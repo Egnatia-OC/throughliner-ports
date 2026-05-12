@@ -10,7 +10,7 @@ The current method lives at the repo root: `NO-CODE-METHOD.md`, `DOC-STRUCTURE.m
 
 > The session scope files are **provisional** — they may be renamed, deleted, or merged as the plan evolves.
 
-`Archive/Version 3/` through `Archive/Version 16/` are older method versions, kept for traceability — they predate this repo's git history.
+`Archive/` holds older method versions (`Version 3/` through `Version 16/`) plus `Iteration playbook/` — a formalized set of named iteration passes used to evolve the method through V17. Both predate this repo's git history.
 
 ## Versioning
 
