@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor configs
+.obsidian/
+.vscode/
+.idea/
+
+# Editor temp / swap files
+*.swp
+*.swo
+*~
+
+# Common build artefacts (forward-looking — for plugin code from V18 onwards)
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.local
