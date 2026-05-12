@@ -1,0 +1,15 @@
+{
+  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). UserPromptSubmit was the original choice but is blocked by anthropics/claude-code#10225; SessionStart works in plugins today and is functionally equivalent given the method's /clear-after-every-build discipline.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -14,9 +14,9 @@ When a future session runs, its plugin code (hook scripts, subagent definitions,
 
 | V# | Session | Output |
 |---|---|---|
-| V18 | Path block format + plugin scaffold + `UserPromptSubmit` hook | `templates/CLAUDE-TEMPLATE.md` path block in fenced YAML/JSON; plugin skeleton; first hook installed |
+| V18 | Path block format + plugin scaffold + `SessionStart` hook (universal-behaviour rules) | `templates/CLAUDE-TEMPLATE.md` path block in fenced JSON; plugin skeleton; SessionStart hook installed (originally planned as UserPromptSubmit; pivoted to SessionStart due to anthropics/claude-code#10225) |
 | V19 | Read-only PreToolUse hook + bundled templates + `/init-project` skill-command | Lock enforcement; templates scaffolded by slash command; tested on Taskflow |
-| V20 | SessionStart hook + routing | Foundational reads, template detection, resume detection, routing; tested |
+| V20 | SessionStart hook — extend with foundational reads + routing | V18's SessionStart hook gains foundational reads (CLAUDE.md, path block, SoT docs), template-state detection, resume detection, and routing logic; tested |
 | V21 | Planning subagent (drift logic inlined) + Serves-line PreToolUse hook | Planning loop end-to-end; tested |
 | V22 | Before-build subagent + batch-executor + Stop hook + supporting PreToolUse hooks | Build orchestration core (the user's two main motivating examples); tested |
 | V23 | After-build subagent | MANIFEST auto-update + build recap; tested |

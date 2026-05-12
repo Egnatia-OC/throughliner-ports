@@ -85,4 +85,4 @@ If a project ever grows large enough that the flat list becomes hard to scan, sw
 Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METHOD.md` → *How a new feature enters the project* for the pipeline. Red flags are the only deferred items that don't need such an entry behind them; they live in `BACKLOG.md` regardless of scope.
 
 ---
-*No-code method — Version 17.*
+*No-code method — Version 18.*

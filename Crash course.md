@@ -212,4 +212,4 @@ There is also a known headwind for any methodology that relies on `CLAUDE.md`-st
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) are in [the Taskflow repo on GitHub](https://github.com/your-username/Taskflowapp) — *(replace with the real link)*. Versions are numbered; each new working session produces one new version folder so the history stays intact and walkable.
 
 ---
-*No-code method — Version 17.*
+*No-code method — Version 18.*

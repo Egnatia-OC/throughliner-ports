@@ -1,6 +1,6 @@
-# Inventory — V17
+# Inventory — current architecture
 
-The two-layer split and the final plugin component list. Permanent reference for V18–V27. Design as **revised after V17's Opus feasibility check** (response in `claude-code-plugin-feasibility-response.md` in this folder).
+The two-layer split and the final plugin component list. Living document — describes current state, not a historical snapshot. Originated as V17's design after the Opus feasibility check (response in `claude-code-plugin-feasibility-response.md` in this folder); revised in subsequent sessions as decisions land.
 
 ## The two-layer split
 
@@ -41,8 +41,7 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Foundational reads (CLAUDE.md, path block, SoT docs); template-state detection; resume detection; routing decision injected as `additionalContext`.
-- **UserPromptSubmit hook.** Universal behavioural rules injected as `additionalContext` on every turn (push back on assumptions, surface red flags, plain English). *Replaces the original "always-loaded core skill" idea — skills bodies aren't always-loaded.*
+- **SessionStart hook.** Two responsibilities, both injected as `additionalContext`: (a) the universal behavioural rules — push back on assumptions, surface red flags, plain English — installed in V18; (b) foundational reads (CLAUDE.md, path block, SoT docs), template-state detection, resume detection, and routing decisions — added in V20. *Replaces the original "always-loaded core skill" idea (skill bodies aren't always-loaded). Originally planned as a `UserPromptSubmit` hook for per-turn re-injection, but `UserPromptSubmit` hooks declared in plugin `hooks.json` don't execute due to anthropics/claude-code#10225. SessionStart works in plugins today and is functionally equivalent given the method's `/clear`-after-every-build discipline — every new session re-fires the hook.*
 - **PreToolUse hook (consolidated, multiple checks).**
   - (a) Read-only enforcement on locked files (`UX.md`, additional SoT docs).
   - (b) Fold-in redirect: `UX.md` write attempts redirected to a `[FOLD-IN PENDING]` block in `BACKLOG.md`.
@@ -89,7 +88,7 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 | Original (Chunks A/B/C) | Revised | Reason |
 |---|---|---|
 | `drift-checker` subagent invoked BY `planning` subagent | Inline drift logic into planning subagent prompt | Subagents can't spawn other subagents |
-| Always-loaded core skill (universal behaviours) | `UserPromptSubmit` hook injecting `additionalContext` | Skill bodies aren't always-loaded |
+| Always-loaded core skill (universal behaviours) | `SessionStart` hook injecting `additionalContext` | Skill bodies aren't always-loaded. (V17 first chose `UserPromptSubmit`; V18 pivoted to `SessionStart` because `UserPromptSubmit`-in-plugin is blocked by anthropics/claude-code#10225.) |
 | `batch-executor` subagent enforces file-list isolation directly | PreToolUse hook enforces; `batch-executor` receives the list via its prompt | Subagent config restricts tools, not paths |
 | `CLAUDE.md` path block as free-form markdown bullets | Fenced YAML/JSON code block | Robust hook parsing |
 | Slash commands as standalone components | Slash commands as skills with `disable-model-invocation: true` + `user-invocable: true` + `agent: <subagent>` | Claude Code v2.1.101 merged commands into skills |
@@ -104,6 +103,7 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 - Cache invalidation on plugin update is manual — `/reload-plugins` required.
 - The "vibe coder distributing a plugin" UX gap — local-install requires CLI muscle; consider a one-click install script.
 - **Method-still-being-refined risk acknowledged and accepted at V17 close.** Reasoning: current method docs are large enough that context bloat is itself preventing realistic adherence testing; the plugin's per-component context isolation is the testability fix, not a freeze of an unstable method.
+- **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered during V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 17.*
+*No-code method — Version 18.*
