@@ -8,6 +8,30 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Track session performance over time? (AEX-style DEX/HEX)
+
+**The question.** Should a future version of the no-code method include a lightweight session-performance log — recording what configuration (model, prompts, hooks, skills) was used in each session and a structured assessment of how it went — so that decisions about the method itself are made against accumulated evidence rather than instinct? Idea borrowed from AEX (a separate protocol — see github.com/ctenidae8/AEX_Protocol): **DEX** as a per-config reliability score earned from logged outcomes, **HEX** as a per-config domain-experience record about what tasks the config has proven good at.
+
+**Why it matters.** Raised externally via a conversation + distilled-question artifact (URLs in V19 chat; share-link content not retrievable, artifact fetched). Worth recording rather than dropping because it points at a real long-term tension: the method develops session-by-session right now and design decisions are made on first-principles intuition. If the method were public, aggregated cross-user session evidence would have obvious value. The question is whether single-user evidence collected against an evolving method is also useful — or whether it's premature and adds noise.
+
+**Working notes — honest assessment from V19.**
+
+1. *Method isn't stable yet.* V19 of ~27 planned sessions plus refinement. Measuring an evolving system captures noise about its evolution, not signal about its working state. Advice fitting this stage: stabilize first (let V27 ship and run a few real project cycles on the stable method), then decide what to measure.
+
+2. *Sample size is unworkable.* One person, one project (Taskflow), with ~30 sessions through V27 — even fully logged, the dataset is small and the variables are confounded ("did the method work?" tangles with "was Alex sharp today?" and "was the task tractable?"). Signal-to-noise per decision is low.
+
+3. *Defining "went well" is the hardest part, and the artifact says so itself.* Without a mechanical, repeatable success criterion, "well" becomes vibes-encoded-as-data — worse than vibes alone, because numeric scores feel objective even when they aren't.
+
+4. *Existing retrospective mechanisms already cover this work qualitatively.* `BUILD-LOG.md` captures what shipped, decisions taken, surprises, carry-forwards. `OPEN-QUESTIONS.md` captures unresolved tensions. Discoveries → planning batches captures emergent needs. These fit small-sample, single-user, evolving-method conditions. If they ever feel insufficient, the cheaper incremental move is to add structured fields to BUILD-LOG entries ("what worked / what didn't / hypothesis for next time"), not to build a separate measurement system.
+
+5. *What current decision would this change?* V17's architecture, V18's hook-event choice, V19's hook-deny-redirect mechanic — none of these would have been called differently with a session-performance log. The artifact's own bar is "does the evidence change my decisions?" and from V19's vantage that bar isn't met.
+
+6. *Where the idea earns its keep eventually.* If the method moves to a public release (Vibe Coding Course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX patterns are designed for that scale. Single-user, in-development is the wrong scale for the pattern. Public-future status would change the call.
+
+**Next step.** Park. Revisit after V27 ships and the method has settled into stable use across a few real project cycles. At that point the question becomes concrete: list 2–3 design decisions that have felt like they would have benefited from logged evidence — if non-empty, define the minimal log against those specific decisions; if empty, drop the question and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward a public release before V27 wraps — that's the scenario where the pattern earns its keep.
+
+---
+
 ## Cross-version template reconciliation for Cowork-first users
 
 **The question.** When a user authors their spine docs (`UX.md`, `BACKLOG.md`, etc.) in Cowork against, say, a V17 template they had locally, and then installs the no-code-method plugin (currently V19), the user's docs carry a V17 footer while the plugin's bundled templates carry V19. The structural rules between versions may differ. What does the plugin do about it?
