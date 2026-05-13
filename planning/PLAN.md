@@ -14,18 +14,20 @@ When a future session runs, its plugin code (hook scripts, subagent definitions,
 
 | V# | Session | Output |
 |---|---|---|
-| V18 | Path block format + plugin scaffold + `SessionStart` hook (universal-behaviour rules) | `templates/CLAUDE-TEMPLATE.md` path block in fenced JSON; plugin skeleton; SessionStart hook installed (originally planned as UserPromptSubmit; pivoted to SessionStart due to anthropics/claude-code#10225) |
-| V19 | Read-only PreToolUse hook + bundled templates + `/init-project` skill-command | Lock enforcement; templates scaffolded by slash command; tested on Taskflow |
-| V20 | SessionStart hook — extend with foundational reads + routing | V18's SessionStart hook gains foundational reads (CLAUDE.md, path block, SoT docs), template-state detection, resume detection, and routing logic; tested |
-| V21 | Planning subagent (drift logic inlined) + Serves-line PreToolUse hook | Planning loop end-to-end; tested |
-| V22 | Before-build subagent + batch-executor + Stop hook + supporting PreToolUse hooks | Build orchestration core (the user's two main motivating examples); tested |
-| V23 | After-build subagent | MANIFEST auto-update + build recap; tested |
-| V24 | New-project + migration skill-commands and subagents | "Starting a project" flows; tested |
-| V25 | `DOC-STRUCTURE.md` content migration + Crash course update | Schema content moved into plugin; Crash course brought current |
-| V26 | `NO-CODE-METHOD.md` retirement / cleanup | Original method files retired or pointed at plugin |
-| V27 | End-to-end Taskflow test | Refinement list; possibly more sessions |
+| V18 | Path block format + plugin scaffold + `SessionStart` hook (universal-behaviour rules) | `templates/CLAUDE-TEMPLATE.md` path block in fenced JSON; plugin skeleton; SessionStart hook installed (originally planned as UserPromptSubmit; pivoted to SessionStart due to anthropics/claude-code#10225). **Shipped.** |
+| V19 | Read-only PreToolUse hook + bundled templates + `/init-project` skill-command + Fold-ins pending section | Lock enforcement; templates scaffolded by slash command; structural rewrite for Fold-ins pending section; tested on Taskflow. **Shipped.** |
+| V20 | Crash course promoted to source-of-truth doc; parity audit; planning-list shifts (batch-sizing folded into V23, TEST-LOG inserted as V24) | Crash course brought current; CLAUDE.md parity rule extended to Crash course; OPEN-QUESTIONS entry for the Cowork-friendly prose-only rewrite. **Shipped.** |
+| V21 | SessionStart hook — extend with foundational reads + routing | V18's SessionStart hook gains foundational reads (CLAUDE.md, path block, SoT docs), template-state detection, resume detection, and routing logic; tested |
+| V22 | Planning subagent (drift logic inlined) + Serves-line PreToolUse hook | Planning loop end-to-end; tested |
+| V23 | Before-build subagent + batch-executor + Stop hook + supporting PreToolUse hooks; **batch-sizing principle** | Build orchestration core (the user's two main motivating examples); batch-sizing optimised for verification burden; tested |
+| V24 | **TEST-LOG.md mechanism + protocol** | New operational tracking doc, template, structural spec, five protocol rules placed across method phases, fourth drift check |
+| V25 | After-build subagent (enforces V24 test-confirmation gate) | MANIFEST auto-update + build recap + test-confirmation gate; tested |
+| V26 | New-project + migration skill-commands and subagents | "Starting a project" flows; tested |
+| V27 | `DOC-STRUCTURE.md` content migration + Crash course coherence pass | Schema content moved into plugin; final coherence read across Crash course before public release |
+| V28 | `NO-CODE-METHOD.md` retirement / cleanup | Original method files retired or pointed at plugin |
+| V29 | End-to-end Taskflow test | Refinement list; possibly more sessions |
 
-10 sessions. Some will combine or split during execution; the count is a target, not a contract.
+12 sessions. Some will combine or split during execution; the count is a target, not a contract.
 
 ## Session-scope file shape
 

@@ -14,7 +14,7 @@ The method belongs to the family of spec-driven development methodologies. The c
 
 - **CLAUDE.md** — The project's entry point. Contains a pointer to the method spec, a path block declaring where every other doc in the project lives, and any project-specific behavioural notes.
 - **UX.md** — The user-facing description of the app. Every entry corresponds to something the user can actually experience in the current build, plus a mandatory "the user needs this because…" line tying it back to a UX principle or user context.
-- **BACKLOG.md** — Deferred work in three sections in fixed order: Red flags (security/privacy/data integrity concerns), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
+- **BACKLOG.md** — Deferred work in four sections in fixed order: Red flags (security/privacy/data integrity concerns), Fold-ins pending (proposed source-of-truth content queued by Claude Code for the user to fold in during their next Cowork session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
 - **MANIFEST.md** — A flat alphabetical glossary of named elements in the codebase that the user might want to look up. Maintained by Claude during builds, not intended to be read cover-to-cover.
 - **Optional additional source-of-truth docs** — When a project needs an extra doc the spine doesn't cover (e.g. `SYSTEM-PROMPT.md` for an MCP-integrated app, `COPY.md` for a project whose user-facing text is its primary deliverable). Same structural rules apply: read-only in Claude Code, no placeholders, intent-level not implementation.
 
@@ -107,6 +107,8 @@ If step 3 had answered "no," steps 4 and 5 would not happen. `UX.md` stays as it
 
 The due-date item from the same test note runs the same pipeline. It might land at "yes, with relative shortcuts only, no date picker" — folding into a new `UX.md` entry once the feature is decided, then a build batch.
 
+**What if the idea conflicts with an existing UX principle?** If a test note or feature request would violate a principle already in `UX.md`, that conflict gets surfaced in chat as the first response — not quietly routed into a planning batch and hoped for. The planning batch still happens (step 2), and the conflict becomes one of its questions. Chat surfaces the tension immediately so you can react; the planning batch records and resolves it.
+
 ### Drift checks at planning sessions
 
 By the third or fourth build, Claude is running **drift checks** at the start of every planning session. Three pairwise comparisons:
@@ -125,7 +127,7 @@ A new feature takes two sessions to land — one planning, one build — minimum
 
 The method ships with a default set of preferences and commitments embedded in `NO-CODE-METHOD.md`. A new user adopting the method needs to distinguish three layers:
 
-**Method contract — load-bearing, edit at your peril.** Some lines read like personal preferences but the method's machinery depends on them. "I'd rather be told I'm wrong than agreed with" — the drift checks, red-flag surfacing, and planning recaps all assume Claude will push back on the user. "Don't stealth-fix regressions" — the build recap assumes Claude states regressions plainly. "Don't immediately fold under push-back" — planning recaps assume Claude engages with disagreement rather than collapsing into either position.
+**Method contract — load-bearing, edit at your peril.** Some lines read like personal preferences but the method's machinery depends on them. "I'd rather be told I'm wrong than agreed with" — the drift checks, red-flag surfacing, and planning recaps all assume Claude will push back on the user. "Don't stealth-fix regressions" — the build recap assumes Claude states regressions plainly. "Don't immediately fold under push-back" — planning recaps assume Claude engages with disagreement rather than collapsing into either position. In `NO-CODE-METHOD.md` the contract is structured as *Required of Claude* (positive lines like the three above) and *Prohibited of Claude* (negative lines — "do not add features not listed in the current batch prompt," "do not refactor without explicit confirmation"), each annotated with the mechanism that breaks without it.
 
 **Recommended habits — edit freely.** Some lines are habits surrounding the build sequence: `/clear` after each build, prepare test results as pasteable text, review all upcoming changes before each build. A different user with a different rhythm might rewrite these to match how they actually work.
 
@@ -134,6 +136,8 @@ The method ships with a default set of preferences and commitments embedded in `
 These three layers each have their own section in `NO-CODE-METHOD.md`: *Method contract* (with the Required-of-Claude / Prohibited-of-Claude split), *Recommended habits*, and *The build sequence*.
 
 ## Editing surfaces — Cowork and Claude Code
+
+The point of locking is to keep `UX.md` as a stable source of truth that doesn't get edited in flight; structural changes only happen in planning sessions, where they're discussed and decided properly.
 
 Some docs are stable artefacts — written slowly, in their proper environment, and meant to stay stable. `UX.md` and any additional source-of-truth docs are written deliberately in Cowork during planning, where their design decisions get the time and headspace they deserve. `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are the method spec — updated in the method's own development project, then shared verbatim across every project using the method.
 
@@ -155,7 +159,7 @@ The full split:
 
 **`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are also read-only to Cowork** in your project — they're shared verbatim across every project using the method, so editing them in your project would diverge from the verbatim copy. They get updated in the method's own development project.
 
-**Planning batch fold-in.** When a planning batch is resolved during a Claude Code session, Claude Code can't write the answer into `UX.md` directly — `UX.md` is locked. Instead, Claude Code writes the resolved answer into the planning batch in `BACKLOG.md` as a *fold-in pending in Cowork* marker. Next time you open Cowork, you do the actual fold-in. Operational detail: `NO-CODE-METHOD.md` → *During planning*.
+**The `[FOLD-IN PENDING]` mechanism.** Claude Code can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt that the PreToolUse hook intercepted. Next time you open Cowork, you review the pending blocks and fold them into the destination doc (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
 
 ## Why the rules
 
@@ -172,6 +176,8 @@ The rationale behind specific rules in `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md
 - **Predictability of session length.** A batch with a fixed file list has a knowable end; one that absorbs "while we're here" additions doesn't.
 - **Clean test coverage.** One batch = one set of changes = one set of tests; mid-build mixing makes regressions harder to trace.
 - **The planning-gate filter.** Mid-build, things *feel* in-scope that wouldn't survive a planning conversation. The rule defers scope decisions back to that conversation rather than shortcutting it.
+
+The rule isn't absolute. If implementation reveals a prerequisite the batch genuinely cannot complete without — something that wasn't visible at planning time — the carve-out is halt, surface in chat with a one-line justification, wait for the user's okay, and label `[Prerequisite, not in plan]` in the build recap. The bar is high ("cannot complete," not "would be nicer") and the protocol is no-silent-prerequisites; both keep the carve-out from becoming a back door for the scope creep the rest of the rule blocks.
 
 The prerequisite carve-out — "if the batch genuinely cannot complete or be tested cleanly without an unplanned change" — exists because implementation occasionally reveals dependencies that weren't visible at planning time. The bar is high (cannot complete, not "would be nicer"), the protocol is halt-and-confirm (no silent prerequisites), and the build-recap labeling keeps it visible after the fact. The carve-out keeps the rule from forbidding the impossible without opening the door to creep.
 
@@ -193,7 +199,7 @@ The prerequisite carve-out — "if the batch genuinely cannot complete or be tes
 
 **`MANIFEST.md` flat list — don't pre-empt the section split.** The rule "switch to alphabetical sections by area when the flat list grows too long" sounds like permission to start with sections from day one. It's not. Most projects' `MANIFEST.md` never grows large enough to need sections, and pre-emptive sectioning forces architecture decisions (which "areas" exist?) before there's enough code to know. Wait until scrolling the flat list actually hurts.
 
-**`BACKLOG.md` as one file with three sections.** Red flags, planning batches, and build batches could live in three separate files. They don't, because the friction of three places to check is what causes deferred items to slip through. One file, three sections, top-to-bottom by priority means there's exactly one place to look for what's outstanding.
+**`BACKLOG.md` as one file with four sections.** Red flags, fold-ins pending, planning batches, and build batches could live in four separate files. They don't, because the friction of multiple places to check is what causes deferred items to slip through. One file, four sections, top-to-bottom by priority means there's exactly one place to look for what's outstanding.
 
 ## Where the method sits in the broader landscape
 
@@ -209,7 +215,7 @@ There is also a known headwind for any methodology that relies on `CLAUDE.md`-st
 
 ## Where the actual files live
 
-The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) are in [the Taskflow repo on GitHub](https://github.com/your-username/Taskflowapp) — *(replace with the real link)*. Versions are numbered; each new working session produces one new version folder so the history stays intact and walkable.
+The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, with the full commit history walkable from any tag.
 
 ---
-*No-code method — Version 19.*
+*No-code method — Version 20.*

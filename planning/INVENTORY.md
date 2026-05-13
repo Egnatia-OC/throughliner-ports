@@ -106,4 +106,4 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 - **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered during V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 19.*
+*No-code method — Version 20.*

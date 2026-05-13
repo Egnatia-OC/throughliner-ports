@@ -8,6 +8,22 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Cowork-friendly prose-only rewrite of the method (post-plugin-build)
+
+**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and the `[FOLD-IN PENDING]` mechanism rely on Claude Code primitives that don't exist in Cowork (or in Claude.ai chat, or in any other Claude surface). To reach users on those surfaces — particularly novices coming through a future Podia course who'd start in Cowork — we'll eventually need a prose-only rewrite of the method that works in any tool: same methodology, no plugin scaffolding.
+
+**Why it matters.** Surfaced in V20 planning. Without the rewrite, the method's current shape is structurally bound to Claude Code: source-of-truth-doc locking is enforced by PreToolUse hooks; session-start reads are injected by SessionStart hooks; routing is done by injected context. None of these primitives exist in Cowork. Users without Claude Code (which will be most novices) currently can't use the method as a working system. The Cowork-friendly version restores accessibility — but only after the plugin shape stabilizes, or the rewrite chases a moving target.
+
+**Working notes.**
+
+- The likely shape: a prose-only `NO-CODE-METHOD.md` that re-expresses every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart-hook foundational reads (becomes an at-session-start narrative in `CLAUDE.md`), PreToolUse read-only enforcement (becomes a trust-based locking convention plus chat-time flagging), slash commands (become operational procedures Claude follows from prose).
+- The pluginified method is still evolving (V21–V29 ahead). Doing the rewrite before the plugin shape settles means re-doing it as the plugin shape changes.
+- This entry partially supersedes the *Cross-version template reconciliation* entry's framing — that entry asserts "Cowork-first is now the recommended path." That assertion isn't wrong yet (it reflects current pluginified reality), but when this question resolves, the cross-version entry will need adjusting too.
+
+**Next step.** Park until V29 (final E2E Taskflow test) ships and the plugin shape has settled. At that point: list each plugin-specific mechanism, design a prose-only equivalent for each, and schedule the rewrite as one or more sessions. **Promote sooner** if the method moves toward public release before the plugin migration completes — that scenario forces the rewrite onto the critical path.
+
+---
+
 ## Track session performance over time? (AEX-style DEX/HEX)
 
 **The question.** Should a future version of the no-code method include a lightweight session-performance log — recording what configuration (model, prompts, hooks, skills) was used in each session and a structured assessment of how it went — so that decisions about the method itself are made against accumulated evidence rather than instinct? Idea borrowed from AEX (a separate protocol — see github.com/ctenidae8/AEX_Protocol): **DEX** as a per-config reliability score earned from logged outcomes, **HEX** as a per-config domain-experience record about what tasks the config has proven good at.
