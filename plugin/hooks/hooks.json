@@ -1,5 +1,5 @@
 {
-  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). UserPromptSubmit was the original choice but is blocked by anthropics/claude-code#10225; SessionStart works in plugins today and is functionally equivalent given the method's /clear-after-every-build discipline.",
+  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). PreToolUse enforces read-only on locked source-of-truth docs (UX.md and any additional SoT docs declared in the project's CLAUDE.md path block). UserPromptSubmit was the original choice for SessionStart's job but is blocked by anthropics/claude-code#10225; SessionStart works in plugins today and is functionally equivalent given the method's /clear-after-every-build discipline.",
   "hooks": {
     "SessionStart": [
       {
@@ -7,6 +7,17 @@
           {
             "type": "command",
             "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre_tool_use.py\""
           }
         ]
       }

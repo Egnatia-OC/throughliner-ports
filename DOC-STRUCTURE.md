@@ -64,19 +64,25 @@ If a project ever grows large enough that the flat list becomes hard to scan, sw
 
 ## BACKLOG.md structure
 
-`BACKLOG.md` consolidates everything that is deferred, in three sections in this fixed order.
+`BACKLOG.md` consolidates everything that is deferred, in four sections in this fixed order.
 
 **Maintained by Claude during planning, not by the user.** Whenever a planning decision changes `BACKLOG.md` — adding, removing, reordering, splitting, or reclassifying an item or batch — Claude edits the file directly. The user reviews the edits afterwards; the user does not apply them.
 
 **Header.** A brief statement of purpose, the section order, and the maintenance rule (so a runtime reader of `BACKLOG.md` itself sees the rule too).
 
-**Three sections, in this order:**
+**Four sections, in this order:**
 
 - **Red flags.** Security, privacy, data integrity, or safety concerns surfaced and explicitly deferred by the user. Empty by default. Each entry is a blockquote in the canonical format: `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Items are removed once addressed. Claude populates this section per the "Red flags — screen and surface" rule under *Method contract → Required of Claude* in `NO-CODE-METHOD.md`.
 
   **Red flags entries are concerns parked outside any active work stream.** Concerns inside an active build batch live there until the batch ships. Concerns attached to a feature in a planning batch become questions inside that planning batch — not Red flags entries. The Red flags section is specifically for concerns the user has explicitly chosen to defer with no active plan to address them.
 
-- **Planning batches.** Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each planning batch lists the questions and ends with a `Blocks:` line — either naming the build batch (or batches) it holds up, or noting `Blocks: scope decision — no build batch yet` when it's an existence question. Once resolved, follow the fold-in mechanism in `NO-CODE-METHOD.md` → *Editing surfaces* (which uses `[FOLD-IN PENDING]` markers so the user can fold the answers into `UX.md` or the relevant additional source-of-truth doc in their next Cowork session — Claude Code cannot write to those docs directly). If a scope-existence batch resolves to "yes, build it," the planning batch may then convert to a build batch (or spawn one) at that point.
+- **Fold-ins pending.** Proposed source-of-truth content that Claude Code has formed but cannot write directly to read-only docs (`UX.md` and any additional source-of-truth docs). All fold-in pending blocks live here regardless of which route produced them — the new-project route, the migration route, a planning-batch resolution, or a mid-build edit attempt that the PreToolUse hook intercepted. Each block is a blockquote in the canonical format:
+
+  > `**`[FOLD-IN PENDING]`**` `<DOC>.md` — [one-line description of the proposed change]. [Proposed text or shape of the change, inline or as an indented sub-quote]. Surfaced [date]; origin: [planning batch name | new-project route | migration route | mid-build edit attempt].
+
+  Empty by default. Items are removed once the user folds them into the destination doc in a Cowork session (or consciously drops them). The full mechanism — when blocks get created and how they reconcile back into source-of-truth docs — is in `NO-CODE-METHOD.md` → *Editing surfaces*.
+
+- **Planning batches.** Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each planning batch lists the questions and ends with a `Blocks:` line — either naming the build batch (or batches) it holds up, or noting `Blocks: scope decision — no build batch yet` when it's an existence question. Resolution mechanism: append the answer to the planning batch and add a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section (with this batch's name as the *origin*). Leave the planning batch in place — the user removes it during the same Cowork session in which they fold the answer into `UX.md` (or the relevant additional source-of-truth doc). If a scope-existence batch resolves to "yes, build it," the planning batch may convert to a build batch (or spawn one) at that point, in addition to the fold-in.
 
   **One planning batch per discrete decision.** If a message contains multiple unrelated feature requests or scope questions, create separate planning batches — one per discrete feature. Bundle only when two items are tightly coupled (deciding one inevitably decides the other). Unrelated items in a single batch create a batch whose `Blocks:` line can't cleanly name what it blocks and whose resolution can't fold into a single source-of-truth-doc entry.
 
@@ -85,4 +91,4 @@ If a project ever grows large enough that the flat list becomes hard to scan, sw
 Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METHOD.md` → *How a new feature enters the project* for the pipeline. Red flags are the only deferred items that don't need such an entry behind them; they live in `BACKLOG.md` regardless of scope.
 
 ---
-*No-code method — Version 18.*
+*No-code method — Version 19.*

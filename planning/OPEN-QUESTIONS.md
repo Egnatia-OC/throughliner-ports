@@ -8,6 +8,24 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Cross-version template reconciliation for Cowork-first users
+
+**The question.** When a user authors their spine docs (`UX.md`, `BACKLOG.md`, etc.) in Cowork against, say, a V17 template they had locally, and then installs the no-code-method plugin (currently V19), the user's docs carry a V17 footer while the plugin's bundled templates carry V19. The structural rules between versions may differ. What does the plugin do about it?
+
+**Why it matters.** Raised in V19 planning while discussing why bundled templates earn their keep in a Cowork-first authoring world. Cowork-first is now the recommended path for the planning phase (see `NO-CODE-METHOD.md` → *Detect template state* and the new-project route preamble), so the "user arrives at Claude Code with pre-authored docs" path is the *expected* case, not the exception. If the plugin silently treats those docs as current, structural drift compounds invisibly — a V17 `UX.md` running against V19 hooks may pass checks the V19 rules tightened.
+
+**Working notes.**
+
+- The model I'd argue for: **plugin is the runtime source of truth; the user's footer is the version their authoring assumed.** Mismatch is a tripwire, not an error.
+- Where each piece would land in the migration roadmap:
+  - **V20 (SessionStart extension).** Reads the user's CLAUDE.md / UX.md footers, compares to the plugin's bundled-template versions, surfaces the mismatch (plain English, no auto-fix). One read per session-start; cheap.
+  - **V24 (`/migrate` skill).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled V19 template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
+- The V19 piece is done already: every bundled template carries its version footer (already true; the session-close rule keeps them current).
+
+**Next step.** Fold the tripwire half into V20's session scope; the worker half into V24's. Confirm during V20 planning that the SessionStart hook's foundational-reads step includes the footer-comparison check, and during V24 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once both folds are confirmed.
+
+---
+
 ## Method response to direct-edit users (developers)
 
 **The question.** How should the no-code method respond to users who edit code directly — i.e. developers who already write code and want the method's planning discipline without ceding all technical work to Claude?
