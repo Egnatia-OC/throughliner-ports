@@ -58,11 +58,11 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 - The model I'd argue for: **plugin is the runtime source of truth; the user's footer is the version their authoring assumed.** Mismatch is a tripwire, not an error.
 - Where each piece would land in the migration roadmap:
-  - **V20 (SessionStart extension).** Reads the user's CLAUDE.md / UX.md footers, compares to the plugin's bundled-template versions, surfaces the mismatch (plain English, no auto-fix). One read per session-start; cheap.
-  - **V24 (`/migrate` skill).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled V19 template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
+  - **V21 (SessionStart extension).** Reads the user's CLAUDE.md / UX.md footers, compares to the plugin's bundled-template versions, surfaces the mismatch (plain English, no auto-fix). One read per session-start; cheap.
+  - **V26 (`/migrate` and migration skill-commands).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
 - The V19 piece is done already: every bundled template carries its version footer (already true; the session-close rule keeps them current).
 
-**Next step.** Fold the tripwire half into V20's session scope; the worker half into V24's. Confirm during V20 planning that the SessionStart hook's foundational-reads step includes the footer-comparison check, and during V24 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once both folds are confirmed.
+**Next step.** Fold the tripwire half into V21's session scope (the SessionStart extension); the worker half into V26's (`/migrate` and the migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — the SessionStart hook's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs* → version-footer mismatch tripwire). Confirm during V26 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once the worker half also ships.
 
 ---
 
@@ -74,8 +74,10 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 **Working notes — three rough shapes the response could take.**
 
-- *Tighten drift detection so manual edits get caught.* V20's `SessionStart` hook (or a `PostToolUse` hook) could compare the working tree against the last-known `MANIFEST.md` state and surface manual changes for triage. Smallest change, but only catches edits after the fact — doesn't prevent them mid-flow.
+- *Tighten drift detection so manual edits get caught.* V21's `SessionStart` hook (or a `PostToolUse` hook) could compare the working tree against the last-known `MANIFEST.md` state and surface manual changes for triage. Smallest change, but only catches edits after the fact — doesn't prevent them mid-flow.
 - *Add a "developer mode" entry point.* The plugin scaffolds a different doc set for developers — keeps `UX.md` / `BACKLOG.md` discipline (spec-first), drops the assumption that Claude does all the code. Requires deciding what the developer-mode equivalents of MANIFEST.md (which Claude maintains) and the build-recap flow look like.
 - *Document that the method explicitly doesn't serve direct-edit users.* Add a "Who this is for" section to `NO-CODE-METHOD.md` so developers self-select out. Cheapest move but loses an audience.
 
-**Next step.** Think during V20 (SessionStart hook extension). If drift detection covers the realistic failure modes, fold there and close the question. If not, promote to its own session somewhere in the V21–V24 range — add a row to `PLAN.md` and create a `sessions/Vxx.md` with whichever shape lands.
+**Next step.** Think during V21 (SessionStart hook extension). If drift detection covers the realistic failure modes, fold there and close the question. If not, promote to its own session somewhere in the V22–V26 range — add a row to `PLAN.md` and create a `sessions/Vxx.md` with whichever shape lands.
+
+**V21 planning, 2026-05-14:** confirmed V21 does *not* absorb this. V21 adds foundational reads + template-state + resume + routing, none of which catch manual code edits. The natural home for the tighten-drift-detection shape is V22 (planning subagent + drift logic inlined) — or its own session if the developer-mode or "Who this is for" shapes win out instead. Question remains parked; revisit during V22 planning at the earliest, or sooner if the method moves toward public release.

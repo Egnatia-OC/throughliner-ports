@@ -218,4 +218,4 @@ There is also a known headwind for any methodology that relies on `CLAUDE.md`-st
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, with the full commit history walkable from any tag.
 
 ---
-*No-code method — Version 20.*
+*No-code method — Version 21.*
