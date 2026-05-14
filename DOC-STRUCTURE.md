@@ -90,5 +90,7 @@ If a project ever grows large enough that the flat list becomes hard to scan, sw
 
 Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METHOD.md` → *How a new feature enters the project* for the pipeline. Red flags are the only deferred items that don't need such an entry behind them; they live in `BACKLOG.md` regardless of scope.
 
+**`Serves UX.md:` name matching.** Names on a `Serves UX.md:` line are matched against `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches an entry named `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines for additional source-of-truth docs are not yet hook-checked.
+
 ---
-*No-code method — Version 21.*
+*No-code method — Version 22.*

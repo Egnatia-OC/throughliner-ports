@@ -31,7 +31,7 @@ Every Claude Code session in a project under this method follows the same shape:
 
 **At session start.** Claude reads `CLAUDE.md`, resolves the path block, reads the spine docs and any additional source-of-truth docs from their declared paths. If a path doesn't resolve, Claude searches the project for the file by name, surfaces what it finds, and asks for confirmation before updating `CLAUDE.md`.
 
-**During planning.** Test notes are sorted into Suggestions (fits current scope) and Discoveries (out of scope until `UX.md` is updated). Drift is checked between `UX.md`, `MANIFEST.md`, and the actual codebase. Backlog edits happen directly. Discoveries are promoted to planning batches before the session ends so nothing slips through `/clear`.
+**During planning.** Main Claude classifies the opener (test notes / feature request / scope question / mixed) and hands off to the **planning subagent** — a focused Claude with its own system prompt scoped to the planning flow. The subagent sorts the opener into Suggestions (fits current scope) and Discoveries (out of scope until `UX.md` is updated), checks drift between `UX.md`, `MANIFEST.md`, and the actual codebase (every planning session — the only skip case is "nothing has been built yet"), and edits `BACKLOG.md` directly. Discoveries are promoted to planning batches before the session ends so nothing slips through `/clear`. The subagent hands a recap back to main Claude, who relays it to the user.
 
 **Before build.** Changes are grouped into batches small enough to build and test in one session. The next-build batch lists every file to be modified.
 
@@ -218,4 +218,4 @@ There is also a known headwind for any methodology that relies on `CLAUDE.md`-st
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, with the full commit history walkable from any tag.
 
 ---
-*No-code method — Version 21.*
+*No-code method — Version 22.*

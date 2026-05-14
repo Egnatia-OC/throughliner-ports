@@ -182,6 +182,15 @@ Then read my first prompt and route:
 
 **Routing priority for mixed-input openers.** If the opening message triggers more than one route, the higher-priority route wins, and the lower-priority items fold into it as the route's sequence handles them. Priority: new-project > migration > resume > planning seed (test notes, feature requests, scope questions, structural changes all live here). Example: an opener with test notes *and* a brand-new feature idea routes to planning — the feature idea gets sorted into Suggestions or Discoveries during the *During planning* sort, not handled separately.
 
+**Handoff to the planning subagent.** "Continue to *During planning*" means invoking the planning subagent (`no-code-method:planning`) via the Task tool. The subagent runs the planning flow in its own context window; you receive its recap and relay it to me. The invocation prompt must include a `primary_intent` line classifying the opener, followed by my full opening message. The four values are:
+
+- `test notes` — I pasted output from a previous build's tests.
+- `feature request` — I'm proposing a new feature or scope addition with no test notes attached.
+- `scope question` — I'm raising a scope-existence question (e.g. "should this app even have X?").
+- `mixed (primary: <one of the above>)` — primary intent named per the routing-priority rule above; the subagent catches the secondary items during its own sort step.
+
+Trust the planning subagent's recap as the source of truth for the session's `BACKLOG.md` changes — don't re-do its work or second-guess its sort. If I push back on something in the recap, relay the pushback back to the planning subagent for resolution rather than answering yourself.
+
 - **[PROMPT]** Once you're done with the route's work, prompt me to continue to "During planning." (Skip this if you took the test-notes route or a planning-seed route — you're already there. The new-project route and existing-docs migration route have their own closing prompts; don't double up.)
 
 #### New-project route — **[SEQUENCE]**
@@ -220,7 +229,7 @@ Planning sessions can start in different ways: I might paste test notes from the
   2. **`MANIFEST.md` ↔ the codebase.** Every `MANIFEST.md` entry exists in the code; every named element worth tracking is in `MANIFEST.md`.
   3. **`MANIFEST.md` ↔ `UX.md` (loose check only).** Every `MANIFEST.md` entry should plausibly serve some `UX.md` entry, with infrastructure as the obvious exception. They are not at the same abstraction level — flag entries that don't fit any user-facing purpose.
   
-  Skip the drift check if nothing has been built yet.
+  Run on every planning session. The only skip case is "nothing has been built yet" — no implementation to compare against. Do not skip on the basis of "nothing has been built since the last planning session": there is no reliable signal for that, and skipping would miss any code changes made outside Claude Code's awareness.
 - **[BRIEF]** If I shared test notes, review them. Sort what's in them into two piles before discussing:
   1. **Bugs and issues against existing `UX.md` entries** — these are candidates for the **Suggestions** list (work that fits current scope).
   2. **Brand-new feature ideas with no `UX.md` backing** — these are candidates for the **Discoveries** list (out of scope until `UX.md` is updated).
@@ -271,4 +280,4 @@ When a user phrases a request as immediate build ("let's add X"), frame the plan
 
 
 ---
-*No-code method — Version 21.*
+*No-code method — Version 22.*
