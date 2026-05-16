@@ -14,9 +14,9 @@ The method belongs to the family of spec-driven development methodologies. The c
 
 - **CLAUDE.md** — The project's entry point. Contains a pointer to the method spec, a path block declaring where every other doc in the project lives, and any project-specific behavioural notes.
 - **UX.md** — The user-facing description of the app. Every entry corresponds to something the user can actually experience in the current build, plus a mandatory "the user needs this because…" line tying it back to a UX principle or user context.
-- **BACKLOG.md** — Deferred work in four sections in fixed order: Red flags (security/privacy/data integrity concerns), Fold-ins pending (proposed source-of-truth content queued by Claude Code for the user to fold in during their next Cowork session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
+- **BACKLOG.md** — Deferred work in four sections in fixed order: Red flags (security/privacy/data integrity concerns), Fold-ins pending (proposed source-of-truth content queued by Claude for the user to fold in by hand during their next planning session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
 - **MANIFEST.md** — A flat alphabetical glossary of named elements in the codebase that the user might want to look up. Maintained by Claude during builds, not intended to be read cover-to-cover.
-- **Optional additional source-of-truth docs** — When a project needs an extra doc the spine doesn't cover (e.g. `SYSTEM-PROMPT.md` for an MCP-integrated app, `COPY.md` for a project whose user-facing text is its primary deliverable). Same structural rules apply: read-only in Claude Code, no placeholders, intent-level not implementation.
+- **Optional additional source-of-truth docs** — When a project needs an extra doc the spine doesn't cover (e.g. `SYSTEM-PROMPT.md` for an MCP-integrated app, `COPY.md` for a project whose user-facing text is its primary deliverable). Same structural rules apply: read-only to Claude (the agent), no placeholders, intent-level not implementation.
 
 **Method-side (shared verbatim across every project using the method):**
 
@@ -35,18 +35,18 @@ Every Claude Code session in a project under this method follows the same shape:
 
 **Before build.** Changes are grouped into batches small enough to build and test in one session. The next-build batch lists every file to be modified.
 
-**During build.** `UX.md` and any additional source-of-truth docs are read-only to Claude Code (full rule in *Editing surfaces — Cowork and Claude Code* below). Any user-facing change Claude notices is flagged at the end of the response, not edited in. This single rule prevents most of the scope creep that plagued the chat-only version.
+**During build.** `UX.md` and any additional source-of-truth docs are read-only to Claude (the agent) (full rule in *Editing surfaces* below). Any user-facing change Claude notices is flagged at the end of the response, not edited in. This single rule prevents most of the scope creep that plagued the chat-only version.
 
 **After build.** `MANIFEST.md` is updated for anything created/renamed/deleted. A build recap is provided ("I am adding a check to the age field so people can't enter negative numbers"). The user is prompted to test and switch back to planning mode.
 
-## Where each tool fits
+## Where each phase fits
 
-This method is designed around two tools used in sequence:
+This method runs in Claude Code throughout. Within Claude Code, work happens in two phases:
 
-- **Cowork** — where you plan and design. Big-picture decisions and source-of-truth doc work happen here. The walkthrough below assumes you start in Cowork.
-- **Claude Code** — where you build. Source-of-truth docs that Cowork has written are read-only here; operational docs (`BACKLOG.md`, `MANIFEST.md`) stay read/write because builds need to update them.
+- **Planning** — where you design and decide. Big-picture decisions, source-of-truth doc edits, drift checks, and `BACKLOG.md` maintenance. You edit `UX.md` and any additional source-of-truth docs by hand during this phase; Claude (the agent) assists in chat but cannot write to source-of-truth docs directly.
+- **Build** — where Claude implements one batch at a time. Source-of-truth docs are locked from Claude (the agent) here; operational docs (`BACKLOG.md`, `MANIFEST.md`) stay read/write because builds need to update them. By-hand edits to source-of-truth docs are reserved for planning sessions, not build sessions, to keep build scope clean.
 
-The lock convention — which docs are read-only to Claude Code and why — is in *Editing surfaces — Cowork and Claude Code* below.
+The lock convention — which docs are read-only to Claude during builds and why — is in *Editing surfaces* below.
 
 ## Three disciplines that do most of the work
 
@@ -62,16 +62,16 @@ This section follows a small project — a task manager called **Taskflow**, des
 
 ### Day one — starting from scratch
 
-In **Cowork**, you talk through the project — what the app does, who it's for, what makes it distinct. Cowork helps you draft the four pieces that go into `UX.md` and the first sketch of `BACKLOG.md`:
+You open a Claude Code session in an empty project folder. The plugin's new-project route walks you through four prompts:
 
 1. **Project context.** What this app does, and what makes it distinct.
 2. **UX principles.** Three to six. For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*. Each gets a one-line claim plus a few sentences of why.
 3. **Core functionalities — first pass.** Three to five features that make this app what it is. Each gets a paragraph plus the *user needs this because…* line.
 4. **First build batch sketch.** The smallest end-to-end thing you can build and test.
 
-You take the time you need on these — they're the decisions the rest of the project is built on. Cowork writes the answers into `UX.md` and `BACKLOG.md` directly.
+You take the time you need on these — they're the decisions the rest of the project is built on. Claude queues your answers as a `[FOLD-IN PENDING]` block in `BACKLOG.md`. You fold the UX content into `UX.md` by hand during the same planning session and convert the first-build sketch into a proper build batch.
 
-When the docs feel ready, you switch to Claude Code in the project folder. Claude Code reads `CLAUDE.md`, resolves the path block, reads the docs, and is ready for the first build.
+Once the docs are seeded, Claude Code is ready for the first build.
 
 ### A first UX entry — Risk accepted in action
 
@@ -135,31 +135,31 @@ The method ships with a default set of preferences and commitments embedded in `
 
 These three layers each have their own section in `NO-CODE-METHOD.md`: *Method contract* (with the Required-of-Claude / Prohibited-of-Claude split), *Recommended habits*, and *The build sequence*.
 
-## Editing surfaces — Cowork and Claude Code
+## Editing surfaces
 
 The point of locking is to keep `UX.md` as a stable source of truth that doesn't get edited in flight; structural changes only happen in planning sessions, where they're discussed and decided properly.
 
-Some docs are stable artefacts — written slowly, in their proper environment, and meant to stay stable. `UX.md` and any additional source-of-truth docs are written deliberately in Cowork during planning, where their design decisions get the time and headspace they deserve. `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are the method spec — updated in the method's own development project, then shared verbatim across every project using the method.
+Some docs are stable artefacts — written slowly, deliberately, and meant to stay stable. `UX.md` and any additional source-of-truth docs are written deliberately during planning sessions, where their design decisions get the time and headspace they deserve. The user edits these by hand; Claude (the agent) cannot. `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are the method spec — updated in the method's own development project, then shared verbatim across every project using the method.
 
-Claude Code sessions are different: short, `/clear`-bounded, and build-focused. The wrong environment for stable docs to drift via small "clarifying" tidy-ups. So these docs are locked to Claude Code — read-only. If Claude Code thinks one of them should be reworded or reorganised, it tells you in chat instead of editing.
+Build sessions are different: short, `/clear`-bounded, and build-focused. The wrong environment for stable docs to drift via small "clarifying" tidy-ups. So these docs are locked from Claude (the agent) — read-only, enforced by the PreToolUse hook. If Claude thinks one of them should be reworded or reorganised, it tells you in chat instead of editing.
 
 The full split:
 
-| Doc | Cowork | Claude Code |
-|---|---|---|
-| `UX.md` | read/write | **read-only** |
-| Additional source-of-truth docs (`SYSTEM-PROMPT.md`, `COPY.md`, etc.) | read/write | **read-only** |
-| `BACKLOG.md` | read/write | read/write |
-| `MANIFEST.md` | read | read/write |
-| `CLAUDE.md` | read/write | read/write |
-| `NO-CODE-METHOD.md` | read | read |
-| `DOC-STRUCTURE.md` | read | read |
+| Doc | Claude (the agent) edit access |
+|---|---|
+| `UX.md` | **read-only** (user edits by hand during planning) |
+| Additional source-of-truth docs (`SYSTEM-PROMPT.md`, `COPY.md`, etc.) | **read-only** (user edits by hand during planning) |
+| `BACKLOG.md` | read/write |
+| `MANIFEST.md` | read/write |
+| `CLAUDE.md` | read/write |
+| `NO-CODE-METHOD.md` | read (method spec, edited in the method's own dev project) |
+| `DOC-STRUCTURE.md` | read (method spec, edited in the method's own dev project) |
 
-**`BACKLOG.md` stays read/write to both** because builds need it (red flags get added, completed batches removed, batches split or reordered). The protective rule is built into the build sequence: Claude Code must discuss every `BACKLOG.md` change with you at the appropriate stage — never silently. The recap rules (after planning, before build, after build) make this explicit.
+**`BACKLOG.md` is read/write to Claude** because builds need it (red flags get added, completed batches removed, batches split or reordered). The protective rule is built into the build sequence: Claude must discuss every `BACKLOG.md` change with you at the appropriate stage — never silently. The recap rules (after planning, before build, after build) make this explicit.
 
-**`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are also read-only to Cowork** in your project — they're shared verbatim across every project using the method, so editing them in your project would diverge from the verbatim copy. They get updated in the method's own development project.
+**`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are read-only across the board** in your project — they're shared verbatim across every project using the method, so editing them in your project would diverge from the verbatim copy. They get updated in the method's own development project.
 
-**The `[FOLD-IN PENDING]` mechanism.** Claude Code can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt that the PreToolUse hook intercepted. Next time you open Cowork, you review the pending blocks and fold them into the destination doc (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
+**The `[FOLD-IN PENDING]` mechanism.** Claude (the agent) can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt that the PreToolUse hook intercepted. During the next planning session, you review the pending blocks and fold them into the destination doc by hand (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
 
 ## Why the rules
 
@@ -183,13 +183,13 @@ The prerequisite carve-out — "if the batch genuinely cannot complete or be tes
 
 **The drift checks at different abstraction levels.** The three drift checks (`UX.md`↔build, `MANIFEST.md`↔code, `MANIFEST.md`↔`UX.md`) operate at different abstraction levels — feature-to-feature, name-to-name, and a loose user-facing-purpose check. Trying to do all three at once mixes the levels and produces noise. Run them as three separate passes.
 
-**Editing surfaces — why some docs are locked to Claude Code.** Full reasoning is in *Editing surfaces — Cowork and Claude Code* above.
+**Editing surfaces — why some docs are locked to Claude.** Full reasoning is in *Editing surfaces* above.
 
 ### From DOC-STRUCTURE.md
 
-**No placeholders, no soft gestures.** Source-of-truth docs are operational — runtime audiences (Claude Code, your future self in Cowork, anyone reading the doc to remember what was decided) need the instruction, not its implementation status. A line that says "currently undecided" forces the reader to look elsewhere for the actual rule and makes the doc inert until that elsewhere is found. The status of an open question lives in `BACKLOG.md`, not in the doc body.
+**No placeholders, no soft gestures.** Source-of-truth docs are operational — runtime audiences (Claude, your future self returning to the project, anyone reading the doc to remember what was decided) need the instruction, not its implementation status. A line that says "currently undecided" forces the reader to look elsewhere for the actual rule and makes the doc inert until that elsewhere is found. The status of an open question lives in `BACKLOG.md`, not in the doc body.
 
-**Additional source-of-truth doc shape — loose by design.** Different projects need different additional docs (a system-prompt doc, a copy doc, something else entirely) and the shape that works for one won't work for another. The structural rules — locked to Claude Code, no placeholders, intent-level, fold-in target — are what's invariant. The shape inside is the project's call.
+**Additional source-of-truth doc shape — loose by design.** Different projects need different additional docs (a system-prompt doc, a copy doc, something else entirely) and the shape that works for one won't work for another. The structural rules — locked to Claude (the agent), no placeholders, intent-level, fold-in target — are what's invariant. The shape inside is the project's call.
 
 **UX principles are project-specific.** A budgeting app's principles ("never let the user lose data they've entered") look nothing like a task manager's ("reduce planning pressure"). Principles that try to be method-wide become so abstract they stop guarding any actual decision. The job is to write the three-to-six that protect *this* project's design from drift, not to compile a general theory of UX.
 
@@ -211,11 +211,11 @@ In the broader spec-driven-development literature (the arXiv paper, the GitHub S
 
 The method is iteratively developed. It has not yet been used to ship an app. The first real Taskflow build under the current version is the next test — and the most honest one.
 
-There is also a known headwind for any methodology that relies on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method tries to design around this by making source-of-truth docs read-only to Claude Code (so big design changes can't slip in mid-build), and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any user of the method should expect to recognise drift and recover from it as part of the skill.
+There is also a known headwind for any methodology that relies on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method tries to design around this by making source-of-truth docs read-only to Claude (the agent) (so big design changes can't slip in mid-build), and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any user of the method should expect to recognise drift and recover from it as part of the skill.
 
 ## Where the actual files live
 
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, with the full commit history walkable from any tag.
 
 ---
-*No-code method — Version 22.*
+*No-code method — Version 23.*

@@ -1,12 +1,12 @@
 # No-Code Method for Claude Code
 
-I build in Claude Code using a structured workflow guided by this document.
+I build in Claude Code using a structured workflow guided by this document. The method requires Claude Code — its mechanisms (read-only enforcement, build orchestration, planning routing) rely on Claude Code primitives (hooks, skills, subagents) and don't run elsewhere.
 
 ## At a glance
 
 Each phase loads different files and runs a different sequence. This is the orientation; the detail is in *The build sequence*.
 
-- **Session start.** Read `CLAUDE.md`, then the docs it points at. Route on my opening message: test notes or feature request → planning; "new project" → new-project route (a Claude-Code fallback; new projects normally start in Cowork); structurally non-conforming docs → migration route.
+- **Session start.** Read `CLAUDE.md`, then the docs it points at. Route on my opening message: test notes or feature request → planning; "new project" → new-project route; structurally non-conforming docs → migration route.
 - **Planning.** Edit `BACKLOG.md` directly. Read `DOC-STRUCTURE.md` when editing source-of-truth docs. Sort changes into Suggestions and Discoveries. Run drift checks. Fold resolved planning batches into `UX.md` (or the relevant additional source-of-truth doc).
 - **Before build.** Reorganise build batches in `BACKLOG.md`. Lock the next-build batch with file-level detail. Get my OK before switching out of plan mode.
 - **After build.** Update `MANIFEST.md`. Provide a build recap. Prompt me to test and `/clear`.
@@ -29,11 +29,11 @@ Method-specific terms used throughout this document and `DOC-STRUCTURE.md`. Cros
 - **Suggestion.** During planning: a fix or improvement that fits the current scope (a `UX.md` entry, or an entry in another source-of-truth doc, already covers it). May be requested by me or proposed by you. Routed into a build batch.
 - **Discovery.** During planning: a bug or improvement that falls outside the current project scope — no `UX.md` entry covers it. Cannot enter a build batch directly. Promoted to a planning batch asking "should this be added to `UX.md`?"
 - **Red flag.** A security, privacy, data integrity, or safety concern. Surface in chat first; if I defer it with no active plan, it goes into the Red flags section of `BACKLOG.md` in the canonical format `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Red flags are the only deferred items that don't need a `UX.md` entry behind them.
-- **Source-of-truth doc.** A doc that describes decided behaviour the build must conform to. `UX.md` is one in every project. Projects may add others (see *Additional source-of-truth doc* below). Read-only to Claude Code; edited by the user in Cowork (full rule in *Editing surfaces*).
+- **Source-of-truth doc.** A doc that describes decided behaviour the build must conform to. `UX.md` is one in every project. Projects may add others (see *Additional source-of-truth doc* below). Read-only to Claude (the agent); edited by the user directly during planning sessions (full rule in *Editing surfaces*).
 - **Additional source-of-truth doc.** A project-specific source-of-truth doc beyond `UX.md` — e.g. `SYSTEM-PROMPT.md` for a project with a Claude/MCP integration, or `COPY.md` for a project whose user-facing text is the deliverable. Same locking rules as `UX.md`. Full structural rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
 - **Serves line.** The line at the end of a build batch in `BACKLOG.md` that names the source-of-truth doc entries the batch implements. Format: `Serves UX.md: [entry name(s)].` (and/or `Serves <DOC>: ...` for additional source-of-truth docs).
 - **Drift check.** The three pairwise checks Claude runs at the start of every planning session: `UX.md` ↔ what's actually built, `MANIFEST.md` ↔ the codebase, `MANIFEST.md` ↔ `UX.md` (loose).
-- **Fold-in.** The act of moving proposed source-of-truth content from `BACKLOG.md` into the destination source-of-truth doc (usually `UX.md`, sometimes an additional source-of-truth doc). In Claude Code, proposed content is queued as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only there; the user does the actual fold-in in Cowork. Fold-ins can originate from a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt intercepted by the read-only PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes the planning batch in the same Cowork session.
+- **Fold-in.** The act of moving proposed source-of-truth content from `BACKLOG.md` into the destination source-of-truth doc (usually `UX.md`, sometimes an additional source-of-truth doc). Claude (the agent) queues proposed content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only to Claude; the user does the actual fold-in by hand during a planning session. Fold-ins can originate from a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt intercepted by the read-only PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes the planning batch in the same planning session.
 - **Build recap.** The plain-English summary Claude provides at the end of every build (per *After every build*). Not a persisted file — it lives in chat. Used by the user to decide whether to test, push back, or accept.
 
 ## Method contract
@@ -115,31 +115,31 @@ Habits worth adopting around the build sequence. Treat these as starting points;
 
 Three files, with different jobs. Read the one relevant to what you're doing.
 
-- `UX.md` — the user-facing description of the app: every feature and behaviour the user can see or experience in the UI, plus why the user needs it. Read-only to you in Claude Code (full rule in *Editing surfaces*); the user maintains it in Cowork.
+- `UX.md` — the user-facing description of the app: every feature and behaviour the user can see or experience in the UI, plus why the user needs it. Read-only to Claude (the agent) (full rule in *Editing surfaces*); the user maintains it directly during planning sessions.
 - `MANIFEST.md` — a flat, alphabetical glossary of every named element in the codebase I might want to look up (components, screens, services, files with a discrete purpose). One-line plain-English entries. You maintain it during builds. It's a lookup reference, not a doc to read cover-to-cover — when I need to refresh on something, point me to UX.md, not MANIFEST.md.
 - `BACKLOG.md` — deferred changes not yet built, organised as batches. Maintained by Claude (not me) during planning; see `DOC-STRUCTURE.md` → *BACKLOG.md structure* for the rule and the editing protocol.
 
 ### Editing surfaces
 
-Some docs in this project are read-only to you (Claude Code) and edited only by the user in their Cowork sessions. If you think one of these docs should be reworded or reorganised, flag it in chat at the end of your response. Never edit them.
+Some docs in this project are read-only to Claude (the agent) and edited only by the user, by hand, during planning sessions. If you think one of these docs should be reworded or reorganised, flag it in chat at the end of your response. Never edit them.
 
-**Read-only to you:** `UX.md`, any additional source-of-truth doc, `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`.
-**Read/write to you:** `BACKLOG.md`, `MANIFEST.md`, `CLAUDE.md`.
+**Read-only to Claude:** `UX.md`, any additional source-of-truth doc, `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`.
+**Read/write to Claude:** `BACKLOG.md`, `MANIFEST.md`, `CLAUDE.md`.
 
 For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The recap rules under *During planning*, *Before build*, and *After every build* make this explicit.
 
-**The `[FOLD-IN PENDING]` mechanism.** Whenever a Claude Code action would otherwise write content into a read-only source-of-truth doc, the content is instead queued as a `[FOLD-IN PENDING]` block in the *Fold-ins pending* section of `BACKLOG.md`. The user reviews and folds it into the destination doc (or drops it) during their next Cowork session. `BACKLOG.md` and `MANIFEST.md` edits stay direct in Claude Code.
+**The `[FOLD-IN PENDING]` mechanism.** Whenever Claude (the agent) would otherwise write content into a read-only source-of-truth doc, the content is instead queued as a `[FOLD-IN PENDING]` block in the *Fold-ins pending* section of `BACKLOG.md`. The user reviews and folds it into the destination doc (or drops it) by hand during their next planning session. `BACKLOG.md` and `MANIFEST.md` edits stay direct from Claude.
 
 The mechanism is the same regardless of how the content was formed:
 
-- **Planning-batch resolution.** When a planning batch is resolved during a Claude Code session, append the resolved answer to the planning batch in place (so the batch records its own resolution), and also add a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section naming this batch in its *origin* field. The user folds the answer into the destination doc and removes the planning batch in the same Cowork session.
+- **Planning-batch resolution.** When a planning batch is resolved during a planning session, Claude appends the resolved answer to the planning batch in place (so the batch records its own resolution), and also adds a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section naming this batch in its *origin* field. The user folds the answer into the destination doc by hand and removes the planning batch in the same planning session.
 - **New-project route, migration route, mid-build PreToolUse intercept.** No preceding planning batch exists; the `[FOLD-IN PENDING]` block goes straight into the *Fold-ins pending* section with the appropriate origin (`new-project route`, `migration route`, or `mid-build edit attempt — <date>`).
 
 For the canonical block format and the section's place in `BACKLOG.md`'s order, see `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
 
 ### When to read or edit each document
 
-**`UX.md` (and any additional source-of-truth doc).** Read-only. Read the relevant entry before making any change, to understand the user concern it serves. If you notice behaviour has changed in a way the doc should reflect, flag it in chat at the end of your response. Do not edit. Edits happen in the user's Cowork sessions.
+**`UX.md` (and any additional source-of-truth doc).** Read-only. Read the relevant entry before making any change, to understand the user concern it serves. If you notice behaviour has changed in a way the doc should reflect, flag it in chat at the end of your response. Do not edit. The user does edits by hand during planning sessions.
 
 **`BACKLOG.md`.** Read/write. Read it at the start of every planning session so your edits build on its current state, not on memory of a previous one. Edit when planning batches are added or resolved, when build batches are reordered or split, when red flags are surfaced, and when completed batches are cleared. Every edit must be discussed in chat at the appropriate stage of the build sequence — never silently.
 
@@ -169,7 +169,7 @@ Every Claude Code chat is a new session by definition — these instructions app
 - **[SILENT]** Read CLAUDE.md before responding to anything else. From its *Where the docs live* section, resolve the paths for `UX.md`, `BACKLOG.md`, `MANIFEST.md`, and any additional source-of-truth docs. Read each doc from its declared path. Those docs hold the project state. (`NO-CODE-METHOD.md` is the doc you're reading now; it's always loaded. `DOC-STRUCTURE.md` is mode-tagged for planning and migration only — don't read it during build sessions.)
 - **[BRIEF]** If a declared path doesn't resolve to an existing file, search the project for a file with that name. If you find one at a different path, surface the mismatch — name the declared path, name the path you found, and propose updating CLAUDE.md's *Where the docs live* section to match. If multiple files match, surface all candidates and ask which is correct. Wait for my confirmation before editing CLAUDE.md. If no file is found, treat the doc as genuinely missing (next bullet).
 - **[BRIEF]** If a doc is genuinely missing from the project, say so plainly when you respond. Same for any doc that is present but empty.
-- **[BRIEF] Detect template state.** If the spine docs are present at their declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in BACKLOG.md, MANIFEST.md empty), the project hasn't been kicked off yet. **Recommend the user open Cowork to do the new-project setup there** — that's where source-of-truth docs can be written directly, and the project's identity gets the headspace it deserves. If the user wants to proceed in Claude Code anyway (acknowledging that all source-of-truth content will be queued as `[FOLD-IN PENDING]` rather than written directly), confirm and start the new-project route below. Wait for the user's okay either way.
+- **[BRIEF] Detect template state.** If the spine docs are present at their declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in BACKLOG.md, MANIFEST.md empty), the project hasn't been kicked off yet. Recommend the user start the **new-project route** below to seed `UX.md`, `BACKLOG.md`, and the first build batch. Wait for the user's okay before proceeding.
 
 Then read my first prompt and route:
 
@@ -195,7 +195,7 @@ Trust the planning subagent's recap as the source of truth for the session's `BA
 
 #### New-project route — **[SEQUENCE]**
 
-*This route is a Claude-Code fallback for projects opened here before Cowork setup. The expected path is Cowork-first — see *Detect template state* above. If you're in this route, the user is likely in the wrong tool for new-project work: source-of-truth content gets queued as `[FOLD-IN PENDING]` rather than written directly, so they'll need to switch to Cowork to actually fold the answers in. Encourage them to switch before starting the sequence; only run the sequence if they explicitly choose to.*
+*This route seeds a new project's docs. Walk the user through the four prompts below; the answers get queued as a `[FOLD-IN PENDING]` block in `BACKLOG.md`, and the user folds the content into `UX.md` by hand during the same planning session (or the next, if deferred).*
 
 Walk me through these prompts in order. Skip any prompt I have already substantively answered in my opening message — acknowledge what I gave you and move on. For partially-answered prompts, acknowledge what was given and ask only the remainder, treating it as one prompt for the count.
 
@@ -204,11 +204,11 @@ Walk me through these prompts in order. Skip any prompt I have already substanti
 3. **Core functionalities — first pass.** What are the 3–5 features the app must have to be itself? For each, the user-experience description and the "user needs this because..." line.
 4. **First build batch sketch.** Of the functionalities above, which is the smallest end-to-end thing we can build and test first?
 
-After the sequence, write all four prompts' answers into the *Fold-ins pending* section of `BACKLOG.md` as a single `[FOLD-IN PENDING]` block, origin `new-project route` — the user folds the UX content into `UX.md` (Project context, UX principles, Functionalities) and converts the first-build sketch into a proper build batch with a `Serves UX.md:` line during their next Cowork session. Leave `CLAUDE.md` alone — its path block and Project-specific notes are user-maintained; path mismatches are handled at session start per the rules above. Prompt me to review the `[FOLD-IN PENDING]` block and switch to Cowork for the fold-in.
+After the sequence, write all four prompts' answers into the *Fold-ins pending* section of `BACKLOG.md` as a single `[FOLD-IN PENDING]` block, origin `new-project route` — the user folds the UX content into `UX.md` (Project context, UX principles, Functionalities) by hand and converts the first-build sketch into a proper build batch with a `Serves UX.md:` line, during the same planning session. Leave `CLAUDE.md` alone — its path block and Project-specific notes are user-maintained; path mismatches are handled at session start per the rules above. Prompt me to review the `[FOLD-IN PENDING]` block and do the fold-in.
 
 #### Existing-docs migration route — **[BRIEF, then SEQUENCE]**
 
-*This route is a hybrid: the diagnostic (which docs are present, which structural gaps exist) happens in Claude Code, where it can read the existing project state directly. The actual edits to `UX.md` and any additional source-of-truth docs land as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` for the user to fold in Cowork; `BACKLOG.md` and `MANIFEST.md` edits are direct.*
+*The diagnostic (which docs are present, which structural gaps exist) happens via Claude reading the existing project state directly. The actual edits to `UX.md` and any additional source-of-truth docs land as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` for the user to fold in by hand during the same planning session (or the next, if deferred); `BACKLOG.md` and `MANIFEST.md` edits are direct from Claude.*
 
 Used when bringing a real existing project under this method for the first time, or when planning docs were drafted before this method was adopted.
 
@@ -216,8 +216,8 @@ Used when bringing a real existing project under this method for the first time,
 - **[SEQUENCE]** Walk through the gaps in this order: UX.md first (it's the source of truth the others depend on), then any additional source-of-truth docs (peers to UX.md as fold-in destinations), then BACKLOG.md, then MANIFEST.md. For each doc:
   1. Confirm with me which existing content stays as-is.
   2. Propose, in plain English, the smallest set of edits that will bring the doc up to spec. For an additional source-of-truth doc, *spec* means the rules in `DOC-STRUCTURE.md` → *Additional source-of-truth docs* — there's no fixed shape, only the structural rules.
-  3. After my okay, make the edits. For `BACKLOG.md` and `MANIFEST.md` (read/write), edit directly. For `UX.md` and any additional source-of-truth doc (read-only), write the proposed edits as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md`, origin `migration route` — the user folds those into the source-of-truth doc during their next Cowork session. Do not describe edits for me to apply.
-- After all docs are migrated (`UX.md` and additional-source-of-truth-doc edits queued as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section; `BACKLOG.md` and `MANIFEST.md` edited directly), prompt me to switch to Cowork to fold those in, then continue to "During planning."
+  3. After my okay, make the edits. For `BACKLOG.md` and `MANIFEST.md` (read/write), edit directly. For `UX.md` and any additional source-of-truth doc (read-only), write the proposed edits as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md`, origin `migration route` — the user folds those into the source-of-truth doc by hand during the same planning session (or the next, if deferred). Do not describe edits for me to apply.
+- After all docs are migrated (`UX.md` and additional-source-of-truth-doc edits queued as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section; `BACKLOG.md` and `MANIFEST.md` edited directly), prompt me to do the fold-ins by hand, then continue to "During planning."
 
 ### During planning
 
@@ -239,7 +239,7 @@ Planning sessions can start in different ways: I might paste test notes from the
 - **[BRIEF]** Provide a **Discoveries** list at the bottom of your planning response — bugs or improvements that fall outside the current project scope (`UX.md`). Do not fix these. They need a `UX.md` update before they can enter the build pipeline.
 - For every change you propose, explicitly label it as [Requested] (I asked for it) or [Suggested] (You think it's a good idea).
 - **[SILENT]** Whenever a decision is reached that changes `BACKLOG.md` — adding, removing, reordering, splitting, or reclassifying an item or batch — edit `BACKLOG.md` immediately. Do not describe the change as something for me to do. I review the edits afterwards; I do not apply them myself.
-- **[SILENT]** When a planning batch's questions are resolved during this session, append the resolved answer to the planning batch in place, and also add a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` naming this batch in its *origin* field. Do not remove the planning batch — the user removes it during the same Cowork session in which they fold the answer into `UX.md` (or the relevant source-of-truth doc). (Detail: *Editing surfaces*.)
+- **[SILENT]** When a planning batch's questions are resolved during this session, append the resolved answer to the planning batch in place, and also add a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` naming this batch in its *origin* field. Do not remove the planning batch — the user removes it during the same planning session in which they fold the answer into `UX.md` (or the relevant source-of-truth doc) by hand. (Detail: *Editing surfaces*.)
 - **[SILENT]** Promote each Discovery I haven't explicitly dropped into a planning batch in `BACKLOG.md` before the session ends. The planning batch's question is "should this be added to `UX.md`?" — that way no Discovery survives `/clear` unrecorded. If I want one dropped, I'll tell you and you remove it.
 - **[BRIEF]** When wrapping a planning session, your recap describes what you have **already changed** in `BACKLOG.md`. It does not list pending edits for me to apply. If a decision was deferred (e.g. you need an answer from me before you can edit), say so explicitly and name the question.
 
@@ -252,8 +252,8 @@ A new feature idea cannot go straight into a build batch. The pipeline is fixed:
    If the idea conflicts with an existing UX principle, surface the conflict in chat as the first response — don't quietly route it into a planning batch and hope the principle survives the resolution. The planning batch still happens (step 2), and the conflict becomes one of its questions. The push-back-in-chat and the planning batch are layered, not alternatives — chat surfaces the tension immediately so the user can react; the planning batch records and resolves it.
 
 2. It enters `BACKLOG.md` as part of a **planning batch** — either a new batch named after the feature, or folded into an existing planning batch on a related topic — asking the questions needed to decide whether and how it joins `UX.md`.
-3. We answer those questions in a planning session. If the session is in Claude Code and the answer is decided, you append the resolved answer to the planning batch and add a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (per *Editing surfaces*).
-4. The fold-in to `UX.md` happens in Cowork — either during the same Cowork planning session (if planning is held there) or at the user's next Cowork session (if a fold-in is pending). The `UX.md` entry is added or updated, the `[FOLD-IN PENDING]` block is removed, and the planning batch is removed.
+3. We answer those questions in a planning session. If the answer is decided, Claude appends the resolved answer to the planning batch and adds a corresponding `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (per *Editing surfaces*).
+4. The fold-in to `UX.md` happens by hand in the same planning session, or in the next planning session if deferred. The `UX.md` entry is added or updated, the `[FOLD-IN PENDING]` block is removed, and the planning batch is removed.
 5. Only then does the engineering work enter `BACKLOG.md` as a **build batch** with a "Serves UX.md: ..." line pointing to that entry.
 
 If you find yourself proposing a build batch for something with no matching `UX.md` entry, stop and check whether you've skipped a step.
@@ -280,4 +280,4 @@ When a user phrases a request as immediate build ("let's add X"), frame the plan
 
 
 ---
-*No-code method — Version 22.*
+*No-code method — Version 23.*

@@ -56,7 +56,7 @@ Whenever a planning decision changes `BACKLOG.md` — adding, removing, reorderi
 
 When adding or modifying a build batch's `Serves UX.md:` line, verify that every named entry exists in `UX.md`'s Functionalities section before writing. The PreToolUse hook will block an edit whose `Serves UX.md:` line points at a non-existent entry (case-insensitive exact match after whitespace-trim) — if you trip the hook, you've likely skipped the planning-batch → `UX.md` fold-in step. The fix is to fold in first, then propose the build batch.
 
-`UX.md` and any additional source-of-truth doc are read-only to you. If a planning decision lands on new source-of-truth content, append the resolved answer to the planning batch in place and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (origin: the planning batch's name). Leave the planning batch in place — the user removes it during the same Cowork session in which they fold the answer into `UX.md`.
+`UX.md` and any additional source-of-truth doc are read-only to you. If a planning decision lands on new source-of-truth content, append the resolved answer to the planning batch in place and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (origin: the planning batch's name). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer into `UX.md`.
 
 ## Discoveries promotion
 
@@ -74,4 +74,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 22.*
+*No-code method — Version 23.*

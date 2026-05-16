@@ -4,7 +4,7 @@
 
 This doc only describes what has been decided. Open questions live in `BACKLOG.md` as planning batches, not here as placeholders or as sentences that gesture at the doc's own undecidedness. (Same rule as `UX.md`. Full source-of-truth-doc rules: see `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.)
 
-This doc is read-only to Claude Code (full rule in `NO-CODE-METHOD.md` → *Editing surfaces*). Edits happen in Cowork. If Claude Code thinks something here should be reworded or reorganised, it flags it in chat at the end of the response.
+This doc is read-only to Claude (the agent) (full rule in `NO-CODE-METHOD.md` → *Editing surfaces*). Edits happen by hand during planning sessions. If Claude thinks something here should be reworded or reorganised, it flags it in chat at the end of the response.
 
 ---
 
@@ -36,4 +36,4 @@ open for this doc, read BACKLOG.md's planning batches.
 -->
 
 ---
-*No-code method — Version 22.*
+*No-code method — Version 23.*

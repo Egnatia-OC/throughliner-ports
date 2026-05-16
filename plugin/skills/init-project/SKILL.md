@@ -13,7 +13,7 @@ Scaffolds the no-code-method spine docs into the user's current working director
 
 The user runs `/init-project` when they want to **start a fresh no-code-method project from scratch** — no method docs in the project yet.
 
-If the user already has hand-authored docs from earlier drafting (for example, drafted in Cowork before installing the plugin), they should run `/migrate` instead. `/init-project` will refuse to overwrite existing method files.
+If the user already has hand-authored docs from earlier drafting (for example, drafted by hand before installing the plugin), they should run `/migrate` instead. `/init-project` will refuse to overwrite existing method files.
 
 `ADDITIONAL-DOC-TEMPLATE.md` is not scaffolded here. It's added per-project via `/add-sot-doc <name>` when the project decides it needs an additional source-of-truth doc.
 

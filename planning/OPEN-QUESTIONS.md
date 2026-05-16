@@ -8,19 +8,18 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Cowork-friendly prose-only rewrite of the method (post-plugin-build)
+## Prose-only rewrite of the method (post-plugin-build)
 
-**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and the `[FOLD-IN PENDING]` mechanism rely on Claude Code primitives that don't exist in Cowork (or in Claude.ai chat, or in any other Claude surface). To reach users on those surfaces — particularly novices coming through a future Podia course who'd start in Cowork — we'll eventually need a prose-only rewrite of the method that works in any tool: same methodology, no plugin scaffolding.
+**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and the `[FOLD-IN PENDING]` mechanism rely on Claude Code primitives that don't exist in plain chat with Claude or in any other AI tool. For users who want the method's discipline outside the sovereign-implementer plugin entirely — in plain chat with Claude, in a different AI tool, or in any context where the plugin shape doesn't fit — we'll eventually need a prose-only rewrite of the method that works tool-agnostically: same methodology, no plugin scaffolding.
 
-**Why it matters.** Surfaced in V20 planning. Without the rewrite, the method's current shape is structurally bound to Claude Code: source-of-truth-doc locking is enforced by PreToolUse hooks; session-start reads are injected by SessionStart hooks; routing is done by injected context. None of these primitives exist in Cowork. Users without Claude Code (which will be most novices) currently can't use the method as a working system. The Cowork-friendly version restores accessibility — but only after the plugin shape stabilizes, or the rewrite chases a moving target.
+**Why it matters.** Surfaced in V20 planning. Without the rewrite, the method's current shape is structurally bound to Claude Code: source-of-truth-doc locking is enforced by PreToolUse hooks; session-start reads are injected by SessionStart hooks; routing is done by injected context. None of these primitives exist outside Claude Code. Users without Claude Code currently can't use the method as a working system. The prose-only version restores accessibility — but only after the plugin shape stabilizes, or the rewrite chases a moving target.
 
 **Working notes.**
 
 - The likely shape: a prose-only `NO-CODE-METHOD.md` that re-expresses every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart-hook foundational reads (becomes an at-session-start narrative in `CLAUDE.md`), PreToolUse read-only enforcement (becomes a trust-based locking convention plus chat-time flagging), slash commands (become operational procedures Claude follows from prose).
-- The pluginified method is still evolving (V21–V29 ahead). Doing the rewrite before the plugin shape settles means re-doing it as the plugin shape changes.
-- This entry partially supersedes the *Cross-version template reconciliation* entry's framing — that entry asserts "Cowork-first is now the recommended path." That assertion isn't wrong yet (it reflects current pluginified reality), but when this question resolves, the cross-version entry will need adjusting too.
+- The pluginified method is still evolving (V24–V30 ahead). Doing the rewrite before the plugin shape settles means re-doing it as the plugin shape changes.
 
-**Next step.** Park until V29 (final E2E Taskflow test) ships and the plugin shape has settled. At that point: list each plugin-specific mechanism, design a prose-only equivalent for each, and schedule the rewrite as one or more sessions. **Promote sooner** if the method moves toward public release before the plugin migration completes — that scenario forces the rewrite onto the critical path.
+**Next step.** Park until V30 (final E2E Taskflow test) ships and the plugin shape has settled. At that point: list each plugin-specific mechanism, design a prose-only equivalent for each, and schedule the rewrite as one or more sessions. **Promote sooner** if the method moves toward public release before the plugin migration completes — that scenario forces the rewrite onto the critical path.
 
 ---
 
@@ -48,21 +47,21 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Cross-version template reconciliation for Cowork-first users
+## Cross-version template reconciliation
 
-**The question.** When a user authors their spine docs (`UX.md`, `BACKLOG.md`, etc.) in Cowork against, say, a V17 template they had locally, and then installs the no-code-method plugin (currently V19), the user's docs carry a V17 footer while the plugin's bundled templates carry V19. The structural rules between versions may differ. What does the plugin do about it?
+**The question.** When a user authors their spine docs (`UX.md`, `BACKLOG.md`, etc.) against, say, a V17 template they had locally, and then installs the no-code-method plugin (currently V19), the user's docs carry a V17 footer while the plugin's bundled templates carry V19. The structural rules between versions may differ. What does the plugin do about it?
 
-**Why it matters.** Raised in V19 planning while discussing why bundled templates earn their keep in a Cowork-first authoring world. Cowork-first is now the recommended path for the planning phase (see `NO-CODE-METHOD.md` → *Detect template state* and the new-project route preamble), so the "user arrives at Claude Code with pre-authored docs" path is the *expected* case, not the exception. If the plugin silently treats those docs as current, structural drift compounds invisibly — a V17 `UX.md` running against V19 hooks may pass checks the V19 rules tightened.
+**Why it matters.** Raised in V19 planning while discussing how bundled templates handle pre-existing user docs. A user might have hand-authored their spine docs against an older method version before installing the plugin (V17 templates downloaded from the repo, for example). When the plugin loads, the user's docs are at one version and the plugin's bundled templates are at another. If the plugin silently treats those docs as current, structural drift compounds invisibly — a V17 `UX.md` running against V19 hooks may pass checks the V19 rules tightened.
 
 **Working notes.**
 
 - The model I'd argue for: **plugin is the runtime source of truth; the user's footer is the version their authoring assumed.** Mismatch is a tripwire, not an error.
 - Where each piece would land in the migration roadmap:
   - **V21 (SessionStart extension).** Reads the user's CLAUDE.md / UX.md footers, compares to the plugin's bundled-template versions, surfaces the mismatch (plain English, no auto-fix). One read per session-start; cheap.
-  - **V26 (`/migrate` and migration skill-commands).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
+  - **V27 (`/migrate` and migration skill-commands).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
 - The V19 piece is done already: every bundled template carries its version footer (already true; the session-close rule keeps them current).
 
-**Next step.** Fold the tripwire half into V21's session scope (the SessionStart extension); the worker half into V26's (`/migrate` and the migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — the SessionStart hook's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs* → version-footer mismatch tripwire). Confirm during V26 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once the worker half also ships.
+**Next step.** Fold the tripwire half into V21's session scope (the SessionStart extension); the worker half into V27's (`/migrate` and the migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — the SessionStart hook's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs* → version-footer mismatch tripwire). Confirm during V27 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once the worker half also ships.
 
 ---
 

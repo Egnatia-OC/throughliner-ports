@@ -65,7 +65,7 @@ from pathlib import Path
 # The method version this build of the plugin carries. Bumped each session
 # alongside the *No-code method — Version N.* footers on the method files.
 # Used by the version-footer mismatch tripwire.
-PLUGIN_METHOD_VERSION = 22
+PLUGIN_METHOD_VERSION = 23
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -350,8 +350,9 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             f"- **Template state detected** in {names_md}. The project "
             "hasn't been kicked off yet — these docs still contain template "
             "placeholders. Per NO-CODE-METHOD.md → *Detect template state*: "
-            "recommend the user open Cowork to do the new-project setup, "
-            "rather than starting build work in Claude Code."
+            "recommend the user start the new-project route to seed "
+            "`UX.md`, `BACKLOG.md`, and the first build batch. Wait for "
+            "the user's okay before proceeding."
         )
 
     footer_mismatches = collect_footer_mismatches(resolved, claude_text)

@@ -19,3 +19,6 @@ __pycache__/
 *.pyc
 .env
 .env.local
+
+# Local-only ideation / scratch work not part of the method
+Marketing/

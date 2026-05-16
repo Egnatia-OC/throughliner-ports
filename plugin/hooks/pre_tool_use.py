@@ -175,16 +175,17 @@ def make_reason(logical_name: str) -> str:
     instruction is unambiguous in any project layout."""
     return (
         f"BLOCKED: {logical_name} is a locked source-of-truth doc. It is "
-        f"read-only to Claude Code; only the user can edit it, in Cowork.\n\n"
+        f"read-only to Claude (the agent); only the user can edit it, by "
+        f"hand during a planning session.\n\n"
         f"If you have identified a {logical_name} change that should "
         "happen, do not retry this edit. Instead, add a `[FOLD-IN PENDING]` "
         "block to the *Fold-ins pending* section of BACKLOG.md, with "
         f"destination `{logical_name}` and origin `mid-build edit attempt "
         "— <today's date>`. The user will fold the block into "
-        f"{logical_name} in their next Cowork session, or drop it. "
-        "Surface this addition plainly in your response to the user. "
-        "Canonical block format and section placement: see DOC-STRUCTURE.md "
-        "→ BACKLOG.md structure → Fold-ins pending."
+        f"{logical_name} by hand during their next planning session, or "
+        f"drop it. Surface this addition plainly in your response to the "
+        f"user. Canonical block format and section placement: see "
+        f"DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins pending."
     )
 
 
@@ -353,8 +354,8 @@ def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> 
         "is a typo, fix the name. If the entry genuinely doesn't exist "
         "yet, the feature has skipped the planning-batch → fold-in step: "
         "route through a planning batch in BACKLOG.md, fold the answer "
-        "into `UX.md` in the next Cowork session, and propose the build "
-        "batch after that."
+        "into `UX.md` by hand during the next planning session, and "
+        "propose the build batch after that."
         + known_block
     )
 
