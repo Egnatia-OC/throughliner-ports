@@ -2,7 +2,43 @@
 
 A running record of decisions, changes, and reasoning. Newest first. Written for a friend skimming, not an auditor — half a page per session, less when possible.
 
-For format details, see the project's `CLAUDE.md` → *Build log*.
+For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
+
+---
+
+## V24 — 2026-05-16 — BUILD-METHOD.md and TEST-LOG.md added; session-tag and method-version decoupled
+
+**What shipped.** Two new dev-internal docs and a slim of the project root `CLAUDE.md`. `sovereign-implementer/BUILD-METHOD.md` consolidates the working manual — session structure (open, three middle shapes, close), the doc-code parity audit (now with a sixth item, *Ghost references*), testing semantics (corrected), the BUILD-LOG / OPEN-QUESTIONS / new TEST-LOG entry shapes, footer-bump rules, and the planning artefact lifecycle. Lifted out of the old CLAUDE.md and expanded where the old version was thin or wrong. `sovereign-implementer/TEST-LOG.md` is new — 30 backfilled rows from V18 (3), V19 (11), V21 (10), V22 (6), one row marked Fail (the V22 INVENTORY ghost-command catch, plus a separate row recording its in-session retest as Pass), three Skipped with reasons. V20 and V23 had no testable code; this session does either. Project root `CLAUDE.md` slimmed from 240 to 100 lines — orientation, environment, file ops, terminology cheat sheet, Taskflowapp lock-down, and command-prompt experience level only; everything procedural moved to BUILD-METHOD. PLAN.md table renumbered: V24 is this session; old V24-V30 shifted to V25-V31 (V20 precedent). Session-scope files renamed accordingly, headings bumped, internal cross-refs shifted. OPEN-QUESTIONS.md entries 1-3 had their forward-looking refs shifted; entry 4's dated historical notes left intact. INVENTORY.md got mechanical V## shifts on 6 forward refs. **No method-version footer bumps anywhere this session** — `plugin.json` stays 0.23.0, `PLUGIN_METHOD_VERSION` stays 23, all method-side file footers stay V23. First session to ship under the new dev-internal-doesn't-bump rule.
+
+**Decisions taken and why.**
+
+- **BUILD-METHOD.md as a new file, not a CLAUDE.md restructure (option a, not b).** The dev project's working manual deserves its own home, separate from CLAUDE.md's orientation / environment / personal-collab material. Lets CLAUDE.md be terse and gives the manual room to grow (TEST-LOG entry shape, ghost-references audit item, footer-bumps explicit list — none of which would have fit cleanly inside the old CLAUDE.md). Option b (in-place restructure) would have preserved the single-file convenience but lost the conceptual separation; the project's working method is something a future reader will want to read once and reference repeatedly, not skim alongside personal preference rules every session.
+
+- **Session tag and method-version footer decoupled going forward.** The old convention bumped footers every session regardless of whether the consumer-facing method had changed. V20 (Crash course promotion) and V23 (Cowork mentions strip) both bumped despite arguably-doc-only scopes — recording an interpretive mismatch (footers asserting a new method version when nothing functional in the method had changed). The new rule: footer + `plugin.json` + `PLUGIN_METHOD_VERSION` only bump when the session substantively changes the method or plugin. Session tag still increments per session. The two numbers will drift between method-changing sessions; the V21 footer-mismatch tripwire stays silent because `PLUGIN_METHOD_VERSION` moves in tandem with the footers. Historical V18-V23 numbers stay as-is; no retroactive corrections.
+
+- **TEST-LOG.md created this session, not deferred to V26's consumer-side TEST-LOG ship.** Alex pushed back on a draft that proposed deferring. The failure mode this session diagnosed (CLAUDE.md asserting "the plugin has never been installed in Claude Code" while V18/V19/V21/V22 BUILD-LOG entries all describe `claude --plugin-dir` smoke tests with hooks firing) is precisely what TEST-LOG fixes — making test outcomes queryable by future sessions rather than buried in BUILD-LOG prose. Deferring would have left the gap open and the same recurring failure pattern in place. Backfill from BUILD-LOG was straightforward; ~30 minutes of work.
+
+**Pivots and surprises.**
+
+- **Initial framing wasted a round-trip on "live install + back-test."** I opened by proposing live-install + back-test as the next session before doing the read-pass, citing the CLAUDE.md *Plugin install status* paragraph asserting "never installed." Alex's pushback was sharp and correct: (1) V23 was a terminology sweep with nothing testable, (2) tests have happened — the BUILD-LOG records them — the recording isn't visible to future sessions, (3) the proposed session has no current pathway because the plugin isn't packaged for global install. Saved as feedback memory (`feedback_dont_propose_live_install_session.md`). The proposal pattern was the V23-era CLAUDE.md text feeding back into recurring recommendations; the root fix is BUILD-METHOD's corrected *Testing* section, not just the memory.
+
+- **The old footer-bump convention had quietly drifted across V20 and V23.** When I drafted BUILD-METHOD's first version I treated "every session bumps the footer" as the existing rule. Alex called it out: the rule itself was the problem, at least for doc-only sessions. The decoupled-numbering rule is partly retroactive acknowledgement that V20 and V23 shouldn't have bumped footers either; the historical record stays as-shipped, with the *Historical note* in BUILD-METHOD recording the discontinuity.
+
+- **INVENTORY.md's forward-pointers are semantically stale.** During the renumber pass, several INVENTORY references (Crash course "Updated in V25", DOC-STRUCTURE "deferred to V25", `/new-project` "Pending — V26") look like they're pointing at the wrong sessions even pre-this-renumber. Did the mechanical +1 shift only this session. A content audit of INVENTORY's forward-pointers would be useful in a future doc-code parity pass.
+
+- **The renumber surfaced that V28.md and V31.md bodies still reference a "live-install session" deferred from V27/V28.** That framing was superseded by this session's BUILD-METHOD *Testing* section. Not rewritten this session — the natural fix is during V28's planning session, when the planner reads the active BUILD-METHOD and updates the scope file. Flagging for awareness, not preempting.
+
+- **BUILD-LOG header pointer updated mid-entry.** The header said "see CLAUDE.md → *Build log*" — that section moved to BUILD-METHOD this session. Updated as part of this entry's commit; small doc-code parity catch.
+
+**Carried forward.**
+
+- **V23 carry-forwards remain valid.** Soft-discipline risk for mid-build SoT edits (the consumer-method-level concern about users editing UX.md during builds without hook protection); OPEN-QUESTIONS' cross-version reconciliation entry still has Cowork-first vocabulary in its working notes; V22's smoke-test items (a) and (e) from the V22 BUILD-LOG carry-forward — not in TEST-LOG because BUILD-LOG didn't explicitly attest them. Worth re-running and recording when Alex next opens Claude Code.
+
+- **INVENTORY.md forward-pointers** — semantic audit deferred to a future doc-code parity pass.
+
+- **`sessions/V24.md` hand-delete** — not applicable. This session was directed live by Alex without a scope file; no V24.md was ever created, so step 7 of session close is a no-op. Recording the precedent: when a session is directed live without a scope file, step 7 is skipped.
+
+- **V28.md and V31.md body's "live-install session" references** — superseded by BUILD-METHOD's *Testing* section. Address during V28's planning session, not preemptively.
 
 ---
 

@@ -18,14 +18,14 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 
 | Doc | Home | Plugin component | Notes |
 |---|---|---|---|
-| `Crash course.md` | Plugin | Bundled docs (humans-only reference) | Updated in V25 to reflect plugin architecture. |
+| `Crash course.md` | Plugin | Bundled docs (humans-only reference) | Updated in V26 to reflect plugin architecture. |
 | `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/init-project` skill-command | **Path block format must change to fenced YAML/JSON in V18** for hook parsing. |
 | `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/init-project` | |
 | `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/init-project` | |
 | `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/init-project` | |
 | `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc <name>` | |
-| `DOC-STRUCTURE.md` | Plugin | Skill body OR bundled reference doc (decision deferred to V25) | |
-| `NO-CODE-METHOD.md` | Plugin | Distributed across components (skills + hooks + subagents); original retired in V26 | |
+| `DOC-STRUCTURE.md` | Plugin | Skill body OR bundled reference doc (decision deferred to V26) | |
+| `NO-CODE-METHOD.md` | Plugin | Distributed across components (skills + hooks + subagents); original retired in V27 | |
 
 ## Project-side doc fates
 
@@ -64,8 +64,8 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 **As of V22, only `/init-project` is shipped.** The remaining commands are listed below for forward-looking architectural reference, with their planned-V annotation. A reader (human or Claude) should not assume the *Pending* commands exist in the installed plugin — they are roadmap items, not current capabilities.
 
 - `/init-project` → scaffolds the 5 templates into a user project. **Shipped V19.**
-- `/new-project` → new-project subagent. *Pending — V26.*
-- `/migrate` → migration subagent. *Pending — V26.*
+- `/new-project` → new-project subagent. *Pending — V27.*
+- `/migrate` → migration subagent. *Pending — V27.*
 - `/add-sot-doc <name>` → scaffolds the additional-doc template. *Pending — not yet scheduled in `PLAN.md`.*
 - `/plan` → planning subagent. *Pending — auto-route via main-Claude classification is the only invocation path as of V22 (per the planning subagent entry above). Explicit `/plan` skill-command not yet shipped; future session.*
 - `/before-build` → before-build subagent. *Pending — V23.*
@@ -75,7 +75,7 @@ Three sub-categories on the plugin side, surfaced in V17's walkthrough:
 
 - 5 templates (CLAUDE, BACKLOG, MANIFEST, UX, ADDITIONAL-DOC) under `skills/init-project/templates/`.
 - `Crash course.md` as bundled docs (not loaded into Claude's context).
-- `DOC-STRUCTURE.md` content — destination decided in V25.
+- `DOC-STRUCTURE.md` content — destination decided in V26.
 
 ## Design decisions taken in V17
 

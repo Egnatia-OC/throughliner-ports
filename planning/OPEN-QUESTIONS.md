@@ -17,9 +17,9 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 **Working notes.**
 
 - The likely shape: a prose-only `NO-CODE-METHOD.md` that re-expresses every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart-hook foundational reads (becomes an at-session-start narrative in `CLAUDE.md`), PreToolUse read-only enforcement (becomes a trust-based locking convention plus chat-time flagging), slash commands (become operational procedures Claude follows from prose).
-- The pluginified method is still evolving (V24–V30 ahead). Doing the rewrite before the plugin shape settles means re-doing it as the plugin shape changes.
+- The pluginified method is still evolving (V25–V31 ahead). Doing the rewrite before the plugin shape settles means re-doing it as the plugin shape changes.
 
-**Next step.** Park until V30 (final E2E Taskflow test) ships and the plugin shape has settled. At that point: list each plugin-specific mechanism, design a prose-only equivalent for each, and schedule the rewrite as one or more sessions. **Promote sooner** if the method moves toward public release before the plugin migration completes — that scenario forces the rewrite onto the critical path.
+**Next step.** Park until V31 (final E2E Taskflow test) ships and the plugin shape has settled. At that point: list each plugin-specific mechanism, design a prose-only equivalent for each, and schedule the rewrite as one or more sessions. **Promote sooner** if the method moves toward public release before the plugin migration completes — that scenario forces the rewrite onto the critical path.
 
 ---
 
@@ -43,7 +43,7 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 6. *Where the idea earns its keep eventually.* If the method moves to a public release (Vibe Coding Course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX patterns are designed for that scale. Single-user, in-development is the wrong scale for the pattern. Public-future status would change the call.
 
-**Next step.** Park. Revisit after V27 ships and the method has settled into stable use across a few real project cycles. At that point the question becomes concrete: list 2–3 design decisions that have felt like they would have benefited from logged evidence — if non-empty, define the minimal log against those specific decisions; if empty, drop the question and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward a public release before V27 wraps — that's the scenario where the pattern earns its keep.
+**Next step.** Park. Revisit after V31 (the final E2E Taskflow test) ships and the method has settled into stable use across a few real project cycles. At that point the question becomes concrete: list 2–3 design decisions that have felt like they would have benefited from logged evidence — if non-empty, define the minimal log against those specific decisions; if empty, drop the question and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward a public release before V31 wraps — that's the scenario where the pattern earns its keep.
 
 ---
 
@@ -58,10 +58,10 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 - The model I'd argue for: **plugin is the runtime source of truth; the user's footer is the version their authoring assumed.** Mismatch is a tripwire, not an error.
 - Where each piece would land in the migration roadmap:
   - **V21 (SessionStart extension).** Reads the user's CLAUDE.md / UX.md footers, compares to the plugin's bundled-template versions, surfaces the mismatch (plain English, no auto-fix). One read per session-start; cheap.
-  - **V27 (`/migrate` and migration skill-commands).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
+  - **V28 (`/adopt` and migration skill-commands).** Does the actual diff-and-propose work — comparing the user's `UX.md` (or whichever doc is mismatched) against the bundled template's structural rules and proposing the edits to bring it up to spec. Already on the roadmap for migrating any non-conformant docs; this just gives it a specific tripwire to react to.
 - The V19 piece is done already: every bundled template carries its version footer (already true; the session-close rule keeps them current).
 
-**Next step.** Fold the tripwire half into V21's session scope (the SessionStart extension); the worker half into V27's (`/migrate` and the migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — the SessionStart hook's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs* → version-footer mismatch tripwire). Confirm during V27 planning that `/migrate` knows how to handle a version-mismatch signal. Remove this entry once the worker half also ships.
+**Next step.** Fold the tripwire half into V21's session scope (the SessionStart extension); the worker half into V28's (`/adopt` and the migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — the SessionStart hook's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs* → version-footer mismatch tripwire). Confirm during V28 planning that `/adopt` knows how to handle a version-mismatch signal. Remove this entry once the worker half also ships.
 
 ---
 
