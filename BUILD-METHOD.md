@@ -152,11 +152,13 @@ When a bump is warranted, the list as of V23:
 - `templates/UX-TEMPLATE.md`
 - `templates/BACKLOG-TEMPLATE.md`
 - `templates/MANIFEST-TEMPLATE.md`
+- `templates/TEST-LOG-TEMPLATE.md`
 - `templates/ADDITIONAL-DOC-TEMPLATE.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
 - `plugin/templates/BACKLOG-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
+- `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - `planning/INVENTORY.md`
 - Every subagent body under `plugin/agents/` that carries a footer (currently `planning.md`, `before-build.md`, `batch-executor.md`)
@@ -176,6 +178,7 @@ V21's smoke test caught a footer miss via the SessionStart hook's version-footer
 | File | Lifecycle | When it's deleted |
 |---|---|---|
 | `planning/sessions/Vxx.md` | **Transient.** Provisional scope for one specific session. Once the session ships, the commit + code + doc edits become the source of truth and the scope doc is a stale snapshot. | When the session ships and is committed (step 7 of session close). |
+| `planning/drafts/<topic>.md` | **Transient.** Substantive content generated in chat that a future session might want to start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices. Committed by the drafting session the moment it's "good enough to walk away from." | When consumed (folded into a spec, scope file, or other persistent location), in the commit of whichever session consumes the draft. Dead-end drafts pruned with a one-line note in `BUILD-LOG.md`. |
 | `planning/INVENTORY.md` | **Living document.** Always describes the current plugin architecture. Updated in place as decisions resolve. | Never. |
 | `planning/PLAN.md` | **Living document.** Rolling roadmap. Completed sessions removed; new sessions added as discovered. | Never. |
 | `planning/OPEN-QUESTIONS.md` | **Living document.** Method-level questions raised but not yet ready to be a session. Each entry has a *Next step* line. | Per entry: when the question resolves. The file itself: never. |
@@ -183,6 +186,14 @@ V21's smoke test caught a footer miss via the SessionStart hook's version-footer
 | `BUILD-LOG.md` | **Historical record.** Append-only at the top (newest first). | Never. |
 | `TEST-LOG.md` | **Living record.** One row per smoke-test check, newest at the bottom. Status may flip (Pass → Fail) if a later session breaks something previously verified, then back to Pass when the regression is fixed. | Never. Rows are not removed when components change substantially; instead the row is marked Superseded and a new row records the post-change retest. |
 | `BUILD-METHOD.md` (this file) | **Living document.** Working manual. Updated in place when the project's working method changes. | Never. |
+
+### Drafts in flight
+
+`planning/drafts/<topic>.md` is where substantive content generated in chat lands as soon as a future session might want to start from it — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices, anything that took real thinking and could seed a later spec change. The drafting session commits the file as part of its own commit; "good enough to walk away from" is the bar, not "finished and polished." Files are deleted in the commit of whichever session consumes the draft (folding the content into a spec, a `Vxx.md` scope file, or another persistent location). If a draft turns out to be a dead end, prune it with a one-line note in the next `BUILD-LOG.md` entry explaining why.
+
+**Corollary.** If a `Vxx.md` scope file's *Inputs* section names content that isn't reachable from the committed repo — phrasings like "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or "the [X] draft" with no committed path — that's a bug, not a workflow. Fix at the source: get the content into `planning/drafts/` retroactively if it still exists in chat history, or restate the input as something the next session can rebuild from what is in the repo. Don't hunt at the destination. The session-open scan rule in `CLAUDE.md` → *Vxx.md inputs must be in the repo* catches the reading side of this; this rule prevents the writing side.
+
+Worked example: the V20 → V26 failure. A "Sonnet draft" with a canonical TEST-LOG column shape and protocol rules was generated in V20 planning chat. It was never committed. V20's session-close wrote "Alex has the file locally; pull it into this session as the starting shape" into `V26.md` as an input. V26 session-open then halted on a reference to content that no longer existed in retrievable form. The `planning/drafts/` convention exists to make this impossible going forward.
 
 ---
 

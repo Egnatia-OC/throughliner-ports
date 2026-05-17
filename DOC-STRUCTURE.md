@@ -62,6 +62,32 @@ Include things the user might plausibly ask about: components, screens, services
 
 If a project ever grows large enough that the flat list becomes hard to scan, switch to alphabetical sections by area.
 
+## TEST-LOG.md structure
+
+**Header.** A brief statement of what `TEST-LOG.md` is: a row-per-test record of every shipped build batch's test outcomes, maintained by Claude during builds (rows added when a batch ships) and planning (rows confirmed per-row via the test-session-close read-back). The test-confirmation gate gates new builds against unconfirmed rows. For the five protocol rules that govern this doc, see `NO-CODE-METHOD.md` → *Method contract* (Rules 1, 3), *Vocabulary* (Rule 4: Pass / Fail / Skipped definitions), and *During planning* (Rule 2: test-session-close read-back; Rule 5: retest-after-change drift check).
+
+The file starts empty at project start. The entry-format reminder lives inside an HTML comment so the file stays cleanly empty until the first build adds rows.
+
+**Columns.** Eight columns, in this order:
+
+| Column | Meaning |
+|---|---|
+| **#** | Stable three-digit ID (`001`, `002`, ...). Never reused. |
+| **Date** | YYYY-MM-DD of the row. Row-per-event: a status flip appends a new row with today's date; the old row stays intact (see *Pruning rule* below). |
+| **Session** | The build-batch session this test was attached to. Can be a project-internal tag (`v26`, `v27`) **or** a YYYY-MM-DD date if the project doesn't keep tags. The mechanism only cares that two rows can be temporally ordered. |
+| **Component** | The named element being tested. Matches a `MANIFEST.md` entry where possible; plain English if cross-component (e.g., a user flow that spans components). |
+| **Test Description** | What was checked, in one sentence. Specific enough that someone can re-run the test from this description alone. |
+| **Status** | One of: `Pass`, `Fail`, `Skipped`, or blank. Blank means the test session is **open** for this row — the test was scoped by *After every build* but not yet confirmed by the user. |
+| **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Tripwire for Rule 1 ("Never infer completion"). A row reaches `Yes` only when the user names this specific row in the planning-session read-back; bulk confirmations ("all others good") do not count. |
+| **User Notes** | Observations, surprises, the reason if Skipped (required by Rule 4), regression context if Fail, or anything else worth keeping. Tight prose. |
+
+**Pruning rule (phase-based, not session-based).** A row's validity ends when the component it tested is substantially changed or removed — not after N sessions or M days.
+
+- **Substantial change → status flips by appending a new row.** Drift check 4 (per `NO-CODE-METHOD.md` → *During planning*) flags rows whose covered components have been changed since the row's Date. The flip appends a new row with today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms the flip, and User Notes naming the change. The original row stays intact — the record of "passed at the time" is historical and worth keeping.
+- **Component removed → row marked Superseded** in the Status column, with a User Notes pointer at the BUILD-LOG entry that removed the component. Rare; only when the test description itself no longer makes sense post-removal.
+
+**Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an empty table, and an HTML comment carrying the canonical entry format and Status / Confirmed Explicitly value vocabularies. The HTML comment stays as a permanent format reminder; rows append above it as builds ship. No placeholder row in the template — same convention as `MANIFEST.md`.
+
 ## BACKLOG.md structure
 
 `BACKLOG.md` consolidates everything that is deferred, in four sections in this fixed order.
@@ -95,4 +121,4 @@ Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METH
 **`Serves UX.md:` name matching.** Names on a `Serves UX.md:` line are matched against `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches an entry named `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines for additional source-of-truth docs are not yet hook-checked.
 
 ---
-*No-code method — Version 25.*
+*No-code method — Version 26.*

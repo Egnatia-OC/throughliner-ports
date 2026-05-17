@@ -46,9 +46,9 @@ Even when `primary_intent` is e.g. `test notes`, the opener may carry other item
 
 ## Drift checks — always run
 
-Run the three pairwise drift checks listed in *During planning* on every invocation, in three separate passes. The only skip case is "nothing has been built yet" (empty `MANIFEST.md`, no implementation to compare against). Do not skip on the basis of "nothing has been built since the last planning session" — there is no reliable signal for that, and skipping would miss manual code edits made outside Claude's awareness.
+Run the four drift checks listed in *During planning* on every invocation, in four separate passes. The only skip case is "nothing has been built yet" (empty `MANIFEST.md` and `TEST-LOG.md`, no implementation to compare against). Do not skip on the basis of "nothing has been built since the last planning session" — there is no reliable signal for that, and skipping would miss manual code edits made outside Claude's awareness.
 
-Run the checks as three separate passes (`UX.md` ↔ build, `MANIFEST.md` ↔ codebase, `MANIFEST.md` ↔ `UX.md` loose). Do not bundle them — each operates at a different abstraction level and bundling produces noise.
+Run the checks as four separate passes (`UX.md` ↔ build, `MANIFEST.md` ↔ codebase, `MANIFEST.md` ↔ `UX.md` loose, `TEST-LOG.md` ↔ what's been touched since each row was recorded). The fourth check (Rule 5 — retest after change, V26 addition) is a per-row code-touch judgement with a brief reasoning trail per flagged row; the first three are pairwise comparisons. Do not bundle them — each operates at a different abstraction level and bundling produces noise.
 
 ## BACKLOG.md editing — do, then describe
 
@@ -74,4 +74,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 25.*
+*No-code method — Version 26.*

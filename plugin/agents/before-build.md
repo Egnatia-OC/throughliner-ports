@@ -27,7 +27,11 @@ Follow *Before build* exactly. The sections below name the operational details a
 
 Before enumerating files or estimating burden, run two checks against BACKLOG.md:
 
-1. **It parses.** Call `python plugin/scripts/parse_backlog.py` (path relative to project root — resolve via the path block). A non-zero exit or a parse error means BACKLOG.md is structurally malformed. Halt and surface the parser's error verbatim — do not attempt to fix the file yourself.
+1. **It parses.** Resolve `BACKLOG.md`'s absolute path via the project's `CLAUDE.md` path block, then call:
+
+       python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG.md absolute path>"
+
+   Both paths quoted — Windows paths with spaces break unquoted invocations silently. The parser is lenient: it emits a JSON payload to stdout (the top unticked build batch, or `{}` if none) and exit 0 on any structural failure. A `{}` outcome on a non-empty Build batches section means the parser couldn't find a real batch — either the file is structurally malformed OR the top batch is still template-shape placeholders. Halt and route the user back to planning; do not propose fixing BACKLOG.md yourself.
 2. **The top batch's `Serves UX.md:` line resolves.** Every entry named on the line must exist in `UX.md`'s Functionalities section (case-insensitive after whitespace-trim — the same matching the PreToolUse hook enforces per `DOC-STRUCTURE.md` → `Serves UX.md:` name matching). A name that doesn't resolve means a planning fold-in step was skipped. Halt and route the user back to planning; do not propose adding the entry to `UX.md` yourself — `UX.md` is locked to you.
 
 You do not re-organise the build queue here. Planning is the structural authority for BACKLOG.md per `NO-CODE-METHOD.md` → *During planning* and the planning subagent's *BACKLOG.md editing — do, then describe* section. By the time you run, batches are already grouped, ordered, and (where needed) split. Reorganise authority survives in before-build only as the response to the verification-burden split halt below.
@@ -85,4 +89,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 25.*
+*No-code method — Version 26.*

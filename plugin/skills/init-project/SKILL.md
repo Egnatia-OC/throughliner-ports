@@ -1,6 +1,6 @@
 ---
 name: init-project
-description: Scaffold the 5 no-code-method template files (CLAUDE.md, UX.md, BACKLOG.md, MANIFEST.md) into a fresh project. Refuses on a non-empty target; points the user at /migrate instead.
+description: Scaffold the 5 no-code-method spine template files (CLAUDE.md, UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md) into a fresh project. Refuses on a non-empty target; points the user at /migrate instead.
 disable-model-invocation: true
 user-invocable: true
 ---

@@ -98,6 +98,14 @@ CHANGE_BULLET_PATTERN = re.compile(r"^- (.+?)\s*$")
 # Prerequisite carve-out label.
 PREREQ_LABEL = "[Prerequisite, not in plan]"
 
+# Template placeholder detection: matches strings entirely wrapped in
+# square brackets, like `[path/to/file]` or `[short descriptive name]`
+# from BACKLOG-TEMPLATE.md. Real batch headings and real file paths
+# never match. Legitimate bracket labels ([Requested], [Suggested],
+# [Prerequisite, not in plan]) live in build recaps or file summaries,
+# not in batch headings or file paths — outside this pattern's scope.
+TEMPLATE_PLACEHOLDER_PATTERN = re.compile(r"^\[[^\]]+\]$")
+
 
 # --- Helpers ---
 
@@ -176,6 +184,19 @@ def parse_batch_body(heading, body):
 
     if not files:
         return None
+
+    # Placeholder detection — if the batch heading or any file path is a
+    # template placeholder from BACKLOG-TEMPLATE.md, the batch is template
+    # content not yet filled in. Return None so consumers skip past it
+    # (same path as malformed). Strict on partial fills: a single
+    # placeholder path triggers None, since emitting a payload with
+    # partial-real-partial-template content would feed batch-executor
+    # garbage.
+    if TEMPLATE_PLACEHOLDER_PATTERN.match(heading.strip()):
+        return None
+    for f in files:
+        if TEMPLATE_PLACEHOLDER_PATTERN.match(f["path"]):
+            return None
 
     serves_ux = []
     for m in SERVES_UX_PATTERN.finditer(after_files):

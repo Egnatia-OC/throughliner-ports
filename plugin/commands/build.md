@@ -5,7 +5,11 @@ allowed-tools: Read, Bash, Task
 
 The user has invoked /build. Prepare the batch-executor payload, then spawn the batch-executor subagent via the Task tool.
 
-**Step 1 — parse BACKLOG.md.** Read `CLAUDE.md`'s path block to resolve where `BACKLOG.md` lives in this project. Run `python plugin/scripts/parse_backlog.py <path/to/BACKLOG.md>` from the project root, passing the resolved path as the script's argument. The parser emits a JSON payload on stdout for the top unticked build batch — or `{}` if no top unticked batch exists. The parser is lenient: any structural failure also results in `{}` and exit 0, so detect the empty case on output content, not exit code.
+**Step 1 — parse BACKLOG.md.** Read `CLAUDE.md`'s path block to resolve where `BACKLOG.md` lives in this project. Run:
+
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BACKLOG.md absolute path>"
+
+Both paths quoted — Windows paths with spaces break unquoted invocations silently. The parser emits a JSON payload on stdout for the top unticked build batch — or `{}` if no top unticked batch exists. The parser is lenient: any structural failure (missing file, unparseable section, template-placeholder batch) also results in `{}` and exit 0, so detect the empty case on output content, not exit code.
 
 **Step 2 — handle the empty case.** If the parser returns `{}` (or any falsy/empty payload), do NOT spawn batch-executor. Tell the user plainly there's nothing to build and prompt them to run `/before-build` or switch to planning.
 

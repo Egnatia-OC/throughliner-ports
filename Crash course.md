@@ -16,6 +16,7 @@ The method belongs to the family of spec-driven development methodologies. The c
 - **UX.md** — The user-facing description of the app. Every entry corresponds to something the user can actually experience in the current build, plus a mandatory "the user needs this because…" line tying it back to a UX principle or user context.
 - **BACKLOG.md** — Deferred work in four sections in fixed order: Red flags (security/privacy/data integrity concerns), Fold-ins pending (proposed source-of-truth content queued by Claude for the user to fold in by hand during their next planning session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
 - **MANIFEST.md** — A flat alphabetical glossary of named elements in the codebase that the user might want to look up. Maintained by Claude during builds, not intended to be read cover-to-cover.
+- **TEST-LOG.md** — A row-per-test record of every shipped build batch's test outcomes. Eight columns: # / Date / Session / Component / Test Description / Status / Confirmed Explicitly / User Notes. Maintained by Claude during builds (rows added with blank Status when a batch ships) and planning (rows confirmed per-row via the test-session-close read-back). The structural enforcement that makes TEST-LOG.md trustworthy as a record is the test-confirmation gate — see *Four disciplines that do most of the work* below.
 - **Optional additional source-of-truth docs** — When a project needs an extra doc the spine doesn't cover (e.g. `SYSTEM-PROMPT.md` for an MCP-integrated app, `COPY.md` for a project whose user-facing text is its primary deliverable). Same structural rules apply: read-only to Claude (the agent), no placeholders, intent-level not implementation.
 
 **Method-side (shared verbatim across every project using the method):**
@@ -48,13 +49,15 @@ This method runs in Claude Code throughout. Within Claude Code, work happens in 
 
 The lock convention — which docs are read-only to Claude during builds and why — is in *Editing surfaces* below.
 
-## Three disciplines that do most of the work
+## Four disciplines that do most of the work
 
 **The "the user needs this because…" line.** Required for every `UX.md` entry. Forces rationale articulation before implementation. Protects against feature drift. Makes scope decisions easier.
 
 **The flag taxonomy.** Three buckets with three different homes. *Red flags* (security, privacy, data integrity, safety) go into `BACKLOG.md` and stay until addressed. *Suggestions* (improvement that fits current scope) go in chat at the end of the response. *Discoveries* (out-of-scope ideas) become planning batches in `BACKLOG.md` before the session ends. Every concern has exactly one place to live.
 
 **The pipeline for new features.** A new feature can't enter a build batch directly. It must enter as a planning batch in `BACKLOG.md`, get answered in a planning session, become or update a `UX.md` entry, and only then enter as a build batch. Rigid by design. Claude proposing a build batch with no matching `UX.md` entry is a flag that something has been skipped.
+
+**The test-confirmation gate.** A new build batch cannot start while any row in `TEST-LOG.md` from the previous batch is unconfirmed. Confirmation happens per-row, by name, in the planning session after the test-session was opened by the build recap — bulk confirmations don't count. Five protocol rules (in `NO-CODE-METHOD.md`) make this concrete: never infer completion, resolve "all others good" before recording, no new build until the test session is closed, Skipped ≠ Passed, retest after change. A hook is the load-bearing gate; the subagent walks the user through; the record stays trustworthy because no row gets a positive outcome by accident or by drift.
 
 ## A walkthrough — a first project from scratch
 
@@ -111,11 +114,12 @@ The due-date item from the same test note runs the same pipeline. It might land 
 
 ### Drift checks at planning sessions
 
-By the third or fourth build, Claude is running **drift checks** at the start of every planning session. Three pairwise comparisons:
+By the third or fourth build, Claude is running **drift checks** at the start of every planning session. Four checks — three pairwise comparisons + one code-touch judgement:
 
 - **`UX.md` ↔ what's actually built.** `UX.md` describes a "drag to reorder" gesture, but the build only supports tap-and-arrows — flag the entry as describing a non-existent feature. Or the build has a swipe-to-archive behaviour no `UX.md` entry covers — that's a Discovery.
 - **`MANIFEST.md` ↔ the codebase.** `MANIFEST.md` still says `TaskCard`, but the last build renamed it `TaskTile` — update the entry. A new service was added with no `MANIFEST.md` entry — add one.
 - **`MANIFEST.md` ↔ `UX.md` (loose check).** `MANIFEST.md` lists a `WeeklyDigestEmailer`, but no `UX.md` entry mentions email digests — either there's a hidden feature (Discovery) or it's dead code (delete). Database config and logging middleware are exempt; they don't trace to user-facing intent by design.
+- **`TEST-LOG.md` ↔ what's been touched (Rule 5 — retest after change).** For each `TEST-LOG.md` row with `Status: Pass` and `Confirmed Explicitly: Yes`, judge whether the component it tested has been substantially changed since the row's `Date`. A row from v23 testing a touch handler whose code was edited in v26 — flag for retest. Trivial changes (comments, formatting, unrelated refactors in the same file) don't count. Produce a brief reasoning trail per flagged row so the call is auditable.
 
 The drift check isn't exhaustive. It catches the cases where docs and code have started disagreeing, before that gap turns into a wrong-feature build.
 
@@ -181,7 +185,7 @@ The rule isn't absolute. If implementation reveals a prerequisite the batch genu
 
 The prerequisite carve-out — "if the batch genuinely cannot complete or be tested cleanly without an unplanned change" — exists because implementation occasionally reveals dependencies that weren't visible at planning time. The bar is high (cannot complete, not "would be nicer"), the protocol is halt-and-confirm (no silent prerequisites), and the build-recap labeling keeps it visible after the fact. The carve-out keeps the rule from forbidding the impossible without opening the door to creep.
 
-**The drift checks at different abstraction levels.** The three drift checks (`UX.md`↔build, `MANIFEST.md`↔code, `MANIFEST.md`↔`UX.md`) operate at different abstraction levels — feature-to-feature, name-to-name, and a loose user-facing-purpose check. Trying to do all three at once mixes the levels and produces noise. Run them as three separate passes.
+**The drift checks at different abstraction levels.** The four drift checks (`UX.md`↔build, `MANIFEST.md`↔code, `MANIFEST.md`↔`UX.md`, `TEST-LOG.md`↔what's-been-touched) operate at different abstraction levels — feature-to-feature, name-to-name, loose user-facing-purpose, and per-row code-touch with reasoning trail. Trying to do all four at once mixes the levels and produces noise. Run them as four separate passes.
 
 **Editing surfaces — why some docs are locked to Claude.** Full reasoning is in *Editing surfaces* above.
 
@@ -193,7 +197,7 @@ The prerequisite carve-out — "if the batch genuinely cannot complete or be tes
 
 **UX principles are project-specific.** A budgeting app's principles ("never let the user lose data they've entered") look nothing like a task manager's ("reduce planning pressure"). Principles that try to be method-wide become so abstract they stop guarding any actual decision. The job is to write the three-to-six that protect *this* project's design from drift, not to compile a general theory of UX.
 
-**The "user needs this because…" line.** See *Three disciplines that do most of the work* above.
+**The "user needs this because…" line.** See *Four disciplines that do most of the work* above.
 
 **Risk accepted — keeping the trade-off visible.** Without an explicit *Risk accepted* line, the cost of a deliberate simplification fades from view. Six months later, someone (often the same person who chose the simplification) wonders why the app deliberately omits a feature and considers adding it — without remembering the reason it was omitted. The *Risk accepted* line keeps the trade-off on the page so any re-litigation happens with the original reasoning in view.
 
@@ -218,4 +222,4 @@ There is also a known headwind for any methodology that relies on `CLAUDE.md`-st
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, with the full commit history walkable from any tag.
 
 ---
-*No-code method — Version 25.*
+*No-code method — Version 26.*

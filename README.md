@@ -4,7 +4,7 @@ A structured workflow for driving Claude Code as a non-coder. Spec-driven discip
 
 ## What's here
 
-The current method lives at the repo root: `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, and the 5 templates in `templates/`. Start with `Crash course.md`.
+The current method lives at the repo root: `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, and the 6 templates in `templates/`. Start with `Crash course.md`.
 
 `plugin/` is the Claude Code plugin that distributes the method's rules across hooks, subagents, skills, and slash commands. Scaffolded in V18; populated session by session through V27. Once the plugin reaches feature-parity with the markdown method (around V26), the markdown method retires.
 

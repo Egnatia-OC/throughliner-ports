@@ -6,25 +6,19 @@ All deferred work in one place. Four sections, in this order; top section first,
 
 ## Red flags
 
-Security, privacy, data integrity, or safety concerns Claude has surfaced and the user has chosen to defer. Each item is a blockquote in the canonical format below. Items are removed when addressed.
+Security, privacy, data integrity, or safety concerns Claude has surfaced and the user has chosen to defer. Items are removed when addressed. Section starts empty for new projects.
 
-> **`[RED FLAG]`** [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix].
-
-[Delete the example above when filling in real items. Section starts empty for new projects.]
+For the canonical entry format, see `DOC-STRUCTURE.md` → *BACKLOG.md structure → Red flags*.
 
 ## Fold-ins pending
 
-Proposed source-of-truth content that Claude (the agent) has formed but cannot write directly. Each block waits here until the user folds it into the destination doc by hand during their next planning session (or drops it). Created by any route that would otherwise write a read-only doc — new-project, migration, mid-build hook intercept, planning resolution — all land here.
+Proposed source-of-truth content that Claude (the agent) has formed but cannot write directly. Each block waits here until the user folds it into the destination doc by hand during their next planning session (or drops it). Created by any route that would otherwise write a read-only doc — new-project, migration, mid-build hook intercept, planning resolution — all land here. Items are removed once folded in or dropped. Section starts empty for new projects.
 
-Each block is a blockquote in the canonical format:
-
-> **`[FOLD-IN PENDING]`** `<DOC>.md` — [one-line description of the proposed change]. [Proposed text or shape of the change, inline or as an indented sub-quote]. Surfaced [date]; origin: [planning batch name | new-project route | migration route | mid-build edit attempt].
-
-Items are removed once folded in or dropped. Section starts empty for new projects.
+For the canonical block format, see `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
 
 ## Planning batches
 
-Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section above (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer in.
+Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a fold-in-pending block to the *Fold-ins pending* section above (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer in.
 
 ### Planning batch: [short descriptive name]
 
@@ -73,4 +67,4 @@ Serves UX.md: [entry name(s)].
 [For batches touching an additional source-of-truth doc, add a `Serves <DOC>: ...` line. Two forms: `Serves <DOC>: [entry/section name].` when the batch implements the doc's content (e.g., `Serves SYSTEM-PROMPT.md: tone and presentation section.`); `Serves <DOC>: [delivery mechanism].` when the batch's purpose is to carry the doc to its runtime destination rather than implement any of its content (e.g., `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt.`).]
 
 ---
-*No-code method — Version 25.*
+*No-code method — Version 26.*

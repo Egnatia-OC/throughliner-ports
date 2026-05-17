@@ -34,6 +34,7 @@ DESTINATION_FILENAMES = (
     "BACKLOG.md",
     "MANIFEST.md",
     "UX.md",
+    "TEST-LOG.md",
 )
 
 # Mapping: template filename (in plugin/templates/) -> destination filename
@@ -43,6 +44,7 @@ TEMPLATE_TO_DESTINATION = (
     ("UX-TEMPLATE.md", "UX.md"),
     ("BACKLOG-TEMPLATE.md", "BACKLOG.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
+    ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
 
 

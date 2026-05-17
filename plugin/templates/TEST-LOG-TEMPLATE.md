@@ -1,0 +1,26 @@
+# TEST-LOG.md
+
+This file records the test outcomes of every shipped build batch, one row per test. Maintained by Claude during builds and planning; the user reviews and confirms in planning sessions.
+
+For the canonical column shape, pruning rule, and protocol, see `DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
+
+| # | Date | Session | Component | Test Description | Status | Confirmed Explicitly | User Notes |
+|---|---|---|---|---|---|---|---|
+
+<!--
+Entry format:
+| 001 | YYYY-MM-DD | <session tag, OR YYYY-MM-DD if the project doesn't keep tags> | <Component name from MANIFEST.md, or plain English if cross-component> | <One-sentence test description specific enough to re-run from> | Pass / Fail / Skipped / blank | Yes (YYYY-MM-DD) / No | <observations, surprises, reason if Skipped, regression context if Fail> |
+
+Status meanings:
+- Pass — tested, behaved as expected
+- Fail — tested, did not behave as expected; details in User Notes
+- Skipped — explicitly not tested this round; reason required in User Notes
+- (blank) — test session is open; user has not yet confirmed an outcome
+
+Confirmed Explicitly meanings:
+- Yes (YYYY-MM-DD) — the user named this specific row in the planning-session read-back; date is when the confirmation happened
+- No — Status was filled in without explicit per-row user confirmation; only valid as a transient state during session-open
+-->
+
+---
+*No-code method — Version 26.*
