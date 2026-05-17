@@ -159,7 +159,7 @@ When a bump is warranted, the list as of V23:
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - `planning/INVENTORY.md`
-- Every subagent body under `plugin/agents/` that carries a footer (currently `planning.md`)
+- Every subagent body under `plugin/agents/` that carries a footer (currently `planning.md`, `before-build.md`, `batch-executor.md`)
 - New files added in this session that describe the method
 
 Plus the version trackers:

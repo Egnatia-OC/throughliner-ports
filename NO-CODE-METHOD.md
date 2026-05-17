@@ -26,6 +26,9 @@ Method-specific terms used throughout this document and `DOC-STRUCTURE.md`. Cros
 
 - **Planning batch.** A group of open questions in `BACKLOG.md` that must be resolved before some build batch can run, or that decide whether a build batch should ever exist (a *scope-existence* question). Resolved by folding answers into the relevant source-of-truth doc.
 - **Build batch.** A group of engineering changes in `BACKLOG.md`, small enough to build and test in one session. Each batch ends with a `Serves` line naming the source-of-truth doc entries it implements.
+- **Files: sub-section.** The list of files a build batch will modify, written as a sub-section of the batch in `BACKLOG.md`. Each entry is a GitHub-style task list bullet (`- [ ]` → `- [x]` when the file is done) with `<path>` and a one-sentence change summary. Written by the before-build subagent during the *Before build* phase; ticked file-by-file by the batch-executor subagent during the build. The PreToolUse hook reads this list at edit-time to enforce batch boundaries — files not on the list are blocked. Full structural rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
+- **Batch-sizing principle.** The rule that sets a build batch's right size by verification burden — the count of distinct user-observable behaviours to test after the build — rather than by lines or files changed. Three sub-rules: split when a small batch produces a long test list; bundle unrelated items when they introduce no new user-facing behaviour and don't interact; never fragment arbitrarily. Applied during *Before build*; full definition there.
+- **Pre-build verification estimate.** The brief list of distinct user-observable behaviours that will need testing after a build batch lands, stated during *Before build*. Used to apply the *Batch-sizing principle*: if the list is long relative to the change scope, the batch gets split before proceeding. If the estimate proves wrong mid-build, the re-batching carve-out under *Prohibited of Claude → Two exceptions* applies.
 - **Suggestion.** During planning: a fix or improvement that fits the current scope (a `UX.md` entry, or an entry in another source-of-truth doc, already covers it). May be requested by me or proposed by you. Routed into a build batch.
 - **Discovery.** During planning: a bug or improvement that falls outside the current project scope — no `UX.md` entry covers it. Cannot enter a build batch directly. Promoted to a planning batch asking "should this be added to `UX.md`?"
 - **Red flag.** A security, privacy, data integrity, or safety concern. Surface in chat first; if I defer it with no active plan, it goes into the Red flags section of `BACKLOG.md` in the canonical format `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Red flags are the only deferred items that don't need a `UX.md` entry behind them.
@@ -34,6 +37,7 @@ Method-specific terms used throughout this document and `DOC-STRUCTURE.md`. Cros
 - **Serves line.** The line at the end of a build batch in `BACKLOG.md` that names the source-of-truth doc entries the batch implements. Format: `Serves UX.md: [entry name(s)].` (and/or `Serves <DOC>: ...` for additional source-of-truth docs).
 - **Drift check.** The three pairwise checks Claude runs at the start of every planning session: `UX.md` ↔ what's actually built, `MANIFEST.md` ↔ the codebase, `MANIFEST.md` ↔ `UX.md` (loose).
 - **Fold-in.** The act of moving proposed source-of-truth content from `BACKLOG.md` into the destination source-of-truth doc (usually `UX.md`, sometimes an additional source-of-truth doc). Claude (the agent) queues proposed content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only to Claude; the user does the actual fold-in by hand during a planning session. Fold-ins can originate from a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt intercepted by the read-only PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes the planning batch in the same planning session.
+- **Halt-and-confirm protocol.** A pattern subagents use when they hit a condition the user must decide on: surface the situation in chat, propose the action (or list the options), wait for the user's response before proceeding. Used by before-build (when validation fails, the change list is too vague, or the verification burden triggers a split) and batch-executor (the prerequisite and re-batching carve-outs).
 - **Build recap.** The plain-English summary Claude provides at the end of every build (per *After every build*). Not a persisted file — it lives in chat. Used by the user to decide whether to test, push back, or accept.
 
 ## Method contract
@@ -43,7 +47,7 @@ The items below read like personal preferences but the method's machinery depend
 ### Required of Claude
 
 - I'd rather be told I'm wrong than agreed with. Check whether my assumptions hold before building on them. Flag concerns plainly. Do not soften unnecessarily.
-  *Load-bearing for: drift checks and red-flag surfacing — both require Claude to push back rather than agree.*
+  *Load-bearing for: drift checks and red-flag surfacing — both require Claude to push back rather than simply agreeing.*
 
 - Explain what you're doing in plain English so I can understand as a non-coder.
   *Load-bearing for: the build recap — the recap rule assumes plain-English output ("I am adding a check to the age field..."), and the user cannot verify the build without that.*
@@ -66,13 +70,16 @@ The items below read like personal preferences but the method's machinery depend
 - If I push back on a suggestion you've made, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
   *Load-bearing for: planning recaps — they assume Claude engages with the disagreement rather than collapsing into either position.*
 
+- When walking me through a multi-step procedure where my next action depends on you finishing the previous one — a smoke test, a debug sequence, a procedure I have to execute, questions where each answer informs the next — deliver one step per message. Open by stating the count ("Three steps coming. First: …") and then stop. Do not preview steps 2 and 3, even briefly — previewing is bundling. The inverse applies to alternatives I'm choosing between: comparisons need everything visible at once. Default for alternatives is a recommended option with a one-line "want me to walk the others?" escape, or a short comparison table.
+  *Load-bearing for: the formally `[SEQUENCE]`-tagged routes (new-project, existing-docs migration) where each prompt's answer informs the next; ad-hoc walkthroughs Claude generates during a session (debugging procedures, recovery steps, command-line sequences) for users who aren't coders; and the planning flow's discuss-and-suggest step, which presents alternative scopings, batch organisations, and option trees that need full-comparison shape to weigh.*
+
 ### Prohibited of Claude
 
 - Do not add features not listed in the current batch prompt. If you notice one that ought to be added, flag it in chat at the end of your response — not in the build (see *Where each kind of flag goes* below).
   *Load-bearing for: build-batch boundaries — the whole *Before build* mechanism assumes batch scope is fixed once agreed.*
 
-- Do not refactor, rename, or restructure anything not in the agreed batch plan. Not "while you're in there" mid-build. If I ask for new scope mid-build, decline politely, remind me we're in build mode, finish the current batch, then route through planning (Suggestion if it fits current `UX.md` scope, Discovery if it doesn't). **One exception:** if the batch genuinely cannot complete or be tested cleanly without an unplanned change — a prerequisite only visible at implementation time — halt, surface it in chat with a one-line justification, and wait for my okay. Label it `[Prerequisite, not in plan]` in the build recap.
-  *Load-bearing for: build-batch boundaries — protects the agreed batch from creep, routes new scope through the planning gate, and carves out prerequisites that would otherwise stall the batch.*
+- Do not refactor, rename, or restructure anything not in the agreed batch plan. Not "while you're in there" mid-build. If I ask for new scope mid-build, decline politely, remind me we're in build mode, finish the current batch, then route through planning (Suggestion if it fits current `UX.md` scope, Discovery if it doesn't). **Two exceptions.** (1) **Prerequisite carve-out** — if the batch genuinely cannot complete or be tested cleanly without an unplanned change (a prerequisite only visible at implementation time), halt, surface in chat with a one-line justification, and wait for my okay; label `[Prerequisite, not in plan]` in the build recap. (2) **Re-batching carve-out** — if implementation reveals the verification burden is much higher than estimated (per the *Pre-build verification estimate* in *Before build*), halt, surface in chat with a one-line justification, propose a split of the remaining work into smaller batches, and wait for my okay; label the split `[Re-batch, not in plan]` in the build recap.
+  *Load-bearing for: build-batch boundaries — the bullet protects the agreed batch from creep and routes new scope through the planning gate; the prerequisite carve-out keeps the batch unblockable when implementation reveals a needed dependency; the re-batching carve-out keeps the verification signal clean when the burden exceeds the estimate.*
 
 - Do not describe a `BACKLOG.md` edit as something for me to apply. Make the edit, then tell me what changed.
   *Load-bearing for: `BACKLOG.md` maintenance — the method requires Claude to edit and the user to review, never the inverse.*
@@ -156,7 +163,7 @@ For the canonical block format and the section's place in `BACKLOG.md`'s order, 
 
 - **[SILENT]** — Perform the action with no narration. If acknowledgment is unavoidable, one sentence max.
 - **[BRIEF]** — Output goes in chat, capped at 1–3 sentences or a tight list.
-- **[SEQUENCE]** — Deliver as a series of prompts, one at a time. Open by stating how many prompts are coming so I know the length, then ask the first and wait for my answer before sending the next. Do not bundle. Each intermediate prompt-question carries its own implicit "answer this next" — the [PROMPT] tag fires only after the final question of the sequence, not after each one.
+- **[SEQUENCE]** — Deliver as a series of prompts, one at a time. Open by stating how many prompts are coming so I know the length, then ask the first and wait for my answer before sending the next. Do not bundle, and do not preview steps 2 and 3 even briefly — previewing is bundling. Each intermediate prompt-question carries its own implicit "answer this next" — the [PROMPT] tag fires only after the final question of the sequence, not after each one. The tag formally marks sections of this doc, but the underlying rule lives in *Method contract → Required of Claude* and applies to any inherently-sequential exchange whether tagged or not.
 - **[DISCUSS]** — Full reasoning expected. Ask, weigh options, push back.
 - **[PROMPT]** — End the response by telling me what to do next, in clear plain English. Hard requirement; do not skip.
 
@@ -190,6 +197,14 @@ Then read my first prompt and route:
 - `mixed (primary: <one of the above>)` — primary intent named per the routing-priority rule above; the subagent catches the secondary items during its own sort step.
 
 Trust the planning subagent's recap as the source of truth for the session's `BACKLOG.md` changes — don't re-do its work or second-guess its sort. If I push back on something in the recap, relay the pushback back to the planning subagent for resolution rather than answering yourself.
+
+**Handoff to before-build.** When I invoke `/before-build` (or otherwise signal I'm ready to lock the next batch), invoke the before-build subagent (`no-code-method:before-build`) via the Task tool. The subagent runs the *Before build* flow in its own context window; you receive its recap and relay it to me. The invocation prompt is short prose announcing the route — no structured payload is required. The subagent reads BACKLOG.md and the rest of the project state itself.
+
+Trust the before-build subagent's recap as the source of truth for the session's `BACKLOG.md` changes — don't re-do its work or second-guess. If a halt-and-confirm surfaces in the recap (no top batch, malformed `BACKLOG.md`, change list too vague, or verification burden triggers a split), relay it verbatim and wait for my response before re-spawning. Do not answer halt-and-confirm requests on the subagent's behalf.
+
+**Handoff to batch-executor.** When I invoke `/build` (or when the Stop hook redirects to the next batch after one completes), invoke the batch-executor subagent (`no-code-method:batch-executor`) via the Task tool. The invocation prompt must include the JSON payload from `plugin/scripts/parse_backlog.py` for the current top unticked batch — see the `/build` slash-command body for the parser CLI. The subagent runs one batch in its own context window, ticking each file in `BACKLOG.md` as it completes, and produces a build recap. You receive the recap and relay it to me.
+
+Trust the batch-executor's recap as the source of truth for what the build did and what state `BACKLOG.md` is now in — don't re-do its work, don't re-summarise, don't second-guess. If a halt-and-confirm surfaces in the recap (prerequisite carve-out, re-batching carve-out), relay verbatim and wait for my response before letting the subagent proceed. Do not answer halt-and-confirm requests on the subagent's behalf.
 
 - **[PROMPT]** Once you're done with the route's work, prompt me to continue to "During planning." (Skip this if you took the test-notes route or a planning-seed route — you're already there. The new-project route and existing-docs migration route have their own closing prompts; don't double up.)
 
@@ -262,22 +277,35 @@ When a user phrases a request as immediate build ("let's add X"), frame the plan
 
 ### Before build
 
-- **[SILENT]** Group all our agreed changes and additions into the existing batches, creating new batches where applicable.
-- **[SILENT]** Edit `BACKLOG.md` to roll the existing batched changes together with the new ones into reorganised batches — each one small enough to build and test in one go.
-- **[BRIEF]** Show me the resulting batches for review. The top batch is the next build.
-- **[BRIEF]** For the 'Next Build' batch, list every file you intend to modify and a one-sentence summary of the only change happening in that file. If a file requires a rewrite instead of a surgical edit, explain why.
+- **[SILENT]** Validate the top build batch. Confirm `BACKLOG.md` parses and the top batch's `Serves UX.md:` names resolve in `UX.md`'s Functionalities section (case-insensitive after whitespace-trim — the same matching the PreToolUse hook enforces). Halt and surface in chat if (a) there is no top build batch, (b) `BACKLOG.md` is structurally malformed, or (c) a `Serves UX.md:` name doesn't resolve. The third case means a planning fold-in step was skipped — route me back to planning rather than proposing the entry yourself.
+- **[SILENT]** Enumerate the Files: list. For each bullet in the top batch's change list, identify the file(s) the change requires modifying. Write the result as a `Files:` sub-section into `BACKLOG.md` per the canonical shape in `DOC-STRUCTURE.md` → *Files: sub-section*. If a file requires a rewrite rather than a surgical edit, the per-file summary says so.
+- **[BRIEF]** Show me the top batch for review — heading, change list, and the Files: list you just wrote. The top batch is the next build.
+- **[BRIEF]** State the expected verification burden — a brief list of the distinct user-observable behaviours that will need testing after the build.
+- **[BRIEF]** Apply the *Batch-sizing principle*. If the verification list is long relative to the change scope, halt and propose a split before proceeding. On my okay, edit `BACKLOG.md` to split: the current batch keeps the changes whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created immediately below the current batch in priority. New batches inherit the current batch's `Serves` line(s) unless the split crosses serve-line boundaries. Then re-run the Files: enumeration on whichever batch is now top.
 - **[SILENT]** Make any further edits to `BACKLOG.md` requested in batch review directly. Do not ask me to edit the file.
 - **[BRIEF]** Flag any conflicts or concerns before proceeding with the build.
-- **[PROMPT]** Prompt me to switch out of plan mode.
+- **[PROMPT]** Prompt me to switch out of plan mode, then run `/build` (or wait for the Stop hook to auto-continue) to start this batch.
+
+#### Batch-sizing principle
+
+A batch's right size is set by **how much you'll have to verify**, not by how many lines or files it changes. Verification burden is the count of distinct user-observable behaviours you'll need to test after the build to satisfy yourself it landed correctly. Three sub-rules follow:
+
+- **Split when a small batch produces a long test list.** A change set that touches few files but ships behaviour across multiple unrelated surfaces carries a long test list. Long test lists in one batch make regression signals ambiguous — if something breaks, you don't know which change to suspect. Split into batches whose test lists each fit a single surface.
+
+- **Bundle unrelated items when they introduce no new user-facing behaviour and don't interact.** Refactors with no semantic change, renames, comment cleanups, configuration normalisations — these have empty (or identical-trivial) test lists. Forcing each into its own batch fragments the work without buying any clarity. Bundle them.
+
+- **Never fragment arbitrarily.** "Smaller is always safer" is not a rule of this method. A batch trimmed below its natural verification unit makes the next batch's job harder (it has to re-verify the same surface) and dilutes the test signal across more sessions.
+
+The existing "small enough to build and test in one session" rule still applies; it now means **one session's worth of verification**, not one session's worth of keystrokes.
 
 ### After every build
 
 - **[SILENT]** Update `MANIFEST.md`: add entries for anything created, update entries for anything renamed or changed, remove entries for anything deleted.
-- **[BRIEF]** Provide a build recap. Instead of technical jargon, use: "I am adding a check to the age field so people can't enter negative numbers."
-- For every change you made, explicitly label it as [Requested] (I asked for it) or [Suggested] (You think it's a good idea).
+- **[BRIEF]** Provide a build recap. Plain English, no jargon ("I am adding a check to the age field so people can't enter negative numbers"). For every change you made, label `[Requested]` (I asked for it) or `[Suggested]` (you proposed it). For any carve-out additions made during the build, also label `[Prerequisite, not in plan]` or `[Re-batch, not in plan]` per *Prohibited of Claude → Two exceptions*.
+- **[BRIEF]** Surface end-of-recap flags per *Where each kind of flag goes*: out-of-scope improvements you noticed but did not act on; user-facing changes the build implies `UX.md` should reflect; any Red flag concerns surfaced during the build (with the BACKLOG.md entry confirmed if I deferred it).
 - **[PROMPT]** Prompt me to refresh my download of the project and begin testing.
-- **[PROMPT]** Prompt me to switch back to /clear and switch back to planning mode.
+- **[PROMPT]** Prompt me to `/clear` and switch back to planning mode when testing is complete.
 
 
 ---
-*No-code method — Version 23.*
+*No-code method — Version 25.*

@@ -2,7 +2,7 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs two checks on every Edit / Write / MultiEdit tool call:
+Runs three checks on every Edit / Write / MultiEdit tool call:
 
   (1) Locked source-of-truth doc enforcement (V19).
       Locked docs are: UX.md, plus any additional source-of-truth docs declared
@@ -21,6 +21,16 @@ Runs two checks on every Edit / Write / MultiEdit tool call:
       or recognise it needs to fold-in first. The check is scoped to
       `Serves UX.md:` only — `Serves <ADDITIONAL>.md:` lines for additional
       source-of-truth docs are out of V22 scope and pass through.
+
+  (3) Batch file-list boundary check (V25).
+      When a top unticked build batch exists in BACKLOG.md, the hook blocks
+      Edit/Write/MultiEdit on any file that isn't on the batch's `Files:` list.
+      Exempts BACKLOG.md and MANIFEST.md (always writable per the editing-
+      surfaces rule). Open mode when no batch is active — no enforcement, all
+      edits allowed. Uses the shared `parse_backlog.py` parser (the same one
+      called by the Stop hook and the `/build` slash-command, per V25 Q1).
+      Deny message includes the current batch's Files: list and the
+      prerequisite carve-out recovery path.
 
 Mechanisms:
 
@@ -54,6 +64,7 @@ hook writes nothing and exits 0 — the absence of a deny is an implicit allow.
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -87,6 +98,18 @@ ENTRY_HEADING_PATTERN = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 # the entries it implements"). The trailing period is part of the canonical
 # format. The regex tolerates trailing whitespace.
 SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
+
+# --- V25 batch file-list boundary check ---
+
+# Path to the shared parser. pre_tool_use.py lives at plugin/hooks/; parser at
+# plugin/scripts/parse_backlog.py. Duplicated from stop.py for V25; a shared
+# helper module is the natural refactor target once a third parser-caller
+# accumulates.
+PARSER_PATH = Path(__file__).parent.parent / "scripts" / "parse_backlog.py"
+
+# Timeout for the parser subprocess call. Insurance against a stuck process,
+# not a tuning parameter — the parser runs in milliseconds on real input.
+PARSER_TIMEOUT_SECONDS = 10
 
 
 def emit_allow() -> int:
@@ -402,6 +425,136 @@ def check_serves_lines(
     return make_serves_line_deny_reason(missing, known_normalised)
 
 
+# --- V25 batch file-list boundary check helpers ---
+
+
+def run_parser(backlog_path):
+    """Invoke parse_backlog.py with backlog_path. Returns the parser's parsed
+    JSON output (dict). Returns None on any failure (parser script missing,
+    subprocess error, non-zero exit, empty stdout, invalid JSON). Duplicated
+    from stop.py for V25; shared helper module is the natural refactor target
+    once a third parser-caller accumulates."""
+    if not PARSER_PATH.exists():
+        return None
+    try:
+        result = subprocess.run(
+            ["python", str(PARSER_PATH), str(backlog_path)],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=PARSER_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    stdout = (result.stdout or "").strip()
+    if not stdout:
+        return None
+    try:
+        return json.loads(stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def make_boundary_deny_reason(target_path, batch, files_entries):
+    """Build the deny-reason text when a target file isn't on the current
+    batch's Files: list. Includes the batch heading, the full Files: list
+    with tick state (so Claude sees what IS allowed), and both carve-out
+    recovery paths spelled out (prerequisite vs. out-of-scope refactor)."""
+    heading = batch.get("batch_heading") or "(unknown)"
+
+    lines = []
+    for entry in files_entries:
+        if not isinstance(entry, dict):
+            continue
+        path = entry.get("path", "?")
+        ticked = entry.get("ticked", False)
+        prereq = entry.get("prerequisite", False)
+        marker = "[x]" if ticked else "[ ]"
+        prereq_marker = " [Prerequisite, not in plan]" if prereq else ""
+        lines.append(f"  - {marker} `{path}`{prereq_marker}")
+    file_list_display = "\n".join(lines) if lines else "  (no files declared)"
+
+    return (
+        f"BLOCKED: `{target_path}` is not on the current build batch's "
+        "`Files:` list and cannot be edited from inside the batch.\n\n"
+        f"Current batch: **{heading}**\n\n"
+        "`Files:` list (authority for Edit/Write/MultiEdit enforcement):\n"
+        f"{file_list_display}\n\n"
+        "If this file is a genuine prerequisite — implementation just "
+        "revealed it as needed and the batch can't complete or be tested "
+        "cleanly without it — halt and surface in chat with a one-line "
+        "justification (per NO-CODE-METHOD.md → Prohibited of Claude → "
+        "Two exceptions → Prerequisite carve-out). On the user's okay, "
+        "append the file to this batch's `Files:` list in BACKLOG.md "
+        "with a trailing `[Prerequisite, not in plan]` label, then retry "
+        "the edit. The hook re-parses BACKLOG.md at edit time, so the "
+        "new entry takes effect immediately.\n\n"
+        "If this file is NOT a prerequisite and you were trying to "
+        "refactor or 'while you're in there' outside the agreed batch "
+        "plan, stop. Finish the current batch, then route the change "
+        "through planning per NO-CODE-METHOD.md → How a new feature "
+        "enters the project."
+    )
+
+
+def check_batch_file_list(project_root, target_path):
+    """V25: enforce the batch file-list boundary on Edit/Write/MultiEdit.
+
+    Returns a deny-reason string if target_path isn't on the current top
+    unticked batch's Files: list. Returns None to allow (or to fall
+    through silently in lenient cases).
+
+    Behaviour:
+      - Exempt: BACKLOG.md and MANIFEST.md (always writable per editing-
+        surfaces).
+      - Open mode: no active batch (parser returns {}) → allow. The check
+        only enforces when there IS a batch to enforce against.
+      - Otherwise: target's resolved path must be in the batch's Files:
+        set (case-sensitive comparison, matching the locked-doc check)."""
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None or not backlog_path.exists():
+        return None  # lenient: no BACKLOG.md to enforce against
+
+    # Exempt BACKLOG.md (Claude needs to tick files, append [Prerequisite,
+    # not in plan] entries, etc.) and MANIFEST.md (always writable).
+    if str(target_path) == str(backlog_path):
+        return None
+    manifest_path = resolve_path_block_entry(project_root, "MANIFEST.md")
+    if manifest_path is not None and str(target_path) == str(manifest_path):
+        return None
+
+    batch = run_parser(backlog_path)
+    if not isinstance(batch, dict) or not batch:
+        return None  # open mode: no active batch
+
+    files_entries = batch.get("files") or []
+    if not isinstance(files_entries, list) or not files_entries:
+        return None  # lenient: malformed batch, nothing to enforce
+
+    allowed_paths = set()
+    for entry in files_entries:
+        if not isinstance(entry, dict):
+            continue
+        rel = entry.get("path")
+        if not isinstance(rel, str) or not rel:
+            continue
+        try:
+            resolved = (project_root / rel).resolve()
+        except OSError:
+            continue
+        allowed_paths.add(str(resolved))
+
+    if not allowed_paths:
+        return None  # lenient: every entry was malformed
+
+    if str(target_path) in allowed_paths:
+        return None  # on the list — allow
+
+    return make_boundary_deny_reason(target_path, batch, files_entries)
+
+
 def main() -> int:
     data = parse_input()
     if not isinstance(data, dict):
@@ -447,6 +600,14 @@ def main() -> int:
     )
     if serves_deny_reason:
         return emit_deny(serves_deny_reason)
+
+    # V25: batch file-list boundary check. When a top unticked build batch
+    # exists in BACKLOG.md, deny any edit whose target isn't on the batch's
+    # `Files:` list (with BACKLOG.md and MANIFEST.md exempt; open mode when
+    # no batch is active).
+    boundary_deny_reason = check_batch_file_list(project_root, target_path)
+    if boundary_deny_reason:
+        return emit_deny(boundary_deny_reason)
 
     return emit_allow()
 

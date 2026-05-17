@@ -8,6 +8,73 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## NO-CODE-METHOD.md → *During planning* doesn't explicitly assert planning's structural authority over BACKLOG.md
+
+**The question.** The V25 *Before build* rewrite removed steps that previously had Claude "Group all our agreed changes and additions into the existing batches" and "Edit `BACKLOG.md` to roll the existing batched changes together with the new ones into reorganised batches." Those steps were dead weight in the subagent flow because planning has full BACKLOG.md edit authority since V22. But *During planning* itself doesn't *explicitly* assert "you do the structural batch grouping; before-build doesn't" — the assertion is implicit in the planning subagent body's *BACKLOG.md editing — do, then describe* section and in the absence of those steps from the rewritten *Before build*. Should *During planning* gain an explicit "structural authority over BACKLOG.md belongs to this phase, including grouping/sizing/splitting" assertion to close the parity loop?
+
+**Why it matters.** Surfaced during V25 while drafting the *Before build* rewrite. Currently a future-Claude reading only *During planning* would have no way to know that before-build deliberately does NOT do reorganisation — the responsibility lives in planning by absence-elsewhere, not by explicit assertion. The asymmetry is harmless today (the planning subagent body handles it) but invites drift if either spec section gets edited later without the other in view.
+
+**Working notes.** Three rough shapes:
+
+- **A. Add a one-line "structural authority" assertion to *During planning*'s opening paragraph.** Smallest change. Explicit but unobtrusive.
+- **B. Add a sub-section "Structural authority over BACKLOG.md" under *During planning*.** More prominent. Risks over-engineering — the assertion fits in a sentence.
+- **C. Leave as-is.** The planning subagent body and the absence-in-*Before build* together communicate the rule implicitly; explicit assertion is over-documentation.
+
+**Next step.** Park. Revisit when *During planning* next needs an edit anyway (a future session that changes planning behaviour). **Promote sooner** if a doc-code parity audit flags `plugin/agents/planning.md`'s BACKLOG-authority section as out of step with *During planning*.
+
+---
+
+## Subagent rule-loading pattern divergence — inline vs. read-spec-on-entry
+
+**The question.** Subagents in the no-code-method plugin currently use two different patterns for sourcing their behavioural rules:
+
+- **`planning.md` (V22)** and **`before-build.md` (V25)** read `NO-CODE-METHOD.md` (and `DOC-STRUCTURE.md` where relevant) at session start and follow it as the source of truth. Agent body holds operational notes only.
+- **`batch-executor.md` (V25)** has the rules inlined in the body. No runtime read of `NO-CODE-METHOD.md`. Intentional per V25 Decision 4.
+
+The two patterns have different doc-code parity profiles. Inline rules drift silently if `NO-CODE-METHOD.md` is updated and the agent body isn't. Read-spec-on-entry picks up spec changes automatically but adds prompt-time read overhead. The question: should the plugin converge on one pattern, or keep the divergence intentional with a documented rule for which agent uses which?
+
+**Why it matters.** Surfaced during V25 before-build subagent design. The original draft proposed inline (matching batch-executor) on the framing "before-build is mechanical, like batch-executor, more than branching like planning." Validation review reframed it as **stable rules vs. fresh rules**: batch-executor inlined rules that hadn't changed in many versions (prerequisite carve-out, recap shape, MANIFEST update protocol), whereas before-build's load-bearing rules were V25-introduced (Batch-sizing principle, Pre-build verification estimate, Mid-build re-batching carve-out trigger) and likely to churn as Alex runs Taskflow builds under them. before-build landed read-spec-on-entry on that basis. Same reasoning would say batch-executor's V25-fresh content (the Two-exceptions framing, the Files: sub-section consumption) is also at parity risk — but batch-executor just shipped and was tested, so flipping it in V25 would churn settled code.
+
+**Working notes.** Three positions:
+
+- **A. Converge on read-spec-on-entry.** Flip batch-executor to match planning and before-build. Doc-code parity drift becomes structurally impossible for runtime behaviour: the spec is always authoritative. Cost: prompt-time read overhead on every batch-executor invocation (4 docs to load before any per-file work); structural refactor on subagent code that just landed.
+- **B. Converge on inline.** Flip planning and before-build to match batch-executor. Drops the read overhead. Cost: doc-code parity audit becomes the primary discipline against drift; the audit's cadence would need formalising in `BUILD-METHOD.md`.
+- **C. Keep the divergence; document the rule.** Agents whose rules are stable across versions go inline; agents whose rules are still evolving read-spec-on-entry. Re-evaluate per agent at each version bump. Cost: a new method-internal classification that has to be maintained alongside the agents.
+
+**Next step.** Park. Revisit once V26–V31 ship and the rate of `NO-CODE-METHOD.md` changes settles into something predictable. At that point the choice is cheap: if the spec is stable across multiple consecutive versions, B is fine; if it churns, A is the safer call; if some sections are stable and others aren't, C with explicit per-agent classification. **Promote sooner** if a doc-code parity audit flags meaningful drift in `batch-executor.md`, since that would force A as the answer.
+
+---
+
+## MANIFEST.md schema gap blocks PreToolUse read-before-edit enforcement
+
+**The question.** NO-CODE-METHOD.md → Required of Claude says Claude must read MANIFEST.md and the relevant UX.md entry before editing a file with a MANIFEST.md entry. V25 originally scoped a PreToolUse hook check to enforce this. The check is blocked by an architectural gap: MANIFEST.md's current schema is a flat alphabetical glossary mapping element NAMES to descriptions, not paths. A hook firing on `Edit /plugin/foo.py` has no way to know which MANIFEST entry (or which UX.md entry) `/plugin/foo.py` corresponds to. The question: how do we extend the method so hook-level enforcement becomes possible — and is it worth the change?
+
+**Why it matters.** Surfaced in V25 chat while designing the PreToolUse boundary check + read-before-edit check pair. Deferred from V25 because the schema decision is itself method-level (the change ripples to MANIFEST-TEMPLATE.md, the plugin's MANIFEST update logic during After-every-build, and the rule's wording in NO-CODE-METHOD.md). Without resolution, the read-before-edit rule remains convention-only (lives in the SessionStart-injected universal-behaviour and is followed when Claude remembers — the ~30% drift rate per Crash course → Caveats applies).
+
+**Working notes.** Five options sketched in V25 chat (2026-05-16):
+
+- **A. PostToolUse-tracks-Reads + PreToolUse-checks-track.** Real enforcement. Requires a new hook type, a session-scoped state file with SessionStart cleanup, AND a MANIFEST.md schema extension (paths-per-entry) so the check can resolve "which entry covers this file." Largest cost; cleanest behavioural match to the rule.
+- **B. Inline deny-with-context.** PreToolUse denies an Edit on a MANIFEST-covered file with the MANIFEST entry and UX.md entry inlined in the deny reason. No state file, no PostToolUse, but still needs the schema extension to know which entry to include. Trade-off: changes the rule's behaviour from "read first" to "have-the-context-by-edit-time." Probably acceptable; worth a separate decision.
+- **C. Convention-only.** Status quo: rule lives in NO-CODE-METHOD.md and the injected universal-behaviour; no hook enforcement. No schema change. Accepts the drift rate.
+- **D. Hybrid A+B.** Worst of both worlds; not pursued.
+- **E. Defer.** What V25 did. Lands the question here for proper design later.
+
+**Next step.** Promote to a planning session in the V26+ range once V25 and V26 ship and the picture is clearer. The session would resolve: (1) does MANIFEST.md gain a path field (and what format)? (2) which of A/B/C is the right enforcement shape given the answer to (1)? **Promote sooner** if direct-edit users (see entry on "Method response to direct-edit users") surface in real use, since path-mapped MANIFEST would also help drift detection for manually edited files.
+
+---
+
+## Stop-hook 8-block cap — only matters if we move to multi-batch-per-turn chains
+
+**The question.** Claude Code's Stop hook applies an 8-consecutive-block cap per user turn: after 8 redirects in one turn, the turn ends with a warning regardless of what the hook returns. Override via env var `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`. The question: does our plugin need defensive design against this cap, or does our `stop_hook_active`-respecting Stop hook design make the cap inert?
+
+**Why it matters.** Surfaced in V25 planning while wiring the Stop hook for auto-continuation. The cap would bite if a user turn produced 9+ Stop-hook redirects back-to-back — a chain of nine or more batches built without a new user turn in between.
+
+**Working notes.** V25's Stop hook design respects `stop_hook_active` and redirects at most once per user turn (V25.md success criterion: "the user can gate between batches with a single keystroke — explicit user gating"). Chain length is always 1; the cap can't trigger. The cap would only matter in a future workflow that intentionally removes the `stop_hook_active` check to enable multi-batch chains within one turn — a different design choice, where the 8-cap would be a useful guardrail for the right reasons. No defensive code in V25.
+
+**Next step.** Park. Revisit if a future session proposes multi-batch-per-turn auto-continuation (no current PLAN.md row for this). The cap's existence is half the design answer for that workflow — "do we chain N batches or stop at 8?" **Promote sooner** if a consumer of the method runs into the cap in normal use, which would indicate `stop_hook_active` isn't doing what we think.
+
+---
+
 ## Prose-only rewrite of the method (post-plugin-build)
 
 **The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and the `[FOLD-IN PENDING]` mechanism rely on Claude Code primitives that don't exist in plain chat with Claude or in any other AI tool. For users who want the method's discipline outside the sovereign-implementer plugin entirely — in plain chat with Claude, in a different AI tool, or in any context where the plugin shape doesn't fit — we'll eventually need a prose-only rewrite of the method that works tool-agnostically: same methodology, no plugin scaffolding.

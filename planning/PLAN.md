@@ -26,12 +26,13 @@ When a future session runs, its plugin code (hook scripts, subagent definitions,
 | V25 | Before-build subagent + batch-executor + Stop hook + supporting PreToolUse hooks; **batch-sizing principle** | Build orchestration core (the user's two main motivating examples); batch-sizing optimised for verification burden; tested |
 | V26 | **TEST-LOG.md mechanism + protocol (consumer-side)** | New operational tracking doc, template, structural spec, five protocol rules placed across method phases, fourth drift check (for projects that use the method — distinct from this project's TEST-LOG.md shipped in V24) |
 | V27 | After-build subagent (enforces V26 test-confirmation gate) | MANIFEST auto-update + build recap + test-confirmation gate; tested |
-| V28 | Safety net (untrusted-folder detection at session start) + unified `/adopt` skill-command | SessionStart hook extended with untrusted-folder halt via `systemMessage`; `/init-project` (V19) + new-project + migration unified into `/adopt` with four case branches (empty / existing code no docs / existing code foreign docs / already method-managed); method-doc rewrites for the rename and for folding *New-project route* + *Existing-docs migration route* into `/adopt`'s case branches; script-validated only (live-install deferred) |
-| V29 | `DOC-STRUCTURE.md` content migration + Crash course coherence pass | Schema content moved into plugin; final coherence read across Crash course before public release |
-| V30 | `NO-CODE-METHOD.md` retirement / cleanup | Original method files retired or pointed at plugin |
-| V31 | End-to-end Taskflow test | Refinement list; possibly more sessions |
+| V28 | **Walkthrough-mode for non-UI testing** | Build batch declares its test mode (UI-testable vs. needs-walkthrough); Before-build captures the declaration; the After-build subagent (V27) branches — producing plain-English recap or step-by-step `[SEQUENCE]`-tagged smoke-test walkthrough; tested |
+| V29 | Safety net (untrusted-folder detection at session start) + unified `/adopt` skill-command | SessionStart hook extended with untrusted-folder halt via `systemMessage`; `/init-project` (V19) + new-project + migration unified into `/adopt` with four case branches (empty / existing code no docs / existing code foreign docs / already method-managed); method-doc rewrites for the rename and for folding *New-project route* + *Existing-docs migration route* into `/adopt`'s case branches; script-validated only (live-install deferred) |
+| V30 | `DOC-STRUCTURE.md` content migration + Crash course coherence pass | Schema content moved into plugin; final coherence read across Crash course before public release |
+| V31 | `NO-CODE-METHOD.md` retirement / cleanup | Original method files retired or pointed at plugin |
+| V32 | End-to-end Taskflow test | Refinement list; possibly more sessions |
 
-14 sessions. Some will combine or split during execution; the count is a target, not a contract.
+15 sessions. Some will combine or split during execution; the count is a target, not a contract.
 
 ## Session-scope file shape
 

@@ -65,7 +65,7 @@ from pathlib import Path
 # The method version this build of the plugin carries. Bumped each session
 # alongside the *No-code method — Version N.* footers on the method files.
 # Used by the version-footer mismatch tripwire.
-PLUGIN_METHOD_VERSION = 23
+PLUGIN_METHOD_VERSION = 25
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by

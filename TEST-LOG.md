@@ -58,3 +58,15 @@ V23 was a Cowork-mentions-strip across method docs and plugin component bodies. 
 ## V24 — TEST-LOG creation + BUILD-METHOD doc
 
 This session creates TEST-LOG.md itself and adds BUILD-METHOD.md as a peer to BUILD-LOG.md. Dev-internal-only changes. No smoke test of plugin behaviour required; no rows.
+
+---
+
+## V25 — Build orchestration core (2026-05-16)
+
+CLI smoke tests run via outputs/ workaround copies for Cowork bash-mount staleness. Pre-validation tier — Windows integration smoke test in `claude --plugin-dir` still owed (deferred to Alex's PowerShell session, post-V25 commit).
+
+| # | Date | Session | Test | Component | Status | Notes |
+|---|---|---|---|---|---|---|
+| 031 | 2026-05-16 | V25 | `parse_backlog.py` CLI: 15-scenario suite covering top-batch detection, change_list parsing, Files: tick-state, Serves line extraction, prerequisite labels, malformed-input lenience | `plugin/scripts/parse_backlog.py` | Pass | 15/15. Pre-validation tier (CLI run, not Claude Code smoke test). outputs/ workaround for Cowork bash-mount staleness. Windows integration retest owed. |
+| 032 | 2026-05-16 | V25 | Stop hook end-to-end CLI: 8-scenario suite covering empty backlog, single-batch redirect, post-completion next-batch redirect, `stop_hook_active` loop prevention, parser-error lenience | `plugin/hooks/stop.py` (+ `parse_backlog.py`) | Pass | 8/8. Pre-validation tier. Loop-exit path (Opus risk #2) verified. outputs/ workaround. Windows integration retest owed. |
+| 033 | 2026-05-16 | V25 | PreToolUse boundary check (V25 (c)) + V19 (a)/(b) read-only and V22 (e) Serves-line regression: 9-scenario suite | `plugin/hooks/pre_tool_use.py` | Pass | 9/9. Pre-validation tier. New (c) blocks edits outside Files: list and allows prerequisite-labeled files; V19/V22 checks all still passing post-V25 changes. outputs/ workaround. Windows integration retest owed. |
