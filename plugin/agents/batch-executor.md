@@ -72,17 +72,16 @@ Mechanism: NO-CODE-METHOD.md → *Prohibited of Claude* → *Two exceptions* →
 
 ## Completion path
 
-When every file in the Files: list is `- [x]`:
+When every file in the Files: list is `- [x]`, your turn ends. Hand back to main Claude with a short completion note naming the batch and the count of files modified — nothing more. Do not:
 
-1. **Update `MANIFEST.md`** per NO-CODE-METHOD.md → *After every build*:
-   - Add entries for anything created.
-   - Update entries for anything renamed or changed.
-   - Remove entries for anything deleted.
-2. **Build recap.** Plain-English change-log, one entry per change. Label each `[Requested]` (user asked for it) or `[Suggested]` (you proposed it). Avoid jargon — write so the user can verify the work without reading code.
-3. **Prompt the user** to refresh their download of the project and begin testing.
-4. **Prompt the user** to `/clear` and switch back to planning mode after testing.
+- update `MANIFEST.md` (the after-build subagent owns this, fully automatic per V27 Q2),
+- produce the build recap with `[Requested]`/`[Suggested]` labels (after-build owns the recap, reading labels off BACKLOG.md per V27 Q3),
+- write rows to `TEST-LOG.md` to open the test session (after-build's job),
+- prompt the user to refresh, test, or `/clear` (after-build's prompts).
 
-The recap audience is the user. Main Claude relays your output without restructuring.
+V25 had batch-executor absorbing the *After every build* responsibilities inline because the recap was most accurate when produced in the same context as the build itself. V26 added the test-session-open step and V27 moves the full set of After-every-build responsibilities to a dedicated `after-build` subagent. The Stop hook detects "batch finished, after-build not yet run" (BACKLOG.mtime > TEST-LOG.mtime) and redirects to after-build at the end of your turn. The user sees one recap (after-build's), not two.
+
+Carve-out flags you raised during your turn (`[Prerequisite, not in plan]` files appended to `Files:` mid-build, or `[Re-batch, not in plan]` splits that ran via halt C below) are already recorded in BACKLOG.md by the time after-build reads it; after-build labels them in its recap from there.
 
 ## What you must not do
 
@@ -92,13 +91,13 @@ The recap audience is the user. Main Claude relays your output without restructu
 - **Do not build multiple batches per invocation.** One batch in, one batch out, return. The Stop hook handles transitioning to the next batch.
 - **Do not invoke sub-subagents.** You do not have the Task tool.
 
-## Flags surfaced in your response
+## Flags surfaced during your turn
 
-Three kinds of flag you may need to surface alongside the recap (per NO-CODE-METHOD.md → *Where each kind of flag goes*):
+Three kinds of flag you may need to surface (per NO-CODE-METHOD.md → *Where each kind of flag goes*). Surface them inline as you notice them — your turn ends with the completion note, not a recap, so the flags need to live in your in-turn output where main Claude can relay them. After-build will also see anything written into BACKLOG.md (red flags entries) and produce its own flag summary in the recap.
 
-- **Red flags** — security, privacy, data integrity, or safety concerns noticed during the build. Surface in chat first; if the user defers with no active plan, add a `[RED FLAG]` entry to BACKLOG.md's *Red flags* section yourself (BACKLOG.md is writable to you). Canonical format: see DOC-STRUCTURE.md → *BACKLOG.md structure → Red flags*.
-- **Out-of-scope improvements** you noticed but did not act on. Surface at the end of the recap. They become Discoveries in the next planning session.
-- **UX.md changes** the build implies — user-facing behaviour that has changed in a way `UX.md` should reflect. Surface at the end of the recap, suggesting the change. Do not edit `UX.md` — it's locked.
+- **Red flags** — security, privacy, data integrity, or safety concerns noticed during the build. Surface in chat first; if the user defers with no active plan, add a `[RED FLAG]` entry to BACKLOG.md's *Red flags* section yourself (BACKLOG.md is writable to you). Canonical format: see DOC-STRUCTURE.md → *BACKLOG.md structure → Red flags*. After-build will see the BACKLOG entry and surface it in the recap.
+- **Out-of-scope improvements** you noticed but did not act on. Surface in chat during your turn. They become Discoveries in the next planning session. After-build cannot see these (chat-only signal), so the user has to remember them — keep them prominent.
+- **UX.md changes** the build implies — user-facing behaviour that has changed in a way `UX.md` should reflect. Surface in chat, suggesting the change. Do not edit `UX.md` — it's locked.
 
 ## Spec references
 
@@ -106,7 +105,7 @@ The rules above derive from:
 
 - NO-CODE-METHOD.md → *Method contract → Required of Claude* (no stealth-fix, red-flag surfacing)
 - NO-CODE-METHOD.md → *Method contract → Prohibited of Claude → Two exceptions* (prerequisite + re-batching carve-outs)
-- NO-CODE-METHOD.md → *After every build* (recap shape, MANIFEST.md update, user prompts)
+- NO-CODE-METHOD.md → *After every build* (the broader *After every build* responsibilities — MANIFEST update, recap, test-session-open, user prompts — belong to the **after-build** subagent as of V27, not to batch-executor)
 - NO-CODE-METHOD.md → *Where each kind of flag goes* (flag taxonomy)
 - NO-CODE-METHOD.md → *Editing surfaces* (which docs are locked to you)
 - DOC-STRUCTURE.md → *BACKLOG.md structure → Files: sub-section* (tick state semantics, prerequisite label format)
@@ -114,4 +113,4 @@ The rules above derive from:
 
 ---
 
-*No-code method — Version 26.*
+*No-code method — Version 27.*

@@ -62,15 +62,18 @@ from pathlib import Path
 
 # --- Constants ---
 
-# The method version this build of the plugin carries. Bumped each session
-# alongside the *No-code method — Version N.* footers on the method files.
-# Used by the version-footer mismatch tripwire.
-PLUGIN_METHOD_VERSION = 26
+# The method version this build of the plugin carries. Bumped when the
+# session substantively changes the method or plugin (per BUILD-METHOD.md →
+# Session tag vs. method version) — dev-internal-only sessions do not bump
+# this. Used by the version-footer mismatch tripwire to compare each loaded
+# doc's footer against the plugin's expected method version.
+PLUGIN_METHOD_VERSION = 27
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
-SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md")
+# TEST-LOG.md added in V26 (spine-doc promotion) / V27 (detection wiring).
+SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 
 # CLAUDE.md's path block is the first fenced JSON code block in the file.
 # Same pattern as pre_tool_use.py — see V18's path block format spec.
@@ -91,6 +94,31 @@ BUILD_BATCHES_SECTION_PATTERN = re.compile(r"^## Build batches\s*$", re.MULTILIN
 
 # Generic next-section pattern (used to bound the Build batches section).
 NEXT_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
+
+# --- V27 TEST-LOG tripwire patterns ---
+
+# Match a data row in TEST-LOG.md's 8-column table. A real data row starts
+# with a numeric ID — the header and separator rows don't match. Mirrored
+# from pre_tool_use.py — see note in that file about future shared-helper
+# extraction once a third caller accumulates.
+TEST_LOG_DATA_ROW_PATTERN = re.compile(
+    r"^\|\s*(\d+)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|"
+    r"\s*([^|]*?)\s*\|",
+    re.MULTILINE,
+)
+
+# BUILD-LOG.md's first `## <token>` heading names the latest session
+# (newest-first). Used to narrow the tripwire's "unconfirmed rows" to the
+# previous build batch's rows. When BUILD-LOG.md is missing or unparseable,
+# the tripwire falls back to "any unconfirmed row" — same strict-fallback
+# semantics as the test-confirmation gate (V26 Q3, V27 Q4).
+BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 
 
 # --- File reads ---
@@ -244,6 +272,157 @@ def detect_top_build_batch(backlog_text: str):
     return title
 
 
+# --- V27 TEST-LOG tripwire helpers ---
+
+
+def parse_test_log_rows(text):
+    """Parse TEST-LOG.md text into a list of row dicts. Mirrors the same
+    helper in pre_tool_use.py — extraction to a shared module is the
+    natural refactor once a third caller appears."""
+    rows = []
+    for m in TEST_LOG_DATA_ROW_PATTERN.finditer(text):
+        rows.append({
+            "id": m.group(1).strip(),
+            "date": m.group(2).strip(),
+            "session": m.group(3).strip(),
+            "component": m.group(4).strip(),
+            "description": m.group(5).strip(),
+            "status": m.group(6).strip(),
+            "confirmed_explicitly": m.group(7).strip(),
+            "user_notes": m.group(8).strip(),
+        })
+    return rows
+
+
+def is_row_confirmed(row):
+    """A row is confirmed iff its `Confirmed Explicitly` cell starts with
+    `Yes`. Per Rule 1 (Never infer completion), absence-of-Yes is not a
+    tacit pass."""
+    ce = row.get("confirmed_explicitly", "").strip()
+    return ce.startswith("Yes")
+
+
+def identify_previous_session_from_build_log(project_root, resolved):
+    """Try to identify the previous build batch's session from BUILD-LOG.md.
+
+    Returns (session_id, status) where status is one of 'ok' (heading
+    parsed), 'missing' (BUILD-LOG.md absent), or 'unparseable' (present
+    but no `## <token>` heading matched).
+
+    Looks at the path block first (via `resolved`), then falls back to
+    BUILD-LOG.md at the project root."""
+    candidate = None
+    build_log_data = resolved.get("BUILD-LOG.md")
+    if build_log_data:
+        candidate, _text = build_log_data
+    if candidate is None or not candidate.exists():
+        candidate = project_root / "BUILD-LOG.md"
+    if not candidate.exists():
+        return None, "missing"
+    text = safe_read_text(candidate)
+    if text is None:
+        return None, "unparseable"
+    match = BUILD_LOG_SESSION_HEADING_PATTERN.search(text)
+    if not match:
+        return None, "unparseable"
+    return match.group(1).strip(), "ok"
+
+
+def detect_unconfirmed_test_rows(project_root, resolved):
+    """Find TEST-LOG.md rows from the previous build batch whose
+    `Confirmed Explicitly` column is not `Yes`.
+
+    Returns a tuple (unconfirmed_rows, build_log_status, session_id):
+      - unconfirmed_rows: list of row dicts (possibly empty)
+      - build_log_status: 'ok' | 'missing' | 'unparseable'
+      - session_id: the identified session string, or None
+
+    Returns ([], 'no_test_log', None) when TEST-LOG.md is missing or
+    unreadable from the path block — there's nothing to trip on.
+
+    Strict-fallback semantics apply when BUILD-LOG.md can't narrow:
+    any row with `Confirmed Explicitly: No` counts as unconfirmed. Same
+    rule as the V27 test-confirmation gate (per V26 Q3 + V27 Q4)."""
+    test_log_data = resolved.get("TEST-LOG.md")
+    if not test_log_data:
+        return [], "no_test_log", None
+    _path, text = test_log_data
+    rows = parse_test_log_rows(text)
+    if not rows:
+        return [], "no_test_log", None
+
+    session_id, build_log_status = identify_previous_session_from_build_log(
+        project_root, resolved
+    )
+    if build_log_status == "ok":
+        unconfirmed = [
+            r for r in rows
+            if r["session"] == session_id and not is_row_confirmed(r)
+        ]
+    else:
+        unconfirmed = [r for r in rows if not is_row_confirmed(r)]
+    return unconfirmed, build_log_status, session_id
+
+
+def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_id):
+    """Compose the additionalContext block for the TEST-LOG tripwire.
+
+    The block is intentionally directive: it tells main Claude to route
+    the next planning-subagent invocation regardless of the opener's
+    classification, because the test session is the gate. The planning
+    subagent's first sub-step (per NO-CODE-METHOD.md → During planning,
+    Rule 2) will walk the rows below."""
+    row_lines = []
+    for r in unconfirmed_rows:
+        component = r.get("component") or "(no component)"
+        row_lines.append(
+            f"  - #{r['id']} (session `{r['session']}`, component "
+            f"`{component}`): {r['description']}"
+        )
+    rows_block = "\n".join(row_lines)
+
+    if build_log_status == "ok":
+        mode_note = (
+            f"Identified previous build batch's session as `{session_id}` "
+            "from BUILD-LOG.md. Rows below are unconfirmed from that "
+            "session."
+        )
+    elif build_log_status == "missing":
+        mode_note = (
+            "BUILD-LOG.md not found — strict fallback: every row with "
+            "`Confirmed Explicitly: No` is treated as pending."
+        )
+    else:  # unparseable
+        mode_note = (
+            "BUILD-LOG.md present but unparseable — strict fallback: every "
+            "row with `Confirmed Explicitly: No` is treated as pending."
+        )
+
+    return (
+        "- **TEST-LOG tripwire: previous build batch's test session is "
+        "still open.** Per NO-CODE-METHOD.md → *Method contract → "
+        "Prohibited of Claude → Test-confirmation gate* (Rule 3) and "
+        "*During planning* (Rule 2, first sub-step), the next planning "
+        "session MUST close the test session via per-row read-back before "
+        "any new build batch can start.\n\n"
+        f"  {mode_note}\n\n"
+        "  Unconfirmed rows:\n"
+        f"{rows_block}\n\n"
+        "  **Routing override.** Regardless of the user's opener "
+        "classification (test notes / feature request / scope question / "
+        "conversational), invoke the planning subagent "
+        "(`no-code-method:planning`) as the next action. Begin the "
+        "subagent prompt with: *\"Before we get to your question — N "
+        "pending tests from session X to confirm. First: <test description "
+        "of row 1>?\"* The subagent's first sub-step is the per-row "
+        "read-back; it will walk each row above asking Pass / Fail / "
+        "Skipped, one at a time. Do NOT attempt to start a new build "
+        "batch or invoke any other subagent until the read-back closes "
+        "the session — the PreToolUse hook will deny the batch-executor "
+        "invocation if you try."
+    )
+
+
 # --- Tier detection ---
 
 def detect_tier(project_root: Path):
@@ -383,12 +562,27 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 "continuing the build."
             )
 
+    # V27 TEST-LOG tripwire: if the previous build batch's test session is
+    # still open (rows with Confirmed Explicitly: No), inject a routing
+    # override directing main Claude to the planning subagent regardless
+    # of opener classification. See format_test_log_tripwire_block.
+    unconfirmed_rows, build_log_status, session_id = detect_unconfirmed_test_rows(
+        project_root, resolved
+    )
+    if unconfirmed_rows:
+        lines.append(
+            format_test_log_tripwire_block(
+                unconfirmed_rows, build_log_status, session_id
+            )
+        )
+
     lines.append("")
     lines.append(
         "**Routing.** Read the user's opening message and route per "
         "NO-CODE-METHOD.md → *At session start*. This hook does not classify "
         "the user's opener — that's your call based on the user's words and "
-        "the structural state listed above."
+        "the structural state listed above. Exception: when the TEST-LOG "
+        "tripwire above fires, the routing override there takes precedence."
     )
 
     return "\n".join(lines)

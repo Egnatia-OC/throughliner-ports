@@ -62,6 +62,18 @@ Three scenarios halt before you produce the recap. All surface in chat and wait 
 
 This is the only place reorganise authority lives in before-build.
 
+## Change-list label preservation (V27)
+
+Every change-list bullet in the top build batch may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- ` (planning wrote them in when the change first entered BACKLOG.md — see `DOC-STRUCTURE.md` → *Build batches → Change list — `[Requested]`/`[Suggested]` labels*). When you reorganise change-list items as part of halt (C)'s split, **preserve every label exactly as written.** The after-build subagent reads them at recap time; if a label vanishes here, the post-build recap loses its source for `[Requested]`/`[Suggested]` and falls back to either guessing or labelling everything `[Suggested]` — neither serves the user.
+
+Specifically:
+
+- **Splitting a batch** (halt C): each change-list item carries its label with it into whichever new batch it lands in. Do not re-classify items as `[Suggested]` because they're "now in a different batch" — the request/suggestion provenance is a property of the change, not the batch boundary.
+- **Re-ordering change-list items** within a batch: untouched. The label is a prefix; the item stays atomic.
+- **Editing a change-list bullet's wording** for clarity during the validate pass: rare, but if you do, keep the label prefix intact. The user agreed to a particular split between `[Requested]` and `[Suggested]` during planning; rewording doesn't change the provenance.
+
+You should not be *creating* new change-list items in before-build. New items belong in planning. If implementation reveals a missing item, that's the batch-executor's prerequisite carve-out (`[Prerequisite, not in plan]` on the `Files:` list), not a change-list addition here.
+
 ## Recap output
 
 Your recap is what main Claude relays to the user. Per `NO-CODE-METHOD.md` → *Before build* steps 3–7:
@@ -89,4 +101,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 26.*
+*No-code method — Version 27.*

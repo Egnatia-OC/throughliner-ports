@@ -116,9 +116,11 @@ The file starts empty at project start. The entry-format reminder lives inside a
 
 Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METHOD.md` → *How a new feature enters the project* for the pipeline. Red flags are the only deferred items that don't need such an entry behind them; they live in `BACKLOG.md` regardless of scope.
 
+**Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list may carry a `[Requested]` (the user asked for it) or `[Suggested]` (Claude proposed it) prefix immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change first enters BACKLOG.md, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent to populate the build recap. The `Files:` sub-section does **not** carry these labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from `[Requested]` and `[Suggested]` changes alike, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and do not appear in BACKLOG.md change-list bullets ahead of the build.
+
 **`Files:` sub-section.** The `Files:` sub-section is a GitHub-style task list — one `- [ ]` bullet per file, `- [x]` when the file is done — of every file the batch will modify, with each bullet shaped `` - [ ] `<path>` — <one-sentence summary of the change in that file> ``. It is the build-time enforcement surface: the PreToolUse hook blocks `Edit`/`Write`/`MultiEdit` on any file not in the current batch's `Files:` list. Prerequisite carve-outs (a file added mid-build per `NO-CODE-METHOD.md` → *Prohibited of Claude* → prerequisite exception) are appended to the `Files:` list with a trailing `[Prerequisite, not in plan]` label, so the file's presence on the list and its provenance are both recorded.
 
 **`Serves UX.md:` name matching.** Names on a `Serves UX.md:` line are matched against `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches an entry named `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines for additional source-of-truth docs are not yet hook-checked.
 
 ---
-*No-code method — Version 26.*
+*No-code method — Version 27.*

@@ -1,5 +1,5 @@
 {
-  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). PreToolUse enforces read-only on locked source-of-truth docs (UX.md and any additional SoT docs declared in the project's CLAUDE.md path block). Stop redirects Claude back into the top unticked build batch in BACKLOG.md when one exists (auto-continuation between batches; respects `stop_hook_active` for one-redirect-per-turn). UserPromptSubmit was the original choice for SessionStart's job but is blocked by anthropics/claude-code#10225; SessionStart works in plugins today and is functionally equivalent given the method's /clear-after-every-build discipline.",
+  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). PreToolUse runs four checks on Edit/Write/MultiEdit (locked-doc read-only, Serves-line resolution, batch file-list boundary) and one check on Task (test-confirmation gate on no-code-method:batch-executor invocations — V27). Stop redirects Claude either to the after-build subagent when a batch has just finished, or back into the top unticked build batch in BACKLOG.md (auto-continuation; respects `stop_hook_active` for one-redirect-per-turn). UserPromptSubmit was the original choice for SessionStart's job but is blocked by anthropics/claude-code#10225; SessionStart works in plugins today and is functionally equivalent given the method's /clear-after-every-build discipline.",
   "hooks": {
     "SessionStart": [
       {
@@ -13,7 +13,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "matcher": "Edit|Write|MultiEdit|Task",
         "hooks": [
           {
             "type": "command",

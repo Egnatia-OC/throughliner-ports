@@ -15,6 +15,6 @@ Both paths quoted — Windows paths with spaces break unquoted invocations silen
 
 **Step 3 — spawn batch-executor.** Pass the JSON payload verbatim to batch-executor via the Task tool, embedded in a short prose prompt naming the route — e.g. "User invoked /build. Execute this batch. Payload follows: <JSON>". Do not summarise, reshape, or modify the JSON; the subagent's input contract depends on its exact shape.
 
-Relay batch-executor's recap to the user without restructuring.
+Relay batch-executor's completion note to the user without restructuring. The build recap itself is produced by the after-build subagent — the Stop hook will route to after-build when batch-executor's turn ends (V27). Do not invoke after-build manually here; the Stop-hook routing is the intended path.
 
 This is the same parser, same payload shape, and same subagent the Stop hook uses for auto-continuation between batches — `/build` is the explicit-invocation entry point for the same flow.

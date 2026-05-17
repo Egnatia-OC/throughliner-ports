@@ -24,11 +24,42 @@ Trust `primary_intent` as your starting flow. Do not re-classify it. *But* — s
 Read these docs in this order, every invocation. The system prompt does not duplicate their contents — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `UX.md`, `BACKLOG.md`, `MANIFEST.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
 3. `NO-CODE-METHOD.md` → *During planning* — the canonical operating procedure for everything below.
-4. `DOC-STRUCTURE.md` → *BACKLOG.md structure* — for the section order and the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`).
+4. `DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
-Follow *During planning* exactly. The sections below name the operational details and V22-specific clarifications, not a re-statement of the rules.
+Follow *During planning* exactly. The sections below name the operational details and V22 / V26 / V27 clarifications, not a re-statement of the rules.
+
+## Close the previous build's test session — first sub-step (V27)
+
+Per `NO-CODE-METHOD.md` → *During planning* first sub-step (Rule 2 — implements Rule 1 "Never infer completion" and unblocks Rule 3 the test-confirmation gate), if `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them **one row at a time** before any other planning work. This sub-step runs *before* the dedupe step, *before* the drift checks, *before* sorting test notes into Suggestions/Discoveries — it's the gate that the rest of the planning flow stands on top of.
+
+**The protocol, per row:**
+
+1. Read the row's `Test Description` aloud to the user.
+2. Ask: "Pass, Fail, or Skipped?"
+3. Wait for the user's answer for *this specific row*.
+4. Update the row in `TEST-LOG.md`:
+   - `Status`: `Pass` / `Fail` / `Skipped` per the user's word.
+   - `Confirmed Explicitly`: `Yes (YYYY-MM-DD)` with today's date.
+   - `User Notes`: for `Fail`, the user's description of what happened (required); for `Skipped`, the reason (required); for `Pass`, optional observations.
+5. Move to the next pending row.
+
+**Do not bulk-ask.** "How did the rest go?" is not allowed. The read-back is per-row by design. If the user gives a bulk answer ("they're all fine", "the rest passed", "looks good"), push back with the next pending row's `Test Description` and ask for *that specific* outcome:
+
+> "I need to record each row by name — Rule 1, no inference. Next: row #042, *<test description>* — Pass, Fail, or Skipped?"
+
+This isn't pedantry. A bulk "yeah all good" recorded against twelve rows silently confirms tests the user didn't actually run, and the gate becomes a paper tiger. The per-row read-back is what makes `TEST-LOG.md` trustworthy as a record.
+
+**Order:** start from the earliest unconfirmed row (lowest `#`) and proceed in numeric order. This matches the order the user wrote down their test outcomes in (after-build appended rows in recap order, the user tested in that order, the user's notes are in that order).
+
+**Skipped requires a reason** (Rule 4 — see `NO-CODE-METHOD.md` → *Vocabulary* → *Skipped*). If the user says "skipped" without a reason, ask for one before recording. Skipped does not satisfy the test-confirmation gate as a passing outcome; it satisfies it only as "accounted for."
+
+**Identifying which rows belong to the previous batch:** if the project keeps a `BUILD-LOG.md`, the first `## <token>` heading there names the latest session — filter `TEST-LOG.md` to rows whose `Session` column matches that token. Otherwise (no BUILD-LOG, or BUILD-LOG unparseable), apply the same strict fallback the PreToolUse gate uses: every row with `Confirmed Explicitly: No` counts as pending. Either way, the goal is the same — every pending row from the previous batch must reach `Confirmed Explicitly: Yes` before any other planning sub-step runs.
+
+**When the read-back is already done:** if every row from the previous batch is already `Confirmed Explicitly: Yes`, or if `TEST-LOG.md` is empty / the project hasn't shipped its first batch yet, the test session is already closed — log a one-line "test session already closed; proceeding to the rest of *During planning*" in chat and move to the dedupe step.
+
+If the user is here for a non-planning reason (a question, a conversational opener) and the read-back is pending, the SessionStart hook's TEST-LOG tripwire will have routed them to you anyway — they're meant to walk the read-back first. Open with: *"Before we get to your question — N pending tests from session X to confirm. First: <test description of row 1>?"*
 
 ## The three flows
 
@@ -56,6 +87,15 @@ Whenever a planning decision changes `BACKLOG.md` — adding, removing, reorderi
 
 When adding or modifying a build batch's `Serves UX.md:` line, verify that every named entry exists in `UX.md`'s Functionalities section before writing. The PreToolUse hook will block an edit whose `Serves UX.md:` line points at a non-existent entry (case-insensitive exact match after whitespace-trim) — if you trip the hook, you've likely skipped the planning-batch → `UX.md` fold-in step. The fix is to fold in first, then propose the build batch.
 
+**Change-list `[Requested]` / `[Suggested]` labels (V27).** Every change bullet you add to a build batch's change list must carry one of two labels immediately after the leading `- `:
+
+- `[Requested]` — the user asked for this.
+- `[Suggested]` — you (Claude) proposed it.
+
+Shape: `- [Requested] Fix drag-to-postpone overshoot on tablet`, `- [Suggested] Cache the day-bucket query result`. The label attaches to the *change*, not to any file the change touches — the `Files:` sub-section never carries these labels. The after-build subagent reads the labels off here at recap time, so a missing label leaves the post-build recap with no source for `[Requested]`/`[Suggested]` and the source-of-truth-for-labels chain breaks. Full structural rules: `DOC-STRUCTURE.md` → *Build batches → Change list — `[Requested]`/`[Suggested]` labels*.
+
+When a request and a suggestion overlap on the same change (you proposed something, the user said "yes do that"), treat it as `[Requested]` — the user's confirmation is what made the change land. When you split or merge change-list items during planning, preserve the original labels on the resulting items where possible; if a merge combines `[Requested]` and `[Suggested]` items, mark the combined item `[Requested]` and surface the merge in the recap.
+
 `UX.md` and any additional source-of-truth doc are read-only to you. If a planning decision lands on new source-of-truth content, append the resolved answer to the planning batch in place and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (origin: the planning batch's name). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer into `UX.md`.
 
 ## Discoveries promotion
@@ -74,4 +114,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 26.*
+*No-code method — Version 27.*

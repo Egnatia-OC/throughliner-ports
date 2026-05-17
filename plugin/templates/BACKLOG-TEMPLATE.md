@@ -43,9 +43,9 @@ A change only belongs here if it serves a `UX.md` entry (or an entry in a releva
 
 ### Batch: [short descriptive name]
 
-- [Change description — one line]
-- [Change description]
-- [Change description]
+- [Requested] [Change description — one line]
+- [Suggested] [Change description]
+- [Requested] [Change description]
 
 Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
@@ -56,8 +56,8 @@ Serves UX.md: [entry name(s)].
 
 ### Batch: [short descriptive name]
 
-- [Change description]
-- [Change description]
+- [Suggested] [Change description]
+- [Requested] [Change description]
 
 Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
@@ -67,4 +67,4 @@ Serves UX.md: [entry name(s)].
 [For batches touching an additional source-of-truth doc, add a `Serves <DOC>: ...` line. Two forms: `Serves <DOC>: [entry/section name].` when the batch implements the doc's content (e.g., `Serves SYSTEM-PROMPT.md: tone and presentation section.`); `Serves <DOC>: [delivery mechanism].` when the batch's purpose is to carry the doc to its runtime destination rather than implement any of its content (e.g., `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt.`).]
 
 ---
-*No-code method — Version 26.*
+*No-code method — Version 27.*
