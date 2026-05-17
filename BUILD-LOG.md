@@ -36,7 +36,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 **Carried forward.**
 
-- **Windows integration smoke test in `claude --plugin-dir`** — owed to Alex's PowerShell session, post-V25 commit. All V25 components (Stop hook, batch-executor, before-build, both slash-commands) tested only at pre-validation CLI tier; the real Claude Code session behaviour (hooks registering, subagents invoked through the normal mechanism, slash commands visible in `/agents` and `/hooks`, Stop hook auto-continuation, halt-and-confirm relay) remains untested. Will generate fresh TEST-LOG rows when Alex runs it. This is the critical V25 retest.
+- **Windows integration smoke test in `claude --plugin-dir`** — run 2026-05-17 against a pre-populated `v25-scratch` outside the sovereign-implementer repo. See TEST-LOG #034–050. End-to-end flow works (index.html generated, renders matching the UX entry's stated behaviour); three bug findings logged as OPEN-QUESTIONS entries for V26 fix: Stop-hook template-placeholder misfire (#041), BACKLOG-TEMPLATE's instructional `[FOLD-IN PENDING]` ambiguity (#042), before-build subagent body's parser-path spec (#044).
 
 - **Subagent rule-loading pattern divergence** — OPEN-QUESTIONS.md entry. before-build and planning use read-spec-on-entry; batch-executor uses inline rules. Should we converge? Defer until V26–V31 ship and the rate of NO-CODE-METHOD.md changes settles into something predictable. Revisit promotion if a doc-code parity audit flags meaningful drift in batch-executor.
 

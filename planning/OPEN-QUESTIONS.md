@@ -8,6 +8,55 @@ For the format and lifecycle, see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Stop hook misfires on template-placeholder BACKLOG.md (V25 first-use bug)
+
+**The question.** The V25 Stop hook calls `parse_backlog.py` to find the top unticked build batch. When BACKLOG.md is freshly scaffolded by `/init-project`, it contains the BACKLOG-TEMPLATE example batches with literal placeholders (`[short descriptive name]`, `[Change description]`, `[path/to/file]`). The parser treats these as a real unticked batch and the Stop hook redirects with a payload containing the literal placeholder strings, telling main Claude to invoke batch-executor with garbage. Should the parser (or the Stop hook) detect placeholder-shape content and refuse to emit a payload for it?
+
+**Why it matters.** Surfaced in V25 Windows smoke test (TEST-LOG #041). First-use case in any freshly-scaffolded project. Only main Claude's judgment caught the misfire — Claude refused to invoke batch-executor on fictional work. Same soft-discipline pattern as V19 #013 (Claude self-policing before the hook backstop). The system degrades gracefully because of Claude's judgment, but the hook itself is wrong.
+
+**Working notes.** Two fix shapes:
+
+- **A. Parser-level placeholder detection.** `parse_backlog.py` examines the parsed batch — if `batch_heading`, `change_list` items, or `files[].path` values contain bracketed-placeholder patterns (e.g., regex `\[[a-z][^\]]*\]` matching `[short descriptive name]`, `[Change description]`, `[path/to/file]`), return `{}` (no batch) instead of the payload. Cleanest — handles every consumer of the parser (Stop hook, /build, PreToolUse boundary check) with one change.
+- **B. Stop-hook-level placeholder check.** Stop hook calls the parser, then inspects the payload for placeholder patterns before deciding to redirect. Doesn't help /build or PreToolUse, which both also consume placeholder-shape batches.
+
+Recommendation: A. Parser is the single source of truth; centralising the check there matches the existing "parser is lenient on malformed input" philosophy.
+
+**Next step.** Promote to a V26 planning session — small fix (one regex check in the parser, plus tests). **Promote sooner** if a real project hits this in normal use (which it would on first scaffold).
+
+---
+
+## BACKLOG-TEMPLATE.md's instructional `[FOLD-IN PENDING]` example collides with real-entry detection
+
+**The question.** Both `templates/BACKLOG-TEMPLATE.md` and `plugin/templates/BACKLOG-TEMPLATE.md` contain instructional text in the *Fold-ins pending* section that uses the literal `[FOLD-IN PENDING]` marker as a canonical-format example. When a real fold-in is added (e.g., during a planning session), a search for the marker hits both the instructional example and the real entry, making them indistinguishable. Should the template's example be rewritten to be visually distinguishable?
+
+**Why it matters.** Surfaced in V25 Windows smoke test (TEST-LOG #042). The user couldn't easily identify the real fold-in block versus the instructional example without reading surrounding context. Parallel concern to the Stop hook misfire — instructional template content collides with real-entry detection logic.
+
+**Working notes.** Three fix shapes:
+
+- **A. Wrap the canonical-format example in a fenced code block.** Visually distinct, but still contains the literal marker string. Tool searches for the marker would still match if they don't filter code blocks.
+- **B. Replace `[FOLD-IN PENDING]` in the example with an annotated placeholder (e.g., `[FOLD-IN PENDING — example, delete this block]`).** Real entries can be detected by absence of the annotation. Easy fix but ugly.
+- **C. Move the canonical-format documentation out of the inline section entirely — into the section's header comment or `DOC-STRUCTURE.md`.** Cleanest, but requires more restructuring.
+
+Recommendation: A + C combined. Template section header gets a one-line pointer to DOC-STRUCTURE.md for the canonical format; no inline literal-marker example in the template.
+
+**Next step.** Promote to a V26 planning session alongside the parser placeholder check. Fix is small but touches the templates (mirrored in two locations) plus possibly DOC-STRUCTURE.md.
+
+---
+
+## before-build subagent body specifies the wrong parser invocation
+
+**The question.** `plugin/agents/before-build.md` specifies the validate-pass parser call as `python plugin/scripts/parse_backlog.py` (project-relative path with no BACKLOG.md argument). The parser actually lives at `${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py` and requires a BACKLOG.md path as `argv[1]`. The subagent's spec is wrong in two ways. Should the subagent body be corrected?
+
+**Why it matters.** Surfaced in V25 Windows smoke test (TEST-LOG #044). The subagent self-corrected by Glob-searching for the parser and retrying with absolute paths — soft-discipline pattern again. The end-to-end flow works because Claude figured out the right thing, but a future Claude (or one with lower self-correction confidence) might not recover.
+
+**Working notes.** One fix: rewrite the validate-pass step 1 in `plugin/agents/before-build.md` from `python plugin/scripts/parse_backlog.py (path relative to project root — resolve via the path block)` to `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG.md absolute path>"`. The `/build` slash-command body already does this correctly (it uses `Read CLAUDE.md's path block to resolve where BACKLOG.md lives`); before-build should match.
+
+Adjacent concern: the same `${CLAUDE_PLUGIN_ROOT}` resolution gap may exist in other subagent-body references to plugin-internal paths. Worth a doc-code parity sweep when fixing this.
+
+**Next step.** Promote to a V26 planning session alongside the Stop-hook and template fixes. Single-file fix in `plugin/agents/before-build.md`.
+
+---
+
 ## NO-CODE-METHOD.md → *During planning* doesn't explicitly assert planning's structural authority over BACKLOG.md
 
 **The question.** The V25 *Before build* rewrite removed steps that previously had Claude "Group all our agreed changes and additions into the existing batches" and "Edit `BACKLOG.md` to roll the existing batched changes together with the new ones into reorganised batches." Those steps were dead weight in the subagent flow because planning has full BACKLOG.md edit authority since V22. But *During planning* itself doesn't *explicitly* assert "you do the structural batch grouping; before-build doesn't" — the assertion is implicit in the planning subagent body's *BACKLOG.md editing — do, then describe* section and in the absence of those steps from the rewritten *Before build*. Should *During planning* gain an explicit "structural authority over BACKLOG.md belongs to this phase, including grouping/sizing/splitting" assertion to close the parity loop?
