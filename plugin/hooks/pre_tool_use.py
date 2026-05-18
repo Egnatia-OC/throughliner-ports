@@ -7,10 +7,15 @@ on every Task tool call:
 
   (1) Locked source-of-truth doc enforcement (V19) — Edit/Write/MultiEdit.
       Locked docs are: UX.md, plus any additional source-of-truth docs declared
-      in the project's CLAUDE.md path block. BACKLOG.md and MANIFEST.md are
-      explicitly writable. When a writing tool targets a locked doc, the hook
-      denies and tells Claude to add a [FOLD-IN PENDING] block to the
-      Fold-ins pending section of BACKLOG.md instead.
+      in the project's CLAUDE.md path block. BACKLOG.md, MANIFEST.md, and
+      TEST-LOG.md are explicitly writable — the planning, glossary, and
+      test-record surfaces Claude edits during the build cycle. (TEST-LOG.md
+      is a spine doc since V26, not "additional"; V28 closed the gap by
+      adding it to WRITABLE_LOGICAL_NAMES so after-build's row-open writes
+      and planning's per-row status updates can land.) When a writing tool
+      targets a locked doc, the hook denies and tells Claude to add a
+      [FOLD-IN PENDING] block to the Fold-ins pending section of BACKLOG.md
+      instead.
 
   (2) Serves-line check on BACKLOG.md build-batch additions (V22) — Edit/Write/
       MultiEdit. When a writing tool targets BACKLOG.md and the proposed new
@@ -85,9 +90,22 @@ hook writes nothing and exits 0 — the absence of a deny is an implicit allow.
 
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
+
+# Make the sibling plugin/scripts/ directory importable so we can pull in
+# the shared project-state helpers. pre_tool_use.py lives at plugin/hooks/;
+# project_state.py is at plugin/scripts/. The hook is invoked directly
+# (`python plugin/hooks/pre_tool_use.py`), so we add scripts/ to sys.path
+# explicitly rather than relying on package imports. (V28 extraction.)
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from project_state import (  # noqa: E402 — must follow sys.path insert
+    safe_read_text,
+    extract_path_block,
+    resolve_path_block_entry,
+    run_parser,
+    get_unconfirmed_previous_session_rows,
+)
 
 # Writing tools whose calls this hook inspects via checks (1)-(3). Anything
 # outside this set + the Task tool is allowed without inspection.
@@ -100,11 +118,9 @@ BATCH_EXECUTOR_SUBAGENT_TYPE = "no-code-method:batch-executor"
 # Path-block keys treated as writable. Everything else in the path block —
 # UX.md, plus any additional source-of-truth docs declared by the project —
 # is locked.
-WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "MANIFEST.md"}
+WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "MANIFEST.md", "TEST-LOG.md"}
 
-# CLAUDE.md's path block is the first fenced JSON code block in the file.
-# Match the contents between the opening ```json line and the closing ```.
-PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
+# PATH_BLOCK_PATTERN now lives in project_state.py (V28 extraction).
 
 # --- V22 Serves-line check patterns ---
 
@@ -124,42 +140,10 @@ ENTRY_HEADING_PATTERN = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 # format. The regex tolerates trailing whitespace.
 SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
 
-# --- V25 batch file-list boundary check ---
-
-# Path to the shared parser. pre_tool_use.py lives at plugin/hooks/; parser at
-# plugin/scripts/parse_backlog.py. Duplicated from stop.py for V25; a shared
-# helper module is the natural refactor target once a third parser-caller
-# accumulates.
-PARSER_PATH = Path(__file__).parent.parent / "scripts" / "parse_backlog.py"
-
-# Timeout for the parser subprocess call. Insurance against a stuck process,
-# not a tuning parameter — the parser runs in milliseconds on real input.
-PARSER_TIMEOUT_SECONDS = 10
-
-# --- V27 test-confirmation gate patterns ---
-
-# Match a data row in TEST-LOG.md's 8-column table. A real data row starts
-# with a numeric three-digit ID — the header row (| # | Date | ...) and the
-# separator row (|---|---|...) don't match. Whitespace inside cells is
-# tolerated and trimmed by the parser.
-TEST_LOG_DATA_ROW_PATTERN = re.compile(
-    r"^\|\s*(\d+)\s*\|"     # # (numeric ID)
-    r"\s*([^|]*?)\s*\|"      # Date
-    r"\s*([^|]*?)\s*\|"      # Session
-    r"\s*([^|]*?)\s*\|"      # Component
-    r"\s*([^|]*?)\s*\|"      # Test Description
-    r"\s*([^|]*?)\s*\|"      # Status
-    r"\s*([^|]*?)\s*\|"      # Confirmed Explicitly
-    r"\s*([^|]*?)\s*\|",     # User Notes
-    re.MULTILINE,
-)
-
-# BUILD-LOG.md's first `## <token>` heading names the latest (newest-first)
-# session. The capture is intentionally permissive — the dev-side convention
-# is `## V27 — YYYY-MM-DD — summary`, but a consumer project may use any
-# session-tag shape. We just need a string that matches the corresponding
-# Session column in TEST-LOG.md.
-BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
+# PARSER_PATH, PARSER_TIMEOUT_SECONDS, TEST_LOG_DATA_ROW_PATTERN, and
+# BUILD_LOG_SESSION_HEADING_PATTERN now live in project_state.py
+# (V28 extraction); the helpers that use them (run_parser, parse_test_log_rows,
+# is_row_confirmed, identify_previous_session) are imported at the top.
 
 
 def emit_allow() -> int:
@@ -191,23 +175,6 @@ def parse_input():
         return None
 
 
-def extract_path_block(claude_md_text: str):
-    """Extract and parse the first fenced JSON code block from CLAUDE.md.
-
-    Returns the parsed dict, or None if the block is missing or unparseable.
-    """
-    match = PATH_BLOCK_PATTERN.search(claude_md_text)
-    if not match:
-        return None
-    try:
-        data = json.loads(match.group(1))
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(data, dict):
-        return None
-    return data
-
-
 def build_locked_map(project_root: Path) -> dict:
     """Read CLAUDE.md from project_root, parse the path block, and return a
     dict mapping resolved absolute path strings -> logical names for every
@@ -217,10 +184,8 @@ def build_locked_map(project_root: Path) -> dict:
     block, or contains no locked entries. The hook treats an empty locked
     map as "no enforcement applicable" and falls through to allow.
     """
-    claude_path = project_root / "CLAUDE.md"
-    try:
-        text = claude_path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
+    text = safe_read_text(project_root / "CLAUDE.md")
+    if text is None:
         return {}
 
     path_block = extract_path_block(text)
@@ -265,16 +230,6 @@ def make_reason(logical_name: str) -> str:
 # --- V22 Serves-line check helpers ---
 
 
-def safe_read_text(path: Path):
-    """Read a text file; return None on any failure. Used by the Serves-line
-    check, which needs to peek at UX.md without raising on missing/locked
-    files. Mirrors the helper in session_start.py."""
-    try:
-        return path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return None
-
-
 def normalise_entry_name(name: str) -> str:
     """Lowercase, strip leading/trailing whitespace, collapse internal
     whitespace runs to a single space. Used for case-insensitive exact match
@@ -289,28 +244,6 @@ def normalise_entry_name(name: str) -> str:
     name = name.strip().lower()
     name = re.sub(r"\s+", " ", name)
     return name
-
-
-def resolve_path_block_entry(project_root: Path, logical_name: str):
-    """Resolve a logical name (e.g. 'UX.md') to its absolute Path via
-    CLAUDE.md's path block. Returns Path on success, None on any failure
-    (missing CLAUDE.md, unparseable path block, name not in block).
-
-    Kept separate from build_locked_map() because the Serves-line check
-    needs the writable resolutions too."""
-    claude_text = safe_read_text(project_root / "CLAUDE.md")
-    if claude_text is None:
-        return None
-    path_block = extract_path_block(claude_text)
-    if not path_block:
-        return None
-    rel = path_block.get(logical_name)
-    if not isinstance(rel, str) or not rel:
-        return None
-    try:
-        return (project_root / rel).resolve()
-    except OSError:
-        return None
 
 
 def extract_functionality_entries(ux_text: str):
@@ -478,35 +411,6 @@ def check_serves_lines(
 # --- V25 batch file-list boundary check helpers ---
 
 
-def run_parser(backlog_path):
-    """Invoke parse_backlog.py with backlog_path. Returns the parser's parsed
-    JSON output (dict). Returns None on any failure (parser script missing,
-    subprocess error, non-zero exit, empty stdout, invalid JSON). Duplicated
-    from stop.py for V25; shared helper module is the natural refactor target
-    once a third parser-caller accumulates."""
-    if not PARSER_PATH.exists():
-        return None
-    try:
-        result = subprocess.run(
-            ["python", str(PARSER_PATH), str(backlog_path)],
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=PARSER_TIMEOUT_SECONDS,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return None
-    if result.returncode != 0:
-        return None
-    stdout = (result.stdout or "").strip()
-    if not stdout:
-        return None
-    try:
-        return json.loads(stdout)
-    except json.JSONDecodeError:
-        return None
-
-
 def make_boundary_deny_reason(target_path, batch, files_entries):
     """Build the deny-reason text when a target file isn't on the current
     batch's Files: list. Includes the batch heading, the full Files: list
@@ -608,65 +512,6 @@ def check_batch_file_list(project_root, target_path):
 # --- V27 test-confirmation gate helpers ---
 
 
-def parse_test_log_rows(text):
-    """Parse TEST-LOG.md text into a list of row dicts.
-
-    Each dict has keys: id, date, session, component, description, status,
-    confirmed_explicitly, user_notes. Whitespace inside cells is trimmed.
-    Returns an empty list if the file has no data rows. Malformed rows are
-    silently skipped — the parser is lenient, the gate only acts on rows it
-    can definitively identify."""
-    rows = []
-    for m in TEST_LOG_DATA_ROW_PATTERN.finditer(text):
-        rows.append({
-            "id": m.group(1).strip(),
-            "date": m.group(2).strip(),
-            "session": m.group(3).strip(),
-            "component": m.group(4).strip(),
-            "description": m.group(5).strip(),
-            "status": m.group(6).strip(),
-            "confirmed_explicitly": m.group(7).strip(),
-            "user_notes": m.group(8).strip(),
-        })
-    return rows
-
-
-def is_row_confirmed(row):
-    """A row is confirmed iff its `Confirmed Explicitly` cell starts with
-    `Yes`. Anything else — `No`, blank, or an unrecognised value — counts
-    as not confirmed. Per Rule 1 (Never infer completion): absence-of-Yes
-    is treated as not-confirmed, not as a tacit pass."""
-    ce = row.get("confirmed_explicitly", "").strip()
-    return ce.startswith("Yes")
-
-
-def identify_previous_session(project_root):
-    """Try to identify the previous build batch's session from BUILD-LOG.md.
-
-    Returns a tuple (session_id, status) where status is one of:
-      - 'ok' — BUILD-LOG.md found and a session heading parsed
-      - 'missing' — BUILD-LOG.md not present in the path block or at
-        project root
-      - 'unparseable' — BUILD-LOG.md present but no `## <token>` heading
-        could be matched
-
-    BUILD-LOG.md is a per-project dev-internal record; consumer projects
-    may not keep one. The lookup tries the path block first, then the
-    project root as a convention fallback."""
-    candidate = resolve_path_block_entry(project_root, "BUILD-LOG.md")
-    if candidate is None or not candidate.exists():
-        candidate = project_root / "BUILD-LOG.md"
-    if not candidate.exists():
-        return None, "missing"
-    text = safe_read_text(candidate)
-    if text is None:
-        return None, "unparseable"
-    match = BUILD_LOG_SESSION_HEADING_PATTERN.search(text)
-    if not match:
-        return None, "unparseable"
-    return match.group(1).strip(), "ok"
-
-
 def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, session_id):
     """Compose the deny-reason text. Names the unconfirmed rows by # and
     Test Description, explains which mode the gate is in (narrowed by
@@ -728,33 +573,21 @@ def check_test_confirmation_gate(project_root, tool_input):
     TEST-LOG.md → allow; no rows → allow). The strict-fallback path only
     fires when TEST-LOG.md exists AND has unconfirmed rows AND BUILD-LOG.md
     can't narrow them to the previous session — safety-by-default per V26
-    Q3 + V27 Q4."""
+    Q3 + V27 Q4.
+
+    V28: the row-collection + session-narrowing logic moved to
+    project_state.get_unconfirmed_previous_session_rows so stop.py's V28
+    TEST-LOG-awareness check shares one definition of "test session open."
+    This function still composes the deny message — the deny phrasing is
+    specific to the pre-tool-use gate's role and stays here.
+    """
     subagent_type = tool_input.get("subagent_type")
     if subagent_type != BATCH_EXECUTOR_SUBAGENT_TYPE:
         return None
 
-    test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
-    if test_log_path is None or not test_log_path.exists():
-        return None  # lenient: no TEST-LOG to check against
-    text = safe_read_text(test_log_path)
-    if text is None:
-        return None
-
-    rows = parse_test_log_rows(text)
-    if not rows:
-        return None  # empty TEST-LOG: first batch ever, or pre-V27 project
-
-    session_id, build_log_status = identify_previous_session(project_root)
-
-    if build_log_status == "ok":
-        unconfirmed = [
-            r for r in rows
-            if r["session"] == session_id and not is_row_confirmed(r)
-        ]
-    else:
-        # Strict fallback per V26 Q3 and V27 Q4.
-        unconfirmed = [r for r in rows if not is_row_confirmed(r)]
-
+    unconfirmed, build_log_status, session_id = (
+        get_unconfirmed_previous_session_rows(project_root)
+    )
     if not unconfirmed:
         return None
 

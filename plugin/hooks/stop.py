@@ -2,12 +2,24 @@
 """
 Stop hook for the no-code-method plugin.
 
-Fires when Claude's turn ends in Claude Code. Routes to one of three
-outcomes depending on BACKLOG.md and TEST-LOG.md state:
+Fires when Claude's turn ends in Claude Code. Routes to one of four
+outcomes depending on BACKLOG.md, TEST-LOG.md, and BUILD-LOG.md state:
+
+  - **Previous batch's test session still open** → exit silently. (V28.)
+    TEST-LOG.md has unconfirmed previous-session rows, which means the
+    planning subagent's per-row read-back is in progress (its turn just
+    ended asking the user about a row outcome). Redirecting anywhere
+    here would derail: redirecting to batch-executor was the V27 bug
+    this check fixes; redirecting to planning would re-invoke planning
+    and re-ask the same question; redirecting to after-build would skip
+    the read-back. Silent exit lets the user respond to the row
+    question; main Claude resumes the read-back on the next turn under
+    the SessionStart-injected tripwire / planning-subagent context.
 
   - **Unticked build batch exists** → emit a `decision: block` redirect
     that pushes Claude into the batch-executor subagent with the parsed
-    batch payload. (Existing V25 behaviour.)
+    batch payload. (V25.) Only fires after the test-session-open check
+    passes — i.e., the previous batch's test session is closed.
 
   - **No unticked batches AND a fully-ticked batch is sitting in BACKLOG.md
     awaiting after-build** → emit a `decision: block` redirect to the
@@ -16,7 +28,10 @@ outcomes depending on BACKLOG.md and TEST-LOG.md state:
     (writes blank-Status rows to TEST-LOG.md). "Awaiting after-build" is
     detected via BACKLOG.mtime > TEST-LOG.mtime — when BACKLOG was
     modified more recently than TEST-LOG, a batch tick happened that
-    after-build hasn't yet processed.
+    after-build hasn't yet processed. The V28 test-session-open check
+    runs first, but in normal flow the test session is opened BY
+    after-build itself, so this path fires when after-build hasn't yet
+    run on the just-ticked batch.
 
   - **Otherwise** → exit silently, the turn ends normally.
 
@@ -30,11 +45,14 @@ Flow:
      in a bug case.
   3. Resolve project root from cwd. Read CLAUDE.md's path block to find
      BACKLOG.md (and, for the after-build check, TEST-LOG.md).
-  4. Subprocess-call `plugin/scripts/parse_backlog.py` with the BACKLOG.md
+  4. (V28) Check whether TEST-LOG.md has unconfirmed previous-session
+     rows via `is_test_session_open`. If yes, exit silent — the planning
+     read-back is in progress and any redirect would derail it.
+  5. Subprocess-call `plugin/scripts/parse_backlog.py` with the BACKLOG.md
      path. Capture stdout.
-  5. If parser returns a non-empty batch (unticked batch found), emit the
+  6. If parser returns a non-empty batch (unticked batch found), emit the
      batch-executor redirect.
-  6. If parser returns `{}` (no top unticked batch), check whether a
+  7. If parser returns `{}` (no top unticked batch), check whether a
      fully-ticked batch exists in BACKLOG.md and BACKLOG.mtime is more
      recent than TEST-LOG.mtime. If so, emit the after-build redirect.
      Otherwise, exit silent.
@@ -44,6 +62,9 @@ block, parser exits non-zero, parser stdout isn't valid JSON, stat
 failures on mtimes, etc.) results in exit 0 with no output. A Stop hook
 that blocks unexpectedly would interfere with normal session ends in
 surprising ways; better to fall silently to "nothing to redirect to."
+The V28 test-session-open check is part of this leniency posture —
+absence-of-evidence (no TEST-LOG, unreadable TEST-LOG, empty TEST-LOG)
+all count as "no signal, fall through to the normal redirect logic."
 
 Output protocol: stdout gets a JSON object with `decision` and `reason`
 at the top level. Or nothing, if no redirect is warranted. Exit code is
@@ -55,27 +76,28 @@ shared parser via `parse_backlog.py`; this hook is one of three call
 sites — the other two being the `/build` slash-command and the
 PreToolUse batch-boundary check); V27 Q1 (Stop-hook routing for
 after-build trigger, with after-build subagent body at
-`plugin/agents/after-build.md`).
+`plugin/agents/after-build.md`); V28 (Stop-hook-vs-tripwire conflict
+resolution — test-session-open check defers the batch-executor redirect
+in favour of silent exit).
 """
 
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
+# Make the sibling plugin/scripts/ directory importable so we can pull in
+# the shared project-state helpers. stop.py lives at plugin/hooks/;
+# project_state.py is at plugin/scripts/. (V28 extraction — same pattern
+# as pre_tool_use.py.)
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from project_state import (  # noqa: E402 — must follow sys.path insert
+    safe_read_text,
+    resolve_path_block_entry,
+    run_parser,
+    is_test_session_open,
+)
 
-# Path to the shared parser, relative to this hook script.
-# stop.py lives at plugin/hooks/stop.py; parser at plugin/scripts/parse_backlog.py.
-PARSER_PATH = Path(__file__).parent.parent / "scripts" / "parse_backlog.py"
-
-# CLAUDE.md's path block is the first fenced JSON code block in the file.
-PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
-
-# Timeout for the parser subprocess call. The parser runs in milliseconds
-# on real input; this is insurance against a stuck process, not a tuning
-# parameter.
-PARSER_TIMEOUT_SECONDS = 10
 
 # V27 after-build detection patterns.
 
@@ -118,83 +140,10 @@ def parse_input():
         return None
 
 
-def safe_read_text(path):
-    """Read text from path; return None on any IO/decoding failure. Same
-    pattern as pre_tool_use.py and parse_backlog.py."""
-    try:
-        return Path(path).read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return None
-
-
-def extract_path_block(claude_md_text):
-    """Extract and parse the first fenced JSON code block from CLAUDE.md.
-    Returns the parsed dict, or None if missing or unparseable. Duplicated
-    from pre_tool_use.py for V25; a shared helper module is a future
-    refactor once a third reader needs it."""
-    match = PATH_BLOCK_PATTERN.search(claude_md_text)
-    if not match:
-        return None
-    try:
-        data = json.loads(match.group(1))
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(data, dict):
-        return None
-    return data
-
-
-def resolve_backlog_path(project_root):
-    """Read CLAUDE.md's path block from project_root and resolve BACKLOG.md's
-    absolute path. Returns Path on success, None on any failure (missing
-    CLAUDE.md, unparseable path block, BACKLOG.md key absent)."""
-    return resolve_path_block_entry(project_root, "BACKLOG.md")
-
-
-def resolve_path_block_entry(project_root, logical_name):
-    """Read CLAUDE.md's path block and resolve a logical name to its absolute
-    Path. Returns Path on success, None on any failure. Generalised helper
-    used for BACKLOG.md (V25) and TEST-LOG.md (V27)."""
-    text = safe_read_text(project_root / "CLAUDE.md")
-    if text is None:
-        return None
-    path_block = extract_path_block(text)
-    if not path_block:
-        return None
-    rel = path_block.get(logical_name)
-    if not isinstance(rel, str) or not rel:
-        return None
-    try:
-        return (project_root / rel).resolve()
-    except OSError:
-        return None
-
-
-def run_parser(backlog_path):
-    """Invoke parse_backlog.py with backlog_path. Returns the parser's parsed
-    JSON output (dict). Returns None on any failure (parser script missing,
-    subprocess error, non-zero exit, empty stdout, invalid JSON)."""
-    if not PARSER_PATH.exists():
-        return None
-    try:
-        result = subprocess.run(
-            ["python", str(PARSER_PATH), str(backlog_path)],
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=PARSER_TIMEOUT_SECONDS,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return None
-    if result.returncode != 0:
-        return None
-    stdout = (result.stdout or "").strip()
-    if not stdout:
-        return None
-    try:
-        return json.loads(stdout)
-    except json.JSONDecodeError:
-        return None
+# safe_read_text, extract_path_block, resolve_path_block_entry, and run_parser
+# now live in project_state.py (V28 extraction). resolve_backlog_path was a
+# one-line wrapper that's been removed in favour of an explicit
+# `resolve_path_block_entry(project_root, "BACKLOG.md")` call at the use site.
 
 
 def format_reason(batch):
@@ -315,8 +264,17 @@ def main():
     except OSError:
         return emit_silent()
 
-    backlog_path = resolve_backlog_path(project_root)
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None or not backlog_path.exists():
+        return emit_silent()
+
+    # V28: Before any redirect, check whether the previous build batch's
+    # test session is still open. If TEST-LOG.md has unconfirmed previous-
+    # session rows, the planning subagent's read-back is mid-flight (its
+    # turn just ended asking the user about a row) — redirecting now
+    # would derail the read-back, the bug this check fixes. Exit silent
+    # and let the user answer.
+    if is_test_session_open(project_root):
         return emit_silent()
 
     batch = run_parser(backlog_path)
