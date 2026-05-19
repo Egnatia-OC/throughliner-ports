@@ -6,6 +6,45 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V29 — 2026-05-19 — Safety net (SessionStart advisory + PreToolUse enforcement) + unified `/adopt`
+
+**What shipped.** The two-hook safety net plus the `/adopt` skill-command, unifying `/new-project` + `/init-project` (V19) + `/migrate` into one command branching across 5 folder states. Smoke-tested live across 5 fixture folders at `C:\Users\Alex\v29-fixtures\`; see TEST-LOG #071–089.
+
+- **`plugin/hooks/session_start.py`** — V29 unadopted-folder detection (Q2 rule: build-manifest / recognized source-dir / foreign CLAUDE.md / >5 files), emits `systemMessage` advisory on unadopted-with-work folders pointing at `/adopt`; silent on empty / adopted / opted-out (`.no-code-method-skip` marker). Wording narrowed mid-session from "Tool calls will be denied" to "Edit/Write/MultiEdit calls will be denied" per smoke-test finding (TEST-LOG #077).
+- **`plugin/hooks/pre_tool_use.py`** — V29 unadopted-folder gate denies Edit/Write/MultiEdit + Task→method-subagent from main Claude on unadopted folders; `/adopt`'s own calls pass through (V22/V27 invoker discrimination). Self-clears once method footer or `.no-code-method-skip` marker is written.
+- **`plugin/agents/adopt.md`** — new subagent, five-case dialogue (empty / existing code, no docs / existing code, foreign docs / already method-managed / opted out). Case 4 runs a *detect template state* first-action (reads `user_v` from CLAUDE.md, `plugin_v` from `PLUGIN_METHOD_VERSION`), then opens with versions-match or version-mismatch dialogue. Option-1 walkthrough explicitly classifies CLAUDE.md/BACKLOG/MANIFEST/TEST-LOG as writable and UX.md (+ additional SoT) as locked — clarification added mid-session after smoke test caught the subagent over-locking (TEST-LOG #083).
+- **`plugin/skills/adopt/SKILL.md`** + **`plugin/skills/adopt/scripts/scaffold.py`** — entry point + `detect-case`/`check`/`write` script.
+- **`plugin/README.md`** — new. One line directing users to `/plugins` after install. Originally `/plugin` — corrected mid-session after smoke test caught the actual command name.
+- **`Crash course.md`** — new *The safety net — installing on a folder that isn't empty* section at narrative altitude; new-project-route and migration-route language replaced with `/adopt`.
+- **`NO-CODE-METHOD.md`** — adoption-state Vocabulary entries (*adopted* / *unadopted folder*); *Detect unadopted folder* rule added at *At session start*; two-hook architecture documented.
+- **`BUILD-METHOD.md`** — *Session close* extended from 8 steps to 9; new step 2 *Frame-correction sweep* (audit `planning/sessions/Vxx.md` for stale references when this session corrected a load-bearing frame). Footer-bumps list adds `adopt.md`.
+- **20 footers bumped V27 → V29** (NO-CODE-METHOD, DOC-STRUCTURE, Crash course, 6 root templates, 6 plugin templates, INVENTORY, 4 existing subagents). `adopt.md` gains its first V29 footer. `plugin.json` → 0.29.0.
+- **`planning/OPEN-QUESTIONS.md`** — *Frame-update sweep rule* (resolved option A) and *Cross-version template reconciliation* (worker half shipped) removed.
+- **`TEST-LOG.md`** — rows #071–089. One Fail (#083), one Skipped (#089); fixes for both applied this commit, retests owed.
+- **Memory file `reference_userpromptsubmit_plugin_bug.md`** — updated with #10225 → #12151 progression, V29 confirmation that the bug still bites, and the cumulative impact on V18's and V29's architectural pivots.
+
+**Decisions taken and why.**
+
+- **Frame-correction sweep rule: option A (audit step in BUILD-METHOD), not B (shorten planning horizon).** A is cheap to add and cheap to execute when triggered; B permanently costs the roadmap-visibility benefit (V28's prequel restructure depended on scope-ahead files). Asymmetric trade-off favours A; B is the right escalation only if A's "did this session do a frame correction?" trigger keeps misfiring. The audit ran against V30/V31/V32 immediately after the rule landed — clean.
+- **Cross-version-template-reconciliation worker half lives in `/adopt` case 4, not a separate skill-command.** Single user-facing entry point; avoids inventing a `/refresh` command. Cost: the version-mismatch isn't user-visible at session start because the V21 tripwire emits to `additionalContext`, not `systemMessage` — only surfaces when `/adopt` runs.
+- **Plugin README, not statusline, for "is the plugin loaded" UX.** `${CLAUDE_PLUGIN_ROOT}` doesn't expand in user `settings.json`; absolute paths with cache-hashes are too fragile for non-developer consumers across plugin updates. One README line pointing at `/plugins` is the working substitute.
+
+**Pivots and surprises.**
+
+- **PreToolUse gate is Edit/Write/MultiEdit only — Bash bypasses by design.** Discovered when Claude creatively wrote `.no-code-method-skip` via PowerShell `New-Item` during case-2 smoke. Threat model is accidental edits via the Edit family, not creative shell circumvention — gate is correctly scoped, but the advisory wording overstated the protection. Wording fix landed same commit (TEST-LOG #077).
+- **`/adopt` case-4 subagent over-locked the spine docs during refresh.** Treated BACKLOG/MANIFEST/TEST-LOG as locked source-of-truth (they're writable per spec); only CLAUDE.md got bumped. The subagent even surfaced its own contradiction in the recap. Adopt.md case-4 option-1 section rewritten same commit with explicit writable/locked classification and a "do NOT route writable through fold-in pending" warning. Retest owed (TEST-LOG #083).
+- **Case-4 pre-edit walkthrough text either skipped or scrolled past — couldn't determine which.** My adopt.md edit prescribed surfacing a writable/locked plan before any Edit; in the smoke run the Edit diff appeared with no walkthrough visible above it. Worth a `ctrl+o` transcript dive or a re-run (TEST-LOG #089).
+- **V21 SessionStart tripwire isn't user-visible.** Likely emits to `additionalContext` (Claude-side) rather than `systemMessage` (terminal-visible). Subagent correctly adapted its case-4 opener ("may have flagged" rather than "did flag") — adaptive, not buggy. Code read pending if user-visible mismatch advisory is wanted.
+
+**Carried forward.**
+
+- TEST-LOG #083 retest (case-4 refresh writable/locked classification after adopt.md fix) — slot into next plugin-touching session.
+- TEST-LOG #089 retest (case-4 walkthrough text visibility) — needs `ctrl+o` transcript dive or fresh smoke run with explicit observation of subagent output before the first Edit.
+- `uploads/sessionstart-hook-research.md` + `uploads/issue-10225-status.md` referenced in V29.md but never committed to `planning/drafts/` — same failure mode as V20→V26 *Sonnet draft* incident. Per `BUILD-METHOD.md` → *Drafts in flight*. Sibling-bug detail on `UserPromptSubmit`-in-plugins is lost; flagged in memory file.
+- V21 SessionStart tripwire user-visibility (`additionalContext` vs `systemMessage`) — code read pending before deciding whether to surface mismatch user-visibly at session start.
+
+---
+
 ## V28 — 2026-05-18 — V27 fix sweep: test-confirmation gate becomes functional
 
 **What shipped.** Three V27 bugs found in same-day Windows smoke testing, all fixed and live-tested end-to-end.

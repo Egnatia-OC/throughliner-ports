@@ -59,13 +59,33 @@ The lock convention is in *Editing surfaces* below.
 
 **The test-confirmation gate.** A new build batch cannot start while any row in `TEST-LOG.md` from the previous batch is unconfirmed. Confirmation happens per-row, by name, in the planning session after the test-session was opened by the after-build subagent — bulk confirmations don't count. Five protocol rules (in `NO-CODE-METHOD.md`) make this concrete: never infer completion, resolve "all others good" before recording, no new build until the test session is closed, Skipped ≠ Passed, retest after change. Two hooks make it load-bearing: a PreToolUse hook denies any `Task` invocation of batch-executor while pending rows exist, and the SessionStart hook injects a routing override that steers any session opening with pending rows straight to the planning subagent's read-back, regardless of what the user asks. The subagent walks the user through; the record stays trustworthy because no row gets a positive outcome by accident or drift.
 
+## The safety net — installing on a folder that isn't empty
+
+The method assumes a fresh project. Sooner or later someone installs the plugin into a folder that isn't fresh — by mistake, or because they want to bring an existing project under the method's discipline. The safety net is the plugin's response.
+
+When a session opens, **SessionStart** checks whether the folder is *adopted* (carries the method footer in `CLAUDE.md`) or *unadopted*. Adopted folders, genuinely empty folders, and folders carrying a `.no-code-method-skip` opt-out marker stay silent. An unadopted folder with substantial existing work — code, foreign docs, anything — triggers an advisory pointing at the `/adopt` command.
+
+Until `/adopt` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-subagent calls from main Claude. Not just a warning — an actual block. `/adopt`'s own scaffolding calls pass through, so adoption can happen while the gate is closed against everything else.
+
+`/adopt` branches on what it finds:
+
+- *Empty folder* → walks the four new-project prompts and scaffolds the spine docs with your answers folded in.
+- *Existing code, no docs* → offers to scaffold fresh docs alongside, or to opt out via `.no-code-method-skip`.
+- *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to migrate the existing `CLAUDE.md` to method spec, overwrite with backup, or leave alone via the opt-out marker.
+- *Already method-managed* → detects template state, surfaces any version mismatch, offers a footer refresh or cancel.
+- *Opted out* → folder previously chose `.no-code-method-skip`; offers to clear the marker (returning to unadopted) or to stay opted out.
+
+Nothing destructive happens without explicit confirmation, and every destructive option backs up first.
+
+Why session-start, not install-time? Claude Code's plugin system has no install-time hook the plugin can run code from. The earliest the plugin can act is when a Claude Code session opens in a folder. By the time you could ask Claude to write a file, the gate has already fired.
+
 ## A walkthrough — a first project from scratch
 
 This section follows a small project — a task manager called **Taskflow**, designed for users with executive dysfunction — through new-project setup, first planning, first build, and the first test note. Meant to make the rules in `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` feel concrete before reading them as rules.
 
 ### Day one — starting from scratch
 
-You open a Claude Code session in an empty project folder. The plugin's new-project route walks you through four prompts:
+You open a Claude Code session in an empty project folder and run `/adopt`. Empty folder means no advisory — `/adopt` detects the empty case and walks you through four prompts:
 
 1. **Project context.** What the app does, and what makes it distinct.
 2. **UX principles.** Three to six. For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*. Each gets a one-line claim plus a few sentences of why.
@@ -163,7 +183,7 @@ The full split:
 
 **`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are read-only across the board** in your project — shared verbatim across every project using the method, so editing them in your project would diverge from the verbatim copy. They get updated in the method's own development project.
 
-**The `[FOLD-IN PENDING]` mechanism.** Claude can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, the new-project route, the migration route, or a mid-build edit attempt the PreToolUse hook intercepted. During the next planning session, you review pending blocks and fold them into the destination doc by hand (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
+**The `[FOLD-IN PENDING]` mechanism.** Claude can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt` (during empty-folder scaffold or foreign-doc migration), or a mid-build edit attempt the PreToolUse hook intercepted. During the next planning session, you review pending blocks and fold them into the destination doc by hand (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
 
 ## Why the rules
 
@@ -220,4 +240,4 @@ A known headwind for any methodology relying on `CLAUDE.md`-style instructions: 
 The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, full commit history walkable from any tag.
 
 ---
-*No-code method — Version 27.*
+*No-code method — Version 29.*

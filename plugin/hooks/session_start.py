@@ -3,30 +3,51 @@
 SessionStart hook for the no-code-method plugin.
 
 Runs at the start of every Claude Code session in any folder where the plugin
-is installed. Detects whether the folder is a no-code-method project; if so,
-injects the universal-behaviour rules and a prose state summary into Claude's
-context via the SessionStart hook output protocol.
+is installed. Two phases:
 
-Three tiers:
+  Phase 1 (V29) — adoption check
+    Before any tier logic, the hook runs `is_unadopted_with_work` against
+    the project root. An unadopted folder (no method footer in CLAUDE.md
+    and no `.no-code-method-skip` opt-out marker) with substantial work
+    (per the Q2 rule: build manifest, source dir, foreign CLAUDE.md, or
+    >5 non-infra files recursively) emits the V29 advisory and short-
+    circuits: `systemMessage` (user-visible warning) plus
+    `additionalContext` (directive into Claude's context), both pointing
+    at `/adopt`. Advisory only — SessionStart has no halt mechanism (the
+    `systemMessage` field is a warning, `continue: false` terminates the
+    session entirely, and `UserPromptSubmit`-in-plugins is broken per
+    GitHub anthropics/claude-code#10225 → #12151). Real enforcement
+    happens in the PreToolUse hook, which denies Edit/Write/MultiEdit
+    and Task→method-subagent calls from main Claude until the folder is
+    adopted or the opt-out marker is written.
 
-  Tier 1 (non-method folder)
-    Neither CLAUDE.md nor any spine doc carrying the method's version footer
-    is present at the project root. The hook writes nothing and exits 0 —
-    the plugin is invisible in folders that aren't method projects.
+  Phase 2 — tier classification (unchanged from V21)
+    Runs only on adopted folders, opted-out folders, and genuinely-empty
+    unadopted folders. Three tiers:
 
-  Tier 2 (partial method shape)
-    Some method-shaped files are present but the project isn't fully set up:
-    e.g. CLAUDE.md is missing while spine docs are present, or CLAUDE.md is
-    present but its fenced JSON path block can't be parsed. The hook injects
-    the universal-behaviour rules plus a single-paragraph gap flag naming
-    the specific missing piece and pointing at /init-project or /migrate.
+      Tier 1 (non-method folder)
+        Neither CLAUDE.md nor any spine doc carrying the method's version
+        footer is present at the project root. The hook writes nothing
+        and exits 0 — the plugin is invisible in folders that aren't
+        method projects. With V29 in place, this tier now covers only
+        opted-out folders and genuinely-empty folders (unadopted-with-
+        work folders short-circuit in Phase 1).
 
-  Tier 3 (complete method project)
-    CLAUDE.md is present and its fenced JSON path block parses. The hook
-    injects the universal-behaviour rules plus a full state summary:
-    resolved doc paths, template-state detection, version-footer mismatch
-    tripwire, top build batch (for the resume route), and a reminder that
-    route classification of the user's opener stays with Claude.
+      Tier 2 (partial method shape)
+        Some method-shaped files are present but the project isn't fully
+        set up: e.g. CLAUDE.md is missing while spine docs are present,
+        or CLAUDE.md is present but its fenced JSON path block can't be
+        parsed. The hook injects the universal-behaviour rules plus a
+        single-paragraph gap flag naming the specific missing piece and
+        pointing at /adopt.
+
+      Tier 3 (complete method project)
+        CLAUDE.md is present and its fenced JSON path block parses. The
+        hook injects the universal-behaviour rules plus a full state
+        summary: resolved doc paths, template-state detection, version-
+        footer mismatch tripwire, top build batch (for the resume
+        route), and a reminder that route classification of the user's
+        opener stays with Claude.
 
 Why SessionStart and not UserPromptSubmit:
   UserPromptSubmit hooks declared in plugin hooks.json don't execute due to
@@ -60,6 +81,19 @@ import re
 import sys
 from pathlib import Path
 
+# Make plugin/scripts/ importable for the shared project-state helpers.
+# (Same pattern as pre_tool_use.py — V28 extraction.)
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from project_state import (  # noqa: E402 — must follow sys.path insert
+    FOOTER_PATTERN,
+    OPT_OUT_MARKER_NAME,
+    has_method_footer,
+    extract_footer_version,
+    has_opt_out_marker,
+    has_substantial_work,
+    is_unadopted_with_work,
+)
+
 # --- Constants ---
 
 # The method version this build of the plugin carries. Bumped when the
@@ -67,7 +101,7 @@ from pathlib import Path
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 27
+PLUGIN_METHOD_VERSION = 29
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -79,8 +113,7 @@ SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 # Same pattern as pre_tool_use.py — see V18's path block format spec.
 PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
 
-# Method version footer line at the bottom of every method file and template.
-FOOTER_PATTERN = re.compile(r"\*No-code method — Version (\d+)\.\*")
+# FOOTER_PATTERN now lives in project_state.py (V29 extraction); imported above.
 
 # Strong signal that a doc is still in template form: the literal placeholder
 # string used in every template's heading and body.
@@ -120,6 +153,9 @@ TEST_LOG_DATA_ROW_PATTERN = re.compile(
 # semantics as the test-confirmation gate (V26 Q3, V27 Q4).
 BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 
+# V29 adoption-state constants (OPT_OUT_MARKER_NAME, BUILD_MANIFEST_NAMES,
+# SOURCE_DIR_NAMES, INFRA_NAMES, SUBSTANTIAL_WORK_FILE_THRESHOLD) now live
+# in project_state.py — imported above where needed.
 
 # --- File reads ---
 
@@ -205,23 +241,8 @@ def extract_path_block(claude_md_text: str):
     return data if isinstance(data, dict) else None
 
 
-def extract_footer_version(text: str):
-    """Return the integer version from the `*No-code method — Version N.*`
-    footer; None if not found."""
-    match = FOOTER_PATTERN.search(text)
-    if not match:
-        return None
-    try:
-        return int(match.group(1))
-    except ValueError:
-        return None
-
-
-def has_method_footer(text: str) -> bool:
-    """Whether the text carries the method's version footer at all. Used to
-    distinguish a method-aware spine doc from an unrelated file that happens
-    to share the same name (e.g. a BACKLOG.md from some other project)."""
-    return bool(FOOTER_PATTERN.search(text))
+# extract_footer_version and has_method_footer now live in project_state.py
+# (V29 extraction); imported above.
 
 
 def is_template_state(text: str) -> bool:
@@ -423,6 +444,68 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
     )
 
 
+# --- V29 unadopted-folder advisory (output formatting) ---
+#
+# Detection helpers (has_opt_out_marker, has_substantial_work,
+# is_unadopted_with_work) live in project_state.py — imported above. The
+# advisory text and JSON-emission shape stay here because they're
+# SessionStart-specific (PreToolUse emits a different shape).
+
+
+def build_unadopted_advisory_context(project_root: Path) -> str:
+    """Compose the additionalContext block for an unadopted-with-work
+    folder. Strong directive: do nothing substantive, route the user to
+    /adopt. Pairs with the systemMessage user-visible warning."""
+    return (
+        "## No-code-method plugin — unadopted folder\n\n"
+        "**This folder has not been adopted by the no-code-method plugin, "
+        "and it contains existing work that the plugin would put at risk "
+        "if you proceed normally.** No method-aware behaviour is active "
+        "until the user runs `/adopt`.\n\n"
+        f"Project root: `{project_root}`\n\n"
+        "**Required behaviour for this session:**\n\n"
+        "- Direct the user to run `/adopt` before doing anything else.\n"
+        "- Do NOT attempt Edit, Write, MultiEdit, or Task→method-subagent "
+        "tool calls. The PreToolUse hook will deny them anyway, and "
+        "attempting them creates confusing churn.\n"
+        "- If the user explicitly chooses not to adopt, they can run "
+        "`/adopt` and select the cancel option (case 2) or leave-alone "
+        "option (case 3) — these write `.no-code-method-skip` at the "
+        "project root, which opts the folder out of method discipline "
+        "and stops the advisory/enforcement for future sessions.\n\n"
+        "Until `/adopt` runs (or the opt-out marker is written), the "
+        "only useful actions are conversational responses pointing the "
+        "user toward `/adopt`."
+    )
+
+
+def build_unadopted_system_message() -> str:
+    """User-visible warning text for the unadopted-with-work advisory.
+    Kept short — system messages are noisier than additionalContext and
+    we want this one to land."""
+    return (
+        "[no-code-method] Folder has work but isn't adopted — run /adopt "
+        "to start. Edit/Write/MultiEdit calls will be denied until /adopt "
+        "completes or the folder is opted out via /adopt's cancel option."
+    )
+
+
+def emit_unadopted_advisory(project_root: Path) -> int:
+    """Write the V29 unadopted-with-work advisory to stdout. Combines a
+    user-visible systemMessage with Claude-facing additionalContext.
+    Returns exit code 0 — this is advisory, not a halt (SessionStart
+    has no halt mechanism per the V29 research findings)."""
+    output = {
+        "systemMessage": build_unadopted_system_message(),
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": build_unadopted_advisory_context(project_root),
+        },
+    }
+    json.dump(output, sys.stdout)
+    return 0
+
+
 # --- Tier detection ---
 
 def detect_tier(project_root: Path):
@@ -544,8 +627,9 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             lines.append(f"  - `{logical_name}` is at Version {v}")
         lines.append(
             "  This is a tripwire, not an auto-fix. Suggest the user run "
-            "`/migrate` if structural drift is suspected, or update the "
-            "footers if the content is current."
+            "`/adopt` if structural drift is suspected (case 3 — migrate "
+            "to current spec), or update the footers if the content is "
+            "current."
         )
 
     backlog_data = resolved.get("BACKLOG.md")
@@ -606,7 +690,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
         next_step = (
             "Set up `CLAUDE.md`'s path block as fenced JSON (see "
             "`templates/CLAUDE-TEMPLATE.md` in the plugin), or run "
-            "`/migrate` to bring an existing project up to spec."
+            "`/adopt` to bring an existing project up to spec."
         )
     elif not has_claude and spine_docs:
         gap = (
@@ -616,7 +700,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
             "spine docs."
         )
         next_step = (
-            "Run `/migrate` to bring this project up to spec — it will "
+            "Run `/adopt` to bring this project up to spec — it will "
             "scaffold the missing `CLAUDE.md` and align the existing docs "
             "with the current structural rules."
         )
@@ -629,14 +713,14 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
         next_step = (
             "Either update `CLAUDE.md`'s path block to match the current "
             "fenced-JSON format (see `templates/CLAUDE-TEMPLATE.md`), or "
-            "run `/migrate` to bring everything up to spec."
+            "run `/adopt` to bring everything up to spec."
         )
     else:
         gap = (
             "Some method-shaped files were found but the project structure "
             "is incomplete."
         )
-        next_step = "Run `/init-project` for a fresh start, or `/migrate` for an existing project."
+        next_step = "Run `/adopt` — it routes to the right case across new-project, migration, and refresh."
 
     return (
         "## No-code-method project state\n\n"
@@ -664,13 +748,23 @@ def main() -> int:
     stdin_data = parse_stdin_input()
     project_root = get_project_root(stdin_data)
 
+    # V29 adoption check fires before tier detection. An unadopted-with-work
+    # folder short-circuits with the advisory; the existing tier logic only
+    # runs on adopted folders, opted-out folders, and genuinely-empty
+    # unadopted folders. PreToolUse enforces what this advises.
+    if is_unadopted_with_work(project_root):
+        return emit_unadopted_advisory(project_root)
+
     tier, claude_text, path_block, spine_docs = detect_tier(project_root)
 
     if tier == 1:
         # Non-method folder. The plugin is invisible: no output, no rules.
         # This is a deliberate behaviour change from V18, which emitted the
         # universal rules in every Claude Code session regardless of project
-        # type. V21 narrows that to method-aware projects only.
+        # type. V21 narrows that to method-aware projects only. V29 splits
+        # this tier: unadopted-with-work folders short-circuit above with
+        # the advisory; what reaches here is opted-out folders or genuinely-
+        # empty folders. Both stay silent.
         return 0
 
     # Tier 2 and tier 3 both get the universal rules. The tier-specific

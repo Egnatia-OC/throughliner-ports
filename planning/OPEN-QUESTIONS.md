@@ -114,24 +114,6 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 ---
 
-## Cross-version template reconciliation
-
-**The question.** A user authors spine docs (`UX.md`, `BACKLOG.md`, etc.) against, say, a locally-held V17 template, then installs the plugin (currently V19). User's docs carry a V17 footer; plugin's bundled templates carry V19. Structural rules between versions may differ. What does the plugin do?
-
-**Why it matters.** Raised in V19 planning while discussing bundled-template handling of pre-existing docs. If the plugin silently treats older docs as current, structural drift compounds invisibly — a V17 `UX.md` running against V19 hooks may pass checks the V19 rules tightened.
-
-**Working notes.**
-
-- Model to argue for: **plugin is the runtime source of truth; user's footer is the version their authoring assumed.** Mismatch is a tripwire, not an error.
-- Migration roadmap placement:
-  - **V21 (SessionStart extension).** Reads user's CLAUDE.md / UX.md footers, compares to bundled-template versions, surfaces mismatch in plain English. No auto-fix. One read per session-start; cheap.
-  - **V28 (`/adopt` and migration skill-commands).** Diff-and-propose: compares user's doc against the bundled template's structural rules, proposes edits to bring it up to spec. Already on the roadmap; this gives it a specific tripwire to react to.
-- V19 piece is done: every bundled template carries its version footer (session-close rule keeps them current).
-
-**Next step.** Fold tripwire half into V21 (SessionStart extension); worker half into V28 (`/adopt` and migration skill-commands). **Tripwire half confirmed 2026-05-14** during V21 planning — SessionStart's foundational reads include the footer-comparison check (see `planning/sessions/V21.md` → *Outputs*). Confirm during V28 planning that `/adopt` handles a version-mismatch signal. Remove this entry once the worker half also ships.
-
----
-
 ## Method response to direct-edit users (developers)
 
 **The question.** How should the method respond to users who edit code directly — developers who already write code and want the method's planning discipline without ceding all technical work to Claude?

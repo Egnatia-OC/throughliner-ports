@@ -2,8 +2,8 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs three checks on every Edit / Write / MultiEdit tool call, and one check
-on every Task tool call:
+Runs a V29 adoption gate first (across Edit / Write / MultiEdit AND Task),
+then three checks on Edit / Write / MultiEdit and one check on Task:
 
   (1) Locked source-of-truth doc enforcement (V19) — Edit/Write/MultiEdit.
       Locked docs are: UX.md, plus any additional source-of-truth docs declared
@@ -37,6 +37,19 @@ on every Task tool call:
       called by the Stop hook and the `/build` slash-command, per V25 Q1).
       Deny message includes the current batch's Files: list and the
       prerequisite carve-out recovery path.
+
+  (5) V29 adoption gate — Edit / Write / MultiEdit AND Task. Fires *before*
+      checks (1)–(4) so the gate isn't bypassed when the folder is
+      unadopted. Denies Edit/Write/MultiEdit on non-scaffold-path files
+      and Task invocations of method subagents (planning, before-build,
+      batch-executor, after-build) when the folder lacks a method footer
+      in CLAUDE.md AND has substantial work AND no `.no-code-method-skip`
+      opt-out marker. Allows Task → no-code-method:adopt always (that's
+      the resolution mechanism). Allows Edit/Write/MultiEdit on scaffold
+      paths (UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md, the
+      opt-out marker file) so /adopt's scaffolding works. The full V29
+      architecture context (why this gate exists in PreToolUse and not at
+      SessionStart) is in NO-CODE-METHOD.md → *Detect unadopted folder*.
 
   (4) Test-confirmation gate (V27) — Task tool with subagent_type
       `no-code-method:batch-executor`. When TEST-LOG.md has rows with
@@ -105,6 +118,8 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     resolve_path_block_entry,
     run_parser,
     get_unconfirmed_previous_session_rows,
+    is_unadopted_with_work,
+    OPT_OUT_MARKER_NAME,
 )
 
 # Writing tools whose calls this hook inspects via checks (1)-(3). Anything
@@ -114,6 +129,32 @@ WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
 # Task invocations targeting this subagent_type are inspected by check (4)
 # (V27 test-confirmation gate). Other Task invocations pass through.
 BATCH_EXECUTOR_SUBAGENT_TYPE = "no-code-method:batch-executor"
+
+# V29: Task invocations targeting /adopt are always allowed even when the
+# folder is unadopted — that's the command users run to RESOLVE the
+# unadopted state, so blocking it would be a deadlock.
+ADOPT_SUBAGENT_TYPE = "no-code-method:adopt"
+
+# V29: method subagent prefix. Other Task calls (e.g. general-purpose
+# agents the user invokes for their own purposes) fall through the V29
+# gate so the unadopted-folder check doesn't lock down all subagent use,
+# only method ones that would misbehave against an unadopted folder.
+METHOD_SUBAGENT_PREFIX = "no-code-method:"
+
+# V29: file names /adopt scaffolds at project root. When folder is
+# unadopted, Edit/Write/MultiEdit on these passes the V29 gate so /adopt's
+# scaffold writes work. (Other writes are blocked.) This is the V29
+# discrimination mechanism — narrower than a runtime flag-file but
+# narrow enough that main Claude's "ignore the advisory and edit code"
+# attempts get caught.
+SCAFFOLD_NAMES = frozenset({
+    "UX.md",
+    "BACKLOG.md",
+    "MANIFEST.md",
+    "TEST-LOG.md",
+    "CLAUDE.md",
+    OPT_OUT_MARKER_NAME,
+})
 
 # Path-block keys treated as writable. Everything else in the path block —
 # UX.md, plus any additional source-of-truth docs declared by the project —
@@ -509,6 +550,128 @@ def check_batch_file_list(project_root, target_path):
     return make_boundary_deny_reason(target_path, batch, files_entries)
 
 
+# --- V29 adoption-gate helpers ---
+
+
+def is_scaffold_path(target_path, project_root):
+    """V29: True if target_path is a direct child of project_root with one
+    of the SCAFFOLD_NAMES. /adopt's scaffolding writes land here; the
+    adoption gate exempts these paths so /adopt can do its work without
+    needing a runtime flag-file mechanism.
+
+    Direct-child only — a deeper-nested file with one of the scaffold
+    names (e.g. `subdir/UX.md`) doesn't qualify."""
+    try:
+        relative = Path(target_path).relative_to(project_root)
+    except ValueError:
+        return False
+    if len(relative.parts) != 1:
+        return False
+    return relative.name in SCAFFOLD_NAMES
+
+
+def make_v29_edit_deny_reason(target_path) -> str:
+    """V29: deny-reason for Edit/Write/MultiEdit on a non-scaffold path
+    in an unadopted folder. Names the path, points at /adopt, and
+    documents the opt-out path so the user has a clear exit."""
+    return (
+        f"BLOCKED: this folder is unadopted (no `*No-code method — Version "
+        "N.*` footer in `CLAUDE.md`), and it contains pre-existing work "
+        "that the no-code-method plugin would put at risk if you proceed. "
+        f"The Edit/Write/MultiEdit target `{target_path}` is outside the "
+        "scaffolding paths the plugin manages.\n\n"
+        "Run `/adopt` first. The five-case dialogue routes you to the "
+        "right setup: empty folder → new project; existing code with no "
+        "docs → scaffold alongside; existing code with foreign `CLAUDE.md` "
+        "→ migrate / overwrite / leave; already adopted; opted out.\n\n"
+        "If you have deliberately decided NOT to use the method in this "
+        "folder, run `/adopt` and pick the cancel option (case 2) or the "
+        "leave-alone option (case 3) — both write `.no-code-method-skip` "
+        "at the project root, which opts the folder out of method "
+        "discipline and stops this gate from firing on future tool calls."
+    )
+
+
+def make_v29_task_deny_reason(subagent_type) -> str:
+    """V29: deny-reason for Task invocations of a method subagent (other
+    than /adopt itself) in an unadopted folder. The method subagents all
+    assume a method-managed project; against an unadopted folder they
+    would fail or produce garbage."""
+    return (
+        f"BLOCKED: this folder is unadopted, so the method subagent "
+        f"`{subagent_type}` cannot be invoked. The planning, before-build, "
+        "batch-executor, and after-build subagents all assume a method-"
+        "managed project (UX.md, BACKLOG.md, MANIFEST.md present and "
+        "wired through CLAUDE.md's path block); they would fail or "
+        "produce garbage against an unadopted folder.\n\n"
+        "Run `/adopt` first. After adoption completes, this subagent "
+        "will work normally. To opt out of method discipline for this "
+        "folder instead, run `/adopt` and pick the cancel option "
+        "(case 2) or leave-alone option (case 3)."
+    )
+
+
+def check_v29_adoption_gate(project_root, tool_name, tool_input):
+    """V29: enforce the adoption gate on Edit/Write/MultiEdit and Task
+    calls when the folder is unadopted.
+
+    Returns a deny-reason string when the call should be denied, None
+    otherwise. None means either (a) the gate doesn't apply (folder is
+    adopted, opted out, or genuinely empty), or (b) the gate applies
+    but this specific call is exempt (Task → /adopt, Edit/Write on a
+    scaffold path, non-method Task call).
+
+    Architecture context (Path D, V29): SessionStart emits an advisory
+    when the folder is unadopted; this gate provides the enforcement.
+    The two together replace the originally-scoped `systemMessage` halt
+    at SessionStart, which Claude Code's hook protocol doesn't support
+    (GitHub anthropics/claude-code#10225 → #12151)."""
+    if not is_unadopted_with_work(project_root):
+        # Adopted, opted out, or genuinely empty — gate doesn't apply.
+        # Downstream checks (V19/V22/V25/V27) handle the adopted-folder
+        # cases on their own terms.
+        return None
+
+    if tool_name == "Task":
+        subagent_type = tool_input.get("subagent_type")
+        # /adopt is the resolution mechanism — always allowed.
+        if subagent_type == ADOPT_SUBAGENT_TYPE:
+            return None
+        # Other method subagents are blocked.
+        if isinstance(subagent_type, str) and subagent_type.startswith(
+            METHOD_SUBAGENT_PREFIX
+        ):
+            return make_v29_task_deny_reason(subagent_type)
+        # Non-method Task calls (user-invoked general-purpose agents,
+        # etc.) fall through.
+        return None
+
+    if tool_name in WRITING_TOOLS:
+        file_path = tool_input.get("file_path")
+        if not isinstance(file_path, str) or not file_path:
+            # Malformed input — be lenient.
+            return None
+        target = Path(file_path)
+        try:
+            target = (
+                target.resolve()
+                if target.is_absolute()
+                else (Path(project_root) / target).resolve()
+            )
+        except OSError:
+            return None
+        if is_scaffold_path(target, project_root):
+            # Scaffold-path write — allowed during unadopted state so
+            # /adopt's scaffolding can proceed. Minor coverage gap: main
+            # Claude can also write these paths directly without going
+            # through /adopt. Accepted per V29 scope (the user reviews
+            # any unexpected scaffold output).
+            return None
+        return make_v29_edit_deny_reason(target)
+
+    return None
+
+
 # --- V27 test-confirmation gate helpers ---
 
 
@@ -616,6 +779,14 @@ def main() -> int:
         project_root = Path(cwd_str).resolve()
     except OSError:
         return emit_allow()
+
+    # V29 check (5): adoption gate. Fires on Edit/Write/MultiEdit and Task
+    # calls when folder is unadopted-with-work and not opted out. Returns
+    # None for adopted folders, opted-out folders, and genuinely-empty
+    # folders — downstream checks then run on their normal terms.
+    v29_deny_reason = check_v29_adoption_gate(project_root, tool_name, tool_input)
+    if v29_deny_reason:
+        return emit_deny(v29_deny_reason)
 
     # V27 check (4): test-confirmation gate fires on Task invocations
     # targeting the batch-executor subagent. Other Task calls fall through.

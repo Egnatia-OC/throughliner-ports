@@ -6,11 +6,10 @@ I build in Claude Code using this workflow. The method requires Claude Code — 
 
 Each phase loads different files and runs a different sequence. Orientation only; detail in *The build sequence*.
 
-- **Session start.** Read `CLAUDE.md`, then the docs it points at. Route on my opening message: test notes or feature request → planning; "new project" → new-project route; non-conforming docs → migration route.
+- **Session start.** Read `CLAUDE.md`, then the docs it points at. Route on my opening message: test notes or feature request → planning; "new project," non-conforming docs, or unadopted-folder safety-net advisory → `/adopt`.
 - **Planning.** Edit `BACKLOG.md` directly; read `DOC-STRUCTURE.md` when editing source-of-truth docs. Sort changes into Suggestions and Discoveries. Run drift checks. Fold resolved planning batches into `UX.md` (or the relevant source-of-truth doc).
 - **Before build.** Reorganise build batches in `BACKLOG.md`. Lock the next batch with file-level detail. Get my OK before switching out of plan mode.
 - **After build.** Update `MANIFEST.md`. Provide a build recap. Prompt me to test and `/clear`.
-- **Migration** (sub-route of session start, once per project). Read `DOC-STRUCTURE.md`. Bring existing docs up to spec.
 
 ## Meta-markup layers
 
@@ -34,9 +33,11 @@ Method-specific terms used throughout this doc and `DOC-STRUCTURE.md`. Cross-ref
 - **Red flag.** A security, privacy, data integrity, or safety concern. Surface in chat first; if I defer with no active plan, add to the Red flags section of `BACKLOG.md` in canonical format: `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Red flags are the only deferred items that don't need a `UX.md` entry behind them.
 - **Source-of-truth doc.** A doc describing decided behaviour the build must conform to. `UX.md` is one in every project. Projects may add others (see *Additional source-of-truth doc*). Read-only to Claude; edited by the user during planning sessions (full rule in *Editing surfaces*).
 - **Additional source-of-truth doc.** A project-specific source-of-truth doc beyond `UX.md` — e.g. `SYSTEM-PROMPT.md` for a Claude/MCP integration project, or `COPY.md` for a project whose user-facing text is the deliverable. Same locking rules as `UX.md`. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
+- **Adopted folder.** A folder where the no-code method is active — the project's `CLAUDE.md` carries the method footer (`*No-code method — Version N.*`). The footer is written by `/adopt` during its scaffold or migrate paths. The safety net (SessionStart advisory + PreToolUse enforcement) stays silent on adopted folders.
+- **Unadopted folder.** A folder where the method is not active — no method footer in `CLAUDE.md`. The safety net fires on unadopted folders **with substantial existing content** (per the *Detect unadopted folder* rule in *At session start*): SessionStart emits an advisory pointing at `/adopt`; PreToolUse blocks `Edit` / `Write` / `MultiEdit` and `Task` → method-subagent calls until the folder becomes adopted or the user writes a `.no-code-method-skip` opt-out marker at root. Genuinely-empty unadopted folders and opted-out folders stay silent.
 - **Serves line.** The line at the end of a build batch in `BACKLOG.md` naming the source-of-truth doc entries the batch implements. Format: `Serves UX.md: [entry name(s)].` (and/or `Serves <DOC>: ...` for additional docs).
 - **Drift check.** Four checks Claude runs at the start of every planning session: `UX.md` ↔ what's built, `MANIFEST.md` ↔ the codebase, `MANIFEST.md` ↔ `UX.md` (loose), and `TEST-LOG.md` ↔ what's been touched since each row was recorded (Rule 5 — retest after change). First three are pairwise; the fourth is a code-touch check per row.
-- **Fold-in.** Moving proposed source-of-truth content from `BACKLOG.md` into the destination doc (usually `UX.md`). Claude queues content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only; the user does the actual fold-in by hand during a planning session. Origins: planning-batch resolution, new-project route, migration route, or a mid-build edit attempt intercepted by the PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes that batch in the same session.
+- **Fold-in.** Moving proposed source-of-truth content from `BACKLOG.md` into the destination doc (usually `UX.md`). Claude queues content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only; the user does the actual fold-in by hand during a planning session. Origins: planning-batch resolution, `/adopt case 1` (new-project prompts), `/adopt case 3` (migration), or a mid-build edit attempt intercepted by the PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes that batch in the same session.
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 - **Build recap.** Plain-English summary Claude provides at the end of every build (per *After every build*). Not persisted — lives in chat. Used by me to decide whether to test, push back, or accept.
 - **Test session.** The state `TEST-LOG.md` enters after a build ships. *Opened* during *After every build* by writing one row per user-observable behaviour the recap names, with blank `Status` and `Confirmed Explicitly: No`. *Closed* during the next planning session's first sub-step (Rule 2) by per-row read-back: the user names each pending row and gives its outcome (Pass / Fail / Skipped). An unclosed test session blocks the next build batch (Rule 3).
@@ -76,7 +77,7 @@ The items below read like personal preferences but the machinery depends on them
   *Load-bearing for: planning recaps — assume engagement with disagreement, not collapse into either position.*
 
 - For multi-step procedures where my next action depends on you finishing the previous one — smoke tests, debug sequences, procedures I have to execute, questions where each answer informs the next — deliver one step per message. Open by stating the count ("Three steps coming. First: …") and then stop. Don't preview steps 2 and 3, even briefly — previewing is bundling. The inverse for alternatives I'm choosing between: comparisons need everything visible at once. Default for alternatives is a recommended option with a one-line "want me to walk the others?" escape, or a short comparison table.
-  *Load-bearing for: formally `[SEQUENCE]`-tagged routes (new-project, migration) where each prompt's answer informs the next; ad-hoc walkthroughs (debugging, recovery, command-line sequences); and the planning flow's discuss-and-suggest step, which presents alternatives in full-comparison shape.*
+  *Load-bearing for: formally `[SEQUENCE]`-tagged routes (`/adopt` cases 1 and 3) where each prompt's answer informs the next; ad-hoc walkthroughs (debugging, recovery, command-line sequences); and the planning flow's discuss-and-suggest step, which presents alternatives in full-comparison shape.*
 
 - **Never infer completion.** A `TEST-LOG.md` row's `Status` is never inferred from absence-of-information. If the user has not explicitly named this specific row in a planning-session read-back, the row's `Confirmed Explicitly` stays `No` regardless of how strongly context implies "looks fine." Bulk confirmations ("all others good," "looks like everything's working," "the rest are fine") don't count for any specific row.
   *Load-bearing for: the test-confirmation gate (Rule 3) and `TEST-LOG.md`'s integrity. Without this, a single "yeah it's fine" silently confirms a dozen rows and the gate becomes a paper tiger. Mechanical correlate: Rule 2 names what to do instead — per-row read-back.*
@@ -152,7 +153,7 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 The mechanism is the same regardless of origin:
 
 - **Planning-batch resolution.** When a planning batch is resolved during a planning session, Claude appends the resolved answer to the planning batch in place, and also adds a corresponding `[FOLD-IN PENDING]` block to *Fold-ins pending* naming this batch in its *origin* field. The user folds the answer in and removes the planning batch in the same session.
-- **New-project route, migration route, mid-build PreToolUse intercept.** No preceding planning batch exists; the block goes straight into *Fold-ins pending* with the appropriate origin (`new-project route`, `migration route`, or `mid-build edit attempt — <date>`).
+- **`/adopt` case 1, `/adopt` case 3, mid-build PreToolUse intercept.** No preceding planning batch exists; the block goes straight into *Fold-ins pending* with the appropriate origin (`/adopt case 1`, `/adopt case 3`, or `mid-build edit attempt — <date>`).
 
 Canonical block format and section placement: `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
 
@@ -189,18 +190,19 @@ Every Claude Code chat is a new session by definition — these instructions app
 - **[SILENT]** Read CLAUDE.md before responding to anything else. From its *Where the docs live* section, resolve the paths for `UX.md`, `BACKLOG.md`, `MANIFEST.md`, and any additional source-of-truth docs. Read each from its declared path. Those docs hold the project state. (`NO-CODE-METHOD.md` is the doc you're reading now; always loaded. `DOC-STRUCTURE.md` is mode-tagged for planning and migration only — don't read it during build sessions.)
 - **[BRIEF]** If a declared path doesn't resolve, search the project for a file with that name. If found at a different path, surface the mismatch — name the declared path, name the path you found, propose updating CLAUDE.md's *Where the docs live* section. If multiple files match, surface all candidates and ask which is correct. Wait for my confirmation before editing CLAUDE.md. If no file is found, treat the doc as genuinely missing.
 - **[BRIEF]** If a doc is genuinely missing from the project, say so plainly. Same for any doc present but empty.
-- **[BRIEF] Detect template state.** If the spine docs are present at their declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in BACKLOG.md, MANIFEST.md empty), the project hasn't been kicked off yet. Recommend the **new-project route** to seed `UX.md`, `BACKLOG.md`, and the first build batch. Wait for my okay.
+- **[BRIEF] Detect template state.** If the spine docs are present at their declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in BACKLOG.md, MANIFEST.md empty), the project hasn't been kicked off yet. Recommend `/adopt` — case 4 (already method-managed) detects the template state and offers to walk you through case 1's four new-project prompts to seed `UX.md`, `BACKLOG.md`, and the first build batch. Wait for my okay.
+- **[BRIEF] Detect unadopted folder.** If the SessionStart hook injected an advisory about the folder being unadopted — no method footer in `CLAUDE.md`, substantial existing content present, no `.no-code-method-skip` marker at root — surface it and recommend `/adopt` before any other work. PreToolUse is already blocking destructive calls (`Edit` / `Write` / `MultiEdit` and method-subagent `Task` invocations); don't attempt them. Full mechanism: *Safety net mechanism* below.
 
 Then read my first prompt and route:
 
 - Test notes → continue to "During planning."
-- "New project" (or similar) → **new-project route** below.
-- Existing project docs present but non-conforming to `DOC-STRUCTURE.md` (e.g. UX.md has no "user needs this because..." lines, BACKLOG.md has no batches, MANIFEST.md isn't alphabetical) → **existing-docs migration route** below.
+- User wants to (re-)initialise project structure ("new project," "set this up," "let's start") → recommend `/adopt`. Wait for my okay.
+- Existing project docs are non-conforming to `DOC-STRUCTURE.md` (e.g. UX.md has no "user needs this because..." lines, BACKLOG.md has no batches, MANIFEST.md isn't alphabetical) → recommend `/adopt`. Wait for my okay.
 - Feature request, scope question, or structural change with no test notes → continue to "During planning" with that input as planning seed.
 - Top batch in `BACKLOG.md` left unfinished from previous session and opener doesn't trigger another route → default to resume. Confirm before continuing the build.
 - Otherwise (a question, status check, something conversational) → **[DISCUSS]** respond using loaded doc state as context. No need to scan the whole codebase yet. (`[DISCUSS]` doesn't override the ask-rather-than-guess rule — if discussion hits genuine ambiguity, ask.)
 
-**Routing priority for mixed-input openers.** If the opening triggers more than one route, higher-priority wins and lower-priority items fold in as the route's sequence handles them. Priority: new-project > migration > resume > planning seed (test notes, feature requests, scope questions, structural changes all live here). Example: an opener with test notes *and* a brand-new feature idea routes to planning — the feature idea gets sorted into Suggestions or Discoveries during the sort, not handled separately.
+**Routing priority for mixed-input openers.** If the opening triggers more than one route, higher-priority wins and lower-priority items fold in as the route's sequence handles them. Priority: `/adopt` > resume > planning seed (test notes, feature requests, scope questions, structural changes all live here). Example: an opener with test notes *and* a brand-new feature idea routes to planning — the feature idea gets sorted into Suggestions or Discoveries during the sort, not handled separately. `/adopt`-triggering openers wait for adoption to resolve before any of the lower-priority routes run.
 
 **Handoff to the planning subagent.** "Continue to *During planning*" means invoking the planning subagent (`no-code-method:planning`) via the Task tool. It runs in its own context window; you receive its recap and relay it. The invocation prompt must include a `primary_intent` line classifying the opener, followed by my full opening message. The four values:
 
@@ -223,33 +225,68 @@ Trust the batch-executor's completion note. If a halt-and-confirm surfaces (prer
 
 After-build is idempotent — if invoked when the test session is already open (rows already exist), it exits with a short "test session already open" note. This covers Stop-hook re-fires when the user continues a conversation after after-build's first run. Trust the recap; don't re-do or re-summarise.
 
-- **[PROMPT]** Once the route's work is done, prompt me to continue to "During planning." (Skip if you took the test-notes route or planning-seed route — you're already there. New-project and migration routes have their own closing prompts; don't double up.)
+- **[PROMPT]** Once the route's work is done, prompt me to continue to "During planning." (Skip if you took the test-notes route or planning-seed route — you're already there. `/adopt`'s case 1 and case 3 close with their own prompts; don't double up.)
 
-#### New-project route — **[SEQUENCE]**
+#### Safety net mechanism
 
-*Seeds a new project's docs. Walk through the four prompts below; answers get queued as a `[FOLD-IN PENDING]` block in `BACKLOG.md`, and the user folds content into `UX.md` by hand during the same session (or the next, if deferred).*
+Two-hook architecture protecting user files in unadopted folders (per *Vocabulary*):
 
-Walk me through these prompts in order. Skip any I've substantively answered in my opening message — acknowledge and move on. For partially-answered prompts, acknowledge what was given and ask only the remainder, treating it as one prompt for the count.
+- **SessionStart hook** detects the unadopted condition and emits an advisory via `systemMessage` (user-visible warning) plus `additionalContext` (directive into Claude's context). Informational — SessionStart has no halt mechanism. Adopted folders, genuinely-empty folders, and folders carrying `.no-code-method-skip` stay silent.
+- **PreToolUse hook** enforces. When the folder is unadopted (no method footer, substantial content, no opt-out marker) and main Claude attempts `Edit` / `Write` / `MultiEdit` or `Task` → method-subagent (planning / before-build / batch-executor / after-build), the call is denied with reason text directing the user to `/adopt`. The `/adopt` subagent's own tool calls pass through — the gate discriminates by invoker so case 1 scaffolding and case 3 migration aren't blocked.
+
+**Detection thresholds** ("substantial existing content"): any of (a) a build-manifest file at root (`package.json` / `pyproject.toml` / `Cargo.toml` / `build.gradle[.kts]` / `Gemfile` / `pom.xml` / `go.mod` / `composer.json` / `requirements.txt` / `setup.py`); (b) a recognised source directory at root (`src/` / `lib/` / `app/`); (c) a foreign `CLAUDE.md` (no method footer); (d) more than 5 files at root, counting everything except `.git/` / `.gitignore` / `README.md` / `LICENSE[.md]` / `.obsidian/`. Canonical list lives in `plugin/hooks/session_start.py`. Conservative bias: false positives are minor friction (`/adopt`'s case 1 handles empty folders); false negatives are catastrophic.
+
+**Self-clearing.** Once `/adopt`'s scaffold or migrate path writes a method-footered `CLAUDE.md`, the next hook fires return through cleanly. The opt-out marker (`.no-code-method-skip`) clears the gate without adopting — `/adopt`'s cancel and leave-alone options write it. Removing the marker by hand brings the safety net back; `/adopt` invoked against an opted-out folder (case 5) offers to clear it.
+
+#### /adopt route
+
+`/adopt` is the single entry point for getting a folder onto (or off of) the no-code method. It detects folder state and routes to one of five cases. Subagent body: `plugin/agents/adopt.md`. Slash-command entry: `plugin/skills/adopt/SKILL.md`. Cases 1 and 3 carry forward the substance of the pre-V29 new-project and migration routes.
+
+**Case 1 — Empty folder.** **[SEQUENCE]** Folder has no method footer in `CLAUDE.md` AND no substantial existing content (per *Safety net mechanism → Detection thresholds*). `/adopt` scaffolds the spine templates (`CLAUDE.md`, `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`) with method-version footers, then walks me through four prompts in order. Skip any I've substantively answered in my opening message — acknowledge and move on. For partially-answered prompts, acknowledge what was given and ask only the remainder, treating it as one prompt for the count.
 
 1. **Project context.** What does this app do, and what makes it distinct from existing apps in the space? (Goes into UX.md "Project context" paragraph.)
 2. **UX principles.** What 3–6 principles should guide every design decision? Ask one at a time if needed.
 3. **Core functionalities — first pass.** What 3–5 features must the app have to be itself? For each, the user-experience description and the "user needs this because..." line.
 4. **First build batch sketch.** Of the functionalities above, which is the smallest end-to-end thing we can build and test first?
 
-After the sequence, write all four answers into *Fold-ins pending* as a single `[FOLD-IN PENDING]` block, origin `new-project route` — the user folds UX content into `UX.md` (Project context, UX principles, Functionalities) by hand and converts the first-build sketch into a proper build batch with a `Serves UX.md:` line, in the same session. Leave `CLAUDE.md` alone — its path block and project-specific notes are user-maintained; path mismatches are handled at session start. Prompt me to review the block and do the fold-in.
+After the sequence, write all four answers into *Fold-ins pending* as a single `[FOLD-IN PENDING]` block, origin `/adopt case 1` — the user folds UX content into `UX.md` (Project context, UX principles, Functionalities) by hand and converts the first-build sketch into a proper build batch with a `Serves UX.md:` line, in the same session. Leave `CLAUDE.md` alone beyond the scaffolded template — its path block and project-specific notes are user-maintained; path mismatches are handled at session start. Prompt me to review the block and do the fold-in.
 
-#### Existing-docs migration route — **[BRIEF, then SEQUENCE]**
+**Case 2 — Existing code, no docs.** **[BRIEF, DISCUSS]** Folder has substantial existing content (per *Safety net mechanism → Detection thresholds*) but no `CLAUDE.md`. `/adopt` confirms a backup of the folder is in place (or offers to make one), then offers two options:
 
-*Diagnostic (which docs are present, which gaps exist) happens via Claude reading the existing project state directly. Actual edits to `UX.md` and any additional source-of-truth docs land as `[FOLD-IN PENDING]` blocks in *Fold-ins pending* for the user to fold in by hand during the same planning session (or next, if deferred); `BACKLOG.md` and `MANIFEST.md` edits are direct.*
+- **Scaffold fresh docs alongside the existing code.** Spine templates land with footers; templates start empty (not filled). When the user runs `/adopt` again in this folder, case 4 detects the template state and offers to walk them through case 1's prompt sequence.
+- **Cancel.** Write `.no-code-method-skip` at root and leave the folder alone. The safety net stops firing immediately.
 
-Used when bringing an existing project under this method for the first time, or when planning docs were drafted before this method was adopted.
+Reverse-engineering docs from existing code is out of scope for V29 case 2 — scheduled for a follow-up session.
+
+**Case 3 — Existing code, foreign docs.** **[BRIEF, then SEQUENCE]** Folder has a `CLAUDE.md` but no method footer (e.g. the user ran Claude Code's built-in `/init`, or has hand-written docs from another methodology). `/adopt` confirms a backup is in place, then offers three options:
+
+- **Migrate (recommended).** Walk through structural gaps and queue `[FOLD-IN PENDING]` blocks for the user to fold into the destination docs (sequence below).
+- **Overwrite.** Replace the existing `CLAUDE.md` (and any other docs at canonical paths) with method templates. Requires explicit confirmation in the dialogue ("yes overwrite," or similar — single-keystroke confirmations don't count).
+- **Leave alone.** Write `.no-code-method-skip` at root and exit.
+
+The dialogue explicitly anticipates the `/init` case so users don't feel punished for trying a built-in command first.
+
+If the user picks Migrate, run the sequence:
 
 - **[BRIEF]** State which docs are present (three spine docs and any additional source-of-truth docs the project declares) and the path each was read from, and for each, the specific structural gaps you can see (missing sections, missing fields, wrong abstraction level). One line per gap. Don't start fixing yet.
 - **[SEQUENCE]** Walk through the gaps in this order: UX.md first (source of truth the others depend on), then any additional source-of-truth docs (peers to UX.md as fold-in destinations), then BACKLOG.md, then MANIFEST.md. For each doc:
   1. Confirm which existing content stays as-is.
   2. Propose, in plain English, the smallest set of edits to bring it up to spec. For an additional source-of-truth doc, *spec* means the rules in `DOC-STRUCTURE.md` → *Additional source-of-truth docs* — there's no fixed shape, only structural rules.
-  3. After my okay, make the edits. For `BACKLOG.md` and `MANIFEST.md` (read/write), edit directly. For `UX.md` and any additional source-of-truth doc (read-only), write the proposed edits as `[FOLD-IN PENDING]` blocks in *Fold-ins pending*, origin `migration route` — the user folds those in by hand during the same planning session (or next, if deferred). Don't describe edits for me to apply.
+  3. After my okay, make the edits. For `BACKLOG.md` and `MANIFEST.md` (read/write), edit directly. For `UX.md` and any additional source-of-truth doc (read-only), write the proposed edits as `[FOLD-IN PENDING]` blocks in *Fold-ins pending*, origin `/adopt case 3`. Don't describe edits for me to apply.
 - After all docs are migrated (`UX.md` and additional-source-of-truth edits queued as `[FOLD-IN PENDING]` blocks; `BACKLOG.md` and `MANIFEST.md` edited directly), prompt me to do the fold-ins by hand, then continue to "During planning."
+
+**Case 4 — Already method-managed.** **[DISCUSS]** Folder's `CLAUDE.md` carries a method footer. `/adopt` was invoked anyway. Offer me three options:
+
+- **Walk me through the new-project prompts.** Offered when *Detect template state* matched (footer present, content unfilled). Re-uses case 1's four-prompt sequence to seed the docs without re-scaffolding templates that are already in place.
+- **Refresh templates to current version.** Replaces canonical-path templates with current-version templates. The dialogue surfaces the version gap explicitly ("Your `CLAUDE.md` is on V25; templates are on V29 — want me to walk you through the structural changes?") rather than refreshing silently.
+- **Did you mean to run this elsewhere?** Exit option for the common case of running `/adopt` in the wrong folder.
+
+**Case 5 — Opted out.** **[DISCUSS]** Folder has a `.no-code-method-skip` marker at root. `/adopt` was invoked anyway. Two options:
+
+- **Clear the marker.** Folder becomes unadopted again; the next prompt will trigger the safety-net advisory and the user can adopt or re-opt-out from there.
+- **Cancel.** Folder stays opted out, nothing changes.
+
+Read deliberately neutral — opting out is a legitimate state, not a stuck one.
 
 ### During planning
 
@@ -328,4 +365,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 27.*
+*No-code method — Version 29.*

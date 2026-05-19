@@ -53,23 +53,25 @@ Claude's job mid-session: do the work, surface concerns, propose. Close, parity,
 
 ---
 
-## Session close: 8 steps
+## Session close: 9 steps
 
 1. **Verify doc-code parity** (audit below). If this session introduced anything the docs don't accurately describe, fix docs first. Footer bumps and BUILD-LOG entry come after, reflecting the now-current state.
 
-2. **Bump method-version footers** — only if the session substantively changed the method or plugin. Dev-internal-only sessions skip entirely. When warranted: every method-side file and template footer matches the new session number, plus `plugin.json` `version` and `PLUGIN_METHOD_VERSION` in `session_start.py`. Full list in *Footer bumps* below.
+2. **Frame-correction sweep.** If this session substantively corrected a load-bearing frame — something the next-session Claude reading old scope files would absorb wrongly — audit `planning/sessions/Vxx.md` for references to the old frame. Fix in this session's commit. The bar isn't "anything changed" but "the change rewrites how future-Claude should think about [X]." Examples: V23 settling that `--plugin-dir` smoke tests ARE live testing (implicit reframe of the live-install dependency carried in pre-V23 scope files); V29's pivot from `systemMessage` halt to SessionStart advisory + PreToolUse enforcement. Both broke prior scope files that referenced the old frame. Frame corrections aren't always self-identifying — the audit prompt is the trigger, not pre-detection. Added V29 after V29's own open hit a pre-V23 frame in its scope file and required rework before substantive work could begin.
 
-3. **Add a `BUILD-LOG.md` entry** for this session, shape in *BUILD-LOG entry shape*. Newest first.
+3. **Bump method-version footers** — only if the session substantively changed the method or plugin. Dev-internal-only sessions skip entirely. When warranted: every method-side file and template footer matches the new session number, plus `plugin.json` `version` and `PLUGIN_METHOD_VERSION` in `session_start.py`. Full list in *Footer bumps* below.
 
-4. **Sweep ideas raised but not implemented.** For each: add to a future `Vxx.md`; create a new `Vxx.md` + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
+4. **Add a `BUILD-LOG.md` entry** for this session, shape in *BUILD-LOG entry shape*. Newest first.
 
-5. **Commit** with a clear `V<N>:` message.
+5. **Sweep ideas raised but not implemented.** For each: add to a future `Vxx.md`; create a new `Vxx.md` + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
 
-6. **Tag** `git tag v<N>`.
+6. **Commit** with a clear `V<N>:` message.
 
-7. **Delete this session's `planning/sessions/Vxx.md`** as part of the commit. If Cowork's bash mount refuses on file ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+7. **Tag** `git tag v<N>`.
 
-8. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
+8. **Delete this session's `planning/sessions/Vxx.md`** as part of the commit. If Cowork's bash mount refuses on file ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+
+9. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
 
 ---
 
@@ -101,7 +103,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 ## Testing — what we actually do
 
-Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/init-project` scaffolds templates. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
+Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/adopt` (V29 — formerly `/init-project`) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
 
 **Pre-install testing options:**
 
@@ -155,7 +157,7 @@ When warranted, as of V23:
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - `planning/INVENTORY.md`
-- Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`)
+- Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `adopt.md`)
 - New method-describing files added this session
 
 Plus version trackers:
