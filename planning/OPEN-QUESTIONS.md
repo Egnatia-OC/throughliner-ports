@@ -21,7 +21,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - Which subagent / hook owns the write? Plausible candidates: `before-build` (populates panel at batch start), `after-build` (advances the cursor), `planning` (refreshes when batches are queued/regrouped).
 - Interaction with the vocabulary-collision question: if we surface a build sequence in the "plan" panel, the conflation between "method's planning phase" and "Claude Code's plan mode" gets stronger, not weaker. May force shape A (rename) of that question.
 
-**Next step.** Park pending a web-search check on whether the plan panel is programmatically writable. If it isn't, the question collapses to "document the limitation in Crash course." If it is, promote to a planning session in V36+ post-E2E (V35), bundled with [["Planning" vocabulary collision with Claude Code's "plan mode"]]. **Promote sooner** if first real Taskflow use surfaces no-coder confusion about why the panel is empty mid-build.
+**Next step.** **V34, 2026-05-21: research half partially folded into V36's scope.** V36 runs the web-search check on whether the plan panel is programmatically writable. Two outcomes: if not writable, V36 collapses this entry to a `Crash course.md` note about the limitation (entry removed in V36's commit). If writable, V36 updates this entry's *Working notes* with the finding and the design-decision half (what to write, which subagent owns it, interaction with the vocabulary collision) stays parked for V37+ paired with [["Planning" vocabulary collision with Claude Code's "plan mode"]]. **Promote the design half sooner** if first real Taskflow use surfaces no-coder confusion about why the panel is empty mid-build.
 
 ---
 
@@ -69,18 +69,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## TEST-LOG ordering — newest at top vs bottom
-
-**The question.** Should `TEST-LOG.md` rows append at the top (newest-first), matching `BUILD-LOG.md` ordering, instead of the bottom (current rule per `DOC-STRUCTURE.md` → *TEST-LOG.md structure*)?
-
-**Why it matters.** Surfaced V30 Crash course review, 2026-05-20. Newest-at-top matches the no-coder's intuition and Claude's natural read order (top first, and the most-recent rows are usually the most relevant). `BUILD-LOG.md` is top-first; `TEST-LOG.md` being bottom-first creates a mental-model mismatch between the two living logs. The current bottom-first convention traces to the dev-internal TEST-LOG argument ("queried by 'is X tested?' where ID order matters more than recency") — but the consumer-side TEST-LOG has different access patterns (recency-of-test matters for drift check 4 and for planning's read-back).
-
-**Working notes.** Touches `DOC-STRUCTURE.md` → *TEST-LOG.md structure* (the append rule), `plugin/templates/TEST-LOG-TEMPLATE.md` (HTML format-reminder comment position — moves from bottom to top), `plugin/agents/after-build.md` (where it appends rows), `plugin/agents/planning.md` (where it reads). Low-friction once decided.
-
-**Next step.** Fold into a planning session in V36+ post-E2E (V35) along with the [[TEST-LOG row pruning]] question — sibling concern. **Promote sooner** if first real Taskflow build raises the same intuition.
-
----
-
 ## TEST-LOG row pruning
 
 **The question.** Should `TEST-LOG.md` gain an actual pruning mechanism (deletion-based) to bound the file's growth? Current rule (`DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*): rows are never deleted, only flipped to `Superseded` when a component is substantially changed or removed. The file grows monotonically over a project's life.
@@ -93,7 +81,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - Component-based: drop rows whose component no longer exists in `MANIFEST.md`.
 - Manual: an explicit per-planning-session option to archive rows to an external file (preserving audit, removing from context).
 
-**Next step.** Fold into the same V36+ planning session as the [[TEST-LOG ordering — newest at top vs bottom]] question (post-E2E V35). **Promote sooner** if Taskflow's TEST-LOG.md crosses a meaningful row count — would benefit from real data first.
+**Next step.** **V34, 2026-05-21: unpaired from [[TEST-LOG ordering — newest at top vs bottom]] after V36 promotion.** Ordering doesn't need real row-count data and ships in V36; pruning still does. Fold into a V37+ planning session post-V35 once Taskflow's TEST-LOG.md has enough rows to inform the cutoff rule — likely after several batches have shipped through real use. **Promote sooner** if Taskflow's TEST-LOG.md crosses a meaningful row count before V37 — would benefit from real data first.
 
 ---
 
@@ -110,22 +98,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - **Hybrid.** Keep "planning phase" as the lifecycle name but rename the subagent (`no-code-method:planning` → `no-code-method:design`) so the plugin-component name reads distinct. Compromise.
 
 **Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow use gives concrete sense of how often readers encounter both terms together. **Promote sooner** if first real Taskflow use surfaces the confusion before V35.
-
----
-
-## NO-CODE-METHOD.md → *During planning* doesn't explicitly assert planning's structural authority over BACKLOG.md
-
-**The question.** V25's *Before build* rewrite removed steps that had Claude regroup BACKLOG.md batches — dead weight, since planning has had full BACKLOG.md edit authority since V22. But *During planning* doesn't explicitly assert "you do the structural batch grouping; before-build doesn't." The assertion is implicit in the planning subagent body's *BACKLOG.md editing — do, then describe* section and in the absence-from-*Before build*. Should *During planning* gain an explicit "structural authority over BACKLOG.md" assertion?
-
-**Why it matters.** Surfaced V25 while drafting the *Before build* rewrite. Future-Claude reading only *During planning* has no way to know before-build deliberately doesn't reorganise. The asymmetry is harmless today but invites drift if either section gets edited later without the other in view.
-
-**Working notes.** Three shapes:
-
-- **A.** One-line assertion in *During planning*'s opening paragraph. Smallest change. Explicit but unobtrusive.
-- **B.** A sub-section "Structural authority over BACKLOG.md" under *During planning*. More prominent. Risks over-engineering — the assertion fits in a sentence.
-- **C.** Leave as-is. Planning subagent body + absence-in-*Before build* communicate the rule implicitly.
-
-**Next step.** Park. Revisit when *During planning* next needs an edit. **Promote sooner** if a doc-code parity audit flags `plugin/agents/planning.md`'s BACKLOG-authority section as out of step.
 
 ---
 

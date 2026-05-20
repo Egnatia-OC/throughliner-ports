@@ -154,7 +154,7 @@ Why session-start, not install-time? Claude Code's plugin system has no install-
 
 The plugin distributes the method's rules across Claude Code primitives — hooks, subagents, skills, and bundled docs — rather than asking Claude to enforce them from a single long prompt. Non-coders do not normally open these files; the plugin runtime does the work.
 
-- **Hooks** are Python scripts that fire on specific Claude Code events. The SessionStart hook detects what shape of folder the no-coder is working in (adopted, unadopted-with-work, empty, opted-out) and injects an advisory or the universal behavioural rules into Claude's session context. The PreToolUse hook enforces edit boundaries — locking UX.md and additional source-of-truth docs from Claude, blocking edits outside the current batch's `Files:` list, gating new build batches on the previous batch's test outcomes being confirmed, and refusing build batches whose `Serves UX.md:` line names entries that do not exist in UX.md. The Stop hook routes one build batch to the next, or routes to the after-build subagent when a batch finishes.
+- **Hooks** are Python scripts that fire on specific Claude Code events. The SessionStart hook detects what shape of folder the no-coder is working in (adopted, unadopted-with-work, empty, opted-out) and injects an advisory or the universal behavioural rules into Claude's session context. The PreToolUse hook enforces edit boundaries — locking UX.md and additional source-of-truth docs from Claude, blocking edits outside the current batch's `Files:` list, gating new build batches on the previous batch's test outcomes being confirmed, refusing build batches whose `Serves UX.md:` line names entries that do not exist in UX.md, and blocking destructive git commands (`git reset --hard`, `git push --force`) with deny messages pointing at safer alternatives. The Stop hook routes one build batch to the next, or routes to the after-build subagent when a batch finishes.
 - **Subagents** handle the phase work in their own Claude Code contexts: planning, before-build, batch-executor, after-build, and adopt. Each runs its own conversation, then returns a recap that main Claude relays to the no-coder. The context isolation keeps each phase's prompts focused.
 - **Slash commands** (`/adopt`, `/before-build`, `/build`) are the user-facing entry points. Each invokes the matching subagent.
 - **Templates** — the starter shapes for the six spine docs that `/adopt` scaffolds into a new project. These get copied into the project root with method-version footers and start mostly empty.
@@ -168,7 +168,7 @@ The method ships with a default set of preferences and commitments. A new no-cod
 
 **Method contract — load-bearing, edit at peril.** Some lines read like personal preferences but the method's machinery depends on them. "Push back rather than simply agreeing" — the drift checks, red-flag surfacing, and planning recaps all assume Claude will push back. "Do not stealth-fix regressions" — the build recap assumes Claude states regressions plainly. "Walkthroughs one step at a time; alternatives all at once" — multi-step procedures lose usability when bundled; alternative-presentation loses comparison context when sequenced. These are structured as *Required of Claude* (positive lines) and *Prohibited of Claude* (negative lines — "do not add features not listed in the current batch prompt," "do not refactor without explicit confirmation"), each annotated with the mechanism that breaks without it.
 
-**Recommended habits — edit freely.** Some lines are habits surrounding the build sequence: `/clear` after each build, prepare test results as pasteable text, review all upcoming changes before each build. A different no-coder with a different rhythm might rewrite these.
+**Recommended habits — edit freely.** Some lines are habits surrounding the build sequence: `/clear` after each build, prepare test results as pasteable text, review all upcoming changes before each build, tag and push after every shipped build batch. A different no-coder with a different rhythm might rewrite these.
 
 **The build sequence — fixed.** The four-phase cycle (session start → planning → before build → after build) is the method's spine. Not part of the editable surface.
 
@@ -249,4 +249,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 33.*
+*No-code method — Version 34.*

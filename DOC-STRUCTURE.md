@@ -161,4 +161,4 @@ Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METH
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 33.*
+*No-code method — Version 34.*

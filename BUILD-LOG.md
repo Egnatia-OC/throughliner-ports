@@ -6,6 +6,36 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V34 — 2026-05-21 — Consumer-method git workflow + OPEN-QUESTIONS promotion
+
+**What shipped.** Two deliverables scoped by `V34.md`, plus an OPEN-QUESTIONS promotion and a Cowork drift cleanup folded in.
+
+- **Recommended habits line** in docs-only `NO-CODE-METHOD.md` → *After building*: "tag and push after every shipped build batch." Windows-specific sub-bullet warns about `.git/index.lock` contention from Claude Code's background `git status` polling, with `del .git\index.lock` as recovery. Crash course updated with a mention in the habits-layer paragraph.
+- **PreToolUse git safety-guard hook** at `plugin/hooks/pre_tool_use_git_guard.py`. New file, new `hooks.json` entry with `Bash` matcher (separate from the existing `Edit|Write|MultiEdit|Task` PreToolUse hook — different matcher, different concern domain). Denies `git reset --hard` and `git push --force` / `git push -f`; allows `git push --force-with-lease`, `git reset` without `--hard`, `git commit`, `git tag`, and all other git operations. Deny messages name the blocked command, explain why, and list safer alternatives. Smoke-tested via direct Python invocation (14 cases: 5 deny, 9 allow, all pass). Regex bug caught and fixed pre-ship (`\b` before `--hard` doesn't fire because both the preceding space and the leading `-` are non-word characters).
+- **V36 session scope created** (`planning/sessions/V36.md`) — OPEN-QUESTIONS doc-only bundle: TEST-LOG ordering (newest-first), planning's BACKLOG authority (one-line assertion), plan-panel writability research. Two OPEN-QUESTIONS entries fully promoted (graduation path 2, removed); two entries date-tagged with partial-fold-in notes (path 3). PLAN.md V36 row added; V37+ renumbered.
+- **Cowork drift cleanup** — 4 line-level edits across 3 files (`plugin/agents/adopt.md`, `BUILD-METHOD.md`, `planning/drafts/claude-cli-headless-feasibility.md`). Remnant references from V23's sweep.
+
+**Decisions taken and why.**
+
+- **New file for the git guard, not an extension of `pre_tool_use.py`.** Existing hook matches `Edit|Write|MultiEdit|Task`; git guard needs `Bash`. Different matcher, different concern domain (destructive-command prevention vs method-doc integrity). A 95-line focused script beats adding branches to an 841-line file.
+- **`--no-optional-locks` not recommended.** Web search confirmed it's a `git` flag, not a `claude` CLI argument. Can't be passed as a Claude Code launch flag. Only mitigation for `.git/index.lock` contention is manual `del` — documented as a Windows sub-bullet in the habits line.
+- **`/git-discipline` skill deferred.** Adds polish (walking the no-coder through first-time git setup) but isn't load-bearing for V34's safety guard. Can be a small standalone session.
+- **Lock-contention reproduction deferred** to future Stop-hook session. V34's hook doesn't perform git ops itself, so measuring retry-logic aggressiveness doesn't shape any V34 deliverable.
+
+**Pivots and surprises.**
+
+- **Regex `\b` doesn't work before `--flags`.** `\b` requires a transition between word and non-word characters; both the preceding space and the leading `-` in `--hard` are non-word characters, so no boundary fires. Caught by automated testing before ship. Would have been a silent pass-through in production.
+- **Automated hook testing worked well.** Direct Python invocation via stdin/stdout pipe tested the full hook logic with zero API cost and deterministic results. Validated the approach documented in `BUILD-METHOD.md` → *Hook script direct invocation*. No need for a full `claude --plugin-dir` session for this hook.
+- **Context compaction mid-session.** Conversation hit limits and was continued from a summary. All task state and design decisions survived accurately.
+
+**Carried forward.**
+
+- **Stop-hook auto-commit** remains deferred (V34.md explicitly parks it). One researched user who tested hook-driven auto-commits rolled it back. Revisit after Taskflow's first build cycles surface evidence.
+- **`.git/index.lock` contention reproduction** deferred to the future Stop-hook session, which will need to measure retry-logic aggressiveness for any git ops the hook performs.
+- **`planning/drafts/git-integration-research.md` consumed** and deleted in this commit per drafts/ lifecycle.
+
+---
+
 ## V33 — 2026-05-20 — Consumer-side BUILD-LOG, planning/drafts/, and frame-correction sweep
 
 **What shipped.** Three coupled additions to the consumer method's *After every build* phase, all landing in `plugin/agents/after-build.md` → *Work loop* (and mirrored in docs-only `NO-CODE-METHOD.md`).

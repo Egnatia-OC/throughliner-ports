@@ -132,6 +132,8 @@ Starting points; adapt to fit how you actually work.
 - I will `/clear`.
 - I will run all tests given in the last build, noting any other items at the end as possible future changes.
 - I will prepare all test results and notes as pasteable text.
+- I will tag and push after every shipped build batch — this gives me a named revert point if a future session, Drive sync, or parallel edit corrupts the working tree. A bare `git tag v<N>` + `git push origin v<N>` after the BUILD-LOG entry is written is enough; the tag name should match the session tag.
+  - **Windows note:** Claude Code's background `git status` polling can leave a stale `.git/index.lock`. If a `git tag` or `git push` fails with "Unable to create index.lock: File exists," delete the lock file (`del .git\index.lock` in PowerShell) and retry.
 
 ## The documents that describe my projects
 
@@ -374,4 +376,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 33.*
+*No-code method — Version 34.*

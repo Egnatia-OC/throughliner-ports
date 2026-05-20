@@ -10,7 +10,7 @@ Personal and collaboration rules live in root `CLAUDE.md`. Anything here superse
 
 ## The unit of work: a session
 
-**One session = one git commit + one git tag.** A new session starts when Alex marks a new boundary. Not a Cowork chat, not a calendar day, not a continuous block — tag boundaries define sessions.
+**One session = one git commit + one git tag.** A new session starts when Alex marks a new boundary. Not a calendar day, not a continuous block, not one chat conversation — tag boundaries define sessions.
 
 Tags are `v17`, `v18`, ... Current tag is `git describe --tags --abbrev=0` from `sovereign-implementer/`. Pre-V17 lives read-only in `Archive/Version 3/` through `Archive/Version 16/`. Don't edit.
 
@@ -69,7 +69,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close, parity,
 
 7. **Tag** `git tag v<N>`.
 
-8. **Delete this session's `planning/sessions/Vxx.md`** as part of the commit. If Cowork's bash mount refuses on file ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+8. **Delete this session's `planning/sessions/Vxx.md`** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
 
 9. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
 

@@ -157,7 +157,7 @@ Wait for the user's choice.
 
 2. Run `check`. If conflicts include `CLAUDE.md` itself (which it will), that's expected for this branch — proceed to `write`.
 
-3. Actually `write` will refuse if `check` reports conflicts. So you need to remove the original `CLAUDE.md` after backing it up, OR have the user remove it manually (the Cowork memory entries flag bash deletes failing on Windows ACLs; have the user delete it via their file manager if `rm` refuses).
+3. Actually `write` will refuse if `check` reports conflicts. So you need to remove the original `CLAUDE.md` after backing it up, OR have the user remove it manually (bash deletes can fail on Windows ACLs; have the user delete it via their file manager if `rm` refuses).
 
    Try first:
    ```
@@ -306,4 +306,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 33.*
+*No-code method — Version 34.*

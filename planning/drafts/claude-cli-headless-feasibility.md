@@ -180,9 +180,9 @@ This is in the Python SDK's `StreamEvent` dataclass, but the underlying stream-j
 
 Source: https://code.claude.com/docs/en/headless — check https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan for the credit amounts.
 
-**Known bug: plugin hooks do not fire when `--setting-sources user` is in effect (Cowork-specific).**
+**Known bug: plugin hooks do not fire under `--setting-sources user`.**
 
-GitHub issue #27398 documents that when a process hardcodes `--setting-sources user`, plugin `hooks/hooks.json` is silently skipped while skills still work. This bug is Cowork-specific (Cowork hardcodes that flag) and should not affect direct CLI invocations. Filed 2026-02-21, status unknown at time of writing. Relevant as a flag if you ever run your smoke tests via Cowork rather than direct CLI.
+GitHub issue #27398 documents that when a process hardcodes `--setting-sources user`, plugin `hooks/hooks.json` is silently skipped while skills still work. Does not affect direct CLI invocations. Filed 2026-02-21, status unknown at time of writing. Relevant only if smoke tests run through a wrapper that hardcodes that flag.
 
 ---
 
