@@ -18,14 +18,14 @@ Three sub-categories on the plugin side (V17 walkthrough):
 
 | Doc | Home | Plugin component | Notes |
 |---|---|---|---|
-| `Crash course.md` | Plugin | Bundled docs (humans-only reference) | Updated as plugin architecture lands (V22 + V25 + V26). |
+| `Crash course.md` | Method-dev repo root | Linked from plugin README (humans-only reference) | Updated as plugin architecture lands (V22 + V25 + V26); fully rewritten as standalone primer in V30. |
 | `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/adopt` skill-command (V29 — formerly `/init-project`) | **Path block format must change to fenced YAML/JSON in V18** for hook parsing. |
 | `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/adopt` | |
 | `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/adopt` | |
 | `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/adopt` | |
 | `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc <name>` | |
-| `DOC-STRUCTURE.md` | Plugin | Skill body OR bundled reference doc (decision deferred to V26) | |
-| `NO-CODE-METHOD.md` | Plugin | Source-of-truth prose; subagents (planning, before-build, after-build) read it at session start via read-spec-on-entry. Retirement of the prose file not scheduled. | |
+| `DOC-STRUCTURE.md` | Plugin | Bundled reference doc at `plugin/docs/DOC-STRUCTURE.md` (V30); read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration). | |
+| `NO-CODE-METHOD.md` | Plugin | Source-of-truth prose at `plugin/docs/NO-CODE-METHOD.md` (V30); subagents (planning, before-build, after-build) read it at session start via read-spec-on-entry. Retirement of the prose file not scheduled. | |
 
 ## Project-side doc fates
 
@@ -80,8 +80,8 @@ Two patterns exist in the current plugin:
 - 6 templates (CLAUDE, BACKLOG, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC) under `plugin/templates/`. The 5 spine templates are scaffolded by `/adopt` (V29 — formerly `/init-project`); ADDITIONAL-DOC lands via `/add-sot-doc`.
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG.md parser used by the Stop hook, PreToolUse (c), and `/build`. Single source of truth for BACKLOG.md structure interpretation.
 - `plugin/scripts/project_state.py` — shared module imported by `pre_tool_use.py` and `stop.py` (V28 extraction). Holds project-state readers: path-block extraction from CLAUDE.md, BACKLOG parser invocation, TEST-LOG row parsing, BUILD-LOG session-narrowing, plus the `is_test_session_open` predicate that backs both V27's PreToolUse gate (check (f)) and V28's Stop-hook silent-exit. Single definition of "what does the project state currently say."
-- `Crash course.md` as bundled docs (not loaded into Claude's context).
-- `DOC-STRUCTURE.md` content — destination decided in V26.
+- `plugin/docs/NO-CODE-METHOD.md` — method-spec prose at canonical bundled path (V30 relocation from repo root). Read by planning, before-build, and after-build subagents at session start via `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md`.
+- `plugin/docs/DOC-STRUCTURE.md` — structural-spec reference at canonical bundled path (V30 relocation from repo root). Read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration).
 
 ## Design decisions taken in V17
 
@@ -114,4 +114,4 @@ Two patterns exist in the current plugin:
 - **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 29.*
+*No-code method — Version 30.*

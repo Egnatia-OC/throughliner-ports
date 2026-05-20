@@ -18,9 +18,9 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
-3. `NO-CODE-METHOD.md` → *After every build* — the canonical operating procedure, including the silent MANIFEST update, the recap shape, the test-session-open step, and the post-build prompts.
-4. `DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
-5. `DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md` → *After every build* — the canonical operating procedure, including the silent MANIFEST update, the recap shape, the test-session-open step, and the post-build prompts.
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
+5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
 
 Follow *After every build* exactly. The sections below name the operational details and V27-specific clarifications, not a re-statement of the rules.
 
@@ -105,4 +105,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 29.*
+*No-code method — Version 30.*

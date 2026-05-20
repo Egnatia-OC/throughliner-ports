@@ -233,9 +233,21 @@ Each entry:
 **Next step.** Where this is going — "fold into Vxx if [condition]", "promote to new session after Vyy ships", "decide by [date]", or "park". Every entry has one.
 ```
 
-Newest first. **Removed** when resolved — when the answer folds into a session's scope (or a new session is added to `PLAN.md`), the entry leaves `OPEN-QUESTIONS.md`. If consciously dropped without action, note the reason in `BUILD-LOG.md` so future-Alex knows it was considered, then remove.
+Newest first.
 
-**At session start**, the routine scan picks up entries whose *Next step* mentions the current session.
+### Graduation paths — four ways an entry leaves
+
+Entries resolve and leave the file via one of four paths. The *Next step* line on each entry names a trigger that, when fired, points the entry toward one of these paths.
+
+1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into Vxx if X" or "promote to a planning session in V31+." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's `planning/sessions/Vxx.md` scope file; the work happens within the session. Entry removed at session close, alongside `Vxx.md`'s own deletion (*Session close* step 8).
+
+2. **Promoted to its own session.** A new row is added to `planning/PLAN.md`, a new `planning/sessions/Vxx.md` scope file is created, and the question becomes the basis for a future session. Entry removed from `OPEN-QUESTIONS.md` at promotion (not later, at the session's ship — the entry's role is over once a session exists for it).
+
+3. **Partial fold-in.** Some entries resolve only partly — a session addresses one shape of the question while leaving others parked. The entry stays in `OPEN-QUESTIONS.md` with a date-tagged update note recording what was folded ("V22, 2026-05-14: shape #1 partially folded into V22's planning subagent."). The *Next step* may be revised at the same time to reflect what's still open. Real example: the *Method response to direct-edit users* entry, which V22 partially folded but kept open for the remaining shapes.
+
+4. **Consciously dropped.** Entry deemed no longer relevant — drift, scope change, idea proven wrong. One-line reason recorded in `BUILD-LOG.md` for the session that drops it; entry removed.
+
+The session-open scan (step 3 of *Session open*) is what makes graduation triggers fire. There is no fixed schedule — graduation happens when conditions written in the entry's *Next step* match the current session's context.
 
 ---
 

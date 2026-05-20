@@ -1,98 +1,72 @@
 # Crash course
 
-*A short structural walk-through.*
+*A standalone primer for the no-code method as a Claude Code plugin.*
 
-## What this is
+## What this is, and who it's for
 
-A structured set of markdown documents that tell Claude Code how to work on a project. Designed for non-coders using Claude as the implementer, who need structure to keep the project from drifting.
+A Claude Code plugin designed around the needs of non-coders using Claude Code, hereafter referred to as "the no coder," as distinct from "the user" who is the user of the no-coder's product. The plugin gives Claude a structured way to work on a project — phase-based (planning, before-build, build, after-build), backed by a small set of markdown files in the project that act as guardrails (preventing drift) and hold the design decisions, the next batch of work, and the test outcomes of every build that has shipped.
 
-The method belongs to the spec-driven development family. Closest neighbour: Cline's Memory Bank — same shape (markdown files as project memory and behavioural guardrails, read at session start), different cut of files, different audience.
+The plugin doesn't write code; Claude does. The plugin keeps Claude inside a deliberately rigid workflow: a new feature cannot enter a build batch directly (it must pass through planning first), build batches do not start until the previous batch's test outcomes are explicitly confirmed, some docs are locked from Claude's edit access entirely, and Claude is instructed to push back rather than quietly agree when something looks wrong.
 
-## The files
+Shaped for non-coders who already have a clear idea what their app should be. Extensive use of plan mode in Claude prior to first instantiation of the build sequence in Sovereign Implementer is highly recommended.
 
-**Per-project (one of each):**
 
-- **CLAUDE.md** — Entry point. Pointer to the method spec, a path block declaring where every other doc lives, and any project-specific behavioural notes.
-- **UX.md** — User-facing description of the app. Every entry corresponds to something the user can experience in the current build, plus a mandatory "the user needs this because…" line tying it back to a UX principle or user context.
-- **BACKLOG.md** — Deferred work in four fixed-order sections: Red flags (security/privacy/data integrity), Fold-ins pending (source-of-truth content Claude queues for the user to fold in by hand next planning session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
-- **MANIFEST.md** — Flat alphabetical glossary of named codebase elements the user might want to look up. Maintained by Claude during builds; not read cover-to-cover.
-- **TEST-LOG.md** — Row-per-test record of every shipped batch's outcomes. Eight columns: # / Date / Session / Component / Test Description / Status / Confirmed Explicitly / User Notes. Claude adds blank-Status rows when a batch ships; the user confirms per-row in planning via the test-session-close read-back. The test-confirmation gate (see *Four disciplines* below) is what makes the record trustworthy.
-- **Optional additional source-of-truth docs** — For projects needing an extra doc the spine doesn't cover (e.g. `SYSTEM-PROMPT.md` for an MCP-integrated app, `COPY.md` where user-facing text is the deliverable). Same rules: read-only to Claude (the agent), no placeholders, intent-level not implementation.
+## Install, and a first session
 
-**Method-side (shared verbatim across every project):**
+The plugin is in development. The install path today is via local clone:
 
-- **NO-CODE-METHOD.md** — The method spec: behavioural rules, flag taxonomy, build sequence.
-- **DOC-STRUCTURE.md** — Structural specs for spine docs and additional source-of-truth docs. Reference material — read when writing or migrating a doc, not every session.
+1. Clone the repo: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
+2. Start a Claude Code session against the project folder you want to work in, using `claude --plugin-dir <path-to-clone>/plugin`.
+3. The plugin's hooks fire at session start. If the folder is empty, or contains existing work without the method's docs, Claude Code surfaces an advisory pointing at the `/adopt` command (see *The safety net* below for what `/adopt` does in each case).
 
-**Templates** — Starter shapes for `UX.md`, `BACKLOG.md`, `MANIFEST.md`, the project's `CLAUDE.md`, and any additional source-of-truth doc.
+Marketplace publication is planned.
+
+A first session in Sovereign Implementer is distinct from a normal build sequence session:
+
+- Open Claude Code in the project folder. Run `/adopt`.
+- `/adopt` detects which case applies — empty folder, existing code without docs, existing code with non-method docs, already method-managed, or opted out — and runs the matching dialogue.
+- For an empty folder, `/adopt` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md) and walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
+- The dialogue's outputs land as a `[FOLD-IN PENDING]` block in BACKLOG.md. The no-coder folds the UX content into UX.md by hand (the doc is read-only to Claude), and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line pointing at the entry it implements.
+- After the fold-in, the project is ready for its first build. Run `/before-build` to lock the next batch, then `/build` to execute it. The plugin orchestrates the rest.
+
+## Guardrail .md docs
+
+Five markdown files sit in the project root once `/adopt` has scaffolded the project. Each does one job, and the workflow expects a clean separation between them.
+
+- **CLAUDE.md** — entry point. Tells Claude Code where every other doc lives via a JSON path block, and carries any project-specific behavioural notes. Read by Claude at every session start.
+- **UX.md** — user-facing description of the app. Every entry corresponds to something the no-coder can experience and test in the current build, plus a mandatory "the user needs this because…" line tying the entry back to a UX principle or other user context. Source of truth — Claude cannot edit this file; the no-coder maintains it by hand during planning sessions.
+- **BACKLOG.md** — deferred work, in four fixed-order sections: Red flags (security/privacy/data integrity), Fold-ins pending (source-of-truth content Claude queues for the no-coder to fold in by hand next planning session), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority).
+- **MANIFEST.md** — a flat alphabetical glossary of named codebase elements the no-coder might want to look up. Maintained by Claude during builds; not read cover-to-cover.
+- **TEST-LOG.md** — a row-per-test record of every shipped build batch's outcomes. Eight columns: # / Date / Session / Component / Test Description / Status / Confirmed Explicitly / User Notes. Claude appends blank-Status rows when a batch ships; the no-coder confirms outcomes per-row during the next planning session.
+
+A project can also declare additional source-of-truth docs — for example, `SYSTEM-PROMPT.md` for a Claude/MCP integration project, or `COPY.md` for a project where the user-facing text is itself the deliverable. These get the same lock-from-Claude treatment as `UX.md`.
 
 ## The session shape
 
-Every session under the method follows the same shape:
+Work in this method moves through two main phases — planning and build — looping back and forth until the project is done. Each Claude Code session sits in one phase or the other; `/clear` or a new session separates them.
 
-**At session start.** Claude reads `CLAUDE.md`, resolves the path block, reads the spine docs and any additional source-of-truth docs. If a path doesn't resolve, Claude searches by name, surfaces what it finds, and asks before updating `CLAUDE.md`.
+**Planning sessions** decide what gets built. The no-coder pastes test notes from a previous build (and/or raises new feature/s, asks a scope question, etc), and the planning subagent runs its routine: closing the previous build's test session by walking each pending TEST-LOG row one at a time; checking drift between UX.md, MANIFEST.md, and the codebase; sorting any new ideas into Suggestions (already in scope) and Discoveries (not yet in scope, need UX.md updates first); and editing BACKLOG.md directly. The conversation stays in the same chat style as ever — questions, push-back, alternatives, second thoughts all belong in there; the subagent's structure is for what gets recorded and where, not for how the conversation feels. Planning sessions are also when source-of-truth doc edits happen, by hand — the no-coder folds in any pending content from BACKLOG.md's *Fold-ins pending* section, removes resolved planning batches, and reorganises build batches if priorities have shifted.
 
-**During planning.** Main Claude classifies the opener (test notes / feature request / scope question / mixed) and hands off to the **planning subagent** — a focused Claude with its own system prompt for the planning flow. The subagent sorts the opener into Suggestions (in scope) and Discoveries (out of scope until `UX.md` is updated), checks drift between `UX.md`, `MANIFEST.md`, and the codebase (every planning session; the only skip case is "nothing built yet"), and edits `BACKLOG.md` directly. Discoveries become planning batches before session end so nothing slips through `/clear`. The subagent hands a recap to main Claude, who relays it.
+**Build sessions** ship engineering work, one batch at a time. The no-coder runs `/before-build` and the before-build subagent locks the next batch: validates that the top batch's `Serves UX.md:` line resolves, enumerates the files the batch will modify into a `Files:` sub-section, estimates the verification burden — the list of distinct things that will need testing once the batch ships — and proposes a split if the list is long relative to scope. Once the no-coder okays the locked batch, `/build` runs the batch-executor subagent against the file list. As each file ticks, the PreToolUse hook enforces that no file outside the list gets edited. When the last file ticks, the Stop hook routes to the after-build subagent, which updates MANIFEST.md, generates a plain-English build recap, and opens a test session by appending blank-Status rows to TEST-LOG.md — one per user-observable behaviour the recap names.
 
-**Before build.** The user runs `/before-build` and the **before-build subagent** locks the next batch. Changes are grouped into batches sized by verification burden — small enough that one session's testing covers them (per the *Batch-sizing principle* in `NO-CODE-METHOD.md`). The subagent writes a `Files:` sub-section listing every file the batch will modify; that list becomes the build-time boundary the PreToolUse hook enforces.
+The no-coder then `/clear`s, refreshes their copy of the project, and runs the tests the recap named. The outcomes (Pass / Fail / Skipped, plus notes) come back to the next planning session, which opens by reading them back row by row before any other work starts.
 
-**During build.** The user runs `/build` and the **batch-executor subagent** runs one batch in fresh context — reading the `Files:` list, editing each file, ticking as it goes. `UX.md` and any additional source-of-truth docs are read-only to Claude (full rule in *Editing surfaces* below). Any user-facing change Claude notices is flagged at the end of the response, not edited in. If implementation reveals a needed change outside the batch — a prerequisite or a re-batching trigger — the subagent halts and asks before proceeding (the two carve-outs under *Prohibited of Claude* in `NO-CODE-METHOD.md`). When the last file ticks, batch-executor ends with a brief completion note. The Stop hook routes to the **after-build subagent** (or back to batch-executor for the next batch if a fresh planning session ran in between).
+The two-phase loop is the spine. Everything else is detail on what happens inside one phase or the other.
 
-**After build.** The after-build subagent updates `MANIFEST.md` for anything created/renamed/deleted (silently, fully automatic), produces the plain-English build recap ("I am adding a check to the age field so people can't enter negative numbers") with `[Requested]` / `[Suggested]` labels read off the `BACKLOG.md` change list, and opens the test session by appending one blank-`Status` row to `TEST-LOG.md` per user-observable behaviour the recap names. Main Claude relays the recap. The user is prompted to refresh, test, and bring per-row outcomes to the next planning session, where the planning subagent walks the read-back row by row.
+## Walkthrough — Taskflow Day 1
 
-## Where each phase fits
-
-This method runs in Claude Code throughout. Within Claude Code, work happens in two phases:
-
-- **Planning** — design and decide. Big-picture decisions, source-of-truth doc edits, drift checks, `BACKLOG.md` maintenance. The user edits `UX.md` and any additional source-of-truth docs by hand here; Claude (the agent) assists in chat but cannot write to those docs directly.
-- **Build** — Claude implements one batch at a time. Source-of-truth docs are locked from Claude; operational docs (`BACKLOG.md`, `MANIFEST.md`) stay read/write because builds need to update them. By-hand edits to source-of-truth docs are reserved for planning sessions, keeping build scope clean.
-
-The lock convention is in *Editing surfaces* below.
-
-## Four disciplines that do most of the work
-
-**The "the user needs this because…" line.** Required for every `UX.md` entry. Forces rationale articulation before implementation. Protects against feature drift. Makes scope decisions easier.
-
-**The flag taxonomy.** Three buckets with three different homes. *Red flags* (security, privacy, data integrity, safety) go into `BACKLOG.md` and stay until addressed. *Suggestions* (improvement that fits current scope) go in chat at end of response. *Discoveries* (out-of-scope ideas) become planning batches in `BACKLOG.md` before session end. Every concern has exactly one place to live.
-
-**The pipeline for new features.** A new feature can't enter a build batch directly. It must enter as a planning batch in `BACKLOG.md`, get answered in a planning session, become or update a `UX.md` entry, and only then enter as a build batch. Rigid by design. Claude proposing a build batch with no matching `UX.md` entry is a flag that something's been skipped.
-
-**The test-confirmation gate.** A new build batch cannot start while any row in `TEST-LOG.md` from the previous batch is unconfirmed. Confirmation happens per-row, by name, in the planning session after the test-session was opened by the after-build subagent — bulk confirmations don't count. Five protocol rules (in `NO-CODE-METHOD.md`) make this concrete: never infer completion, resolve "all others good" before recording, no new build until the test session is closed, Skipped ≠ Passed, retest after change. Two hooks make it load-bearing: a PreToolUse hook denies any `Task` invocation of batch-executor while pending rows exist, and the SessionStart hook injects a routing override that steers any session opening with pending rows straight to the planning subagent's read-back, regardless of what the user asks. The subagent walks the user through; the record stays trustworthy because no row gets a positive outcome by accident or drift.
-
-## The safety net — installing on a folder that isn't empty
-
-The method assumes a fresh project. Sooner or later someone installs the plugin into a folder that isn't fresh — by mistake, or because they want to bring an existing project under the method's discipline. The safety net is the plugin's response.
-
-When a session opens, **SessionStart** checks whether the folder is *adopted* (carries the method footer in `CLAUDE.md`) or *unadopted*. Adopted folders, genuinely empty folders, and folders carrying a `.no-code-method-skip` opt-out marker stay silent. An unadopted folder with substantial existing work — code, foreign docs, anything — triggers an advisory pointing at the `/adopt` command.
-
-Until `/adopt` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-subagent calls from main Claude. Not just a warning — an actual block. `/adopt`'s own scaffolding calls pass through, so adoption can happen while the gate is closed against everything else.
-
-`/adopt` branches on what it finds:
-
-- *Empty folder* → walks the four new-project prompts and scaffolds the spine docs with your answers folded in.
-- *Existing code, no docs* → offers to scaffold fresh docs alongside, or to opt out via `.no-code-method-skip`.
-- *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to migrate the existing `CLAUDE.md` to method spec, overwrite with backup, or leave alone via the opt-out marker.
-- *Already method-managed* → detects template state, surfaces any version mismatch, offers a footer refresh or cancel.
-- *Opted out* → folder previously chose `.no-code-method-skip`; offers to clear the marker (returning to unadopted) or to stay opted out.
-
-Nothing destructive happens without explicit confirmation, and every destructive option backs up first.
-
-Why session-start, not install-time? Claude Code's plugin system has no install-time hook the plugin can run code from. The earliest the plugin can act is when a Claude Code session opens in a folder. By the time you could ask Claude to write a file, the gate has already fired.
-
-## A walkthrough — a first project from scratch
-
-This section follows a small project — a task manager called **Taskflow**, designed for users with executive dysfunction — through new-project setup, first planning, first build, and the first test note. Meant to make the rules in `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` feel concrete before reading them as rules.
+This walkthrough follows a small project — a task manager called **Taskflow**, designed for users with executive dysfunction — through new-project setup, first planning, first build, and the first test note. The point is to make the method's discipline feel concrete.
 
 ### Day one — starting from scratch
 
-You open a Claude Code session in an empty project folder and run `/adopt`. Empty folder means no advisory — `/adopt` detects the empty case and walks you through four prompts:
+The no-coder opens a Claude Code session in an empty project folder and runs `/adopt`. Empty folder means no advisory — `/adopt` detects the empty case and walks four prompts:
 
 1. **Project context.** What the app does, and what makes it distinct.
-2. **UX principles.** Three to six. For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*. Each gets a one-line claim plus a few sentences of why.
+2. **UX principles.** Three to six. For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*. Each gets a one-line claim plus a few sentences of reasoning.
 3. **Core functionalities — first pass.** Three to five features that make this app what it is. Each gets a paragraph plus the *user needs this because…* line.
-4. **First build batch sketch.** The smallest end-to-end thing you can build and test.
+4. **First build batch sketch.** The smallest end-to-end thing that can be built and tested.
 
-Take the time you need — these are the decisions the rest of the project is built on. Claude queues your answers as a `[FOLD-IN PENDING]` block in `BACKLOG.md`. You fold the UX content into `UX.md` by hand during the same planning session and convert the first-build sketch into a proper build batch.
+These are the decisions the rest of the project is built on. Claude queues the answers as a `[FOLD-IN PENDING]` block in BACKLOG.md. The no-coder folds the UX content into UX.md by hand during the same planning session, and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line.
 
 Once the docs are seeded, Claude Code is ready for the first build.
 
@@ -104,128 +78,151 @@ One of Taskflow's first functionalities is **One-day-at-a-time view**: the Today
 
 The entry ends with a **Risk accepted** line:
 
-> Users cannot plan around upcoming busy periods or anticipate scheduling conflicts. We've judged this an acceptable cost — the people this app is for are already overwhelmed by ahead-planning; protecting the present is more important than enabling the future.
+> Future days' task load isn't visible in Taskflow until each day arrives — time-bound commitments still surface through calendar integration. We've judged this an acceptable cost: looking at a wall of upcoming tasks is itself the pressure that triggers shutdown for the users this app is for; protecting the present matters more than enabling forward task-planning.
 
-The Risk accepted line is for the future-self who, six months in, wonders why the app deliberately omits a week view. The trade-off is on the page; it doesn't have to be re-derived.
+The *Risk accepted* line is for the future-self who, six months in, wonders why the app deliberately omits a week view. The trade-off is on the page; it does not have to be re-derived.
 
 ### First build, first test note
 
-The first build batch ships — an empty Today screen, a way to add a task. You `/clear`, refresh, test, and write notes:
+The first build batch ships — an empty Today screen, a way to add a task. The no-coder `/clear`s, refreshes, tests, and writes notes:
 
 > *"Added a task fine. Couldn't find anywhere to set a due date — is that intentional? The screen is hard to read at night — dark mode would help."*
 
-You paste the notes into a new Claude Code session. Claude takes the test-notes route into planning.
+The notes get pasted into a new Claude Code session. Claude takes the test-notes route into planning.
 
 ### How a test note becomes a feature — the five-step pipeline
 
 Take the dark-mode item:
 
 1. **Idea raised.** Test note → dark-mode request.
-2. **Planning batch.** Claude adds a planning batch in `BACKLOG.md` named *Dark mode* with the questions to answer: *Is this app used at night frequently enough to justify maintaining a parallel theme? Follow OS setting or have its own toggle? Which existing UX entries assume light-background contrast and would need revisiting?* Closes with `Blocks: scope decision — no build batch yet.`
-3. **Planning session.** You and Claude answer. Suppose: yes, follow OS setting, two existing UX entries need a contrast pass.
-4. **`UX.md` updated.** A new *Dark mode* entry is added with the *user needs this because…* line. The two affected entries get a quick revisit.
-5. **Build batch.** A build batch enters `BACKLOG.md` ending with `Serves UX.md: Dark mode (and the two reviewed entries).`
+2. **Planning batch.** Claude adds a planning batch in BACKLOG.md named *Dark mode* with the questions to answer: *Is this app used at night frequently enough to justify maintaining a parallel theme? Follow OS setting or have its own toggle? Which existing UX entries assume light-background contrast and would need revisiting?* The batch closes with `Blocks: scope decision — no build batch yet.`
+3. **Planning session.** The no-coder and Claude answer the questions. Suppose: yes, follow OS setting, two existing UX entries need a contrast pass.
+4. **UX.md updated.** A new *Dark mode* entry is added with the *user needs this because…* line. The two affected entries get a quick revisit.
+5. **Build batch.** A build batch enters BACKLOG.md ending with `Serves UX.md: Dark mode (and the two reviewed entries).`
 
-If step 3 had answered "no," steps 4 and 5 wouldn't happen. `UX.md` stays as it was, the planning batch is removed as resolved, no build batch is ever created. That's the short-circuit case — and it's just as valid an outcome as "yes, build it."
+If step 3 had answered "no," steps 4 and 5 would not happen. UX.md stays as it was, the planning batch is removed as resolved, no build batch is ever created. That short-circuit case is just as valid an outcome as "yes, build it."
 
-The due-date item runs the same pipeline. It might land at "yes, with relative shortcuts only, no date picker" — folding into a new `UX.md` entry once decided, then a build batch.
+The due-date item runs the same pipeline. It might land at "yes, with relative shortcuts only, no date picker" — folding into a new UX.md entry once decided, then a build batch.
 
-**What if the idea conflicts with an existing UX principle?** If a test note or feature request would violate a principle already in `UX.md`, that conflict gets surfaced in chat as the first response — not quietly routed into a planning batch and hoped for. The planning batch still happens (step 2), and the conflict becomes one of its questions. Chat surfaces the tension immediately so you can react; the planning batch records and resolves it.
+**What if the idea conflicts with an existing UX principle?** If a test note or feature request would violate a principle already in UX.md, that conflict gets surfaced in chat as the first response — not quietly routed into a planning batch and hoped for. The planning batch still happens (step 2), and the conflict becomes one of its questions. Chat surfaces the tension immediately; the planning batch records and resolves it.
 
 ### Drift checks at planning sessions
 
-By the third or fourth build, Claude is running **drift checks** at the start of every planning session. Four checks — three pairwise comparisons plus one code-touch judgement:
+By the third or fourth build, drift checks run at the start of every planning session. Four checks — three pairwise comparisons plus one code-touch judgement:
 
-- **`UX.md` ↔ what's actually built.** `UX.md` describes a "drag to reorder" gesture, but the build only supports tap-and-arrows — flag the entry as describing a non-existent feature. Or the build has a swipe-to-archive behaviour no `UX.md` entry covers — that's a Discovery.
-- **`MANIFEST.md` ↔ the codebase.** `MANIFEST.md` still says `TaskCard`, but the last build renamed it `TaskTile` — update the entry. A new service was added with no `MANIFEST.md` entry — add one.
-- **`MANIFEST.md` ↔ `UX.md` (loose check).** `MANIFEST.md` lists a `WeeklyDigestEmailer`, but no `UX.md` entry mentions email digests — either there's a hidden feature (Discovery) or it's dead code (delete). Database config and logging middleware are exempt; they don't trace to user-facing intent by design.
-- **`TEST-LOG.md` ↔ what's been touched (Rule 5 — retest after change).** For each `TEST-LOG.md` row with `Status: Pass` and `Confirmed Explicitly: Yes`, judge whether the component it tested has been substantially changed since the row's `Date`. A row from v23 testing a touch handler whose code was edited in v26 — flag for retest. Trivial changes (comments, formatting, unrelated refactors in the same file) don't count. Produce a brief reasoning trail per flagged row so the call is auditable.
+- **UX.md ↔ what's actually built.** UX.md describes a "drag to reorder" gesture, but the build only supports tap-and-arrows — flag the entry as describing a non-existent feature. Or the build has a swipe-to-archive behaviour no UX.md entry covers — that is a Discovery.
+- **MANIFEST.md ↔ the codebase.** MANIFEST.md still says `TaskCard`, but the last build renamed it `TaskTile` — update the entry. A new service was added with no MANIFEST.md entry — add one.
+- **MANIFEST.md ↔ UX.md (loose check).** MANIFEST.md lists a `WeeklyDigestEmailer`, but no UX.md entry mentions email digests — either there is a hidden feature (Discovery) or it is dead code (delete). Database config and logging middleware are exempt; they do not trace to user-facing intent by design.
+- **TEST-LOG.md ↔ what has been touched (Rule 5 — retest after change).** For each TEST-LOG row with `Status: Pass` and `Confirmed Explicitly: Yes`, judge whether the component it tested has been substantially changed since the row's Date. A row from v23 testing a touch handler whose code was edited in v26 — flag for retest. Trivial changes (comments, formatting, unrelated refactors in the same file) do not count. Produce a brief reasoning trail per flagged row so the call is auditable.
 
-The drift check isn't exhaustive. It catches cases where docs and code have started disagreeing, before that gap turns into a wrong-feature build.
+The drift check is not exhaustive. It catches cases where docs and code have started disagreeing, before that gap turns into a wrong-feature build.
 
-### What this all costs
+## The four disciplines that do most of the work
 
-A new feature takes two sessions to land — one planning, one build — minimum. The pipeline is rigid by design. What the discipline buys: every shipped feature traces to a written user-need rationale; nothing gets built that no one decided to build; and at any moment you can ask *why is this here?* and the answer is on a page you can open.
+**The "the user needs this because…" line.** Required for every UX.md entry. Forces rationale articulation before implementation. Protects against feature drift. Makes scope decisions easier.
 
-## What's editable, what's not
+**The flag taxonomy.** Three buckets with three different homes. *Red flags* (security, privacy, data integrity, safety) go into BACKLOG.md and stay until addressed. *Suggestions* (improvements that fit current scope) go in chat at end of response. *Discoveries* (out-of-scope ideas) become planning batches in BACKLOG.md before session end. Every concern has exactly one place to live.
 
-The method ships with a default set of preferences and commitments embedded in `NO-CODE-METHOD.md`. A new user needs to distinguish three layers:
+**The pipeline for new features.** A new feature cannot enter a build batch directly. It must enter as a planning batch in BACKLOG.md, get answered in a planning session, become or update a UX.md entry, and only then enter as a build batch. Rigid by design. Claude proposing a build batch with no matching UX.md entry is itself a flag that something has been skipped.
 
-**Method contract — load-bearing, edit at your peril.** Some lines read like personal preferences but the method's machinery depends on them. "I'd rather be told I'm wrong than agreed with" — the drift checks, red-flag surfacing, and planning recaps all assume Claude will push back. "Don't stealth-fix regressions" — the build recap assumes Claude states regressions plainly. "Don't immediately fold under push-back" — planning recaps assume Claude engages with disagreement rather than collapsing into either position. "Walkthroughs one step at a time; alternatives all at once" — multi-step procedures lose usability when bundled, alternative-presentation loses comparison context when sequenced. In `NO-CODE-METHOD.md` the contract is structured as *Required of Claude* (positive lines like the four above) and *Prohibited of Claude* (negative lines — "do not add features not listed in the current batch prompt," "do not refactor without explicit confirmation"), each annotated with the mechanism that breaks without it.
+**The test-confirmation gate.** A new build batch cannot start while any row in TEST-LOG.md from the previous batch is unconfirmed. Confirmation happens per-row, by name, in the planning session after the test session was opened by the after-build subagent — bulk confirmations do not count. Five protocol rules make this concrete: never infer completion, resolve "all others good" before recording, no new build until the test session is closed, Skipped is not Passed, retest after change. Two hooks make it load-bearing: a PreToolUse hook denies any `Task` invocation of batch-executor while pending rows exist, and the SessionStart hook injects a routing override that steers any session opening with pending rows straight to the planning subagent's read-back, regardless of what the no-coder asks. The subagent walks the no-coder through; the record stays trustworthy because no row gets a positive outcome by accident or drift.
 
-**Recommended habits — edit freely.** Some lines are habits surrounding the build sequence: `/clear` after each build, prepare test results as pasteable text, review all upcoming changes before each build. A different user with a different rhythm might rewrite these.
+## The safety net — installing on a folder that isn't empty
 
-**The build sequence — fixed, not advisable to personalise.** The four-phase cycle (session start → planning → before build → after build) is the method's spine. Not part of the editable surface.
+The method assumes a fresh project. Sooner or later someone installs the plugin into a folder that is not fresh — by mistake, or to bring an existing project under the method's discipline. The safety net is the plugin's response.
 
-Each layer has its own section in `NO-CODE-METHOD.md`: *Method contract* (with the Required-of-Claude / Prohibited-of-Claude split), *Recommended habits*, and *The build sequence*.
+When a session opens, **SessionStart** checks whether the folder is *adopted* (carries the method footer in CLAUDE.md) or *unadopted*. Adopted folders, genuinely empty folders, and folders carrying a `.no-code-method-skip` opt-out marker stay silent. An unadopted folder with substantial existing work — code, foreign docs, anything — triggers an advisory pointing at the `/adopt` command.
 
-## Editing surfaces
+Until `/adopt` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-subagent calls from main Claude. Not just a warning — an actual block. `/adopt`'s own scaffolding calls pass through, so adoption can happen while the gate is closed against everything else.
 
-The point of locking is to keep `UX.md` as a stable source of truth that doesn't get edited in flight; structural changes only happen in planning sessions, where they're discussed and decided properly.
+`/adopt` branches on what it finds:
 
-Some docs are stable artefacts — written slowly, deliberately, meant to stay stable. `UX.md` and any additional source-of-truth docs are written in planning sessions, where their design decisions get the time they deserve. The user edits these by hand; Claude (the agent) cannot. `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are the method spec — updated in the method's own development project, then shared verbatim across every project using it.
+- *Empty folder* → walks the four new-project prompts and scaffolds the spine docs with the no-coder's answers folded in.
+- *Existing code, no docs* → offers to scaffold fresh docs alongside, or to opt out via `.no-code-method-skip`.
+- *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to **migrate** the existing CLAUDE.md to method spec (preserving content — Claude proposes edits and iterates with the no-coder until the migration plan is right; anything that does not fit cleanly lands as `[FOLD-IN PENDING]` blocks so nothing is lost), **overwrite** the existing CLAUDE.md after backing it up, or **leave alone** via the opt-out marker.
+- *Already method-managed* → detects template state, surfaces any version mismatch, offers a **refresh** (bumps method-version footers across writable docs directly; locked docs get `[FOLD-IN PENDING]` entries for the no-coder to bump by hand; project-specific content in CLAUDE.md stays intact) or **cancel**.
+- *Opted out* → folder previously chose `.no-code-method-skip`; offers to clear the marker (returning to unadopted) or to stay opted out.
 
-Build sessions are different: short, `/clear`-bounded, build-focused. The wrong environment for stable docs to drift via small "clarifying" tidy-ups. So those docs are locked from Claude — read-only, enforced by the PreToolUse hook. If Claude thinks one should be reworded or reorganised, it tells you in chat instead of editing.
+Nothing destructive happens without explicit confirmation, and every destructive option backs up first.
 
-The full split:
+Why session-start, not install-time? Claude Code's plugin system has no install-time hook the plugin can run code from. The earliest the plugin can act is when a Claude Code session opens in a folder. By the time the no-coder could ask Claude to write a file, the gate has already fired.
+
+## What's inside the plugin
+
+The plugin distributes the method's rules across Claude Code primitives — hooks, subagents, skills, and bundled docs — rather than asking Claude to enforce them from a single long prompt. Non-coders do not normally open these files; the plugin runtime does the work.
+
+- **Hooks** are Python scripts that fire on specific Claude Code events. The SessionStart hook detects what shape of folder the no-coder is working in (adopted, unadopted-with-work, empty, opted-out) and injects an advisory or the universal behavioural rules into Claude's session context. The PreToolUse hook enforces edit boundaries — locking UX.md and additional source-of-truth docs from Claude, blocking edits outside the current batch's `Files:` list, gating new build batches on the previous batch's test outcomes being confirmed, and refusing build batches whose `Serves UX.md:` line names entries that do not exist in UX.md. The Stop hook routes one build batch to the next, or routes to the after-build subagent when a batch finishes.
+- **Subagents** handle the phase work in their own Claude Code contexts: planning, before-build, batch-executor, after-build, and adopt. Each runs its own conversation, then returns a recap that main Claude relays to the no-coder. The context isolation keeps each phase's prompts focused.
+- **Slash commands** (`/adopt`, `/before-build`, `/build`) are the user-facing entry points. Each invokes the matching subagent.
+- **Templates** — the starter shapes for the five spine docs that `/adopt` scaffolds into a new project. These get copied into the project root with method-version footers and start mostly empty.
+- **Bundled reference docs** — `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` live inside the plugin at `plugin/docs/`. The subagents read them at session start via `${CLAUDE_PLUGIN_ROOT}/docs/...`. Non-coders do not normally open these directly; the *When you need more* section at the end of this doc says when reaching for them is worthwhile.
+
+The split between hooks (deterministic enforcement) and subagents (probabilistic behaviour) is deliberate: hooks bite when correctness matters and a prompt-based instruction might be ignored; subagents handle the work that needs judgment.
+
+## What's editable
+
+The method ships with a default set of preferences and commitments. A new no-coder needs to distinguish three layers.
+
+**Method contract — load-bearing, edit at peril.** Some lines read like personal preferences but the method's machinery depends on them. "Push back rather than simply agreeing" — the drift checks, red-flag surfacing, and planning recaps all assume Claude will push back. "Do not stealth-fix regressions" — the build recap assumes Claude states regressions plainly. "Walkthroughs one step at a time; alternatives all at once" — multi-step procedures lose usability when bundled; alternative-presentation loses comparison context when sequenced. These are structured as *Required of Claude* (positive lines) and *Prohibited of Claude* (negative lines — "do not add features not listed in the current batch prompt," "do not refactor without explicit confirmation"), each annotated with the mechanism that breaks without it.
+
+**Recommended habits — edit freely.** Some lines are habits surrounding the build sequence: `/clear` after each build, prepare test results as pasteable text, review all upcoming changes before each build. A different no-coder with a different rhythm might rewrite these.
+
+**The build sequence — fixed.** The four-phase cycle (session start → planning → before build → after build) is the method's spine. Not part of the editable surface.
+
+Each layer has its own section in `NO-CODE-METHOD.md` inside the plugin.
+
+### Editing surfaces — what Claude can write
+
+Some docs are stable artefacts written slowly and deliberately. UX.md and any additional source-of-truth docs are written during planning sessions by hand; Claude (the agent) cannot edit them, enforced by the PreToolUse hook. Build sessions are short, `/clear`-bounded, build-focused — the wrong environment for stable docs to drift via small "clarifying" tidy-ups. So those docs are locked from Claude. When Claude thinks one should be reworded, it surfaces the suggestion in chat rather than editing.
 
 | Doc | Claude (the agent) edit access |
 |---|---|
-| `UX.md` | **read-only** (user edits by hand during planning) |
-| Additional source-of-truth docs (`SYSTEM-PROMPT.md`, `COPY.md`, etc.) | **read-only** (user edits by hand during planning) |
+| `UX.md` | **read-only** (no-coder edits by hand during planning) |
+| Additional source-of-truth docs (`SYSTEM-PROMPT.md`, `COPY.md`, etc.) | **read-only** (no-coder edits by hand during planning) |
 | `BACKLOG.md` | read/write |
 | `MANIFEST.md` | read/write |
+| `TEST-LOG.md` | read/write |
 | `CLAUDE.md` | read/write |
-| `NO-CODE-METHOD.md` | read (method spec, edited in the method's own dev project) |
-| `DOC-STRUCTURE.md` | read (method spec, edited in the method's own dev project) |
+| `NO-CODE-METHOD.md` | read (method spec inside plugin) |
+| `DOC-STRUCTURE.md` | read (method spec inside plugin) |
 
-**`BACKLOG.md` is read/write to Claude** because builds need it (red flags added, completed batches removed, batches split or reordered). The protective rule is built into the build sequence: Claude must discuss every `BACKLOG.md` change with you at the appropriate stage — never silently. The recap rules (after planning, before build, after build) make this explicit.
+`BACKLOG.md` is read/write because builds need it. The protective rule is built into the build sequence: Claude must discuss every `BACKLOG.md` change with the no-coder at the appropriate stage — never silently.
 
-**`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` are read-only across the board** in your project — shared verbatim across every project using the method, so editing them in your project would diverge from the verbatim copy. They get updated in the method's own development project.
-
-**The `[FOLD-IN PENDING]` mechanism.** Claude can't write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in a dedicated *Fold-ins pending* section of `BACKLOG.md`. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt` (during empty-folder scaffold or foreign-doc migration), or a mid-build edit attempt the PreToolUse hook intercepted. During the next planning session, you review pending blocks and fold them into the destination doc by hand (or drop them). Canonical block format and section ordering: `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
+**The `[FOLD-IN PENDING]` mechanism.** Claude cannot write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in BACKLOG.md's *Fold-ins pending* section. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt`, or a mid-build edit attempt the PreToolUse hook intercepted. During the next planning session, the no-coder reviews pending blocks and folds them into the destination doc by hand (or drops them).
 
 ## Why the rules
 
-The rationale behind specific rules in `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` — the *why* that doesn't fit in a tight operational rule. Organised in the order the rules appear.
+The method's rules are not arbitrary; each one defends something. Some of the defences are not obvious from the rule alone, so they live here in prose.
 
-### From NO-CODE-METHOD.md
+**Why Claude is asked to push back rather than agree.** A planning recap that mirrors whatever the no-coder last said is only useful if Claude has engaged with disagreement before recording the outcome. Capitulating without engagement and refusing to listen are mirror failures: both bypass the conversation that would decide whether a suggestion was right. The drift checks, red-flag surfacing, and planning recaps all assume Claude pushes back when something looks wrong — if Claude defaults to agreement, the safety nets stop functioning.
 
-**Push-back without folding.** The rule "if I push back on a suggestion, don't immediately fold and don't immediately dig in" is load-bearing for planning recaps. A recap that mirrors whatever the user last said is only useful if Claude has actually engaged with any disagreement before recording the outcome. Capitulating without engagement and refusing to listen are mirror failures: both bypass a conversation that would decide whether a suggestion was right. (See *What's editable, what's not* for why this is method contract, not personal preference.)
+**Why regressions get stated plainly, not stealth-fixed.** The build recap is the no-coder's primary record of what happened in a build session, used to decide whether to test, push back, or accept. A stealth-fix breaks that record — the regression survives invisibly until it resurfaces later with no breadcrumbs back to its origin. Plain statements keep the recap a reliable trail.
 
-**No stealth-fixing.** The rule "if a build fails or causes a regression, state it plainly rather than silently fixing it" is load-bearing for the build recap. The recap is the user's primary record of what happened in a build session, used to decide whether to test, push back, or accept. A stealth-fix breaks that record — the regression survives invisibly until it resurfaces later with no breadcrumbs back to its origin. Plain statements keep the recap a reliable trail.
+**Why batch scope is locked once agreed.** Mid-build scope additions cost three things the method protects. Predictability of session length — a batch with a fixed file list has a knowable end; one that absorbs "while we're here" additions does not. Clean test coverage — one batch is one set of changes is one set of tests; mid-build mixing makes regressions harder to trace. The planning-gate filter — mid-build, things feel in-scope that would not survive a planning conversation. The rule defers scope decisions back to planning rather than shortcutting them. The two named carve-outs (prerequisite and re-batching) are escape valves the discipline anticipates, not invitations to bend the rule.
 
-**Why batch scope is locked.** Mid-build scope additions cost three things the method protects:
+**Why drift checks operate at four different abstraction levels.** The four checks — UX.md ↔ build, MANIFEST.md ↔ code, MANIFEST.md ↔ UX.md, TEST-LOG.md ↔ what has been touched — operate at different abstraction levels (feature-to-feature, name-to-name, loose user-facing-purpose, per-row code-touch with reasoning trail). Doing all four at once mixes the levels and produces noise. Running them as four separate passes lets each catch the gap it is designed for.
 
-- **Predictability of session length.** A batch with a fixed file list has a knowable end; one that absorbs "while we're here" additions doesn't.
-- **Clean test coverage.** One batch = one set of changes = one set of tests; mid-build mixing makes regressions harder to trace.
-- **The planning-gate filter.** Mid-build, things *feel* in-scope that wouldn't survive a planning conversation. The rule defers scope decisions back to that conversation rather than shortcutting it.
+**Why source-of-truth docs are locked from Claude.** UX.md and additional source-of-truth docs are written slowly, in planning sessions, with the time those decisions deserve. Build sessions are short and build-focused — the wrong environment for stable docs to drift via small "clarifying" tidy-ups. Locking those docs from Claude means design changes can only happen where they get proper deliberation.
 
-The rule isn't absolute. If implementation reveals a prerequisite the batch genuinely cannot complete without — something invisible at planning time — the carve-out is: halt, surface in chat with a one-line justification, wait for the user's okay, label `[Prerequisite, not in plan]` in the build recap. The bar is high ("cannot complete," not "would be nicer") and the protocol is no-silent-prerequisites; both keep the carve-out from becoming a back door for the scope creep the rest of the rule blocks.
+**Why source-of-truth docs cannot carry placeholders or soft gestures at undecidedness.** Source-of-truth docs are operational. Runtime audiences (Claude, the no-coder's future self, anyone reading to remember what was decided) need the instruction, not its status. A line that says "currently undecided" forces the reader elsewhere for the actual rule and makes the doc inert until that elsewhere is found. The status of an open question lives in BACKLOG.md, not in the body of a source-of-truth doc.
 
-**The drift checks at different abstraction levels.** The four drift checks (`UX.md`↔build, `MANIFEST.md`↔code, `MANIFEST.md`↔`UX.md`, `TEST-LOG.md`↔what's-been-touched) operate at different abstraction levels — feature-to-feature, name-to-name, loose user-facing-purpose, and per-row code-touch with reasoning trail. Doing all four at once mixes the levels and produces noise. Run them as four separate passes.
+**Why UX principles are project-specific.** A budgeting app's principles ("never let the user lose data they have entered") look nothing like a task manager's ("reduce planning pressure"). Principles that try to be method-wide become so abstract they stop guarding any actual decision. The job is to write the three-to-six principles that protect *this* project's design from drift, not to compile a general theory of UX.
 
-**Editing surfaces — why some docs are locked to Claude.** Full reasoning in *Editing surfaces* above.
+**Why MANIFEST.md starts flat instead of pre-sectioned.** "Switch to alphabetical sections by area when the flat list grows too long" sounds like permission to start with sections from day one. It is not. Most projects' MANIFEST.md never grows large enough to need sections, and pre-emptive sectioning forces architecture decisions (which "areas" exist?) before there is enough code to know. Wait until scrolling the flat list actually hurts.
 
-### From DOC-STRUCTURE.md
+**Why BACKLOG.md is one file with four sections instead of four files.** Red flags, fold-ins pending, planning batches, and build batches could live in four separate files. They do not, because the friction of multiple places to check is what causes deferred items to slip through. One file, four sections, top-to-bottom by priority means there is exactly one place to look for what is outstanding.
 
-**No placeholders, no soft gestures.** Source-of-truth docs are operational — runtime audiences (Claude, your future self, anyone reading to remember what was decided) need the instruction, not its implementation status. A line that says "currently undecided" forces the reader elsewhere for the actual rule and makes the doc inert until that elsewhere is found. The status of an open question lives in `BACKLOG.md`, not in the doc body.
+**Why Risk accepted is its own labelled line.** Without an explicit *Risk accepted* line, the cost of a deliberate simplification fades from view. Six months later, someone (often the same person who chose the simplification) wonders why the app deliberately omits a feature and considers adding it — without remembering why it was omitted. The Risk-accepted line keeps the trade-off on the page so any re-litigation happens with the original reasoning in view.
 
-**Additional source-of-truth doc shape — loose by design.** Different projects need different additional docs (a system-prompt doc, a copy doc, something else) and the shape that works for one won't work for another. The structural rules — locked to Claude, no placeholders, intent-level, fold-in target — are what's invariant. The shape inside is the project's call.
+**Why a test session must be closed by per-row read-back before the next build can start.** Bulk confirmations ("all the others passed") would silently flip dozens of TEST-LOG rows to confirmed when only a few were actually verified. A single per-row read-back — Claude reads the test description, the no-coder names the outcome — is the only way to keep the record honest. Without that, TEST-LOG.md becomes intentions-as-data rather than decided outcomes.
 
-**UX principles are project-specific.** A budgeting app's principles ("never let the user lose data they've entered") look nothing like a task manager's ("reduce planning pressure"). Principles that try to be method-wide become so abstract they stop guarding any actual decision. The job is to write the three-to-six that protect *this* project's design from drift, not to compile a general theory of UX.
+## What this costs
 
-**The "user needs this because…" line.** See *Four disciplines* above.
-
-**Risk accepted — keeping the trade-off visible.** Without an explicit *Risk accepted* line, the cost of a deliberate simplification fades from view. Six months later, someone (often the same person who chose the simplification) wonders why the app deliberately omits a feature and considers adding it — without remembering why it was omitted. The *Risk accepted* line keeps the trade-off on the page so any re-litigation happens with the original reasoning in view.
-
-**`MANIFEST.md` flat list — don't pre-empt the section split.** The rule "switch to alphabetical sections by area when the flat list grows too long" sounds like permission to start with sections from day one. It's not. Most projects' `MANIFEST.md` never grows large enough to need sections, and pre-emptive sectioning forces architecture decisions (which "areas" exist?) before there's enough code to know. Wait until scrolling the flat list actually hurts.
-
-**`BACKLOG.md` as one file with four sections.** Red flags, fold-ins pending, planning batches, and build batches could live in four separate files. They don't, because the friction of multiple places to check is what causes deferred items to slip through. One file, four sections, top-to-bottom by priority means there's exactly one place to look for what's outstanding.
+A new feature takes two sessions to land — one planning, one build — at minimum. The pipeline is rigid by design. What the discipline buys: every shipped feature traces to a written user-need rationale; nothing gets built that no one decided to build; and at any moment "why is this here?" has an answer on a page that can be opened.
 
 ## Where the method sits in the broader landscape
 
-If you've used Cline's Memory Bank, this will feel familiar — multiple structured markdown files governing AI behaviour, read at session start, with a workflow that loops planning and building. Memory Bank's cut: `projectbrief.md`, `productContext.md`, `activeContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`. This method's cut: `UX`, `MANIFEST`, `BACKLOG`, plus additional source-of-truth docs as needed. Different cuts of the same idea. Memory Bank is general-purpose; this method is shaped around non-coders.
+The method belongs to the spec-driven development family. Closest neighbour: Cline's Memory Bank — same shape (markdown files as project memory and behavioural guardrails, read at session start), different cut of files, different audience. Memory Bank's cut: `projectbrief.md`, `productContext.md`, `activeContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`. This method's cut: UX.md, MANIFEST.md, BACKLOG.md, TEST-LOG.md, plus additional source-of-truth docs as needed. Different cuts of the same idea. Memory Bank is general-purpose; this method is shaped around non-coders.
 
 In the broader spec-driven-development literature (the arXiv paper, the GitHub Spec Kit, the Augment Code guides, the DeepLearning.AI course), this method maps onto the **spec-anchored** rigour level: specs are high-quality context that drive code generation, but code remains the source of truth.
 
@@ -233,11 +230,20 @@ In the broader spec-driven-development literature (the arXiv paper, the GitHub S
 
 Iteratively developed. Has not yet been used to ship an app. The first real Taskflow build under the current version is the next test — and the most honest one.
 
-A known headwind for any methodology relying on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude won't follow them. The method designs around this by making source-of-truth docs read-only to Claude (so big design changes can't slip in mid-build) and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any user should expect to recognise drift and recover from it as part of the skill.
+A known headwind for any methodology relying on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method designs around this by making source-of-truth docs read-only to Claude (so big design changes cannot slip in mid-build) and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any no-coder should expect to recognise drift and recover from it as part of the skill.
 
-## Where the actual files live
+## When you need more
 
-The current versioned method files (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, all templates) live in the `sovereign-implementer` repo on GitHub — *(replace with the real link when the repo goes public)*. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...) — one tag per working session, full commit history walkable from any tag.
+This document is the primer. The method's full specification lives inside the plugin you installed, at `plugin/docs/NO-CODE-METHOD.md` (the behavioural rules and operational procedures) and `plugin/docs/DOC-STRUCTURE.md` (the structural rules for the project's docs). Both files are also browsable on the source repo at `https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs`. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...), one tag per working session.
+
+Reach for them when:
+
+- A concept this primer mentions in passing turns out to matter to a decision being made.
+- A rule's edge case is the thing actually needed.
+- A non-method project is being migrated onto the method and `/adopt`'s case 3 dialogue surfaces a structural rule whose reasoning matters.
+- The method itself is being extended — proposing changes, building related tooling, or distinguishing what is core from what is editable habit.
+
+For everything else, this primer is enough.
 
 ---
-*No-code method — Version 29.*
+*No-code method — Version 30.*

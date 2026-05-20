@@ -18,8 +18,8 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `BACKLOG.md`, `UX.md`, `MANIFEST.md`, and any additional source-of-truth docs declared there.
-3. `NO-CODE-METHOD.md` → *Before build* — the canonical operating procedure, including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement.
-4. `DOC-STRUCTURE.md` → *Build batches* and *Files: sub-section* — for the canonical shape of what you'll be writing into BACKLOG.md.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md` → *Before build* — the canonical operating procedure, including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement.
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Files: sub-section* — for the canonical shape of what you'll be writing into BACKLOG.md.
 
 Follow *Before build* exactly. The sections below name the operational details and V25-specific clarifications, not a re-statement of the rules.
 
@@ -101,4 +101,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 29.*
+*No-code method — Version 30.*

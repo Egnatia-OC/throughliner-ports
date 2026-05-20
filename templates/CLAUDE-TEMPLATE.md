@@ -1,6 +1,6 @@
 # CLAUDE.md — [Project Name]
 
-This is the project's per-project glue file. Claude Code auto-loads it on session start. The structural workflow lives in `NO-CODE-METHOD.md` (verbatim across every project using the no-code method); the structural specs for the project's docs live in `DOC-STRUCTURE.md` (also verbatim). Read those files for the workflow and the doc structure rules. The two project-specific things this file owns are the path block below and any project-specific behavioural notes after it.
+This is the project's per-project glue file. Claude Code auto-loads it on session start. The structural workflow (`NO-CODE-METHOD.md`) and the structural specs for the project's docs (`DOC-STRUCTURE.md`) live inside the no-code-method plugin at `plugin/docs/` — one copy, used by every project the plugin runs on. The plugin's subagents read them on entry; humans can browse the same files at https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs. The two project-specific things this file owns are the path block below and any project-specific behavioural notes after it.
 
 ## Where the docs live
 
@@ -25,4 +25,4 @@ If the project has additional source-of-truth docs (see `DOC-STRUCTURE.md` → *
 
 
 ---
-*No-code method — Version 29.*
+*No-code method — Version 30.*

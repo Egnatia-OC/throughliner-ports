@@ -340,7 +340,7 @@ When I phrase a request as immediate build ("let's add X"), frame the planning-f
 - **[BRIEF]** Apply the *Batch-sizing principle*. If the verification list is long relative to scope, halt and propose a split. On my okay, edit `BACKLOG.md` to split: current batch keeps changes whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created immediately below in priority. New batches inherit the current batch's `Serves` line(s) unless the split crosses serve-line boundaries. Then re-run Files: enumeration on whichever batch is now top.
 - **[SILENT]** Make any further edits to `BACKLOG.md` requested in batch review directly. Don't ask me to edit.
 - **[BRIEF]** Flag any conflicts or concerns before proceeding.
-- **[PROMPT]** Prompt me to switch out of plan mode, then run `/build` (or wait for the Stop hook to auto-continue) to start this batch.
+- **[PROMPT]** Prompt me to run `/build` (or wait for the Stop hook to auto-continue) to start this batch. If I'm in plan mode for any reason, ask me to switch out first — `/build` invokes file edits that plan mode blocks.
 
 #### Batch-sizing principle
 
@@ -365,4 +365,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 29.*
+*No-code method — Version 30.*

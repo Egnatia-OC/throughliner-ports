@@ -25,8 +25,8 @@ Read these docs in this order, every invocation. The system prompt does not dupl
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
-3. `NO-CODE-METHOD.md` → *During planning* — the canonical operating procedure for everything below.
-4. `DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md` → *During planning* — the canonical operating procedure for everything below.
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
 Follow *During planning* exactly. The sections below name the operational details and V22 / V26 / V27 clarifications, not a re-statement of the rules.
 
@@ -114,4 +114,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 29.*
+*No-code method — Version 30.*
