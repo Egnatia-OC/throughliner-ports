@@ -46,7 +46,7 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       in CLAUDE.md AND has substantial work AND no `.no-code-method-skip`
       opt-out marker. Allows Task → no-code-method:adopt always (that's
       the resolution mechanism). Allows Edit/Write/MultiEdit on scaffold
-      paths (UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md, the
+      paths (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md, the
       opt-out marker file) so /adopt's scaffolding works. The full V29
       architecture context (why this gate exists in PreToolUse and not at
       SessionStart) is in universal-behaviour.md → *Routing main-Claude's
@@ -151,6 +151,7 @@ METHOD_SUBAGENT_PREFIX = "no-code-method:"
 SCAFFOLD_NAMES = frozenset({
     "UX.md",
     "BACKLOG.md",
+    "BUILD-LOG.md",
     "MANIFEST.md",
     "TEST-LOG.md",
     "CLAUDE.md",
@@ -160,7 +161,7 @@ SCAFFOLD_NAMES = frozenset({
 # Path-block keys treated as writable. Everything else in the path block —
 # UX.md, plus any additional source-of-truth docs declared by the project —
 # is locked.
-WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "MANIFEST.md", "TEST-LOG.md"}
+WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md"}
 
 # PATH_BLOCK_PATTERN now lives in project_state.py (V28 extraction).
 

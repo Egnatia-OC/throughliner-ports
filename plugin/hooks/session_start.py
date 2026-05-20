@@ -101,13 +101,13 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 32
+PLUGIN_METHOD_VERSION = 33
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
 # TEST-LOG.md added in V26 (spine-doc promotion) / V27 (detection wiring).
-SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
+SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md")
 
 # CLAUDE.md's path block is the first fenced JSON code block in the file.
 # Same pattern as pre_tool_use.py — see V18's path block format spec.

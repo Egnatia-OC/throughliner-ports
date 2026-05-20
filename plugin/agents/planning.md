@@ -24,7 +24,7 @@ Trust `primary_intent` as your starting flow. Do not re-classify it. *But* — s
 Read these docs in this order, every invocation. The system prompt does not duplicate their contents — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `UX.md`, `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
 The operating procedure for *During planning* is inlined in this file (see *Procedure order* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
@@ -151,4 +151,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 32.*
+*No-code method — Version 33.*

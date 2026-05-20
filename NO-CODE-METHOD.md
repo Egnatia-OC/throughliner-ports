@@ -39,7 +39,10 @@ Method-specific terms used throughout this doc and `DOC-STRUCTURE.md`. Cross-ref
 - **Drift check.** Four checks Claude runs at the start of every planning session: `UX.md` ↔ what's built, `MANIFEST.md` ↔ the codebase, `MANIFEST.md` ↔ `UX.md` (loose), and `TEST-LOG.md` ↔ what's been touched since each row was recorded (Rule 5 — retest after change). First three are pairwise; the fourth is a code-touch check per row.
 - **Fold-in.** Moving proposed source-of-truth content from `BACKLOG.md` into the destination doc (usually `UX.md`). Claude queues content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only; the user does the actual fold-in by hand during a planning session. Origins: planning-batch resolution, `/adopt case 1` (new-project prompts), `/adopt case 3` (migration), or a mid-build edit attempt intercepted by the PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes that batch in the same session.
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
-- **Build recap.** Plain-English summary Claude provides at the end of every build (per *After every build*). Not persisted — lives in chat. Used by me to decide whether to test, push back, or accept.
+- **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by after-build. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
+- **Build recap.** Plain-English summary Claude provides at the end of every build in chat (per *After every build*). Not persisted — lives in chat only. The persistent per-build record is the build log entry (see above), written to `BUILD-LOG.md` by the same after-build phase. Used by me to decide whether to test, push back, or accept.
+- **Draft.** A `planning/drafts/<topic>.md` file holding substantive content not yet ready for a specific doc. Complements `BACKLOG.md`'s *Fold-ins pending* (destination-specific, for source-of-truth doc content); drafts hold everything else — comparison tables, structural sketches, protocol rules, option matrices. Written at "good enough to walk away from"; deleted when consumed; dead-end drafts pruned with a one-line note in the next build log entry. Full rules: `DOC-STRUCTURE.md` → *planning/drafts/ folder*.
+- **Frame-correction sweep.** After-build check: when a build substantively changes how a feature works, scan `BACKLOG.md` planning batches and `[FOLD-IN PENDING]` blocks for entries that reference the old behaviour. Candidates flagged in chat for review at the next planning session. `UX.md` drift is not part of the sweep — already caught by drift check 1 (UX.md ↔ what's built) during planning.
 - **Test session.** The state `TEST-LOG.md` enters after a build ships. *Opened* during *After every build* by writing one row per user-observable behaviour the recap names, with blank `Status` and `Confirmed Explicitly: No`. *Closed* during the next planning session's first sub-step (Rule 2) by per-row read-back: the user names each pending row and gives its outcome (Pass / Fail / Skipped). An unclosed test session blocks the next build batch (Rule 3).
 - **Pass.** A `TEST-LOG.md` row `Status` meaning: the user ran the test and the behaviour matched. Pass with `Confirmed Explicitly: Yes` is the only outcome that closes a row positively.
 - **Fail.** Row `Status` meaning: the user ran the test and the behaviour did not match. Requires a `User Notes` line describing what actually happened, so the regression has context in future sessions.
@@ -132,19 +135,21 @@ Starting points; adapt to fit how you actually work.
 
 ## The documents that describe my projects
 
-Four files with different jobs. Read the one relevant to what you're doing.
+Five files with different jobs, plus a drafts folder. Read the one relevant to what you're doing.
 
 - `UX.md` — user-facing description of the app: every feature and behaviour visible in the UI, plus why the user needs it. Read-only to Claude (full rule in *Editing surfaces*); user maintains it directly during planning sessions.
 - `MANIFEST.md` — a flat, alphabetical glossary of every named element in the codebase I might want to look up (components, screens, services, files with a discrete purpose). One-line plain-English entries. You maintain it during builds. Lookup reference, not cover-to-cover reading — when I need to refresh on something, point me to UX.md, not MANIFEST.md.
 - `TEST-LOG.md` — row-per-test record of every shipped build batch's outcomes (eight columns: # / Date / Session / Component / Test Description / Status / Confirmed Explicitly / User Notes). Maintained by Claude during builds (blank-`Status` rows added when a batch ships) and planning (rows confirmed via per-row read-back). See `DOC-STRUCTURE.md` → *TEST-LOG.md structure* for column shape and pruning.
 - `BACKLOG.md` — deferred changes not yet built, organised as batches. Maintained by Claude (not me) during planning; see `DOC-STRUCTURE.md` → *BACKLOG.md structure*.
+- `BUILD-LOG.md` — running record of decisions, changes, and reasoning for every build, newest-first. Maintained by Claude during builds (after-build writes the entry). Not read cover-to-cover — search and scan when you need the "why" behind a previous build's choices. See `DOC-STRUCTURE.md` → *BUILD-LOG.md structure* for entry shape.
+- `planning/drafts/<topic>.md` — destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Written during builds or planning when content is "good enough to walk away from." Deleted when consumed; dead-ends pruned with a one-line note in `BUILD-LOG.md`. See `DOC-STRUCTURE.md` → *planning/drafts/ folder*.
 
 ### Editing surfaces
 
 Some docs are read-only to Claude and edited only by the user, by hand, during planning sessions. If you think one should be reworded or reorganised, flag in chat at the end of your response. Never edit them.
 
 **Read-only to Claude:** `UX.md`, any additional source-of-truth doc, `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`.
-**Read/write to Claude:** `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Read/write to Claude:** `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
 For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The recap rules under *During planning*, *Before build*, and *After every build* make this explicit.
 
@@ -166,6 +171,8 @@ Canonical block format and section placement: `DOC-STRUCTURE.md` → *BACKLOG.md
 **`MANIFEST.md`.** Read/write. Look up entries on demand when you encounter a name you want context on. Read the full file at the start of every planning session for the drift checks. Update during *After every build* for anything created, renamed, or removed.
 
 **`TEST-LOG.md`.** Read/write. Read at the start of every planning session to find rows with `Confirmed Explicitly: No` from the previous build batch (test-session-close read-back, Rule 2) and to run the fourth drift check (Rule 5). Write rows during *After every build* (one per user-observable behaviour the recap names) and during the planning-session read-back (updating `Status` and `Confirmed Explicitly`). Same discussion contract as `BACKLOG.md`.
+
+**`BUILD-LOG.md`.** Read/write. Written by after-build (one entry per completed batch). Read by the planning subagent for session identification (test-confirmation gate hook fallback). Search when you need the "why" behind a previous build's choices.
 
 **`NO-CODE-METHOD.md` and `DOC-STRUCTURE.md`.** Read-only. Method spec, shared verbatim across every project, updated in the method's own development project. Read `DOC-STRUCTURE.md` when migrating an existing project's docs onto this method, or when consulting structural rules for source-of-truth docs.
 
@@ -242,7 +249,7 @@ Two-hook architecture protecting user files in unadopted folders (per *Vocabular
 
 `/adopt` is the single entry point for getting a folder onto (or off of) the no-code method. It detects folder state and routes to one of five cases. Subagent body: `plugin/agents/adopt.md`. Slash-command entry: `plugin/skills/adopt/SKILL.md`. Cases 1 and 3 carry forward the substance of the pre-V29 new-project and migration routes.
 
-**Case 1 — Empty folder.** **[SEQUENCE]** Folder has no method footer in `CLAUDE.md` AND no substantial existing content (per *Safety net mechanism → Detection thresholds*). `/adopt` scaffolds the spine templates (`CLAUDE.md`, `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`) with method-version footers, then walks me through four prompts in order. Skip any I've substantively answered in my opening message — acknowledge and move on. For partially-answered prompts, acknowledge what was given and ask only the remainder, treating it as one prompt for the count.
+**Case 1 — Empty folder.** **[SEQUENCE]** Folder has no method footer in `CLAUDE.md` AND no substantial existing content (per *Safety net mechanism → Detection thresholds*). `/adopt` scaffolds the spine templates (`CLAUDE.md`, `UX.md`, `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`) with method-version footers and creates a `planning/drafts/` directory, then walks me through four prompts in order. Skip any I've substantively answered in my opening message — acknowledge and move on. For partially-answered prompts, acknowledge what was given and ask only the remainder, treating it as one prompt for the count.
 
 1. **Project context.** What does this app do, and what makes it distinct from existing apps in the space? (Goes into UX.md "Project context" paragraph.)
 2. **UX principles.** What 3–6 principles should guide every design decision? Ask one at a time if needed.
@@ -358,11 +365,13 @@ The existing "small enough to build and test in one session" rule still applies;
 
 - **[SILENT]** Update `MANIFEST.md`: add entries for anything created, update for anything renamed or changed, remove for anything deleted.
 - **[BRIEF]** Provide a build recap. Plain English, no jargon ("I am adding a check to the age field so people can't enter negative numbers"). For every change, label `[Requested]` (I asked) or `[Suggested]` (you proposed). For any carve-out additions made during the build, also label `[Prerequisite, not in plan]` or `[Re-batch, not in plan]` per *Prohibited → Two exceptions*.
-- **[BRIEF]** Surface end-of-recap flags per *Where each kind of flag goes*: out-of-scope improvements noticed but not acted on; user-facing changes the build implies `UX.md` should reflect; any Red flag concerns surfaced during the build (with the BACKLOG.md entry confirmed if I deferred it).
 - **[SILENT]** **Open the test session.** Enumerate the user-observable behaviours the recap names as needing testing. For each, append a row to `TEST-LOG.md` with: today's `Date`, the build's `Session` (project's session tag if it keeps tags, today's `YYYY-MM-DD` otherwise), the `Component` (matching `MANIFEST.md` where possible, plain English if cross-component), a one-sentence `Test Description`, blank `Status`, `Confirmed Explicitly: No`, blank `User Notes`. These blank-Status rows define the test session that next planning's first sub-step will close. Per *Method contract → Prohibited → Test-confirmation gate*, the next build batch is gated on these rows being confirmed.
+- **[SILENT]** **Write a `BUILD-LOG.md` entry.** Append a newest-first entry to `BUILD-LOG.md` using the canonical shape from `DOC-STRUCTURE.md` → *BUILD-LOG.md structure*: What shipped (drawn from the recap), Decisions taken and why, Pivots and surprises, Carried forward (deferred items from the end-of-recap flags). If `BUILD-LOG.md` doesn't exist, create it with the template header first. If an entry for this session already exists, do not append a duplicate.
+- **[BRIEF]** **Frame-correction sweep.** If the build substantively changed how a feature works (rewrite, rename, new interaction pattern, changed data flow), scan `BACKLOG.md`'s *Planning batches* and *Fold-ins pending* for entries that reference the old behaviour. For each candidate, flag in chat for review at next planning. If no candidates (the common case), one sentence: "No frame-correction candidates in BACKLOG.md."
+- **[BRIEF]** Surface end-of-recap flags per *Where each kind of flag goes*: out-of-scope improvements noticed but not acted on; user-facing changes the build implies `UX.md` should reflect; any Red flag concerns surfaced during the build (with the BACKLOG.md entry confirmed if I deferred it).
 - **[PROMPT]** Prompt me to refresh my download of the project and begin testing — and to bring per-row test outcomes (Pass / Fail / Skipped) to the next planning session, where the planning subagent will walk the read-back row by row.
 - **[PROMPT]** Prompt me to `/clear` and switch back to planning mode when testing is complete.
 
 
 ---
-*No-code method — Version 32.*
+*No-code method — Version 33.*

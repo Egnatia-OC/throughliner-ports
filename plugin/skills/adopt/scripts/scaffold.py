@@ -11,8 +11,9 @@ Three modes, each writes a single JSON object to stdout:
                right dialogue branch on entry.
 
   check  Recursively scan cwd for any file whose name matches one of the
-         destination filenames (CLAUDE.md, UX.md, BACKLOG.md, MANIFEST.md,
-         TEST-LOG.md). No writes. Output: {target_path, conflicts, ready}.
+         destination filenames (BUILD-LOG.md, CLAUDE.md, UX.md, BACKLOG.md,
+         MANIFEST.md, TEST-LOG.md). No writes. Output: {target_path,
+         conflicts, ready}.
 
   write  Copy the bundled templates from plugin/templates/ into cwd root,
          renaming each template to its destination filename. Refuses if the
@@ -58,6 +59,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Filenames that the method's runtime expects in a project.
 # The recursive scan looks for these names anywhere under cwd.
 DESTINATION_FILENAMES = (
+    "BUILD-LOG.md",
     "CLAUDE.md",
     "BACKLOG.md",
     "MANIFEST.md",
@@ -71,6 +73,7 @@ TEMPLATE_TO_DESTINATION = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
     ("UX-TEMPLATE.md", "UX.md"),
     ("BACKLOG-TEMPLATE.md", "BACKLOG.md"),
+    ("BUILD-LOG-TEMPLATE.md", "BUILD-LOG.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
     ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
@@ -187,9 +190,13 @@ def cmd_write(target_dir: Path) -> int:
         shutil.copyfile(src_dir / tpl_name, target_dir / dest_name)
         written.append(dest_name)
 
+    drafts_dir = target_dir / "planning" / "drafts"
+    drafts_dir.mkdir(parents=True, exist_ok=True)
+
     return emit({
         "written": True,
         "files": written,
+        "directories_created": ["planning/drafts/"],
         "target_path": str(target_dir),
     })
 

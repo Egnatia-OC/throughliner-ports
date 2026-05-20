@@ -118,7 +118,7 @@ Trust each subagent's recap. Relay it to the user. If the user pushes back on so
 Some of a consumer project's docs are read-only to Claude and edited only by the user, by hand, during planning sessions. If you think one should be reworded or reorganised, flag in chat at the end of your response. Never edit them.
 
 **Read-only to Claude:** `UX.md`, any additional source-of-truth doc declared in `CLAUDE.md`'s path block.
-**Read/write to Claude:** `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Read/write to Claude:** `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
 For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The planning subagent's *BACKLOG.md editing — do, then describe* section makes this explicit.
 

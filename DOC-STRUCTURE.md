@@ -86,6 +86,46 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, empty table, and an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies. The comment stays as a permanent format reminder; rows append above it. No placeholder row — same convention as `MANIFEST.md`.
 
+## BUILD-LOG.md structure
+
+**Header.** Brief statement of what `BUILD-LOG.md` is: a running record of decisions, changes, and reasoning for every build, newest-first. Maintained by Claude during builds (after-build writes one entry per completed batch). Not for cover-to-cover reading.
+
+Starts empty. Entry-format reminder lives in an HTML comment until the first build.
+
+**Entries.** One per build, newest first. Each entry:
+
+```markdown
+## <Session> — YYYY-MM-DD — One-line summary
+
+**What shipped.** Short plain-English paragraph describing concrete deliverables. Reference TEST-LOG row range rather than restating test outcomes.
+
+**Decisions taken and why.** Two or three bullets on load-bearing decisions — what was chosen, alternatives considered, what tipped the call. Skip housekeeping; focus on choices shaping future sessions.
+
+**Pivots and surprises.** Anything that turned out differently than the plan expected — a bug, a wrong assumption, an external fact discovered mid-build.
+
+**Carried forward.** Items raised but not done, with destination (which planning batch, BACKLOG entry, or "not pursued — reason").
+```
+
+**Session identifier.** Matches `TEST-LOG.md`'s `Session` column convention — project-internal tag (e.g. `V27`) if the project keeps tags, `YYYY-MM-DD` otherwise. The after-build phase uses the same session-identification logic for both.
+
+**Ordering.** Newest-first. A reader looking for recent context opens the file and reads from the top.
+
+**Maintenance.** After-build writes one entry per completed batch. Planning reads for session identification (test-confirmation gate fallback). Entries are permanent — not pruned, not edited after the fact. If a later build invalidates a decision recorded in an earlier entry, the later entry says so in its own *Pivots and surprises*; the earlier entry stays as-is.
+
+**Template.** `templates/BUILD-LOG-TEMPLATE.md` is empty by default — header and an HTML comment with the canonical entry format. Same convention as `MANIFEST-TEMPLATE.md` and `TEST-LOG-TEMPLATE.md`.
+
+## planning/drafts/ folder
+
+**Location.** `planning/drafts/<topic>.md` — project root relative. Created by `/adopt` scaffold (empty directory).
+
+**Purpose.** Destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Complements `BACKLOG.md`'s *Fold-ins pending* section, which is destination-specific (source-of-truth doc content queued for fold-in). Drafts hold everything else: comparison tables, structural sketches, protocol rules, column shapes, option matrices — content that has value for a future session but doesn't yet have a clear home.
+
+**Lifecycle.** Written during builds or planning when content is "good enough to walk away from" — the bar is preservation, not polish. Deleted when consumed (folded into a spec, a source-of-truth doc, or a BACKLOG batch) — in the same session as the consumption, so the file and its destination stay in sync. Dead-end drafts are pruned with a one-line note in the next `BUILD-LOG.md` entry.
+
+**Format.** One file per topic, kebab-case filename (e.g. `settings-panel-layout.md`, `notification-channel-options.md`). No required internal shape — the content is pre-decision, so no template.
+
+**Access.** Read/write to Claude. No locking — drafts are working material, not source-of-truth docs.
+
 ## BACKLOG.md structure
 
 `BACKLOG.md` consolidates everything deferred, in four sections in fixed order.
@@ -121,4 +161,4 @@ Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METH
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 32.*
+*No-code method — Version 33.*

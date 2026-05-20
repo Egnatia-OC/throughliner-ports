@@ -6,6 +6,34 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V33 — 2026-05-20 — Consumer-side BUILD-LOG, planning/drafts/, and frame-correction sweep
+
+**What shipped.** Three coupled additions to the consumer method's *After every build* phase, all landing in `plugin/agents/after-build.md` → *Work loop* (and mirrored in docs-only `NO-CODE-METHOD.md`).
+
+- **BUILD-LOG.md as 6th spine doc.** New `BUILD-LOG-TEMPLATE.md` (both template locations). `scaffold.py` scaffolds it alongside the other five. After-build writes one entry per build — What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Session identification reads the latest `## <token>` heading (existing mechanism, now always present). CLAUDE-TEMPLATE path block gained the `BUILD-LOG.md` entry. Both DOC-STRUCTURE copies gained a *BUILD-LOG.md structure* section.
+- **`planning/drafts/` folder.** Destination-agnostic carryover for substantive chat content not yet doc-ready. `scaffold.py` creates the directory at `/adopt` time. Lifecycle documented in both DOC-STRUCTURE copies (*planning/drafts/ folder* section). Three new Vocabulary terms: *Build log entry*, *Draft*, *Frame-correction sweep*.
+- **Frame-correction sweep.** After-build step 6 (new): when a build substantively changes a feature, scan BACKLOG.md planning batches and `[FOLD-IN PENDING]` blocks for old-behaviour references. Flag candidates in chat; silent if none. Scope is BACKLOG only — UX.md drift already caught by planning's drift check 1.
+- **Parity sweep caught ~8 files beyond the 11-file plan.** `session_start.py` (`SPINE_FILENAMES`), `pre_tool_use.py` (`WRITABLE_LOGICAL_NAMES`, `SCAFFOLD_NAMES`), `planning.md` (load list), `before-build.md` (load list), `adopt.md` (Case 1/2/3 scaffold lists), `CLAUDE-TEMPLATE.md` (path block, both copies), `BUILD-METHOD.md` (footer-bump list). The plan had said "no changes" to several of these — wrong.
+
+**Decisions taken and why.**
+
+- **Both chat recap and BUILD-LOG entry (not either/or).** Chat recap is the ephemeral in-session announcement; BUILD-LOG entry is the persistent audit trail. Different audiences, different lifecycles — no reason to collapse.
+- **Frame-sweep scope: BACKLOG.md only.** UX.md drift is already caught by planning's drift check 1 at next session open. Sweeping UX.md here would duplicate that work and blur ownership.
+- **Frame-sweep ownership: after-build (not planning).** Build context is freshest right after the build. Dev-project does it at session-close for the same reason. Consumer-side mirrors that.
+- **Drafts as own DOC-STRUCTURE section (not sub-section of Editing surfaces).** Drafts have lifecycle, format, and access rules — enough substance to warrant a standalone section rather than a cramped bullet under Editing surfaces.
+
+**Pivots and surprises.**
+
+- **Context compaction mid-session.** The conversation hit context limits and was continued from a summary. All in-flight work survived — the compaction summary accurately captured the pending `SCAFFOLD_NAMES` edit and the parity sweep state. No work lost.
+- **Plan underestimated the blast radius.** The plan listed 11 files; actual edits touched ~19 distinct files (excluding footer bumps). Every new spine doc propagates to: template (×2), scaffold script, hook constants (×2), subagent load lists (×3), CLAUDE-TEMPLATE path block (×2), INVENTORY, Crash course, NO-CODE-METHOD, BUILD-METHOD footer list. Worth remembering for future "add a spine doc" sessions.
+
+**Carried forward.**
+
+- **Smoke test owed.** Plan §5 specifies `claude --plugin-dir` against `~/v33-scratch` — `/adopt` scaffolds BUILD-LOG.md + `planning/drafts/`, then a build batch fires after-build which writes the BUILD-LOG entry and runs the frame sweep. Not done this session.
+- **Docs-only NO-CODE-METHOD.md still uses plugin-specific phrasing** (carried from V32). Substance correct, framing wrong for project-agnostic audience. Slot for a future session or a dedicated docs-only rewrite.
+
+---
+
 ## V32 — 2026-05-20 — NO-CODE-METHOD.md retired from plugin; two-write architecture established
 
 **What shipped.** The "retirement" reframe (see *Pivots and surprises*) split the canonical method content into two parallel artefact sets: plugin-side (operational) and docs-only (project-agnostic prose).

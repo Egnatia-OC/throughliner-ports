@@ -17,9 +17,10 @@ A short prose prompt from main Claude (forwarded from the Stop hook's redirect r
 Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
-4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-LOG.md structure* — for the canonical entry shape (What shipped / Decisions taken and why / Pivots and surprises / Carried forward).
+5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
 
 The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
 
@@ -78,12 +79,40 @@ After the load + identify + idempotency check, perform these steps in order. The
    - Carve-out additions made during the build (visible in BACKLOG.md as `[Prerequisite, not in plan]` on `Files:` entries, or as a batch split note for `[Re-batch, not in plan]`) get those labels appended in the recap.
    - The verification list — one bullet per row you wrote to TEST-LOG.md, in the order the user will see them — so the user knows what to test.
 
-5. **End-of-recap flags** (per *After every build* step 3, surfaced via *Where each kind of flag goes*):
+5. **Write `BUILD-LOG.md` entry** — `[SILENT]`. Append a newest-first entry to `BUILD-LOG.md` using the canonical shape from `DOC-STRUCTURE.md` → *BUILD-LOG.md structure*:
+
+   ```markdown
+   ## <Session> — YYYY-MM-DD — One-line summary
+
+   **What shipped.** <drawn from the recap — plain-English paragraph of concrete deliverables; reference TEST-LOG row range rather than restating test outcomes>
+
+   **Decisions taken and why.** <two or three bullets on load-bearing decisions from the batch — what was chosen, alternatives considered, what tipped the call; skip housekeeping>
+
+   **Pivots and surprises.** <anything that turned out differently than the plan expected — carve-outs, bugs, wrong assumptions, external facts discovered mid-build; omit if none>
+
+   **Carried forward.** <items raised in the end-of-recap flags that name deferred items, with destination; omit if none>
+   ```
+
+   Session identifier: per *Session identification* above. Date: today. Summary: one-line distillation of What shipped.
+
+   If `BUILD-LOG.md` doesn't exist at the path-block location (or project root fallback), create it with the template header first — the canonical header is in `BUILD-LOG-TEMPLATE.md`.
+
+   If `BUILD-LOG.md` already has an entry for this session (same Session identifier in its topmost `## <token>` heading), do not append a duplicate — this is the BUILD-LOG counterpart of the test-session idempotency check.
+
+6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan `BACKLOG.md`'s *Planning batches* and *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption.
+
+   For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[FOLD-IN PENDING] block for *<doc>* assumes [old behaviour] — review at next planning session."
+
+   If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG.md."
+
+   The sweep is not exhaustive — it catches cases where BACKLOG items would mislead the next session if read without knowing the build changed the frame. UX.md drift is already caught by drift check 1 (UX.md ↔ what's built) in the next planning session; don't duplicate that here.
+
+7. **End-of-recap flags** (per *After every build* step 3, surfaced via *Where each kind of flag goes*):
    - Out-of-scope improvements you noticed but did not act on.
    - User-facing changes the build implies `UX.md` should reflect (do not edit `UX.md` — it is locked to you; the flag is the only action).
    - Any Red flag concerns surfaced during the build. If the user deferred any, confirm the `BACKLOG.md` Red flags entry was written per the canonical format.
 
-6. **Closing prompts** (per *After every build* steps 4–5):
+8. **Closing prompts** (per *After every build* steps 6–7):
    - `[PROMPT]` "Refresh your download of the project and begin testing. Bring per-row test outcomes (Pass / Fail / Skipped) to the next planning session — the planning subagent will walk each TEST-LOG row by row asking for the outcome."
    - `[PROMPT]` "`/clear` and switch back to planning mode when testing is complete."
 
@@ -104,4 +133,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 32.*
+*No-code method — Version 33.*

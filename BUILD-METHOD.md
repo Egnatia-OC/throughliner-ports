@@ -176,6 +176,7 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
 - `plugin/templates/BACKLOG-TEMPLATE.md`
+- `plugin/templates/BUILD-LOG-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
@@ -190,6 +191,7 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - `templates/CLAUDE-TEMPLATE.md`
 - `templates/UX-TEMPLATE.md`
 - `templates/BACKLOG-TEMPLATE.md`
+- `templates/BUILD-LOG-TEMPLATE.md`
 - `templates/MANIFEST-TEMPLATE.md`
 - `templates/TEST-LOG-TEMPLATE.md`
 - `templates/ADDITIONAL-DOC-TEMPLATE.md`

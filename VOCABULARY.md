@@ -34,7 +34,13 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 
-- **Build recap.** Plain-English summary the after-build subagent provides at the end of every build. Not persisted — lives in chat. Used by the user to decide whether to test, push back, or accept.
+- **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by the after-build phase. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
+
+- **Build recap.** Plain-English summary the after-build phase provides at the end of every build in chat. Not persisted — lives in chat only. The persistent per-build record is the build log entry (see above), written to `BUILD-LOG.md` by the same after-build phase. Used by the user to decide whether to test, push back, or accept.
+
+- **Draft.** A `planning/drafts/<topic>.md` file holding substantive content not yet ready for a specific doc. Complements `BACKLOG.md`'s *Fold-ins pending* (destination-specific, for source-of-truth doc content); drafts hold everything else — comparison tables, structural sketches, protocol rules, option matrices. Written at "good enough to walk away from"; deleted when consumed (folded into a spec, a source-of-truth doc, or a BACKLOG batch); dead-end drafts pruned with a one-line note in the next build log entry. Full rules: `DOC-STRUCTURE.md` → *planning/drafts/ folder*.
+
+- **Frame-correction sweep.** After-build check: when a build substantively changes how a feature works, scan `BACKLOG.md` planning batches and `[FOLD-IN PENDING]` blocks for entries that reference the old behaviour. Candidates flagged in chat for review at the next planning session. `UX.md` drift is not part of the sweep — already caught by drift check 1 (UX.md ↔ what's built) during planning.
 
 - **Test session.** The state `TEST-LOG.md` enters after a build ships. *Opened* during *After every build* by writing one row per user-observable behaviour the recap names, with blank `Status` and `Confirmed Explicitly: No`. *Closed* during the next planning session's first sub-step by per-row read-back: the user names each pending row and gives its outcome (Pass / Fail / Skipped). An unclosed test session blocks the next build batch (test-confirmation gate).
 
@@ -47,4 +53,4 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep `BUILD-LOG.md` for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 4 (retest after change).
 
 ---
-*No-code method — Version 32.*
+*No-code method — Version 33.*

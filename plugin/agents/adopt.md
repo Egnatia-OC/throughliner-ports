@@ -55,7 +55,7 @@ The folder is genuinely fresh. No CLAUDE.md, no substantial work, no opt-out mar
 
 **Open with:**
 
-> Looks like this is a fresh folder. I'll ask you four quick questions about the project, then scaffold the method's doc set (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md, TEST-LOG.md) — your answers go into UX.md and BACKLOG.md so the docs start with real content, not placeholders.
+> Looks like this is a fresh folder. I'll ask you four quick questions about the project, then scaffold the method's doc set (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, CLAUDE.md, TEST-LOG.md) and create the `planning/drafts/` folder — your answers go into UX.md and BACKLOG.md so the docs start with real content, not placeholders.
 
 Then walk the four new-project questions one at a time (one question per message, wait for the answer, ask the next):
 
@@ -72,7 +72,7 @@ After the four answers:
 
 **Recap to main Claude:**
 
-> Adopted (case 1 — empty folder). Scaffolded UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`. User's four answers folded into UX.md (Project context, UX principles, Functionalities) and BACKLOG.md (first build batch sketch).
+> Adopted (case 1 — empty folder). Scaffolded UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/`. User's four answers folded into UX.md (Project context, UX principles, Functionalities) and BACKLOG.md (first build batch sketch).
 
 ---
 
@@ -100,7 +100,7 @@ Wait for the user's choice.
 
 **Recap:**
 
-> Adopted (case 2 — existing code, no docs). Scaffolded UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>` alongside the existing code. [If the user answered some/all of the four new-project questions: name which got folded in and which are pending.]
+> Adopted (case 2 — existing code, no docs). Scaffolded UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/` alongside the existing code. [If the user answered some/all of the four new-project questions: name which got folded in and which are pending.]
 
 **On option 2 (cancel / opt out):**
 
@@ -138,7 +138,7 @@ Wait for the user's choice.
 2. Read `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md` to see the target shape: header, fenced-JSON path block, project-specific-notes section, method footer.
 3. Propose edits as a unified plan: "Keep [content X] under *Project-specific notes*; add the path block at [position]; add the method footer at the end. Anything I should preserve I haven't named?" Iterate with the user until they're satisfied.
 4. Apply the edits via `Edit` calls on the existing `CLAUDE.md`. The PreToolUse V29 gate allows CLAUDE.md edits because it's on the scaffold-paths list.
-5. Run `check` and `write` to scaffold the other spine docs (UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md). If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
+5. Run `check` and `write` to scaffold the other spine docs (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and create the `planning/drafts/` directory. If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
 6. Surface anything that couldn't be migrated as `[FOLD-IN PENDING]` blocks in BACKLOG.md so they're not lost.
 
 **Recap:**
@@ -306,4 +306,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 32.*
+*No-code method — Version 33.*
