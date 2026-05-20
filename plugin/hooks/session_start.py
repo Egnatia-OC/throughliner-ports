@@ -101,7 +101,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 30
+PLUGIN_METHOD_VERSION = 32
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -391,8 +391,8 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
     The block is intentionally directive: it tells main Claude to route
     the next planning-subagent invocation regardless of the opener's
     classification, because the test session is the gate. The planning
-    subagent's first sub-step (per NO-CODE-METHOD.md → During planning,
-    Rule 2) will walk the rows below."""
+    subagent's first sub-step (per planning.md → *Close the previous
+    build's test session*) will walk the rows below."""
     row_lines = []
     for r in unconfirmed_rows:
         component = r.get("component") or "(no component)"
@@ -421,11 +421,11 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
 
     return (
         "- **TEST-LOG tripwire: previous build batch's test session is "
-        "still open.** Per NO-CODE-METHOD.md → *Method contract → "
-        "Prohibited of Claude → Test-confirmation gate* (Rule 3) and "
-        "*During planning* (Rule 2, first sub-step), the next planning "
-        "session MUST close the test session via per-row read-back before "
-        "any new build batch can start.\n\n"
+        "still open.** Per `universal-behaviour.md` → *Prohibited "
+        "behaviours* → 'Do not invoke the batch-executor', and per "
+        "`planning.md` → *Close the previous build's test session*, "
+        "the next planning session MUST close the test session via "
+        "per-row read-back before any new build batch can start.\n\n"
         f"  {mode_note}\n\n"
         "  Unconfirmed rows:\n"
         f"{rows_block}\n\n"
@@ -600,9 +600,10 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         for logical_name, rel_path in unresolved:
             lines.append(f"  - `{logical_name}` → `{rel_path}` (file not found)")
         lines.append(
-            "  Per NO-CODE-METHOD.md → *At session start*: search the project "
-            "for the file by name, surface the mismatch, and propose updating "
-            "the path block. Wait for the user's confirmation before editing."
+            "  Search the project for each file by name, surface the "
+            "mismatch (declared path vs. found path), and propose updating "
+            "`CLAUDE.md`'s path block. Wait for the user's confirmation "
+            "before editing."
         )
 
     template_docs = collect_template_state_docs(resolved)
@@ -611,10 +612,11 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         lines.append(
             f"- **Template state detected** in {names_md}. The project "
             "hasn't been kicked off yet — these docs still contain template "
-            "placeholders. Per NO-CODE-METHOD.md → *Detect template state*: "
-            "recommend the user start the new-project route to seed "
-            "`UX.md`, `BACKLOG.md`, and the first build batch. Wait for "
-            "the user's okay before proceeding."
+            "placeholders. Per `universal-behaviour.md` → *Routing "
+            "main-Claude's openers* (the *Template state* detect-first "
+            "rule): recommend `/adopt` to seed `UX.md`, `BACKLOG.md`, "
+            "and the first build batch. Wait for the user's okay before "
+            "proceeding."
         )
 
     footer_mismatches = collect_footer_mismatches(resolved, claude_text)
@@ -641,9 +643,9 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 f"- **Top build batch in BACKLOG.md:** \"{top_batch}\". If "
                 "the user's opener implies resume (test notes pointing at "
                 "this batch, a 'continue where we left off' phrasing, etc.) "
-                "default to *During planning → resume* per NO-CODE-METHOD.md "
-                "→ *At session start*. Confirm with the user before "
-                "continuing the build."
+                "default to resume per `universal-behaviour.md` → *Routing "
+                "main-Claude's openers* (the unfinished-top-batch row). "
+                "Confirm with the user before continuing the build."
             )
 
     # V27 TEST-LOG tripwire: if the previous build batch's test session is
@@ -663,10 +665,11 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     lines.append("")
     lines.append(
         "**Routing.** Read the user's opening message and route per "
-        "NO-CODE-METHOD.md → *At session start*. This hook does not classify "
-        "the user's opener — that's your call based on the user's words and "
-        "the structural state listed above. Exception: when the TEST-LOG "
-        "tripwire above fires, the routing override there takes precedence."
+        "`universal-behaviour.md` → *Routing main-Claude's openers*. This "
+        "hook does not classify the user's opener — that's your call based "
+        "on the user's words and the structural state listed above. "
+        "Exception: when the TEST-LOG tripwire above fires, the routing "
+        "override there takes precedence."
     )
 
     return "\n".join(lines)

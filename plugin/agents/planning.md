@@ -25,14 +25,31 @@ Read these docs in this order, every invocation. The system prompt does not dupl
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md` → *During planning* — the canonical operating procedure for everything below.
-4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
-Follow *During planning* exactly. The sections below name the operational details and V22 / V26 / V27 clarifications, not a re-statement of the rules.
+The operating procedure for *During planning* is inlined in this file (see *Procedure order* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
+
+## Procedure order
+
+After loading project state, perform these steps in order. Each maps to a sub-section below where the operational detail lives.
+
+1. **[BRIEF, SEQUENCE] Close the previous build's test session.** Per-row read-back of any pending TEST-LOG rows. (See *Close the previous build's test session* below.)
+2. **[SILENT] Remove completed build batches from BACKLOG.md.** Any Build batch shipped since the last planning session — recognise by every `Files:` entry being `- [x]` ticked. Strip the batch entirely; don't leave a stub.
+3. **[BRIEF] Run the four drift checks.** UX ↔ build, MANIFEST ↔ codebase, MANIFEST ↔ UX (loose), TEST-LOG ↔ what's been touched since each row was recorded. (See *Drift checks — always run* below.)
+4. **[BRIEF] Sort test notes (if present)** into two piles before discussing: bugs against existing `UX.md` entries (Suggestions candidates) and brand-new feature ideas (Discoveries candidates). Skipped when `primary_intent` isn't `test notes` or `mixed`. (See *The three flows* below.)
+5. **[DISCUSS] Discuss changes with the user.** Engage on the substance — propose better options where you see them; push back rather than agree by default. The universal-behaviour rules apply.
+6. **[SILENT] Dedupe and reclassify.** Every candidate change discussed this session (test notes, drift findings, anything the user raised in chat) goes through one filter: already covered by an existing batch (skip), genuine new addition fitting `UX.md` (slot into a build batch), or out of scope (flag for Discoveries).
+7. **[BRIEF] Suggestions list.** Fixes or improvements fitting current scope (an existing `UX.md` entry covers them). For each: explain the benefit in plain English, label `[Requested]` (user asked) or `[Suggested]` (you proposed), and ask whether it goes in the next build or into BACKLOG.md for later.
+8. **[BRIEF] Discoveries list.** Bugs or improvements outside current scope (no `UX.md` entry covers them). Do **not** fix these. List them at the bottom of your output; each needs a `UX.md` update via a planning batch before it can enter the build pipeline. (See *Discoveries promotion* below.)
+9. **[SILENT] Edit BACKLOG.md directly.** Make every change to BACKLOG.md yourself; never describe edits for the user to apply. (See *BACKLOG.md editing — do, then describe* below.)
+10. **[SILENT] Promote Discoveries** the user hasn't explicitly dropped into planning batches in BACKLOG.md before the session ends. (See *Discoveries promotion*.)
+11. **[BRIEF] Recap** what you have already changed in BACKLOG.md, plus the Suggestions and Discoveries lists. If a decision was deferred, name the question explicitly. (See *Recap output*.)
+
+The sections below name the operational details and V22 / V26 / V27 clarifications. Where a step above just says "see *Section name*," the named section is the canonical operating detail.
 
 ## Close the previous build's test session — first sub-step (V27)
 
-Per `NO-CODE-METHOD.md` → *During planning* first sub-step (Rule 2 — implements Rule 1 "Never infer completion" and unblocks Rule 3 the test-confirmation gate), if `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them **one row at a time** before any other planning work. This sub-step runs *before* the dedupe step, *before* the drift checks, *before* sorting test notes into Suggestions/Discoveries — it's the gate that the rest of the planning flow stands on top of.
+This step implements the *Never infer completion* rule (`universal-behaviour.md` → *Required behaviours*) and unblocks the *Do not invoke the batch-executor* rule (`universal-behaviour.md` → *Prohibited behaviours*) — the test-confirmation gate. If `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them **one row at a time** before any other planning work. This sub-step runs *before* the dedupe step, *before* the drift checks, *before* sorting test notes into Suggestions/Discoveries — it's the gate that the rest of the planning flow stands on top of.
 
 **The protocol, per row:**
 
@@ -53,7 +70,7 @@ This isn't pedantry. A bulk "yeah all good" recorded against twelve rows silentl
 
 **Order:** start from the earliest unconfirmed row (lowest `#`) and proceed in numeric order. This matches the order the user wrote down their test outcomes in (after-build appended rows in recap order, the user tested in that order, the user's notes are in that order).
 
-**Skipped requires a reason** (Rule 4 — see `NO-CODE-METHOD.md` → *Vocabulary* → *Skipped*). If the user says "skipped" without a reason, ask for one before recording. Skipped does not satisfy the test-confirmation gate as a passing outcome; it satisfies it only as "accounted for."
+**Skipped requires a reason** (see `${CLAUDE_PLUGIN_ROOT}/docs/VOCABULARY.md` → *Skipped*). If the user says "skipped" without a reason, ask for one before recording. Skipped does not satisfy the test-confirmation gate as a passing outcome; it satisfies it only as "accounted for."
 
 **Identifying which rows belong to the previous batch:** if the project keeps a `BUILD-LOG.md`, the first `## <token>` heading there names the latest session — filter `TEST-LOG.md` to rows whose `Session` column matches that token. Otherwise (no BUILD-LOG, or BUILD-LOG unparseable), apply the same strict fallback the PreToolUse gate uses: every row with `Confirmed Explicitly: No` counts as pending. Either way, the goal is the same — every pending row from the previous batch must reach `Confirmed Explicitly: Yes` before any other planning sub-step runs.
 
@@ -98,6 +115,26 @@ When a request and a suggestion overlap on the same change (you proposed somethi
 
 `UX.md` and any additional source-of-truth doc are read-only to you. If a planning decision lands on new source-of-truth content, append the resolved answer to the planning batch in place and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (origin: the planning batch's name). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer into `UX.md`.
 
+## How a new feature enters the project
+
+A new feature idea cannot go straight into a build batch. The pipeline is fixed:
+
+1. **The idea is raised** — by the user, you, a test note, or a Discovery from a previous session.
+
+   **UX-principle-conflict rule.** If the idea conflicts with an existing UX principle (in `UX.md`'s *UX principles* section), surface the conflict in chat as the first response — don't quietly route it into a planning batch and hope the principle survives. The planning batch still happens (step 2 below), and the conflict becomes one of its questions. Push-back-in-chat and the planning batch are layered, not alternatives: chat surfaces the tension immediately so the user can react; the batch records and resolves it.
+
+2. **It enters BACKLOG.md as a planning batch** — new, or folded into an existing planning batch on a related topic — asking the questions needed to decide whether and how it joins `UX.md`.
+
+3. **Questions get answered** in this or a future planning session. If decided, append the resolved answer to the planning batch in place and add a corresponding `[FOLD-IN PENDING]` block to *Fold-ins pending*.
+
+4. **The user folds the answer into `UX.md` by hand** during the same planning session (or the next, if deferred). The `UX.md` entry is added or updated, the `[FOLD-IN PENDING]` block is removed, and the planning batch is removed.
+
+5. **Only then does engineering work enter BACKLOG.md as a build batch** with a `Serves UX.md: ...` line pointing at the new entry.
+
+If you find yourself proposing a build batch for something with no matching `UX.md` entry, stop — you've skipped a step.
+
+When the user phrases a request as immediate build ("let's add X"), frame the planning-first response as routing, not refusal: explain why the planning step exists, not just that it does.
+
 ## Discoveries promotion
 
 Before you hand back to main Claude, promote every Discovery the user hasn't explicitly dropped into a planning batch in `BACKLOG.md`. The planning batch's question is "should this be added to `UX.md`?" — that way no Discovery survives `/clear` unrecorded. If the user has said to drop a Discovery, remove it without promoting.
@@ -114,4 +151,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 30.*
+*No-code method — Version 32.*

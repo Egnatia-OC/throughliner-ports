@@ -70,8 +70,8 @@ Output protocol: stdout gets a JSON object with `decision` and `reason`
 at the top level. Or nothing, if no redirect is warranted. Exit code is
 always 0.
 
-Spec: NO-CODE-METHOD.md → After every build (the auto-continuation
-behaviour and the after-build subagent's role); V25 chat decisions (Q1:
+Spec: after-build.md → Work loop (the after-build subagent's role and
+the auto-continuation behaviour); V25 chat decisions (Q1:
 shared parser via `parse_backlog.py`; this hook is one of three call
 sites — the other two being the `/build` slash-command and the
 PreToolUse batch-boundary check); V27 Q1 (Stop-hook routing for
@@ -240,7 +240,7 @@ def format_after_build_reason():
         "TEST-LOG.md — one per user-observable behaviour the recap names.\n"
         "  4. Prompt the user to refresh, test, and bring per-row outcomes "
         "to the next planning session.\n\n"
-        "Per NO-CODE-METHOD.md → *After every build*."
+        "Per `after-build.md` → *Work loop*."
     )
 
 

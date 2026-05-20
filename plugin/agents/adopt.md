@@ -215,7 +215,7 @@ Wait for the user's choice.
 
 **Which docs are writable vs locked (read this carefully — V29 smoke test caught the subagent over-classifying):**
 
-- **Writable, bump directly via `Edit`:** `CLAUDE.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`. These are read/write per `NO-CODE-METHOD.md → Editing surfaces`. **Do NOT route these through `[FOLD-IN PENDING]`.** They get edited like any normal Edit.
+- **Writable, bump directly via `Edit`:** `CLAUDE.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`. These are read/write per `universal-behaviour.md` → *Editing surfaces*. **Do NOT route these through `[FOLD-IN PENDING]`.** They get edited like any normal Edit.
 - **Locked, route via `[FOLD-IN PENDING]`:** `UX.md` and any *additional source-of-truth docs* declared in `CLAUDE.md`'s path block (e.g., `SYSTEM-PROMPT.md`, `COPY.md`). These are read-only to Claude per the V19 PreToolUse lock; only the user can edit them by hand during a planning session.
 
 Surface the planned edits before touching anything. List only docs that actually need bumping (omit any whose footer already matches `plugin_v`):
@@ -306,4 +306,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 30.*
+*No-code method — Version 32.*

@@ -57,7 +57,7 @@ If, during implementation, you find you need to edit a file NOT on the Files: li
 4. **Then proceed** with the original edit. The PreToolUse hook re-parses BACKLOG.md at edit time, so the new entry takes effect immediately.
 5. **Note `[Prerequisite, not in plan]`** in the build recap when you eventually produce it.
 
-Mechanism: NO-CODE-METHOD.md → *Prohibited of Claude* → *Two exceptions* → Prerequisite carve-out.
+Mechanism: `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → Prerequisite carve-out.
 
 ## Halt-and-confirm: the re-batching carve-out
 
@@ -68,7 +68,7 @@ If, mid-build, you realise the verification burden is much higher than the pre-b
 3. **On the user's okay**, edit `BACKLOG.md` to re-organise. Completed (`- [x]`) files stay in the current batch. Unticked files move to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's `Serves` line(s) unless the split crosses serve-line boundaries.
 4. **Label `[Re-batch, not in plan]`** in the build recap.
 
-Mechanism: NO-CODE-METHOD.md → *Prohibited of Claude* → *Two exceptions* → Re-batching carve-out.
+Mechanism: `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → Re-batching carve-out.
 
 ## Completion path
 
@@ -85,7 +85,7 @@ Carve-out flags you raised during your turn (`[Prerequisite, not in plan]` files
 
 ## What you must not do
 
-- **Do not edit locked source-of-truth docs.** `UX.md`, `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, and any additional source-of-truth doc declared in CLAUDE.md's path block are read-only to you. The PreToolUse hook will block these; do not try. If you notice a needed change, surface it in chat at the end of the recap as a `UX.md` change flag.
+- **Do not edit locked source-of-truth docs.** `UX.md` and any additional source-of-truth doc declared in CLAUDE.md's path block are read-only to you (per `universal-behaviour.md` → *Editing surfaces*). The plugin's bundled spec docs (`DOC-STRUCTURE.md`, `VOCABULARY.md`) are also off-limits if they appear in the project tree. The PreToolUse hook will block these; do not try. If you notice a needed change to a source-of-truth doc, surface it in chat at the end of the recap as a `UX.md` change flag.
 - **Do not add files to the Files: list** outside the prerequisite-carve-out protocol. No silent extensions.
 - **Do not modify the batch's heading, change_list, or `Serves` line.** Those are planning-session decisions. The only batch metadata you edit is the Files: tick state and the prerequisite-carve-out append.
 - **Do not build multiple batches per invocation.** One batch in, one batch out, return. The Stop hook handles transitioning to the next batch.
@@ -93,7 +93,7 @@ Carve-out flags you raised during your turn (`[Prerequisite, not in plan]` files
 
 ## Flags surfaced during your turn
 
-Three kinds of flag you may need to surface (per NO-CODE-METHOD.md → *Where each kind of flag goes*). Surface them inline as you notice them — your turn ends with the completion note, not a recap, so the flags need to live in your in-turn output where main Claude can relay them. After-build will also see anything written into BACKLOG.md (red flags entries) and produce its own flag summary in the recap.
+Three kinds of flag you may need to surface (per `universal-behaviour.md` → *Where each kind of flag goes*). Surface them inline as you notice them — your turn ends with the completion note, not a recap, so the flags need to live in your in-turn output where main Claude can relay them. After-build will also see anything written into BACKLOG.md (red flags entries) and produce its own flag summary in the recap.
 
 - **Red flags** — security, privacy, data integrity, or safety concerns noticed during the build. Surface in chat first; if the user defers with no active plan, add a `[RED FLAG]` entry to BACKLOG.md's *Red flags* section yourself (BACKLOG.md is writable to you). Canonical format: see DOC-STRUCTURE.md → *BACKLOG.md structure → Red flags*. After-build will see the BACKLOG entry and surface it in the recap.
 - **Out-of-scope improvements** you noticed but did not act on. Surface in chat during your turn. They become Discoveries in the next planning session. After-build cannot see these (chat-only signal), so the user has to remember them — keep them prominent.
@@ -103,14 +103,14 @@ Three kinds of flag you may need to surface (per NO-CODE-METHOD.md → *Where ea
 
 The rules above derive from:
 
-- NO-CODE-METHOD.md → *Method contract → Required of Claude* (no stealth-fix, red-flag surfacing)
-- NO-CODE-METHOD.md → *Method contract → Prohibited of Claude → Two exceptions* (prerequisite + re-batching carve-outs)
-- NO-CODE-METHOD.md → *After every build* (the broader *After every build* responsibilities — MANIFEST update, recap, test-session-open, user prompts — belong to the **after-build** subagent as of V27, not to batch-executor)
-- NO-CODE-METHOD.md → *Where each kind of flag goes* (flag taxonomy)
-- NO-CODE-METHOD.md → *Editing surfaces* (which docs are locked to you)
-- DOC-STRUCTURE.md → *BACKLOG.md structure → Files: sub-section* (tick state semantics, prerequisite label format)
-- DOC-STRUCTURE.md → *BACKLOG.md structure → Red flags* (Red flag entry format)
+- `universal-behaviour.md` → *Required behaviours* (no stealth-fix, red-flag surfacing)
+- `universal-behaviour.md` → *Prohibited behaviours → Two exceptions* (prerequisite + re-batching carve-outs)
+- `after-build.md` → *Work loop* (the broader *After every build* responsibilities — MANIFEST update, recap, test-session-open, user prompts — belong to the **after-build** subagent as of V27, not to batch-executor)
+- `universal-behaviour.md` → *Where each kind of flag goes* (flag taxonomy)
+- `universal-behaviour.md` → *Editing surfaces* (which docs are locked to you)
+- `DOC-STRUCTURE.md` → *BACKLOG.md structure → Files: sub-section* (tick state semantics, prerequisite label format)
+- `DOC-STRUCTURE.md` → *BACKLOG.md structure → Red flags* (Red flag entry format)
 
 ---
 
-*No-code method — Version 30.*
+*No-code method — Version 32.*

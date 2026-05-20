@@ -18,11 +18,10 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/NO-CODE-METHOD.md` → *After every build* — the canonical operating procedure, including the silent MANIFEST update, the recap shape, the test-session-open step, and the post-build prompts.
-4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
-5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
 
-Follow *After every build* exactly. The sections below name the operational details and V27-specific clarifications, not a re-statement of the rules.
+The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
 
 ## Identify the just-completed batch
 
@@ -96,7 +95,7 @@ Hand control back to main Claude via the recap. Main Claude relays the recap to 
 - **Do not edit `BACKLOG.md` to mark the batch "complete" or remove it.** Planning removes completed batches at the next planning session's first sub-step (per *During planning*). Until then, the fully-ticked batch stays in `BACKLOG.md` as the in-flight record.
 - **Do not invoke any subagent.** You do not have the Task tool. The build is done; the recap closes the loop.
 - **Do not start a new build, or call `/build`, or do anything that would invoke batch-executor.** The Stop hook will redirect on the next user turn if more work is queued; the test-confirmation gate will prevent batch-executor from running while your blank-Status rows are pending. Both are designed to keep the boundaries clean.
-- **Do not infer test outcomes.** Per Rule 1 (*Never infer completion* — `NO-CODE-METHOD.md` → *Method contract → Required of Claude*): write rows with blank `Status` and `Confirmed Explicitly: No`. The user fills in outcomes at the next planning session, by name, per row. Do not pre-fill anything.
+- **Do not infer test outcomes.** Per the *Never infer completion* rule (`universal-behaviour.md` → *Required behaviours*): write rows with blank `Status` and `Confirmed Explicitly: No`. The user fills in outcomes at the next planning session, by name, per row. Do not pre-fill anything.
 - **Do not write `[Prerequisite, not in plan]` or `[Re-batch, not in plan]` labels into the BACKLOG.md change list.** Those are recap-time labels only — they describe events that occurred during the build, not pre-existing change-list items.
 
 ## Behavioural rules
@@ -105,4 +104,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 30.*
+*No-code method — Version 32.*

@@ -4,7 +4,7 @@
 
 Structural specs for the project's documents — required sections, entry shape, rules for additional source-of-truth docs. Not loaded every session.
 
-Method terms (planning batch, build batch, Serves line, source-of-truth doc, etc.) are defined in `VOCABULARY.md` (sibling of this file in `plugin/docs/`). Each subagent body's *First action — load the project's current state* section names what that phase reads.
+Method terms (planning batch, build batch, Serves line, source-of-truth doc, etc.) are defined in `NO-CODE-METHOD.md` → *Vocabulary*. For each doc's role, see → *The documents that describe my projects*. For when to read each, see → *When to read each document*.
 
 ## Additional source-of-truth docs
 
@@ -12,7 +12,7 @@ Some projects need an extra source-of-truth doc the three spine docs don't cover
 
 Same structural rules as `UX.md` apply:
 
-- **Read-only in Claude Code.** See `universal-behaviour.md` → *Editing surfaces*.
+- **Read-only in Claude Code.** See `NO-CODE-METHOD.md` → *Editing surfaces*.
 - **No placeholders, no soft gestures.** Source-of-truth docs describe decided behaviour. Don't write placeholders (`[TO FILL IN]`, `[Open: ...]`) or sentences that gesture at undecidedness ("currently undecided", "pending decision", "to be revisited", "see `BACKLOG.md`"). Open-question status lives in `BACKLOG.md` only. If a default applies while a question is being resolved, state it plainly without flagging it as provisional.
 - **Intent level, not implementation.** Describe what the user (or doc consumer, e.g. Claude for a system-prompt doc) experiences and why — not how it's wired.
 - **Folding planning answers.** Planning batches whose resolutions describe behaviour for the additional doc fold into *it*, not `UX.md`. The planning batch in `BACKLOG.md` should say so at setup so the destination is clear at fold-in time.
@@ -62,7 +62,7 @@ If the flat list becomes hard to scan, switch to alphabetical sections by area.
 
 ## TEST-LOG.md structure
 
-**Header.** Brief statement of what `TEST-LOG.md` is: a row-per-test record of every shipped batch's outcomes, maintained by Claude during builds (rows added when a batch ships) and planning (rows confirmed per-row via the test-session-close read-back). The test-confirmation gate gates new builds against unconfirmed rows. The five protocol rules live across the plugin: *Never infer completion* and *Do not invoke the batch-executor* in `universal-behaviour.md` → *Required behaviours* / *Prohibited behaviours*; Pass / Fail / Skipped definitions in `VOCABULARY.md`; per-row read-back and retest-after-change drift check in `planning.md` → *Close the previous build's test session* and *Drift checks — always run*.
+**Header.** Brief statement of what `TEST-LOG.md` is: a row-per-test record of every shipped batch's outcomes, maintained by Claude during builds (rows added when a batch ships) and planning (rows confirmed per-row via the test-session-close read-back). The test-confirmation gate gates new builds against unconfirmed rows. For the five protocol rules, see `NO-CODE-METHOD.md` → *Method contract* (Rules 1, 3), *Vocabulary* (Rule 4: Pass / Fail / Skipped definitions), and *During planning* (Rule 2: test-session-close read-back; Rule 5: retest-after-change drift check).
 
 Starts empty. Entry-format reminder lives in an HTML comment until the first build.
 
@@ -81,7 +81,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days.
 
-- **Substantial change → status flips by appending a new row.** Drift check 4 (`planning.md` → *Drift checks — always run*, fourth check) flags rows whose components have changed since the row's Date. The flip appends a new row: today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays — "passed at the time" is worth keeping as history.
+- **Substantial change → status flips by appending a new row.** Drift check 4 (`NO-CODE-METHOD.md` → *During planning*) flags rows whose components have changed since the row's Date. The flip appends a new row: today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays — "passed at the time" is worth keeping as history.
 - **Component removed → row marked Superseded** in Status, with User Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
 
 **Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, empty table, and an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies. The comment stays as a permanent format reminder; rows append above it. No placeholder row — same convention as `MANIFEST.md`.
@@ -96,7 +96,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Four sections, in this order:**
 
-- **Red flags.** Security, privacy, data integrity, or safety concerns surfaced and explicitly deferred by the user. Empty by default. Each entry is a blockquote: `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Removed once addressed. Claude populates this section per the *Red flags — screen and surface* rule in `universal-behaviour.md` → *Required behaviours*.
+- **Red flags.** Security, privacy, data integrity, or safety concerns surfaced and explicitly deferred by the user. Empty by default. Each entry is a blockquote: `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Removed once addressed. Claude populates this section per the "Red flags — screen and surface" rule under *Method contract → Required of Claude* in `NO-CODE-METHOD.md`.
 
   **Red flags are concerns parked outside any active work stream.** Concerns inside an active build batch live there until the batch ships. Concerns attached to a feature in a planning batch become questions inside that batch — not Red flags. Red flags are specifically concerns the user has explicitly chosen to defer with no active plan to address them.
 
@@ -104,19 +104,19 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
   > `**`[FOLD-IN PENDING]`**` `<DOC>.md` — [one-line description of the proposed change]. [Proposed text or shape of the change, inline or as an indented sub-quote]. Surfaced [date]; origin: [planning batch name | new-project route | migration route | mid-build edit attempt].
 
-  Empty by default. Removed once the user folds them into the destination doc by hand during a planning session (or drops them). Full mechanism — when blocks get created and how they reconcile back — in `universal-behaviour.md` → *Editing surfaces*.
+  Empty by default. Removed once the user folds them into the destination doc by hand during a planning session (or drops them). Full mechanism — when blocks get created and how they reconcile back — in `NO-CODE-METHOD.md` → *Editing surfaces*.
 
 - **Planning batches.** Two kinds of question live here. **(a)** Open questions that must resolve before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each batch lists the questions and ends with a `Blocks:` line — either naming the build batch(es) it holds up, or `Blocks: scope decision — no build batch yet` for an existence question. Resolution: append the answer to the batch and add a corresponding `[FOLD-IN PENDING]` block (with this batch's name as *origin*). Leave the planning batch in place — the user removes it during the same planning session in which they fold the answer into `UX.md` (or the relevant additional source-of-truth doc) by hand. If a scope-existence batch resolves to "yes, build it," the planning batch may convert to or spawn a build batch at that point, in addition to the fold-in.
 
   **One planning batch per discrete decision.** If a message contains multiple unrelated feature requests or scope questions, create separate planning batches. Bundle only when two items are tightly coupled (deciding one inevitably decides the other). Unrelated items in a single batch create a batch whose `Blocks:` line can't cleanly name what it blocks and whose resolution can't fold into a single entry.
 
-- **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build. Each batch: heading, list of changes, `Files:` sub-section, then a `Serves UX.md: ...` line listing implemented entries (and/or `Serves <DOC>: ...` for additional source-of-truth docs). If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `planning.md` → *Procedure order* step 2). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
+- **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build. Each batch: heading, list of changes, `Files:` sub-section, then a `Serves UX.md: ...` line listing implemented entries (and/or `Serves <DOC>: ...` for additional source-of-truth docs). If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `NO-CODE-METHOD.md` → *During planning*). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
 
-Build batches must serve an entry in a source-of-truth doc — see `planning.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in `BACKLOG.md` regardless of scope.
+Build batches must serve an entry in a source-of-truth doc — see `NO-CODE-METHOD.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in `BACKLOG.md` regardless of scope.
 
 **Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list may carry `[Requested]` (user asked) or `[Suggested]` (Claude proposed) immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change enters BACKLOG.md, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent for the build recap. The `Files:` sub-section does **not** carry labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from both, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and don't appear in BACKLOG.md change-list bullets ahead of the build.
 
-**`Files:` sub-section.** A GitHub-style task list — one `- [ ]` per file, `- [x]` when done — of every file the batch will modify, each shaped `` - [ ] `<path>` — <one-sentence summary of the change in that file> ``. It is the build-time enforcement surface: the PreToolUse hook blocks `Edit`/`Write`/`MultiEdit` on any file not in the current batch's `Files:` list. Prerequisite carve-outs (a file added mid-build per `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → *Prerequisite carve-out*) are appended with a trailing `[Prerequisite, not in plan]` label, recording both presence and provenance.
+**`Files:` sub-section.** A GitHub-style task list — one `- [ ]` per file, `- [x]` when done — of every file the batch will modify, each shaped `` - [ ] `<path>` — <one-sentence summary of the change in that file> ``. It is the build-time enforcement surface: the PreToolUse hook blocks `Edit`/`Write`/`MultiEdit` on any file not in the current batch's `Files:` list. Prerequisite carve-outs (a file added mid-build per `NO-CODE-METHOD.md` → *Prohibited of Claude* → prerequisite exception) are appended with a trailing `[Prerequisite, not in plan]` label, recording both presence and provenance.
 
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 

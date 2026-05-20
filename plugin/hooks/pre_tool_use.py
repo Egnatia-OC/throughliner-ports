@@ -49,7 +49,8 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       paths (UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md, the
       opt-out marker file) so /adopt's scaffolding works. The full V29
       architecture context (why this gate exists in PreToolUse and not at
-      SessionStart) is in NO-CODE-METHOD.md → *Detect unadopted folder*.
+      SessionStart) is in universal-behaviour.md → *Routing main-Claude's
+      openers* (the *Detect unadopted folder* paragraph).
 
   (4) Test-confirmation gate (V27) — Task tool with subagent_type
       `no-code-method:batch-executor`. When TEST-LOG.md has rows with
@@ -59,21 +60,21 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       keeps one; otherwise it falls back to strict mode (any unconfirmed row
       blocks). Strict fallback also fires when BUILD-LOG.md is present but
       unparseable — the deny message names the parse failure so the user can
-      fix the right thing. Spec: NO-CODE-METHOD.md → Method contract →
-      Prohibited of Claude → Test-confirmation gate.
+      fix the right thing. Spec: universal-behaviour.md → Prohibited
+      behaviours → "Do not invoke the batch-executor".
 
 Mechanisms:
 
-  - Locked-doc rule: NO-CODE-METHOD.md → Editing surfaces.
+  - Locked-doc rule: universal-behaviour.md → Editing surfaces.
   - Fold-in block format: DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins
     pending.
-  - Serves-line rule: NO-CODE-METHOD.md → How a new feature enters the
-    project, and DOC-STRUCTURE.md → BACKLOG.md structure → Build batches.
+  - Serves-line rule: planning.md → How a new feature enters the project,
+    and DOC-STRUCTURE.md → BACKLOG.md structure → Build batches.
   - V22 Q3 (case-insensitive exact match): BUILD-LOG.md → V22.
-  - Test-confirmation gate: NO-CODE-METHOD.md → Method contract → Required
-    of Claude → Never infer completion (Rule 1) and Prohibited of Claude →
-    Test-confirmation gate (Rule 3); TEST-LOG.md column shape in
-    DOC-STRUCTURE.md → TEST-LOG.md structure.
+  - Test-confirmation gate: universal-behaviour.md → Required behaviours →
+    "Never infer completion" and Prohibited behaviours → "Do not invoke
+    the batch-executor"; TEST-LOG.md column shape in DOC-STRUCTURE.md →
+    TEST-LOG.md structure.
 
   The hook doesn't repeat the mechanisms — it names them and lets Claude
   consult those docs (or its own SessionStart-injected rules) for specifics.

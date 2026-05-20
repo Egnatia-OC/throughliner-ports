@@ -18,8 +18,8 @@ which can't deterministically decide doesn't surprise the user with a
 spurious deny.
 
 Mechanisms referenced:
-  - Path block format: NO-CODE-METHOD.md → *At session start* (a fenced
-    JSON code block in CLAUDE.md mapping logical names → relative paths).
+  - Path block format: CLAUDE-TEMPLATE.md (a fenced JSON code block in
+    CLAUDE.md mapping logical names → relative paths).
   - TEST-LOG.md row shape: DOC-STRUCTURE.md → *TEST-LOG.md structure*
     (the 8-column data row).
   - BUILD-LOG.md session-heading convention: DOC-STRUCTURE.md →

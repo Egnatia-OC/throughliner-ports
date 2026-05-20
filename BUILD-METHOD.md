@@ -101,6 +101,33 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 ---
 
+## Two-write rule for canonical docs
+
+V32 split canonical method content into two parallel artefact sets:
+
+- **Plugin-side canonical docs** (the operational system). Live inside `plugin/` — `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`, the bundled templates at `plugin/templates/`, plus the agent bodies that inline operating procedures (`planning.md`, `before-build.md`, `after-build.md`, `batch-executor.md`, `adopt.md`). These are what the plugin runtime reads. **The plugin is the leader** — when the method substantively changes, the plugin gets edited first.
+
+- **Docs-only canonical docs** (the project-agnostic system). Live at the repo root — `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, the templates at `templates/`. Maintained as the prose-only / no-plugin version of the method for chat-with-Claude or other AI-tool contexts where the plugin shape doesn't fit. The docs-only set follows the plugin's lead — kept as fresh as the plugin via the two-write discipline below.
+
+`Crash course.md` (repo root) is plugin-side only — it documents how to install and use the plugin. It does not appear in the docs-only set.
+
+### The two-write discipline
+
+When a session substantively changes a method rule (a new step in *During planning*, a new flag-taxonomy row, a renamed concept in *Vocabulary*, etc.), update both copies of every affected canonical doc. Doc-code parity audits at session close must check both sides. Drift between the two sides is the risk this arrangement carries — the discipline is the defence.
+
+Cross-references inside the two copies legitimately diverge:
+
+- **Plugin-side** cross-refs point at plugin homes (`universal-behaviour.md`, `VOCABULARY.md`, `planning.md`, etc.). The plugin's subagents read these at runtime.
+- **Docs-only side** cross-refs point at sibling sections of `NO-CODE-METHOD.md` (and the docs-only `DOC-STRUCTURE.md` / `VOCABULARY.md`). A no-plugin reader follows references inside the prose spec without needing to know about plugin internals.
+
+The substance — the actual rules, definitions, structural specs — stays identical across both sides. Cross-references are the explicit exception.
+
+### Don't propose re-coupling
+
+Future sessions might be tempted to re-introduce a "subagents read NO-CODE-METHOD.md at runtime" pattern as a parity defence. That's exactly what V32 dismantles. The discipline of the two-write rule is the intended defence, not runtime coupling.
+
+---
+
 ## Testing — what we actually do
 
 Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/adopt` (V29 — formerly `/init-project`) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
@@ -139,33 +166,50 @@ When a session substantively changes the method or plugin (test in *Session tag 
 
 Method-side = describes how the consumer method works. Dev-internal files (`BUILD-LOG.md`, `TEST-LOG.md`, `PLAN.md`, `OPEN-QUESTIONS.md`, this file) don't carry the footer.
 
-When warranted, as of V23:
+The list splits in V32 along the two-write architecture (see *Two-write rule for canonical docs* above). Both sides bump together.
 
-- `NO-CODE-METHOD.md`
-- `DOC-STRUCTURE.md`
-- `Crash course.md`
-- `templates/CLAUDE-TEMPLATE.md`
-- `templates/UX-TEMPLATE.md`
-- `templates/BACKLOG-TEMPLATE.md`
-- `templates/MANIFEST-TEMPLATE.md`
-- `templates/TEST-LOG-TEMPLATE.md`
-- `templates/ADDITIONAL-DOC-TEMPLATE.md`
+### Plugin-side (the leader)
+
+- `plugin/docs/DOC-STRUCTURE.md`
+- `plugin/docs/VOCABULARY.md`
+- `plugin/hooks/universal-behaviour.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
 - `plugin/templates/BACKLOG-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
-- `planning/INVENTORY.md`
 - Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `adopt.md`)
-- New method-describing files added this session
+- `Crash course.md` (repo root, but plugin-side audience — documents how to install and use the plugin)
 
-Plus version trackers:
+### Docs-only side (the follower)
+
+- `NO-CODE-METHOD.md` (repo root)
+- `DOC-STRUCTURE.md` (repo root)
+- `VOCABULARY.md` (repo root)
+- `templates/CLAUDE-TEMPLATE.md`
+- `templates/UX-TEMPLATE.md`
+- `templates/BACKLOG-TEMPLATE.md`
+- `templates/MANIFEST-TEMPLATE.md`
+- `templates/TEST-LOG-TEMPLATE.md`
+- `templates/ADDITIONAL-DOC-TEMPLATE.md`
+
+### Cross-cutting (dev-internal but version-tagged)
+
+- `planning/INVENTORY.md` — carries the footer for sync purposes, even though it's dev-internal.
+
+### New files added this session
+
+Add new method-describing files to the right column above as part of the session creating them.
+
+### Version trackers
 
 - `plugin/.claude-plugin/plugin.json` — `version` → `0.<N>.0`
 - `plugin/hooks/session_start.py` — `PLUGIN_METHOD_VERSION` → `N`
 
-V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/templates/*.md` hadn't been bumped while `templates/*.md` had. The two-location rule is easy to miss; the tripwire backstops it. Add new files to this list as part of the session creating them.
+V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/templates/*.md` hadn't been bumped while `templates/*.md` had. The two-location rule is easy to miss; the tripwire backstops it.
+
+**`universal-behaviour.md` does not carry the `*No-code method — Version N.*` footer** — it carries a longer signature paragraph instead (see the file). It's listed in the plugin-side bump list above because its substance is method-canonical and must move in lockstep with the version trackers.
 
 ---
 

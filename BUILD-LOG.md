@@ -6,6 +6,45 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V32 — 2026-05-20 — NO-CODE-METHOD.md retired from plugin; two-write architecture established
+
+**What shipped.** The "retirement" reframe (see *Pivots and surprises*) split the canonical method content into two parallel artefact sets: plugin-side (operational) and docs-only (project-agnostic prose).
+
+- **Docs-only set bootstrapped at repo root.** `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` (new) — the prose-only / no-plugin version of the method, byte-identical to the plugin-side at this V32 commit. `templates/` was already there from earlier; now formally the docs-only template set. `Crash course.md` stays at repo root but is plugin-side audience (per Alex).
+- **`plugin/docs/NO-CODE-METHOD.md` retired from plugin runtime.** Subagent bodies stopped reading it at session start. Operating procedures inlined: `planning.md` gained a *Procedure order* section + *How a new feature enters the project* (with the UX-principle-conflict rule from coverage-map §17); `before-build.md` inlined the *Batch-sizing principle* sub-rules; `after-build.md` was already complete inline. `batch-executor.md` kept its in-place inlines; only cross-references redirected.
+- **`plugin/hooks/universal-behaviour.md` absorbed the orphans** from the coverage map: §13 main-Claude routing logic (highest-stakes orphan); §5 Rule 1 *Never infer completion*; §6 Prohibited block + *Two exceptions*; §7 flag taxonomy table; §3 response-shape tags glossary; §10 *Editing surfaces*. SessionStart now injects all the cross-cutting rules main Claude needs.
+- **`plugin/docs/VOCABULARY.md`** — new file, holds the §4 Vocabulary content (planning batch, build batch, test session, Pass/Fail/Skipped, etc.). Mirrored at repo root for the docs-only set.
+- **Cross-reference cleanup, plugin-wide.** Every "see `NO-CODE-METHOD.md` → X" reference in plugin code (subagents, hooks, INVENTORY, templates, the plugin-side DOC-STRUCTURE.md, the slash-command body) redirected to its new home. User-visible deny messages in PreToolUse kept their NO-CODE-METHOD.md references intact — those point at the docs-only spec on GitHub, which the user can read.
+- **`BUILD-METHOD.md`** gained a *Two-write rule for canonical docs* section + split the *Footer bumps* list into plugin-side, docs-only-side, and cross-cutting (INVENTORY.md alone). Documents the architecture, the two-write discipline, and the legitimate cross-reference divergence between the two sides.
+- **`CLAUDE.md` (dev-project, repo root)** file-inventory rewrite reflecting the two parallel doc sets. Terminology cheat sheet updated — NO-CODE-METHOD.md / DOC-STRUCTURE.md / VOCABULARY.md rows now describe their post-V32 status (not present in consumer-project trees; plugin homes named).
+- **`planning/INVENTORY.md`** doc-fates table updated; subagent and bundled-artefacts rows updated to note V32 inline status; `plugin/docs/NO-CODE-METHOD.md` row removed; VOCABULARY.md row added; universal-behaviour.md row added.
+- **Frame-correction sweep on `V33.md / V34.md / V35.md`** per BUILD-METHOD step 2. V33 inputs/outputs/risks rewritten to name concrete post-V32 destinations (`plugin/agents/after-build.md` → *Work loop* instead of "wherever V32 distributed those rules"). V34 *Recommended habits* destination clarified to docs-only `NO-CODE-METHOD.md` at repo root. V35 framing of the V32 dependency tightened.
+- **Footers V30 → V32** across all method-side files (both plugin-side and docs-only-side — see BUILD-METHOD's new split). `plugin.json` → `0.32.0`; `PLUGIN_METHOD_VERSION` → `32`. V31 was dev-internal-only so footers had stayed at V30; V32's substantive method change makes this the next real bump.
+- `planning/drafts/v32-coverage-map.md` consumed at close (deleted in commit).
+
+**Decisions taken and why.**
+
+- **Shape A + repo-root home (not Shape B "trim" or Shape C "pointer").** Coverage map flagged three retirement shapes. Shape A (full retirement, inline everything) won because: (a) Alex's framing made it clear the rules live in the plugin, not in a docs read; (b) trimming-not-retiring would keep the divergence question alive (the OPEN-QUESTIONS entry on subagent rule-loading divergence settles cleanly to "inline" with Shape A); (c) the runtime reads were a belt-and-braces measure that's no longer needed once the inlines are verified.
+- **Plugin is the leader; docs-only follows.** Two-write discipline keeps both copies aligned; legitimate divergence is allowed for cross-references (each copy points at its own siblings). The plugin-edits-first-then-docs-only-catches-up rule prevents the docs-only side from drifting toward a different operational model.
+- **`VOCABULARY.md` as its own file** vs. lumping into universal-behaviour.md. ~20 entries, frequently cross-referenced (`see Vocabulary → Skipped` from multiple subagents), structurally distinct from universal behavioural rules. Lumping would make universal-behaviour.md a kitchen sink and obscure the rules that ARE behavioural. Cost: one more file in the two-write pair list.
+
+**Pivots and surprises.**
+
+- **Session was a continuation after the previous chat glitched out.** Coverage map at `planning/drafts/v32-coverage-map.md` survived (substantive design work for V32, completed pre-glitch). No implementation work had landed before the glitch. Memory file `project_no_code_method_canonical.md` carried the framing decision (retirement is from plugin only; file lives on as docs-only) into this session, preventing a re-litigation. This is the second time auto-memory has materially saved continuity (first was the Crash course rewrite in V30); worth noting as a positive pattern.
+- **V32.md scope file was stale relative to the framing decision.** Read "Retire the file or replace with a one-line pointer" — pre-docs-only framing. Flagged at session open; substantive direction (Shape A + docs-only relocation) carried by memory + Alex's confirmation, not by the scope file. Frame-correction sweep at close updated V33/V34/V35 scope files to use post-V32 references.
+- **Cowork mount stale-view issues, twice.** (a) `bash cp` of `templates/CLAUDE-TEMPLATE.md` and `templates/ADDITIONAL-DOC-TEMPLATE.md` from `plugin/templates/` produced truncated copies — file ended mid-sentence at line 24 instead of 28. Recovered via `Write` through the canonical Windows path. (b) `bash tail -n 2` and `bash awk` on long-line files returned truncated output that masked footer presence. Both behaviours documented in memory `reference_cowork_git_mount_phantoms.md` — re-confirmed today. **Going forward,** verify any bash-copied file's integrity via `Read` (Windows path), not via bash inspection.
+- **Bash `rm` of `plugin/docs/NO-CODE-METHOD.md` blocked by Windows ACLs.** Predicted by the memory file. Alex to delete via PowerShell `Remove-Item` or Windows Explorer at close.
+- **Subagent inline gaps were larger than coverage map suggested.** Coverage map said `planning.md` was "Partial → Covered if read is removed" because the read was a safety net. Audit revealed real procedural gaps the read had been providing: remove-completed-batches, discuss-step, dedupe filter, Suggestions list shape, Discoveries list framing. All lifted into a new *Procedure order* section before the reads dropped. `before-build.md` similarly relied on the read for the three Batch-sizing sub-rules. `after-build.md` was the only one fully complete inline pre-V32.
+
+**Carried forward.**
+
+- **`plugin/docs/NO-CODE-METHOD.md` deletion** owed to Alex via PowerShell `Remove-Item` or Windows Explorer — Cowork bash `rm` returned "Operation not permitted" (Windows ACLs, predicted by memory). Has to happen before the V32 commit.
+- **Docs-only `NO-CODE-METHOD.md` still uses plugin-specific phrasing** ("you're reading now; always loaded," "the SessionStart hook," "the PreToolUse hook"). Substance is correct but framing is wrong for the project-agnostic role. Per the coverage-map escape clause, folded forward rather than rewritten this session — the rewrite would be a substantial prose pass dominating session scope. Slot for V33+ or a dedicated docs-only-rewrite session.
+- **Smoke test in `~/v32-scratch` owed.** Removing the runtime reads is the V32 risk surface — any inline gap from step 2's lift would surface as a runtime regression. Smoke run validates planning / before-build / after-build still behave per spec against a fixture project.
+- **`Recommended habits` orphan (coverage-map §8)** — consciously accepted as no-op. Crash course narrative covers the habits at install time; the rule itself stays only in the docs-only `NO-CODE-METHOD.md`. If V34 (Recommended-habits "tag and push") surfaces a need to promote habits into the plugin, revisit.
+
+---
+
 ## V31 — 2026-05-20 — Planning: rescope OPEN-QUESTIONS into V33/V34; V32–V35 numbering shifted
 
 **What shipped.** Planning session over `OPEN-QUESTIONS.md` (foreshadowed in V30's *Carried forward*). Four promotion-ready entries folded into two new sessions; V31's own work claims the v31 tag; everything else shifts by one.
