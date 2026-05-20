@@ -6,6 +6,37 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V31 — 2026-05-20 — Planning: rescope OPEN-QUESTIONS into V33/V34; V32–V35 numbering shifted
+
+**What shipped.** Planning session over `OPEN-QUESTIONS.md` (foreshadowed in V30's *Carried forward*). Four promotion-ready entries folded into two new sessions; V31's own work claims the v31 tag; everything else shifts by one.
+
+- **Renames.** `planning/sessions/V31.md` (NO-CODE-METHOD.md retirement) → `V32.md`; old `V32.md` (E2E Taskflow test) → `V35.md`. Internal refs in both files updated (titles, commit-tag lines, input dependencies — V18–V31 → V18–V34 in the E2E scope file).
+- **New session-scope files.** `planning/sessions/V33.md` — consumer-side audit trail + frame-correction sweep; combines three OPEN-Qs ([[Consumer-side BUILD-LOG.md equivalent]], [[planning/drafts/ pattern for consumer projects]], [[Frame-correction sweep — consumer-method version]]) into one session because all three touch *After every build* and would otherwise sweep the same docs three times. `planning/sessions/V34.md` — consumer-method git workflow; promotes [[Consumer-method git workflow]] with Stop-hook auto-commit explicitly deferred to a later opt-in session. Both scope files note V32 dependency (the *After every build* edits land wherever V32 distributes those rules post-NO-CODE-METHOD-retirement).
+- **`planning/PLAN.md`.** Row inserted for V31 (this session). Row inserted for V33 and V34. V32 → V35 shifted. New V36+ row pointing at the five still-parked promotion-ready entries. Count line updated from "15 sessions" to "18 sessions through V35, plus V36+ TBD."
+- **`planning/OPEN-QUESTIONS.md`.** Four promoted entries removed (graduation path 2: removal at promotion, not at session ship). Five remaining promotion-ready entries' *Next step* lines retargeted from "V31+ once V30 ships" to "V36+ post-E2E (V35)" — UX.md non-GUI, SoT doc edits with permission, TEST-LOG ordering, TEST-LOG row pruning, "planning" vocabulary collision, MANIFEST.md schema gap. Stale V31 references in three parked entries updated to V35 — Automated testing/CI ("post-V32 E2E test" → "post-V35"), Prose-only rewrite ("V31 (final E2E Taskflow test) ships" → "V35"), AEX-style performance log ("after V31 ships" → "after V35"). Subagent rule-loading-divergence entry's "V26–V31 ship" window extended to "V26–V35 ship (or its post-V32 successor location)" since V32 retires NO-CODE-METHOD.md and that affects what stability the question measures. 13 entries remaining, down from 17.
+- **Dev-internal-only session.** No method-version footer bumps; `plugin.json` and `PLUGIN_METHOD_VERSION` unchanged.
+
+**Decisions taken and why.**
+
+- **Re-order rather than append.** Two of the four promoted sessions ship discipline V35's E2E test exercises (consumer BUILD-LOG, frame-sweep, git safety-guard). Landing them after E2E means the test runs without the discipline it'll then validate; landing them before is what makes E2E meaningful. UX.md non-GUI, TEST-LOG order/prune, SoT permission, planning-vocab, and MANIFEST schema all wait for E2E evidence (none get useful signal from a single-user GUI-project test ahead of time).
+- **Combine three open questions into V33.** Consumer BUILD-LOG, drafts/ pattern, and frame-correction sweep all touch *After every build*. Three separate sessions = three sweeps of the same docs + three footer-bump cycles. One combined session lets related additions share a smoke test.
+- **Stop-hook auto-commit explicitly deferred from V34.** Web-search draft flagged one user who rolled it back at scale ("cost more than they returned"). V34 ships *Recommended habits* line + PreToolUse safety-guard against `git reset --hard` / `git push --force`; auto-commit becomes a later opt-in session once Taskflow's cycles produce evidence.
+- **MANIFEST schema gap surfaced honestly rather than silently moved.** Promotable since V25–V26 (its *Next step* trigger fired in V25). Held through V26–V31 because it's a heavy method-level decision (path-field schema + behaviour choice across A/B/C/E options) and earlier sessions consistently had higher-priority work. Calling that out in the entry's revised *Next step* so future-Claude doesn't read "promote V26+" as a fresh decision.
+
+**Pivots and surprises.**
+
+- **Tag-numbering shift mid-discussion.** Initial proposal had V31 staying as NO-CODE-METHOD retirement; Alex approved the table. Then BUILD-METHOD's "one session = one tag" forced this planning session to claim its own v31, pushing everything else by one. Settled inline with a recommend-one + escape-line proposal; she went with the shift. Cost: re-approval on numbers she'd already signed off on. Worth noting because the tension between "what's already approved" and "what the convention requires" is the kind of thing a future planning session could hit again.
+- **Nothing else surprised.** The OPEN-Q entries' own *Working notes* sections did most of the scope-design work — this session was assembly, not invention. That's a positive signal about how the entry shape (per BUILD-METHOD → *OPEN-QUESTIONS entry shape*) is doing its job: notes captured at the time of raising prove load-bearing later.
+
+**Carried forward.**
+
+- **Five promotion-ready entries still in OPEN-QUESTIONS for V36+.** UX.md non-GUI adaptation; TEST-LOG ordering + row pruning (paired); SoT doc edits with no-coder permission; "planning" vocabulary collision; MANIFEST.md schema gap. Each becomes its own PLAN.md row + Vxx.md scope file when promoted post-E2E.
+- **Eight parked entries unchanged in shape.** Triggers retargeted from V31/V32 to V35 where they referenced E2E; activation conditions otherwise intact.
+- **Next session is V32: NO-CODE-METHOD.md retirement** as previously scoped. Scope file already renamed; internal refs already updated.
+- **Further Crash course review pass still parked** (carried over from V30). The promised "after the OPEN-Q planning session" trigger from V30's *Carried forward* has now fired — pass can be picked up next time it lands naturally, likely in V32 alongside the retirement work since both touch the same spec docs.
+
+---
+
 ## V30 — 2026-05-20 — Method docs relocated into plugin; Crash course rewritten as standalone primer
 
 **What shipped.**

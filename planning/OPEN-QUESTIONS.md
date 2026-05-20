@@ -20,7 +20,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - *Hook-script direct-invocation suite.* Add a `tests/` directory at repo root with scripts that pipe fake hook input into each hook script and assert on stdout. Catches parser / arithmetic bugs pre-smoke-test. Doesn't catch Claude Code integration issues (those still need `--plugin-dir`). Low cost; partial coverage.
 - *Fixture-driven integration suite.* Harness that spins up a fixture project, runs `claude --plugin-dir`, and asserts on resulting BACKLOG.md / TEST-LOG.md state. Highest fidelity; highest cost; brittle against Claude Code version changes.
 
-**Next step.** Park. Revisit when (a) the plugin surface stabilises post-V32 E2E test, or (b) a regression slips through hand-verification that automation would have caught. **Promote sooner** if hand-verification scaling becomes a real bottleneck.
+**Next step.** Park. Revisit when (a) the plugin surface stabilises post-V35 E2E test, or (b) a regression slips through hand-verification that automation would have caught. **Promote sooner** if hand-verification scaling becomes a real bottleneck.
 
 ---
 
@@ -36,92 +36,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - *Non-GUI variant of UX.md.* Add a section to `DOC-STRUCTURE.md` → *UX.md structure* explaining how non-GUI projects should shape their entries: name the "user" explicitly (operator, downstream system, integrating developer), let the "experience" be whatever they observe (logs, response, exit code, file). Heavier; clearer for non-GUI no-coders.
 - *Separate spine doc for non-GUI projects.* A new template (BEHAVIOUR.md? CONTRACT.md? OUTPUTS.md?) replaces UX.md for non-GUI projects. Heaviest; risks fragmenting the method. Defer unless shapes 1 and 2 prove inadequate.
 
-**Next step.** Promote to a planning session in V31+ once V30 ships and the Crash course excerpt fix is in place. **Promote sooner** if Alex (or any consumer) starts a non-GUI project with the method before V31 ships.
-
----
-
-## Consumer-method git workflow — tagging, commits, push discipline
-
-**The question.** The method currently leaves git workflow up to the no-coder, with no recommended habits or supporting machinery. The dev project (sovereign-implementer itself) uses a strict "one session = one git commit + one git tag, push commit + tag" convention (`BUILD-METHOD.md` → *The unit of work: a session*). The consumer method makes no equivalent recommendation. Two coupled sub-questions:
-
-1. Should the method recommend or enforce a session-tagging / commit-push discipline for consumer projects?
-2. What does graceful integration look like with Claude Code's native git handling — does Claude Code expose any git-workflow hooks or features the plugin should pair with, or should the plugin do its own?
-
-**Why it matters.** Surfaced V30 retrospective, 2026-05-20. The dev project hit a recovery-cost incident in V23 — parallel Cowork sessions on the same folder corrupted files, mangled CRLF, partial-wrote, and lost in-flight ideas. Without git discipline as a habit, recovery was harder and the loss was larger. Consumer projects without the dev project's tagging habit are equally exposed to mid-session corruption (Drive sync, parallel sessions, Obsidian locks), with no easy revert path. A method-level "tag and push after every shipped build batch" would give consumer projects the same recovery surface the dev project relies on. Big topic that was missed during V17–V29; deserves its own build session, not a fold-in.
-
-**Working notes.** Web-search complete (V30, 2026-05-20); full notes at `planning/drafts/git-integration-research.md` — V32+ session consumes that draft. Headline findings:
-
-- **No git-specific hooks** in Claude Code (no PreCommit / PostCommit / PrePush). Git awareness happens by intercepting Bash via `PreToolUse` / `PostToolUse`, or by acting at `Stop`.
-- **CC has no auto-commit behaviour** and treats git as a tool it calls via Bash. There's nothing native to "pair with" — the plugin either drives git itself or doesn't.
-- **Prior art is fragmented**: GitButler ships a `Stop`-hook commit pattern (closest published analogue, but its `but claude stop` command does non-trivial branch management); `git-guardrails` ships a `PreToolUse` skill blocking dangerous git commands; no Anthropic-published git plugin exists.
-- **Windows-specific.** `.git/index.lock` contention is real and worse on Windows; CC's background `git status --porcelain` polling is the main contention source. Open issue `anthropics/claude-code` #28546 confirms; proposed fix `--no-optional-locks` (#47721) status unknown. Hooks doing git ops need retry/wait logic; avoid `git status --porcelain` in frequently-firing hooks.
-- **Caveat in the research.** One user who tested Stop-hook auto-commits at scale rolled them back as "cost more than they returned." Safer initial position: recommended habit + a `PreToolUse` safety-guard against destructive git commands; Stop-hook auto-commit as opt-in later.
-
-Likely shapes (refined from web-search):
-
-- *Habit + safety-guard.* Add a *Recommended habits* line to `NO-CODE-METHOD.md` ("tag and push after every shipped build batch"). Ship a `PreToolUse` hook blocking `git reset --hard` and `git push --force`. Lowest risk, addresses the V23 recovery-surface gap.
-- *Stop-hook auto-commit (opt-in).* Stop-hook tags + pushes after batch-executor's last file ticks. Test in Taskflow before promoting to default.
-- *Bundled skill doc.* A skill (`/git-discipline` or similar) explains the method's git habits and walks the no-coder through first-time setup. Pairs with the habit recommendation.
-
-Pre-promote action items (from the research's *Items to verify*):
-
-1. Reproduce the `.git/index.lock` contention on Alex's machine — measure how aggressive retry logic needs to be.
-2. Read GitButler's full `but claude stop` implementation before designing any Stop hook.
-3. Check current status of `--no-optional-locks` (issue #47721).
-4. Confirm plugin-bundled hooks install into `settings.json` automatically vs. require user copy-paste.
-
-**Next step.** Web-search returned; promote to its own session in V32+ (PLAN.md row to be added when V32 scoping starts). The session likely ships: a *Recommended habits* line + a `PreToolUse` safety-guard hook against destructive git commands, plus consumer-side documentation in `Crash course.md`. Stop-hook auto-commit deferred to a later opt-in session. **Promote sooner** if Taskflow's first build cycle suffers a recovery incident.
-
----
-
-## planning/drafts/ pattern for consumer projects
-
-**The question.** The dev project (sovereign-implementer itself) uses `planning/drafts/<topic>.md` as a destination-agnostic carryover for substantive chat content a future session might start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices. Files are committed when "good enough to walk away from," consumed by whichever session folds them into a persistent location, and deleted at consumption. Consumer projects under the method have `BACKLOG.md`'s *Fold-ins pending* section (destination-specific — for source-of-truth doc content) but no general home for chat content that doesn't yet belong to a specific doc destination. Should the method add a consumer-side drafts mechanism?
-
-**Why it matters.** Surfaced V30 retrospective, 2026-05-20. The pattern that prompted the dev-project drafts/ — substantive chat output worth carrying forward but not yet ready to commit to a specific destination — likely occurs in consumer projects too. Without a drafts location, that content either ends up in chat (lost on `/clear`), in `BACKLOG.md` (where it doesn't fit if it's not yet a planning batch or a fold-in), or in an ad-hoc file somewhere. The drafts/ pattern gives chat content a transient home with a clear lifecycle.
-
-**Working notes.** Touches: `NO-CODE-METHOD.md` (mention drafts/ in *Editing surfaces* or its own sub-section), `DOC-STRUCTURE.md` (folder structure rule, file format, lifecycle), the planning subagent body (when to write a draft), potentially the `/adopt` scaffold script (create the drafts/ directory at scaffold time). Lifecycle should mirror dev project: write when "good enough to walk away from," delete at consumption, with a one-line note in BUILD-LOG (or its consumer-side equivalent — see [[Consumer-side BUILD-LOG.md equivalent]]) for dead-end drafts that get pruned.
-
-**Next step.** Fold into the same V31+ session as [[Consumer-side BUILD-LOG.md equivalent]] — these are coupled (drafts/ needs a place to log dead-end pruning, and that place is the BUILD-LOG entry). **Promote sooner** if first real Taskflow use surfaces the gap acutely.
-
----
-
-## Consumer-side BUILD-LOG.md equivalent
-
-**The question.** The dev project (sovereign-implementer itself) maintains `BUILD-LOG.md` — a persistent narrative record per session, capturing what shipped, decisions taken and why, pivots and surprises, and items carried forward. Consumer projects under the method have no equivalent. The after-build subagent produces a plain-English build recap, but that recap lives only in chat — lost on `/clear`. The "why" trail across a consumer project's builds is currently missing. Should the method gain a consumer-side `BUILD-LOG.md`?
-
-**Why it matters.** Surfaced V30 retrospective, 2026-05-20, when Alex asked what dev-project practices should be applied back to the method itself. After-build's recap captures plain-English description of what changed, but a project's audit trail beyond that is patchy: UX.md has user-need rationale (intent-level only), MANIFEST.md has element descriptions (no per-build narrative), BACKLOG.md tracks deferred work (forward-looking), TEST-LOG.md tracks test outcomes (one row per behaviour). No single doc captures "this build shipped X because of Y, and surprise Z came up during it." The dev project found this gap large enough to add `BUILD-LOG.md` early; consumer projects likely feel the same gap as they accumulate builds.
-
-**Working notes.** New entry shape would mirror the dev project's `BUILD-LOG.md` (What shipped / Decisions taken and why / Pivots and surprises / Carried forward). Touches:
-
-- `NO-CODE-METHOD.md` → *After every build* — add a step appending an entry to BUILD-LOG.md.
-- `DOC-STRUCTURE.md` — add BUILD-LOG.md structure.
-- `templates/BUILD-LOG-TEMPLATE.md` and `plugin/templates/BUILD-LOG-TEMPLATE.md` — new templates.
-- `plugin/agents/after-build.md` — drafting the entry as part of recap-generation.
-- `plugin/skills/adopt/scripts/scaffold.py` → `DESTINATION_FILENAMES` and `TEMPLATE_TO_DESTINATION` — scaffold BUILD-LOG.md alongside the existing spine docs.
-- INVENTORY.md, footer-bump list.
-
-Sub-question: where does after-build's existing chat-time recap sit relative to the new BUILD-LOG entry? Likely: BUILD-LOG entry is the persistent record; the chat recap is the in-session announcement. Both happen, one persists.
-
-**Next step.** Promote to a planning session in V31+ once V30 ships. **Promote sooner** if first real Taskflow build cycle surfaces the audit-trail gap acutely.
-
----
-
-## Frame-correction sweep at session close — consumer-method version
-
-**The question.** The dev project added a frame-correction sweep at session close in V29 (`BUILD-METHOD.md` → *Session close* step 2) after V29's own scope file hit a pre-V23 frame and required rework before substantive work could begin. The sweep audits pending scope files for references to old frames the current session corrected. Consumer projects under the method have no analogous obligation. Should the method gain a session-close frame-correction sweep, and if so, what does it operate on (planning batches in BACKLOG.md, UX.md entries cross-referencing the changed feature, additional source-of-truth doc text)?
-
-**Why it matters.** Surfaced V30 retrospective, 2026-05-20. When a build batch substantively changes how a feature works, planning batches in BACKLOG.md that reference the old behaviour could absorb wrongly when a future planning session reads them. The four drift checks (NO-CODE-METHOD.md → *During planning*) cover code↔doc disagreement but not frame-correction in pending planning content. Same failure mode that hit V29's scope file would hit consumer projects' planning batches at some point — the question is whether to surface it before that happens.
-
-**Working notes.** Touches:
-
-- `NO-CODE-METHOD.md` → *After every build* — add a frame-correction sweep step.
-- `plugin/agents/after-build.md` — execute the sweep.
-- Possibly `plugin/agents/planning.md` — if the sweep is better placed at the next session's planning open rather than at after-build.
-
-Operating scope candidates: planning batches in BACKLOG.md naming the changed frame; UX.md entries cross-referencing the changed feature (flagged as `[FOLD-IN PENDING]` since UX.md is read-only); pending `[FOLD-IN PENDING]` blocks themselves. Sub-question: who runs the sweep — after-build (right after the build that corrected the frame, while the change is fresh) or planning (next session, with the BACKLOG already settled)? After-build is where the dev project does it; consumer-side may differ depending on what's being swept.
-
-**Next step.** Promote to a planning session in V31+ once V30 ships. **Promote sooner** if first real Taskflow build cycle surfaces a frame-correction miss in BACKLOG.md.
+**Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow evidence informs whether the structural rules need a non-GUI variant or only vocabulary generalisation. **Promote sooner** if Alex (or any consumer) starts a non-GUI project with the method before V35 ships.
 
 ---
 
@@ -133,7 +48,7 @@ Operating scope candidates: planning batches in BACKLOG.md naming the changed fr
 
 **Working notes.** Likely shape: a `[PROPOSED EDIT]` chat-time mechanism, distinct from `[FOLD-IN PENDING]`. The no-coder approves explicitly with a non-keystroke confirmation; Claude applies the edit directly. `[FOLD-IN PENDING]` stays for cases where Claude cannot get permission (mid-build edit attempts blocked by the PreToolUse hook). Touches: PreToolUse hook's locked-doc check (V19), the `[FOLD-IN PENDING]` mechanism in `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*, `/adopt` case 3 migrate flow (`plugin/agents/adopt.md`), planning subagent rules.
 
-**Next step.** Promote to a planning session in V31+ once V30 ships. **Promote sooner** if `/adopt` case 3 migrate friction becomes a real blocker in early Taskflow adoption.
+**Next step.** Promote to a planning session in V36+ post-E2E (V35). **Promote sooner** if `/adopt` case 3 migrate friction becomes a real blocker in early Taskflow adoption.
 
 ---
 
@@ -145,7 +60,7 @@ Operating scope candidates: planning batches in BACKLOG.md naming the changed fr
 
 **Working notes.** Touches `DOC-STRUCTURE.md` → *TEST-LOG.md structure* (the append rule), `plugin/templates/TEST-LOG-TEMPLATE.md` (HTML format-reminder comment position — moves from bottom to top), `plugin/agents/after-build.md` (where it appends rows), `plugin/agents/planning.md` (where it reads). Low-friction once decided.
 
-**Next step.** Fold into a planning session in V31+ along with the [[TEST-LOG row pruning]] question — sibling concern. **Promote sooner** if first real Taskflow build raises the same intuition.
+**Next step.** Fold into a planning session in V36+ post-E2E (V35) along with the [[TEST-LOG row pruning]] question — sibling concern. **Promote sooner** if first real Taskflow build raises the same intuition.
 
 ---
 
@@ -161,7 +76,7 @@ Operating scope candidates: planning batches in BACKLOG.md naming the changed fr
 - Component-based: drop rows whose component no longer exists in `MANIFEST.md`.
 - Manual: an explicit per-planning-session option to archive rows to an external file (preserving audit, removing from context).
 
-**Next step.** Fold into the same V31+ planning session as the [[TEST-LOG ordering — newest at top vs bottom]] question. **Promote sooner** if Taskflow's TEST-LOG.md crosses a meaningful row count — would benefit from real data first.
+**Next step.** Fold into the same V36+ planning session as the [[TEST-LOG ordering — newest at top vs bottom]] question (post-E2E V35). **Promote sooner** if Taskflow's TEST-LOG.md crosses a meaningful row count — would benefit from real data first.
 
 ---
 
@@ -177,7 +92,7 @@ Operating scope candidates: planning batches in BACKLOG.md naming the changed fr
 - **Vocabulary disambiguation in docs.** Add an explicit "not to be confused with plan mode" note to `NO-CODE-METHOD.md` → *Vocabulary*. Mention in Crash course where plan mode comes up. Low-cost; relies on the reader.
 - **Hybrid.** Keep "planning phase" as the lifecycle name but rename the subagent (`no-code-method:planning` → `no-code-method:design`) so the plugin-component name reads distinct. Compromise.
 
-**Next step.** Promote to a planning session in V31+ once V30's Crash course gives concrete sense of how often readers encounter both terms together. **Promote sooner** if first real Taskflow use surfaces the confusion in practice.
+**Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow use gives concrete sense of how often readers encounter both terms together. **Promote sooner** if first real Taskflow use surfaces the confusion before V35.
 
 ---
 
@@ -214,7 +129,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 - **B. Converge on inline.** Flip planning and before-build. Drops the read overhead. Cost: doc-code parity audit becomes primary discipline against drift; cadence needs formalising in `BUILD-METHOD.md`.
 - **C. Keep the divergence; document the rule.** Stable rules go inline; evolving rules read-spec-on-entry. Re-evaluate per agent per version. Cost: new internal classification to maintain.
 
-**Next step.** Park. Revisit once V26–V31 ship and the rate of `NO-CODE-METHOD.md` changes settles. If the spec is stable across consecutive versions, B is fine; if it churns, A; mixed, C. **Promote sooner** if an audit flags meaningful drift in `batch-executor.md`, which forces A.
+**Next step.** Park. Revisit once V26–V35 ship and the rate of `NO-CODE-METHOD.md` changes (or its post-V32 successor location) settles. If the spec is stable across consecutive versions, B is fine; if it churns, A; mixed, C. **Promote sooner** if an audit flags meaningful drift in `batch-executor.md`, which forces A.
 
 ---
 
@@ -232,7 +147,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 - **D. Hybrid A+B.** Worst of both; not pursued.
 - **E. Defer.** What V25 did.
 
-**Next step.** Promote to a planning session in V26+ once V25 and V26 ship. The session resolves: (1) does MANIFEST.md gain a path field, and in what format? (2) which of A/B/C given (1)? **Promote sooner** if direct-edit users surface in real use — path-mapped MANIFEST also helps drift detection for manual edits.
+**Next step.** Promote to a planning session in V36+ post-E2E (V35). The session resolves: (1) does MANIFEST.md gain a path field, and in what format? (2) which of A/B/C given (1)? Originally tagged V26+ — held through V26–V31 because it's a heavy method-level decision (schema change ripples to MANIFEST-TEMPLATE.md, after-build update logic, the rule's wording in spec docs) and earlier sessions had higher-priority work. Post-V35 evidence may shift the relative priority. **Promote sooner** if direct-edit users surface in real use — path-mapped MANIFEST also helps drift detection for manual edits.
 
 ---
 
@@ -257,9 +172,9 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 **Working notes.**
 
 - Likely shape: prose-only `NO-CODE-METHOD.md` re-expressing every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart foundational reads (becomes at-session-start narrative in `CLAUDE.md`), PreToolUse locking (trust-based convention + chat-time flagging), slash commands (operational procedures in prose).
-- Plugin still evolving (V25–V31 ahead). Rewriting before it settles means redoing.
+- Plugin still evolving (V32–V35 ahead). Rewriting before it settles means redoing.
 
-**Next step.** Park until V31 (final E2E Taskflow test) ships. Then: list each plugin-specific mechanism, design a prose-only equivalent, schedule sessions. **Promote sooner** if public release approaches before migration completes — that scenario forces the rewrite onto the critical path.
+**Next step.** Park until V35 (final E2E Taskflow test) ships. Then: list each plugin-specific mechanism, design a prose-only equivalent, schedule sessions. **Promote sooner** if public release approaches before migration completes — that scenario forces the rewrite onto the critical path.
 
 ---
 
@@ -283,7 +198,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 6. *Where the idea earns its keep eventually.* If the method goes public (course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX are designed for that scale. Single-user, in-development is the wrong scale.
 
-**Next step.** Park. Revisit after V31 ships and the method has settled into stable use across a few real project cycles. The question then becomes concrete: list 2–3 design decisions that would have benefited from logged evidence — if non-empty, define a minimal log against them; if empty, drop and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward public release before V31 wraps.
+**Next step.** Park. Revisit after V35 ships and the method has settled into stable use across a few real project cycles. The question then becomes concrete: list 2–3 design decisions that would have benefited from logged evidence — if non-empty, define a minimal log against them; if empty, drop and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward public release before V35 wraps.
 
 ---
 
