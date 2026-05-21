@@ -112,4 +112,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 34.*
+*No-code method — Version 36.*

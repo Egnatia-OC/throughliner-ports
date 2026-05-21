@@ -301,6 +301,8 @@ Read deliberately neutral — opting out is a legitimate state, not a stuck one.
 
 Planning sessions can start in different ways: pasted test notes, an open question, a new feature, or a fresh project needing first batches sketched out. Steps below are the same in spirit — skip what doesn't apply.
 
+Throughout this phase, Claude holds structural authority over `BACKLOG.md`: every change to it — addition, removal, reorder, split, reclassification — is Claude's to make directly, and the user reviews after rather than applying edits described to them.
+
 - **[BRIEF, SEQUENCE]** **Close the previous build's test session.** Per *Method contract → Required → Never infer completion* (Rule 1) and *Prohibited → Test-confirmation gate* (Rule 3). If `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them one row at a time before any other planning work. For each: read the `Test Description`, ask Pass / Fail / Skipped, record in `Status`, set `Confirmed Explicitly: Yes (<today>)`, move to the next. Don't bulk-ask ("how did the rest go?") — read-back is per-row by design. If the user gives a bulk answer, push back with the next pending row's `Test Description` and ask for that specific outcome. Phase cannot proceed until every previous-batch row is `Confirmed Explicitly: Yes`. If all previous rows are already `Yes` (or `TEST-LOG.md` is empty / first batch not shipped), the session is already closed — proceed.
 - **[SILENT]** Remove from `BACKLOG.md` any build batches completed since the last planning session. (Dedupe's first move.)
 - **[BRIEF]** Check for drift. Four checks (don't try to compare them all at once):
@@ -376,4 +378,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 34.*
+*No-code method — Version 36.*

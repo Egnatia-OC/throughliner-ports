@@ -6,6 +6,37 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V36 — 2026-05-21 — OPEN-QUESTIONS doc-only bundle: TEST-LOG newest-first, BACKLOG authority, plan-panel resolved
+
+**What shipped.** Three doc-only items scoped by `V36.md`, plus the method-version bump that catches up from V35's no-bump close.
+
+- **TEST-LOG.md flipped to newest-first** across both `DOC-STRUCTURE.md` copies (new *Ordering* paragraph added, *Template* and *Pruning rule* paragraphs revised to reference it), both `TEST-LOG-TEMPLATE.md` files (HTML format-reminder comment moved above the empty table; the comment now carries the ordering note inline), `plugin/agents/after-build.md` step 3 (specifies top-of-table-body position with within-batch recap order), and `plugin/agents/planning.md` *Order* paragraph (cross-refs the new ordering). Transition stance — existing rows in projects whose `TEST-LOG.md` predates this rule stay where they are — landed as an italicised sentence inside the *Ordering* paragraph.
+- **BACKLOG-authority sentence** added to *During planning*'s opening paragraph in root `NO-CODE-METHOD.md` and to `plugin/agents/planning.md`'s opening (two-write). One sentence asserting planning holds structural authority over `BACKLOG.md` — every change is Claude's to make directly, user reviews after rather than applying edits described to them.
+- **Plan-panel question resolved.** Sonnet research (`research/claude-code-plan-panel-research.md`, written this session) confirmed Claude Code's plan-mode panel is not programmatically writable from outside Claude — no hook output field, MCP tool, file convention, CLI flag, or env var populates it; it's exclusively driven by Claude's native `ExitPlanMode` flow. Per V36.md's "not writable" outcome handling, the question collapsed to a caveat paragraph in `Crash course.md` (under the existing CLAUDE.md-instruction-headwind paragraph) explaining the limitation and pointing readers to `BACKLOG.md` → Build batches for the real sequence. OPEN-QUESTIONS *Surface the current build sequence in Claude Code's plan panel* entry removed (graduation path 4 — substantively resolved by research, not dropped as irrelevant).
+- **Method-version bump 34 → 36** across all 26 footer-carrying canonical doc files (both two-write sides), plus `plugin.json` (`0.34.0` → `0.36.0`) and `PLUGIN_METHOD_VERSION` in `session_start.py` (`34` → `36`). V35 was dev-internal-only and didn't bump; V36's spec change (TEST-LOG ordering) is the trigger that catches the version up. Footers move 34 → 36, skipping 35.
+
+No smoke test — doc-only session per `BUILD-METHOD.md` → *Doc-only sessions*. Doc-code parity audit clean: the TEST-LOG parser (`plugin/scripts/project_state.py` → `parse_test_log_rows`) filters by `Session` column + confirmation status, both ordering-agnostic, so the ordering flip needs no code change. Frame-correction sweep found only dev-internal "newest at bottom" references (`BUILD-METHOD.md` lines 229 + 314, `TEST-LOG.md` line 3) — all legitimately stay newest-at-bottom under the explicit dev-vs-consumer separation; zero consumer-side candidates for change.
+
+**Decisions taken and why.**
+
+- **BACKLOG-authority sentence lives in `plugin/agents/planning.md`, not `plugin/hooks/universal-behaviour.md`.** V36.md's input list (written at V34) named universal-behaviour.md as the plugin-side target, but that file holds cross-phase rules with no *During planning* section — the phase-specific operating procedure for planning lives in `planning.md` per V32's split. The deviation was caught at edit time, surfaced to Alex, and confirmed: substance went into planning.md, scope-file path was wrong. Substance identical across both two-write copies; only the file location differs from what V36.md named.
+- **Plan-panel resolved as a caveat in `Crash course.md`'s existing Caveats section** (alongside the "30% CLAUDE.md instruction-following" headwind). Same section, same "known limitation, here's how to work around it" register. Avoided creating a standalone section for a single-paragraph note. Pointer to `BACKLOG.md` → Build batches gives the no-coder the right place to look when the panel reads empty mid-build.
+- **Method version 34 → 36 in one jump** (skipping 35). V35 was dev-internal-only per `BUILD-METHOD.md` → *Session tag vs. method version* — no method-side substance changed in V35, so its footers stayed at 34. V36's TEST-LOG ordering flip is substantive, so this session catches the footer up. Session tag (`v36`) and method version (`36`) re-lock — both move together going forward until another dev-internal-only session de-syncs them.
+
+**Pivots and surprises.**
+
+- **V36.md drafting error caught at edit time.** The scope file's Inputs / Outputs sections named `plugin/hooks/universal-behaviour.md` as the plugin-side target for #2's BACKLOG-authority sentence. That file holds the universal cross-phase rules (push back, plain English, ask rather than guess, etc.) — no *During planning* section, by V32's design. The actual plugin-side home for *During planning*'s operating procedure is `plugin/agents/planning.md`. The mistake went undetected when V36.md was drafted at V34 because the writer (me) didn't cross-check the file content against the new architecture. Pattern flag for future scope-file writers: when naming a plugin-side file in a scope's Inputs, open it and confirm the named section actually exists in the post-V32 layout.
+- **Footer-bump parallelism hit "File has not been read yet" on 16 files.** Edit requires a prior Read in the same session; bumping footers across the full canonical doc set needs a batch read first. Resolved with parallel one-line reads then re-running the failed edits. Worth noting for future version-bumping sessions: batch-read all footer-carrying files before the bump loop.
+
+**Carried forward.**
+
+- **V37 scope (`planning/sessions/V37.md`) unchanged** — marketplace.json + local install + smoke test queued post-V36 per V35's planning.
+- **Remaining OPEN-QUESTIONS entries (11) stay parked** per their existing *Next step* lines — most pending V35 evidence + first real Taskflow use. The plan-panel entry's design-half pairing with the vocabulary-collision question is dissolved by the plan-panel resolution; vocabulary-collision now stands alone and its own *Next step* ("promote to a planning session in V36+ post-E2E (V35) once Taskflow use gives concrete sense of how often readers encounter both terms together") is unaffected.
+- **`research/claude-code-plan-panel-research.md` retained** as the basis-of-decision record for V36's plan-panel resolution, in the same convention as V35's `research/plugin-marketplace-scoping.md`. Sonnet research outputs stay alongside the BUILD-LOG entry that consumed them.
+- **V36 scope file deleted** in this commit per the transient-scope rule.
+
+---
+
 ## V35 — 2026-05-21 — E2E Taskflow test — `/adopt` validated; planning-subagent first contact
 
 **What shipped.** Dev-internal only — no plugin code or method-doc structural changes. Three planning artefacts plus a research file.

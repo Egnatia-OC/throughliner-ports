@@ -2,10 +2,7 @@
 
 This file records the test outcomes of every shipped build batch, one row per test. Maintained by Claude during builds and planning; the user reviews and confirms in planning sessions.
 
-For the canonical column shape, pruning rule, and protocol, see `DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
-
-| # | Date | Session | Component | Test Description | Status | Confirmed Explicitly | User Notes |
-|---|---|---|---|---|---|---|---|
+For the canonical column shape, pruning rule, ordering, and protocol, see `DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
 
 <!--
 Entry format:
@@ -20,7 +17,12 @@ Status meanings:
 Confirmed Explicitly meanings:
 - Yes (YYYY-MM-DD) — the user named this specific row in the planning-session read-back; date is when the confirmation happened
 - No — Status was filled in without explicit per-row user confirmation; only valid as a transient state during session-open
+
+Ordering: newest-first. New rows append directly below the table header separator (`|---|...|`), pushing earlier rows downward. Within a single batch's append, rows go in recap order (lowest # at the top of that batch's block).
 -->
 
+| # | Date | Session | Component | Test Description | Status | Confirmed Explicitly | User Notes |
+|---|---|---|---|---|---|---|---|
+
 ---
-*No-code method — Version 34.*
+*No-code method — Version 36.*

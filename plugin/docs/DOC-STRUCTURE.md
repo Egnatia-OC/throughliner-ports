@@ -79,12 +79,14 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 | **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Tripwire for Rule 1 ("Never infer completion"). Reaches `Yes` only when the user names this specific row in the planning read-back; bulk confirmations ("all others good") don't count. |
 | **User Notes** | Observations, surprises, reason if Skipped (required by Rule 4), regression context if Fail, anything else worth keeping. Tight prose. |
 
+**Ordering.** Newest-first. New rows append at the top of the table body, directly below the header separator (`|---|...|`), pushing earlier rows downward. Within a single batch's append (one after-build run), rows go in recap order — lowest `#` at the top of that batch's block — so the user reads them top-to-bottom in the order they tested. A reader looking for the most recent batch's outcomes opens the file and reads from the top. *Existing rows in projects whose `TEST-LOG.md` predates this rule stay where they are — newest-first applies to new appends only.*
+
 **Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days.
 
-- **Substantial change → status flips by appending a new row.** Drift check 4 (`planning.md` → *Drift checks — always run*, fourth check) flags rows whose components have changed since the row's Date. The flip appends a new row: today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays — "passed at the time" is worth keeping as history.
+- **Substantial change → status flips by appending a new row.** Drift check 4 (`planning.md` → *Drift checks — always run*, fourth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
 - **Component removed → row marked Superseded** in Status, with User Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
 
-**Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, empty table, and an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies. The comment stays as a permanent format reminder; rows append above it. No placeholder row — same convention as `MANIFEST.md`.
+**Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies, then the empty table. The comment stays at the top as a permanent format reminder; rows append below it at the top of the table body, per *Ordering* above. No placeholder row — same convention as `MANIFEST.md`.
 
 ## BUILD-LOG.md structure
 
@@ -161,4 +163,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 34.*
+*No-code method — Version 36.*

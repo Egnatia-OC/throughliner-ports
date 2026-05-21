@@ -235,6 +235,8 @@ Iteratively developed. Has not yet been used to ship an app. The first real Task
 
 A known headwind for any methodology relying on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method designs around this by making source-of-truth docs read-only to Claude (so big design changes cannot slip in mid-build) and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any no-coder should expect to recognise drift and recover from it as part of the skill.
 
+Claude Code's built-in **plan panel** (the Shift+Tab plan-mode surface) does not show the method's build sequence. The panel is Claude-Code-internal — populated only by Claude itself via its native plan-mode flow, with no plugin-facing write surface to inject the method's current and queued build batches. Where the real sequence lives is `BACKLOG.md` → Build batches; the top batch is what's next. If the plan panel reads empty mid-build, that is not the plugin losing track of where it is — that is the panel showing what it can show. Open the project's `BACKLOG.md` to see the actual queue.
+
 ## When you need more
 
 This document is the primer. The method's full specification lives inside the plugin you installed, at `plugin/docs/NO-CODE-METHOD.md` (the behavioural rules and operational procedures) and `plugin/docs/DOC-STRUCTURE.md` (the structural rules for the project's docs). Both files are also browsable on the source repo at `https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs`. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...), one tag per working session.
@@ -249,4 +251,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 34.*
+*No-code method — Version 36.*

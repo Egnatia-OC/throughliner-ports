@@ -36,23 +36,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Surface the current build sequence in Claude Code's plan panel
-
-**The question.** Claude Code has a built-in "plan panel" UI (the plan-mode surface, Shift+Tab). When a no-coder using the method is partway through a build sequence — e.g., mid-way through the build batches a planning session queued in `BACKLOG.md` — that sequence is invisible to the plan panel; the panel only reflects what Claude Code's own plan-mode tool has populated. Should the method push the current build sequence into the plan panel so the no-coder can see "where we are" natively, and if so, by what mechanism?
-
-**Why it matters.** Surfaced by Alex, 2026-05-20. The method's own representation of "what's next" lives in `BACKLOG.md` → Build batches and in the active session's `Vxx.md`. The no-coder reads those in their editor. Claude Code's plan panel is a separate, more glanceable surface that consumers see in-tool. Today the two don't talk: the panel shows nothing during a build sequence, even though there *is* a sequence. Risk of a no-coder assuming Claude Code "doesn't know" what's coming, or relying on the plan panel and missing the real plan entirely. Also collides with the existing [["Planning" vocabulary collision with Claude Code's "plan mode"]] question — both touch the same surface from different angles.
-
-**Working notes.** Open questions before we can scope this:
-
-- Does the plan panel have a programmatic write surface (hook output, MCP tool, file-based) we can populate, or is it Claude-Code-internal only? Needs web search / docs check before any design.
-- If writable: what would we write — the active session's batch list, the whole `BACKLOG.md` → Build batches, or just the next batch? Each has trade-offs (specificity vs. context). **Alex's lean (2026-05-20):** the current build session *plus* the next N upcoming build sessions, with a visual separator (line break, divider, heading) between "current" and "upcoming" so the no-coder sees both where they are and what's queued. More useful than current-only because it gives forward visibility without forcing the no-coder back into `BACKLOG.md`. Open: what's N (next 1? next 3? all queued?), and does the separator need to distinguish "remaining batches in this session" from "subsequent sessions" as a second axis?
-- Which subagent / hook owns the write? Plausible candidates: `before-build` (populates panel at batch start), `after-build` (advances the cursor), `planning` (refreshes when batches are queued/regrouped).
-- Interaction with the vocabulary-collision question: if we surface a build sequence in the "plan" panel, the conflation between "method's planning phase" and "Claude Code's plan mode" gets stronger, not weaker. May force shape A (rename) of that question.
-
-**Next step.** **V34, 2026-05-21: research half partially folded into V36's scope.** V36 runs the web-search check on whether the plan panel is programmatically writable. Two outcomes: if not writable, V36 collapses this entry to a `Crash course.md` note about the limitation (entry removed in V36's commit). If writable, V36 updates this entry's *Working notes* with the finding and the design-decision half (what to write, which subagent owns it, interaction with the vocabulary collision) stays parked for V37+ paired with [["Planning" vocabulary collision with Claude Code's "plan mode"]]. **Promote the design half sooner** if first real Taskflow use surfaces no-coder confusion about why the panel is empty mid-build.
-
----
-
 ## Automated testing / CI for the method's dev project
 
 **The question.** `BUILD-METHOD.md` → *Testing — what we actually do* asserts no automated CI: smoke tests are hand-run by Alex post-session, framed as deliberate — "CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention." Should the decision be revisited as the plugin's surface grows, and if so, what shape of automation would earn its place?
