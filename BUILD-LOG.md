@@ -6,6 +6,39 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V35 — 2026-05-21 — E2E Taskflow test — `/adopt` validated; planning-subagent first contact
+
+**What shipped.** Dev-internal only — no plugin code or method-doc structural changes. Three planning artefacts plus a research file.
+
+- **First plugin run against real Taskflow** (not a synthetic fixture). Two `claude --plugin-dir` sessions: a previous one (since blown up) that took `/adopt` case 1 cleanly through migrate on `Taskflowapp/` with foreign CLAUDE.md, scaffolded BUILD-LOG.md + TEST-LOG.md; and this session's `/adopt` case 4 refresh after real Taskflow planning docs were dropped in from `Taskflowapp/New-docs/`. Case 4 correctly bumped footers on BACKLOG.md + MANIFEST.md (writable per V29 #083 fix), recognised CLAUDE/BUILD-LOG/TEST-LOG as already-V34, and routed UX.md + SYSTEM-PROMPT.md footer additions through `[FOLD-IN PENDING]`. See TEST-LOG #104–108.
+- **Two new OPEN-QUESTIONS entries** (newest first):
+  - *Footer-stamp on locked source-of-truth docs routed through [FOLD-IN PENDING]* — surfaced by case 4 refresh forcing manual fold-in for a footer line (metadata, not content). Paired with the existing *Source-of-truth doc edits with no-coder permission* entry for a future joint session.
+  - */adopt permission-prompt UX and narration for new users* — added in the blown-up prior session, picked up in this commit. CLI `--plugin-dir` permission prompts are user-opaque; marketplace-installed surface untested; CLI vs. desktop pre-fill differences captured as a sub-bullet.
+- **Marketplace path researched.** Sonnet output at `research/plugin-marketplace-scoping.md` confirmed: manifest is `.claude-plugin/marketplace.json` at repo root; relative `source: "./plugin"` works for both local install and public GitHub distribution; minimal manifest is ~15 lines. `/plugin marketplace add ./<repo>` is the recommended local-install path — no hosting, persists across sessions, `/reload-plugins` picks up edits.
+- **V37 scope created** at `planning/sessions/V37.md` — marketplace.json + local install + smoke test.
+
+**Decisions taken and why.**
+
+- **V35 closes as planning/observational, not full E2E.** Scope expected a planning → before-build → build → after-build cycle. We got SessionStart safety net + `/adopt` (cases 1 and 4) + planning subagent into question 1 of 5 of a [SEQUENCE] before halting (the plugin's questions clashed with decisions already settled in Alex's separate Taskflow Planning project). Rather than walk synthetic continuation, the remaining-phase coverage will arrive naturally as real Taskflow batches go through.
+- **No method-version bump.** Two OPEN-QUESTIONS entries + a research file + a new V37 scope + a BUILD-LOG entry + TEST-LOG rows. No plugin code, no method-doc structural change. Dev-internal only per `BUILD-METHOD.md` → *Session tag vs. method version*.
+- **V37 = marketplace.json as its own session, not folded.** V35 is already in an awkward state; V36 is doc-only OPEN-QUESTIONS bundle. Marketplace.json is plugin-side packaging — warrants its own footer bump and a clean smoke test.
+- **Local marketplace install over `~/.claude/plugins/` copying.** Sonnet research §6 explicitly recommends `/plugin marketplace add` over manual cache writes. Same `marketplace.json` serves local and public distribution; the trade-off I'd initially flagged ("two configurations of the same file") was wrong — relative `./plugin` source works for both.
+
+**Pivots and surprises.**
+
+- **Previous session blew up mid-planning-subagent.** First `claude --plugin-dir` run reached the planning subagent's [SEQUENCE] for the "Unassigned dated tasks" planning batch and stopped because the questions clashed with already-resolved Taskflow decisions. Handoff prompt captured the state; the V35 commit picks up the OPEN-QUESTIONS entry the prior session added but never committed.
+- **`/adopt` first run launched from `C:\Users\Alex` (home dir).** Subagent's sanity check caught it — detected Windows user profile as adoption target, refused to scatter spine docs there. Real-world catch that would have been a disaster without it.
+- **Marketplace path was much shorter than originally framed.** I'd previously called this a separate packaging session blocked on schema uncertainty. Sonnet research surfaced `/plugin marketplace add ./<repo>` as a single-command local install — no hosting, no publication. V37 is now small and concrete.
+- **My "two configurations" framing on local vs public marketplace was wrong.** Alex pushed back ("How does this affect the way we publish later?"); re-reading the research showed relative-path source works for both audiences. Correction recorded; no OPEN-QUESTIONS entry needed.
+
+**Carried forward.**
+
+- **Full E2E cycle (planning → before-build → build → after-build) remains owed.** V35's scope expected it; V35 closes without it. Folds into normal Taskflow use rather than a dedicated retest session — real batches will exercise the remaining subagents naturally.
+- **V37 (marketplace.json + local install)** scope file created; queued post-V36.
+- **V35 scope file deleted** this commit per the transient-scope rule.
+
+---
+
 ## V34 — 2026-05-21 — Consumer-method git workflow + OPEN-QUESTIONS promotion
 
 **What shipped.** Two deliverables scoped by `V34.md`, plus an OPEN-QUESTIONS promotion and a Cowork drift cleanup folded in.
