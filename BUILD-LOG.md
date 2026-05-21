@@ -6,27 +6,27 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
-## v41 — 2026-05-21 — Rescope OPEN-QUESTIONS into V44–V46
+## v41 — 2026-05-21 — Rescope OPEN-QUESTIONS into V45–V47
 
-**What shipped.** Dev-internal. Three major OPEN-QUESTIONS entries (plus one V39-surfaced entry) scoped into future build sessions with full scope files. Pattern follows V31 (rescoping session). No plugin code, no method-version bump.
+**What shipped.** Dev-internal. Three major OPEN-QUESTIONS entries (plus one V39-surfaced entry) scoped into future build sessions with full scope files. Pattern follows V31 (rescoping session). No plugin code, no method-version bump. Existing V41–V43 renumbered to V42–V44 (following V31 precedent — scoping session takes the slot, existing scope files shift up).
 
-- **V44 scope file** (`planning/sessions/V44.md`) — distributed fold-ins + BACKLOG open-questions section + batch `Inputs:` line. Largest structural rewrite of V44–V46. Prerequisite #1 for the graduation meta-goal.
-- **V45 scope file** (`planning/sessions/V45.md`) — automated vs. manual test split + four non-UI test types. Depends on V42 (non-GUI vocab) and V44 (`Inputs:` line as carrier for per-batch test spec). Prerequisite #2 for the graduation meta-goal; after V45, graduation becomes promotable.
-- **V46 scope file** (`planning/sessions/V46.md`) — `cd`-shifts-cwd opt-out marker fix. Decisions pre-made (shape A marker-walk-up, bounded by first `CLAUDE.md`/`.git`-bearing ancestor). Smallest of the three.
-- **PLAN.md** — V44/V45/V46 rows added; V44+ parked grab-bag retargeted to V47+; session count 26→29.
-- **OPEN-QUESTIONS.md** — *Next step* lines updated on distributed fold-ins (→V44), test split (→V45), cd-cwd (→V46). Meta-goal entry's prerequisites list annotated: all four prerequisites now scheduled; graduation promotable after V45 ships + one verification cycle.
-- **CLAUDE.md** — *Current state* bumped to v41; *What's next* expanded through V46.
-- **V43.md** — added a Risks note to consider folding V46 into V43 at session start (both touch adoption-gate hook logic; V46 is small enough to bundle if V43's surface is light).
+- **V45 scope file** (`planning/sessions/V45.md`) — distributed fold-ins + BACKLOG open-questions section + batch `Inputs:` line. Largest structural rewrite of V45–V47. Prerequisite #1 for the graduation meta-goal.
+- **V46 scope file** (`planning/sessions/V46.md`) — automated vs. manual test split + four non-UI test types. Depends on V43 (non-GUI vocab) and V45 (`Inputs:` line as carrier for per-batch test spec). Prerequisite #2 for the graduation meta-goal; after V46, graduation becomes promotable.
+- **V47 scope file** (`planning/sessions/V47.md`) — `cd`-shifts-cwd opt-out marker fix. Decisions pre-made (shape A marker-walk-up, bounded by first `CLAUDE.md`/`.git`-bearing ancestor). Smallest of the three.
+- **PLAN.md** — v41 scoping row added; V42–V47 rows updated (renumbered from V41–V46); V48+ parked grab-bag retargeted; session count 26→30.
+- **OPEN-QUESTIONS.md** — *Next step* lines updated on distributed fold-ins (→V45), test split (→V46), cd-cwd (→V47), UX.md adaptation (→V43), planning-vocab collision (→V43), direct-edit users (→V42). Meta-goal entry's prerequisites list annotated: all four now scheduled; graduation promotable after V46 ships + one verification cycle.
+- **CLAUDE.md** — *Current state* bumped to v41; *What's next* expanded through V47.
+- **V44.md** (was V43) — added a Risks note to consider folding V47 into V44 at session start (both touch adoption-gate hook logic; V47 is small enough to bundle if V44's surface is light).
 
 **Decisions taken and why.**
 
-- **V44 before V45.** V45's per-batch test spec needs V44's `Inputs:` line as its natural carrier. V44's open-questions section also gives V45's between-session design decisions a place to park. Dependency is soft — V45 could ship without V44 by inventing an isolated `Tests:` sub-section — but the surface is cleaner together.
-- **V46 kept separate from V43.** Both touch adoption-gate hook logic, but V43 is user-facing UX and V46 is internal plumbing. V43 is already 5-outputs heavy. Note added to V43.md's Risks to reconsider at V43 session start.
-- **No renumbering of V41/V42/V43.** Unlike V31 (which renumbered V32–V35), existing scope files kept as-is — new sessions appended. Less churn, no stale cross-references.
+- **V45 before V46.** V46's per-batch test spec needs V45's `Inputs:` line as its natural carrier. V45's open-questions section also gives V46's between-session design decisions a place to park. Dependency is soft — V46 could ship without V45 by inventing an isolated `Tests:` sub-section — but the surface is cleaner together.
+- **V47 kept separate from V44.** Both touch adoption-gate hook logic, but V44 is user-facing UX and V47 is internal plumbing. V44 is already 5-outputs heavy. Note added to V44.md's Risks to reconsider at V44 session start.
+- **Renumbering applied (fix commit).** Initially shipped without renumbering (appended V44–V46 after existing V41–V43). Session tag v41 collided with scope file V41.md — next session's scope-file lookup skipped V41 and jumped to V42. Fixed by shifting V41→V42 through V46→V47, following the V31 precedent.
 
 **Pivots and surprises.**
 
-- None. Straightforward scoping session.
+- **Numbering collision caught post-push.** The initial commit shipped without renumbering; Alex discovered the next session skipped to V42. Root cause: session tag v41 consumed the V41 slot, so the session-open rule ("lowest V# above current built version") bypassed V41.md. Fix: follow the V31 pattern (scoping session takes the slot; existing scope files shift up by one). Amend commit added.
 
 **Carried forward.**
 
