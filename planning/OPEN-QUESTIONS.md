@@ -8,6 +8,51 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Post-adopt and mid-loop UX friction (V42 smoke-test observations)
+
+**The question.** The adopt → plan → before-build → build → test loop works mechanically, but seven UX friction points surfaced during V42's live smoke test that would frustrate a new non-coder user. Should any be addressed, and if so, how?
+
+**Why it matters.** Surfaced 2026-05-21, V42 smoke test against `~\v42-scratch`. Alex walked the full loop as a user would. Each observation is a moment where the user would be stuck, confused, or doing unnecessary manual work.
+
+**The seven items.**
+
+1. **Jargon in adopt subagent.** `/adopt` says "One more, then I'll scaffold" — "scaffold" is jargon. Should say something like "create your project's starter docs." Violates the universal-behaviour "Plain English over jargon" rule.
+2. **No next-action prompt after `/adopt`.** Adopt finishes by telling the user to fold pending blocks into UX.md "during the next planning session" but doesn't say how to start one. A new user would be stuck at the prompt with no idea what to type.
+3. **Fold-in UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
+4. **Claude Code's permission modes vs. the UX.md lock.** Claude Code has its own graduated permission model (Ask permissions → Accept edits → Auto mode). The method's UX.md lock is a second, harsher layer on top. Research needed: does the plugin's PreToolUse hook fire regardless of which Claude Code mode is active? If the mode already provides the safety guarantee, the manual fold-in may be unnecessary.
+5. **After-build doesn't prompt commit/tag.** After-build tells the user to "/clear and switch back to planning mode" but never mentions committing or tagging. The method recommends tagging (and drift check 1 depends on it), but the user isn't told.
+6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/adopt` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
+7. **"Pass / Fail / Skipped" not explained.** TEST-LOG read-back asks "Pass, Fail, or Skipped?" with no context for what each means or when to use which. A one-line explanation per option would help.
+
+**Relationship to existing entries.** Item 3 is adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX. Item 4 is new research with no existing entry. Items 1, 2, 5, 6, 7 are subagent/template fixes that could land independently.
+
+**Next step.** Bring to V43 planning. Items 1, 2, 5, 6, 7 are small fixes that could bundle into a build batch. Item 4 needs empirical research (test PreToolUse under different Claude Code modes). Item 3 is a larger design question that may feed into or follow V45.
+
+---
+
+## Six prose directives identified for pluginification
+
+**The question.** An audit of sovereign-implementer's method docs against the current Claude Code plugin surface identified six rules currently enforced only by prose (Claude reads and follows them) that could become plugin automation. Should any or all be scheduled?
+
+**Why it matters.** Surfaced 2026-05-21, ideation session. The plugin uses 3 of 18 available hook events (SessionStart, PreToolUse, Stop) and 1 of 5 hook types (command scripts). Six prose directives were identified where automation would reduce reliance on Claude reading and correctly applying rules from docs.
+
+**The six items.**
+
+1. **BACKLOG.md parse validation after edits.** PostToolUse hook runs `parse_backlog.py` after each BACKLOG.md edit and surfaces parse failures immediately, rather than silently returning `{}` when the Stop hook or `/build` tries to consume the output later. Rule source: implicit structural assumption across all subagents and the Stop hook.
+2. **`Serves <DOC>:` validation for additional source-of-truth docs.** PreToolUse extension. Currently validates `Serves UX.md:` lines only. Consumer projects declaring additional docs in their CLAUDE.md path block get no validation on `Serves <DOC>:` lines. Rule source: DOC-STRUCTURE.md.
+3. **Red flags non-empty warning at SessionStart.** SessionStart already reads BACKLOG.md — add a check for non-empty Red flags section and surface prominently. Rule source: DOC-STRUCTURE.md + universal-behaviour.md.
+4. **Fold-in aging reminder.** Planning subagent scans `[FOLD-IN PENDING]` blocks for age (using existing `Surfaced [date]` field) and flags any older than 1–2 planning sessions. Rule source: DOC-STRUCTURE.md.
+5. **Context preservation before compaction.** PreCompact hook injects a structured summary of current build state (which batch, ticked/unticked files, active subagent) so mid-build context survives compaction. Rule source: none — unaddressed risk not named in any doc.
+6. **Opener routing classification.** UserPromptSubmit hook parses the user's first message, classifies it (test notes / feature request / resume / question), and injects the routing decision as structured context. Currently a prose table in universal-behaviour.md that Claude applies from reasoning alone. Rule source: universal-behaviour.md ("Routing main-Claude's openers").
+
+**Relationship to existing build batches.** Checked against V42–V47: no overlap. V45 (distributed fold-ins) is adjacent to item 4 but doesn't address age tracking. None block a scheduled session.
+
+**Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
+
+**Next step.** Park. Revisit after V45 ships (fold-in restructuring may change item 4's shape; BACKLOG.md structural changes may affect item 1's hook target). Items are independent of each other and can be promoted individually. **Promote sooner** if a consumer project hits a routing misclassification (item 6), a silent BACKLOG parse failure (item 1), or a compaction-loses-build-state incident (item 5) — those are the three with the highest consequence-of-inaction.
+
+---
+
 ## Graduate sovereign implementer development onto sovereign implementer
 
 **The question.** Can the no-code method's own development project switch from its bespoke dev environment (Vxx scope files, BUILD-METHOD.md, OPEN-QUESTIONS.md, two-write rule) to using the method's own plugin — dogfooding sovereign implementer to build sovereign implementer?

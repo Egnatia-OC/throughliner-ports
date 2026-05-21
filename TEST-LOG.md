@@ -244,3 +244,13 @@ Direct hook-script invocation (per `BUILD-METHOD.md` → *Testing*, "Hook script
 | 120 | 2026-05-21 | V39 | MANIFEST entry without a `(path)` field is silently skipped by the gate (legacy / incremental migration) | `pre_tool_use.py` → `manifest_entry_covers_file` (empty paths) | Pass | Fixture had `- **LegacyComponent** — Old component, no path field yet.`; Edit on an unrelated file allowed. Confirms `entry.paths == []` → skipped. |
 | 121 | 2026-05-21 | V39 | Spine-doc target (MANIFEST.md itself) is exempt from the V39 gate even if accidentally listed | `pre_tool_use.py` → `check_read_before_edit` (`V39_EXEMPT_LOGICAL_NAMES` check) | Pass | Edit on `MANIFEST.md` allowed regardless of whether MANIFEST coincidentally had a matching entry. Defensive guard against build-cycle deadlock. |
 | 122 | 2026-05-21 | V39 | Retry after first deny succeeds via transcript scan (block-once semantics, no state file) | `pre_tool_use.py` → `transcript_shows_prior_v39_deny` | Pass | Wrote a fake transcript file containing `BLOCKED [V39 read-before-edit]: <abs path>`; subsequent Edit on the same file allowed. Confirms the marker line is what the retry check matches on. |
+
+---
+
+## V42 — Drift check 1 (direct-edit detection) smoke test (2026-05-21)
+
+Live `claude --plugin-dir` smoke test against `~\v42-scratch` scratch project. Full adopt → plan → before-build → build → tag → manual-edit → reopen-planning loop. Plugin v0.40.0 (`PLUGIN_METHOD_VERSION = 40`).
+
+| # | Date | Session | Test | Component | Status | Notes |
+|---|---|---|---|---|---|---|
+| 123 | 2026-05-21 | V42 | Drift check 1 detects uncommitted manual edit to `index.html` (hello → goodbye) after `git tag v1`, surfaces per-file confirmation walk | `plugin/agents/planning.md` (drift check 1 — direct-edit detection) | Pass | Full loop: `/adopt` case 1 → planning (4 fold-ins) → `/before-build` → `/build` (greeting page batch) → `git tag v1` → manual Notepad edit of `index.html` outside Claude → new session → `let's plan`. Planning subagent ran `git diff HEAD -- index.html` + `git tag --list`, diffed against tag `v1`, found one flagged file, reported: "index.html (MANIFEST entry: Greeting page) — content change in `<body>`: hello → goodbye", asked "Was the change in index.html (hello → goodbye) you, doing a direct edit? Yes / No / not sure". Confirmation protocol shape matches spec exactly. |
