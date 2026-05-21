@@ -6,6 +6,36 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v41 — 2026-05-21 — Rescope OPEN-QUESTIONS into V44–V46
+
+**What shipped.** Dev-internal. Three major OPEN-QUESTIONS entries (plus one V39-surfaced entry) scoped into future build sessions with full scope files. Pattern follows V31 (rescoping session). No plugin code, no method-version bump.
+
+- **V44 scope file** (`planning/sessions/V44.md`) — distributed fold-ins + BACKLOG open-questions section + batch `Inputs:` line. Largest structural rewrite of V44–V46. Prerequisite #1 for the graduation meta-goal.
+- **V45 scope file** (`planning/sessions/V45.md`) — automated vs. manual test split + four non-UI test types. Depends on V42 (non-GUI vocab) and V44 (`Inputs:` line as carrier for per-batch test spec). Prerequisite #2 for the graduation meta-goal; after V45, graduation becomes promotable.
+- **V46 scope file** (`planning/sessions/V46.md`) — `cd`-shifts-cwd opt-out marker fix. Decisions pre-made (shape A marker-walk-up, bounded by first `CLAUDE.md`/`.git`-bearing ancestor). Smallest of the three.
+- **PLAN.md** — V44/V45/V46 rows added; V44+ parked grab-bag retargeted to V47+; session count 26→29.
+- **OPEN-QUESTIONS.md** — *Next step* lines updated on distributed fold-ins (→V44), test split (→V45), cd-cwd (→V46). Meta-goal entry's prerequisites list annotated: all four prerequisites now scheduled; graduation promotable after V45 ships + one verification cycle.
+- **CLAUDE.md** — *Current state* bumped to v41; *What's next* expanded through V46.
+- **V43.md** — added a Risks note to consider folding V46 into V43 at session start (both touch adoption-gate hook logic; V46 is small enough to bundle if V43's surface is light).
+
+**Decisions taken and why.**
+
+- **V44 before V45.** V45's per-batch test spec needs V44's `Inputs:` line as its natural carrier. V44's open-questions section also gives V45's between-session design decisions a place to park. Dependency is soft — V45 could ship without V44 by inventing an isolated `Tests:` sub-section — but the surface is cleaner together.
+- **V46 kept separate from V43.** Both touch adoption-gate hook logic, but V43 is user-facing UX and V46 is internal plumbing. V43 is already 5-outputs heavy. Note added to V43.md's Risks to reconsider at V43 session start.
+- **No renumbering of V41/V42/V43.** Unlike V31 (which renumbered V32–V35), existing scope files kept as-is — new sessions appended. Less churn, no stale cross-references.
+
+**Pivots and surprises.**
+
+- None. Straightforward scoping session.
+
+**Carried forward.**
+
+- **No `Vxx.md` scope file** was created for v41 — the session was ad-hoc, like v40.
+- **No smoke test** — pure planning-artefact change.
+- **`plugin/hooks/pre_tool_use.py` deny-message citations of `NO-CODE-METHOD.md`** — still unfixed from v40's carried-forward note.
+
+---
+
 ## V40 — 2026-05-21 — Shelve the two-write rule for canonical docs
 
 **What shipped.** Dev-internal. The V32 two-write rule (parallel plugin-side and docs-only canonical doc sets, both bumped on every method version change) is shelved. The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) and the repo-root `templates/` mirror are frozen at method version V39 with a notice at the top of each file. Plugin-side becomes the sole operational source. Method version stays at V39; no footer bump.

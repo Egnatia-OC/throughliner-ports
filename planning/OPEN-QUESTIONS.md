@@ -18,14 +18,14 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Prerequisites (all tracked as separate entries).**
 
-1. **[[Distributed fold-ins + open questions section in BACKLOG]]** — gives the method a parking lot for unresolved questions (replaces this project's bespoke OPEN-QUESTIONS.md) and restructures BACKLOG.md. Includes the Inputs line for build batches (replaces Vxx Inputs sections).
-2. **[[Automated vs. manual test split + non-UI test types]]** — the primary blocker. The method's test model must accommodate run-and-read, trigger-and-observe, and generate-and-inspect test types, and support Claude-run automated tests. Without this, the build cycle can't verify plugin work.
+1. **[[Distributed fold-ins + open questions section in BACKLOG]]** — **Promoted to V44 (session v41, 2026-05-21).** Gives the method a parking lot for unresolved questions (replaces this project's bespoke OPEN-QUESTIONS.md) and restructures BACKLOG.md. Includes the Inputs line for build batches (replaces Vxx Inputs sections).
+2. **[[Automated vs. manual test split + non-UI test types]]** — **Promoted to V45 (session v41, 2026-05-21).** The primary blocker. The method's test model must accommodate run-and-read, trigger-and-observe, and generate-and-inspect test types, and support Claude-run automated tests. Without this, the build cycle can't verify plugin work.
 3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
-4. **[[UX.md adaptation for non-GUI projects]]** — vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
+4. **[[UX.md adaptation for non-GUI projects]]** — **Promoted to V42 (renumbered from V40/V41 across v40/v41 sessions).** Vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
 
 **What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). BUILD-LOG.md narrative (already in the consumer method since V33).
 
-**Next step.** Park. This entry is the meta-goal; the prerequisites have their own promotion triggers. Graduate when all four prerequisites have shipped and been verified in at least one build cycle. **Promote sooner** if an external reason (public release, new contributor) makes dogfooding urgent before all prerequisites land.
+**Next step.** Park. This entry is the meta-goal; the prerequisites have their own promotion triggers. As of session v41 (2026-05-21), all four prerequisites have been scheduled (V42 vocab, V44 fold-ins, V45 test split; #3 already done in v40) and after V45 ships, graduation becomes promotable on its own evaluation. Graduate when all four prerequisites have shipped and been verified in at least one build cycle. **Promote sooner** if an external reason (public release, new contributor) makes dogfooding urgent before all prerequisites land.
 
 ---
 
@@ -49,7 +49,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - **After-build prompt language.** Currently assumes all testing is user-performed. Needs to distinguish: "Claude has already verified X; please manually check Y."
 - **Test specification.** Where does the build batch specify what tests to run and which are automatable? An extension of the Inputs line, or a separate `Tests:` section per batch?
 
-**Next step.** Park. Connects to the existing entry [[UX.md adaptation for non-GUI projects]] — that entry handles vocabulary and doc structure; this one handles the test model specifically. Promote to its own session once the non-GUI vocabulary work (V41) ships, since both reshape how the method serves non-UI projects. **Promote sooner** if dogfooding sovereign implementer becomes a priority, since this is the primary blocker.
+**Next step.** Promoted to V45 (session v41, 2026-05-21). Depends on V42 (non-GUI vocab settled) and V44 (Inputs line; per-batch test spec is the natural peer). After V45 ships, three of four prerequisites for [[Graduate sovereign implementer development onto sovereign implementer]] are done. **Promote sooner** only if dogfooding becomes urgent before V42 ships, since the test-type language would shadow-decide vocabulary that V42 owns.
 
 ---
 
@@ -68,7 +68,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - Planning batches (the current `Blocks:` mechanism) — relationship to the new open-questions section not yet resolved. May merge, may coexist.
 - **Inputs line for build batches.** Each batch gains an `Inputs:` line listing non-standard reads specific to that batch — an OPEN-QUESTIONS entry, a specific additional doc, a research artifact, an external reference. Foundational docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are already read every session by SessionStart, so `Inputs:` only lists what's beyond the standard set. Closes the gap left by Vxx scope files' Inputs sections: without it, Claude has to guess what to read before starting a batch.
 
-**Next step.** Park. Promote to its own session once V39–V41 ship (higher priority — MANIFEST path-field, TEST-LOG pruning, vocabulary collision). **Promote sooner** if real Taskflow use surfaces the "nowhere to park unresolved questions" gap, or if the fold-in centralisation causes friction during planning.
+**Next step.** Promoted to V44 (session v41, 2026-05-21). Placed ahead of V45 because V45 (test split) needs both the open-questions section as a parking lot for between-session design decisions and the `Inputs:` line as the natural carrier for per-batch test specs. Prerequisite #1 for [[Graduate sovereign implementer development onto sovereign implementer]]. **Promote sooner** only if real Taskflow use surfaces the "nowhere to park unresolved questions" gap before V41–V43 ship.
 
 ---
 
@@ -90,7 +90,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-bearing ancestor)**. Cheap, covers both real cases (dev project + monorepo), and the bound keeps it from over-reaching into the user's home directory.
 
-**Next step.** Park. Promote to its own session in V43+ once V40–V42 ship (those have higher priority — direct-edit drift, vocabulary sweep, /adopt UX). **Promote sooner** if a consumer hits this in normal use, OR if the V40 git-diff drift detection ends up `cd`-ing into subdirectories often enough that the dev project trips again.
+**Next step.** Promoted to V46 (session v41, 2026-05-21). Decisions pre-made (shape A marker-walk-up, bounded by first `CLAUDE.md`/`.git/`-bearing ancestor); shapes B and C rejected. Smallest of V44–V46. **Promote sooner** only if a consumer hits this in normal use, OR if V41's git-diff drift detection trips the dev project again before V46 ships.
 
 ---
 
