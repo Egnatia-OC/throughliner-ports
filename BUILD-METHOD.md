@@ -33,7 +33,7 @@ In order:
 1. `git describe --tags --abbrev=0` from `sovereign-implementer/` — confirm current version.
 2. Read `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md` at `HEAD` — the active method.
 3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
-4. Read `planning/sessions/V<N>.md` if one exists — provisional scope, not a contract.
+4. Read the active scope file at `planning/sessions/V<N>.md` — provisional scope, not a contract. `<N>` is the lowest version number present in that folder above the current tag from step 1 (i.e. the next session up, not the furthest-out one). Use the absolute path (see `CLAUDE.md → Current state` for why). If no scope file exists above the current tag, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
 
 Then read Alex's opener and route. `CLAUDE.md → Working with me` governs interaction shape. If the task isn't clear, report what was loaded and ask. Don't draft.
 

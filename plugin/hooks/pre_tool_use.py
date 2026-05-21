@@ -5,17 +5,17 @@ PreToolUse hook for the no-code-method plugin.
 Runs a V29 adoption gate first (across Edit / Write / MultiEdit AND Task),
 then three checks on Edit / Write / MultiEdit and one check on Task:
 
-  (1) Locked source-of-truth doc enforcement (V19) — Edit/Write/MultiEdit.
-      Locked docs are: UX.md, plus any additional source-of-truth docs declared
-      in the project's CLAUDE.md path block. BACKLOG.md, MANIFEST.md, and
-      TEST-LOG.md are explicitly writable — the planning, glossary, and
-      test-record surfaces Claude edits during the build cycle. (TEST-LOG.md
-      is a spine doc since V26, not "additional"; V28 closed the gap by
-      adding it to WRITABLE_LOGICAL_NAMES so after-build's row-open writes
-      and planning's per-row status updates can land.) When a writing tool
-      targets a locked doc, the hook denies and tells Claude to add a
-      [FOLD-IN PENDING] block to the Fold-ins pending section of BACKLOG.md
-      instead.
+  (1) Locked source-of-truth doc enforcement (V19, V38 carve-out) —
+      Edit/Write/MultiEdit. Locked docs are: UX.md, plus any additional
+      source-of-truth docs declared in the project's CLAUDE.md path block.
+      BACKLOG.md, MANIFEST.md, and TEST-LOG.md are explicitly writable — the
+      planning, glossary, and test-record surfaces Claude edits during the
+      build cycle. When a writing tool targets a locked doc, the hook denies
+      and tells Claude to add a [FOLD-IN PENDING] block to the Fold-ins
+      pending section of BACKLOG.md instead. V38 exception: footer-only
+      edits (Edit tool only) that exclusively add or update the method-
+      version footer (`*No-code method — Version N.*`) are allowed — the
+      footer is metadata, not content.
 
   (2) Serves-line check on BACKLOG.md build-batch additions (V22) — Edit/Write/
       MultiEdit. When a writing tool targets BACKLOG.md and the proposed new
@@ -182,6 +182,9 @@ ENTRY_HEADING_PATTERN = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 # the entries it implements"). The trailing period is part of the canonical
 # format. The regex tolerates trailing whitespace.
 SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
+
+# V38: method-version footer pattern for the footer-stamp carve-out.
+FOOTER_LINE_PATTERN = re.compile(r"\*No-code method — Version \d+\.\*")
 
 # PARSER_PATH, PARSER_TIMEOUT_SECONDS, TEST_LOG_DATA_ROW_PATTERN, and
 # BUILD_LOG_SESSION_HEADING_PATTERN now live in project_state.py
@@ -449,6 +452,31 @@ def check_serves_lines(
         return None
 
     return make_serves_line_deny_reason(missing, known_normalised)
+
+
+# --- V38 Footer-stamp carve-out helper ---
+
+
+def is_footer_only_edit(tool_name, tool_input):
+    """V38: Return True if a writing-tool call on a locked doc is exclusively
+    adding or updating the method-version footer line.
+
+    Only Edit qualifies — Write replaces the entire file (too broad for a
+    footer-only determination) and MultiEdit can bundle footer + other
+    changes. The check strips footer lines from both old_string and
+    new_string: if the remainder is identical, the only change was the
+    footer."""
+    if tool_name != "Edit":
+        return False
+    old = tool_input.get("old_string")
+    new = tool_input.get("new_string")
+    if not isinstance(old, str) or not isinstance(new, str):
+        return False
+    if not FOOTER_LINE_PATTERN.search(new):
+        return False
+    old_stripped = FOOTER_LINE_PATTERN.sub("", old).strip()
+    new_stripped = FOOTER_LINE_PATTERN.sub("", new).strip()
+    return old_stripped == new_stripped
 
 
 # --- V25 batch file-list boundary check helpers ---
@@ -815,7 +843,10 @@ def main() -> int:
     locked_map = build_locked_map(project_root)
     logical_name = locked_map.get(str(target_path)) if locked_map else None
     if logical_name:
-        return emit_deny(make_reason(logical_name))
+        # V38: narrow carve-out — footer-only edits are metadata, not
+        # content, and don't need [FOLD-IN PENDING] routing.
+        if not is_footer_only_edit(tool_name, tool_input):
+            return emit_deny(make_reason(logical_name))
 
     # V22: Serves-line check fires on BACKLOG.md edits whose new content
     # contains one or more `Serves UX.md: <entry>.` lines. Anywhere the

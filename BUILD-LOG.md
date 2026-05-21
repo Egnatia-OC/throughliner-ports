@@ -6,6 +6,35 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V38 — 2026-05-21 — Locked-doc edit rules + Sonnet-search discipline
+
+**What shipped.** Three method-discipline changes resolving three OPEN-QUESTIONS entries, touching the PreToolUse hook, both canonical doc sets, all five subagent bodies, and both VOCABULARY files.
+
+- **Footer-stamp carve-out in PreToolUse hook.** New `is_footer_only_edit()` function + `FOOTER_LINE_PATTERN` regex. An `Edit` call that changes nothing except the `*No-code method — Version N.*` footer line now passes through the locked-doc check. `Write` and `MultiEdit` remain blocked (too broad to verify as footer-only). Simplifies `/adopt` case 4 — footer refreshes go through directly, no fold-in blocks needed.
+- **Preview-then-fold-in convention.** New `[PROPOSED EDIT]` workflow: during planning and `/adopt`, subagents preview proposed source-of-truth edits in chat (full section with heading and tags), wait for explicit approval, write the `[FOLD-IN PENDING]` block, then prompt the user to fold in *now* rather than deferring. Block specifies replace vs. add. Landed in `universal-behaviour.md` → Editing surfaces, `NO-CODE-METHOD.md` → Editing surfaces, `planning.md` (6-step inline sequence), `adopt.md` case 3, both VOCABULARY Fold-in entries, and `Crash course.md`.
+- **Sonnet-search / verify-external-facts rule.** New Required behaviour: don't guess or hedge on external facts — use web-search tools if available, otherwise hand the user a paste-ready Sonnet prompt. Fallback if search can't happen: mark the claim `[UNVERIFIED: <what>]` inline. Landed in `universal-behaviour.md`, `NO-CODE-METHOD.md`, `Crash course.md`.
+- **Three OPEN-QUESTIONS entries removed** — "Footer-stamp on locked source-of-truth docs," "Source-of-truth doc edits with no-coder permission," and "Method rule: ask the user to run a Sonnet web search." All resolved by V38's changes.
+- **Method-version bump 37 → 38** across all 26 footer-carrying files, `plugin.json` (`0.37.0` → `0.38.0`), `PLUGIN_METHOD_VERSION` (`37` → `38`).
+
+**Decisions taken and why.**
+
+- **Preview convention instead of a PreToolUse planning-context carve-out.** The hook can't identify which subagent made a tool call (no caller identity in hook protocol), so a "planning subagent may edit locked docs" exception would require a state-file mechanism. Keeping the lock intact and improving fold-in UX (preview → approve → fold in now) was simpler and preserved the lock's safety guarantee.
+- **`[UNVERIFIED: <what>]` as fallback, not a hard block.** The user can't always run a Sonnet search (no second window, mid-flow, etc.). Marking uncertain claims inline lets work continue while making the uncertainty visible and retestable.
+- **Footer-stamp carve-out scoped to `Edit` only.** `Write` replaces the entire file (can't verify it's footer-only), `MultiEdit` can bundle footer + content changes. `Edit` with the strip-and-compare check is the tightest guarantee.
+
+**Pivots and surprises.**
+
+- **adopt.md case 4 recap template was stale.** After adding the footer-stamp carve-out to case 4's procedure, the recap template still referenced `[FOLD-IN PENDING]` blocks for locked docs. Caught in parity audit and fixed.
+- **Context window ran out mid-session.** Session continued via summary-and-resume. The summary was accurate — no rework needed on resume.
+
+**Carried forward.**
+
+- **V38 scope file deleted** in this commit per the transient-scope rule.
+- **No new OPEN-QUESTIONS entries** — no ideas raised that aren't already tracked.
+- **No smoke test** — no new hook logic exercisable without a consumer project build cycle. The footer-stamp carve-out and preview convention will get real exercise in Taskflow's first batch under V38+.
+
+---
+
 ## V37 — 2026-05-21 — Marketplace.json + local install + first globally-installed smoke test
 
 **What shipped.** Plugin packaging for marketplace distribution and local install, plus the first smoke test running the plugin without `--plugin-dir`.

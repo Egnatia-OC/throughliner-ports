@@ -37,7 +37,7 @@ Method-specific terms used throughout this doc and `DOC-STRUCTURE.md`. Cross-ref
 - **Unadopted folder.** A folder where the method is not active — no method footer in `CLAUDE.md`. The safety net fires on unadopted folders **with substantial existing content** (per the *Detect unadopted folder* rule in *At session start*): SessionStart emits an advisory pointing at `/adopt`; PreToolUse blocks `Edit` / `Write` / `MultiEdit` and `Task` → method-subagent calls until the folder becomes adopted or the user writes a `.no-code-method-skip` opt-out marker at root. Genuinely-empty unadopted folders and opted-out folders stay silent.
 - **Serves line.** The line at the end of a build batch in `BACKLOG.md` naming the source-of-truth doc entries the batch implements. Format: `Serves UX.md: [entry name(s)].` (and/or `Serves <DOC>: ...` for additional docs).
 - **Drift check.** Four checks Claude runs at the start of every planning session: `UX.md` ↔ what's built, `MANIFEST.md` ↔ the codebase, `MANIFEST.md` ↔ `UX.md` (loose), and `TEST-LOG.md` ↔ what's been touched since each row was recorded (Rule 5 — retest after change). First three are pairwise; the fourth is a code-touch check per row.
-- **Fold-in.** Moving proposed source-of-truth content from `BACKLOG.md` into the destination doc (usually `UX.md`). Claude queues content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only; the user does the actual fold-in by hand during a planning session. Origins: planning-batch resolution, `/adopt case 1` (new-project prompts), `/adopt case 3` (migration), or a mid-build edit attempt intercepted by the PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes that batch in the same session.
+- **Fold-in.** Moving proposed source-of-truth content from `BACKLOG.md` into the destination doc (usually `UX.md`). Claude queues content as `[FOLD-IN PENDING]` blocks in the *Fold-ins pending* section of `BACKLOG.md` because source-of-truth docs are read-only; the user does the actual fold-in by hand during a planning session. Origins: planning-batch resolution, `/adopt case 1` (new-project prompts), `/adopt case 3` (migration), or a mid-build edit attempt intercepted by the PreToolUse hook. Once folded in, the block is removed; if a planning batch produced the fold-in, the user also removes that batch in the same session. During planning and `/adopt`, the **preview-then-fold-in convention** applies: Claude previews the complete section in chat before writing the fold-in block, waits for approval, then prompts the user to fold in now rather than deferring. Full convention: *Editing surfaces* below. One exception to the lock: method-version footer stamps (`*No-code method — Version N.*`) are metadata, not content, and the PreToolUse hook allows footer-only edits on locked docs directly.
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 - **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by after-build. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
 - **Build recap.** Plain-English summary Claude provides at the end of every build in chat (per *After every build*). Not persisted — lives in chat only. The persistent per-build record is the build log entry (see above), written to `BUILD-LOG.md` by the same after-build phase. Used by me to decide whether to test, push back, or accept.
@@ -75,6 +75,9 @@ The items below read like personal preferences but the machinery depends on them
 
 - If a request is ambiguous, ask rather than guess.
   *Load-bearing for: planning and pre-build discussions — they exist to surface and resolve ambiguity; a guess bypasses them.*
+
+- When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. If web-search tools are available in this session, use them. Otherwise, ask me to run a search, formatted as a paste-ready prompt I can hand to a fresh Claude Sonnet chat: context about the project, the decision the answer turns on, what to look for, and any authoritative URLs to check first. If I can't run the search, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
+  *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries.*
 
 - If I push back on a suggestion, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
   *Load-bearing for: planning recaps — assume engagement with disagreement, not collapse into either position.*
@@ -153,6 +156,8 @@ Some docs are read-only to Claude and edited only by the user, by hand, during p
 **Read-only to Claude:** `UX.md`, any additional source-of-truth doc, `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`.
 **Read/write to Claude:** `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
+**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer is metadata, not content — adding or updating it doesn't change what the doc says about the project. The PreToolUse hook allows footer-only edits on locked docs (`Edit` tool only; `Write` and `MultiEdit` are too broad to verify as footer-only). All other edits to locked docs still route through `[FOLD-IN PENDING]`.
+
 For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The recap rules under *During planning*, *Before build*, and *After every build* make this explicit.
 
 **The `[FOLD-IN PENDING]` mechanism.** Whenever Claude would otherwise write content into a read-only source-of-truth doc, it's instead queued as a `[FOLD-IN PENDING]` block in the *Fold-ins pending* section of `BACKLOG.md`. The user folds it into the destination doc (or drops it) by hand during their next planning session. `BACKLOG.md` and `MANIFEST.md` edits stay direct.
@@ -163,6 +168,8 @@ The mechanism is the same regardless of origin:
 - **`/adopt` case 1, `/adopt` case 3, mid-build PreToolUse intercept.** No preceding planning batch exists; the block goes straight into *Fold-ins pending* with the appropriate origin (`/adopt case 1`, `/adopt case 3`, or `mid-build edit attempt — <date>`).
 
 Canonical block format and section placement: `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
+
+**Planning-time preview convention.** During planning sessions and `/adopt`, when Claude has proposed content for a read-only doc and the user is present, Claude previews the complete section in chat — including its heading, all content, formatting, and any tags — labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On the user's explicit approval, Claude writes the `[FOLD-IN PENDING]` block to `BACKLOG.md` and prompts the user to fold it in now, specifying the section heading to find and replace. The fold-in block specifies whether it's a **replace** (swap the section between heading X and heading Y) or an **add** (place this new section after heading Z). The user folds in during the current session rather than deferring. When confirmed, Claude removes the `[FOLD-IN PENDING]` block. This does not bypass the lock — the PreToolUse hook still prevents direct edits.
 
 ### When to read or edit each document
 
@@ -378,4 +385,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 37.*
+*No-code method — Version 38.*

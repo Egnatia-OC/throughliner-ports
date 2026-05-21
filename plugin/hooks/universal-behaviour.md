@@ -27,6 +27,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Ask rather than guess on ambiguity.** If a request is ambiguous, ask.
   *Load-bearing for: the planning and pre-build discussions — they exist to resolve ambiguity; a guess bypasses them.*
 
+- **Verify external facts, don't guess.** When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. If web-search tools are available in this session, use them. Otherwise, ask the user to run a search, formatted as a paste-ready prompt they can hand to a fresh Claude Sonnet chat: context about the project, the decision the answer turns on, what to look for, and any authoritative URLs to check first. If the user can't run the search, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
+  *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries. Distinct from "ask rather than guess on ambiguity" (request ambiguity) and "red flags — screen and surface" (security/privacy concerns).*
+
 - **Engage with pushback, don't collapse.** If I push back on a suggestion you've made, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
   *Load-bearing for: planning recaps — assumes engagement with disagreement rather than collapsing into either position.*
 
@@ -120,9 +123,13 @@ Some of a consumer project's docs are read-only to Claude and edited only by the
 **Read-only to Claude:** `UX.md`, any additional source-of-truth doc declared in `CLAUDE.md`'s path block.
 **Read/write to Claude:** `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
+**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer is metadata, not content — adding or updating it doesn't change what the doc says about the project. The PreToolUse hook allows footer-only edits on locked docs (`Edit` tool only; `Write` and `MultiEdit` are too broad to verify as footer-only). All other edits to locked docs still route through `[FOLD-IN PENDING]`.
+
 For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The planning subagent's *BACKLOG.md editing — do, then describe* section makes this explicit.
 
 **The `[FOLD-IN PENDING]` mechanism.** Whenever Claude would otherwise write content into a read-only source-of-truth doc, it's instead queued as a `[FOLD-IN PENDING]` block in the *Fold-ins pending* section of `BACKLOG.md`. The user folds it into the destination doc (or drops it) by hand during their next planning session. `BACKLOG.md` and `MANIFEST.md` edits stay direct. Canonical block format and section placement: `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
+
+**Planning-time preview convention.** During planning sessions and `/adopt`, when a subagent has proposed content for a read-only doc and the user is present, the subagent previews the complete section in chat — including its heading, all content, formatting, and any tags — labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On the user's explicit approval, the subagent writes the `[FOLD-IN PENDING]` block to `BACKLOG.md` and prompts the user to fold it in now: "In `<DOC>.md`, find the section **[heading]** — select from that heading down to the next heading at the same level, and replace with the block above. Let me know when done." The fold-in block specifies whether it's a **replace** (swap the section between heading X and heading Y) or an **add** (place this new section after heading Z). The user folds in during the current session rather than deferring. When confirmed, the subagent removes the `[FOLD-IN PENDING]` block. This does not bypass the lock — the PreToolUse hook still prevents direct edits. The improvement is that the user sees exactly what will change, approves explicitly, and folds in immediately.
 
 ---
 

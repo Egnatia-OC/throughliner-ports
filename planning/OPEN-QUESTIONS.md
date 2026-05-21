@@ -8,53 +8,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Method rule: ask the user to run a Sonnet web search when uncertain about an external fact
-
-**The question.** Should the no-code method codify an explicit rule — in `plugin/hooks/universal-behaviour.md` → *Required behaviours* and the docs-only `NO-CODE-METHOD.md` → *Required of Claude* (two-write) — that when Claude is uncertain about an external fact (Claude Code's feature surface, an API's behaviour, a library's status, a setting that may have changed, anything Claude could verify rather than infer), it must either run a web search itself (if web-search tools are available in that session) or ask the user to run one in a separate Claude Sonnet chat? Currently this discipline lives only in Alex's personal global CLAUDE.md; the method itself doesn't carry it, so a consumer using the plugin without that personal instruction is back to Claude guessing or hedging.
-
-**Why it matters.** Surfaced V36, 2026-05-21. V36 #3 resolved cleanly precisely because we ran this discipline: the plan-panel writability question went to Sonnet as a paste-ready prompt, came back with a definitive "not writable from outside Claude" plus evidence and caveats, and the V36 outcome handling executed the same session. Without that discipline, the same question would have either (a) been parked indefinitely waiting for "someone to research it," (b) been guessed at by Claude with a fabricated mechanism, or (c) shipped wrong instructions into the spec. The method already has *Ask rather than guess on ambiguity* in `universal-behaviour.md`, but that rule is about ambiguity in the user's *request* — not about external-fact uncertainty Claude could verify. Different shape, different mechanism, different fix.
-
-**Working notes.** Likely shape: a new bullet under *Required behaviours* in `universal-behaviour.md`, mirrored in docs-only `NO-CODE-METHOD.md` → *Required of Claude*. Draft wording: *"When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. If web-search tools are available in this session, use them. Otherwise, ask the user to run one for you, formatted as a paste-ready prompt the user can hand to a fresh Claude Sonnet chat: context about the project, the decision the answer turns on, what to look for, any authoritative URLs to check first, and a request to output as markdown. Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries."*
-
-Open shape questions before scoping:
-
-- **Prompt shape templated or freeform?** Alex's global CLAUDE.md specifies the paste-ready-prompt shape in detail (address Sonnet, give context, list authoritative URLs, request markdown output, one fenced block). Should the method codify this shape (a sub-rule listing the required prompt elements), or leave it to Claude's judgment per-case? Templating tightens the contract but adds spec surface.
-- **What if the user can't easily run a parallel Sonnet?** Many no-coders won't have a second Claude Sonnet chat readily available alongside their Claude Code session. Should the rule have a fallback ("if the user says they can't run the search, surface the uncertainty plainly in the relevant doc as a `[UNVERIFIED]` marker and proceed conservatively")? Or trust that "ask" is enough and the user's "I can't" is the trigger for downstream behaviour?
-- **Scope boundary against existing rules.** The new rule overlaps subtly with *Ask rather than guess on ambiguity* (request ambiguity) and *Red flags — screen and surface* (security/privacy concerns). The new rule covers external-fact uncertainty — a third axis. Confirm the three don't tread on each other when drafted.
-- **Crash course mention.** Probably worth a one-line mention in the *Four disciplines that do most of the work* section or alongside the existing "30% drift" headwind — non-coders should know Claude will sometimes hand them a Sonnet prompt and that this is a method discipline, not Claude being lazy.
-
-**Next step.** Fold into a V38+ planning session post-V37 (V37 is the marketplace.json + local install session, already scoped). **Promote sooner** if a session surfaces another moment where guessing-instead-of-searching costs work, ships wrong content, or parks a question that Sonnet could have answered in one round.
-
----
-
-## Footer-stamp on locked source-of-truth docs routed through [FOLD-IN PENDING]
-
-**The question.** When `/adopt` case 4 (refresh templates) finds a locked source-of-truth doc (UX.md, SYSTEM-PROMPT.md, or any other additional-doc covered by the lock) missing the `*No-code method — Version N.*` footer, the subagent routes the footer addition through `[FOLD-IN PENDING]` in BACKLOG.md and asks the user to add the line by hand at the next planning session. Should there be a narrow carve-out letting the plugin stamp the footer directly on a locked doc, since the footer is version metadata rather than user-facing content?
-
-**Why it matters.** Surfaced V35 E2E test, 2026-05-21. The lock on UX.md and similar source-of-truth docs exists to prevent silent content drift — small "clarifying" edits to user-facing text slipping in without deliberation. A `*No-code method — Version N.*` footer is metadata, not content; adding or refreshing it doesn't change what the doc says about the project. Forcing a manual fold-in here adds friction during `/adopt` without protecting against anything the lock was designed to prevent. In V35's actual run, two of the four "missing footer" docs (UX.md and SYSTEM-PROMPT.md) became `[FOLD-IN PENDING]` blocks the user must apply by hand at the next planning session — a step that exists purely because the carve-out doesn't.
-
-**Working notes.** Likely shape: a single-purpose exception in the PreToolUse locked-doc check that permits an Edit on a locked doc if and only if the diff is exclusively adding or updating the footer line (exact-match pattern, no surrounding content changes). All other edits to locked docs still route through `[FOLD-IN PENDING]`. Touches: `/adopt` case 4 refresh logic (`plugin/agents/adopt.md`), the PreToolUse locked-doc check, and the lock description in `DOC-STRUCTURE.md` / `NO-CODE-METHOD.md` (both sides per the two-write rule).
-
-**Next step.** Fold into a V36+ planning session post-V35, paired with [[Source-of-truth doc edits with no-coder permission]] — both questions touch the same lock rule from different angles and one session can resolve them together. **Promote sooner** if `/adopt` refresh friction with locked-doc footers comes up again in a non-Alex consumer's first run.
-
----
-
-## /adopt permission-prompt UX and narration for new users
-
-**The question.** The `/adopt` flow in a CLI session (PowerShell via `claude --plugin-dir`) requires the user to approve multiple tool calls — `scaffold.py detect-case`, python one-liners checking file size, grep for the method footer, reads of template files — each surfacing a "Do you want to proceed?" prompt with no explanation of what the step is for or why it matters. A non-coder seeing "Bash: python -c import os; p=r'C:\...CLAUDE.md'; print('size:', os.path.getsize(p))" has no basis for deciding whether to approve. Is the narration sufficient, and does the flow need redesign for the marketplace-installed experience?
-
-**Why it matters.** Surfaced V35 E2E test, 2026-05-21. The `/adopt` subagent's detection steps are mechanically correct but user-opaque. The CLI's `--plugin-dir` path is dev-only and permission-prompt-heavy by nature, so some friction is expected there. But the marketplace-installed experience (once `marketplace.json` exists and the plugin is formally installable) will be the real first-run path for new users — and it's untested. Two concerns: (1) whether marketplace installation changes the permission-prompt surface (it may not — Claude Code's permission model is per-tool, not per-install-method); (2) whether the `/adopt` subagent's narration needs a plain-English preamble at each detection step ("I'm checking whether this folder already uses the method — approving these reads lets me figure out which setup path to offer you").
-
-**Working notes.** Three things to test once `marketplace.json` exists:
-
-- Does a marketplace-installed plugin get a different permission surface than `--plugin-dir`? If the user has already approved the plugin at install time, do individual tool calls still prompt?
-- Walk through `/adopt` on a fresh app project (not Taskflow — a genuinely new folder) and review each prompt from a new-user perspective. Is the narration self-explanatory, or does the user need the Crash course open beside them?
-- **CLI vs. desktop app input differences.** The CLI (`claude` in a terminal) pre-fills suggested responses at the prompt — the user can see a proposed answer and press Enter to accept or edit it. The Claude Code desktop app (Claude Code tab in the Claude Windows/Mac app) has no pre-fill; the user sees an empty prompt and must type from scratch. The plugin's dialogue flows (especially `/adopt`'s multi-step sequences and planning's per-row read-backs) may rely on pre-filled suggestions to guide non-coders through choices. Verify during the desktop-app test that every dialogue step is navigable without pre-fills — if not, the subagent narration needs to compensate by spelling out what to type.
-
-**Next step.** Park until the plugin has a `marketplace.json` and a packaging session ships (no current PLAN.md row for packaging). Then test `/adopt` end-to-end via marketplace install on a fresh project. **Promote sooner** if a non-Alex user tries the plugin before packaging ships and reports confusion.
-
----
-
 ## Automated testing / CI for the method's dev project
 
 **The question.** `BUILD-METHOD.md` → *Testing — what we actually do* asserts no automated CI: smoke tests are hand-run by Alex post-session, framed as deliberate — "CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention." Should the decision be revisited as the plugin's surface grows, and if so, what shape of automation would earn its place?
@@ -84,18 +37,6 @@ Open shape questions before scoping:
 - *Separate spine doc for non-GUI projects.* A new template (BEHAVIOUR.md? CONTRACT.md? OUTPUTS.md?) replaces UX.md for non-GUI projects. Heaviest; risks fragmenting the method. Defer unless shapes 1 and 2 prove inadequate.
 
 **Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow evidence informs whether the structural rules need a non-GUI variant or only vocabulary generalisation. **Promote sooner** if Alex (or any consumer) starts a non-GUI project with the method before V35 ships.
-
----
-
-## Source-of-truth doc edits with no-coder permission
-
-**The question.** Should Claude be permitted to edit `UX.md` and other source-of-truth docs directly when the no-coder gives explicit permission — during a planning session or `/adopt` — bypassing the `[FOLD-IN PENDING]` mechanism? The current rule (`NO-CODE-METHOD.md` → *Editing surfaces*) says never, even with permission.
-
-**Why it matters.** Surfaced V30 Crash course review, 2026-05-20. The lock exists to prevent build-session drift — small "clarifying" tidy-ups slipping into source-of-truth docs without deliberation. But planning-session-time and `/adopt`-time are exactly when deliberation is happening. The mechanism currently forces a manual fold-in even when Claude has the proposed text ready and the no-coder explicitly says yes. Friction without clear benefit at those moments.
-
-**Working notes.** Likely shape: a `[PROPOSED EDIT]` chat-time mechanism, distinct from `[FOLD-IN PENDING]`. The no-coder approves explicitly with a non-keystroke confirmation; Claude applies the edit directly. `[FOLD-IN PENDING]` stays for cases where Claude cannot get permission (mid-build edit attempts blocked by the PreToolUse hook). Touches: PreToolUse hook's locked-doc check (V19), the `[FOLD-IN PENDING]` mechanism in `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*, `/adopt` case 3 migrate flow (`plugin/agents/adopt.md`), planning subagent rules.
-
-**Next step.** Promote to a planning session in V36+ post-E2E (V35). **Promote sooner** if `/adopt` case 3 migrate friction becomes a real blocker in early Taskflow adoption.
 
 ---
 
@@ -150,6 +91,8 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 **Next step.** Park. Revisit once V26–V35 ship and the rate of `NO-CODE-METHOD.md` changes (or its post-V32 successor location) settles. If the spec is stable across consecutive versions, B is fine; if it churns, A; mixed, C. **Promote sooner** if an audit flags meaningful drift in `batch-executor.md`, which forces A.
 
+**V37, 2026-05-21: targets shifted, tension unchanged.** V32's two-write rule moved the runtime spec targets from `NO-CODE-METHOD.md` to `plugin/docs/DOC-STRUCTURE.md` and `plugin/docs/VOCABULARY.md`; `adopt.md` joins `planning.md` and `before-build.md` as a read-at-entry subagent. The underlying inline-vs-read-at-entry question is the same shape, just against the new targets. Stays parked at the same threshold: promote if `plugin/docs/` churns enough (or stabilises enough) to make convergence the obviously right call, or if a parity audit flags meaningful drift in `batch-executor.md`.
+
 ---
 
 ## MANIFEST.md schema gap blocks PreToolUse read-before-edit enforcement
@@ -194,6 +137,8 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 - Plugin still evolving (V32–V35 ahead). Rewriting before it settles means redoing.
 
 **Next step.** Park until V35 (final E2E Taskflow test) ships. Then: list each plugin-specific mechanism, design a prose-only equivalent, schedule sessions. **Promote sooner** if public release approaches before migration completes — that scenario forces the rewrite onto the critical path.
+
+**V37, 2026-05-21: rewrite delivered by V32; entry overtaken.** V32's two-write rule split canonical method content into plugin-side (operational) and docs-only (project-agnostic) artefact sets. The docs-only side at the repo root — `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/` — is the prose-only rewrite this entry called for. Ongoing parity is held by the two-write discipline (`BUILD-METHOD.md` → *Two-write rule for canonical docs*), not by a future rewrite session. **Revised next step:** consciously drop with a one-line `BUILD-LOG.md` note pointing at V32. A future major prose-only sweep, if ever needed (e.g. ahead of a public release), will earn its own session driven by concrete need rather than this parked entry.
 
 ---
 

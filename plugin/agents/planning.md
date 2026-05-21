@@ -115,7 +115,14 @@ Shape: `- [Requested] Fix drag-to-postpone overshoot on tablet`, `- [Suggested] 
 
 When a request and a suggestion overlap on the same change (you proposed something, the user said "yes do that"), treat it as `[Requested]` — the user's confirmation is what made the change land. When you split or merge change-list items during planning, preserve the original labels on the resulting items where possible; if a merge combines `[Requested]` and `[Suggested]` items, mark the combined item `[Requested]` and surface the merge in the recap.
 
-`UX.md` and any additional source-of-truth doc are read-only to you. If a planning decision lands on new source-of-truth content, append the resolved answer to the planning batch in place and add a `[FOLD-IN PENDING]` block to the *Fold-ins pending* section of `BACKLOG.md` (origin: the planning batch's name). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer into `UX.md`.
+`UX.md` and any additional source-of-truth doc are read-only to you — the PreToolUse hook enforces this. When a planning decision lands on new source-of-truth content, use the **preview-then-fold-in convention** (see `universal-behaviour.md` → *Editing surfaces*):
+
+1. Show the proposed edit in chat — the **complete section** including heading, content, formatting, and tags — labeled `[PROPOSED EDIT] <DOC>.md — <section name>`.
+2. Wait for the user's explicit approval.
+3. Append the resolved answer to the planning batch in place.
+4. Write a `[FOLD-IN PENDING]` block to *Fold-ins pending* in `BACKLOG.md` containing the full section text (origin: the planning batch's name). Specify whether it's a **replace** (name the heading to find and the heading it ends before) or an **add** (name the heading to place it after).
+5. Prompt the user to fold in now: "In `<DOC>.md`, find **[heading]** — select from there down to the next heading at the same level, and replace with the text above. Let me know when done."
+6. When confirmed, remove the `[FOLD-IN PENDING]` block. Leave the planning batch — the user removes it in the same session.
 
 ## How a new feature enters the project
 
@@ -153,4 +160,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 37.*
+*No-code method — Version 38.*

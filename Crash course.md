@@ -191,7 +191,11 @@ Some docs are stable artefacts written slowly and deliberately. UX.md and any ad
 
 `BACKLOG.md` is read/write because builds need it. The protective rule is built into the build sequence: Claude must discuss every `BACKLOG.md` change with the no-coder at the appropriate stage — never silently.
 
-**The `[FOLD-IN PENDING]` mechanism.** Claude cannot write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in BACKLOG.md's *Fold-ins pending* section. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt`, or a mid-build edit attempt the PreToolUse hook intercepted. During the next planning session, the no-coder reviews pending blocks and folds them into the destination doc by hand (or drops them).
+**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer on each doc is metadata, not content. The PreToolUse hook allows footer-only edits on locked docs, so `/adopt`'s version refresh can stamp all footers directly without routing through fold-in blocks.
+
+**The `[FOLD-IN PENDING]` mechanism.** Claude cannot write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in BACKLOG.md's *Fold-ins pending* section. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt`, or a mid-build edit attempt the PreToolUse hook intercepted.
+
+During planning sessions and `/adopt`, a **preview-then-fold-in convention** applies: before writing the fold-in block, Claude shows the complete proposed section in chat (heading, content, formatting, and all) and waits for the no-coder's approval. On approval, Claude writes the fold-in block and prompts the no-coder to fold it in now — naming the section heading to find and replace in the destination doc. The fold-in happens in the same session rather than being deferred. Mid-build edit attempts intercepted by the hook still produce a standard `[FOLD-IN PENDING]` block deferred to the next planning session.
 
 ## Why the rules
 
@@ -235,6 +239,8 @@ Iteratively developed. Has not yet been used to ship an app. The first real Task
 
 A known headwind for any methodology relying on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method designs around this by making source-of-truth docs read-only to Claude (so big design changes cannot slip in mid-build) and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any no-coder should expect to recognise drift and recover from it as part of the skill.
 
+Claude will sometimes hand the no-coder a paste-ready prompt and ask them to run a web search (or run one in a separate Claude Sonnet chat) before proceeding. This is a method discipline, not Claude being lazy — it's how the method prevents wrong external facts from getting baked into source-of-truth docs and scope files. If the no-coder can't run the search, Claude marks the uncertain claim with `[UNVERIFIED]` and proceeds conservatively.
+
 Claude Code's built-in **plan panel** (the Shift+Tab plan-mode surface) does not show the method's build sequence. The panel is Claude-Code-internal — populated only by Claude itself via its native plan-mode flow, with no plugin-facing write surface to inject the method's current and queued build batches. Where the real sequence lives is `BACKLOG.md` → Build batches; the top batch is what's next. If the plan panel reads empty mid-build, that is not the plugin losing track of where it is — that is the panel showing what it can show. Open the project's `BACKLOG.md` to see the actual queue.
 
 ## When you need more
@@ -251,4 +257,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 37.*
+*No-code method — Version 38.*

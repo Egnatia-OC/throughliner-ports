@@ -139,7 +139,7 @@ Wait for the user's choice.
 3. Propose edits as a unified plan: "Keep [content X] under *Project-specific notes*; add the path block at [position]; add the method footer at the end. Anything I should preserve I haven't named?" Iterate with the user until they're satisfied.
 4. Apply the edits via `Edit` calls on the existing `CLAUDE.md`. The PreToolUse V29 gate allows CLAUDE.md edits because it's on the scaffold-paths list.
 5. Run `check` and `write` to scaffold the other spine docs (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and create the `planning/drafts/` directory. If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
-6. Surface anything that couldn't be migrated as `[FOLD-IN PENDING]` blocks in BACKLOG.md so they're not lost.
+6. For any content that needs to go into `UX.md` or another read-only doc, use the **preview-then-fold-in convention** (see `universal-behaviour.md` → *Editing surfaces*): show the complete section in chat labeled `[PROPOSED EDIT]`, wait for approval, write a `[FOLD-IN PENDING]` block in *Fold-ins pending* (origin `/adopt case 3`) containing the full section text, then prompt the user to fold it in now.
 
 **Recap:**
 
@@ -213,37 +213,26 @@ Wait for the user's choice.
 
 **On option 1 (refresh) — template-state walkthrough:**
 
-**Which docs are writable vs locked (read this carefully — V29 smoke test caught the subagent over-classifying):**
-
-- **Writable, bump directly via `Edit`:** `CLAUDE.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`. These are read/write per `universal-behaviour.md` → *Editing surfaces*. **Do NOT route these through `[FOLD-IN PENDING]`.** They get edited like any normal Edit.
-- **Locked, route via `[FOLD-IN PENDING]`:** `UX.md` and any *additional source-of-truth docs* declared in `CLAUDE.md`'s path block (e.g., `SYSTEM-PROMPT.md`, `COPY.md`). These are read-only to Claude per the V19 PreToolUse lock; only the user can edit them by hand during a planning session.
-
 Surface the planned edits before touching anything. List only docs that actually need bumping (omit any whose footer already matches `plugin_v`):
 
 > "I'll bump these footers to Version [plugin_v]:
 >
-> Writable (edit directly):
 > - `CLAUDE.md` (V[user_v] → V[plugin_v])
 > - `BACKLOG.md` (V[X] → V[plugin_v])
 > - `MANIFEST.md` (V[Y] → V[plugin_v])
 > - `TEST-LOG.md` (V[Z] → V[plugin_v])
->
-> Locked (won't edit directly — PreToolUse V19 source-of-truth lock applies):
 > - `UX.md` (V[W] → V[plugin_v])
 > - [additional source-of-truth docs as applicable]
 >
 > Proceed?"
 
-On confirmation:
+On confirmation, edit every footer via `Edit` — including locked docs like `UX.md`. The V38 footer-stamp carve-out in the PreToolUse hook allows footer-only edits on locked docs because the footer is version metadata, not content. The edit must change nothing except the footer line — the hook verifies this by stripping footer lines from both `old_string` and `new_string` and comparing the remainder. `Write` and `MultiEdit` are not covered by the carve-out; use `Edit` specifically.
 
-1. **Edit each writable footer via `Edit`.** That's `CLAUDE.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md` — touch them directly, no fold-in routing.
-2. **For each locked doc with a stale or missing footer**, write a `[FOLD-IN PENDING]` block in `BACKLOG.md`'s *Fold-ins pending* section, naming the doc and the stale-vs-current version, so the user picks it up in their next planning session. Don't skip locked docs silently — the fold-in block is the trigger that closes the loop.
-
-Note: the PreToolUse V19 locked-doc check applies in case 4 (folder is adopted, so the V29 unadopted-folder gate doesn't fire and downstream checks run normally). Only docs declared as source-of-truth get locked — `CLAUDE.md` isn't path-block-locked, and `BACKLOG.md`/`MANIFEST.md`/`TEST-LOG.md` are read/write, so their footers can be bumped directly.
+Don't skip any doc silently. If a doc's footer is already current, omit it from the list above.
 
 **Recap:**
 
-> Refreshed (case 4). Bumped method-version footers on [list]. [If any locked docs had stale footers: name them and the `[FOLD-IN PENDING]` blocks added in `BACKLOG.md`; otherwise "no locked docs needed fold-in."]
+> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed).
 
 **On option 2 (cancel):**
 
@@ -306,4 +295,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 37.*
+*No-code method — Version 38.*
