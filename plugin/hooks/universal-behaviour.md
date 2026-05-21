@@ -72,7 +72,7 @@ If a single observation matches more than one row (e.g. a proposed feature with 
 
 ## Response-shape tags
 
-Verbosity contract markers used throughout subagent bodies and the docs-only spec — you will see them on rules and steps in any operating procedure you read.
+Verbosity contract markers used throughout subagent bodies and the canonical docs — you will see them on rules and steps in any operating procedure you read.
 
 - **[SILENT]** — Perform the action with no narration. One sentence max if acknowledgment is unavoidable.
 - **[BRIEF]** — Output in chat, capped at 1–3 sentences or a tight list.
@@ -133,4 +133,4 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 
 ---
 
-*This file is the plugin-side canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. The docs-only spec at repo root (`NO-CODE-METHOD.md`) carries the same substance in prose form and is maintained alongside — see `BUILD-METHOD.md` → Two-write rule for canonical docs.*
+*This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*

@@ -1,5 +1,7 @@
 # TEST-LOG.md
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live template is at `plugin/templates/TEST-LOG-TEMPLATE.md` — that's what `/adopt` scaffolds. The two-write rule that kept this copy aligned has been shelved (see `BUILD-METHOD.md` → *Two-write rule for canonical docs*). Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away if a real audience for the no-plugin template set emerges.
+
 This file records the test outcomes of every shipped build batch, one row per test. Maintained by Claude during builds and planning; the user reviews and confirms in planning sessions.
 
 For the canonical column shape, pruning rule, ordering, and protocol, see `DOC-STRUCTURE.md` → *TEST-LOG.md structure*.

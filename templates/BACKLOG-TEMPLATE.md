@@ -1,5 +1,7 @@
 # BACKLOG.md — [Project Name] Deferred Work
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live template is at `plugin/templates/BACKLOG-TEMPLATE.md` — that's what `/adopt` scaffolds. The two-write rule that kept this copy aligned has been shelved (see `BUILD-METHOD.md` → *Two-write rule for canonical docs*). Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away if a real audience for the no-plugin template set emerges.
+
 All deferred work in one place. Four sections, in this order; top section first, top item first.
 
 *Full spec for these sections: `DOC-STRUCTURE.md` → BACKLOG.md structure.*

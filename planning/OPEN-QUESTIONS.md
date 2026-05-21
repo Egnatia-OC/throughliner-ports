@@ -8,6 +8,70 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Graduate sovereign implementer development onto sovereign implementer
+
+**The question.** Can the no-code method's own development project switch from its bespoke dev environment (Vxx scope files, BUILD-METHOD.md, OPEN-QUESTIONS.md, two-write rule) to using the method's own plugin — dogfooding sovereign implementer to build sovereign implementer?
+
+**Why it matters.** Surfaced 2026-05-21, discussion session. Dogfooding would surface gaps Taskflow can't (Taskflow only exercises the app-building path), and would validate the method for non-UI project types. The bespoke dev environment has served the project well but diverges from the method it's building — the longer the divergence persists, the more the method's design is informed by building apps rather than by building anything.
+
+**Conclusion from discussion.** Yes, but staged. The current dev environment must ship the prerequisites first; the graduation itself is a managed transition, not a switch-flip.
+
+**Prerequisites (all tracked as separate entries).**
+
+1. **[[Distributed fold-ins + open questions section in BACKLOG]]** — gives the method a parking lot for unresolved questions (replaces this project's bespoke OPEN-QUESTIONS.md) and restructures BACKLOG.md. Includes the Inputs line for build batches (replaces Vxx Inputs sections).
+2. **[[Automated vs. manual test split + non-UI test types]]** — the primary blocker. The method's test model must accommodate run-and-read, trigger-and-observe, and generate-and-inspect test types, and support Claude-run automated tests. Without this, the build cycle can't verify plugin work.
+3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
+4. **[[UX.md adaptation for non-GUI projects]]** — vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
+
+**What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). BUILD-LOG.md narrative (already in the consumer method since V33).
+
+**Next step.** Park. This entry is the meta-goal; the prerequisites have their own promotion triggers. Graduate when all four prerequisites have shipped and been verified in at least one build cycle. **Promote sooner** if an external reason (public release, new contributor) makes dogfooding urgent before all prerequisites land.
+
+---
+
+## Automated vs. manual test split + non-UI test types
+
+**The question.** The method's after-build test model assumes the user manually verifies everything ("refresh, click through, report what you see"). But Claude Code can run many tests itself — anything with an objective pass/fail. Should the build cycle accommodate automated Claude-run tests alongside manual user-run tests, and should the method formally recognise test types beyond UI interaction?
+
+**Why it matters.** Surfaced 2026-05-21, discussion session. Two compounding problems: (1) The after-build prompt and TEST-LOG row format are shaped around UI testing. Non-UI projects (CLI tools, plugins, APIs, document generators) can't use the test model as written. (2) Many tests — especially non-UI ones — have objective pass/fail criteria that Claude Code can verify without user involvement. The current model pushes ALL verification onto the user, including mechanical checks Claude could handle faster and more reliably. This is the single biggest blocker to using the method on its own development (dogfooding), where nearly all tests are "run a hook script, check the output."
+
+**Four test types identified.** The method currently serves only the first.
+
+1. **Look and click (UI interaction).** Open an app or website, interact, observe behaviour. Partially automatable (Claude Code's preview tool can screenshot and check structure), but subjective assessment stays with the user.
+2. **Run and read (command execution).** Execute a command in the terminal, read the output. CLI tools, scripts, data pipelines. Fully automatable by Claude — run the command, check stdout/stderr against expected output.
+3. **Trigger and observe (integration/trigger).** Do something that should cause the system to respond, verify it did. Plugins, hooks, webhooks, automations, scheduled tasks. Fully automatable by Claude — set up conditions, trigger, check response. This is the shape of sovereign implementer's own tests (run a hook with test input, verify the output).
+4. **Generate and inspect (artifact inspection).** Run a process that produces a file, open the file and verify it. Reports, exports, spreadsheets, generated documents. Fully automatable by Claude — run the process, read the output file, check against expectations.
+
+**Design questions to resolve.**
+
+- **Where in the build cycle do automated tests run?** During the build (batch-executor tests as it goes), after the build (after-build runs an automated pass before prompting the user), or both?
+- **TEST-LOG format.** Needs to track who verified each row (Claude vs. user) and what type of test was run. Current row format doesn't accommodate this.
+- **After-build prompt language.** Currently assumes all testing is user-performed. Needs to distinguish: "Claude has already verified X; please manually check Y."
+- **Test specification.** Where does the build batch specify what tests to run and which are automatable? An extension of the Inputs line, or a separate `Tests:` section per batch?
+
+**Next step.** Park. Connects to the existing entry [[UX.md adaptation for non-GUI projects]] — that entry handles vocabulary and doc structure; this one handles the test model specifically. Promote to its own session once the non-GUI vocabulary work (V41) ships, since both reshape how the method serves non-UI projects. **Promote sooner** if dogfooding sovereign implementer becomes a priority, since this is the primary blocker.
+
+---
+
+## Distributed fold-ins + open questions section in BACKLOG
+
+**The question.** Should fold-ins move from a centralised section in BACKLOG.md to the bottom of each destination doc (UX.md, MANIFEST.md, BACKLOG.md itself), and should BACKLOG.md gain an open-questions section scanned during planning?
+
+**Why it matters.** Surfaced 2026-05-21, discussion session. Two related design problems: (1) BACKLOG.md currently houses source-of-truth content destined for other docs (UX.md entries, MANIFEST.md entries) alongside build batches — semantically wrong, since BACKLOG is about what gets built, not about parking SOT content for unrelated docs. (2) The method has no parking lot for unresolved questions that aren't blocking a specific build batch. This project's own OPEN-QUESTIONS.md has been load-bearing (10 entries with trigger conditions), but consumer projects have no equivalent.
+
+**Design so far.**
+
+- Each spine doc gains a fold-in section at its bottom. Claude appends proposed content there; the user folds it into the main body during planning. Content lives next to its destination instead of being routed through BACKLOG.
+- Locked docs (UX.md, MANIFEST.md) need an **append-only carve-out** in PreToolUse — same pattern as V38's footer-stamp carve-out (`is_footer_only_edit()`), but for appending to the fold-in section.
+- BACKLOG.md structure becomes: Red flags → Build batches → BACKLOG-specific fold-ins (resolved features not yet batched) → Open questions.
+- Open questions are scanned by the planning subagent during its existing drift-check sweep at the top of every planning session — not left to chance.
+- Planning batches (the current `Blocks:` mechanism) — relationship to the new open-questions section not yet resolved. May merge, may coexist.
+- **Inputs line for build batches.** Each batch gains an `Inputs:` line listing non-standard reads specific to that batch — an OPEN-QUESTIONS entry, a specific additional doc, a research artifact, an external reference. Foundational docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are already read every session by SessionStart, so `Inputs:` only lists what's beyond the standard set. Closes the gap left by Vxx scope files' Inputs sections: without it, Claude has to guess what to read before starting a batch.
+
+**Next step.** Park. Promote to its own session once V39–V41 ship (higher priority — MANIFEST path-field, TEST-LOG pruning, vocabulary collision). **Promote sooner** if real Taskflow use surfaces the "nowhere to park unresolved questions" gap, or if the fold-in centralisation causes friction during planning.
+
+---
+
 ## Bash `cd` inside a session shifts plugin cwd, breaking parent-folder opt-out marker
 
 **The question.** During V39 dev work, a Bash command early in the session (`cd sovereign-implementer/ && git describe --tags --abbrev=0`) shifted Claude Code's session cwd from the parent `No code method/` folder to `sovereign-implementer/`. Subsequent PreToolUse hook invocations received `sovereign-implementer/` as `cwd`, and the V29 adoption gate's `has_opt_out_marker` check (which reads `<cwd>/.no-code-method-skip`) found nothing — the marker that opts out the dev project lives at the parent folder, not inside `sovereign-implementer/`. The gate started blocking every Edit. Workaround: write a second `.no-code-method-skip` at `sovereign-implementer/`. But the deeper question is whether the plugin should be resilient to `cd`-induced cwd drift mid-session.

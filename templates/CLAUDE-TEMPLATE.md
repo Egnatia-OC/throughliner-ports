@@ -1,5 +1,7 @@
 # CLAUDE.md — [Project Name]
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live template is at `plugin/templates/CLAUDE-TEMPLATE.md` — that's what `/adopt` scaffolds. The two-write rule that kept this copy aligned has been shelved (see `BUILD-METHOD.md` → *Two-write rule for canonical docs*). Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away if a real audience for the no-plugin template set emerges.
+
 This is the project's per-project glue file. Claude Code auto-loads it on session start. The plugin's internal canonical docs live inside the no-code-method plugin (`plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`) — one copy per plugin install. The full project-agnostic method spec (`NO-CODE-METHOD.md`) lives at the no-code-method repo root and is maintained alongside the plugin; humans can browse it at https://github.com/FlintCraftTech/sovereign-implementer/blob/main/NO-CODE-METHOD.md. The two project-specific things this file owns are the path block below and any project-specific behavioural notes after it.
 
 ## Where the docs live

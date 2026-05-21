@@ -1,5 +1,7 @@
 # No-Code Method for Claude Code
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The two-write rule that kept this file aligned with the plugin-side operational substance has been shelved. The live operational source is plugin-side: `plugin/hooks/universal-behaviour.md` for the universal rules and substance formerly inlined here, plus subagent bodies (`plugin/agents/*.md`) and `plugin/docs/VOCABULARY.md` for the operating procedures and vocabulary. This file is preserved at repo root as a frozen prose snapshot — the no-plugin prose spec as of V39. Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away if a real audience for the prose spec emerges. Background: `BUILD-METHOD.md` → *Two-write rule for canonical docs* (annotated shelved).
+
 I build in Claude Code using this workflow. The method requires Claude Code — its mechanisms (read-only enforcement, build orchestration, planning routing) depend on Claude Code primitives (hooks, skills, subagents) and don't run elsewhere.
 
 ## At a glance

@@ -1,5 +1,7 @@
 # [DOC NAME].md — [Project Name]
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live template is at `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md` — that's what `/add-sot-doc` will scaffold. The two-write rule that kept this copy aligned has been shelved (see `BUILD-METHOD.md` → *Two-write rule for canonical docs*). Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away if a real audience for the no-plugin template set emerges.
+
 [Brief intro: what this doc is for, who its audience is (the user? Claude at runtime? a third party?), and when it applies (e.g. "paid tier only", "internal API only"). Treat this header with the same care as `UX.md`'s header — it's the orientation a future reader needs to know whether to read on.]
 
 This doc only describes what has been decided. Open questions live in `BACKLOG.md` as planning batches, not here as placeholders or as sentences that gesture at the doc's own undecidedness. (Same rule as `UX.md`. Full source-of-truth-doc rules: see `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.)

@@ -1,6 +1,6 @@
 # Vocabulary — no-code method
 
-Method-specific terms used across the plugin (subagent bodies, hook deny messages, slash commands, templates) and the docs-only spec at repo root. Cross-references elsewhere point here rather than redefining inline.
+Method-specific terms used across the plugin (subagent bodies, hook deny messages, slash commands, templates). Cross-references elsewhere point here rather than redefining inline. A frozen prose snapshot of these definitions exists at `VOCABULARY.md` in the no-code-method repo root (V39 freeze — two-write rule shelved in session v40).
 
 - **Planning batch.** Open questions in `BACKLOG.md` that must resolve before a build batch can run, or that decide whether a build batch should exist (a *scope-existence* question). Resolved by folding answers into the relevant source-of-truth doc.
 

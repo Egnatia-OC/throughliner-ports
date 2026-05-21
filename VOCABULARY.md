@@ -1,5 +1,7 @@
 # Vocabulary — no-code method
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live operational copy is at `plugin/docs/VOCABULARY.md` — that's what subagent bodies, hook deny messages, and other plugin docs reference. The two-write rule that kept this repo-root copy aligned has been shelved. This file is preserved as a frozen prose snapshot as of V39. Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away. Background: `BUILD-METHOD.md` → *Two-write rule for canonical docs* (annotated shelved).
+
 Method-specific terms used across the plugin (subagent bodies, hook deny messages, slash commands, templates) and the docs-only spec at repo root. Cross-references elsewhere point here rather than redefining inline.
 
 - **Planning batch.** Open questions in `BACKLOG.md` that must resolve before a build batch can run, or that decide whether a build batch should exist (a *scope-existence* question). Resolved by folding answers into the relevant source-of-truth doc.

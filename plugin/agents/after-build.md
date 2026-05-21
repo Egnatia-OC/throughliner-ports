@@ -22,7 +22,7 @@ Read these docs in this order, every invocation. The body of this file holds ope
 4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-LOG.md structure* — for the canonical entry shape (What shipped / Decisions taken and why / Pivots and surprises / Carried forward).
 5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
 
-The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
+The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
 ## Identify the just-completed batch
 

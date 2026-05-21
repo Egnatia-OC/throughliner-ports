@@ -6,6 +6,41 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V40 — 2026-05-21 — Shelve the two-write rule for canonical docs
+
+**What shipped.** Dev-internal. The V32 two-write rule (parallel plugin-side and docs-only canonical doc sets, both bumped on every method version change) is shelved. The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) and the repo-root `templates/` mirror are frozen at method version V39 with a notice at the top of each file. Plugin-side becomes the sole operational source. Method version stays at V39; no footer bump.
+
+- **Repo-root prose docs.** Added a FROZEN notice (top of file) to `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`. Each notice names the V39 freeze, points at the plugin-side live equivalents, and links the resume path back through OPEN-QUESTIONS.
+- **Repo-root templates.** Added matching FROZEN notices to all seven (`CLAUDE-TEMPLATE.md`, `BACKLOG-TEMPLATE.md`, `MANIFEST-TEMPLATE.md`, `UX-TEMPLATE.md`, `TEST-LOG-TEMPLATE.md`, `BUILD-LOG-TEMPLATE.md`, `ADDITIONAL-DOC-TEMPLATE.md`). Each notice names the live template at `plugin/templates/<filename>` — that's what `/adopt` scaffolds.
+- **BUILD-METHOD.md** — four edits. *Session open* step 2 switched from `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md` to `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`. *Doc-code parity* step 3 "Two locations" requirement collapsed to plugin-side. *Two-write rule for canonical docs* section annotated as shelved at top, body retained for resume-ability. *Footer bumps* docs-only subsection renamed to "Docs-only side — SHELVED in v40 (no longer bumped)" with a non-bump notice.
+- **Project root CLAUDE.md** — Inside-the-repo bullets and terminology cheat sheet updated to mark the docs-only set and `templates/` as frozen at V39. *Current state* section advanced to v40 with the dev-internal note.
+- **Plugin-side prose references.** Updated the docs-only-spec-maintained-alongside wording in `plugin/agents/planning.md`, `before-build.md`, `after-build.md`; `plugin/hooks/universal-behaviour.md` (two sites); `plugin/docs/VOCABULARY.md`; `plugin/templates/CLAUDE-TEMPLATE.md`. All now describe the repo-root set as a frozen V39 snapshot rather than a parity-tracked twin.
+- **Planning artefacts.** `planning/INVENTORY.md` — three doc-fate rows (`DOC-STRUCTURE.md`, `VOCABULARY.md`, `NO-CODE-METHOD.md`) rewritten. `planning/OPEN-QUESTIONS.md` — removed the *Shelve the two-write rule* entry (resolved); updated the *Graduate sovereign-implementer dev onto sovereign-implementer* meta-entry's prerequisite 3 to "Done in session v40." `planning/PLAN.md` — new V40 row for this session; renumbered original V40→V41, V41→V42, V42→V43; updated counts ("26 sessions through V43"); V43+ catch-all gained a "restoration of two-write maintenance" line.
+- **Scope files.** `planning/sessions/V42.md` → `V43.md`, `V41.md` → `V42.md`, `V40.md` → `V41.md` (via `git mv`). Internal H1 headings updated to match. V41 (was V40, drift detection) trimmed: dropped `NO-CODE-METHOD.md (docs-only)` from Inputs/Outputs, dropped "both sides" from Success criteria. V42 (was V41, vocab sweep) — bundling-rationale note added at the top flagging that the parity-audit-amortisation argument dissolves; Inputs/Outputs/Success criteria collapsed to plugin-side.
+- **README.md** — repo-root prose docs and `templates/` lines updated to reflect the freeze.
+
+**Decisions taken and why.**
+
+- **Freeze rather than archive or delete.** Per OPEN-QUESTIONS's leaning. Lowest blast radius — the docs continue to exist for anyone who already linked at them (notably `plugin/templates/CLAUDE-TEMPLATE.md` and `plugin/hooks/universal-behaviour.md`'s signature footer, which point at `NO-CODE-METHOD.md`). Resume path is one OPEN-QUESTIONS promotion away. Archive folder added overhead without payoff; deletion was destructive for hypothetical gain.
+- **Annotate `BUILD-METHOD.md` → *Two-write rule* in place rather than removing the section.** Same resume-ability logic. If we restore the rule later, the body's still there; the annotation just suspends enforcement.
+- **Own session (v40) rather than folding into V40-drift-detection.** Mixing scope muddies BUILD-LOG. Renumbering three scope files cost ~five edits; merging would have cost discipline. Per BUILD-METHOD's "one tag at a time" principle.
+- **Method version stays at V39.** Dev-internal change — no plugin or method-substance change. Per BUILD-METHOD *Session tag vs. method version*: dev-internal sessions don't bump the footer. The frozen repo-root docs retain their V39 footers in perpetuity (until two-write is restored, if ever).
+
+**Pivots and surprises.**
+
+- **`plugin/templates/CLAUDE-TEMPLATE.md` references `NO-CODE-METHOD.md`** — discovered during the plugin-side reference sweep. The template's intro paragraph points the no-coder at the GitHub URL of `NO-CODE-METHOD.md` as the "full project-agnostic method spec." With the file frozen, that link now points at a V39 snapshot rather than live spec. Wording adjusted to call it a "frozen prose snapshot" and explain the shelving. No URL change.
+- **Plugin hook deny messages still cite `NO-CODE-METHOD.md` → Section X** at four sites in `plugin/hooks/pre_tool_use.py`. Left as-is per the chat-time decision to flag rather than fix. Future cleanup: repoint to `plugin/hooks/universal-behaviour.md` and `plugin/docs/VOCABULARY.md` as appropriate. Not blocking — the cited sections still exist in the frozen file.
+- **V42 (renumbered vocab sweep) bundling rationale dissolves.** The session was bundled because two questions both needed a grep-and-rewrite across both sides of the two-write rule, amortising the parity audit. With v40's shelving, only the plugin side gets touched — bundling is now defensible on surface-area grounds (one sweep cheaper than two) but no longer compelling. Note added at the top of `V42.md` flagging the bundling re-decision.
+
+**Carried forward.**
+
+- **No `Vxx.md` scope file** was created for v40 — the decision was made and executed in chat directly. No file to delete at close.
+- **`plugin/hooks/pre_tool_use.py` deny-message citations of `NO-CODE-METHOD.md`** — flagged but not fixed. Add to V41+ work or a future tidy-up session.
+- **No smoke test** for this session — pure doc / planning-artefact change, no plugin code touched.
+- **Three pre-v40 OPEN-QUESTIONS entries swept in.** An earlier discussion session today (2026-05-21) drafted four new OPEN-QUESTIONS entries that sat uncommitted before v40 opened: the *Graduate sovereign-implementer development onto sovereign-implementer* meta-entry plus its three prerequisites — *Distributed fold-ins + open questions section in BACKLOG*, *Automated vs. manual test split + non-UI test types*, and *Shelve the two-write rule*. The fourth (Shelve) is resolved by v40 and was removed; the remaining three are committed alongside v40 since they're part of the same thinking arc.
+
+---
+
 ## V39 — 2026-05-21 — MANIFEST paths field + read-before-edit hook gate
 
 **What shipped.** MANIFEST.md gains an optional `(path)` field on each entry; the V25-deferred read-before-edit rule becomes hook-enforced via shape B (inline deny-with-context, transcript-scan retry). Touches both canonical doc sets, both template sides, `after-build.md`, `pre_tool_use.py`, INVENTORY, and resolves one OPEN-QUESTIONS entry.

@@ -1,5 +1,7 @@
 # Document structure specifications
 
+> **FROZEN at method version V39, 2026-05-21 (shelved in session v40).** The live operational copy is at `plugin/docs/DOC-STRUCTURE.md` — that's what subagents (`planning`, `before-build`, `adopt`) read at runtime. The two-write rule that kept this repo-root copy aligned has been shelved. This file is preserved as a frozen prose snapshot as of V39. Restoring two-write maintenance is one `planning/OPEN-QUESTIONS.md` promotion away. Background: `BUILD-METHOD.md` → *Two-write rule for canonical docs* (annotated shelved).
+
 *Mode: planning, migration.*
 
 Structural specs for the project's documents — required sections, entry shape, rules for additional source-of-truth docs. Not loaded every session.

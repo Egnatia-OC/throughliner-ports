@@ -20,7 +20,7 @@ Read these docs in this order, every invocation. The body of this file holds ope
 2. The path block's destinations: `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Files: sub-section* — for the canonical shape of what you'll be writing into BACKLOG.md.
 
-The operating procedure for *Before build* — including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement — is inlined in this file (see *Work loop* and *Batch-sizing principle* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the docs-only spec maintained alongside the plugin, not a runtime dependency.
+The operating procedure for *Before build* — including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement — is inlined in this file (see *Work loop* and *Batch-sizing principle* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
 ## Validate pass — first work step
 

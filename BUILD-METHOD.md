@@ -31,7 +31,7 @@ So the two numbers diverge. Session `v25` may ship with V23 footers because noth
 In order:
 
 1. `git describe --tags --abbrev=0` from `sovereign-implementer/` — confirm current version.
-2. Read `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md` at `HEAD` — the active method.
+2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Crash course.md` at `HEAD` — the active method (plugin-side, operational). The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) is frozen at V39 — read only if you need the prose-spec form, not for current rules.
 3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
 4. Read the active scope file at `planning/sessions/V<N>.md` — provisional scope, not a contract. `<N>` is the lowest version number present in that folder above the current tag from step 1 (i.e. the next session up, not the furthest-out one). Use the absolute path (see `CLAUDE.md → Current state` for why). If no scope file exists above the current tag, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
 
@@ -89,7 +89,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 2. **Mechanism descriptions.** If something works differently (new route, different fold-in destination, new enforcement point, renamed marker), `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` describe the new mechanism. Grep every reference to the old — section names, counts (`Three sections...` after a fourth lands), location phrases, cross-references — and update. Read each match; confirm surrounding sentences still parse.
 
-3. **Templates.** New sections, markers, or canonical formats land in the relevant template. If a hook or skill writes to a section, that section is in the template. **Two locations** (`templates/`, `plugin/templates/`) — both update together.
+3. **Templates.** New sections, markers, or canonical formats land in the relevant template at `plugin/templates/`. (The repo-root mirror `templates/` is frozen at V39 — see *Two-write rule for canonical docs* below.)
 
 4. **Inventory.** New plugin components or changed responsibilities → `planning/INVENTORY.md` (living — see *Planning artefacts*).
 
@@ -102,6 +102,8 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 ---
 
 ## Two-write rule for canonical docs
+
+> **SHELVED in session v40, 2026-05-21.** The docs-only repo-root set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) is frozen at method version V39. Every method-side substantive change now lands on the plugin side only. The body of this section is retained for resume-ability — if a real audience for the prose-only spec emerges, restoring the two-write discipline is a parking-lot promotion away. Background: `planning/OPEN-QUESTIONS.md` entry *Shelve the two-write rule and prose-only canonical docs* (resolved in session v40), and BUILD-LOG.md entry for v40.
 
 V32 split canonical method content into two parallel artefact sets:
 
@@ -183,7 +185,9 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `adopt.md`)
 - `Crash course.md` (repo root, but plugin-side audience — documents how to install and use the plugin)
 
-### Docs-only side (the follower)
+### Docs-only side — SHELVED in v40 (no longer bumped)
+
+> Files below are frozen at method version V39 per *Two-write rule for canonical docs* above. They retain their V39 footer in perpetuity unless the two-write rule is restored. Do not bump them when the plugin-side bumps.
 
 - `NO-CODE-METHOD.md` (repo root)
 - `DOC-STRUCTURE.md` (repo root)
