@@ -56,7 +56,7 @@ This step implements the *Never infer completion* rule (`universal-behaviour.md`
 **The protocol, per row:**
 
 1. Read the row's `Test Description` aloud to the user.
-2. Ask: "Pass, Fail, or Skipped?"
+2. Ask: "Pass, Fail, or Skipped?" with a brief explanation: **Pass** means the feature works as expected; **Fail** means something is broken or wrong (I'll ask what happened); **Skipped** means you didn't get to test it (I'll ask why).
 3. Wait for the user's answer for *this specific row*.
 4. Update the row in `TEST-LOG.md`:
    - `Status`: `Pass` / `Fail` / `Skipped` per the user's word.
@@ -121,7 +121,7 @@ Catches in-file content changes the previous drift checks miss — a manual edit
 **What counts as expected (no confirmation needed).** Files in either of these sets are silently accepted:
 
 - Files listed in the most recent build batch's `Files:` sub-section (the batch covered them, ticked or not).
-- The method's writable surface: `MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, `BACKLOG.md`, `CLAUDE.md`. (Locked docs that received a footer-only edit during `/adopt` refresh also fall here — see `universal-behaviour.md` → *Editing surfaces* → footer carve-out.)
+- The method's writable surface: `MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, `BACKLOG.md`, `CLAUDE.md`. (Locked docs that received a footer-only edit during `/setup` refresh also fall here — see `universal-behaviour.md` → *Editing surfaces* → footer carve-out.)
 
 Every other changed file is a candidate for the confirmation protocol below.
 
@@ -200,4 +200,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 41.*
+*No-code method — Version 42.*

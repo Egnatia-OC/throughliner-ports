@@ -93,13 +93,6 @@ BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 # carries this footer.
 FOOTER_PATTERN = re.compile(r"\*No-code method — Version (\d+)\.\*")
 
-# Empty marker file written by /adopt's cancel and leave-alone options
-# (cases 2 and 3). When present at project root, both hooks skip their
-# unadopted-folder logic — the folder is consciously opted out of method
-# discipline. Reversible: user deletes the file, or runs /adopt (case 5)
-# which offers to clear it.
-OPT_OUT_MARKER_NAME = ".no-code-method-skip"
-
 # Build-manifest filenames the Q2 detection rule (V29 open question 2)
 # treats as definitive "substantial work" signals at the project root.
 # Language-agnostic list covering major ecosystems. Presence of any one
@@ -133,7 +126,7 @@ INFRA_NAMES = frozenset({
     "LICENSE",
     "LICENSE.md",
     ".obsidian",
-    OPT_OUT_MARKER_NAME,
+    ".no-code-method-skip",
 })
 
 # Q2 rule (d) threshold: more than this many non-infra files (recursively,
@@ -161,13 +154,6 @@ def extract_footer_version(text):
         return int(match.group(1))
     except ValueError:
         return None
-
-
-def has_opt_out_marker(project_root):
-    """V29: True if `.no-code-method-skip` is present at project root.
-    Both SessionStart and PreToolUse skip their gating logic when the
-    marker is present — the folder is consciously opted out."""
-    return (Path(project_root) / OPT_OUT_MARKER_NAME).is_file()
 
 
 def _count_non_infra_files_exceeds(project_root, threshold):
@@ -213,7 +199,7 @@ def has_substantial_work(project_root, claude_text):
           (recursively, skipping INFRA_NAMES at every depth)
 
     Conservative bias: false positives are minor friction (the user runs
-    /adopt and can opt out via cancel/leave-alone); false negatives are
+    /setup and can opt out via cancel/leave-alone); false negatives are
     catastrophic (plugin scaffolds over existing work)."""
 
     # (c) Foreign CLAUDE.md is a trigger on its own.
@@ -242,19 +228,29 @@ def has_substantial_work(project_root, claude_text):
     )
 
 
+_LEGACY_SKIP_MARKER = ".no-code-method-skip"
+
+
 def is_unadopted_with_work(project_root):
     """V29 entry point for the adoption check.
 
     True iff the folder is unadopted (no method footer in CLAUDE.md) AND
-    has substantial work AND no opt-out marker. Adopted folders,
-    genuinely-empty unadopted folders, and opted-out folders all return
-    False.
+    has substantial work. Adopted folders and genuinely-empty unadopted
+    folders return False. Per-project opt-out is handled by Claude Code's
+    built-in plugin disable (``/plugin`` → Installed → toggle off), which
+    prevents the plugin's hooks from firing at all.
+
+    Legacy: the dev project (sovereign-implementer/) keeps a
+    .no-code-method-skip file at its root because --plugin-dir plugins
+    don't appear in /plugin's Installed tab. This check honours that
+    file so the advisory stays quiet during dev sessions.
 
     Drives SessionStart's advisory emission and PreToolUse's enforcement
     gate. Both hooks call this function — same definition of "unadopted"
     everywhere."""
     root = Path(project_root)
-    if has_opt_out_marker(root):
+
+    if (root / _LEGACY_SKIP_MARKER).is_file():
         return False
 
     claude_text = safe_read_text(root / "CLAUDE.md")
@@ -266,40 +262,33 @@ def is_unadopted_with_work(project_root):
     return has_substantial_work(root, claude_text)
 
 
-# V29 /adopt case numbers — kept here as named constants so scaffold.py
+# V29 /setup case numbers — kept here as named constants so scaffold.py
 # and the subagent body don't have to reproduce the magic numbers.
 ADOPT_CASE_EMPTY = 1                  # genuinely empty folder
 ADOPT_CASE_CODE_NO_DOCS = 2           # existing code, no method docs
 ADOPT_CASE_CODE_FOREIGN_DOCS = 3      # existing code, foreign CLAUDE.md
 ADOPT_CASE_ALREADY_ADOPTED = 4        # method-footered CLAUDE.md
-ADOPT_CASE_OPTED_OUT = 5              # .no-code-method-skip present
 
 
 def detect_adopt_case(project_root):
-    """V29: classify the project root into one of /adopt's five cases.
+    """V29/V44: classify the project root into one of /setup's four cases.
 
-    Returns an integer 1–5 corresponding to ADOPT_CASE_* constants:
+    Returns an integer 1–4 corresponding to ADOPT_CASE_* constants:
 
-      1 — empty folder (no CLAUDE.md, no substantial work, no marker)
+      1 — empty folder (no CLAUDE.md, no substantial work)
       2 — existing code, no method docs (no CLAUDE.md, substantial work)
       3 — existing code, foreign docs (CLAUDE.md present, no method footer)
       4 — already method-managed (CLAUDE.md present with method footer)
-      5 — opted out (.no-code-method-skip marker present at project root)
 
-    Order matters: opt-out marker is checked first (overrides everything
-    else), then method footer (adopted state), then foreign CLAUDE.md,
-    then substantial-work scan. An adopted-and-then-opted-out folder is
-    rare — the typical opted-out folder reached case 2 or 3, then case
-    2/3's cancel option wrote the marker.
+    Per-project opt-out is handled by Claude Code's built-in plugin
+    disable (``/plugin`` → Installed → toggle off), which prevents the
+    plugin's hooks from firing at all — no case needed here.
 
-    Used by the /adopt subagent (case dispatch) and by the scaffold.py
+    Used by the /setup subagent (case dispatch) and by the scaffold.py
     `detect-case` command. SessionStart and PreToolUse use the coarser
     `is_unadopted_with_work` since they only need yes/no, not the
     specific case."""
     root = Path(project_root)
-
-    if has_opt_out_marker(root):
-        return ADOPT_CASE_OPTED_OUT
 
     claude_text = safe_read_text(root / "CLAUDE.md")
 

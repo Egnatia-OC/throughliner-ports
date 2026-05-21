@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 Scaffold the no-code-method spine docs into the user's project (cwd), and
-classify the project root into one of /adopt's five cases.
+classify the project root into one of /setup's four cases.
 
 Three modes, each writes a single JSON object to stdout:
 
-  detect-case  V29: classify the current project root into one of /adopt's
-               cases. Output: {case: 1-5, case_name, target_path, details}.
-               No writes. Used by the /adopt subagent to dispatch to the
-               right dialogue branch on entry.
+  detect-case  V29/V44: classify the current project root into one of
+               /setup's cases. Output: {case: 1-4, case_name, target_path,
+               details}. No writes. Used by the /setup subagent to dispatch
+               to the right dialogue branch on entry.
 
   check  Recursively scan cwd for any file whose name matches one of the
          destination filenames (BUILD-LOG.md, CLAUDE.md, UX.md, BACKLOG.md,
@@ -21,9 +21,9 @@ Three modes, each writes a single JSON object to stdout:
          target_path} on success or {written: false, reason, ...} on
          failure.
 
-The /adopt subagent coordinates: run detect-case on entry, branch to the
+The /setup subagent coordinates: run detect-case on entry, branch to the
 right dialogue, then run check + write (cases 1 and 2) or perform
-case-specific work (cases 3, 4, 5). This script never asks the user
+case-specific work (cases 3, 4). This script never asks the user
 anything directly — it has no terminal access. Interaction is the
 subagent body's job.
 
@@ -31,7 +31,7 @@ ADDITIONAL-DOC-TEMPLATE.md is intentionally not scaffolded here. It lands
 in projects via /add-sot-doc when the project decides it needs one.
 
 History: forked from plugin/skills/init-project/scripts/scaffold.py
-(V19) at V29, when /init-project was renamed and expanded into /adopt.
+(V19) at V29, when /init-project was renamed and expanded into /setup.
 """
 
 import argparse
@@ -42,7 +42,7 @@ from pathlib import Path
 
 # Make plugin/scripts/ importable so we can pull in the shared
 # project-state helpers (V29 extraction). This script lives at
-# plugin/skills/adopt/scripts/scaffold.py, so plugin/scripts/ is three
+# plugin/skills/setup/scripts/scaffold.py, so plugin/scripts/ is three
 # levels up from the script's parent directory.
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
@@ -51,9 +51,6 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     ADOPT_CASE_CODE_NO_DOCS,
     ADOPT_CASE_CODE_FOREIGN_DOCS,
     ADOPT_CASE_ALREADY_ADOPTED,
-    ADOPT_CASE_OPTED_OUT,
-    has_opt_out_marker,
-    OPT_OUT_MARKER_NAME,
 )
 
 # Filenames that the method's runtime expects in a project.
@@ -79,21 +76,20 @@ TEMPLATE_TO_DESTINATION = (
 )
 
 # Human-readable case name for each case number. Mirrors V29.md's
-# *Outputs* → */adopt five-case branching* wording for stability in the
+# *Outputs* → */setup five-case branching* wording for stability in the
 # subagent dialogue.
 CASE_NAMES = {
     ADOPT_CASE_EMPTY: "empty folder",
     ADOPT_CASE_CODE_NO_DOCS: "existing code, no docs",
     ADOPT_CASE_CODE_FOREIGN_DOCS: "existing code, foreign docs",
     ADOPT_CASE_ALREADY_ADOPTED: "already method-managed",
-    ADOPT_CASE_OPTED_OUT: "opted out",
 }
 
 
 def templates_dir() -> Path:
     """Return the bundled templates directory.
 
-    This script lives at plugin/skills/adopt/scripts/scaffold.py, so
+    This script lives at plugin/skills/setup/scripts/scaffold.py, so
     plugin/templates/ is three levels up from the script's parent
     directory."""
     return Path(__file__).resolve().parents[3] / "templates"
@@ -124,16 +120,14 @@ def emit(payload, *, exit_code: int = 0) -> int:
 
 
 def cmd_detect_case(target_dir: Path) -> int:
-    """V29: classify target_dir into one of /adopt's five cases.
+    """V29/V44: classify target_dir into one of /setup's four cases.
 
     Output includes the case number, the human-readable case name, the
     resolved target path, and a `details` dict with case-specific signal
-    (e.g. whether a foreign CLAUDE.md was detected for case 3, whether
-    the opt-out marker is present)."""
+    (e.g. whether a foreign CLAUDE.md was detected for case 3)."""
     case = detect_adopt_case(target_dir)
     details = {
         "claude_md_present": (target_dir / "CLAUDE.md").is_file(),
-        "opt_out_marker_present": has_opt_out_marker(target_dir),
     }
     return emit({
         "case": case,
@@ -204,13 +198,13 @@ def cmd_write(target_dir: Path) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Scaffold no-code-method templates into a project, "
-                    "and classify project state for /adopt.",
+                    "and classify project state for /setup.",
     )
     parser.add_argument(
         "mode",
         choices=("detect-case", "check", "write"),
         help=(
-            "detect-case: classify project into one of /adopt's 5 cases; "
+            "detect-case: classify project into one of /setup's 4 cases; "
             "check: scan for existing method files; "
             "write: copy templates in"
         ),

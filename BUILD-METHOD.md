@@ -132,7 +132,7 @@ Future sessions might be tempted to re-introduce a "subagents read NO-CODE-METHO
 
 ## Testing — what we actually do
 
-Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/adopt` (V29 — formerly `/init-project`) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
+Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` (V29 — formerly `/init-project`; renamed from `/adopt` in V44) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
 
 **Pre-install testing options:**
 

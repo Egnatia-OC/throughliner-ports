@@ -8,6 +8,45 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## `research/` folder convention + automatic research persistence
+
+**The question.** Should the method formalise a `research/` folder (scaffolded at `/setup` time) where the agent automatically writes findings as `.md` files whenever it researches something — without requiring the user to ask?
+
+**Why it matters.** Surfaced 2026-05-22, ideation session. Two problems: (1) The method currently tells the agent to "prompt the user to do a Sonnet search" — a Cowork-era workaround. Claude Code has built-in web search; the agent should research directly. (2) Research findings have no designated home. They either vanish with the conversation or get manually pasted somewhere. The sovereign-implementer project's own `research/` folder (one `.md` per topic) has proven the pattern works — `research/platform-capabilities-audit.md`, `research/plugin-marketplace-scoping.md`, etc.
+
+**Design so far.**
+
+- `/setup` scaffolds an empty `research/` folder at project root.
+- When the agent hits uncertainty sufficient to research, it researches and writes findings to `research/<topic>.md` automatically. No user prompt needed, no size threshold.
+- Build log entries link to relevant research files rather than embedding findings inline.
+- The Sonnet-search language across method docs (universal-behaviour, subagent bodies, Crash course) is reworded to "offer to conduct research on anything you're uncertain of" — shifting responsibility from user to agent.
+- Research files are reference material: no MANIFEST tracking, no BACKLOG entries. Zero maintenance burden.
+
+**Relationship to existing entries.** Adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — the `Inputs:` line for build batches is the natural place to reference research files that inform a specific build. Adjacent to [[Graduate sovereign implementer development onto sovereign implementer]] — the method's own dev project already uses this pattern.
+
+**Next step.** Park until promoted. Could bundle with V45 (the `Inputs:` line needs something to point at) or schedule independently. The Sonnet-search reword is a standalone fix that could land in any session touching universal-behaviour or subagent bodies. **Promote sooner** if a consumer project reaches a moment where research findings would have been useful but weren't persisted.
+
+---
+
+## BUILD-LOG restructuring — per-build files in a folder with index
+
+**The question.** Should BUILD-LOG.md be replaced by a `build-log/` folder containing one file per build plus a lightweight index, to reduce how much Claude must read?
+
+**Why it matters.** Surfaced 2026-05-22, ideation session. The current monolithic BUILD-LOG.md grows with every build. Claude reads the entire file to write one entry or to check build history during planning. Per-build files mean the agent reads only the entries it needs. The index preserves scan-the-full-history capability in one place.
+
+**Design so far.**
+
+- `build-log/` folder replaces `BUILD-LOG.md`. `/setup` scaffolds the folder.
+- One file per build (naming TBD — `BUILD-001.md`, `BUILD-002.md`, or batch-name-based).
+- Lightweight index file at `build-log/INDEX.md` — one line per build with a short summary and link. The after-build subagent writes the build entry and appends the index line in the same pass.
+- Research files referenced from build entries are linked, not embedded — research lives in `research/`, build entries point to it.
+
+**Relationship to existing entries.** Prerequisite-adjacent for [[Graduate sovereign implementer development onto sovereign implementer]] — the current dev project's `BUILD-LOG.md` is already unwieldy. Pairs naturally with [[`research/` folder convention + automatic research persistence]] — build entries link to research files.
+
+**Next step.** Park until promoted. Natural bundle with V45 (BACKLOG restructuring) or as a standalone structural session. Needs template and after-build subagent changes. **Promote sooner** if a consumer project's BUILD-LOG.md grows large enough to cause context-window pressure during planning reads.
+
+---
+
 ## Red-flag / threat-class marker for security-shaped batches
 
 **The question.** Should BACKLOG batches that touch security-shaped surfaces (auth, secrets, PII, deletion of user data, third-party API keys) carry an explicit *Red flags* or *Caution* marker — as a new batch sub-section, as planning-subagent behaviour that detects security-shaped scope and surfaces a verbal heads-up at scoping time, or both?
@@ -32,17 +71,17 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **The seven items.**
 
-1. **Jargon in adopt subagent.** `/adopt` says "One more, then I'll scaffold" — "scaffold" is jargon. Should say something like "create your project's starter docs." Violates the universal-behaviour "Plain English over jargon" rule.
-2. **No next-action prompt after `/adopt`.** Adopt finishes by telling the user to fold pending blocks into UX.md "during the next planning session" but doesn't say how to start one. A new user would be stuck at the prompt with no idea what to type.
+1. ~~**Jargon in adopt subagent.**~~ **Resolved V44 (session v46, 2026-05-22).** "Scaffold" replaced with "create the method's starter docs" across all user-facing dialogue in `setup.md`.
+2. ~~**No next-action prompt after `/setup`.**~~ **Resolved V44 (session v46, 2026-05-22).** All successful-path recaps in `setup.md` (cases 1, 2, 3) now close with guidance on how to start a planning session.
 3. **Fold-in UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
-4. **Claude Code's permission modes vs. the UX.md lock.** Claude Code has its own graduated permission model (Ask permissions → Accept edits → Auto mode). The method's UX.md lock is a second, harsher layer on top. Research needed: does the plugin's PreToolUse hook fire regardless of which Claude Code mode is active? If the mode already provides the safety guarantee, the manual fold-in may be unnecessary.
+4. ~~**Claude Code's permission modes vs. the UX.md lock.**~~ **Resolved by V43 research (session v43, 2026-05-22).** PreToolUse hooks fire in all permission modes, including Auto and bypass — the method's lock is complementary to, not redundant with, Claude Code's permission system. Mode-aware deny messages shipped in V43.
 5. **After-build doesn't prompt commit/tag.** After-build tells the user to "/clear and switch back to planning mode" but never mentions committing or tagging. The method recommends tagging (and drift check 1 depends on it), but the user isn't told.
-6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/adopt` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
-7. **"Pass / Fail / Skipped" not explained.** TEST-LOG read-back asks "Pass, Fail, or Skipped?" with no context for what each means or when to use which. A one-line explanation per option would help.
+6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/setup` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
+7. ~~**"Pass / Fail / Skipped" not explained.**~~ **Resolved V44 (session v46, 2026-05-22).** Per-row read-back in `planning.md` now includes one-line explanation for each option.
 
-**Relationship to existing entries.** Item 3 is adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX. Item 4 is new research with no existing entry. Items 1, 2, 5, 6, 7 are subagent/template fixes that could land independently.
+**Relationship to existing entries.** Item 3 is adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
 
-**Next step.** Item 4 (permission modes vs. UX.md lock) resolved by research in session v43 (2026-05-22): PreToolUse hooks fire in all permission modes, including Auto and bypass — the method's lock is complementary to, not redundant with, Claude Code's permission system. Design work for mode-aware deny messages and behaviour changes scheduled as V43 (permission-mode UX harmonization). Items 1, 2, 5, 6, 7 are small fixes that could bundle into V44 (/adopt UX) or a standalone batch. Item 3 (fold-in UX) is a larger design question that may feed into or follow V45.
+**Next step.** Four of seven items resolved (1, 2, 4, 7). Remaining: item 3 (fold-in UX — larger design question, may feed into or follow V45), item 5 (after-build commit/tag prompt — small subagent fix), item 6 (template placeholder cleanup — small template fix). Items 5 and 6 can bundle into any future session touching the relevant subagent/template.
 
 ---
 

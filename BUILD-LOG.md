@@ -6,6 +6,31 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v46 — 2026-05-22 — /setup UX + per-project opt-out
+
+**What shipped.** V44 scope. Three major changes: (1) `.no-code-method-skip` marker architecture removed from the public plugin — `OPT_OUT_MARKER_NAME`, `has_opt_out_marker()`, and case 5 (opted out) removed from `project_state.py`, `pre_tool_use.py`, `session_start.py`, `setup.md` (formerly `adopt.md`), `scaffold.py`, `SKILL.md`, `universal-behaviour.md`, `VOCABULARY.md`, and `Crash course.md`. Per-project opt-out is now Claude Code's built-in `/plugin` → Installed → toggle off. Dev-project's `.no-code-method-skip` stays as a legacy escape hatch (`_LEGACY_SKIP_MARKER`). (2) `/adopt` renamed to `/setup` across the entire plugin surface — skill directory (`plugin/skills/adopt/` → `plugin/skills/setup/`), subagent body (`adopt.md` → `setup.md`), subagent type (`no-code-method:adopt` → `no-code-method:setup`), all hook references, all doc references, Crash course, planning artefacts. (3) Three OPEN-QUESTIONS UX friction items resolved: "scaffold" jargon replaced with plain English in user-facing `/setup` dialogue; next-action prompt added to successful-path recaps (cases 1, 2, 3); Pass/Fail/Skipped one-line explanations added to planning subagent's per-row read-back. V46 scope (cd-shifts-cwd marker walk-up) closed — marker removal made it moot. Permission-prompt surface researched: no difference between marketplace and `--plugin-dir` (written to `research/marketplace-install-permission-surface.md`). Method version V41 → V42; plugin 0.41.0 → 0.42.0.
+
+**Decisions taken and why.**
+
+- **Marker removal before rename.** The marker architecture touched the same files the rename would touch. Removing markers first simplified the rename pass — fewer code paths, cleaner diffs. The v46 session ran the marker removal; the continuation session ran the rename.
+- **V46 closed rather than reworked.** V46's scope was "walk up parent directories to find the opt-out marker when `cd` shifts cwd." With the marker architecture removed from the public plugin, the only surviving marker is the dev project's legacy `_LEGACY_SKIP_MARKER` — not worth a walk-up mechanism for one project's internal compat.
+- **`detect_adopt_case` function name and `ADOPT_CASE_*` constants kept.** These are internal API imported by `scaffold.py`. Renaming them would be churn with no user-visible benefit — they're never surfaced in dialogue or docs.
+- **Narration improvements (V44 output 4) covered by items 1/2.** The jargon fix and next-action prompt address the concrete narration gaps surfaced in the V42 smoke test. No additional narration work needed.
+- **CLI vs. desktop-app parity (V44 output 5) deferred.** Requires hands-on testing in both environments. Not a code change — needs Alex to run `/setup` in both and report back.
+
+**Pivots and surprises.**
+
+- Session ran out of context mid-v46 (after marker removal, before rename). Continuation session picked up cleanly from the handoff notes in V44.md.
+- OPEN-QUESTIONS entry for the UX friction items now has four of seven items resolved (1, 2, 4, 7); three remain (fold-in UX, after-build commit/tag prompt, template placeholder cleanup).
+
+**Carried forward.**
+
+- CLI vs. desktop-app parity testing — Alex runs `/setup` in both CLI and desktop app against a fresh folder and reports back.
+- Remaining OPEN-QUESTIONS UX friction items 3, 5, 6 — can bundle into future sessions touching the relevant components.
+- V43 + V44 smoke test still deferred — mode-aware deny messages (V43) and `/setup` rename (V44) both testable against Taskflow via `--plugin-dir`.
+
+---
+
 ## v45 — 2026-05-22 — Permission-mode UX harmonization
 
 **What shipped.** Mode-aware deny messages across all seven PreToolUse deny paths. Every deny now carries a `[No-code method]` prefix and a `What to do:` closing line. Four of seven paths (locked-doc lock, batch boundary, adoption gate, destructive git guard) add a mode-aware suffix in permissive Claude Code modes (Accept edits, Auto, Bypass) clarifying that changing permission mode won't help. Three paths (serves-line, test-confirmation gate, MANIFEST read-before-edit) get format standardisation only — their denies are sequencing or fix-it-yourself issues, not mode-sensitive. `permission_mode` field read defensively from hook input JSON; absent or unrecognised values produce no mode-aware text. SessionStart hook now prepends a two-layer-permission-model preamble to the universal-behaviour context injection (tiers 2 and 3). Crash course gains a new *Two layers of permission* section. INVENTORY.md updated with V43 annotations across all three affected hook entries. Method version V40 → V41; plugin version 0.40.0 → 0.41.0.

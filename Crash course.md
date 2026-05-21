@@ -17,21 +17,23 @@ Install via marketplace (persists across sessions):
 
 1. Clone the repo: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
 2. In Claude Code, run: `/plugin marketplace add <path-to-clone>` then `/plugin install no-code-method@sovereign-implementer`.
-3. Open a Claude Code session in the project folder you want to work in. The plugin's hooks fire at session start. If the folder is empty, or contains existing work without the method's docs, Claude Code surfaces an advisory pointing at the `/adopt` command (see *The safety net* below for what `/adopt` does in each case).
+3. Open a Claude Code session in the project folder you want to work in. The plugin's hooks fire at session start. If the folder is empty, or contains existing work without the method's docs, Claude Code surfaces an advisory pointing at the `/setup` command (see *The safety net* below for what `/setup` does in each case).
 
 For development or one-off use, `claude --plugin-dir <path-to-clone>/plugin` loads the plugin for a single session without installing.
 
+**Disabling the plugin in a specific project.** Once installed via marketplace, the plugin fires in every folder. To turn it off in a particular project: open a Claude Code session in that folder, type `/plugin`, go to the Installed tab, and toggle the plugin off. The setting sticks for that project — the plugin stays active everywhere else.
+
 A first session in Sovereign Implementer is distinct from a normal build sequence session:
 
-- Open Claude Code in the project folder. Run `/adopt`.
-- `/adopt` detects which case applies — empty folder, existing code without docs, existing code with non-method docs, already method-managed, or opted out — and runs the matching dialogue.
-- For an empty folder, `/adopt` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates a `planning/drafts/` folder, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
+- Open Claude Code in the project folder. Run `/setup`.
+- `/setup` detects which case applies — empty folder, existing code without docs, existing code with non-method docs, already method-managed, or opted out — and runs the matching dialogue.
+- For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates a `planning/drafts/` folder, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
 - The dialogue's outputs land as a `[FOLD-IN PENDING]` block in BACKLOG.md. The no-coder folds the UX content into UX.md by hand (the doc is read-only to Claude), and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line pointing at the entry it implements.
 - After the fold-in, the project is ready for its first build. Run `/before-build` to lock the next batch, then `/build` to execute it. The plugin orchestrates the rest.
 
 ## Guardrail .md docs
 
-Six markdown files sit in the project root once `/adopt` has scaffolded the project, plus a `planning/drafts/` folder. Each does one job, and the workflow expects a clean separation between them.
+Six markdown files sit in the project root once `/setup` has scaffolded the project, plus a `planning/drafts/` folder. Each does one job, and the workflow expects a clean separation between them.
 
 - **CLAUDE.md** — entry point. Tells Claude Code where every other doc lives via a JSON path block, and carries any project-specific behavioural notes. Read by Claude at every session start.
 - **UX.md** — user-facing description of the app. Every entry corresponds to something the no-coder can experience and test in the current build, plus a mandatory "the user needs this because…" line tying the entry back to a UX principle or other user context. Source of truth — Claude cannot edit this file; the no-coder maintains it by hand during planning sessions.
@@ -40,7 +42,7 @@ Six markdown files sit in the project root once `/adopt` has scaffolded the proj
 - **TEST-LOG.md** — a row-per-test record of every shipped build batch's outcomes. Eight columns: # / Date / Session / Component / Test Description / Status / Confirmed Explicitly / User Notes. Claude appends blank-Status rows when a batch ships; the no-coder confirms outcomes per-row during the next planning session.
 - **BUILD-LOG.md** — a running record of decisions, changes, and reasoning for every build, newest-first. Written by Claude after each build completes. Not read cover-to-cover — search when you need the "why" behind a previous build's choices. Entry shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward.
 
-`/adopt` also creates a `planning/drafts/` folder — a destination-agnostic holding area for substantive chat content not yet ready for a specific doc (comparison tables, structural sketches, option matrices). Drafts complement BACKLOG.md's *Fold-ins pending* section, which is for source-of-truth doc content specifically. Drafts are written when content is "good enough to walk away from" and deleted when consumed.
+`/setup` also creates a `planning/drafts/` folder — a destination-agnostic holding area for substantive chat content not yet ready for a specific doc (comparison tables, structural sketches, option matrices). Drafts complement BACKLOG.md's *Fold-ins pending* section, which is for source-of-truth doc content specifically. Drafts are written when content is "good enough to walk away from" and deleted when consumed.
 
 A project can also declare additional source-of-truth docs — for example, `SYSTEM-PROMPT.md` for a Claude/MCP integration project, or `COPY.md` for a project where the user-facing text is itself the deliverable. These get the same lock-from-Claude treatment as `UX.md`.
 
@@ -62,7 +64,7 @@ This walkthrough follows a small project — a task manager called **Taskflow**,
 
 ### Day one — starting from scratch
 
-The no-coder opens a Claude Code session in an empty project folder and runs `/adopt`. Empty folder means no advisory — `/adopt` detects the empty case and walks four prompts:
+The no-coder opens a Claude Code session in an empty project folder and runs `/setup`. Empty folder means no advisory — `/setup` detects the empty case and walks four prompts:
 
 1. **Project context.** What the app does, and what makes it distinct.
 2. **UX principles.** Three to six. For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*. Each gets a one-line claim plus a few sentences of reasoning.
@@ -135,17 +137,18 @@ The drift check is not exhaustive. It catches cases where docs and code have sta
 
 The method assumes a fresh project. Sooner or later someone installs the plugin into a folder that is not fresh — by mistake, or to bring an existing project under the method's discipline. The safety net is the plugin's response.
 
-When a session opens, **SessionStart** checks whether the folder is *adopted* (carries the method footer in CLAUDE.md) or *unadopted*. Adopted folders, genuinely empty folders, and folders carrying a `.no-code-method-skip` opt-out marker stay silent. An unadopted folder with substantial existing work — code, foreign docs, anything — triggers an advisory pointing at the `/adopt` command.
+When a session opens, **SessionStart** checks whether the folder is *adopted* (carries the method footer in CLAUDE.md) or *unadopted*. Adopted folders and genuinely empty folders stay silent. An unadopted folder with substantial existing work — code, foreign docs, anything — triggers an advisory pointing at the `/setup` command and explaining how to disable the plugin if the user doesn't want it here.
 
-Until `/adopt` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-subagent calls from main Claude. Not just a warning — an actual block. `/adopt`'s own scaffolding calls pass through, so adoption can happen while the gate is closed against everything else.
+Until `/setup` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-subagent calls from main Claude. Not just a warning — an actual block. `/setup`'s own scaffolding calls pass through, so adoption can happen while the gate is closed against everything else.
 
-`/adopt` branches on what it finds:
+`/setup` branches on what it finds:
 
 - *Empty folder* → walks the four new-project prompts and scaffolds the spine docs with the no-coder's answers folded in.
-- *Existing code, no docs* → offers to scaffold fresh docs alongside, or to opt out via `.no-code-method-skip`.
-- *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to **migrate** the existing CLAUDE.md to method spec (preserving content — Claude proposes edits and iterates with the no-coder until the migration plan is right; anything that does not fit cleanly lands as `[FOLD-IN PENDING]` blocks so nothing is lost), **overwrite** the existing CLAUDE.md after backing it up, or **leave alone** via the opt-out marker.
+- *Existing code, no docs* → offers to scaffold fresh docs alongside, or cancel.
+- *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to **migrate** the existing CLAUDE.md to method spec (preserving content — Claude proposes edits and iterates with the no-coder until the migration plan is right; anything that does not fit cleanly lands as `[FOLD-IN PENDING]` blocks so nothing is lost), **overwrite** the existing CLAUDE.md after backing it up, or **leave alone**.
 - *Already method-managed* → detects template state, surfaces any version mismatch, offers a **refresh** (bumps method-version footers across writable docs directly; locked docs get `[FOLD-IN PENDING]` entries for the no-coder to bump by hand; project-specific content in CLAUDE.md stays intact) or **cancel**.
-- *Opted out* → folder previously chose `.no-code-method-skip`; offers to clear the marker (returning to unadopted) or to stay opted out.
+
+Users who don't want the method in a particular folder don't need to go through `/setup` at all — they can disable the plugin for that project via `/plugin` → Installed → toggle off.
 
 Nothing destructive happens without explicit confirmation, and every destructive option backs up first.
 
@@ -156,9 +159,9 @@ Why session-start, not install-time? Claude Code's plugin system has no install-
 The plugin distributes the method's rules across Claude Code primitives — hooks, subagents, skills, and bundled docs — rather than asking Claude to enforce them from a single long prompt. Non-coders do not normally open these files; the plugin runtime does the work.
 
 - **Hooks** are Python scripts that fire on specific Claude Code events. The SessionStart hook detects what shape of folder the no-coder is working in (adopted, unadopted-with-work, empty, opted-out) and injects an advisory or the universal behavioural rules into Claude's session context. The PreToolUse hook enforces edit boundaries — locking UX.md and additional source-of-truth docs from Claude, blocking edits outside the current batch's `Files:` list, gating new build batches on the previous batch's test outcomes being confirmed, refusing build batches whose `Serves UX.md:` line names entries that do not exist in UX.md, denying the first edit on a MANIFEST-covered file with the matching MANIFEST entry and UX.md's Functionalities headings inlined in the deny reason (Claude retries with the context in hand — the hook scans the transcript for the prior deny and allows the retry), and blocking destructive git commands (`git reset --hard`, `git push --force`) with deny messages pointing at safer alternatives. The Stop hook routes one build batch to the next, or routes to the after-build subagent when a batch finishes.
-- **Subagents** handle the phase work in their own Claude Code contexts: planning, before-build, batch-executor, after-build, and adopt. Each runs its own conversation, then returns a recap that main Claude relays to the no-coder. The context isolation keeps each phase's prompts focused.
-- **Slash commands** (`/adopt`, `/before-build`, `/build`) are the user-facing entry points. Each invokes the matching subagent.
-- **Templates** — the starter shapes for the six spine docs that `/adopt` scaffolds into a new project. These get copied into the project root with method-version footers and start mostly empty.
+- **Subagents** handle the phase work in their own Claude Code contexts: planning, before-build, batch-executor, after-build, and setup. Each runs its own conversation, then returns a recap that main Claude relays to the no-coder. The context isolation keeps each phase's prompts focused.
+- **Slash commands** (`/setup`, `/before-build`, `/build`) are the user-facing entry points. Each invokes the matching subagent.
+- **Templates** — the starter shapes for the six spine docs that `/setup` scaffolds into a new project. These get copied into the project root with method-version footers and start mostly empty.
 - **Bundled reference docs** — `DOC-STRUCTURE.md` and `VOCABULARY.md` live inside the plugin at `plugin/docs/`. The subagents read them when needed via `${CLAUDE_PLUGIN_ROOT}/docs/...`. Non-coders do not normally open these directly; the *When you need more* section at the end of this doc says when reaching for them is worthwhile.
 
 The split between hooks (deterministic enforcement) and subagents (probabilistic behaviour) is deliberate: hooks bite when correctness matters and a prompt-based instruction might be ignored; subagents handle the work that needs judgment.
@@ -205,11 +208,11 @@ Some docs are stable artefacts written slowly and deliberately. UX.md and any ad
 
 `BACKLOG.md` is read/write because builds need it. The protective rule is built into the build sequence: Claude must discuss every `BACKLOG.md` change with the no-coder at the appropriate stage — never silently.
 
-**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer on each doc is metadata, not content. The PreToolUse hook allows footer-only edits on locked docs, so `/adopt`'s version refresh can stamp all footers directly without routing through fold-in blocks.
+**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer on each doc is metadata, not content. The PreToolUse hook allows footer-only edits on locked docs, so `/setup`'s version refresh can stamp all footers directly without routing through fold-in blocks.
 
-**The `[FOLD-IN PENDING]` mechanism.** Claude cannot write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in BACKLOG.md's *Fold-ins pending* section. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/adopt`, or a mid-build edit attempt the PreToolUse hook intercepted.
+**The `[FOLD-IN PENDING]` mechanism.** Claude cannot write directly into read-only source-of-truth docs like `UX.md`. Instead, proposed content is queued as a `[FOLD-IN PENDING]` block in BACKLOG.md's *Fold-ins pending* section. The block names the destination doc, the proposed change, and where the content came from — a planning-batch resolution, `/setup`, or a mid-build edit attempt the PreToolUse hook intercepted.
 
-During planning sessions and `/adopt`, a **preview-then-fold-in convention** applies: before writing the fold-in block, Claude shows the complete proposed section in chat (heading, content, formatting, and all) and waits for the no-coder's approval. On approval, Claude writes the fold-in block and prompts the no-coder to fold it in now — naming the section heading to find and replace in the destination doc. The fold-in happens in the same session rather than being deferred. Mid-build edit attempts intercepted by the hook still produce a standard `[FOLD-IN PENDING]` block deferred to the next planning session.
+During planning sessions and `/setup`, a **preview-then-fold-in convention** applies: before writing the fold-in block, Claude shows the complete proposed section in chat (heading, content, formatting, and all) and waits for the no-coder's approval. On approval, Claude writes the fold-in block and prompts the no-coder to fold it in now — naming the section heading to find and replace in the destination doc. The fold-in happens in the same session rather than being deferred. Mid-build edit attempts intercepted by the hook still produce a standard `[FOLD-IN PENDING]` block deferred to the next planning session.
 
 ## Why the rules
 
@@ -265,10 +268,10 @@ Reach for them when:
 
 - A concept this primer mentions in passing turns out to matter to a decision being made.
 - A rule's edge case is the thing actually needed.
-- A non-method project is being migrated onto the method and `/adopt`'s case 3 dialogue surfaces a structural rule whose reasoning matters.
+- A non-method project is being migrated onto the method and `/setup`'s case 3 dialogue surfaces a structural rule whose reasoning matters.
 - The method itself is being extended — proposing changes, building related tooling, or distinguishing what is core from what is editable habit.
 
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 41.*
+*No-code method — Version 42.*

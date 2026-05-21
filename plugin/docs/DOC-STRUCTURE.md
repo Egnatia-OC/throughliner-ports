@@ -69,7 +69,7 @@ If the flat list becomes hard to scan, switch to alphabetical sections by area.
 - **Multi-file, directory shape.** `` (`app/src/settings/`) `` — trailing slash signals directory match; any file under that prefix counts.
 - **No path.** Omit the parens entirely for entries that don't correspond to a file (a cross-component flow, a named UX state). Such entries skip the gate.
 
-**Migration is incremental.** The after-build subagent populates the paths field on any MANIFEST entry it creates or updates during a build (`after-build.md` → *Work loop* step 1). Legacy entries without paths stay skipped by the gate until something touches them. `/adopt` case 4 (refresh) offers a one-time backfill pass — see `adopt.md` for the dialogue.
+**Migration is incremental.** The after-build subagent populates the paths field on any MANIFEST entry it creates or updates during a build (`after-build.md` → *Work loop* step 1). Legacy entries without paths stay skipped by the gate until something touches them. `/setup` case 4 (refresh) offers a one-time backfill pass — see `setup.md` for the dialogue.
 
 ## TEST-LOG.md structure
 
@@ -129,7 +129,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 ## planning/drafts/ folder
 
-**Location.** `planning/drafts/<topic>.md` — project root relative. Created by `/adopt` scaffold (empty directory).
+**Location.** `planning/drafts/<topic>.md` — project root relative. Created by `/setup` scaffold (empty directory).
 
 **Purpose.** Destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Complements `BACKLOG.md`'s *Fold-ins pending* section, which is destination-specific (source-of-truth doc content queued for fold-in). Drafts hold everything else: comparison tables, structural sketches, protocol rules, column shapes, option matrices — content that has value for a future session but doesn't yet have a clear home.
 
@@ -174,4 +174,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 41.*
+*No-code method — Version 42.*

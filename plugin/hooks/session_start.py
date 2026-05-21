@@ -7,30 +7,30 @@ is installed. Two phases:
 
   Phase 1 (V29) — adoption check
     Before any tier logic, the hook runs `is_unadopted_with_work` against
-    the project root. An unadopted folder (no method footer in CLAUDE.md
-    and no `.no-code-method-skip` opt-out marker) with substantial work
-    (per the Q2 rule: build manifest, source dir, foreign CLAUDE.md, or
-    >5 non-infra files recursively) emits the V29 advisory and short-
-    circuits: `systemMessage` (user-visible warning) plus
-    `additionalContext` (directive into Claude's context), both pointing
-    at `/adopt`. Advisory only — SessionStart has no halt mechanism (the
-    `systemMessage` field is a warning, `continue: false` terminates the
-    session entirely, and `UserPromptSubmit`-in-plugins is broken per
-    GitHub anthropics/claude-code#10225 → #12151). Real enforcement
-    happens in the PreToolUse hook, which denies Edit/Write/MultiEdit
-    and Task→method-subagent calls from main Claude until the folder is
-    adopted or the opt-out marker is written.
+    the project root. An unadopted folder (no method footer in CLAUDE.md)
+    with substantial work (per the Q2 rule: build manifest, source dir,
+    foreign CLAUDE.md, or >5 non-infra files recursively) emits the V29
+    advisory and short-circuits: `systemMessage` (user-visible warning)
+    plus `additionalContext` (directive into Claude's context), both
+    pointing at `/setup`. Advisory only — SessionStart has no halt
+    mechanism (the `systemMessage` field is a warning, `continue: false`
+    terminates the session entirely, and `UserPromptSubmit`-in-plugins is
+    broken per GitHub anthropics/claude-code#10225 → #12151). Real
+    enforcement happens in the PreToolUse hook, which denies
+    Edit/Write/MultiEdit and Task→method-subagent calls from main Claude
+    until the folder is adopted. Per-project opt-out is handled by Claude
+    Code's built-in plugin disable (/plugin → Installed → toggle off).
 
   Phase 2 — tier classification (unchanged from V21)
-    Runs only on adopted folders, opted-out folders, and genuinely-empty
-    unadopted folders. Three tiers:
+    Runs only on adopted folders and genuinely-empty unadopted folders.
+    Three tiers:
 
       Tier 1 (non-method folder)
         Neither CLAUDE.md nor any spine doc carrying the method's version
         footer is present at the project root. The hook writes nothing
         and exits 0 — the plugin is invisible in folders that aren't
         method projects. With V29 in place, this tier now covers only
-        opted-out folders and genuinely-empty folders (unadopted-with-
+        genuinely-empty folders (unadopted-with-
         work folders short-circuit in Phase 1).
 
       Tier 2 (partial method shape)
@@ -39,7 +39,7 @@ is installed. Two phases:
         or CLAUDE.md is present but its fenced JSON path block can't be
         parsed. The hook injects the universal-behaviour rules plus a
         single-paragraph gap flag naming the specific missing piece and
-        pointing at /adopt.
+        pointing at /setup.
 
       Tier 3 (complete method project)
         CLAUDE.md is present and its fenced JSON path block parses. The
@@ -86,10 +86,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
     FOOTER_PATTERN,
-    OPT_OUT_MARKER_NAME,
     has_method_footer,
     extract_footer_version,
-    has_opt_out_marker,
     has_substantial_work,
     is_unadopted_with_work,
 )
@@ -101,7 +99,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 41
+PLUGIN_METHOD_VERSION = 42
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -153,9 +151,9 @@ TEST_LOG_DATA_ROW_PATTERN = re.compile(
 # semantics as the test-confirmation gate (V26 Q3, V27 Q4).
 BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 
-# V29 adoption-state constants (OPT_OUT_MARKER_NAME, BUILD_MANIFEST_NAMES,
-# SOURCE_DIR_NAMES, INFRA_NAMES, SUBSTANTIAL_WORK_FILE_THRESHOLD) now live
-# in project_state.py — imported above where needed.
+# V29 adoption-state constants (BUILD_MANIFEST_NAMES, SOURCE_DIR_NAMES,
+# INFRA_NAMES, SUBSTANTIAL_WORK_FILE_THRESHOLD) now live in
+# project_state.py — imported above where needed.
 
 # --- File reads ---
 
@@ -446,36 +444,35 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
 
 # --- V29 unadopted-folder advisory (output formatting) ---
 #
-# Detection helpers (has_opt_out_marker, has_substantial_work,
-# is_unadopted_with_work) live in project_state.py — imported above. The
-# advisory text and JSON-emission shape stay here because they're
-# SessionStart-specific (PreToolUse emits a different shape).
+# Detection helpers (has_substantial_work, is_unadopted_with_work) live in
+# project_state.py — imported above. The advisory text and JSON-emission
+# shape stay here because they're SessionStart-specific (PreToolUse emits
+# a different shape).
 
 
 def build_unadopted_advisory_context(project_root: Path) -> str:
     """Compose the additionalContext block for an unadopted-with-work
     folder. Strong directive: do nothing substantive, route the user to
-    /adopt. Pairs with the systemMessage user-visible warning."""
+    /setup. Pairs with the systemMessage user-visible warning."""
     return (
         "## No-code-method plugin — unadopted folder\n\n"
         "**This folder has not been adopted by the no-code-method plugin, "
         "and it contains existing work that the plugin would put at risk "
         "if you proceed normally.** No method-aware behaviour is active "
-        "until the user runs `/adopt`.\n\n"
+        "until the user runs `/setup`.\n\n"
         f"Project root: `{project_root}`\n\n"
         "**Required behaviour for this session:**\n\n"
-        "- Direct the user to run `/adopt` before doing anything else.\n"
+        "- Direct the user to run `/setup` before doing anything else.\n"
         "- Do NOT attempt Edit, Write, MultiEdit, or Task→method-subagent "
         "tool calls. The PreToolUse hook will deny them anyway, and "
         "attempting them creates confusing churn.\n"
-        "- If the user explicitly chooses not to adopt, they can run "
-        "`/adopt` and select the cancel option (case 2) or leave-alone "
-        "option (case 3) — these write `.no-code-method-skip` at the "
-        "project root, which opts the folder out of method discipline "
-        "and stops the advisory/enforcement for future sessions.\n\n"
-        "Until `/adopt` runs (or the opt-out marker is written), the "
-        "only useful actions are conversational responses pointing the "
-        "user toward `/adopt`."
+        "- If the user does not want the method in this folder, they can "
+        "disable the plugin for this project: type `/plugin`, go to the "
+        "Installed tab, and toggle it off. This is a Claude Code built-in "
+        "— it stops all plugin hooks from firing in this folder.\n\n"
+        "Until `/setup` runs (or the plugin is disabled for this project), "
+        "the only useful actions are conversational responses pointing the "
+        "user toward `/setup` or explaining how to disable the plugin."
     )
 
 
@@ -484,9 +481,10 @@ def build_unadopted_system_message() -> str:
     Kept short — system messages are noisier than additionalContext and
     we want this one to land."""
     return (
-        "[no-code-method] Folder has work but isn't adopted — run /adopt "
-        "to start. Edit/Write/MultiEdit calls will be denied until /adopt "
-        "completes or the folder is opted out via /adopt's cancel option."
+        "[no-code-method] Folder has work but isn't set up — run /setup "
+        "to start, or disable the plugin for this project via /plugin → "
+        "Installed → toggle off. Edit/Write/MultiEdit calls will be "
+        "denied until /setup completes."
     )
 
 
@@ -614,7 +612,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             "hasn't been kicked off yet — these docs still contain template "
             "placeholders. Per `universal-behaviour.md` → *Routing "
             "main-Claude's openers* (the *Template state* detect-first "
-            "rule): recommend `/adopt` to seed `UX.md`, `BACKLOG.md`, "
+            "rule): recommend `/setup` to seed `UX.md`, `BACKLOG.md`, "
             "and the first build batch. Wait for the user's okay before "
             "proceeding."
         )
@@ -629,7 +627,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             lines.append(f"  - `{logical_name}` is at Version {v}")
         lines.append(
             "  This is a tripwire, not an auto-fix. Suggest the user run "
-            "`/adopt` if structural drift is suspected (case 3 — migrate "
+            "`/setup` if structural drift is suspected (case 3 — migrate "
             "to current spec), or update the footers if the content is "
             "current."
         )
@@ -693,7 +691,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
         next_step = (
             "Set up `CLAUDE.md`'s path block as fenced JSON (see "
             "`templates/CLAUDE-TEMPLATE.md` in the plugin), or run "
-            "`/adopt` to bring an existing project up to spec."
+            "`/setup` to bring an existing project up to spec."
         )
     elif not has_claude and spine_docs:
         gap = (
@@ -703,7 +701,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
             "spine docs."
         )
         next_step = (
-            "Run `/adopt` to bring this project up to spec — it will "
+            "Run `/setup` to bring this project up to spec — it will "
             "scaffold the missing `CLAUDE.md` and align the existing docs "
             "with the current structural rules."
         )
@@ -716,14 +714,14 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
         next_step = (
             "Either update `CLAUDE.md`'s path block to match the current "
             "fenced-JSON format (see `templates/CLAUDE-TEMPLATE.md`), or "
-            "run `/adopt` to bring everything up to spec."
+            "run `/setup` to bring everything up to spec."
         )
     else:
         gap = (
             "Some method-shaped files were found but the project structure "
             "is incomplete."
         )
-        next_step = "Run `/adopt` — it routes to the right case across new-project, migration, and refresh."
+        next_step = "Run `/setup` — it routes to the right case across new-project, migration, and refresh."
 
     return (
         "## No-code-method project state\n\n"
@@ -753,8 +751,8 @@ def main() -> int:
 
     # V29 adoption check fires before tier detection. An unadopted-with-work
     # folder short-circuits with the advisory; the existing tier logic only
-    # runs on adopted folders, opted-out folders, and genuinely-empty
-    # unadopted folders. PreToolUse enforces what this advises.
+    # runs on adopted folders and genuinely-empty unadopted folders.
+    # PreToolUse enforces what this advises.
     if is_unadopted_with_work(project_root):
         return emit_unadopted_advisory(project_root)
 
@@ -762,12 +760,9 @@ def main() -> int:
 
     if tier == 1:
         # Non-method folder. The plugin is invisible: no output, no rules.
-        # This is a deliberate behaviour change from V18, which emitted the
-        # universal rules in every Claude Code session regardless of project
-        # type. V21 narrows that to method-aware projects only. V29 splits
-        # this tier: unadopted-with-work folders short-circuit above with
-        # the advisory; what reaches here is opted-out folders or genuinely-
-        # empty folders. Both stay silent.
+        # V29 splits this tier: unadopted-with-work folders short-circuit
+        # above with the advisory; what reaches here is genuinely-empty
+        # folders. They stay silent.
         return 0
 
     # Tier 2 and tier 3 both get the universal rules. The tier-specific

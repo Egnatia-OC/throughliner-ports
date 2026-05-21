@@ -56,14 +56,12 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       unadopted. Denies Edit/Write/MultiEdit on non-scaffold-path files
       and Task invocations of method subagents (planning, before-build,
       batch-executor, after-build) when the folder lacks a method footer
-      in CLAUDE.md AND has substantial work AND no `.no-code-method-skip`
-      opt-out marker. Allows Task → no-code-method:adopt always (that's
-      the resolution mechanism). Allows Edit/Write/MultiEdit on scaffold
-      paths (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md, the
-      opt-out marker file) so /adopt's scaffolding works. The full V29
-      architecture context (why this gate exists in PreToolUse and not at
-      SessionStart) is in universal-behaviour.md → *Routing main-Claude's
-      openers* (the *Detect unadopted folder* paragraph).
+      in CLAUDE.md AND has substantial work. Allows Task →
+      no-code-method:setup always (that's the resolution mechanism).
+      Allows Edit/Write/MultiEdit on scaffold paths (UX.md, BACKLOG.md,
+      BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md) so /setup's
+      scaffolding works. Per-project opt-out is handled by Claude Code's
+      built-in plugin disable (/plugin → Installed → toggle off).
 
   (4) Test-confirmation gate (V27) — Task tool with subagent_type
       `no-code-method:batch-executor`. When TEST-LOG.md has rows with
@@ -133,7 +131,6 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     run_parser,
     get_unconfirmed_previous_session_rows,
     is_unadopted_with_work,
-    OPT_OUT_MARKER_NAME,
 )
 
 # Writing tools whose calls this hook inspects via checks (1)-(3). Anything
@@ -144,10 +141,10 @@ WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
 # (V27 test-confirmation gate). Other Task invocations pass through.
 BATCH_EXECUTOR_SUBAGENT_TYPE = "no-code-method:batch-executor"
 
-# V29: Task invocations targeting /adopt are always allowed even when the
+# V29: Task invocations targeting /setup are always allowed even when the
 # folder is unadopted — that's the command users run to RESOLVE the
 # unadopted state, so blocking it would be a deadlock.
-ADOPT_SUBAGENT_TYPE = "no-code-method:adopt"
+SETUP_SUBAGENT_TYPE = "no-code-method:setup"
 
 # V29: method subagent prefix. Other Task calls (e.g. general-purpose
 # agents the user invokes for their own purposes) fall through the V29
@@ -155,8 +152,8 @@ ADOPT_SUBAGENT_TYPE = "no-code-method:adopt"
 # only method ones that would misbehave against an unadopted folder.
 METHOD_SUBAGENT_PREFIX = "no-code-method:"
 
-# V29: file names /adopt scaffolds at project root. When folder is
-# unadopted, Edit/Write/MultiEdit on these passes the V29 gate so /adopt's
+# V29: file names /setup scaffolds at project root. When folder is
+# unadopted, Edit/Write/MultiEdit on these passes the V29 gate so /setup's
 # scaffold writes work. (Other writes are blocked.) This is the V29
 # discrimination mechanism — narrower than a runtime flag-file but
 # narrow enough that main Claude's "ignore the advisory and edit code"
@@ -168,7 +165,6 @@ SCAFFOLD_NAMES = frozenset({
     "MANIFEST.md",
     "TEST-LOG.md",
     "CLAUDE.md",
-    OPT_OUT_MARKER_NAME,
 })
 
 # Path-block keys treated as writable. Everything else in the path block —
@@ -848,8 +844,8 @@ def check_read_before_edit(project_root, target_path, hook_input):
 
 def is_scaffold_path(target_path, project_root):
     """V29: True if target_path is a direct child of project_root with one
-    of the SCAFFOLD_NAMES. /adopt's scaffolding writes land here; the
-    adoption gate exempts these paths so /adopt can do its work without
+    of the SCAFFOLD_NAMES. /setup's scaffolding writes land here; the
+    adoption gate exempts these paths so /setup can do its work without
     needing a runtime flag-file mechanism.
 
     Direct-child only — a deeper-nested file with one of the scaffold
@@ -865,7 +861,7 @@ def is_scaffold_path(target_path, project_root):
 
 def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
     """V29: deny-reason for Edit/Write/MultiEdit on a non-scaffold path
-    in an unadopted folder. Names the path, points at /adopt, and
+    in an unadopted folder. Names the path, points at /setup, and
     documents the opt-out path so the user has a clear exit."""
     return (
         "[No-code method] BLOCKED: this folder is unadopted (no `*No-code "
@@ -874,20 +870,16 @@ def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
         f"risk if you proceed. The Edit/Write/MultiEdit target "
         f"`{target_path}` is outside the scaffolding paths the plugin "
         "manages.\n\n"
-        "What to do: run `/adopt` first. The five-case dialogue routes "
-        "you to the right setup: empty folder → new project; existing "
-        "code with no docs → scaffold alongside; existing code with "
-        "foreign `CLAUDE.md` → migrate / overwrite / leave; already "
-        "adopted; opted out. To opt out instead, run `/adopt` and pick "
-        "the cancel or leave-alone option — both write "
-        "`.no-code-method-skip`, which stops this gate permanently."
+        "What to do: run `/setup` first. Or, if you don't want the "
+        "method in this folder, disable the plugin for this project: "
+        "type `/plugin`, go to the Installed tab, and toggle it off."
         + _mode_suffix(permission_mode)
     )
 
 
 def make_v29_task_deny_reason(subagent_type, permission_mode="") -> str:
     """V29: deny-reason for Task invocations of a method subagent (other
-    than /adopt itself) in an unadopted folder. The method subagents all
+    than /setup itself) in an unadopted folder. The method subagents all
     assume a method-managed project; against an unadopted folder they
     would fail or produce garbage."""
     return (
@@ -896,9 +888,10 @@ def make_v29_task_deny_reason(subagent_type, permission_mode="") -> str:
         "planning, before-build, batch-executor, and after-build "
         "subagents all assume a method-managed project; they would fail "
         "or produce garbage against an unadopted folder.\n\n"
-        "What to do: run `/adopt` first. After adoption completes, this "
-        "subagent will work normally. To opt out instead, run `/adopt` "
-        "and pick the cancel or leave-alone option."
+        "What to do: run `/setup` first. After adoption completes, this "
+        "subagent will work normally. Or, if you don't want the method "
+        "in this folder, disable the plugin via `/plugin` → Installed → "
+        "toggle off."
         + _mode_suffix(permission_mode)
     )
 
@@ -910,8 +903,8 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
 
     Returns a deny-reason string when the call should be denied, None
     otherwise. None means either (a) the gate doesn't apply (folder is
-    adopted, opted out, or genuinely empty), or (b) the gate applies
-    but this specific call is exempt (Task → /adopt, Edit/Write on a
+    adopted or genuinely empty), or (b) the gate applies
+    but this specific call is exempt (Task → /setup, Edit/Write on a
     scaffold path, non-method Task call).
 
     Architecture context (Path D, V29): SessionStart emits an advisory
@@ -924,7 +917,7 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
 
     if tool_name == "Task":
         subagent_type = tool_input.get("subagent_type")
-        if subagent_type == ADOPT_SUBAGENT_TYPE:
+        if subagent_type == SETUP_SUBAGENT_TYPE:
             return None
         if isinstance(subagent_type, str) and subagent_type.startswith(
             METHOD_SUBAGENT_PREFIX
@@ -1065,9 +1058,8 @@ def main() -> int:
         return emit_allow()
 
     # V29 check (5): adoption gate. Fires on Edit/Write/MultiEdit and Task
-    # calls when folder is unadopted-with-work and not opted out. Returns
-    # None for adopted folders, opted-out folders, and genuinely-empty
-    # folders — downstream checks then run on their normal terms.
+    # calls when folder is unadopted-with-work. Returns None for adopted
+    # and genuinely-empty folders — downstream checks then run normally.
     v29_deny_reason = check_v29_adoption_gate(project_root, tool_name, tool_input,
                                                permission_mode)
     if v29_deny_reason:
