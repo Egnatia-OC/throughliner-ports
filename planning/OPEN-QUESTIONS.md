@@ -130,7 +130,7 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 
 **The question.** Should `TEST-LOG.md` gain an actual pruning mechanism (deletion-based) to bound the file's growth? Current rule (`DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*): rows are never deleted, only flipped to `Superseded` when a component is substantially changed or removed. The file grows monotonically over a project's life.
 
-**Why it matters.** Surfaced V30 Crash course review, 2026-05-20. Drift check 4 (retest after change — `NO-CODE-METHOD.md` → *During planning*) walks every Pass-confirmed row to judge whether its component has been touched. As a project ages, this scales linearly with batches shipped. Real context cost. Counter-argument: audit trail value — "passed at the time" is worth keeping; deletion risks losing the trail.
+**Why it matters.** Surfaced V30 Crash course review, 2026-05-20. Drift check 5 (retest after change — `plugin/agents/planning.md` → *Drift checks — always run*) walks every Pass-confirmed row to judge whether its component has been touched. As a project ages, this scales linearly with batches shipped. Real context cost. Counter-argument: audit trail value — "passed at the time" is worth keeping; deletion risks losing the trail.
 
 **Working notes.** Three approaches worth weighing.
 
@@ -231,25 +231,3 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 6. *Where the idea earns its keep eventually.* If the method goes public (course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX are designed for that scale. Single-user, in-development is the wrong scale.
 
 **Next step.** Park. Revisit after V35 ships and the method has settled into stable use across a few real project cycles. The question then becomes concrete: list 2–3 design decisions that would have benefited from logged evidence — if non-empty, define a minimal log against them; if empty, drop and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward public release before V35 wraps.
-
----
-
-## Method response to direct-edit users (developers)
-
-**The question.** How should the method respond to users who edit code directly — developers who already write code and want the method's planning discipline without ceding all technical work to Claude?
-
-**Why it matters.** Raised in Vibecord — "developers will try to use it." The method assumes Claude does the technical work and the user reviews recaps. A user editing code directly breaks several assumptions: MANIFEST.md drifts because user edits aren't recorded; `Serves UX.md:` discipline gets bypassed; drift checks catch *some* of it (MANIFEST ↔ codebase) but not all. Without addressing this, developers using the method will silently corrupt project state and lose the benefits.
-
-**Working notes — three shapes the response could take.**
-
-- *Tighten drift detection so manual edits get caught.* V21's SessionStart (or a PostToolUse) compares working tree against last-known MANIFEST.md state and surfaces manual changes for triage. Smallest change; catches edits after the fact, doesn't prevent them mid-flow.
-- *Add a "developer mode" entry point.* Plugin scaffolds a different doc set — keeps `UX.md` / `BACKLOG.md` discipline, drops the assumption Claude does all the code. Requires deciding what developer-mode equivalents of MANIFEST.md and the build-recap flow look like.
-- *Document that the method explicitly doesn't serve direct-edit users.* "Who this is for" section in `NO-CODE-METHOD.md` so developers self-select out. Cheapest; loses an audience.
-
-**Next step.** Think during V21 (SessionStart hook extension). If drift detection covers realistic failure modes, fold there and close. If not, promote to its own session in V22–V26.
-
-**V21 planning, 2026-05-14:** V21 does *not* absorb this. V21 adds foundational reads + template-state + resume + routing — none catch manual code edits. Natural home for the tighten-drift-detection shape is V22 (planning subagent + drift logic inlined), or its own session if the other shapes win. Parked; revisit V22 planning earliest, or sooner if public release approaches.
-
-**V22, 2026-05-14:** shape #1 **partially folded into V22's planning subagent.** Q2 decision: "always run drift checks every planning session; only skip case is 'nothing has been built yet.'" Drift check 2 (MANIFEST ↔ codebase) fires every planning session regardless of whether Claude shipped a batch — catches file-level changes a direct-edit user makes (new files, renames, deletes on tracked components). What it does **not** catch: in-file content changes to existing tracked files (a developer modifying a function inside a still-tracked `.kt` file leaves no MANIFEST-level signal). That gap is the remaining concern. Shapes #2 and #3 still out of scope; would need their own session.
-
-**Promoted to V42 (renumbered from V40 → V41 → V42 across v40/v41 sessions; 2026-05-21).** Pre-session planning decided: git-diff detection + per-change confirmation protocol (user confirms each flagged change; Claude checks for build-batch conflicts; accepts + doc catch-up if clean). Shapes #2 (developer-mode entry point) and #3 (explicit non-audience) deferred until a real developer reports friction. V42 scope file has full decisions.

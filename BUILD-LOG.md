@@ -6,6 +6,44 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v42 — 2026-05-21 — Git-diff drift detection + direct-edit confirmation protocol
+
+**What shipped.** New **drift check 1 — direct-edit detection** in the planning subagent (`plugin/agents/planning.md`). At planning-session start, Claude runs `git diff <last-tag>...HEAD` plus working-tree diff (or `git diff HEAD` if the project is untagged) to surface files touched outside the build cycle. Files in the previous batch's `Files:` sub-section and the method's writable surface (`MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, `BACKLOG.md`, `CLAUDE.md`) pass silently. Everything else triggers a per-file confirmation walk — Claude shows the path + change summary + any matching MANIFEST entry, asks *"Was this you (direct edit)? Yes / No / not sure"*, and routes on the answer:
+
+- **Yes** → check upcoming `BACKLOG.md` batches for `Files:` conflicts; if none, accept (MANIFEST entry stands as-is, or propose an addition for the next build); if the edit implies a UX.md update, queue a standard `[FOLD-IN PENDING]` via the preview-then-fold-in convention.
+- **No** / **Not sure** → flag as unexpected, pause planning until the source is identified.
+
+Existing checks renumbered 2–5 (UX↔build, MANIFEST↔code, MANIFEST↔UX loose, retest-after-change). Per-file walk, no bulk-confirm — pattern mirrors the per-row TEST-LOG read-back for the same "never infer" reason. Resolves the remaining shapes from V22's partial fold-in of *Method response to direct-edit users*; shapes #2 (developer-mode entry point) and #3 (explicit non-audience) deferred until a real developer reports friction. **Doc-code parity:** VOCABULARY's *Drift check* definition updated (four → five); DOC-STRUCTURE's TEST-LOG pruning rule reference renumbered (check 4 → check 5); after-build.md and VOCABULARY's *Frame-correction sweep* references renumbered (check 1 → check 2); Crash course's drift-checks section expanded to five with a new bullet for direct-edit detection; INVENTORY's planning-subagent entry annotated. Method version V39 → V40; plugin 0.39.0 → 0.40.0; `PLUGIN_METHOD_VERSION` → 40; all plugin-side footers bumped. Repo-root docs-only set stays frozen at V39 (v40 shelving). OPEN-QUESTIONS entry *Method response to direct-edit users* removed. No smoke test yet — see *Carried forward*.
+
+**Decisions taken and why.**
+
+- **Numbered as drift check 1, not check 5.** The V42 scope file leaned "fifth check that runs first." Renumbered instead so order-of-execution and order-of-listing match — cleaner mental model, smaller cognitive load on the future-Claude reading the procedure mid-session. Cost: small parity sweep across VOCABULARY, DOC-STRUCTURE, after-build.md, Crash course, INVENTORY for the "drift check N" references. Worth it.
+- **Per-file walk, no threshold mechanism.** Scope file raised "threshold for noisy diffs" as an open question. Skipped: shipped per-file always, on the same logic as the TEST-LOG per-row read-back — bulk confirmation is the failure mode the protocol exists to prevent. If real use makes the per-file walk painful on large diffs, a deferral mechanism ("walk the remainder next session") is the natural follow-up. The user can already pause mid-walk; that may be enough.
+- **No-tag fallback: working-tree-only.** Method recommends but doesn't require tagging. Without a tag we diff working tree vs. `HEAD` — catches uncommitted direct edits (the most common case) and surfaces a one-line "consider tagging" note. Committed-but-out-of-band edits in untagged projects are out of scope for V42. Acceptable: the no-coder method assumes tagging, and the fallback at least catches the uncommitted case without erroring out.
+- **Lightweight UX fold-in: standard `[FOLD-IN PENDING]` block.** No reason to invent a thinner shape; the existing mechanism already covers small edits cleanly.
+- **No new Required behaviour added.** Considered a *Never auto-attribute manual edits* analog to *Never infer completion*. Decided against — the new logic is concrete procedure (where to look, what to ask) rather than abstract principle, and lives cleanly in `planning.md`. If real use shows prompt-level reinforcement matters, V42 follow-up can promote it.
+
+**Pivots and surprises.**
+
+- None mid-session. Decisions pre-made in scope file held up.
+
+**Carried forward.**
+
+- **Smoke test pending.** Direct-edit detection is the kind of change that wants a real planning-session walkthrough against a fixture with manual edits to validate. Alex to run via `claude --plugin-dir` against a scratch fixture before the session is considered closed. See *Smoke-test instructions* at the bottom of this entry.
+- **`plugin/hooks/pre_tool_use.py` deny-message citations of `NO-CODE-METHOD.md`** — still unfixed from v40's carried-forward note (out of scope here).
+
+**Smoke-test instructions (for Alex, post-session).**
+
+1. Create a fresh scratch folder (e.g. `~/v42-scratch`) and run `git init` in it.
+2. Run `claude --plugin-dir <path-to-this-repo>/plugin` from inside it. Run `/adopt` to scaffold the spine docs (case 1, empty folder), seed a first build batch, ship it (`/before-build` then `/build`), and tag (`git tag v1`).
+3. `/clear`. Outside Claude Code, manually edit one of the files the batch touched — change a function body inside a file in the previous batch's `Files:` list, or add a new file unrelated to any batch.
+4. Open a new Claude Code session with `--plugin-dir` and paste test notes from the previous build (or just say "let's plan").
+5. **Expected:** planning subagent runs drift check 1, surfaces the manually-edited file, walks the confirmation prompt (*Was this you? Yes / No / not sure*). On *Yes*, it accepts and (depending on the edit) proposes a MANIFEST update or queues a `[FOLD-IN PENDING]`. On *No*, it pauses.
+
+If anything doesn't fire as expected, append a TEST-LOG row with `Fail` status and bring it to the next planning session.
+
+---
+
 ## v41 — 2026-05-21 — Rescope OPEN-QUESTIONS into V45–V47
 
 **What shipped.** Dev-internal. Three major OPEN-QUESTIONS entries (plus one V39-surfaced entry) scoped into future build sessions with full scope files. Pattern follows V31 (rescoping session). No plugin code, no method-version bump. Existing V41–V43 renumbered to V42–V44 (following V31 precedent — scoping session takes the slot, existing scope files shift up).

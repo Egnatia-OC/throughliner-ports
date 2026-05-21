@@ -105,7 +105,7 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG.md."
 
-   The sweep is not exhaustive — it catches cases where BACKLOG items would mislead the next session if read without knowing the build changed the frame. UX.md drift is already caught by drift check 1 (UX.md ↔ what's built) in the next planning session; don't duplicate that here.
+   The sweep is not exhaustive — it catches cases where BACKLOG items would mislead the next session if read without knowing the build changed the frame. UX.md drift is already caught by drift check 2 (UX.md ↔ what's built) in the next planning session; don't duplicate that here.
 
 7. **End-of-recap flags** (per *After every build* step 3, surfaced via *Where each kind of flag goes*):
    - Out-of-scope improvements you noticed but did not act on.
@@ -133,4 +133,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 39.*
+*No-code method — Version 40.*

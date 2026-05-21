@@ -37,7 +37,7 @@ After loading project state, perform these steps in order. Each maps to a sub-se
 
 1. **[BRIEF, SEQUENCE] Close the previous build's test session.** Per-row read-back of any pending TEST-LOG rows. (See *Close the previous build's test session* below.)
 2. **[SILENT] Remove completed build batches from BACKLOG.md.** Any Build batch shipped since the last planning session — recognise by every `Files:` entry being `- [x]` ticked. Strip the batch entirely; don't leave a stub.
-3. **[BRIEF] Run the four drift checks.** UX ↔ build, MANIFEST ↔ codebase, MANIFEST ↔ UX (loose), TEST-LOG ↔ what's been touched since each row was recorded. (See *Drift checks — always run* below.)
+3. **[BRIEF, SEQUENCE] Run the five drift checks.** Direct-edit detection (git-diff against last build), UX ↔ build, MANIFEST ↔ codebase, MANIFEST ↔ UX (loose), TEST-LOG ↔ what's been touched since each row was recorded. The first runs the per-file confirmation protocol — sequence-shaped because each flagged file is walked individually. The remaining four are read-only comparison passes. (See *Drift checks — always run* below.)
 4. **[BRIEF] Sort test notes (if present)** into two piles before discussing: bugs against existing `UX.md` entries (Suggestions candidates) and brand-new feature ideas (Discoveries candidates). Skipped when `primary_intent` isn't `test notes` or `mixed`. (See *The three flows* below.)
 5. **[DISCUSS] Discuss changes with the user.** Engage on the substance — propose better options where you see them; push back rather than agree by default. The universal-behaviour rules apply.
 6. **[SILENT] Dedupe and reclassify.** Every candidate change discussed this session (test notes, drift findings, anything the user raised in chat) goes through one filter: already covered by an existing batch (skip), genuine new addition fitting `UX.md` (slot into a build batch), or out of scope (flag for Discoveries).
@@ -96,9 +96,49 @@ Even when `primary_intent` is e.g. `test notes`, the opener may carry other item
 
 ## Drift checks — always run
 
-Run the four drift checks listed in *During planning* on every invocation, in four separate passes. The only skip case is "nothing has been built yet" (empty `MANIFEST.md` and `TEST-LOG.md`, no implementation to compare against). Do not skip on the basis of "nothing has been built since the last planning session" — there is no reliable signal for that, and skipping would miss manual code edits made outside Claude's awareness.
+Run the five drift checks on every invocation, in five separate passes:
 
-Run the checks as four separate passes (`UX.md` ↔ build, `MANIFEST.md` ↔ codebase, `MANIFEST.md` ↔ `UX.md` loose, `TEST-LOG.md` ↔ what's been touched since each row was recorded). The fourth check (Rule 5 — retest after change, V26 addition) is a per-row code-touch judgement with a brief reasoning trail per flagged row; the first three are pairwise comparisons. Do not bundle them — each operates at a different abstraction level and bundling produces noise.
+1. **Direct-edit detection (V42 addition).** Git-diff against the last build's state — catches manual edits to files outside the build cycle. Per-file confirmation protocol; output feeds checks 3 and 5. (See *Drift check 1 — direct-edit detection* below.)
+2. **`UX.md` ↔ what's actually built.** Pairwise: every `UX.md` Functionalities entry corresponds to something experienceable; every user-observable behaviour the build supports has a `UX.md` entry.
+3. **`MANIFEST.md` ↔ the codebase.** Pairwise: every named element in `MANIFEST.md` still exists in code under its named path; every new file with a discrete purpose has a `MANIFEST.md` entry.
+4. **`MANIFEST.md` ↔ `UX.md` (loose).** Pairwise: every `MANIFEST.md` entry plausibly traces to a `UX.md` entry. Database config, logging middleware, and similar plumbing are exempt.
+5. **`TEST-LOG.md` ↔ what's been touched since each row was recorded (Rule 5 — retest after change, V26 addition).** Per-row code-touch judgement with a brief reasoning trail per flagged row. Rows whose component has been substantially changed get a status flip via append (per `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*).
+
+The only skip case is "nothing has been built yet" (empty `MANIFEST.md` and `TEST-LOG.md`, no implementation to compare against). Do not skip on the basis of "nothing has been built since the last planning session" — there is no reliable signal for that, and skipping would miss manual code edits made outside Claude's awareness. (Check 1 is the explicit catcher; checks 3 and 5 backstop it at the doc-level and component-level.)
+
+Run the checks as five separate passes. Each operates at a different abstraction level — direct-edit detection is file-level temporal, `UX.md` ↔ build is feature-to-feature, `MANIFEST.md` ↔ codebase is name-to-name, `MANIFEST.md` ↔ `UX.md` is loose user-facing-purpose, retest-after-change is per-row code-touch with reasoning trail. Do not bundle them — bundling produces noise.
+
+## Drift check 1 — direct-edit detection
+
+Catches in-file content changes the previous drift checks miss — a manual edit to a function inside a still-tracked file leaves no MANIFEST-level signal, but it can silently corrupt project state (the build the user runs no longer matches what `MANIFEST.md` says was last built; future `Serves` lines drift; tested behaviour may have changed without re-test).
+
+**Diff target.**
+
+1. If the project has tags, diff against the most recent tag: `git diff <last-tag>...HEAD` (committed changes since last build) plus `git diff` (uncommitted working-tree changes).
+2. If the project has no tags, diff working-tree against `HEAD` only (`git diff HEAD`). Note in chat: "no tags in this repo; only catching uncommitted edits. Consider tagging after each build to widen the window."
+3. If `git` is unavailable or the project isn't a repo, skip this check with a one-line note in chat. The remaining four checks still run.
+
+**What counts as expected (no confirmation needed).** Files in either of these sets are silently accepted:
+
+- Files listed in the most recent build batch's `Files:` sub-section (the batch covered them, ticked or not).
+- The method's writable surface: `MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, `BACKLOG.md`, `CLAUDE.md`. (Locked docs that received a footer-only edit during `/adopt` refresh also fall here — see `universal-behaviour.md` → *Editing surfaces* → footer carve-out.)
+
+Every other changed file is a candidate for the confirmation protocol below.
+
+**Confirmation protocol — per file.** Walk flagged files one at a time. For each:
+
+1. Surface the path, a one-line summary of what changed (lines added/removed, or first few diff lines if short), and any matching `MANIFEST.md` entry (look up by path — V39 paths field is the anchor).
+2. Ask: *"Was this you (direct edit)? Yes / No / not sure."*
+3. Wait for the user's answer for *this specific file*.
+4. Route on the answer:
+   - **Yes (the user edited it).** Check whether the file appears in any upcoming build batch's `Files:` sub-section in `BACKLOG.md`. If yes, flag the conflict — surface the batch heading and the file path together, propose a resolution (drop the file from the upcoming batch if the manual edit subsumed the planned change, or re-plan if the manual edit and the planned change disagree). If no conflict, accept: if the file maps to a `MANIFEST.md` entry, the entry stays (the path field is unchanged); if it doesn't, propose a `MANIFEST.md` addition in chat for the next build to pick up. If the edit implies a `UX.md` update (new user-observable behaviour, removed feature, changed rationale), use the standard preview-then-fold-in convention (`universal-behaviour.md` → *Editing surfaces*) to queue a `[FOLD-IN PENDING]` block.
+   - **No (the user didn't make this edit).** Flag as unexpected. Surface the diff in chat and pause. Don't continue the planning flow until the source of the change is identified. Possible causes: an earlier Claude session edited without recording, an external tool ran, the user forgot. Do not silently accept.
+   - **Not sure.** Treat as *No* — flag and pause.
+5. Move to the next flagged file.
+
+**Per-file walk, not summary.** Walk one file at a time even if the diff is large. If many files are flagged and the user signals fatigue, pause and ask whether they want to defer the remainder to the next planning session (recorded as a continuation note in chat) — do not bulk-confirm. The pattern mirrors *Close the previous build's test session* for the same reason: a bulk "yes all me" against twelve files silently accepts edits the user didn't actually make.
+
+**Integration with check 5.** If a confirmed direct edit touches a file mapped to a `MANIFEST.md` entry that has Pass-confirmed `TEST-LOG.md` rows, surface in chat that check 5 will likely flag those rows for retest — the user can pre-emptively expect the flip. Don't merge the checks; check 5's "since this row's Date" window is wider than "since last build."
 
 ## BACKLOG.md editing — do, then describe
 
@@ -160,4 +200,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 39.*
+*No-code method — Version 40.*

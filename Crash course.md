@@ -111,8 +111,9 @@ The due-date item runs the same pipeline. It might land at "yes, with relative s
 
 ### Drift checks at planning sessions
 
-By the third or fourth build, drift checks run at the start of every planning session. Four checks — three pairwise comparisons plus one code-touch judgement:
+By the third or fourth build, drift checks run at the start of every planning session. Five checks — one file-level temporal check, three pairwise comparisons, and one per-row code-touch judgement:
 
+- **Direct-edit detection (git-diff against last build).** Catches manual edits to files outside the build cycle — a function modified by hand inside a tracked file, a new file added without going through a build batch. Claude diffs the working tree against the most recent tag (or against `HEAD` if the project doesn't tag) and walks each flagged file with the no-coder: *"Was this you?"* per file. Confirmed user edits get accepted, checked against upcoming build batches for conflicts, and queued as `[FOLD-IN PENDING]` blocks if they imply a UX.md update. Unconfirmed changes pause the planning session for investigation. Files in the last batch's `Files:` list and the method's writable docs (MANIFEST/BACKLOG/TEST-LOG/BUILD-LOG/CLAUDE) pass through silently — only unexpected edits surface.
 - **UX.md ↔ what's actually built.** UX.md describes a "drag to reorder" gesture, but the build only supports tap-and-arrows — flag the entry as describing a non-existent feature. Or the build has a swipe-to-archive behaviour no UX.md entry covers — that is a Discovery.
 - **MANIFEST.md ↔ the codebase.** MANIFEST.md still says `TaskCard`, but the last build renamed it `TaskTile` — update the entry. A new service was added with no MANIFEST.md entry — add one.
 - **MANIFEST.md ↔ UX.md (loose check).** MANIFEST.md lists a `WeeklyDigestEmailer`, but no UX.md entry mentions email digests — either there is a hidden feature (Discovery) or it is dead code (delete). Database config and logging middleware are exempt; they do not trace to user-facing intent by design.
@@ -207,7 +208,7 @@ The method's rules are not arbitrary; each one defends something. Some of the de
 
 **Why batch scope is locked once agreed.** Mid-build scope additions cost three things the method protects. Predictability of session length — a batch with a fixed file list has a knowable end; one that absorbs "while we're here" additions does not. Clean test coverage — one batch is one set of changes is one set of tests; mid-build mixing makes regressions harder to trace. The planning-gate filter — mid-build, things feel in-scope that would not survive a planning conversation. The rule defers scope decisions back to planning rather than shortcutting them. The two named carve-outs (prerequisite and re-batching) are escape valves the discipline anticipates, not invitations to bend the rule.
 
-**Why drift checks operate at four different abstraction levels.** The four checks — UX.md ↔ build, MANIFEST.md ↔ code, MANIFEST.md ↔ UX.md, TEST-LOG.md ↔ what has been touched — operate at different abstraction levels (feature-to-feature, name-to-name, loose user-facing-purpose, per-row code-touch with reasoning trail). Doing all four at once mixes the levels and produces noise. Running them as four separate passes lets each catch the gap it is designed for.
+**Why drift checks operate at five different abstraction levels.** The five checks — direct-edit detection, UX.md ↔ build, MANIFEST.md ↔ code, MANIFEST.md ↔ UX.md, TEST-LOG.md ↔ what has been touched — operate at different abstraction levels (file-level temporal, feature-to-feature, name-to-name, loose user-facing-purpose, per-row code-touch with reasoning trail). Doing them at once mixes the levels and produces noise. Running them as five separate passes lets each catch the gap it is designed for; in particular, direct-edit detection runs first because its output (a list of files touched since the last build) feeds the MANIFEST ↔ codebase and TEST-LOG ↔ touched-since-recorded checks downstream.
 
 **Why source-of-truth docs are locked from Claude.** UX.md and additional source-of-truth docs are written slowly, in planning sessions, with the time those decisions deserve. Build sessions are short and build-focused — the wrong environment for stable docs to drift via small "clarifying" tidy-ups. Locking those docs from Claude means design changes can only happen where they get proper deliberation.
 
@@ -257,4 +258,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 39.*
+*No-code method — Version 40.*

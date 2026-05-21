@@ -113,4 +113,4 @@ The rules above derive from:
 
 ---
 
-*No-code method — Version 39.*
+*No-code method — Version 40.*

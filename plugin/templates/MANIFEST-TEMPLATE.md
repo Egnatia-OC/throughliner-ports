@@ -21,4 +21,4 @@ Full spec: `DOC-STRUCTURE.md` → MANIFEST.md structure.
 -->
 
 ---
-*No-code method — Version 39.*
+*No-code method — Version 40.*

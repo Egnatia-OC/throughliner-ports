@@ -94,7 +94,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days.
 
-- **Substantial change → status flips by appending a new row.** Drift check 4 (`planning.md` → *Drift checks — always run*, fourth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
+- **Substantial change → status flips by appending a new row.** Drift check 5 (`planning.md` → *Drift checks — always run*, fifth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
 - **Component removed → row marked Superseded** in Status, with User Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
 
 **Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies, then the empty table. The comment stays at the top as a permanent format reminder; rows append below it at the top of the table body, per *Ordering* above. No placeholder row — same convention as `MANIFEST.md`.
@@ -174,4 +174,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 39.*
+*No-code method — Version 40.*
