@@ -13,13 +13,13 @@ Shaped for non-coders who already have a clear idea what their app should be. Ex
 
 ## Install, and a first session
 
-The plugin is in development. The install path today is via local clone:
+Install via marketplace (persists across sessions):
 
 1. Clone the repo: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
-2. Start a Claude Code session against the project folder you want to work in, using `claude --plugin-dir <path-to-clone>/plugin`.
-3. The plugin's hooks fire at session start. If the folder is empty, or contains existing work without the method's docs, Claude Code surfaces an advisory pointing at the `/adopt` command (see *The safety net* below for what `/adopt` does in each case).
+2. In Claude Code, run: `/plugin marketplace add <path-to-clone>` then `/plugin install no-code-method@sovereign-implementer`.
+3. Open a Claude Code session in the project folder you want to work in. The plugin's hooks fire at session start. If the folder is empty, or contains existing work without the method's docs, Claude Code surfaces an advisory pointing at the `/adopt` command (see *The safety net* below for what `/adopt` does in each case).
 
-Marketplace publication is planned.
+For development or one-off use, `claude --plugin-dir <path-to-clone>/plugin` loads the plugin for a single session without installing.
 
 A first session in Sovereign Implementer is distinct from a normal build sequence session:
 
@@ -158,7 +158,7 @@ The plugin distributes the method's rules across Claude Code primitives — hook
 - **Subagents** handle the phase work in their own Claude Code contexts: planning, before-build, batch-executor, after-build, and adopt. Each runs its own conversation, then returns a recap that main Claude relays to the no-coder. The context isolation keeps each phase's prompts focused.
 - **Slash commands** (`/adopt`, `/before-build`, `/build`) are the user-facing entry points. Each invokes the matching subagent.
 - **Templates** — the starter shapes for the six spine docs that `/adopt` scaffolds into a new project. These get copied into the project root with method-version footers and start mostly empty.
-- **Bundled reference docs** — `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` live inside the plugin at `plugin/docs/`. The subagents read them at session start via `${CLAUDE_PLUGIN_ROOT}/docs/...`. Non-coders do not normally open these directly; the *When you need more* section at the end of this doc says when reaching for them is worthwhile.
+- **Bundled reference docs** — `DOC-STRUCTURE.md` and `VOCABULARY.md` live inside the plugin at `plugin/docs/`. The subagents read them when needed via `${CLAUDE_PLUGIN_ROOT}/docs/...`. Non-coders do not normally open these directly; the *When you need more* section at the end of this doc says when reaching for them is worthwhile.
 
 The split between hooks (deterministic enforcement) and subagents (probabilistic behaviour) is deliberate: hooks bite when correctness matters and a prompt-based instruction might be ignored; subagents handle the work that needs judgment.
 
@@ -251,4 +251,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 36.*
+*No-code method — Version 37.*

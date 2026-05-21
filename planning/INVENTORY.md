@@ -86,6 +86,7 @@ Two patterns exist in the current plugin:
 - `plugin/docs/DOC-STRUCTURE.md` — structural-spec reference at canonical bundled path (V30 relocation from repo root; mirrored at repo root in V32 as part of the docs-only set). Read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration).
 - `plugin/docs/VOCABULARY.md` — method-term definitions (planning batch, build batch, test session, etc.); new in V32 as the canonical plugin-side home for the vocabulary that used to live in `NO-CODE-METHOD.md` → *Vocabulary*. Mirrored at repo root for the docs-only set.
 - `plugin/hooks/universal-behaviour.md` — plugin-side canonical home for the universal behavioural rules (V18), prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule (V32 expansion). Injected into every Claude Code session via SessionStart `additionalContext`.
+- `.claude-plugin/marketplace.json` — **repo root, not inside `plugin/`.** Marketplace registration manifest. Names the marketplace (`sovereign-implementer`), owner (`FlintCraftTech`), and a single plugin entry pointing at `./plugin` via relative-path source. Used by `/plugin marketplace add` + `/plugin install` for both local and public GitHub distribution. Validated by `claude plugin validate .`. Distinct from `plugin/.claude-plugin/plugin.json` (the plugin-level identity manifest). **Shipped V37.**
 
 ## Design decisions taken in V17
 
@@ -118,4 +119,4 @@ Two patterns exist in the current plugin:
 - **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 36.*
+*No-code method — Version 37.*

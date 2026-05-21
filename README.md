@@ -2,21 +2,28 @@
 
 A structured workflow for driving Claude Code as a non-coder. Spec-driven discipline, locked conventions, and a pipeline preventing drift between spec and build.
 
+## Install
+
+```bash
+/plugin marketplace add <path-or-URL-to-this-repo>
+/plugin install no-code-method@sovereign-implementer
+```
+
+Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Crash course.md](Crash%20course.md) for the full primer.
+
 ## What's here
 
-The current method is at the repo root: `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, and 6 templates in `templates/`. Start with `Crash course.md`.
+`Crash course.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
 
-`plugin/` — the Claude Code plugin distributing the method's rules via hooks, subagents, skills, and slash commands. Scaffolded V18, populated through V27. At feature-parity with the markdown method (~V26), the markdown method retires.
+`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` — the full method spec (docs-only / no-plugin version). `templates/` — starter shapes for the six spine docs.
 
-`planning/` — migration roadmap. `INVENTORY.md` (current architecture), `PLAN.md` (session-by-session plan), `planning/sessions/Vxx.md` (scopes for upcoming sessions).
+`plugin/` — the Claude Code plugin distributing the method's rules via hooks, subagents, slash commands, and templates.
 
-> Session scope files are **provisional** — renamed, deleted, or merged as the plan evolves; deleted when shipped.
-
-`Archive/` — older method versions (`Version 3/`–`Version 16/`) and `Iteration playbook/`, the named iteration passes used to evolve the method through V16. Both predate this repo's git history.
+`planning/` — dev-internal roadmap and session scopes. `Archive/` — pre-git method versions (V3–V16).
 
 ## Versioning
 
-From V17, sessions are tracked as commits and tags (`v17`, `v18`, …) rather than folders. Each method file's footer (`*No-code method — Version N.*`) marks the snapshot you're reading.
+Sessions are tracked as commits and tags (`v17`, `v18`, …). Each method file's footer (`*No-code method — Version N.*`) marks the snapshot you're reading.
 
 ## Status
 
@@ -24,4 +31,4 @@ Iteratively developed; not yet used to ship an app. The first real build under t
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+PolyForm Noncommercial 1.0.0 — see [LICENSE](LICENSE).

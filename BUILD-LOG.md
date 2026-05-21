@@ -6,6 +6,36 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V37 — 2026-05-21 — Marketplace.json + local install + first globally-installed smoke test
+
+**What shipped.** Plugin packaging for marketplace distribution and local install, plus the first smoke test running the plugin without `--plugin-dir`.
+
+- **`.claude-plugin/marketplace.json`** at repo root. Single-plugin marketplace named `sovereign-implementer`, owner `FlintCraftTech`, relative-path source `./plugin`. Validates clean via `claude plugin validate .`. Same file works for local install (`/plugin marketplace add ./`) and public `git clone` distribution with no restructuring at publication time.
+- **Local install completed.** `claude plugin marketplace add ./` + `claude plugin install no-code-method@sovereign-implementer` — plugin persists across sessions at user scope without `--plugin-dir`.
+- **Smoke test against `~\v37-scratch`** (empty folder, no `--plugin-dir`): SessionStart tier 1 silent (correct), `/hooks` shows both `[Plugin]` PreToolUse hooks, `/adopt` case 1 fires and delivers first prompt, `/reload-plugins` loads full surface (1 plugin · 2 skills · 11 agents · 4 hooks). See TEST-LOG #109–115.
+- **`README.md` updated** — install instructions (marketplace path), license reference corrected from MIT to PolyForm Noncommercial 1.0.0, streamlined structure with pointer to `Crash course.md`.
+- **Method-version bump 36 → 37** across all 26 footer-carrying files, `plugin.json` (`0.36.0` → `0.37.0`), `PLUGIN_METHOD_VERSION` (`36` → `37`). Plugin-side packaging change warrants the bump.
+
+**Decisions taken and why.**
+
+- **Marketplace name `sovereign-implementer`** — matches the repo name, distinct from reserved names, reads cleanly in install command (`/plugin install no-code-method@sovereign-implementer`).
+- **License stays PolyForm Noncommercial 1.0.0** (already present in `LICENSE` from a prior session). README's MIT reference was stale; corrected.
+- **No version in marketplace.json plugin entry.** With `strict: true` (default), `plugin.json` is authoritative for version. Avoids conflict where both declare version and `plugin.json` silently wins. The `PLUGIN_METHOD_VERSION` tripwire in `session_start.py` reads from `plugin.json`; keeping version there keeps the chain intact.
+- **Marketplace `description` added** after first validation surfaced a warning. One-line summary matching the README opener.
+
+**Pivots and surprises.**
+
+- **`/hooks` display difference between `--plugin-dir` and globally-installed.** Previous smoke tests (#035, #091) via `--plugin-dir` showed 3 plugin event types (SessionStart, PreToolUse, Stop). V37's globally-installed test showed only PreToolUse in `/hooks`, though SessionStart and Stop demonstrably fired (tier 1 silence = SessionStart ran; `/adopt` subagent completion = Stop hook domain). The display gap is cosmetic — hook behaviour is identical. Worth noting for the `/adopt` permission-prompt UX OPEN-QUESTIONS entry.
+- **`claude -p "~\v37-scratch"` misfire.** `-p` sends a prompt, doesn't set project directory. Session ran against `sovereign-implementer/` instead of the scratch folder. Corrected by `cd ~\v37-scratch && claude`. Minor — but worth documenting since Alex's command-line experience is limited and future smoke-test instructions should use `cd` + `claude`, not `-p`.
+
+**Carried forward.**
+
+- **V37 scope file deleted** in this commit per the transient-scope rule.
+- **`~\v37-scratch` can be deleted** — served its purpose as a smoke-test fixture.
+- **OPEN-QUESTIONS entries unchanged** — no V37-specific entries added; no existing entries' conditions triggered this session.
+
+---
+
 ## V36 — 2026-05-21 — OPEN-QUESTIONS doc-only bundle: TEST-LOG newest-first, BACKLOG authority, plan-panel resolved
 
 **What shipped.** Three doc-only items scoped by `V36.md`, plus the method-version bump that catches up from V35's no-bump close.

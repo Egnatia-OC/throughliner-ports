@@ -1,0 +1,14 @@
+{
+  "name": "sovereign-implementer",
+  "description": "A structured workflow for driving Claude Code as a non-coder.",
+  "owner": {
+    "name": "FlintCraftTech"
+  },
+  "plugins": [
+    {
+      "name": "no-code-method",
+      "source": "./plugin",
+      "description": "The no-code method as a Claude Code plugin: hooks, subagents, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence."
+    }
+  ]
+}
