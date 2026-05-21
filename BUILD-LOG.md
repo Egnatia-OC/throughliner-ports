@@ -6,6 +6,40 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v44 — 2026-05-22 — Consumer-batch structure ideation + V49/V50 scoping
+
+**What shipped.** Dev-internal ideation session. Two threads ran:
+
+1. **Doc-structure inventory of V-files.** Interrogated which of the six V-file scope sections (`Goal`, `Inputs`, `Outputs`, `Success criteria`, `Open questions for this session`, `Risks / dependencies`) should propagate to consumer-project BACKLOG batches. All five non-`Inputs` sections landed (`Inputs` already coming via V45), with two renames: *Open questions for this session* → *Decisions to make this batch* (disambiguates from V45's BACKLOG open-questions section); *Risks / dependencies* split into *Risks* (scoped out — degrades to hand-waving for non-coder users) and *Dependencies* (kept, peer to existing `Blocks:` field). Re-framing surfaced mid-interrogation: consumer batches will skew V-file-sized, not sprint-slice-sized, because the method exists for non-coder users who absorb ideas mid-stream — so the structural symmetry holds.
+
+2. **File-naming convention + numbering churn.** Current V-numbering causes rename churn whenever priority shifts. Web search confirmed ADR-style (`NNNN-kebab-title.md`) as the conventional fix: number allocated at creation by filesystem scan, never renumbered; build order moves to a separate index (PLAN.md dev-side, BACKLOG/INDEX.md consumer-side). Scope split into V49 (consumer-batch structure overhaul) and V50 (ADR-style numbering + per-batch file-split + migration) — V50's file-split only makes sense after V49's batch structure exists.
+
+**Files created/edited:**
+- `planning/sessions/V49.md` — consumer-batch structure overhaul scope.
+- `planning/sessions/V50.md` — ADR-style numbering + per-batch file-split scope.
+- `PLAN.md` — V49, V50 rows added; `V49+` placeholder updated to `V51+`; session count 31 → 33.
+- `planning/OPEN-QUESTIONS.md` — new entry parked at top: *Red-flag / threat-class marker for security-shaped batches* (surfaced when separating dependency-risk from security-risk in the Risks/Dependencies interrogation).
+
+**Decisions taken and why.**
+
+- **Split overhaul into V49 then V50** rather than bundle. V49 ships section-additions inside the current single-file BACKLOG.md (lower risk, immediate value). V50 then splits batches into files and adopts ADR-style numbering across both dev-side V-files and consumer-side batches. Decouplable: V49 doesn't need file-split; V50's file-split would be wasteful without V49's structure.
+- **Retroactive rename in V50, not partial cutover.** When V50 runs, all V-files `V18.md`–`V49.md` get renamed to ADR-style and references are swept across BUILD-LOG, OPEN-QUESTIONS, INVENTORY, project CLAUDE.md, plugin docs. Cleaner long-term than living with a two-system mix. Cost is the reference sweep — accepted.
+- **No new slash command for session creation in V50.** Allocation rule alone (filesystem scan, baked into subagent + `BUILD-METHOD.md`) is sufficient. Slash command parked as optional follow-up if friction emerges.
+- **Risks section explicitly scoped out of V49's consumer-batch structure.** For non-coder users, "what could go wrong with this batch?" tends to produce either obvious-and-already-handled concerns or vague-and-imaginary anxieties. Planning subagent can surface concrete risks verbally in the recap without a forced section.
+- **Red-flag/threat-class concern parked separately** rather than bundled into V49. Conflation between build-dependency risk and security/threat-class risk surfaced mid-interrogation; pulling threat-class into V49 would stretch its scope. Parked in OPEN-QUESTIONS with three possible shapes.
+
+**Pivots and surprises.**
+
+- **Re-framing on session size.** Initial framing assumed consumer batches would skew smaller than V-files because consumer projects are "less complex." Alex pushed back: the method exists precisely because non-coder users absorb ideas mid-stream and need a scoping moment to batch them. That recalibrated the entire interrogation — five sections landed instead of being filtered down to two or three.
+- **Crash course addition surfaced mid-interrogation.** The "method absorbs mid-stream ideation" framing earned its own slot in Crash course. Filed as a deliverable of V49 (it's the *why* underneath V49's *what*).
+
+**Carried forward.**
+
+- V49 and V50 await build.
+- Red-flag / threat-class OPEN-QUESTIONS entry awaits trigger (Taskflow batch with security-shaped scope, OR subsequent batch-structure ideation that bundles it).
+
+---
+
 ## v43 — 2026-05-22 — Permission-mode research + roadmap rescope V43–V48
 
 **What shipped.** Dev-internal. Web research confirmed that Claude Code's PreToolUse hooks fire in every permission mode (Ask permissions, Accept edits, Plan mode, Auto mode, bypass) — the `permission_mode` field is delivered in hook input JSON, and a hook returning `deny` blocks the tool call regardless of mode. This resolves OPEN-QUESTIONS item 4 (permission modes vs. UX.md lock) from the post-adopt UX friction entry: the method's lock is complementary to Claude Code's permission system, not redundant. The finding motivated a new session: **V43 (permission-mode UX harmonization)** — audit every deny path against every permission mode, design mode-aware deny messages and behaviour changes so users in permissive modes don't mistake method blocks for broken permissions. Roadmap renumbered V43–V48 to accommodate: old V43 (vocab sweep) → V47, old V46 (test split) → V48, old V47 (cd fix) → V46. V44 and V45 unchanged. All cross-references updated across scope files, PLAN.md, OPEN-QUESTIONS.md, CLAUDE.md, research/platform-capabilities-audit.md. Pattern follows v41 (rescoping session takes the slot, existing scope files shift).
