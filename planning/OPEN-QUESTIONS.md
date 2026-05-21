@@ -8,6 +8,25 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Method rule: ask the user to run a Sonnet web search when uncertain about an external fact
+
+**The question.** Should the no-code method codify an explicit rule — in `plugin/hooks/universal-behaviour.md` → *Required behaviours* and the docs-only `NO-CODE-METHOD.md` → *Required of Claude* (two-write) — that when Claude is uncertain about an external fact (Claude Code's feature surface, an API's behaviour, a library's status, a setting that may have changed, anything Claude could verify rather than infer), it must either run a web search itself (if web-search tools are available in that session) or ask the user to run one in a separate Claude Sonnet chat? Currently this discipline lives only in Alex's personal global CLAUDE.md; the method itself doesn't carry it, so a consumer using the plugin without that personal instruction is back to Claude guessing or hedging.
+
+**Why it matters.** Surfaced V36, 2026-05-21. V36 #3 resolved cleanly precisely because we ran this discipline: the plan-panel writability question went to Sonnet as a paste-ready prompt, came back with a definitive "not writable from outside Claude" plus evidence and caveats, and the V36 outcome handling executed the same session. Without that discipline, the same question would have either (a) been parked indefinitely waiting for "someone to research it," (b) been guessed at by Claude with a fabricated mechanism, or (c) shipped wrong instructions into the spec. The method already has *Ask rather than guess on ambiguity* in `universal-behaviour.md`, but that rule is about ambiguity in the user's *request* — not about external-fact uncertainty Claude could verify. Different shape, different mechanism, different fix.
+
+**Working notes.** Likely shape: a new bullet under *Required behaviours* in `universal-behaviour.md`, mirrored in docs-only `NO-CODE-METHOD.md` → *Required of Claude*. Draft wording: *"When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. If web-search tools are available in this session, use them. Otherwise, ask the user to run one for you, formatted as a paste-ready prompt the user can hand to a fresh Claude Sonnet chat: context about the project, the decision the answer turns on, what to look for, any authoritative URLs to check first, and a request to output as markdown. Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries."*
+
+Open shape questions before scoping:
+
+- **Prompt shape templated or freeform?** Alex's global CLAUDE.md specifies the paste-ready-prompt shape in detail (address Sonnet, give context, list authoritative URLs, request markdown output, one fenced block). Should the method codify this shape (a sub-rule listing the required prompt elements), or leave it to Claude's judgment per-case? Templating tightens the contract but adds spec surface.
+- **What if the user can't easily run a parallel Sonnet?** Many no-coders won't have a second Claude Sonnet chat readily available alongside their Claude Code session. Should the rule have a fallback ("if the user says they can't run the search, surface the uncertainty plainly in the relevant doc as a `[UNVERIFIED]` marker and proceed conservatively")? Or trust that "ask" is enough and the user's "I can't" is the trigger for downstream behaviour?
+- **Scope boundary against existing rules.** The new rule overlaps subtly with *Ask rather than guess on ambiguity* (request ambiguity) and *Red flags — screen and surface* (security/privacy concerns). The new rule covers external-fact uncertainty — a third axis. Confirm the three don't tread on each other when drafted.
+- **Crash course mention.** Probably worth a one-line mention in the *Four disciplines that do most of the work* section or alongside the existing "30% drift" headwind — non-coders should know Claude will sometimes hand them a Sonnet prompt and that this is a method discipline, not Claude being lazy.
+
+**Next step.** Fold into a V38+ planning session post-V37 (V37 is the marketplace.json + local install session, already scoped). **Promote sooner** if a session surfaces another moment where guessing-instead-of-searching costs work, ships wrong content, or parks a question that Sonnet could have answered in one round.
+
+---
+
 ## Footer-stamp on locked source-of-truth docs routed through [FOLD-IN PENDING]
 
 **The question.** When `/adopt` case 4 (refresh templates) finds a locked source-of-truth doc (UX.md, SYSTEM-PROMPT.md, or any other additional-doc covered by the lock) missing the `*No-code method — Version N.*` footer, the subagent routes the footer addition through `[FOLD-IN PENDING]` in BACKLOG.md and asks the user to add the line by hand at the next planning session. Should there be a narrow carve-out letting the plugin stamp the footer directly on a locked doc, since the footer is version metadata rather than user-facing content?
