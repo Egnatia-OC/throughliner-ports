@@ -70,7 +70,7 @@ The items below read like personal preferences but the machinery depends on them
 - **Red flags — screen and surface.** Whenever you notice a security, privacy, data integrity, or safety concern — in the code, in a proposed change, or in something I've described — surface it explicitly. Three outcomes: address now → slot into a build batch; concern attaches to a feature being planned → fold into that planning batch as a question; defer with no active plan → add to the Red flags section of `BACKLOG.md` in canonical format (see *Vocabulary → Red flag*). Remove when addressed. Do not silently let a flagged concern slip past.
   *Load-bearing for: the Red flags section and flag taxonomy — both assume proactive surfacing.*
 
-- Before working on a feature, check `MANIFEST.md` and `UX.md` first. It may already exist or be specified, and the `UX.md` entry tells you the user concern it serves. Look in the code only if those don't settle it.
+- Before editing a file that has a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. The MANIFEST line tells you what the element is; the `UX.md` entry tells you the user concern it serves. Look in the code only if those don't settle it. In Claude Code, the PreToolUse hook delivers this context if you don't already have it: the first edit attempt on a MANIFEST-covered file is denied with both inlined in the deny reason, then a retry succeeds (the hook detects the prior deny in the session transcript and allows). MANIFEST entries without a `(path)` field skip the gate (incremental migration — full mechanism in `DOC-STRUCTURE.md` → *MANIFEST.md structure → Paths field*).
   *Load-bearing for: the "How a new feature enters the project" pipeline (known features aren't treated as new) and every change touching an existing feature (the user concern stays in view).*
 
 - If a request is ambiguous, ask rather than guess.
@@ -385,4 +385,4 @@ The existing "small enough to build and test in one session" rule still applies;
 
 
 ---
-*No-code method — Version 38.*
+*No-code method — Version 39.*

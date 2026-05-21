@@ -6,6 +6,40 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V39 — 2026-05-21 — MANIFEST paths field + read-before-edit hook gate
+
+**What shipped.** MANIFEST.md gains an optional `(path)` field on each entry; the V25-deferred read-before-edit rule becomes hook-enforced via shape B (inline deny-with-context, transcript-scan retry). Touches both canonical doc sets, both template sides, `after-build.md`, `pre_tool_use.py`, INVENTORY, and resolves one OPEN-QUESTIONS entry.
+
+- **Schema change.** MANIFEST entries now: `- **Name** (\`path/to/file.ext\`) — description`. Three path shapes — single file inline; multi-file as `` (`a.kt`, `b.kt`) ``; directory-level as `` (`dir/`) ``. Paths field is optional, legacy entries skip the gate silently. Documented in both DOC-STRUCTURE.md sides + both MANIFEST-TEMPLATE.md sides.
+- **PreToolUse check (6) shipped.** Parses MANIFEST entries, matches target file against paths fields, denies first attempt with the matching MANIFEST entry + UX.md Functionalities entry headings inlined. Retry via transcript scan: deny embeds `BLOCKED [V39 read-before-edit]: <abs path>` marker; subsequent invocations check the session transcript for that marker and allow when present. No state file, no PostToolUse tracking. Spine docs (BACKLOG, MANIFEST, TEST-LOG, BUILD-LOG, CLAUDE) explicitly exempt — defensive guard against an accidental MANIFEST entry deadlocking the build cycle.
+- **`after-build.md` MANIFEST update step extended** to populate the paths field when creating, renaming, or first-touching an entry — drives the incremental migration on touch.
+- **Read-before-edit rule rewritten** in `universal-behaviour.md` (plugin-side) and `NO-CODE-METHOD.md` (docs-only). Frame shifts from "check first" to "have the context by edit time" — the hook delivers context via the inline deny if Claude doesn't already have it.
+- **Crash course updated.** MANIFEST description mentions the paths field; the hooks paragraph adds the V39 inline-deny clause.
+- **OPEN-QUESTIONS entry removed** — "MANIFEST.md schema gap blocks PreToolUse read-before-edit enforcement" (V25-era, promoted to V39, now resolved).
+- **INVENTORY.md** PreToolUse check (d) updated from "Deferred from V25 — blocked by schema gap" to the V39 shipped wording.
+- **Smoke-tested via direct hook invocation** — 7 cases all Pass; see TEST-LOG #116–122. Covered: single-path match, multi-path list match, directory-prefix match, no-match-allow, legacy-entry-skip, spine-doc-exempt, retry-after-prior-deny.
+- **Method-version bump 38 → 39** across all 26 footer-carrying files, `plugin.json` (0.38.0 → 0.39.0), `PLUGIN_METHOD_VERSION` (38 → 39).
+
+**Decisions taken and why.**
+
+- **Shape B over shape A.** Pre-session planning settled this. Shape A (PostToolUse Read-tracking + PreToolUse check + session state file) required two new mechanisms (state file + cross-hook coordination). Shape B needs only the paths field — the deny output IS the state, lives in the conversation transcript Claude Code already maintains. Cost-of-implementation half of A, behavioural guarantee the same: Claude can't blindly edit a MANIFEST-covered file. The framing softens (from "read first" to "have-the-context-by-edit-time") but the user-observable effect is identical.
+- **Paths field is optional.** Forcing every legacy MANIFEST entry to have a path would break adoption for projects mid-flight. Incremental migration on touch (via after-build) lets the gate grow with the project — no flag-day rewrites. `/adopt` case 4 (refresh) offers one-time backfill for projects wanting full coverage immediately.
+- **Three path shapes (single / list / directory).** Single covers the common case. Directory (trailing slash) covers settings-screen-style entries where the scope is genuinely a folder. List shape covers the in-between case (2–3 related files that don't fit a directory). Avoids forcing artificial entries-per-file or imprecise directory matches.
+
+**Pivots and surprises.**
+
+- **Plugin's own adoption gate fired against the dev project mid-session.** Early Bash command `cd sovereign-implementer/ && git describe --tags --abbrev=0` shifted the cwd Claude Code passes to subsequent hooks; the `.no-code-method-skip` marker at the parent `No code method/` folder was no longer at the hook's view of project_root, so the V29 gate started denying every Edit. Recovered by writing a second `.no-code-method-skip` at `sovereign-implementer/` root (which is in SCAFFOLD_NAMES, so the gate allowed even while firing). Both markers stay committed; the new marker also covers any future session that opens with cwd inside the dev project subtree. The deeper issue — Bash `cd` inside a session shifting Claude Code's cwd globally and breaking opt-out markers placed at the original cwd — is logged as a new OPEN-QUESTIONS entry.
+- **No smoke test via `--plugin-dir`.** The V39 hook check requires a real Claude Code session transcript to exercise the retry semantics, and the fixture-based direct invocation covered all 7 cases including the retry (via a hand-written fake transcript). A `--plugin-dir` test would add fidelity but the direct-invocation evidence is sufficient for V39 — V40+ Taskflow work will exercise this naturally.
+
+**Carried forward.**
+
+- **V39 scope file deleted** in this commit per the transient-scope rule.
+- **New OPEN-QUESTIONS entry** — "Bash `cd` inside a session shifts plugin cwd and breaks the parent-folder opt-out marker." See `OPEN-QUESTIONS.md`.
+- **No frame-correction candidates in BACKLOG.md.** V39 added a new gate rather than substantively changing how a feature works. Scope files V40–V42 audited — V40 references the V39 paths field as input and is compatible; V41/V42 don't depend on V39 substance.
+- **`.no-code-method-skip` at `sovereign-implementer/` root** — committed alongside the V39 changes so future sessions opening with cwd inside the dev subtree stay silent. Removable by hand if dev-project E2E plugin testing requires the gate to fire.
+
+---
+
 ## V38 — 2026-05-21 — Locked-doc edit rules + Sonnet-search discipline
 
 **What shipped.** Three method-discipline changes resolving three OPEN-QUESTIONS entries, touching the PreToolUse hook, both canonical doc sets, all five subagent bodies, and both VOCABULARY files.

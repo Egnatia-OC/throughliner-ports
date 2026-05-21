@@ -8,6 +8,28 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Bash `cd` inside a session shifts plugin cwd, breaking parent-folder opt-out marker
+
+**The question.** During V39 dev work, a Bash command early in the session (`cd sovereign-implementer/ && git describe --tags --abbrev=0`) shifted Claude Code's session cwd from the parent `No code method/` folder to `sovereign-implementer/`. Subsequent PreToolUse hook invocations received `sovereign-implementer/` as `cwd`, and the V29 adoption gate's `has_opt_out_marker` check (which reads `<cwd>/.no-code-method-skip`) found nothing — the marker that opts out the dev project lives at the parent folder, not inside `sovereign-implementer/`. The gate started blocking every Edit. Workaround: write a second `.no-code-method-skip` at `sovereign-implementer/`. But the deeper question is whether the plugin should be resilient to `cd`-induced cwd drift mid-session.
+
+**Why it matters.** Surfaced V39 mid-session, 2026-05-21. Three flavours of consequence:
+
+1. **Dev-project ergonomics.** The no-code-method's own dev project sits at `No code method/` with the dev subtree at `sovereign-implementer/`. A single Bash `cd` (which Claude will reach for naturally — `git describe`, `git log`, anything subdir-scoped) can deadlock the session against the plugin's own gate. V39 had to recover from this mid-build.
+2. **Consumer projects.** Any consumer who opts out via `.no-code-method-skip` at their project root would experience the same break if Claude `cd`s into a sub-folder. Less common (consumer projects are usually opened at the actual root), but possible — e.g. a monorepo with multiple sub-projects.
+3. **Mental model.** Users (and Claude itself) reasonably expect the session's project to be the folder they opened, not whichever folder Bash last `cd`'d into. The plugin's current behaviour quietly diverges from that.
+
+**Working notes.** Three shapes worth considering.
+
+- **A. Marker-walk-up.** `has_opt_out_marker` walks from cwd upward to the filesystem root, looking for `.no-code-method-skip` at any ancestor. Smallest change; covers both monorepo sub-projects and the dev-project's cd-drift case. Risk: walking too far could pick up an unrelated opt-out marker (e.g. user has one at `~`). Mitigation: bound the walk by some marker (e.g. the first `.git/` ancestor, or the first ancestor with a `CLAUDE.md`).
+- **B. Pin cwd at SessionStart.** SessionStart writes the resolved project root to a session-local cache (the existing transcript/session-id key); subsequent hooks read project_root from there rather than from each call's `cwd`. Eliminates cd drift entirely. Risk: cross-hook coordination via filesystem cache is a new mechanism with its own failure modes.
+- **C. Document the gotcha, fix nothing.** Add to `BUILD-METHOD.md` and Crash course: "don't `cd` mid-session; if you must, place opt-out markers at every potential cwd." Cheapest. Pushes the burden onto users and Claude — drift will recur.
+
+Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-bearing ancestor)**. Cheap, covers both real cases (dev project + monorepo), and the bound keeps it from over-reaching into the user's home directory.
+
+**Next step.** Park. Promote to its own session in V43+ once V40–V42 ship (those have higher priority — direct-edit drift, vocabulary sweep, /adopt UX). **Promote sooner** if a consumer hits this in normal use, OR if the V40 git-diff drift detection ends up `cd`-ing into subdirectories often enough that the dev project trips again.
+
+---
+
 ## Automated testing / CI for the method's dev project
 
 **The question.** `BUILD-METHOD.md` → *Testing — what we actually do* asserts no automated CI: smoke tests are hand-run by Alex post-session, framed as deliberate — "CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention." Should the decision be revisited as the plugin's surface grows, and if so, what shape of automation would earn its place?
@@ -36,7 +58,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - *Non-GUI variant of UX.md.* Add a section to `DOC-STRUCTURE.md` → *UX.md structure* explaining how non-GUI projects should shape their entries: name the "user" explicitly (operator, downstream system, integrating developer), let the "experience" be whatever they observe (logs, response, exit code, file). Heavier; clearer for non-GUI no-coders.
 - *Separate spine doc for non-GUI projects.* A new template (BEHAVIOUR.md? CONTRACT.md? OUTPUTS.md?) replaces UX.md for non-GUI projects. Heaviest; risks fragmenting the method. Defer unless shapes 1 and 2 prove inadequate.
 
-**Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow evidence informs whether the structural rules need a non-GUI variant or only vocabulary generalisation. **Promote sooner** if Alex (or any consumer) starts a non-GUI project with the method before V35 ships.
+**Next step.** Promoted to V41 (renumbered from V40; 2026-05-21). Leaning: vocabulary generalisation + guidance section. Bundled with "planning" disambiguation to amortise the parity audit. **Promote sooner** if Alex (or any consumer) starts a non-GUI project with the method before V41 ships.
 
 ---
 
@@ -68,7 +90,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - **Vocabulary disambiguation in docs.** Add an explicit "not to be confused with plan mode" note to `NO-CODE-METHOD.md` → *Vocabulary*. Mention in Crash course where plan mode comes up. Low-cost; relies on the reader.
 - **Hybrid.** Keep "planning phase" as the lifecycle name but rename the subagent (`no-code-method:planning` → `no-code-method:design`) so the plugin-component name reads distinct. Compromise.
 
-**Next step.** Promote to a planning session in V36+ post-E2E (V35) once Taskflow use gives concrete sense of how often readers encounter both terms together. **Promote sooner** if first real Taskflow use surfaces the confusion before V35.
+**Next step.** Promoted to V41 (renumbered from V40; 2026-05-21). Bundled with non-GUI generalisation to amortise the parity audit. **Promote sooner** if first real Taskflow use surfaces the confusion before V41.
 
 ---
 
@@ -92,24 +114,6 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 **Next step.** Park. Revisit once V26–V35 ship and the rate of `NO-CODE-METHOD.md` changes (or its post-V32 successor location) settles. If the spec is stable across consecutive versions, B is fine; if it churns, A; mixed, C. **Promote sooner** if an audit flags meaningful drift in `batch-executor.md`, which forces A.
 
 **V37, 2026-05-21: targets shifted, tension unchanged.** V32's two-write rule moved the runtime spec targets from `NO-CODE-METHOD.md` to `plugin/docs/DOC-STRUCTURE.md` and `plugin/docs/VOCABULARY.md`; `adopt.md` joins `planning.md` and `before-build.md` as a read-at-entry subagent. The underlying inline-vs-read-at-entry question is the same shape, just against the new targets. Stays parked at the same threshold: promote if `plugin/docs/` churns enough (or stabilises enough) to make convergence the obviously right call, or if a parity audit flags meaningful drift in `batch-executor.md`.
-
----
-
-## MANIFEST.md schema gap blocks PreToolUse read-before-edit enforcement
-
-**The question.** `NO-CODE-METHOD.md` → *Required of Claude* says Claude must read MANIFEST.md and the relevant UX.md entry before editing a file with a MANIFEST entry. V25 scoped a PreToolUse check to enforce this, blocked by a schema gap: MANIFEST.md is a flat alphabetical glossary mapping names to descriptions, not paths. A hook firing on `Edit /plugin/foo.py` can't know which MANIFEST entry covers that path. How do we extend the method so hook-level enforcement becomes possible — and is it worth the change?
-
-**Why it matters.** Surfaced V25 while designing the PreToolUse boundary check + read-before-edit pair. Deferred because the schema decision is itself method-level (ripples to MANIFEST-TEMPLATE.md, the After-every-build update logic, and the rule's wording in NO-CODE-METHOD.md). Without resolution, read-before-edit stays convention-only (followed when Claude remembers — ~30% drift per Crash course → Caveats).
-
-**Working notes.** Five options from V25 chat (2026-05-16):
-
-- **A. PostToolUse tracks Reads + PreToolUse checks track.** Real enforcement. New hook type, session-scoped state file with SessionStart cleanup, AND a paths-per-entry schema extension. Largest cost; cleanest behavioural match.
-- **B. Inline deny-with-context.** PreToolUse denies an Edit on a MANIFEST-covered file with the MANIFEST and UX entries inlined in the deny reason. No state file, no PostToolUse, still needs the schema extension. Changes the rule from "read first" to "have-the-context-by-edit-time." Worth a separate decision.
-- **C. Convention-only.** Status quo. No schema change. Accepts the drift rate.
-- **D. Hybrid A+B.** Worst of both; not pursued.
-- **E. Defer.** What V25 did.
-
-**Next step.** Promote to a planning session in V36+ post-E2E (V35). The session resolves: (1) does MANIFEST.md gain a path field, and in what format? (2) which of A/B/C given (1)? Originally tagged V26+ — held through V26–V31 because it's a heavy method-level decision (schema change ripples to MANIFEST-TEMPLATE.md, after-build update logic, the rule's wording in spec docs) and earlier sessions had higher-priority work. Post-V35 evidence may shift the relative priority. **Promote sooner** if direct-edit users surface in real use — path-mapped MANIFEST also helps drift detection for manual edits.
 
 ---
 
@@ -182,4 +186,6 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 **V21 planning, 2026-05-14:** V21 does *not* absorb this. V21 adds foundational reads + template-state + resume + routing — none catch manual code edits. Natural home for the tighten-drift-detection shape is V22 (planning subagent + drift logic inlined), or its own session if the other shapes win. Parked; revisit V22 planning earliest, or sooner if public release approaches.
 
-**V22, 2026-05-14:** shape #1 **partially folded into V22's planning subagent.** Q2 decision: "always run drift checks every planning session; only skip case is 'nothing has been built yet.'" Drift check 2 (MANIFEST ↔ codebase) fires every planning session regardless of whether Claude shipped a batch — catches file-level changes a direct-edit user makes (new files, renames, deletes on tracked components). What it does **not** catch: in-file content changes to existing tracked files (a developer modifying a function inside a still-tracked `.kt` file leaves no MANIFEST-level signal). That gap is the remaining concern. Shapes #2 and #3 still out of scope; would need their own session. Parked: revisit if direct-edit users surface and file-level coverage proves insufficient; promote sooner if public release approaches.
+**V22, 2026-05-14:** shape #1 **partially folded into V22's planning subagent.** Q2 decision: "always run drift checks every planning session; only skip case is 'nothing has been built yet.'" Drift check 2 (MANIFEST ↔ codebase) fires every planning session regardless of whether Claude shipped a batch — catches file-level changes a direct-edit user makes (new files, renames, deletes on tracked components). What it does **not** catch: in-file content changes to existing tracked files (a developer modifying a function inside a still-tracked `.kt` file leaves no MANIFEST-level signal). That gap is the remaining concern. Shapes #2 and #3 still out of scope; would need their own session.
+
+**Promoted to V40 (2026-05-21).** Pre-session planning decided: git-diff detection + per-change confirmation protocol (user confirms each flagged change; Claude checks for build-batch conflicts; accepts + doc catch-up if clean). Shapes #2 (developer-mode entry point) and #3 (explicit non-audience) deferred until a real developer reports friction. V40 scope file has full decisions.

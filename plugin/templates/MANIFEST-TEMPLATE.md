@@ -6,10 +6,19 @@ If this list ever grows long enough that scanning it becomes hard, switch to alp
 
 <!--
 Entry format (one per line, alphabetical by Name):
-- **[Name]** — [one-line plain-English description of what this is and what it does]
+- **[Name]** (`path/to/file.ext`) — [one-line plain-English description of what this is and what it does]
+
+The `(path)` field is optional but strongly recommended — the PreToolUse hook
+reads it to drive the read-before-edit gate. Without a path, the entry is
+silently skipped by that gate. Multi-file entries: comma-separate paths
+inside the parens, e.g. `(`a.kt`, `b.kt`)`, OR use a directory-level path
+with a trailing slash, e.g. `(`app/src/settings/`)`. One MANIFEST entry per
+discrete element — don't bundle unrelated elements into one row to share a
+path. Entries that don't correspond to a file (a cross-component flow, a
+named UX state) can omit the path.
 
 Full spec: `DOC-STRUCTURE.md` → MANIFEST.md structure.
 -->
 
 ---
-*No-code method — Version 38.*
+*No-code method — Version 39.*

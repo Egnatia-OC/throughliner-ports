@@ -51,13 +51,13 @@ The same fallback discipline lives in the test-confirmation gate (PreToolUse hoo
 
 After the load + identify + idempotency check, perform these steps in order. The first three are silent (`[SILENT]`); the fourth is a chat recap (`[BRIEF]`); the fifth and sixth are user prompts (`[PROMPT]`).
 
-1. **Update `MANIFEST.md` silently** (per *After every build* step 1, `[SILENT]` tag, and V27 Q2 — fully automatic). Detect what the batch created, renamed, or deleted. The cheapest signal is `git status --short` and `git diff --name-status HEAD`, then cross-reference against existing MANIFEST entries:
-   - **Added file** that introduces a named element worth tracking → add a MANIFEST entry in the canonical one-line format from `DOC-STRUCTURE.md` → *MANIFEST.md structure*. Preserve alphabetical order.
-   - **Renamed file** corresponding to an existing MANIFEST entry → rename the entry's element name; update the description if the rename signals a behavioural shift.
+1. **Update `MANIFEST.md` silently** (per *After every build* step 1, `[SILENT]` tag, and V27 Q2 — fully automatic). Detect what the batch created, renamed, or deleted via `git status --short` and `git diff --name-status HEAD`, then cross-reference against existing MANIFEST entries:
+   - **Added file** that introduces a named element worth tracking → add a MANIFEST entry in the canonical one-line format from `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure*, **including the `(path)` field** naming the file. Use the multi-file or directory-level shape (see *Paths-field shape* in that section) when the element's scope is genuinely broader than one file. Preserve alphabetical order.
+   - **Renamed file** corresponding to an existing MANIFEST entry → rename the entry's element name AND update its `(path)` field to the new location. Update the description if the rename signals a behavioural shift.
    - **Deleted file** corresponding to an existing MANIFEST entry → remove the entry.
-   - **Modified file** corresponding to an existing MANIFEST entry → update the description only if the modification changed what the element is or does (don't churn the description for trivial edits).
+   - **Modified file** corresponding to an existing MANIFEST entry → update the description only if the modification changed what the element is or does (don't churn the description for trivial edits). **If the entry has no `(path)` field yet** (legacy pre-V39 entry), add the path now — this is the incremental migration the V39 paths field relies on, and it's how the read-before-edit gate progressively gets hooked up to the existing MANIFEST.
    
-   Trivial helpers, internal utility functions, and boilerplate stay out of MANIFEST (per `DOC-STRUCTURE.md` → *MANIFEST.md structure*).
+   Trivial helpers, internal utility functions, and boilerplate stay out of MANIFEST (per `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure*).
 
 2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
 
@@ -133,4 +133,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 38.*
+*No-code method — Version 39.*

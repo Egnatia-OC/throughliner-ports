@@ -38,6 +38,19 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       Deny message includes the current batch's Files: list and the
       prerequisite carve-out recovery path.
 
+  (6) Read-before-edit gate (V39) — Edit/Write/MultiEdit.
+      When the target file is named in a MANIFEST.md entry's `(path)` field,
+      the hook denies the first edit attempt with the matching MANIFEST
+      entry and UX.md's Functionalities entry headings inlined in the deny
+      reason. Retries succeed because the hook scans the session transcript
+      (`transcript_path` from the hook input) for a prior V39 block-once
+      deny on the same file — if present, allow. No state file, no
+      PostToolUse tracking. MANIFEST entries without a `(path)` field skip
+      the gate silently (incremental migration: after-build populates paths
+      on touch). Spine docs (BACKLOG.md, MANIFEST.md, TEST-LOG.md,
+      BUILD-LOG.md, CLAUDE.md) are exempt even if they accidentally appear
+      in MANIFEST — defensive guard so the build cycle can't brick itself.
+
   (5) V29 adoption gate — Edit / Write / MultiEdit AND Task. Fires *before*
       checks (1)–(4) so the gate isn't bypassed when the folder is
       unadopted. Denies Edit/Write/MultiEdit on non-scaffold-path files
@@ -185,6 +198,34 @@ SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
 
 # V38: method-version footer pattern for the footer-stamp carve-out.
 FOOTER_LINE_PATTERN = re.compile(r"\*No-code method — Version \d+\.\*")
+
+# --- V39 read-before-edit gate patterns ---
+
+# MANIFEST entry pattern: `- **Name** (optional path) — description`.
+# Group 1: name; group 2: paths string (or None); group 3: description.
+# The optional parens-with-content-before the em-dash carry the V39 paths
+# field. Em-dash (—, U+2014) is the canonical separator.
+MANIFEST_ENTRY_PATTERN = re.compile(
+    r"^-\s+\*\*(.+?)\*\*\s*(?:\(([^)]+)\))?\s*—\s*(.+?)\s*$",
+    re.MULTILINE,
+)
+
+# Extract backtick-wrapped tokens (paths) from a paths-field string.
+# Inside the parens, paths are written as `path1`, `path2`, etc.
+BACKTICK_PATH_PATTERN = re.compile(r"`([^`]+)`")
+
+# Marker string the V39 deny prefixes its message with — used as the
+# transcript-scan needle for the block-once retry semantics.
+V39_DENY_MARKER = "BLOCKED [V39 read-before-edit]"
+
+# Spine docs exempt from the V39 gate even if they accidentally appear in
+# a MANIFEST entry. The gate is meant for codebase elements, not method-
+# spine docs. Without this exemption, a mis-placed entry could brick the
+# build cycle (after-build can't edit MANIFEST, batch-executor can't tick
+# BACKLOG, etc.).
+V39_EXEMPT_LOGICAL_NAMES = {
+    "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md", "BUILD-LOG.md", "CLAUDE.md"
+}
 
 # PARSER_PATH, PARSER_TIMEOUT_SECONDS, TEST_LOG_DATA_ROW_PATTERN, and
 # BUILD_LOG_SESSION_HEADING_PATTERN now live in project_state.py
@@ -580,6 +621,209 @@ def check_batch_file_list(project_root, target_path):
     return make_boundary_deny_reason(target_path, batch, files_entries)
 
 
+# --- V39 read-before-edit gate helpers ---
+
+
+def parse_manifest_entries(manifest_text):
+    """Parse MANIFEST.md text into a list of entries:
+        {'name': str, 'paths': [str, ...], 'description': str, 'raw_line': str}
+
+    Entries without a `(path)` field have paths == []. The raw_line is kept
+    so the deny message can quote the entry verbatim."""
+    entries = []
+    for m in MANIFEST_ENTRY_PATTERN.finditer(manifest_text):
+        name = m.group(1).strip()
+        paths_str = m.group(2)
+        description = m.group(3).strip()
+        if paths_str:
+            raw_paths = BACKTICK_PATH_PATTERN.findall(paths_str)
+            paths = [p.strip() for p in raw_paths if p.strip()]
+        else:
+            paths = []
+        entries.append({
+            "name": name,
+            "paths": paths,
+            "description": description,
+            "raw_line": m.group(0).strip(),
+        })
+    return entries
+
+
+def _path_matches_entry_path(target_str, raw_path, project_root):
+    """True iff target_str matches raw_path as a MANIFEST paths-field
+    entry (single file, directory prefix, or directory exact)."""
+    is_directory = raw_path.endswith("/") or raw_path.endswith("\\")
+    try:
+        if is_directory:
+            resolved = (project_root / raw_path.rstrip("/\\")).resolve()
+            resolved_str = str(resolved)
+            if target_str == resolved_str:
+                return True
+            # Directory prefix match — handle both Windows and POSIX separators.
+            return (
+                target_str.startswith(resolved_str + "\\")
+                or target_str.startswith(resolved_str + "/")
+            )
+        resolved = (project_root / raw_path).resolve()
+        return target_str == str(resolved)
+    except OSError:
+        return False
+
+
+def manifest_entry_covers_file(entry, target_path, project_root):
+    """True iff any of the entry's paths matches target_path."""
+    if not entry["paths"]:
+        return False
+    target_str = str(target_path)
+    return any(
+        _path_matches_entry_path(target_str, p, project_root)
+        for p in entry["paths"]
+    )
+
+
+def find_matching_manifest_entries(target_path, project_root):
+    """Return the list of MANIFEST entries whose paths field covers
+    target_path. Empty list if MANIFEST.md is missing, unreadable, or
+    has no matches."""
+    manifest_path = resolve_path_block_entry(project_root, "MANIFEST.md")
+    if manifest_path is None:
+        return []
+    manifest_text = safe_read_text(manifest_path)
+    if manifest_text is None:
+        return []
+    entries = parse_manifest_entries(manifest_text)
+    return [
+        e for e in entries
+        if manifest_entry_covers_file(e, target_path, project_root)
+    ]
+
+
+def extract_ux_functionalities_headings(project_root):
+    """Return the list of UX.md Functionalities entry headings as strings
+    in their original casing. Empty list on any read failure or if the
+    section / its entries are missing."""
+    ux_path = resolve_path_block_entry(project_root, "UX.md")
+    if ux_path is None:
+        return []
+    ux_text = safe_read_text(ux_path)
+    if ux_text is None:
+        return []
+    section_match = FUNCTIONALITIES_SECTION_PATTERN.search(ux_text)
+    if not section_match:
+        return []
+    section_text = ux_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+    return [m.group(1).strip() for m in ENTRY_HEADING_PATTERN.finditer(section_text)]
+
+
+def transcript_shows_prior_v39_deny(transcript_path, target_path_str):
+    """True iff the session transcript contains a prior V39 block-once
+    deny for this target file. Lenient on any failure: returns False so
+    the deny fires (over-delivering context is safer than missing it).
+
+    Block-once semantics: the deny message embeds `BLOCKED [V39 read-
+    before-edit]: <absolute path>` near the top. Claude Code injects the
+    deny reason into the conversation as a tool_result, so it lands in
+    the transcript JSONL. A simple substring check on the raw transcript
+    text catches the prior deny."""
+    if not isinstance(transcript_path, str) or not transcript_path:
+        return False
+    try:
+        with open(transcript_path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except (OSError, UnicodeDecodeError):
+        return False
+    needle = f"{V39_DENY_MARKER}: {target_path_str}"
+    return needle in text
+
+
+def make_v39_deny_reason(target_path, matching_entries, ux_headings, ux_present):
+    """Compose the V39 deny-with-inlined-context reason text. The marker
+    line at the top is what `transcript_shows_prior_v39_deny` matches on,
+    so its exact shape (`BLOCKED [V39 read-before-edit]: <absolute path>`)
+    is load-bearing."""
+    entries_lines = [f"  {e['raw_line']}" for e in matching_entries]
+    entries_block = "\n".join(entries_lines) if entries_lines else "  (none)"
+
+    if ux_present and ux_headings:
+        headings_block = "\n".join(f"  - {h}" for h in ux_headings)
+        ux_block = (
+            "Current `UX.md` Functionalities entries (find the one that "
+            "names this file's user concern, and read its full text "
+            "including the `user needs this because…` line in `UX.md` if "
+            "the title alone doesn't settle it):\n"
+            f"{headings_block}"
+        )
+    elif ux_present:
+        ux_block = (
+            "`UX.md` Functionalities section is empty or missing — no "
+            "entries to surface. Check `UX.md` directly for context "
+            "before retrying."
+        )
+    else:
+        ux_block = (
+            "`UX.md` could not be located via `CLAUDE.md`'s path block. "
+            "The MANIFEST entry above is your only inline context — "
+            "check `CLAUDE.md` and `UX.md` directly before retrying if "
+            "more is needed."
+        )
+
+    return (
+        f"{V39_DENY_MARKER}: {target_path}\n\n"
+        "Before editing this file, you must have the MANIFEST entry and "
+        "the relevant `UX.md` Functionalities entry in view — the "
+        "MANIFEST line tells you what the element is, the `UX.md` entry "
+        "tells you the user concern it serves (per universal-behaviour.md "
+        "→ *Required behaviours* → *Check MANIFEST.md and UX.md before "
+        "working on a feature*).\n\n"
+        f"Matching `MANIFEST.md` entry:\n{entries_block}\n\n"
+        f"{ux_block}\n\n"
+        "Retry the edit now. The hook scans the session transcript on "
+        "each invocation and allows the retry once it sees this deny — "
+        "block-once is via transcript scan, no state file, no PostToolUse."
+    )
+
+
+def check_read_before_edit(project_root, target_path, hook_input):
+    """V39 check (6): read-before-edit gate.
+
+    Returns a deny-reason string when:
+      - the target file matches one or more MANIFEST entries' (path) fields, AND
+      - the session transcript does NOT contain a prior V39 block-once deny
+        for this same file.
+
+    Returns None to allow in all other cases (no MANIFEST match; transcript
+    already has prior deny; spine-doc exemption; lenient failures).
+
+    Spine-doc exemption: if the target path resolves to one of the
+    writable spine docs declared in CLAUDE.md's path block, skip the gate
+    even if MANIFEST happens to list it. This is a defensive guard — the
+    build cycle relies on after-build editing MANIFEST.md, batch-executor
+    ticking BACKLOG.md, etc., and a stray MANIFEST entry for one of those
+    docs shouldn't deadlock the cycle."""
+    # Spine-doc exemption.
+    for logical_name in V39_EXEMPT_LOGICAL_NAMES:
+        spine_path = resolve_path_block_entry(project_root, logical_name)
+        if spine_path is not None and str(target_path) == str(spine_path):
+            return None
+
+    matching_entries = find_matching_manifest_entries(target_path, project_root)
+    if not matching_entries:
+        return None
+
+    transcript_path = hook_input.get("transcript_path") if isinstance(hook_input, dict) else None
+    if transcript_shows_prior_v39_deny(transcript_path, str(target_path)):
+        return None
+
+    ux_headings = extract_ux_functionalities_headings(project_root)
+    ux_path = resolve_path_block_entry(project_root, "UX.md")
+    ux_present = ux_path is not None and ux_path.exists()
+
+    return make_v39_deny_reason(target_path, matching_entries, ux_headings, ux_present)
+
+
 # --- V29 adoption-gate helpers ---
 
 
@@ -864,6 +1108,16 @@ def main() -> int:
     boundary_deny_reason = check_batch_file_list(project_root, target_path)
     if boundary_deny_reason:
         return emit_deny(boundary_deny_reason)
+
+    # V39: read-before-edit gate. If the target file is named in a MANIFEST
+    # entry's (path) field and the session transcript doesn't already have a
+    # prior block-once deny for this file, deny with MANIFEST + UX context
+    # inlined. The marker line `BLOCKED [V39 read-before-edit]: <abs path>`
+    # in the deny reason is what subsequent transcript scans match on, so the
+    # retry succeeds.
+    v39_deny_reason = check_read_before_edit(project_root, target_path, data)
+    if v39_deny_reason:
+        return emit_deny(v39_deny_reason)
 
     return emit_allow()
 

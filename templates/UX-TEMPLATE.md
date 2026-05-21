@@ -48,4 +48,4 @@ Optional patterns for entries (full spec in DOC-STRUCTURE.md → UX.md structure
 
 
 ---
-*No-code method — Version 38.*
+*No-code method — Version 39.*

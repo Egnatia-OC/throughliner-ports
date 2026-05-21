@@ -54,11 +54,22 @@ Starts empty. The entry-format reminder lives in an HTML comment so the file sta
 
 **Entries.** A flat list, alphabetical by name. One line each:
 
-> - **[Name]** — [one-line plain-English description of what this is and does]
+> - **[Name]** (`path/to/file.ext`) — [one-line plain-English description of what this is and does]
 
 Include things the user might plausibly ask about: components, screens, services, modules, files with discrete purpose. Skip trivial helpers, internal utilities, boilerplate.
 
 If the flat list becomes hard to scan, switch to alphabetical sections by area.
+
+**Paths field.** The optional `(path)` in parentheses after the entry name is the runtime anchor for the V39 read-before-edit gate in `pre_tool_use.py`. When an `Edit`/`Write`/`MultiEdit` targets a file whose path matches a MANIFEST entry's paths field, the hook denies the first attempt with the MANIFEST entry and `UX.md`'s Functionalities entry headings inlined in the deny reason — Claude retries with the context in hand. Retries succeed because the hook scans the session transcript for a prior block-once deny on the same file (no state file). Entries that omit the paths field skip the gate silently. Full rule wording: `universal-behaviour.md` → *Required behaviours* → *Check MANIFEST.md and UX.md before working on a feature*.
+
+**Paths-field shape.**
+
+- **Single file.** `` (`app/src/TaskCard.kt`) ``.
+- **Multi-file, list shape.** `` (`a.kt`, `b.kt`) ``.
+- **Multi-file, directory shape.** `` (`app/src/settings/`) `` — trailing slash signals directory match; any file under that prefix counts.
+- **No path.** Omit the parens entirely for entries that don't correspond to a file (a cross-component flow, a named UX state). Such entries skip the gate.
+
+**Migration is incremental.** The after-build subagent populates the paths field on any MANIFEST entry it creates or updates during a build (`after-build.md` → *Work loop* step 1). Legacy entries without paths stay skipped by the gate until something touches them. `/adopt` case 4 (refresh) offers a one-time backfill pass — see `adopt.md` for the dialogue.
 
 ## TEST-LOG.md structure
 
@@ -163,4 +174,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 ---
-*No-code method — Version 38.*
+*No-code method — Version 39.*
