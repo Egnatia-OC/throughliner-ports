@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v43 — 2026-05-22 — Permission-mode research + roadmap rescope V43–V48
+
+**What shipped.** Dev-internal. Web research confirmed that Claude Code's PreToolUse hooks fire in every permission mode (Ask permissions, Accept edits, Plan mode, Auto mode, bypass) — the `permission_mode` field is delivered in hook input JSON, and a hook returning `deny` blocks the tool call regardless of mode. This resolves OPEN-QUESTIONS item 4 (permission modes vs. UX.md lock) from the post-adopt UX friction entry: the method's lock is complementary to Claude Code's permission system, not redundant. The finding motivated a new session: **V43 (permission-mode UX harmonization)** — audit every deny path against every permission mode, design mode-aware deny messages and behaviour changes so users in permissive modes don't mistake method blocks for broken permissions. Roadmap renumbered V43–V48 to accommodate: old V43 (vocab sweep) → V47, old V46 (test split) → V48, old V47 (cd fix) → V46. V44 and V45 unchanged. All cross-references updated across scope files, PLAN.md, OPEN-QUESTIONS.md, CLAUDE.md, research/platform-capabilities-audit.md. Pattern follows v41 (rescoping session takes the slot, existing scope files shift).
+
+**Decisions taken and why.** Permission-mode session placed at V43 (top of the queue) because the UX gap affects every user in every permissive mode from day one — higher impact than vocabulary polish or cd-fix plumbing. Vocab sweep displaced to V47 rather than dropped because V48 (test split) depends on it. Cd fix moved to V46 (filling the gap) because it's small with no dependencies.
+
+**Pivots and surprises.** Session opened expecting to run V43 (vocab sweep). Alex redirected to permission-mode research after recalling the OPEN-QUESTIONS item about permission modes vs. UX.md lock. The research answer was clear enough to scope a full session rather than park as a note.
+
+**Carried forward.** OPEN-QUESTIONS post-adopt UX friction items 1, 2, 5, 6, 7 (small subagent/template fixes) — noted in the updated *Next step* as candidates for V44 or a standalone batch. Item 3 (fold-in UX) remains tied to V45.
+
+---
+
 ## v42 — 2026-05-21 — Git-diff drift detection + direct-edit confirmation protocol
 
 **What shipped.** New **drift check 1 — direct-edit detection** in the planning subagent (`plugin/agents/planning.md`). At planning-session start, Claude runs `git diff <last-tag>...HEAD` plus working-tree diff (or `git diff HEAD` if the project is untagged) to surface files touched outside the build cycle. Files in the previous batch's `Files:` sub-section and the method's writable surface (`MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, `BACKLOG.md`, `CLAUDE.md`) pass silently. Everything else triggers a per-file confirmation walk — Claude shows the path + change summary + any matching MANIFEST entry, asks *"Was this you (direct edit)? Yes / No / not sure"*, and routes on the answer:
