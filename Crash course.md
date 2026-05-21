@@ -163,6 +163,19 @@ The plugin distributes the method's rules across Claude Code primitives — hook
 
 The split between hooks (deterministic enforcement) and subagents (probabilistic behaviour) is deliberate: hooks bite when correctness matters and a prompt-based instruction might be ignored; subagents handle the work that needs judgment.
 
+## Two layers of permission
+
+Claude Code has its own permission modes — Ask permissions, Accept edits, Plan mode, Auto, and the `--dangerously-skip-permissions` bypass. These control whether Claude Code prompts the no-coder before a tool call goes through. They are Claude Code's own mechanism, independent of any plugin.
+
+The no-code method plugin adds a second layer on top. Its PreToolUse hooks evaluate every Edit, Write, MultiEdit, Task, and Bash tool call against method rules — locked-doc enforcement, batch file-list boundaries, the test-confirmation gate, the adoption gate, the read-before-edit gate, the Serves-line check, and the destructive-git guard. When a hook denies, the tool call is blocked regardless of Claude Code's permission mode. Setting Claude Code to Auto or Bypass does not override a method deny.
+
+The two layers are complementary, not overlapping:
+
+- **Claude Code's permission modes** decide whether the no-coder gets prompted before Claude acts. They affect the user-prompting step, not the plugin's hook evaluation.
+- **The plugin's hooks** decide whether Claude is allowed to act at all. They fire in every permission mode, including Bypass.
+
+Every deny message from the plugin's hooks is prefixed `[No-code method]` and ends with a `What to do:` line naming the specific action to take instead. In permissive modes (Accept edits, Auto, Bypass), an additional line clarifies that changing the permission mode won't help — so the no-coder doesn't waste time escalating through modes looking for one that works.
+
 ## What's editable
 
 The method ships with a default set of preferences and commitments. A new no-coder needs to distinguish three layers.
@@ -258,4 +271,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 40.*
+*No-code method — Version 41.*

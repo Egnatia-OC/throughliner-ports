@@ -6,6 +6,28 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v45 — 2026-05-22 — Permission-mode UX harmonization
+
+**What shipped.** Mode-aware deny messages across all seven PreToolUse deny paths. Every deny now carries a `[No-code method]` prefix and a `What to do:` closing line. Four of seven paths (locked-doc lock, batch boundary, adoption gate, destructive git guard) add a mode-aware suffix in permissive Claude Code modes (Accept edits, Auto, Bypass) clarifying that changing permission mode won't help. Three paths (serves-line, test-confirmation gate, MANIFEST read-before-edit) get format standardisation only — their denies are sequencing or fix-it-yourself issues, not mode-sensitive. `permission_mode` field read defensively from hook input JSON; absent or unrecognised values produce no mode-aware text. SessionStart hook now prepends a two-layer-permission-model preamble to the universal-behaviour context injection (tiers 2 and 3). Crash course gains a new *Two layers of permission* section. INVENTORY.md updated with V43 annotations across all three affected hook entries. Method version V40 → V41; plugin version 0.40.0 → 0.41.0.
+
+**Decisions taken and why.**
+
+- **Format standardisation bundled with mode-awareness** rather than deferred as a separate session. The prefix and closing-line format are low-cost and make every deny identifiable as method-originated regardless of mode — splitting them would have delivered mode-awareness without the identity signal.
+- **Zero behaviour changes shipped.** Two candidates evaluated: Plan mode + edit denies (return `defer` to avoid double-deny noise) and MANIFEST read-before-edit in Auto mode (allow with inlined context on first attempt). Both deferred. Plan mode needs a smoke test to determine whether hooks fire on plan-mode tool calls. MANIFEST's "allow with context" would require the hook protocol to support injecting context into an allow decision, which it doesn't.
+- **Substring-based mode detection** (`"auto" in mode.lower()`) rather than exact enum matching. The `permission_mode` field's exact string values are unverified. Substring matching tolerates casing/formatting variation. False-positive risk low — suffix is informational, not behaviour-changing.
+
+**Pivots and surprises.**
+
+- Context compaction mid-session. No work lost — compacted summary captured the full design agreement and all file paths.
+
+**Carried forward.**
+
+- Smoke test deferred: trigger each deny path in at least two permission modes (default + one permissive) and verify the deny message is mode-appropriate. Testable against Taskflow via `--plugin-dir`.
+- Plan mode investigation: whether PreToolUse hooks fire on plan-mode tool calls is unverified. Testable during the smoke-test session.
+- V45 forward dependency: the distributed-fold-ins session will add an append-only carve-out on locked docs. Its new "partial allow" path needs its own `[No-code method]`-prefixed, `What to do:`-terminated message using the `_mode_suffix` helper V43 ships.
+
+---
+
 ## v44 — 2026-05-22 — Consumer-batch structure ideation + V49/V50 scoping
 
 **What shipped.** Dev-internal ideation session. Two threads ran:

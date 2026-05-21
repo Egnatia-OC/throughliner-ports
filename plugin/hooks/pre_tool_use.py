@@ -176,6 +176,29 @@ SCAFFOLD_NAMES = frozenset({
 # is locked.
 WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md"}
 
+# --- V43 mode-aware deny messaging ---
+
+# Suffix appended to deny messages in permissive Claude Code modes (Accept
+# edits, Auto, Bypass) where the user expects Claude to work freely and a
+# method deny could be mistaken for a Claude Code permission issue.
+_MODE_AWARE_SUFFIX = (
+    "\n\nChanging your Claude Code permission mode won't unlock this — "
+    "this is a method rule enforced by the no-code-method plugin's hook, "
+    "not a Claude Code permission check."
+)
+
+
+def _mode_suffix(permission_mode: str) -> str:
+    """Return _MODE_AWARE_SUFFIX for permissive modes, empty string otherwise.
+    Defensive: unrecognised or absent values produce no suffix."""
+    if not permission_mode:
+        return ""
+    m = permission_mode.lower()
+    if "auto" in m or "bypass" in m or "accept" in m:
+        return _MODE_AWARE_SUFFIX
+    return ""
+
+
 # PATH_BLOCK_PATTERN now lives in project_state.py (V28 extraction).
 
 # --- V22 Serves-line check patterns ---
@@ -293,24 +316,24 @@ def build_locked_map(project_root: Path) -> dict:
     return locked
 
 
-def make_reason(logical_name: str) -> str:
+def make_reason(logical_name: str, permission_mode: str = "") -> str:
     """Build the deny-reason text Claude sees when a locked-doc edit is
     blocked. The reason tells Claude exactly where to place the proposed
     change — the *Fold-ins pending* section of BACKLOG.md — so the
     instruction is unambiguous in any project layout."""
     return (
-        f"BLOCKED: {logical_name} is a locked source-of-truth doc. It is "
-        f"read-only to Claude (the agent); only the user can edit it, by "
-        f"hand during a planning session.\n\n"
-        f"If you have identified a {logical_name} change that should "
-        "happen, do not retry this edit. Instead, add a `[FOLD-IN PENDING]` "
-        "block to the *Fold-ins pending* section of BACKLOG.md, with "
-        f"destination `{logical_name}` and origin `mid-build edit attempt "
-        "— <today's date>`. The user will fold the block into "
-        f"{logical_name} by hand during their next planning session, or "
-        f"drop it. Surface this addition plainly in your response to the "
-        f"user. Canonical block format and section placement: see "
-        f"DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins pending."
+        f"[No-code method] BLOCKED: {logical_name} is a locked source-of-"
+        "truth doc. It is read-only to Claude (the agent); only the user "
+        "can edit it, by hand during a planning session.\n\n"
+        "What to do: add a `[FOLD-IN PENDING]` block to the *Fold-ins "
+        f"pending* section of BACKLOG.md, with destination `{logical_name}` "
+        "and origin `mid-build edit attempt — <today's date>`. The user "
+        f"will fold the block into {logical_name} by hand during their next "
+        "planning session, or drop it. Surface this addition plainly in "
+        "your response to the user. Canonical block format and section "
+        "placement: see DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins "
+        "pending."
+        + _mode_suffix(permission_mode)
     )
 
 
@@ -440,15 +463,13 @@ def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> 
             "(section missing or empty)."
         )
     return (
-        f"BLOCKED: a build batch's `Serves UX.md:` line names entries that "
-        f"don't exist in `UX.md`: {missing_str}.\n\n"
-        "Per NO-CODE-METHOD.md → *How a new feature enters the project*, a "
-        "build batch must serve an entry in a source-of-truth doc. If this "
-        "is a typo, fix the name. If the entry genuinely doesn't exist "
-        "yet, the feature has skipped the planning-batch → fold-in step: "
-        "route through a planning batch in BACKLOG.md, fold the answer "
-        "into `UX.md` by hand during the next planning session, and "
-        "propose the build batch after that."
+        "[No-code method] BLOCKED: a build batch's `Serves UX.md:` line "
+        f"names entries that don't exist in `UX.md`: {missing_str}.\n\n"
+        "What to do: if this is a typo, fix the name. If the entry "
+        "genuinely doesn't exist yet, the feature has skipped the "
+        "planning-batch → fold-in step — route through a planning batch in "
+        "BACKLOG.md, fold the answer into `UX.md` by hand during the next "
+        "planning session, and propose the build batch after that."
         + known_block
     )
 
@@ -523,7 +544,8 @@ def is_footer_only_edit(tool_name, tool_input):
 # --- V25 batch file-list boundary check helpers ---
 
 
-def make_boundary_deny_reason(target_path, batch, files_entries):
+def make_boundary_deny_reason(target_path, batch, files_entries,
+                              permission_mode=""):
     """Build the deny-reason text when a target file isn't on the current
     batch's Files: list. Includes the batch heading, the full Files: list
     with tick state (so Claude sees what IS allowed), and both carve-out
@@ -543,29 +565,27 @@ def make_boundary_deny_reason(target_path, batch, files_entries):
     file_list_display = "\n".join(lines) if lines else "  (no files declared)"
 
     return (
-        f"BLOCKED: `{target_path}` is not on the current build batch's "
-        "`Files:` list and cannot be edited from inside the batch.\n\n"
+        f"[No-code method] BLOCKED: `{target_path}` is not on the current "
+        "build batch's `Files:` list and cannot be edited from inside the "
+        "batch.\n\n"
         f"Current batch: **{heading}**\n\n"
         "`Files:` list (authority for Edit/Write/MultiEdit enforcement):\n"
         f"{file_list_display}\n\n"
-        "If this file is a genuine prerequisite — implementation just "
-        "revealed it as needed and the batch can't complete or be tested "
-        "cleanly without it — halt and surface in chat with a one-line "
-        "justification (per NO-CODE-METHOD.md → Prohibited of Claude → "
-        "Two exceptions → Prerequisite carve-out). On the user's okay, "
-        "append the file to this batch's `Files:` list in BACKLOG.md "
-        "with a trailing `[Prerequisite, not in plan]` label, then retry "
-        "the edit. The hook re-parses BACKLOG.md at edit time, so the "
-        "new entry takes effect immediately.\n\n"
-        "If this file is NOT a prerequisite and you were trying to "
-        "refactor or 'while you're in there' outside the agreed batch "
-        "plan, stop. Finish the current batch, then route the change "
-        "through planning per NO-CODE-METHOD.md → How a new feature "
-        "enters the project."
+        "What to do: if this file is a genuine prerequisite — "
+        "implementation just revealed it as needed and the batch can't "
+        "complete or be tested cleanly without it — halt and surface in "
+        "chat with a one-line justification (prerequisite carve-out). On "
+        "the user's okay, append the file to this batch's `Files:` list "
+        "in BACKLOG.md with a trailing `[Prerequisite, not in plan]` "
+        "label, then retry the edit. The hook re-parses BACKLOG.md at "
+        "edit time, so the new entry takes effect immediately.\n\n"
+        "If this file is NOT a prerequisite, stop. Finish the current "
+        "batch, then route the change through planning."
+        + _mode_suffix(permission_mode)
     )
 
 
-def check_batch_file_list(project_root, target_path):
+def check_batch_file_list(project_root, target_path, permission_mode=""):
     """V25: enforce the batch file-list boundary on Edit/Write/MultiEdit.
 
     Returns a deny-reason string if target_path isn't on the current top
@@ -618,7 +638,8 @@ def check_batch_file_list(project_root, target_path):
     if str(target_path) in allowed_paths:
         return None  # on the list — allow
 
-    return make_boundary_deny_reason(target_path, batch, files_entries)
+    return make_boundary_deny_reason(target_path, batch, files_entries,
+                                     permission_mode)
 
 
 # --- V39 read-before-edit gate helpers ---
@@ -771,18 +792,16 @@ def make_v39_deny_reason(target_path, matching_entries, ux_headings, ux_present)
         )
 
     return (
-        f"{V39_DENY_MARKER}: {target_path}\n\n"
+        f"[No-code method] {V39_DENY_MARKER}: {target_path}\n\n"
         "Before editing this file, you must have the MANIFEST entry and "
         "the relevant `UX.md` Functionalities entry in view — the "
         "MANIFEST line tells you what the element is, the `UX.md` entry "
-        "tells you the user concern it serves (per universal-behaviour.md "
-        "→ *Required behaviours* → *Check MANIFEST.md and UX.md before "
-        "working on a feature*).\n\n"
+        "tells you the user concern it serves.\n\n"
         f"Matching `MANIFEST.md` entry:\n{entries_block}\n\n"
         f"{ux_block}\n\n"
-        "Retry the edit now. The hook scans the session transcript on "
-        "each invocation and allows the retry once it sees this deny — "
-        "block-once is via transcript scan, no state file, no PostToolUse."
+        "What to do: retry the edit now. The hook scans the session "
+        "transcript and allows the retry once it sees this deny — "
+        "block-once semantics, no state file."
     )
 
 
@@ -844,48 +863,48 @@ def is_scaffold_path(target_path, project_root):
     return relative.name in SCAFFOLD_NAMES
 
 
-def make_v29_edit_deny_reason(target_path) -> str:
+def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
     """V29: deny-reason for Edit/Write/MultiEdit on a non-scaffold path
     in an unadopted folder. Names the path, points at /adopt, and
     documents the opt-out path so the user has a clear exit."""
     return (
-        f"BLOCKED: this folder is unadopted (no `*No-code method — Version "
-        "N.*` footer in `CLAUDE.md`), and it contains pre-existing work "
-        "that the no-code-method plugin would put at risk if you proceed. "
-        f"The Edit/Write/MultiEdit target `{target_path}` is outside the "
-        "scaffolding paths the plugin manages.\n\n"
-        "Run `/adopt` first. The five-case dialogue routes you to the "
-        "right setup: empty folder → new project; existing code with no "
-        "docs → scaffold alongside; existing code with foreign `CLAUDE.md` "
-        "→ migrate / overwrite / leave; already adopted; opted out.\n\n"
-        "If you have deliberately decided NOT to use the method in this "
-        "folder, run `/adopt` and pick the cancel option (case 2) or the "
-        "leave-alone option (case 3) — both write `.no-code-method-skip` "
-        "at the project root, which opts the folder out of method "
-        "discipline and stops this gate from firing on future tool calls."
+        "[No-code method] BLOCKED: this folder is unadopted (no `*No-code "
+        "method — Version N.*` footer in `CLAUDE.md`), and it contains "
+        "pre-existing work that the no-code-method plugin would put at "
+        f"risk if you proceed. The Edit/Write/MultiEdit target "
+        f"`{target_path}` is outside the scaffolding paths the plugin "
+        "manages.\n\n"
+        "What to do: run `/adopt` first. The five-case dialogue routes "
+        "you to the right setup: empty folder → new project; existing "
+        "code with no docs → scaffold alongside; existing code with "
+        "foreign `CLAUDE.md` → migrate / overwrite / leave; already "
+        "adopted; opted out. To opt out instead, run `/adopt` and pick "
+        "the cancel or leave-alone option — both write "
+        "`.no-code-method-skip`, which stops this gate permanently."
+        + _mode_suffix(permission_mode)
     )
 
 
-def make_v29_task_deny_reason(subagent_type) -> str:
+def make_v29_task_deny_reason(subagent_type, permission_mode="") -> str:
     """V29: deny-reason for Task invocations of a method subagent (other
     than /adopt itself) in an unadopted folder. The method subagents all
     assume a method-managed project; against an unadopted folder they
     would fail or produce garbage."""
     return (
-        f"BLOCKED: this folder is unadopted, so the method subagent "
-        f"`{subagent_type}` cannot be invoked. The planning, before-build, "
-        "batch-executor, and after-build subagents all assume a method-"
-        "managed project (UX.md, BACKLOG.md, MANIFEST.md present and "
-        "wired through CLAUDE.md's path block); they would fail or "
-        "produce garbage against an unadopted folder.\n\n"
-        "Run `/adopt` first. After adoption completes, this subagent "
-        "will work normally. To opt out of method discipline for this "
-        "folder instead, run `/adopt` and pick the cancel option "
-        "(case 2) or leave-alone option (case 3)."
+        "[No-code method] BLOCKED: this folder is unadopted, so the "
+        f"method subagent `{subagent_type}` cannot be invoked. The "
+        "planning, before-build, batch-executor, and after-build "
+        "subagents all assume a method-managed project; they would fail "
+        "or produce garbage against an unadopted folder.\n\n"
+        "What to do: run `/adopt` first. After adoption completes, this "
+        "subagent will work normally. To opt out instead, run `/adopt` "
+        "and pick the cancel or leave-alone option."
+        + _mode_suffix(permission_mode)
     )
 
 
-def check_v29_adoption_gate(project_root, tool_name, tool_input):
+def check_v29_adoption_gate(project_root, tool_name, tool_input,
+                            permission_mode=""):
     """V29: enforce the adoption gate on Edit/Write/MultiEdit and Task
     calls when the folder is unadopted.
 
@@ -901,29 +920,21 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input):
     at SessionStart, which Claude Code's hook protocol doesn't support
     (GitHub anthropics/claude-code#10225 → #12151)."""
     if not is_unadopted_with_work(project_root):
-        # Adopted, opted out, or genuinely empty — gate doesn't apply.
-        # Downstream checks (V19/V22/V25/V27) handle the adopted-folder
-        # cases on their own terms.
         return None
 
     if tool_name == "Task":
         subagent_type = tool_input.get("subagent_type")
-        # /adopt is the resolution mechanism — always allowed.
         if subagent_type == ADOPT_SUBAGENT_TYPE:
             return None
-        # Other method subagents are blocked.
         if isinstance(subagent_type, str) and subagent_type.startswith(
             METHOD_SUBAGENT_PREFIX
         ):
-            return make_v29_task_deny_reason(subagent_type)
-        # Non-method Task calls (user-invoked general-purpose agents,
-        # etc.) fall through.
+            return make_v29_task_deny_reason(subagent_type, permission_mode)
         return None
 
     if tool_name in WRITING_TOOLS:
         file_path = tool_input.get("file_path")
         if not isinstance(file_path, str) or not file_path:
-            # Malformed input — be lenient.
             return None
         target = Path(file_path)
         try:
@@ -935,13 +946,8 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input):
         except OSError:
             return None
         if is_scaffold_path(target, project_root):
-            # Scaffold-path write — allowed during unadopted state so
-            # /adopt's scaffolding can proceed. Minor coverage gap: main
-            # Claude can also write these paths directly without going
-            # through /adopt. Accepted per V29 scope (the user reviews
-            # any unexpected scaffold output).
             return None
-        return make_v29_edit_deny_reason(target)
+        return make_v29_edit_deny_reason(target, permission_mode)
 
     return None
 
@@ -987,16 +993,14 @@ def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, sessi
         )
 
     return (
-        "BLOCKED: cannot start a new build batch while the previous "
-        "batch's test session is still open.\n\n"
+        "[No-code method] BLOCKED: cannot start a new build batch while "
+        "the previous batch's test session is still open.\n\n"
         f"{mode_explanation}\n\n"
         f"Unconfirmed TEST-LOG.md rows:\n{rows_block}\n\n"
-        "Per NO-CODE-METHOD.md → *Method contract → Prohibited of Claude "
-        "→ Test-confirmation gate* (Rule 3), the test-session-close "
-        "read-back (Rule 2, first sub-step of *During planning*) must "
-        "run before a new build batch starts. Tell the user to /clear "
-        "and start a planning session; the planning subagent will walk "
-        "each row above asking Pass / Fail / Skipped."
+        "What to do: tell the user to /clear and start a planning "
+        "session. The planning subagent will walk each row above asking "
+        "Pass / Fail / Skipped — the read-back must complete before a "
+        "new build batch can start."
     )
 
 
@@ -1041,6 +1045,12 @@ def main() -> int:
     tool_name = data.get("tool_name")
     tool_input = data.get("tool_input") or {}
 
+    # V43: extract permission_mode for mode-aware deny messages. Defensive:
+    # absent or non-string values default to empty (no mode-aware text).
+    permission_mode = data.get("permission_mode", "")
+    if not isinstance(permission_mode, str):
+        permission_mode = ""
+
     # Anything outside the writing tools + Task passes through without
     # inspection. Cheap exit before the project-root resolution.
     if tool_name not in WRITING_TOOLS and tool_name != "Task":
@@ -1058,7 +1068,8 @@ def main() -> int:
     # calls when folder is unadopted-with-work and not opted out. Returns
     # None for adopted folders, opted-out folders, and genuinely-empty
     # folders — downstream checks then run on their normal terms.
-    v29_deny_reason = check_v29_adoption_gate(project_root, tool_name, tool_input)
+    v29_deny_reason = check_v29_adoption_gate(project_root, tool_name, tool_input,
+                                               permission_mode)
     if v29_deny_reason:
         return emit_deny(v29_deny_reason)
 
@@ -1090,7 +1101,7 @@ def main() -> int:
         # V38: narrow carve-out — footer-only edits are metadata, not
         # content, and don't need [FOLD-IN PENDING] routing.
         if not is_footer_only_edit(tool_name, tool_input):
-            return emit_deny(make_reason(logical_name))
+            return emit_deny(make_reason(logical_name, permission_mode))
 
     # V22: Serves-line check fires on BACKLOG.md edits whose new content
     # contains one or more `Serves UX.md: <entry>.` lines. Anywhere the
@@ -1105,7 +1116,8 @@ def main() -> int:
     # exists in BACKLOG.md, deny any edit whose target isn't on the batch's
     # `Files:` list (with BACKLOG.md and MANIFEST.md exempt; open mode when
     # no batch is active).
-    boundary_deny_reason = check_batch_file_list(project_root, target_path)
+    boundary_deny_reason = check_batch_file_list(project_root, target_path,
+                                                  permission_mode)
     if boundary_deny_reason:
         return emit_deny(boundary_deny_reason)
 
