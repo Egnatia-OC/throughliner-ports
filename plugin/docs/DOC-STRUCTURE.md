@@ -167,21 +167,24 @@ Each block specifies whether it's a **replace** (swap the section between headin
 
 **PreToolUse carve-out.** The fold-in section is the one part of a locked doc that Claude can edit. The PreToolUse hook allows edits that fall entirely within the fold-in section (between the `## Fold-ins pending` heading and the footer separator). This covers appending new blocks and removing blocks after the user confirms fold-in. Edits to any other part of the locked doc are still denied. The detection pattern mirrors V38's footer-stamp carve-out (`is_footer_only_edit()`): both use section-boundary markers to verify the edit stays within the allowed region.
 
-**Migration from the centralised BACKLOG.md fold-in section.** Projects upgrading from a version where fold-in blocks lived in BACKLOG.md's centralised *Fold-ins pending* section: the planning subagent redistributes any existing blocks to their destination docs' fold-in sections during its normal planning-session work. No explicit `/setup` run needed.
+**Migration from the centralised BACKLOG fold-in section.** Projects upgrading from a version where fold-in blocks lived in BACKLOG's centralised *Fold-ins pending* section: the planning subagent redistributes any existing blocks to their destination docs' fold-in sections during its normal planning-session work. No explicit `/setup` run needed.
 
-## BACKLOG.md structure
+## BACKLOG structure
 
-`BACKLOG.md` consolidates everything deferred, in four sections in fixed order.
+BACKLOG consolidates everything deferred. Two formats, auto-detected by the plugin:
 
-**Maintained by Claude during planning, not by the user.** Whenever a planning decision changes `BACKLOG.md` — adding, removing, reordering, splitting, or reclassifying an item or batch — Claude edits directly. The user reviews afterwards; doesn't apply.
+- **Single-file (legacy):** a single `BACKLOG.md` with everything inline, including full build-batch content in the `## Build batches` section. The `CLAUDE.md` path block entry `"BACKLOG.md"` points to `BACKLOG.md`.
+- **Folder (V48+):** a `BACKLOG/` directory containing `INDEX.md` (with the build-order reference list, Red flags, Planning batches, and Open questions) and per-batch `.md` files (one per build batch). The path block entry `"BACKLOG.md"` points to `BACKLOG/INDEX.md`. New projects created by `/setup` use folder mode by default.
 
-**Header.** Brief statement of purpose, section order, and the maintenance rule (so a runtime reader of `BACKLOG.md` itself sees the rule too).
+**Maintained by Claude during planning, not by the user.** Whenever a planning decision changes BACKLOG — adding, removing, reordering, splitting, or reclassifying an item or batch — Claude edits directly. The user reviews afterwards; doesn't apply.
 
-**Four sections, in this order:**
+**Header.** Brief statement of purpose, section order, and the maintenance rule.
+
+**Four sections, in this order** (in INDEX.md for folder mode, in BACKLOG.md for single-file mode):
 
 - **Red flags.** Security, privacy, data integrity, or safety concerns surfaced and explicitly deferred by the user. Empty by default. Each entry is a blockquote: `**`[RED FLAG]`**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix]. Removed once addressed. Claude populates this section per the *Red flags — screen and surface* rule in `universal-behaviour.md` → *Required behaviours*.
 
-  **Red flags are concerns parked outside any active work stream.** Concerns inside an active build batch live there until the batch ships. Concerns attached to a feature in a planning batch become questions inside that batch — not Red flags. Red flags are specifically concerns the user has explicitly chosen to defer with no active plan to address them.
+  **Red flags are concerns parked outside any active work stream.** Concerns inside an active build batch live there until the batch ships. Concerns attached to a feature in a planning batch become questions inside that batch — not Red flags. Red flags are specifically concerns the user has explicitly chosen to defer with no active plan to address them. In folder mode, this section lives in INDEX.md.
 
 - **Planning batches.** Two kinds of question live here. **(a)** Open questions that must resolve before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each batch lists the questions and ends with a `Blocks:` line — either naming the build batch(es) it holds up, or `Blocks: scope decision — no build batch yet` for an existence question. Resolution: append the answer to the batch and add a corresponding `[FOLD-IN PENDING]` block to the destination doc's *Fold-ins pending* section (with this batch's name as *origin*). Leave the planning batch in place — the user removes it during the same planning session in which they fold the answer into the destination doc by hand. If a scope-existence batch resolves to "yes, build it," the planning batch may convert to or spawn a build batch at that point, in addition to the fold-in.
 
@@ -189,12 +192,24 @@ Each block specifies whether it's a **replace** (swap the section between headin
 
 - **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build (after any one currently in progress). Each batch has two regions: **scope context** (Goal through Dependencies/Red flags — the strategic frame) and **build operations** (Changes through Serves — the tactical execution surface). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `planning.md` → *Procedure order* step 2). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
 
-  Build batches must serve an entry in a source-of-truth doc — see `planning.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in `BACKLOG.md` regardless of scope. If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`).
+  Build batches must serve an entry in a source-of-truth doc — see `planning.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in BACKLOG regardless of scope. If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`).
 
-  **Batch structure — full shape.** Sections appear in this order within each batch. The scope-context sections are written by the planning subagent when the batch is created; the build-operations sections are populated by the before-build subagent during batch lock-in.
+  **Two batch formats.** In single-file mode, batches are inline under `## Build batches` with `### Batch:` headings. In folder mode (V48+), each batch lives in its own file (`NNNN-batch-name.md`) in the `BACKLOG/` directory, with `INDEX.md`'s `## Build batches` section carrying a reference list for ordering:
 
   ```
-  ### Batch: [short descriptive name]
+  ## Build batches
+
+  - `0001-first-batch-name.md` — one-line description
+  - `0002-second-batch-name.md` — one-line description
+  ```
+
+  The `NNNN` number is allocated at creation time (via `plugin/scripts/allocate_number.py`) and never changes. Reordering means moving lines in the reference list, not renaming files.
+
+  **Batch structure — full shape.** Sections appear in this order within each batch. The scope-context sections are written by the planning subagent when the batch is created; the build-operations sections are populated by the before-build subagent during batch lock-in. In folder mode, the heading is `# <name>` (H1); in single-file mode it's `### Batch: <name>`.
+
+  ```
+  # [short descriptive name]                        ← folder mode (H1)
+  ### Batch: [short descriptive name]               ← single-file mode
 
   **Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
 
@@ -232,13 +247,13 @@ Each block specifies whether it's a **replace** (swap the section between headin
   - **Decisions to make this batch.** Unresolved scope questions within this batch — things that must be decided during the build, not parked as open questions. Distinct from the section-level Open questions (parking lot for non-blocking items) and from planning batches (blocking questions with a `Blocks:` line). Omit entirely if all decisions are made at planning time.
   - **Dependencies.** What this batch needs from outside itself: another batch shipped first, a planning batch resolved, an external resource provisioned. Peer to `Blocks:` on planning batches — `Blocks:` points forward ("resolving me unblocks X"), Dependencies points backward ("before starting me, Y must have happened"). Omit if none.
 
-  **Red flags sub-section.** Appears only when the planning subagent detects security-shaped scope — the batch touches auth, secrets, PII, deletion of user data, payment, third-party API keys, or similar surfaces. Written by the planning subagent at batch-creation time; not a static always-present section. Contains specific concerns and mitigations for this batch's scope. Distinct from the top-level Red flags section in BACKLOG.md (which holds concerns deferred with no active plan); this sub-section holds concerns attached to an active batch.
+  **Red flags sub-section.** Appears only when the planning subagent detects security-shaped scope — the batch touches auth, secrets, PII, deletion of user data, payment, third-party API keys, or similar surfaces. Written by the planning subagent at batch-creation time; not a static always-present section. Contains specific concerns and mitigations for this batch's scope. Distinct from the top-level Red flags section in BACKLOG (which holds concerns deferred with no active plan); this sub-section holds concerns attached to an active batch.
 
   **`Changes:` delimiter.** The `Changes:` line separates scope-context sections from the change list. Required for new batches; the parser falls back to legacy behaviour (extract all `- ` bullets before `Files:`) for batches without it. The delimiter keeps the parser's change-list extraction clean when scope sections contain bullet-formatted content.
 
-  **Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list carries `[Requested]` (user asked) or `[Suggested]` (Claude proposed) immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change enters BACKLOG.md, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent for the build recap. The `Files:` sub-section does **not** carry labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from both, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and don't appear in BACKLOG.md change-list bullets ahead of the build.
+  **Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list carries `[Requested]` (user asked) or `[Suggested]` (Claude proposed) immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change enters BACKLOG, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent for the build recap. The `Files:` sub-section does **not** carry labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from both, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and don't appear in BACKLOG change-list bullets ahead of the build.
 
-**`Inputs:` line.** An optional bullet list of non-standard resources the batch needs before starting work. Each entry: `` `<path or reference>` — <why this batch needs it> ``. Sits between the change list and the `Files:` sub-section. Standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are omitted — they're read every session. Only list what's beyond the standard set: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference. Written by the before-build subagent during batch lock-in; consumed by the batch-executor, which reads every named input before starting work.
+**`Inputs:` line.** An optional bullet list of non-standard resources the batch needs before starting work. Each entry: `` `<path or reference>` — <why this batch needs it> ``. Sits between the change list and the `Files:` sub-section. Standard docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) are omitted — they're read every session. Only list what's beyond the standard set: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference. Written by the before-build subagent during batch lock-in; consumed by the batch-executor, which reads every named input before starting work.
 
 **`Files:` sub-section.** A GitHub-style task list — one `- [ ]` per file, `- [x]` when done — of every file the batch will modify, each shaped `` - [ ] `<path>` — <one-sentence summary of the change in that file> ``. It is the build-time enforcement surface: the PreToolUse hook blocks `Edit`/`Write`/`MultiEdit` on any file not in the current batch's `Files:` list. Prerequisite carve-outs (a file added mid-build per `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → *Prerequisite carve-out*) are appended with a trailing `[Prerequisite, not in plan]` label, recording both presence and provenance.
 
@@ -260,4 +275,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 47.*
+*No-code method — Version 48.*

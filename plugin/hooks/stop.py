@@ -96,6 +96,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
     safe_read_text,
     resolve_path_block_entry,
+    resolve_backlog_dir,
     run_parser,
     is_test_session_open,
 )
@@ -169,11 +170,32 @@ def format_reason(batch):
 # --- V27 after-build redirect helpers ---
 
 
-def has_ticked_file_in_build_batches(backlog_text):
-    """Return True iff the `## Build batches` section contains at least one
-    `- [x]` file bullet. Indicates a batch has been worked on and is sitting
-    awaiting after-build (or planning). False when the section is missing,
-    empty, or contains only unticked bullets."""
+def has_ticked_file_in_build_batches(backlog_text, backlog_dir=None):
+    """Return True iff the Build batches region contains at least one
+    `- [x]` file bullet. Indicates a batch has been worked on and is
+    sitting awaiting after-build (or planning). False when the section
+    is missing, empty, or contains only unticked bullets.
+
+    In single-file mode (backlog_dir is None), searches the `## Build
+    batches` section of backlog_text directly.
+
+    In folder mode (backlog_dir is a Path to BACKLOG/), the ticked
+    bullets live inside per-batch files — this function scans each
+    `.md` file in backlog_dir for `- [x]` bullets."""
+    if backlog_dir is not None:
+        try:
+            for entry in backlog_dir.iterdir():
+                if not entry.is_file() or not entry.name.endswith(".md"):
+                    continue
+                if entry.name.upper() == "INDEX.MD":
+                    continue
+                text = safe_read_text(entry)
+                if text and TICKED_FILE_BULLET_PATTERN.search(text):
+                    return True
+        except OSError:
+            pass
+        return False
+
     section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
     if not section_match:
         return False
@@ -188,35 +210,44 @@ def has_ticked_file_in_build_batches(backlog_text):
 
 
 def after_build_appears_pending(project_root, backlog_path, backlog_text):
-    """Return True iff a fully-ticked batch sits in BACKLOG.md and
+    """Return True iff a fully-ticked batch sits in BACKLOG and
     after-build appears not to have run for it yet.
 
-    Heuristic: BACKLOG.mtime > TEST-LOG.mtime → a batch tick happened
-    after after-build's last write to TEST-LOG. When TEST-LOG.md is
+    Heuristic: BACKLOG mtime > TEST-LOG.mtime → a batch tick happened
+    after after-build's last write to TEST-LOG. In folder mode, "BACKLOG
+    mtime" is the most recent mtime across all files in BACKLOG/ (the
+    tick lands in a per-batch file, not INDEX.md). When TEST-LOG.md is
     missing entirely from the path block, we redirect anyway — the
     after-build subagent will scaffold or warn as appropriate.
 
     Lenient on stat failures: any OSError → False (no redirect), since
     we can't be sure of the comparison.
 
-    Limitation: a planning session that touches BACKLOG.md after
-    after-build ran (e.g. removing the completed batch) advances
-    BACKLOG.mtime ahead of TEST-LOG.mtime. The has_ticked_file_in_build_batches
+    Limitation: a planning session that touches BACKLOG after
+    after-build ran (e.g. removing the completed batch) advances the
+    mtime ahead of TEST-LOG.mtime. The has_ticked_file_in_build_batches
     gate above blocks the false-positive — if planning removed all
     completed batches, no `- [x]` survives and the check returns False
     before this function is consulted."""
-    if not has_ticked_file_in_build_batches(backlog_text):
+    backlog_dir = resolve_backlog_dir(project_root)
+    if not has_ticked_file_in_build_batches(backlog_text, backlog_dir):
         return False
 
     test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
     if test_log_path is None or not test_log_path.exists():
-        # No TEST-LOG in path block (or path block points to a missing
-        # file). Redirect anyway — after-build's first run will write
-        # rows or surface the problem.
         return True
 
     try:
-        backlog_mtime = backlog_path.stat().st_mtime
+        if backlog_dir is not None:
+            max_mtime = 0.0
+            for entry in backlog_dir.iterdir():
+                if entry.is_file():
+                    mt = entry.stat().st_mtime
+                    if mt > max_mtime:
+                        max_mtime = mt
+            backlog_mtime = max_mtime
+        else:
+            backlog_mtime = backlog_path.stat().st_mtime
         test_log_mtime = test_log_path.stat().st_mtime
     except OSError:
         return False

@@ -19,4 +19,4 @@ Entry format (newest first):
 -->
 
 ---
-*No-code method — Version 47.*
+*No-code method — Version 48.*

@@ -8,13 +8,15 @@ From V17 onwards, sessions are tracked as **git commits and tags** (`v17`, `v18`
 
 **Session tag vs. method version** — these are two different things. The session tag increments per session; the `*No-code method — Version N.*` footer at the bottom of every method-side file (and `PLUGIN_METHOD_VERSION` in `session_start.py`, and `plugin.json` `version`) only bumps when the session **substantively changes the method or plugin**. Dev-internal-only sessions (BUILD-METHOD edits, BUILD-LOG entries, TEST-LOG appends, planning artefact reshuffles) ship with the footer unchanged. Full rule in `BUILD-METHOD.md` → *Session tag vs. method version*.
 
-Per-session scopes for V18 onwards live as `sessions/V18.md`, `V19.md`, etc. **The session files are PROVISIONAL.** If the plan changes mid-track — sessions reordered, merged, split, or skipped — the files should be renamed, deleted, or merged. A file existing isn't a commitment to do that session in that order.
+Per-session scopes live as `sessions/NNNN-kebab-title.md` (e.g. `0050-adr-style-numbering.md`). Prior to V50 they used `V<N>.md`; those were retroactively renamed. **The session files are PROVISIONAL.** If the plan changes mid-track — sessions reordered, merged, split, or skipped — the files should be deleted or merged. A file existing isn't a commitment to do that session in that order.
+
+**Allocation rule.** New scope files get the next unused 4-digit number by scanning `planning/sessions/` for `NNNN-*.md` filenames (same logic as `plugin/scripts/allocate_number.py`). Numbers are never reused or renumbered. Reordering work means moving rows in the session list below, not renaming files.
 
 When a future session runs, its plugin code (hook scripts, subagent definitions, skill bodies, slash command definitions) lands in a `plugin/` subfolder of the repo root (created when the first plugin code arrives in V18).
 
 ## The session list
 
-| V# | Session | Output |
+| # | Session | Output |
 |---|---|---|
 | V18 | Path block format + plugin scaffold + `SessionStart` hook (universal-behaviour rules) | `templates/CLAUDE-TEMPLATE.md` path block in fenced JSON; plugin skeleton; SessionStart hook installed (originally planned as UserPromptSubmit; pivoted to SessionStart due to anthropics/claude-code#10225). **Shipped.** |
 | V19 | Read-only PreToolUse hook + bundled templates + `/init-project` skill-command + Fold-ins pending section | Lock enforcement; templates scaffolded by slash command; structural rewrite for Fold-ins pending section; tested on Taskflow. **Shipped.** |
@@ -64,10 +66,10 @@ When a future session runs, its plugin code (hook scripts, subagent definitions,
 
 ## Session-scope file shape
 
-Each `sessions/Vxx.md` follows this shape:
+Each `sessions/NNNN-kebab-title.md` follows this shape:
 
 ```markdown
-# Vxx — [Session Name]
+# NNNN — [Session Name]
 
 ## Goal
 [One paragraph: what this session aims to produce.]

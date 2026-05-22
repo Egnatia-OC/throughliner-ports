@@ -27,17 +27,17 @@ A first session in Sovereign Implementer is distinct from a normal build sequenc
 
 - Open Claude Code in the project folder. Run `/setup`.
 - `/setup` detects which case applies — empty folder, existing code without docs, existing code with non-method docs, already method-managed, or opted out — and runs the matching dialogue.
-- For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates a `planning/drafts/` folder, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
+- For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG/ folder, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates a `planning/drafts/` folder, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
 - The dialogue's outputs land as `[FOLD-IN PENDING]` blocks in the destination docs' own *Fold-ins pending* sections (e.g. UX.md's `## Fold-ins pending`). The no-coder folds the UX content into UX.md's main body by hand (the doc is read-only to Claude), and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line pointing at the entry it implements.
 - After the fold-in, the project is ready for its first build. Run `/before-build` to lock the next batch, then `/build` to execute it. The plugin orchestrates the rest.
 
 ## Guardrail .md docs
 
-Six markdown files sit in the project root once `/setup` has scaffolded the project, plus a `planning/drafts/` folder. Each does one job, and the workflow expects a clean separation between them.
+Five markdown files and one folder sit in the project root once `/setup` has scaffolded the project, plus a `planning/drafts/` folder. Each does one job, and the workflow expects a clean separation between them.
 
 - **CLAUDE.md** — entry point. Tells Claude Code where every other doc lives via a JSON path block, and carries any project-specific behavioural notes. Read by Claude at every session start.
 - **UX.md** — user-facing description of the app. Every entry corresponds to something the no-coder can experience and test in the current build, plus a mandatory "the user needs this because…" line tying the entry back to a UX principle or other user context. Source of truth — Claude cannot edit this file; the no-coder maintains it by hand during planning sessions.
-- **BACKLOG.md** — deferred work, in four fixed-order sections: Red flags (security/privacy/data integrity), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority), and Open questions (non-blocking parking-lot items worth tracking but not blocking any specific batch). Each build batch carries scope-context sections (Goal, Outputs, Success criteria, and conditionally Decisions/Dependencies/Red flags) written during planning, plus build-operations sections (Changes, Inputs, Files, Tests, Serves) populated during before-build.
+- **BACKLOG/** — deferred work, structured as a folder. `INDEX.md` inside the folder carries four fixed-order sections: Red flags (security/privacy/data integrity), Planning batches (open questions blocking a build batch), Build batches (a reference list ordering per-batch files), and Open questions (non-blocking parking-lot items worth tracking but not blocking any specific batch). Each build batch lives in its own file in the folder (e.g. `0001-add-today-screen.md`), carrying scope-context sections (Goal, Outputs, Success criteria, and conditionally Decisions/Dependencies/Red flags) written during planning, plus build-operations sections (Changes, Inputs, Files, Tests, Serves) populated during before-build. Reordering batches means moving lines in INDEX.md, not renaming files.
 - **MANIFEST.md** — a flat alphabetical glossary of named codebase elements the no-coder might want to look up. Each entry pairs a name with the file path it lives at (in parentheses) and a one-line description. Maintained by Claude during builds; not read cover-to-cover. The path field anchors a read-before-edit gate in the PreToolUse hook — Claude must have the MANIFEST entry and the matching `UX.md` entry in view before editing a file that has a MANIFEST entry; see *What's inside the plugin* below.
 - **TEST-LOG.md** — a row-per-test record of every shipped build batch's outcomes. Ten columns: # / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes. When a batch ships, Claude appends rows, runs Claude-automatable tests (filling in results for Claude-verified rows), and leaves user-verified rows for the no-coder to confirm per-row during the next planning session.
 - **BUILD-LOG.md** — a running record of decisions, changes, and reasoning for every build, newest-first. Written by Claude after each build completes. Not read cover-to-cover — search when you need the "why" behind a previous build's choices. Entry shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward.
@@ -68,7 +68,7 @@ The method's response is to give every build batch the same scoping structure th
 
 ## Anatomy of a batch
 
-A build batch in BACKLOG.md has two regions: **scope context** at the top (the strategic frame) and **build operations** below (the tactical execution surface).
+A build batch lives in its own file inside the BACKLOG/ folder (e.g. `BACKLOG/0001-add-today-screen.md`). Each file has two regions: **scope context** at the top (the strategic frame) and **build operations** below (the tactical execution surface).
 
 **Scope context** — written by the planning subagent when the batch is created:
 
@@ -293,7 +293,7 @@ The method's rules are not arbitrary; each one defends something. Some of the de
 
 **Why MANIFEST.md starts flat instead of pre-sectioned.** "Switch to alphabetical sections by area when the flat list grows too long" sounds like permission to start with sections from day one. It is not. Most projects' MANIFEST.md never grows large enough to need sections, and pre-emptive sectioning forces architecture decisions (which "areas" exist?) before there is enough code to know. Wait until scrolling the flat list actually hurts.
 
-**Why BACKLOG.md is one file with four sections instead of four files.** Red flags, planning batches, build batches, and open questions could live in four separate files. They do not, because the friction of multiple places to check is what causes deferred items to slip through. One file, four sections, top-to-bottom by priority means there is exactly one place to look for what is outstanding.
+**Why BACKLOG is a folder, not four separate files by section type.** Red flags, planning batches, build batches, and open questions could live in four separate files by type. They do not — INDEX.md carries all four sections in one file so there is exactly one place to look for what is outstanding. Build batches get their own per-batch files because batches accumulate content (scope context, file lists, test plans) that would bloat the index. The index carries the build order as a reference list; each per-batch file carries its own content. The split is content-volume, not category — the four-section structure and top-to-bottom ordering are preserved in INDEX.md.
 
 **Why Risk accepted is its own labelled line.** Without an explicit *Risk accepted* line, the cost of a deliberate simplification fades from view. Six months later, someone (often the same person who chose the simplification) wonders why the app deliberately omits a feature and considers adding it — without remembering why it was omitted. The Risk-accepted line keeps the trade-off on the page so any re-litigation happens with the original reasoning in view.
 
@@ -321,7 +321,7 @@ Claude Code's built-in **plan panel** (the Shift+Tab plan-mode surface) does not
 
 ## When you need more
 
-This document is the primer. The method's full specification lives inside the plugin you installed, at `plugin/docs/NO-CODE-METHOD.md` (the behavioural rules and operational procedures) and `plugin/docs/DOC-STRUCTURE.md` (the structural rules for the project's docs). Both files are also browsable on the source repo at `https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs`. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...), one tag per working session.
+This document is the primer. The method's full specification lives inside the plugin you installed, at `plugin/hooks/universal-behaviour.md` (the behavioural rules and operational procedures) and `plugin/docs/DOC-STRUCTURE.md` (the structural rules for the project's docs). Both files are also browsable on the source repo at `https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs`. From V17 onwards, versions are tracked as git tags (`v17`, `v18`, ...), one tag per working session.
 
 Reach for them when:
 
@@ -333,4 +333,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 47.*
+*No-code method — Version 48.*

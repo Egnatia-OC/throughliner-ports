@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
 """
-parse_backlog.py — shared BACKLOG.md parser for the no-code-method plugin.
+parse_backlog.py — shared BACKLOG parser for the no-code-method plugin.
 
-Locates the top unticked build batch in a BACKLOG.md file and emits its data
-as JSON on stdout. The "top unticked batch" is the first build batch (in
-file order) whose `Files:` sub-section contains at least one `- [ ]` bullet.
-Batches that are placeholders (no `Files:` section or empty `Files:` list)
-and batches that are complete (all `- [x]`) are skipped past.
+Locates the top unticked build batch and emits its data as JSON on stdout.
+The "top unticked batch" is the first build batch (in priority order) whose
+`Files:` sub-section contains at least one `- [ ]` bullet. Batches that
+are placeholders (no `Files:` section or empty `Files:` list) and batches
+that are complete (all `- [x]`) are skipped past.
+
+Supports two BACKLOG formats (auto-detected):
+
+  **Single-file (legacy):** A single `BACKLOG.md` with full batch content
+  inline in the `## Build batches` section. Detected when the section
+  contains `### Batch:` headings.
+
+  **Folder (V48+):** A `BACKLOG/` folder with `INDEX.md` (carrying the
+  build-order list as backtick-wrapped filenames) and per-batch `.md`
+  files. Detected when `## Build batches` contains reference lines
+  (`` - `NNNN-name.md` ``) instead of `### Batch:` headings.
 
 Four call sites consume this parser (V25, extended V46):
 
@@ -17,7 +28,7 @@ Four call sites consume this parser (V25, extended V46):
   - The PreToolUse hook calls the parser at edit-time to look up the
     current batch's declared file list for the boundary check.
   - The PostToolUse hook (V46) imports `find_top_unticked_batch` directly
-    (not subprocess) to validate BACKLOG.md format after each edit.
+    (not subprocess) to validate BACKLOG format after each edit.
 
 The parser is deliberately lenient: any failure (missing file, unparseable
 section, malformed batch) results in `{}` on stdout and exit 0. Callers
@@ -28,6 +39,7 @@ hook falls through to allow.
 CLI:
 
     python parse_backlog.py <path/to/BACKLOG.md>
+    python parse_backlog.py <path/to/BACKLOG/INDEX.md>
 
 Output (stdout, JSON, compact):
 
@@ -36,7 +48,8 @@ Output (stdout, JSON, compact):
     Otherwise:
 
     {
-      "batch_heading": "<text after `### Batch:`>",
+      "batch_heading": "<batch name>",
+      "batch_file":    "<filename — only present in folder mode>",
       "change_list":   ["<bullet text>", ...],
       "files": [
         {
@@ -54,7 +67,7 @@ Output (stdout, JSON, compact):
   Paths are returned relative as-written; callers resolve against the
   project root.
 
-Spec: DOC-STRUCTURE.md → BACKLOG.md structure → Build batches, the
+Spec: DOC-STRUCTURE.md → BACKLOG structure → Build batches, the
 **`Changes:` delimiter** (V47), and the **`Files:` sub-section**.
 """
 
@@ -72,8 +85,14 @@ BUILD_BATCHES_SECTION_PATTERN = re.compile(r"^## Build batches\s*$", re.MULTILIN
 # Any other top-level section — bounds the build-batches section.
 NEXT_TOP_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
 
-# Batch heading: `### Batch: <name>`. Captures the name.
+# Batch heading: `### Batch: <name>`. Captures the name. (Single-file mode.)
 BATCH_HEADING_PATTERN = re.compile(r"^### Batch:\s*(.+?)\s*$", re.MULTILINE)
+
+# Per-batch file H1 heading: `# <name>`. Captures the name. (Folder mode.)
+BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
+
+# Batch reference line in INDEX.md: `- `NNNN-name.md`` with optional description.
+BATCH_REF_PATTERN = re.compile(r"^-\s+`(\d{4}-.+?\.md)`", re.MULTILINE)
 
 # `Changes:` sub-section anchor (V47 — separates scope sections from change list).
 CHANGES_LINE_PATTERN = re.compile(r"^Changes:\s*$", re.MULTILINE)
@@ -159,8 +178,6 @@ def parse_file_bullet(line):
     tick_char, path, summary = m.group(1), m.group(2), m.group(3)
     prerequisite = PREREQ_LABEL in summary
     if prerequisite:
-        # Remove the label, then trim trailing separator/whitespace it left
-        # behind so the summary reads cleanly without dangling punctuation.
         summary = summary.replace(PREREQ_LABEL, "").rstrip(" —-").rstrip()
     return {
         "path": path,
@@ -171,9 +188,11 @@ def parse_file_bullet(line):
 
 
 def parse_batch_body(heading, body):
-    """Parse the body of one batch (everything after the `### Batch:` heading,
-    up to the next batch or end-of-section). Returns dict on success, None on
-    malformed/placeholder batches (no `Files:` section or empty file list)."""
+    """Parse the body of one batch (everything after the heading, up to
+    the next batch or end-of-section/file). Returns dict on success, None
+    on malformed/placeholder batches (no `Files:` section or empty file
+    list). Works for both single-file mode (body from `### Batch:` region)
+    and folder mode (body from per-batch file after `# <name>`)."""
     files_match = FILES_LINE_PATTERN.search(body)
     if not files_match:
         return None
@@ -195,13 +214,6 @@ def parse_batch_body(heading, body):
     if not files:
         return None
 
-    # Placeholder detection — if the batch heading or any file path is a
-    # template placeholder from BACKLOG-TEMPLATE.md, the batch is template
-    # content not yet filled in. Return None so consumers skip past it
-    # (same path as malformed). Strict on partial fills: a single
-    # placeholder path triggers None, since emitting a payload with
-    # partial-real-partial-template content would feed batch-executor
-    # garbage.
     if TEMPLATE_PLACEHOLDER_PATTERN.match(heading.strip()):
         return None
     for f in files:
@@ -219,7 +231,7 @@ def parse_batch_body(heading, body):
     for m in SERVES_DOC_PATTERN.finditer(after_files):
         doc, content = m.group(1), m.group(2)
         if doc == "UX.md":
-            continue  # already captured by SERVES_UX_PATTERN above
+            continue
         serves_doc.append({"doc": doc, "content": content.strip()})
 
     return {
@@ -231,10 +243,40 @@ def parse_batch_body(heading, body):
     }
 
 
+def parse_batch_file(batch_path: Path):
+    """Parse a per-batch file (folder mode). The file starts with
+    `# <batch name>` and the rest is batch body. Returns dict on
+    success (with `batch_file` key added), None on any failure."""
+    text = safe_read_text(batch_path)
+    if text is None:
+        return None
+
+    h1_match = BATCH_FILE_H1_PATTERN.search(text)
+    if not h1_match:
+        return None
+
+    heading = h1_match.group(1)
+    body = text[h1_match.end():]
+    result = parse_batch_body(heading, body)
+    if result is not None:
+        result["batch_file"] = batch_path.name
+    return result
+
+
+# --- Single-file mode (legacy) ---
+
+
 def find_top_unticked_batch(text):
     """Walk the `## Build batches` section top-to-bottom and return the
     first batch with at least one `- [ ]` file. Returns {} if no qualifying
-    batch is found, or if the section is missing or empty."""
+    batch is found, or if the section is missing or empty.
+
+    Auto-detects format: if the section contains `### Batch:` headings,
+    uses single-file mode (inline batches). If it contains backtick
+    reference lines, uses folder mode — but folder mode requires a path
+    to resolve batch files, so this text-only function falls back to
+    single-file parsing. Callers that have a path should use
+    `find_top_unticked_batch_from_path` instead."""
     bounds = find_section_bounds(
         text, BUILD_BATCHES_SECTION_PATTERN, NEXT_TOP_SECTION_PATTERN
     )
@@ -259,14 +301,85 @@ def find_top_unticked_batch(text):
 
         batch = parse_batch_body(heading, body)
         if batch is None:
-            # Placeholder / malformed: try the next batch.
             continue
         if all(f["ticked"] for f in batch["files"]):
-            # Batch is complete; try the next one.
             continue
         return batch
 
     return {}
+
+
+# --- Folder mode ---
+
+
+def find_top_unticked_batch_folder(index_path: Path):
+    """Folder mode: read INDEX.md, extract the ordered list of batch file
+    references from `## Build batches`, read each batch file in order,
+    and return the first with unticked files. Returns {} if none found."""
+    text = safe_read_text(index_path)
+    if text is None:
+        return {}
+
+    bounds = find_section_bounds(
+        text, BUILD_BATCHES_SECTION_PATTERN, NEXT_TOP_SECTION_PATTERN
+    )
+    if bounds is None:
+        return {}
+    section_text = text[bounds[0]:bounds[1]]
+
+    batch_refs = BATCH_REF_PATTERN.findall(section_text)
+    if not batch_refs:
+        return {}
+
+    backlog_dir = index_path.parent
+    for filename in batch_refs:
+        batch_path = backlog_dir / filename
+        batch = parse_batch_file(batch_path)
+        if batch is None:
+            continue
+        if all(f["ticked"] for f in batch["files"]):
+            continue
+        return batch
+
+    return {}
+
+
+# --- Auto-detecting entry point ---
+
+
+def is_folder_mode(index_path: Path) -> bool:
+    """Detect whether the BACKLOG is in folder mode. True if the file is
+    named INDEX.md and lives inside a directory (the BACKLOG/ folder),
+    AND the `## Build batches` section contains batch reference lines
+    OR no `### Batch:` headings (empty or reference-only). Falls back to
+    single-file mode on any ambiguity."""
+    if index_path.name.upper() != "INDEX.MD":
+        return False
+    text = safe_read_text(index_path)
+    if text is None:
+        return False
+    bounds = find_section_bounds(
+        text, BUILD_BATCHES_SECTION_PATTERN, NEXT_TOP_SECTION_PATTERN
+    )
+    if bounds is None:
+        return False
+    section_text = text[bounds[0]:bounds[1]]
+    if BATCH_HEADING_PATTERN.search(section_text):
+        return False
+    return True
+
+
+def find_top_unticked_batch_from_path(path: Path):
+    """Auto-detecting entry point. Accepts a path to either BACKLOG.md
+    (single-file) or BACKLOG/INDEX.md (folder mode). Returns the same
+    dict shape as `find_top_unticked_batch`."""
+    if is_folder_mode(path):
+        return find_top_unticked_batch_folder(path)
+
+    text = safe_read_text(path)
+    if text is None:
+        return {}
+    return find_top_unticked_batch(text)
 
 
 def main():
@@ -275,12 +388,7 @@ def main():
         return 0
 
     path = Path(sys.argv[1])
-    text = safe_read_text(path)
-    if text is None:
-        json.dump({}, sys.stdout)
-        return 0
-
-    result = find_top_unticked_batch(text)
+    result = find_top_unticked_batch_from_path(path)
     json.dump(result, sys.stdout)
     return 0
 

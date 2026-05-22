@@ -1,6 +1,6 @@
 # Open questions
 
-Method-level questions raised but not yet ready to be a session. Each entry stays until it resolves — folded into a session's scope, promoted to its own session (row in `PLAN.md`, `sessions/Vxx.md`), or consciously dropped with a one-line reason in `BUILD-LOG.md`.
+Method-level questions raised but not yet ready to be a session. Each entry stays until it resolves — folded into a session's scope, promoted to its own session (row in `PLAN.md`, scope file in `sessions/`), or consciously dropped with a one-line reason in `BUILD-LOG.md`.
 
 Newest first. Removed when resolved.
 
@@ -24,7 +24,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Relationship to existing entries.** Adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — the `Inputs:` line for build batches is the natural place to reference research files that inform a specific build. Adjacent to [[Graduate sovereign implementer development onto sovereign implementer]] — the method's own dev project already uses this pattern.
 
-**Next step.** **Promoted to V51** (session v47, 2026-05-22). Scope file at `planning/sessions/V51.md`.
+**Next step.** **Promoted to 0051** (session v47, 2026-05-22). Scope file at `planning/sessions/0051-research-folder-convention.md`.
 
 ---
 
@@ -43,7 +43,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Relationship to existing entries.** Prerequisite-adjacent for [[Graduate sovereign implementer development onto sovereign implementer]] — the current dev project's `BUILD-LOG.md` is already unwieldy. Pairs naturally with [[`research/` folder convention + automatic research persistence]] — build entries link to research files.
 
-**Next step.** **Promoted to V52** (session v47, 2026-05-22). Scope file at `planning/sessions/V52.md`.
+**Next step.** **Promoted to 0052** (session v47, 2026-05-22). Scope file at `planning/sessions/0052-build-log-restructuring.md`.
 
 ---
 
@@ -104,7 +104,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
 
-**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → V54. Items 5, 6 (compaction context, opener routing) → V55. Scope files at `planning/sessions/V54.md`, `V55.md`.
+**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → 0054. Items 5, 6 (compaction context, opener routing) → 0055. Scope files at `planning/sessions/0054-validation-warnings-bundle.md`, `0055-new-hook-events.md`.
 
 ---
 
@@ -125,7 +125,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). BUILD-LOG.md narrative (already in the consumer method since V33).
 
-**Next step.** **Promoted to V59** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before V59. Scope file at `planning/sessions/V59.md`.
+**Next step.** **Promoted to 0059** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before 0059. Scope file at `planning/sessions/0059-graduation-dev-onto-method.md`.
 
 ---
 
@@ -165,7 +165,7 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 - *Hook-script direct-invocation suite.* Add a `tests/` directory at repo root with scripts that pipe fake hook input into each hook script and assert on stdout. Catches parser / arithmetic bugs pre-smoke-test. Doesn't catch Claude Code integration issues (those still need `--plugin-dir`). Low cost; partial coverage.
 - *Fixture-driven integration suite.* Harness that spins up a fixture project, runs `claude --plugin-dir`, and asserts on resulting BACKLOG.md / TEST-LOG.md state. Highest fidelity; highest cost; brittle against Claude Code version changes.
 
-**Next step.** **Promoted to V53** (session v47, 2026-05-22). Hook-script direct-invocation suite shape. Scope file at `planning/sessions/V53.md`.
+**Next step.** **Promoted to 0053** (session v47, 2026-05-22). Hook-script direct-invocation suite shape. Scope file at `planning/sessions/0053-automated-testing-ci.md`.
 
 ---
 
@@ -181,7 +181,7 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 - Component-based: drop rows whose component no longer exists in `MANIFEST.md`.
 - Manual: an explicit per-planning-session option to archive rows to an external file (preserving audit, removing from context).
 
-**Next step.** **Promoted to V56** (session v47, 2026-05-22). Scope file at `planning/sessions/V56.md`.
+**Next step.** **Promoted to 0056** (session v47, 2026-05-22). Scope file at `planning/sessions/0056-test-log-row-pruning.md`.
 
 ---
 
@@ -202,7 +202,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 - **B. Converge on inline.** Flip planning and before-build. Drops the read overhead. Cost: doc-code parity audit becomes primary discipline against drift; cadence needs formalising in `BUILD-METHOD.md`.
 - **C. Keep the divergence; document the rule.** Stable rules go inline; evolving rules read-spec-on-entry. Re-evaluate per agent per version. Cost: new internal classification to maintain.
 
-**Next step.** **Promoted to V57** (session v47, 2026-05-22). Direction decided at session start based on spec stability across V45–V56. Scope file at `planning/sessions/V57.md`.
+**Next step.** **Promoted to 0057** (session v47, 2026-05-22). Direction decided at session start based on spec stability across 0045–0056. Scope file at `planning/sessions/0057-subagent-rule-loading-convergence.md`.
 
 **V37, 2026-05-21: targets shifted, tension unchanged.** V32's two-write rule moved the runtime spec targets from `NO-CODE-METHOD.md` to `plugin/docs/DOC-STRUCTURE.md` and `plugin/docs/VOCABULARY.md`; `adopt.md` joins `planning.md` and `before-build.md` as a read-at-entry subagent. The underlying inline-vs-read-at-entry question is the same shape, just against the new targets. Stays parked at the same threshold: promote if `plugin/docs/` churns enough (or stabilises enough) to make convergence the obviously right call, or if a parity audit flags meaningful drift in `batch-executor.md`.
 
@@ -228,7 +228,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 6. *Where the idea earns its keep eventually.* If the method goes public (course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX are designed for that scale. Single-user, in-development is the wrong scale.
 
-**Next step.** **Promoted to V58** (session v47, 2026-05-22). Scope file at `planning/sessions/V58.md`. Focus on mechanical measures (regression count, intervention count, turn count) to avoid vibes-as-data.
+**Next step.** **Promoted to 0058** (session v47, 2026-05-22). Scope file at `planning/sessions/0058-session-performance-tracking.md`. Focus on mechanical measures (regression count, intervention count, turn count) to avoid vibes-as-data.
 
 ---
 

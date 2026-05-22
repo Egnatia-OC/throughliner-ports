@@ -53,27 +53,35 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     ADOPT_CASE_ALREADY_ADOPTED,
 )
 
-# Filenames that the method's runtime expects in a project.
-# The recursive scan looks for these names anywhere under cwd.
+# Filenames and directory names that the method's runtime expects in a project.
+# The recursive scan looks for these anywhere under cwd.
 DESTINATION_FILENAMES = (
     "BUILD-LOG.md",
     "CLAUDE.md",
-    "BACKLOG.md",
     "MANIFEST.md",
     "UX.md",
     "TEST-LOG.md",
 )
 
+# Directory names that conflict if they already exist at the project root.
+DESTINATION_DIRNAMES = (
+    "BACKLOG",
+)
+
 # Mapping: template filename (in plugin/templates/) -> destination filename
 # (in cwd root). Order is preserved for the success report.
+# BACKLOG is handled separately (folder scaffold).
 TEMPLATE_TO_DESTINATION = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
     ("UX-TEMPLATE.md", "UX.md"),
-    ("BACKLOG-TEMPLATE.md", "BACKLOG.md"),
     ("BUILD-LOG-TEMPLATE.md", "BUILD-LOG.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
     ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
+
+# BACKLOG folder template: INDEX-TEMPLATE.md → BACKLOG/INDEX.md.
+BACKLOG_INDEX_TEMPLATE = "BACKLOG/INDEX-TEMPLATE.md"
+BACKLOG_INDEX_DEST = "INDEX.md"
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */setup five-case branching* wording for stability in the
@@ -96,11 +104,13 @@ def templates_dir() -> Path:
 
 
 def find_conflicts(target_dir: Path):
-    """Recursively scan target_dir for any file matching DESTINATION_FILENAMES.
+    """Recursively scan target_dir for any file matching DESTINATION_FILENAMES,
+    any BACKLOG.md file, or any BACKLOG/ directory.
 
     Returns a sorted list of paths relative to target_dir, as strings using
     POSIX-style separators for stable display across platforms."""
     target_set = set(DESTINATION_FILENAMES)
+    dir_set = set(DESTINATION_DIRNAMES)
     conflicts = []
     for path in target_dir.rglob("*"):
         if path.is_file() and path.name in target_set:
@@ -109,7 +119,17 @@ def find_conflicts(target_dir: Path):
             except ValueError:
                 rel = path
             conflicts.append(rel.as_posix())
-    return sorted(conflicts)
+        if path.is_file() and path.name == "BACKLOG.md":
+            try:
+                rel = path.relative_to(target_dir)
+            except ValueError:
+                rel = path
+            conflicts.append(rel.as_posix())
+    for dirname in dir_set:
+        candidate = target_dir / dirname
+        if candidate.is_dir():
+            conflicts.append(dirname)
+    return sorted(set(conflicts))
 
 
 def emit(payload, *, exit_code: int = 0) -> int:
@@ -171,6 +191,9 @@ def cmd_write(target_dir: Path) -> int:
         tpl for tpl, _ in TEMPLATE_TO_DESTINATION
         if not (src_dir / tpl).is_file()
     ]
+    backlog_index_tpl = src_dir / BACKLOG_INDEX_TEMPLATE
+    if not backlog_index_tpl.is_file():
+        missing.append(BACKLOG_INDEX_TEMPLATE)
     if missing:
         return emit({
             "written": False,
@@ -184,13 +207,18 @@ def cmd_write(target_dir: Path) -> int:
         shutil.copyfile(src_dir / tpl_name, target_dir / dest_name)
         written.append(dest_name)
 
+    backlog_dir = target_dir / "BACKLOG"
+    backlog_dir.mkdir(exist_ok=True)
+    shutil.copyfile(backlog_index_tpl, backlog_dir / BACKLOG_INDEX_DEST)
+    written.append("BACKLOG/INDEX.md")
+
     drafts_dir = target_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["planning/drafts/"],
+        "directories_created": ["BACKLOG/", "planning/drafts/"],
         "target_path": str(target_dir),
     })
 

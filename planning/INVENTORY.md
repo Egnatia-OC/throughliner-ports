@@ -33,7 +33,7 @@ Three sub-categories on the plugin side (V17 walkthrough):
 | Doc | Home |
 |---|---|
 | `UX.md` | Per-project; **read-only to Claude** (PreToolUse hook enforces) |
-| `BACKLOG.md` | Per-project; read/write to Claude (discussion-contract in subagent prompts) |
+| `BACKLOG/` (folder with `INDEX.md` + per-batch files) | Per-project; read/write to Claude (discussion-contract in subagent prompts) |
 | `MANIFEST.md` | Per-project; read/write to Claude |
 | `TEST-LOG.md` | Per-project; read/write to Claude (test-confirmation gate per V26 — V27 hook enforcement) |
 | `BUILD-LOG.md` | Per-project; read/write to Claude |
@@ -82,9 +82,10 @@ Two patterns exist in the current plugin:
 
 ### Bundled artefacts
 
-- 7 templates (BUILD-LOG, CLAUDE, BACKLOG, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC) under `plugin/templates/`. The 6 spine templates are scaffolded by `/setup` (V29 — formerly `/init-project`); ADDITIONAL-DOC lands via `/add-sot-doc`.
-- `plugin/scripts/parse_backlog.py` — shared BACKLOG.md parser used by the Stop hook, PreToolUse (c), PostToolUse (V46), and `/build`. Single source of truth for BACKLOG.md structure interpretation.
-- `plugin/scripts/project_state.py` — shared module imported by `pre_tool_use.py` and `stop.py` (V28 extraction). Holds project-state readers: path-block extraction from CLAUDE.md, BACKLOG parser invocation, TEST-LOG row parsing, BUILD-LOG session-narrowing, plus the `is_test_session_open` predicate that backs both V27's PreToolUse gate (check (f)) and V28's Stop-hook silent-exit. Single definition of "what does the project state currently say."
+- 8 templates under `plugin/templates/`: BUILD-LOG, CLAUDE, BACKLOG (legacy single-file), BACKLOG/INDEX (folder-mode index), MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC. The 6 spine templates (using the folder-mode BACKLOG) are scaffolded by `/setup` (V29 — formerly `/init-project`); ADDITIONAL-DOC lands via `/add-sot-doc`.
+- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser used by the Stop hook, PreToolUse (c), PostToolUse (V46), and `/build`. Handles both single-file (`BACKLOG.md`) and folder-mode (`BACKLOG/INDEX.md` + per-batch files) formats via auto-detection. Single source of truth for BACKLOG structure interpretation.
+- `plugin/scripts/project_state.py` — shared module imported by `pre_tool_use.py`, `stop.py`, and `post_tool_use.py` (V28 extraction, extended V48). Holds project-state readers: path-block extraction from CLAUDE.md, BACKLOG parser invocation, TEST-LOG row parsing, BUILD-LOG session-narrowing, `is_test_session_open` predicate, plus V48 additions — `resolve_backlog_dir()` (returns BACKLOG folder path when in folder mode) and `is_backlog_file()` (tests whether a path is a BACKLOG file in either format). Single definition of "what does the project state currently say."
+- `plugin/scripts/allocate_number.py` — shared 4-digit number allocator. Scans a directory for `NNNN-*.md` files and returns the next available number. Used by the planning subagent (consumer batches) and dev-side session creation.
 - `plugin/docs/DOC-STRUCTURE.md` — structural-spec reference at canonical bundled path (V30 relocation from repo root; mirrored at repo root in V32 as part of the docs-only set). Read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration).
 - `plugin/docs/VOCABULARY.md` — method-term definitions (planning batch, build batch, test session, etc.); new in V32 as the canonical plugin-side home for the vocabulary that used to live in `NO-CODE-METHOD.md` → *Vocabulary*. Mirrored at repo root for the docs-only set.
 - `plugin/hooks/universal-behaviour.md` — plugin-side canonical home for the universal behavioural rules (V18), prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule (V32 expansion). Injected into every Claude Code session via SessionStart `additionalContext`.
@@ -121,4 +122,4 @@ Two patterns exist in the current plugin:
 - **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 45.*
+*No-code method — Version 48.*

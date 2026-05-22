@@ -526,6 +526,38 @@ def get_unconfirmed_previous_session_rows(project_root):
     return unconfirmed, build_log_status, session_id
 
 
+def resolve_backlog_dir(project_root):
+    """If the BACKLOG is in folder mode (path block points to
+    BACKLOG/INDEX.md), return the resolved BACKLOG/ directory path.
+    Returns None if single-file mode or path block can't be resolved."""
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None:
+        return None
+    if backlog_path.name.upper() == "INDEX.MD":
+        return backlog_path.parent
+    return None
+
+
+def is_backlog_file(target_path, project_root):
+    """True if target_path is part of the BACKLOG — either it IS BACKLOG.md
+    (single-file mode) or it's a file inside the BACKLOG/ directory (folder
+    mode). Used by hooks that need to identify BACKLOG edits."""
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None:
+        return False
+    target_str = str(target_path)
+    if target_str == str(backlog_path):
+        return True
+    backlog_dir = resolve_backlog_dir(project_root)
+    if backlog_dir is None:
+        return False
+    try:
+        target_path.relative_to(backlog_dir)
+        return True
+    except ValueError:
+        return False
+
+
 def is_test_session_open(project_root):
     """Convenience boolean wrapper around get_unconfirmed_previous_session_rows.
 

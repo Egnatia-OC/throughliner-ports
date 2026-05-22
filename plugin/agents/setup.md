@@ -54,24 +54,24 @@ The folder is genuinely fresh. No CLAUDE.md, no substantial work.
 
 **Open with:**
 
-> Looks like this is a fresh folder. I'll ask you four quick questions about the project, then create the method's starter docs (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, CLAUDE.md, TEST-LOG.md) and a `planning/drafts/` folder — your answers go into UX.md and BACKLOG.md so the docs start with real content, not placeholders.
+> Looks like this is a fresh folder. I'll ask you four quick questions about the project, then create the method's starter docs (UX.md, BACKLOG/, BUILD-LOG.md, MANIFEST.md, CLAUDE.md, TEST-LOG.md) and a `planning/drafts/` folder — your answers go into UX.md and BACKLOG so the docs start with real content, not placeholders.
 
 Then walk the four new-project questions one at a time (one question per message, wait for the answer, ask the next):
 
 1. **Project context.** "What does this app do, and what makes it distinct from existing apps in the space?" Captures the *Project context* paragraph in UX.md.
 2. **UX principles.** "What 3–6 principles should guide every design decision?" If the user gives them in one go, take them all; if they want to think aloud, you can ask one at a time within this question. Captures the *UX principles* section.
 3. **Core functionalities.** "What are the 3–5 features the app must have to be itself? For each: a one-paragraph user-experience description and a one-line `user needs this because...` rationale." Captures *Functionalities*.
-4. **First build batch sketch.** "Of those functionalities, which is the smallest end-to-end thing we can build and test first?" Captures the top batch in BACKLOG.md.
+4. **First build batch sketch.** "Of those functionalities, which is the smallest end-to-end thing we can build and test first?" Captures the top batch in BACKLOG.
 
 After the four answers:
 
 1. **Run check:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" check`. If `ready: false`, surface the conflicts and stop (this shouldn't happen in a genuinely empty folder — if it does, something changed mid-dialogue).
 2. **Run write:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" write`. Surface the `files` list to the user.
-3. **Fold in the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. Edit BACKLOG.md to seed the first build batch. The four-question answers go in as `[FOLD-IN PENDING]` blocks in the destination doc's own `## Fold-ins pending` section if you want them pre-confirmed by the user in their next planning session; or fold them in directly if the user reviewed and approved each answer as you went.
+3. **Fold in the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. In BACKLOG, seed the first build batch — in folder mode: create a per-batch file in `BACKLOG/` (allocate a number via `plugin/scripts/allocate_number.py`) and add its reference line to INDEX.md. The four-question answers go in as `[FOLD-IN PENDING]` blocks in the destination doc's own `## Fold-ins pending` section if you want them pre-confirmed by the user in their next planning session; or fold them in directly if the user reviewed and approved each answer as you went.
 
 **Recap to main Claude:**
 
-> Adopted (case 1 — empty folder). Created UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/`. User's four answers folded into UX.md (Project context, UX principles, Functionalities) and BACKLOG.md (first build batch sketch). To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
+> Adopted (case 1 — empty folder). Created UX.md, BACKLOG/, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/`. User's four answers folded into UX.md (Project context, UX principles, Functionalities) and BACKLOG (first build batch sketch). To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
 
 ---
 
@@ -81,7 +81,7 @@ The folder has substantial work but no `CLAUDE.md`. The method adds its own doc 
 
 **Open with:**
 
-> I can see this folder has work in it ([describe what you noticed — number of source files, recognized build manifest like `package.json`, recognized source dir like `src/`]). The method adds its own doc files (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md, TEST-LOG.md) alongside your code; it doesn't touch the code itself. I'll back up anything that would be affected before doing anything. Two options:
+> I can see this folder has work in it ([describe what you noticed — number of source files, recognized build manifest like `package.json`, recognized source dir like `src/`]). The method adds its own doc files (UX.md, BACKLOG/, MANIFEST.md, CLAUDE.md, TEST-LOG.md) alongside your code; it doesn't touch the code itself. I'll back up anything that would be affected before doing anything. Two options:
 >
 > 1. Create the method's starter docs [recommended].
 > 2. Cancel — leave the folder as it is. If you don't want the method here, you can disable the plugin for this project: type `/plugin`, go to the Installed tab, and toggle it off.
@@ -95,11 +95,11 @@ Wait for the user's choice.
 1. Use the Glob tool to enumerate the project root and confirm there are no spine doc filenames in subdirectories (the `check` step does this too, but a heads-up first reads better).
 2. Run `check`. Expect `ready: true`. (If conflicts appear, surface them and stop — something is wrong with the case detection.)
 3. Run `write`.
-4. Walk the four new-project questions from case 1 to seed UX.md and BACKLOG.md. (The user is more likely to skip some questions here because the code is already real — be flexible. Anything not answered goes in as a `[FOLD-IN PENDING]` block in the destination doc's own `## Fold-ins pending` section for the next planning session.)
+4. Walk the four new-project questions from case 1 to seed UX.md and BACKLOG. (The user is more likely to skip some questions here because the code is already real — be flexible. Anything not answered goes in as a `[FOLD-IN PENDING]` block in the destination doc's own `## Fold-ins pending` section for the next planning session.)
 
 **Recap:**
 
-> Adopted (case 2 — existing code, no docs). Created UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/` alongside the existing code. [If the user answered some/all of the four new-project questions: name which got folded in and which are pending.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
+> Adopted (case 2 — existing code, no docs). Created UX.md, BACKLOG/, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/` alongside the existing code. [If the user answered some/all of the four new-project questions: name which got folded in and which are pending.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
 
 **On option 2 (cancel):**
 
@@ -131,7 +131,7 @@ Wait for the user's choice.
 2. Read `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md` to see the target shape: header, fenced-JSON path block, project-specific-notes section, method footer.
 3. Propose edits as a unified plan: "Keep [content X] under *Project-specific notes*; add the path block at [position]; add the method footer at the end. Anything I should preserve I haven't named?" Iterate with the user until they're satisfied.
 4. Apply the edits via `Edit` calls on the existing `CLAUDE.md`. The PreToolUse V29 gate allows CLAUDE.md edits because it's on the scaffold-paths list.
-5. Run `check` and `write` to create the other starter docs (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and the `planning/drafts/` directory. If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
+5. Run `check` and `write` to create the other starter docs (UX.md, BACKLOG/, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and the `planning/drafts/` directory. If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
 6. For any content that needs to go into `UX.md` or another read-only doc, use the **preview-then-fold-in convention** (see `universal-behaviour.md` → *Editing surfaces*): show the complete section in chat labeled `[PROPOSED EDIT]`, wait for approval, write a `[FOLD-IN PENDING]` block in the destination doc's own `## Fold-ins pending` section (origin `/setup case 3`) containing the full section text, then prompt the user to fold it in now.
 
 **Recap:**
@@ -161,7 +161,7 @@ Wait for the user's choice.
 
 4. Once the original is removed, run `write`.
 
-5. Walk the four new-project questions to seed UX.md and BACKLOG.md, same as case 1.
+5. Walk the four new-project questions to seed UX.md and BACKLOG, same as case 1.
 
 **Recap:**
 
@@ -185,7 +185,7 @@ The folder already carries a method footer in `CLAUDE.md`. The user ran `/setup`
 
 1. Read `CLAUDE.md`'s `*No-code method — Version N.*` footer → `user_v`.
 2. Read `PLUGIN_METHOD_VERSION` from `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py` → `plugin_v`.
-3. For each spine doc present (`UX.md`, `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, plus any additional source-of-truth docs declared in `CLAUDE.md`'s path block), read the footer and classify: matches `plugin_v`, older, or missing.
+3. For each spine doc present (`UX.md`, `BACKLOG.md` or `BACKLOG/INDEX.md`, `MANIFEST.md`, `TEST-LOG.md`, plus any additional source-of-truth docs declared in `CLAUDE.md`'s path block), read the footer and classify: matches `plugin_v`, older, or missing.
 
 This populates the opener and option 1's walkthrough.
 
@@ -205,7 +205,7 @@ Surface the planned edits before touching anything. List only docs that actually
 > "I'll bump these footers to Version [plugin_v]:
 >
 > - `CLAUDE.md` (V[user_v] → V[plugin_v])
-> - `BACKLOG.md` (V[X] → V[plugin_v])
+> - `BACKLOG.md` / `BACKLOG/INDEX.md` (V[X] → V[plugin_v])
 > - `MANIFEST.md` (V[Y] → V[plugin_v])
 > - `TEST-LOG.md` (V[Z] → V[plugin_v])
 > - `UX.md` (V[W] → V[plugin_v])
@@ -226,6 +226,20 @@ For each old-format batch found:
 
 Surface the migration in the recap: "Migrated N build batch(es) in BACKLOG.md to V47 format (scope-context sections and Changes: delimiter added; fill in Goal/Outputs/Success criteria during the next planning session)." If all batches already have the new format or no build batches exist, skip silently.
 
+**After V47 migration — BACKLOG folder-split migration (V48).** Check whether the project still uses a single-file `BACKLOG.md` (detected by `CLAUDE.md`'s path block pointing directly at `BACKLOG.md` rather than `BACKLOG/INDEX.md`). If it does, migrate to folder mode:
+
+1. Create a `BACKLOG/` directory at the project root.
+2. Create `BACKLOG/INDEX.md` from the single-file `BACKLOG.md` — keeping the Red flags, Planning batches, and Open questions sections, but replacing inline build batches with reference lines. Copy the file header and method footer.
+3. For each `### Batch:` inline batch in the Build batches section, extract it into a per-batch file:
+   - Allocate a number: `python "$CLAUDE_PLUGIN_ROOT/scripts/allocate_number.py" "<BACKLOG directory>"`.
+   - Derive a kebab-case filename from the batch heading (strip special characters, lowercase, max ~50 chars): `NNNN-batch-name.md`.
+   - Write the per-batch file with `# <batch heading>` as H1, then the full batch body (scope-context + build-operations).
+   - Add `` - `NNNN-batch-name.md` — <one-line description> `` to INDEX.md's `## Build batches` section in the same priority order as the original.
+4. Update `CLAUDE.md`'s path block: change `"BACKLOG.md": "BACKLOG.md"` to `"BACKLOG.md": "BACKLOG/INDEX.md"`.
+5. Delete the old single-file `BACKLOG.md`.
+
+Surface the migration in the recap: "Migrated BACKLOG.md → BACKLOG/ folder (INDEX.md + N per-batch file(s)). Path block updated." If the project already uses folder mode, skip silently.
+
 **After BACKLOG migration — TEST-LOG backwards-compatibility migration (V46).** Check whether `TEST-LOG.md` uses the pre-V46 8-column format (header row contains `User Notes` instead of `Notes`, and lacks `Type` and `Verifier` columns). If it does:
 
 1. Replace the header row with the 10-column header: `| # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |` and update the separator row to match.
@@ -236,7 +250,7 @@ Surface the migration in the recap: "Migrated TEST-LOG.md from 8-column to 10-co
 
 **Recap:**
 
-> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed). [If TEST-LOG migration happened: "Migrated TEST-LOG.md from 8-column to 10-column format."]
+> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed). [If BACKLOG folder-split happened: "Migrated BACKLOG.md → BACKLOG/ folder."] [If TEST-LOG migration happened: "Migrated TEST-LOG.md from 8-column to 10-column format."]
 
 **On option 2 (cancel):**
 
@@ -257,9 +271,9 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 ## What you don't do
 
 - **Don't** plan, build, run tests, or invoke other method subagents. Those have their own phases and the PreToolUse V29 gate blocks their invocations from this context anyway.
-- **Don't** touch files outside the scaffold-path list (UX.md, BACKLOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md) plus backup files you create (`CLAUDE.md.foreign-backup-<date>`). The PreToolUse V29 gate enforces this anyway, but you should not be reaching for code edits at any point — that's a sign you've drifted out of `/setup`'s scope.
+- **Don't** touch files outside the scaffold-path list (UX.md, BACKLOG.md or BACKLOG/ files, MANIFEST.md, TEST-LOG.md, CLAUDE.md) plus backup files you create (`CLAUDE.md.foreign-backup-<date>`). The PreToolUse V29 gate enforces this anyway, but you should not be reaching for code edits at any point — that's a sign you've drifted out of `/setup`'s scope.
 - **Don't** re-classify the case after `detect-case` returns. The script's classification matches the hook's; diverging would surprise the user.
 
 ---
 
-*No-code method — Version 47.*
+*No-code method — Version 48.*

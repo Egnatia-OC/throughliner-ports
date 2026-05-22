@@ -14,15 +14,17 @@ Personal and collaboration rules live in root `CLAUDE.md`. Anything here superse
 
 Tags are `v17`, `v18`, ... Current tag is `git describe --tags --abbrev=0` from `sovereign-implementer/`. Pre-V17 lives read-only in `Archive/Version 3/` through `Archive/Version 16/`. Don't edit.
 
-### Session tag vs. method version
+### Three numbers to keep distinct
 
-Session tag (`v17`, ...) names the dev project's working state — increments per session.
+The dev project carries three version-ish numbers that look similar but move independently.
 
-**Method version** is what consumers see — the `*No-code method — Version N.*` footer on every method-side file. Increments only when the method or plugin **substantively changes** (new mechanism, renamed component, shipped plugin feature, structural rewrite). Dev-internal changes (BUILD-LOG, BUILD-METHOD, planning, TEST-LOG) don't bump it.
+- **Session tag** (lowercase `v`, e.g. `v52`) — one git tag per session, no matter what the session did (build, planning, ideation, doc tweak). Always increments. `git describe --tags --abbrev=0` shows the most recent.
+- **Method version** (uppercase `V`, e.g. `V48`) — the footer number consumers see (`*No-code method — Version N.*`). Only bumps on substantive method or plugin change; pure planning, scoping, or ideation sessions don't move it.
+- **Scope-file number** (4-digit, e.g. `0050`) — the leading number in a scope-file's filename (`planning/sessions/0050-adr-style-numbering.md`). Allocated at creation time, never reused, never renumbered. Filename order carries creation order only; build order lives in PLAN.md's session list.
 
-So the two numbers diverge. Session `v25` may ship with V23 footers because nothing method-side has substantively changed since V23. That's correct, not drift — the V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked together until a method-changing session bumps them in tandem.
+So the three diverge. Session tag `v52` may coexist with method version `V48` and scope file `0050` — that's correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked together until a method-changing session bumps them in tandem.
 
-**Historical note.** V18–V23 conflated the two — every session bumped the footer regardless. Going forward they're separated; historical mismatches stay (no retroactive corrections).
+**Historical note.** V18–V23 conflated session tag and method version — every session bumped the footer regardless. Going forward they're separated; historical mismatches stay (no retroactive corrections). Scope files prior to V50 used the `V<N>.md` convention; V50 retroactively renamed them to `NNNN-kebab-title.md`. Git history and commit messages still reference the old V-numbers; that divergence is permanent and documented.
 
 ---
 
@@ -33,7 +35,7 @@ In order:
 1. `git describe --tags --abbrev=0` from `sovereign-implementer/` — confirm current version.
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Crash course.md` at `HEAD` — the active method (plugin-side, operational). The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) is frozen at V39 — read only if you need the prose-spec form, not for current rules.
 3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
-4. Read the active scope file at `planning/sessions/V<N>.md` — provisional scope, not a contract. `<N>` is the lowest version number present in that folder above the current tag from step 1 (i.e. the next session up, not the furthest-out one). Use the absolute path (see `CLAUDE.md → Current state` for why). If no scope file exists above the current tag, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
+4. Read the active scope file from `planning/sessions/`. Scope files use the naming convention `NNNN-kebab-title.md` (e.g. `0050-adr-style-numbering.md`). The active scope file is named in PLAN.md's session list as the next unshipped row. Use the absolute path (see `CLAUDE.md → Current state` for why). If no unshipped scope file exists, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
 
 Then read Alex's opener and route. `CLAUDE.md → Working with me` governs interaction shape. If the task isn't clear, report what was loaded and ask. Don't draft.
 
@@ -69,7 +71,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close, parity,
 
 7. **Tag** `git tag v<N>`.
 
-8. **Delete this session's `planning/sessions/Vxx.md`** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+8. **Delete this session's scope file** (e.g. `planning/sessions/0050-adr-style-numbering.md`) as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
 
 9. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
 
@@ -175,7 +177,8 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - `plugin/hooks/universal-behaviour.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
-- `plugin/templates/BACKLOG-TEMPLATE.md`
+- `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file format)
+- `plugin/templates/BACKLOG/INDEX-TEMPLATE.md`
 - `plugin/templates/BUILD-LOG-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
@@ -221,7 +224,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/
 
 | File | Lifecycle | When deleted |
 |---|---|---|
-| `planning/sessions/Vxx.md` | **Transient.** Provisional scope for one session. Once shipped, the commit + code + doc edits are source of truth; the scope doc is stale. | When the session ships (step 7). |
+| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Provisional scope for one session. Once shipped, the commit + code + doc edits are source of truth; the scope doc is stale. | When the session ships (step 8). |
 | `planning/drafts/<topic>.md` | **Transient.** Substantive chat content a future session might start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices. Committed when "good enough to walk away from." | When consumed (folded into spec/scope/other persistent location), in the commit of whichever session consumes it. Dead-ends pruned with a one-line note in `BUILD-LOG.md`. |
 | `planning/INVENTORY.md` | **Living.** Current plugin architecture. Updated in place. | Never. |
 | `planning/PLAN.md` | **Living.** Rolling roadmap. | Never. |
@@ -235,9 +238,9 @@ V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/
 
 `planning/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. The drafting session commits the file as part of its own commit; "good enough to walk away from" is the bar, not "polished." Files are deleted in the commit of whichever session consumes them (folding into a spec, `Vxx.md`, or persistent location). Dead-end drafts: prune with a one-line note in next `BUILD-LOG.md`.
 
-**Corollary.** If a `Vxx.md` *Inputs* names content not reachable from the committed repo — phrasings like "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or "the [X] draft" without a committed path — that's a bug. Fix at the source: get the content into `planning/drafts/` retroactively if it still exists in chat history, or restate the input as something the next session can rebuild from what is in the repo. Don't hunt at the destination. The session-open scan in `CLAUDE.md → Vxx.md inputs must be in the repo` catches the reading side; this catches the writing side.
+**Corollary.** If a scope file's *Inputs* names content not reachable from the committed repo — phrasings like "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or "the [X] draft" without a committed path — that's a bug. Fix at the source: get the content into `planning/drafts/` retroactively if it still exists in chat history, or restate the input as something the next session can rebuild from what is in the repo. Don't hunt at the destination. The session-open scan in `CLAUDE.md → scope file inputs must be in the repo` catches the reading side; this catches the writing side.
 
-Worked example: V20 → V26 failure. A "Sonnet draft" with canonical TEST-LOG column shape and protocol rules was generated in V20 planning chat. Never committed. V20's session-close wrote "Alex has the file locally; pull it into this session as the starting shape" into `V26.md`. V26 session-open halted on a reference to content that no longer existed in retrievable form. `planning/drafts/` makes this impossible going forward.
+Worked example: V20 → V26 failure. A "Sonnet draft" with canonical TEST-LOG column shape and protocol rules was generated in V20 planning chat. Never committed. V20's session-close wrote "Alex has the file locally; pull it into this session as the starting shape" into the V26 scope file. V26 session-open halted on a reference to content that no longer existed in retrievable form. `planning/drafts/` makes this impossible going forward.
 
 ---
 
@@ -287,9 +290,9 @@ Newest first.
 
 Entries resolve and leave the file via one of four paths. The *Next step* line on each entry names a trigger that, when fired, points the entry toward one of these paths.
 
-1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into Vxx if X" or "promote to a planning session in V31+." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's `planning/sessions/Vxx.md` scope file; the work happens within the session. Entry removed at session close, alongside `Vxx.md`'s own deletion (*Session close* step 8).
+1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into session NNNN if X" or "promote to a planning session after NNNN ships." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's scope file; the work happens within the session. Entry removed at session close, alongside the scope file's deletion (*Session close* step 8).
 
-2. **Promoted to its own session.** A new row is added to `planning/PLAN.md`, a new `planning/sessions/Vxx.md` scope file is created, and the question becomes the basis for a future session. Entry removed from `OPEN-QUESTIONS.md` at promotion (not later, at the session's ship — the entry's role is over once a session exists for it).
+2. **Promoted to its own session.** A new row is added to `planning/PLAN.md`, a new scope file is created in `planning/sessions/` (allocated via filesystem scan for the next unused 4-digit number), and the question becomes the basis for a future session. Entry removed from `OPEN-QUESTIONS.md` at promotion (not later, at the session's ship — the entry's role is over once a session exists for it).
 
 3. **Partial fold-in.** Some entries resolve only partly — a session addresses one shape of the question while leaving others parked. The entry stays in `OPEN-QUESTIONS.md` with a date-tagged update note recording what was folded ("V22, 2026-05-14: shape #1 partially folded into V22's planning subagent."). The *Next step* may be revised at the same time to reflect what's still open. Real example: the *Method response to direct-edit users* entry, which V22 partially folded but kept open for the remaining shapes.
 

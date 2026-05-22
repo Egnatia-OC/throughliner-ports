@@ -129,6 +129,8 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     safe_read_text,
     extract_path_block,
     resolve_path_block_entry,
+    is_backlog_file,
+    resolve_backlog_dir,
     run_parser,
     get_unconfirmed_previous_session_rows,
     is_unadopted_with_work,
@@ -166,6 +168,10 @@ SCAFFOLD_NAMES = frozenset({
     "MANIFEST.md",
     "TEST-LOG.md",
     "CLAUDE.md",
+})
+
+SCAFFOLD_DIRS = frozenset({
+    "BACKLOG",
 })
 
 # Path-block keys treated as writable. Everything else in the path block —
@@ -480,19 +486,20 @@ def check_serves_lines(
     tool_name: str,
     tool_input: dict,
 ):
-    """If the edit targets BACKLOG.md, validate every `Serves UX.md:` line
-    in the proposed new content against UX.md's Functionalities entries.
+    """If the edit targets a BACKLOG file (BACKLOG.md in single-file mode,
+    or any file inside BACKLOG/ in folder mode), validate every
+    `Serves UX.md:` line in the proposed new content against UX.md's
+    Functionalities entries.
 
     Returns:
-      - None if the check doesn't apply (target isn't BACKLOG.md; UX.md
-        can't be resolved or read; no Serves UX.md lines in the new content;
-        every name matches an entry).
+      - None if the check doesn't apply (target isn't a BACKLOG file;
+        UX.md can't be resolved or read; no Serves UX.md lines in the
+        new content; every name matches an entry).
       - A deny-reason string if one or more names miss.
 
     The lenient principle applies throughout — anywhere the check can't
     deterministically decide, it returns None and the caller allows."""
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
-    if backlog_path is None or str(target_path) != str(backlog_path):
+    if not is_backlog_file(target_path, project_root):
         return None
 
     ux_path = resolve_path_block_entry(project_root, "UX.md")
@@ -635,11 +642,12 @@ def check_batch_file_list(project_root, target_path, permission_mode=""):
         set (case-sensitive comparison, matching the locked-doc check)."""
     backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None or not backlog_path.exists():
-        return None  # lenient: no BACKLOG.md to enforce against
+        return None  # lenient: no BACKLOG to enforce against
 
-    # Exempt BACKLOG.md (Claude needs to tick files, append [Prerequisite,
-    # not in plan] entries, etc.) and MANIFEST.md (always writable).
-    if str(target_path) == str(backlog_path):
+    # Exempt BACKLOG files (Claude needs to tick files, append entries,
+    # etc.) and MANIFEST.md (always writable). In folder mode, any file
+    # inside BACKLOG/ is exempt.
+    if is_backlog_file(target_path, project_root):
         return None
     manifest_path = resolve_path_block_entry(project_root, "MANIFEST.md")
     if manifest_path is not None and str(target_path) == str(manifest_path):
@@ -882,19 +890,21 @@ def check_read_before_edit(project_root, target_path, hook_input):
 
 def is_scaffold_path(target_path, project_root):
     """V29: True if target_path is a direct child of project_root with one
-    of the SCAFFOLD_NAMES. /setup's scaffolding writes land here; the
-    adoption gate exempts these paths so /setup can do its work without
-    needing a runtime flag-file mechanism.
+    of the SCAFFOLD_NAMES, or a file inside a direct-child directory named
+    in SCAFFOLD_DIRS (e.g. BACKLOG/INDEX.md, BACKLOG/0001-batch.md).
 
-    Direct-child only — a deeper-nested file with one of the scaffold
-    names (e.g. `subdir/UX.md`) doesn't qualify."""
+    /setup's scaffolding writes land here; the adoption gate exempts these
+    paths so /setup can do its work without needing a runtime flag-file
+    mechanism. Deeper nesting (e.g. `subdir/UX.md`) doesn't qualify."""
     try:
         relative = Path(target_path).relative_to(project_root)
     except ValueError:
         return False
-    if len(relative.parts) != 1:
-        return False
-    return relative.name in SCAFFOLD_NAMES
+    if len(relative.parts) == 1:
+        return relative.name in SCAFFOLD_NAMES
+    if len(relative.parts) == 2:
+        return relative.parts[0] in SCAFFOLD_DIRS
+    return False
 
 
 def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:

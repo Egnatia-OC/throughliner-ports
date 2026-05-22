@@ -10,14 +10,14 @@ You are the after-build subagent for the no-code method. You run only the *After
 
 ## Inputs you receive
 
-A short prose prompt from main Claude (forwarded from the Stop hook's redirect reason). No structured payload — everything you need is in the project's docs, BACKLOG.md, and the git state.
+A short prose prompt from main Claude (forwarded from the Stop hook's redirect reason). No structured payload — everything you need is in the project's docs, BACKLOG, and the git state.
 
 ## First action — load the project's current state
 
 Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the 10-column shape (including Type and Verifier), the Pass / Fail / Skipped / blank vocabulary, the Confirmed Explicitly column convention, and the backwards-compatibility migration rule.
 4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-LOG.md structure* — for the canonical entry shape (What shipped / Decisions taken and why / Pivots and surprises / Carried forward).
 5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Change list — `[Requested]`/`[Suggested]` labels*, and *Tests: sub-section* — for where to read the labels off the batch's change list and the pre-specified test list with types and verifiers.
@@ -26,9 +26,14 @@ The operating procedure for *After every build* — silent MANIFEST update, reca
 
 ## Identify the just-completed batch
 
-Walk the `## Build batches` section of `BACKLOG.md` top-to-bottom. The just-completed batch is the **topmost batch whose `Files:` sub-section is entirely ticked** (every file is `- [x]`, no `- [ ]` remaining). If a topmost batch has any unticked files, you were invoked at the wrong time — halt and surface that in chat; the Stop hook's heuristic mis-fired and the user should investigate.
+Find the just-completed batch. **Two BACKLOG formats:**
 
-If no fully-ticked batch is present, halt with a short note ("no completed batch in BACKLOG.md awaiting after-build") and exit. Same outcome if the Build batches section is empty or only contains template placeholders.
+- **Single-file (legacy):** Walk the `## Build batches` section of `BACKLOG.md` top-to-bottom. The just-completed batch is the **topmost batch whose `Files:` sub-section is entirely ticked** (every file is `- [x]`, no `- [ ]` remaining).
+- **Folder mode (V48+):** The path block's `"BACKLOG.md"` entry points to `BACKLOG/INDEX.md`. Walk the reference list in `## Build batches` top-to-bottom, reading each per-batch file. The just-completed batch is the first whose `Files:` sub-section is entirely ticked.
+
+If a topmost batch has any unticked files, you were invoked at the wrong time — halt and surface that in chat; the Stop hook's heuristic mis-fired and the user should investigate.
+
+If no fully-ticked batch is present, halt with a short note ("no completed batch in BACKLOG awaiting after-build") and exit. Same outcome if the Build batches section is empty or only contains template placeholders.
 
 ## Idempotency check
 
@@ -59,11 +64,11 @@ After the load + identify + idempotency check, perform these steps in order. The
    
    Trivial helpers, internal utility functions, and boilerplate stay out of MANIFEST (per `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure*).
 
-2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list (under the `Changes:` delimiter, or before the `Files:` anchor in legacy batches without one) may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
+2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG** (per V27 Q3). Each bullet in the batch's change list (under the `Changes:` delimiter, or before the `Files:` anchor in legacy batches without one) may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. In folder mode, these are in the per-batch file. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
 
 3. **Open the test session and run Claude-automatable tests.** Two sub-steps.
 
-   **3a. Write all TEST-LOG rows.** Append rows to `TEST-LOG.md` — one row per distinct observable behaviour, drawing from the batch's `Tests:` sub-section in BACKLOG.md if present (each entry becomes one row with the specified type and verifier), or deriving tests from the build recap if no `Tests:` sub-section exists (default to `Look and click` type and `User` verifier). **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row (10-column format):
+   **3a. Write all TEST-LOG rows.** Append rows to `TEST-LOG.md` — one row per distinct observable behaviour, drawing from the batch's `Tests:` sub-section in BACKLOG (the per-batch file in folder mode, or inline in single-file mode) if present (each entry becomes one row with the specified type and verifier), or deriving tests from the build recap if no `Tests:` sub-section exists (default to `Look and click` type and `User` verifier). **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row (10-column format):
    
    - `#` — next available three-digit ID (read the current max from TEST-LOG and increment).
    - `Date` — today's `YYYY-MM-DD`.
@@ -92,8 +97,8 @@ After the load + identify + idempotency check, perform these steps in order. The
 4. **Build recap** — `[BRIEF]` chat output (per *After every build* step 2). Plain English, no jargon. Three parts:
 
    **Changes shipped.** One bullet per change:
-   - Each bullet labelled `[Requested]` or `[Suggested]` from the BACKLOG.md change list.
-   - Carve-out additions made during the build (visible in BACKLOG.md as `[Prerequisite, not in plan]` on `Files:` entries, or as a batch split note for `[Re-batch, not in plan]`) get those labels appended in the recap.
+   - Each bullet labelled `[Requested]` or `[Suggested]` from the BACKLOG change list.
+   - Carve-out additions made during the build (visible in BACKLOG as `[Prerequisite, not in plan]` on `Files:` entries, or as a batch split note for `[Re-batch, not in plan]`) get those labels appended in the recap.
 
    **Claude has verified.** One bullet per Claude-verified TEST-LOG row, with its result (Pass or Fail) and a one-line summary of what was checked. If any Claude-verified test failed, flag it prominently — the user needs to decide whether to proceed or fix before testing their own items.
 
@@ -119,18 +124,18 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    If `BUILD-LOG.md` already has an entry for this session (same Session identifier in its topmost `## <token>` heading), do not append a duplicate — this is the BUILD-LOG counterpart of the test-session idempotency check.
 
-6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan `BACKLOG.md` planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption.
+6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan BACKLOG planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption. In folder mode, scan all per-batch files in `BACKLOG/` plus the planning-batches section in `INDEX.md`.
 
    For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[FOLD-IN PENDING] block in *<doc>* assumes [old behaviour] — review at next planning session."
 
-   If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG.md."
+   If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG."
 
    The sweep is not exhaustive — it catches cases where BACKLOG items would mislead the next session if read without knowing the build changed the frame. UX.md drift is already caught by drift check 2 (UX.md ↔ what's built) in the next planning session; don't duplicate that here.
 
 7. **End-of-recap flags** (per *After every build* step 3, surfaced via *Where each kind of flag goes*):
    - Out-of-scope improvements you noticed but did not act on.
    - User-facing changes the build implies `UX.md` should reflect (do not edit `UX.md` — it is locked to you; the flag is the only action).
-   - Any Red flag concerns surfaced during the build. If the user deferred any, confirm the `BACKLOG.md` Red flags entry was written per the canonical format.
+   - Any Red flag concerns surfaced during the build. If the user deferred any, confirm the BACKLOG Red flags entry was written per the canonical format (in folder mode, the Red flags section is in INDEX.md).
 
 8. **Closing prompts** (per *After every build* steps 6–8):
    - `[PROMPT]` "Commit and tag this build before testing. A commit preserves the exact state the tests run against; a tag gives the drift checks a reference point for the next planning session." If the project uses git (`.git/` exists at project root), suggest: `git add -A && git commit -m "<batch heading>"` and `git tag <session tag>`. If the project doesn't use git, skip the suggestion.
@@ -142,11 +147,11 @@ Hand control back to main Claude via the recap. Main Claude relays the recap to 
 ## What you must not do
 
 - **Do not edit any source-of-truth doc.** `UX.md` and any additional source-of-truth doc are locked to you (PreToolUse hook enforces). If you notice user-facing behaviour the build implies should be reflected in `UX.md`, flag it in the recap; do not edit. Edits happen by hand during the next planning session.
-- **Do not edit `BACKLOG.md` to mark the batch "complete" or remove it.** Planning removes completed batches at the next planning session's first sub-step (per *During planning*). Until then, the fully-ticked batch stays in `BACKLOG.md` as the in-flight record.
+- **Do not edit BACKLOG to mark the batch "complete" or remove it.** Planning removes completed batches at the next planning session's first sub-step (per *During planning*). Until then, the fully-ticked batch stays in BACKLOG as the in-flight record (in folder mode, the per-batch file stays in `BACKLOG/` and its INDEX.md reference line stays in place).
 - **Do not invoke any subagent.** You do not have the Task tool. The build is done; the recap closes the loop.
 - **Do not start a new build, or call `/build`, or do anything that would invoke batch-executor.** The Stop hook will redirect on the next user turn if more work is queued; the test-confirmation gate will prevent batch-executor from running while your blank-Status rows are pending. Both are designed to keep the boundaries clean.
 - **Do not infer test outcomes.** Per the *Never infer completion* rule (`universal-behaviour.md` → *Required behaviours*): write rows with blank `Status` and `Confirmed Explicitly: No`. The user fills in outcomes at the next planning session, by name, per row. Do not pre-fill anything.
-- **Do not write `[Prerequisite, not in plan]` or `[Re-batch, not in plan]` labels into the BACKLOG.md change list.** Those are recap-time labels only — they describe events that occurred during the build, not pre-existing change-list items.
+- **Do not write `[Prerequisite, not in plan]` or `[Re-batch, not in plan]` labels into the BACKLOG change list.** Those are recap-time labels only — they describe events that occurred during the build, not pre-existing change-list items.
 
 ## Behavioural rules
 
@@ -154,4 +159,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 47.*
+*No-code method — Version 48.*

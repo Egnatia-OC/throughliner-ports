@@ -6,6 +6,30 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v52 — 2026-05-22 — ADR-style numbering + per-batch BACKLOG file-split
+
+**What shipped.** V50 scope (0050). Two structural overhauls in one session: dev-side scope files renamed from `V*.md` to `NNNN-kebab-title.md` format (0051–0059 created; V50.md retained as current session's file, deleted at close); consumer-side BACKLOG split from a single `BACKLOG.md` into a `BACKLOG/` folder with `INDEX.md` (carrying Red flags, Planning batches, Build batch reference list, Open questions) plus per-batch files (`NNNN-batch-name.md`). Shared `allocate_number.py` for 4-digit number allocation across both dev and consumer sides. All four hook scripts updated for folder-aware BACKLOG detection (`is_backlog_file()`, `resolve_backlog_dir()` helpers in `project_state.py`). Parser auto-detects folder vs single-file mode. `/setup` case 4 migrates old single-file BACKLOG.md to folder format. All five subagent bodies updated for two-format BACKLOG handling. Scaffold script extended to create `BACKLOG/` directory with `INDEX-TEMPLATE.md`. `Crash course.md` updated to describe folder structure. `BUILD-METHOD.md` updated with triple-distinction (session tag / scope-file number / method version) and allocation rule. PLAN.md and OPEN-QUESTIONS.md references updated from V-number format to NNNN format. INVENTORY.md updated with new components. All plugin-side footers bumped. Method version V47 → V48; plugin 0.47.0 → 0.48.0; PLUGIN_METHOD_VERSION 47 → 48.
+
+**Decisions taken and why.**
+
+- **All at once rather than split dev/consumer.** User chose to combine dev-side rename + consumer-side file-split into one session despite recommendation to split. The two halves share the allocation concept and `allocate_number.py`; shipping them together avoids a half-baked intermediate state where dev uses NNNN format but consumer still uses inline batches.
+- **4-digit zero-padded numbers (0001, not 001).** Future-proof; conventional ADR practice. No realistic project hits 10,000 batches, but the padding is cheap insurance.
+- **INDEX.md, not README.md.** Explicit purpose; no collision with GitHub's README convention (which would render as the folder's landing page on GitHub, conflating navigation with BACKLOG content).
+- **Numbers frozen at allocation; splits create new files.** Per ADR convention — numbers are stable identifiers, not position markers. Reordering means moving lines in INDEX.md, not renaming files. Splits create new files with new numbers; the old file stays.
+- **Legacy single-file format kept working.** Parser falls back to single-file extraction when it detects `### Batch:` headings (not `INDEX.md`). Projects that haven't run `/setup` case 4 continue working.
+
+**Pivots and surprises.**
+
+- Session spanned two context windows due to the volume of files touched (4 hooks, 5 subagents, scaffold script, parser, project_state, 2 canonical docs, 8 templates, Crash course, BUILD-METHOD, PLAN, OPEN-QUESTIONS, INVENTORY, CLAUDE.md, plugin.json, session_start.py).
+- `stop.py` docstring edit failed on string match — skipped as non-critical; the code changes are correct.
+
+**Carried forward.**
+
+- Smoke tests deferred: all previous deferrals plus V48 BACKLOG folder-split — testable against Taskflow in a desktop-app burner session with the plugin installed via local marketplace.
+- OPEN-QUESTIONS: "Red-flag / threat-class marker" remaining half (UX.md marker) still unscheduled.
+
+---
+
 ## v51 — 2026-05-22 — Consumer-batch structure overhaul
 
 **What shipped.** V49 scope. Adds five scope-context sections to consumer-project BACKLOG build batches — Goal, Outputs, Success criteria, Decisions to make this batch, Dependencies — plus a conditional Red flags sub-section and the `Changes:` delimiter that separates scope-context from build-operations content. The batch now has two regions: scope context (everything between the `### Batch:` heading and `Changes:`) and build operations (`Changes:` through `Serves`). Template placeholder cleanup (UX friction item 6): BACKLOG-TEMPLATE's example batches replaced with HTML-comment format specs. `/setup` case 4 extended to detect old-format batches and insert stub scope-context sections + `Changes:` delimiter.

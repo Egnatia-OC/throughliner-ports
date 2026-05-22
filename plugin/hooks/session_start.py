@@ -101,13 +101,17 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 47
+PLUGIN_METHOD_VERSION = 48
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
 # TEST-LOG.md added in V26 (spine-doc promotion) / V27 (detection wiring).
 SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md")
+
+# Folder-mode spine doc paths (relative to project root). Checked in addition
+# to SPINE_FILENAMES for tier 2 detection.
+SPINE_FOLDER_PATHS = (Path("BACKLOG") / "INDEX.md",)
 
 # CLAUDE.md's path block is the first fenced JSON code block in the file.
 # Same pattern as pre_tool_use.py — see V18's path block format spec.
@@ -119,14 +123,20 @@ PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
 # string used in every template's heading and body.
 TEMPLATE_PLACEHOLDER_PATTERN = re.compile(r"\[Project Name\]")
 
-# Heading shape for a build batch in BACKLOG.md.
+# Heading shape for a build batch in BACKLOG.md (single-file mode).
 BUILD_BATCH_HEADING_PATTERN = re.compile(r"^### Batch: (.+)$", re.MULTILINE)
 
-# Heading shape for the Build batches section in BACKLOG.md.
+# Heading shape for the Build batches section in BACKLOG.md / INDEX.md.
 BUILD_BATCHES_SECTION_PATTERN = re.compile(r"^## Build batches\s*$", re.MULTILINE)
 
 # Generic next-section pattern (used to bound the Build batches section).
 NEXT_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
+
+# Batch reference line in INDEX.md (folder mode): `- `NNNN-name.md``.
+BATCH_REF_PATTERN = re.compile(r"^-\s+`(\d{4}-.+?\.md)`", re.MULTILINE)
+
+# H1 heading in a per-batch file (folder mode): `# <batch name>`.
+BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
 
 # --- V27 TEST-LOG tripwire patterns ---
 
@@ -244,41 +254,66 @@ def is_template_state(text: str) -> bool:
 def find_method_spine_docs(project_root: Path):
     """Return a list of spine doc paths at the project root that carry the
     method footer. Tightens tier 2 detection — an unrelated BACKLOG.md from
-    some other context will not falsely trigger method-aware behaviour."""
+    some other context will not falsely trigger method-aware behaviour.
+
+    Checks both single-file spine docs (UX.md, BACKLOG.md, etc.) and
+    folder-mode paths (BACKLOG/INDEX.md)."""
     found = []
     for name in SPINE_FILENAMES:
         candidate = project_root / name
         text = safe_read_text(candidate)
         if text is not None and has_method_footer(text):
             found.append(candidate)
+    for rel_path in SPINE_FOLDER_PATHS:
+        candidate = project_root / rel_path
+        text = safe_read_text(candidate)
+        if text is not None and has_method_footer(text):
+            found.append(candidate)
     return found
 
 
-def detect_top_build_batch(backlog_text: str):
-    """Find the first `### Batch:` heading inside BACKLOG.md's `## Build
-    batches` section. Returns the batch title, or None if no real batch is
-    present. Template placeholder titles like `[short descriptive name]`
-    are filtered out so an unedited BACKLOG.md doesn't trip the resume
-    signal."""
+def detect_top_build_batch(backlog_text: str, backlog_path=None):
+    """Find the first batch name in the `## Build batches` section.
+
+    In single-file mode, searches for `### Batch:` headings inline. In
+    folder mode (when `backlog_path` is provided and the section contains
+    batch reference lines instead of headings), reads the first referenced
+    batch file's `# <name>` heading.
+
+    Returns the batch title, or None if no real batch is present. Template
+    placeholder titles like `[short descriptive name]` are filtered out."""
     section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
     if not section_match:
         return None
 
-    # Bound the search to within the Build batches section.
     section_text = backlog_text[section_match.end():]
     next_section = NEXT_SECTION_PATTERN.search(section_text)
     if next_section:
         section_text = section_text[:next_section.start()]
 
+    # Single-file mode: inline `### Batch:` headings.
     batch_match = BUILD_BATCH_HEADING_PATTERN.search(section_text)
-    if not batch_match:
-        return None
+    if batch_match:
+        title = batch_match.group(1).strip()
+        if title.startswith("[") and title.endswith("]"):
+            return None
+        return title
 
-    title = batch_match.group(1).strip()
-    # Template placeholder titles look like `[short descriptive name]`.
-    if title.startswith("[") and title.endswith("]"):
-        return None
-    return title
+    # Folder mode: reference lines like `- `0001-name.md``.
+    if backlog_path is not None:
+        ref_match = BATCH_REF_PATTERN.search(section_text)
+        if ref_match:
+            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if batch_text:
+                h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+                if h1_match:
+                    title = h1_match.group(1).strip()
+                    if title.startswith("[") and title.endswith("]"):
+                        return None
+                    return title
+
+    return None
 
 
 # --- V27 TEST-LOG tripwire helpers ---
@@ -608,11 +643,11 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
 
     backlog_data = resolved.get("BACKLOG.md")
     if backlog_data:
-        _path, backlog_text = backlog_data
-        top_batch = detect_top_build_batch(backlog_text)
+        backlog_resolved_path, backlog_text = backlog_data
+        top_batch = detect_top_build_batch(backlog_text, backlog_resolved_path)
         if top_batch:
             lines.append(
-                f"- **Top build batch in BACKLOG.md:** \"{top_batch}\". If "
+                f"- **Top build batch in BACKLOG:** \"{top_batch}\". If "
                 "the user's opener implies resume (test notes pointing at "
                 "this batch, a 'continue where we left off' phrasing, etc.) "
                 "default to resume per `universal-behaviour.md` → *Routing "
