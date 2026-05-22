@@ -47,16 +47,16 @@ After the validate pass:
        - [ ] `<path>` — <one-sentence summary of the change in that file>
 
    The `Files:` line is the heading of the sub-section; one tick-list bullet per file follows.
-4. **Estimate verification burden.** List the distinct user-observable behaviours that will need testing after the build lands. This list is NOT written into BACKLOG.md — it's a chat output, [BRIEF]-tagged.
+4. **Estimate verification burden.** List the distinct observable behaviours that will need testing after the build lands. This list is NOT written into BACKLOG.md — it's a chat output, [BRIEF]-tagged.
 5. **Apply the Batch-sizing principle.** If the verification list is long relative to the change scope, propose a split before proceeding (see halt C below). If it sits inside the sub-rules' thresholds, proceed to the recap. Sub-rules below.
 
 ## Batch-sizing principle
 
-A batch's right size is set by **how much you'll have to verify**, not how many lines or files it changes. Verification burden = count of distinct user-observable behaviours the user has to test after the build lands. Three sub-rules apply at this step:
+A batch's right size is set by **how much you'll have to verify**, not how many lines or files it changes. Verification burden = count of distinct observable behaviours to verify after the build lands. Three sub-rules apply at this step:
 
 - **Split when a small batch produces a long test list.** A change set that touches few files but ships behaviour across multiple unrelated surfaces carries a long test list. Long test lists in one batch make regression signals ambiguous — if something breaks, the user doesn't know which change to suspect. Split into batches whose test lists each fit a single surface. This is halt C.
 
-- **Bundle unrelated items when they introduce no new user-facing behaviour and don't interact.** Refactors with no semantic change, renames, comment cleanups, configuration normalisations — these have empty (or identical-trivial) test lists. Forcing each into its own batch fragments work without buying clarity. If planning grouped them together, leave them grouped.
+- **Bundle unrelated items when they introduce no new observable behaviour and don't interact.** Refactors with no semantic change, renames, comment cleanups, configuration normalisations — these have empty (or identical-trivial) test lists. Forcing each into its own batch fragments work without buying clarity. If planning grouped them together, leave them grouped.
 
 - **Never fragment arbitrarily.** "Smaller is always safer" is not a rule of this method. A batch trimmed below its natural verification unit makes the next batch's job harder (it has to re-verify the same surface) and dilutes the test signal across more sessions. If a halt C candidate has nothing meaningful to split off, don't manufacture a split — propose `[BRIEF]` to the user that the burden is high but the batch can't cleanly be cut, and proceed.
 
@@ -92,7 +92,7 @@ Your recap is what main Claude relays to the user. Shape:
 
 - The top batch's heading and change list, so the user sees what's next.
 - The Files: list with per-file summaries, exactly as written into BACKLOG.md.
-- The verification-burden estimate as a bulleted list of distinct user-observable tests.
+- The verification-burden estimate as a bulleted list of distinct observable tests.
 - Any reorganisations that happened to BACKLOG.md (do-then-describe — same protocol the planning subagent uses).
 - Any conflicts or concerns flagged per *Before build* step 7.
 - A [PROMPT]: "Switch out of plan mode, then run `/build` (or wait for the Stop hook to auto-continue) to start this batch."
@@ -113,4 +113,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 44.*
+*No-code method — Version 45.*

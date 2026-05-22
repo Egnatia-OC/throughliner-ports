@@ -61,7 +61,7 @@ After the load + identify + idempotency check, perform these steps in order. The
 
 2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
 
-3. **Open the test session** by appending rows to `TEST-LOG.md` — one row per distinct user-observable behaviour your recap will name as needing testing. **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row:
+3. **Open the test session** by appending rows to `TEST-LOG.md` — one row per distinct observable behaviour your recap will name as needing testing. **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row:
    
    - `#` — next available three-digit ID (read the current max from TEST-LOG and increment).
    - `Date` — today's `YYYY-MM-DD`.
@@ -133,4 +133,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 44.*
+*No-code method — Version 45.*

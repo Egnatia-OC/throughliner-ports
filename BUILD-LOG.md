@@ -6,6 +6,29 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v49 — 2026-05-22 — Non-GUI vocabulary generalisation + planning/plan-mode disambiguation
+
+**What shipped.** V47 scope (both questions bundled). (1) Replaced "user-observable behaviours" with "observable behaviours" across all plugin-side operational docs — VOCABULARY.md (3 definitions), before-build.md (4 instances), after-build.md (1), planning.md (2), stop.py (1 string literal), Crash course.md (1), INVENTORY.md (1). Added a "Non-GUI projects" guidance paragraph to DOC-STRUCTURE.md under UX.md structure, explaining how non-GUI projects (CLI tools, backend services, MCP servers, plugins, scripts) adapt the "user" and "experience" concepts. (2) Added a "Planning session (not plan mode)" vocabulary entry to VOCABULARY.md clarifying the distinction. Added a "Which mode for which phase" subsection to Crash course.md's "Two layers of permission" section — a per-phase permission-mode recommendation table covering planning, before-build, build, after-build, pre-method ideation, and batch review. Researched programmatic permission-mode switching as an alternative — confirmed not possible from plugin hooks.
+
+Files touched: `plugin/docs/VOCABULARY.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/agents/before-build.md`, `plugin/agents/after-build.md`, `plugin/agents/planning.md`, `plugin/hooks/stop.py`, `Crash course.md`, `planning/INVENTORY.md`. Plus footer bumps on all plugin-side files. Method version V44 → V45; plugin 0.44.0 → 0.45.0.
+
+**Decisions taken and why.**
+
+- **"Observable behaviours" rather than "observable outcomes" or "testable behaviours."** Keeps "behaviours" (consistent with existing method language) while dropping only the "user-" prefix that assumed GUI. "Outcomes" would have shifted the meaning toward results rather than actions; "testable" would have narrowed to verification-time phrasing only.
+- **Vocabulary note rather than full rename of the planning phase.** The rename (to "design session," "discussion session," etc.) would have touched every doc, subagent body, INVENTORY entry, and the subagent type name. A vocabulary note plus per-phase mode table addresses the confusion directly at lower cost. The rename was explored in conversation — Alex considered "discussion" then stepped back; the per-phase table emerged as a more practical resolution.
+- **Guidance paragraph in DOC-STRUCTURE.md rather than a separate non-GUI template.** A new template (BEHAVIOUR.md, CONTRACT.md) would fragment the method. The guidance paragraph preserves UX.md as the universal spine doc while explaining how to adapt it.
+
+**Pivots and surprises.**
+
+- Alex proposed collapsing the method's planning phase with Claude Code's plan mode by having the plugin programmatically enable plan mode during planning. Research confirmed plugins cannot switch permission modes mid-session — only the user can (Shift+Tab, CLI flag, or settings.json). The per-phase mode table was the outcome.
+- Frozen repo-root docs (NO-CODE-METHOD.md, VOCABULARY.md, DOC-STRUCTURE.md at repo root) retain the old "user-observable" phrasing — correct per the V39 freeze, not drift.
+
+**Carried forward.**
+
+- Two OPEN-QUESTIONS entries resolved: "UX.md adaptation for non-GUI projects" and "'Planning' vocabulary collision with Claude Code's plan mode."
+
+---
+
 ## v48 — 2026-05-22 — BACKLOG.md PostToolUse parse validation hook
 
 **What shipped.** V46 scope. New PostToolUse hook (`plugin/hooks/post_tool_use.py`) — the plugin's first use of the PostToolUse hook event. Fires after every Edit/Write/MultiEdit via hooks.json matcher; filters for BACKLOG.md edits by resolving the target path through CLAUDE.md's path block. When the edit targeted BACKLOG.md, imports `find_top_unticked_batch` directly from `parse_backlog.py` (no subprocess overhead) and validates the file's structural format. Detection heuristic: if the file contains unticked file bullets with non-placeholder paths but the parser returns `{}`, the format is broken — surfaces an immediate `additionalContext` warning naming common causes. Template-placeholder paths excluded via `TEMPLATE_PLACEHOLDER_PATTERN` to avoid false positives on freshly-scaffolded projects. Full-file search rather than section-bounded, so corrupted `## Build batches` headings are themselves caught.

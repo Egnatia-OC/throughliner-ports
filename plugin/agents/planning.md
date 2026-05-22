@@ -100,7 +100,7 @@ Even when `primary_intent` is e.g. `test notes`, the opener may carry other item
 Run the five drift checks on every invocation, in five separate passes:
 
 1. **Direct-edit detection (V42 addition).** Git-diff against the last build's state — catches manual edits to files outside the build cycle. Per-file confirmation protocol; output feeds checks 3 and 5. (See *Drift check 1 — direct-edit detection* below.)
-2. **`UX.md` ↔ what's actually built.** Pairwise: every `UX.md` Functionalities entry corresponds to something experienceable; every user-observable behaviour the build supports has a `UX.md` entry.
+2. **`UX.md` ↔ what's actually built.** Pairwise: every `UX.md` Functionalities entry corresponds to something experienceable; every observable behaviour the build supports has a `UX.md` entry.
 3. **`MANIFEST.md` ↔ the codebase.** Pairwise: every named element in `MANIFEST.md` still exists in code under its named path; every new file with a discrete purpose has a `MANIFEST.md` entry.
 4. **`MANIFEST.md` ↔ `UX.md` (loose).** Pairwise: every `MANIFEST.md` entry plausibly traces to a `UX.md` entry. Database config, logging middleware, and similar plumbing are exempt.
 5. **`TEST-LOG.md` ↔ what's been touched since each row was recorded (Rule 5 — retest after change, V26 addition).** Per-row code-touch judgement with a brief reasoning trail per flagged row. Rows whose component has been substantially changed get a status flip via append (per `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*).
@@ -132,7 +132,7 @@ Every other changed file is a candidate for the confirmation protocol below.
 2. Ask: *"Was this you (direct edit)? Yes / No / not sure."*
 3. Wait for the user's answer for *this specific file*.
 4. Route on the answer:
-   - **Yes (the user edited it).** Check whether the file appears in any upcoming build batch's `Files:` sub-section in `BACKLOG.md`. If yes, flag the conflict — surface the batch heading and the file path together, propose a resolution (drop the file from the upcoming batch if the manual edit subsumed the planned change, or re-plan if the manual edit and the planned change disagree). If no conflict, accept: if the file maps to a `MANIFEST.md` entry, the entry stays (the path field is unchanged); if it doesn't, propose a `MANIFEST.md` addition in chat for the next build to pick up. If the edit implies a `UX.md` update (new user-observable behaviour, removed feature, changed rationale), use the standard preview-then-fold-in convention (`universal-behaviour.md` → *Editing surfaces*) to queue a `[FOLD-IN PENDING]` block.
+   - **Yes (the user edited it).** Check whether the file appears in any upcoming build batch's `Files:` sub-section in `BACKLOG.md`. If yes, flag the conflict — surface the batch heading and the file path together, propose a resolution (drop the file from the upcoming batch if the manual edit subsumed the planned change, or re-plan if the manual edit and the planned change disagree). If no conflict, accept: if the file maps to a `MANIFEST.md` entry, the entry stays (the path field is unchanged); if it doesn't, propose a `MANIFEST.md` addition in chat for the next build to pick up. If the edit implies a `UX.md` update (new observable behaviour, removed feature, changed rationale), use the standard preview-then-fold-in convention (`universal-behaviour.md` → *Editing surfaces*) to queue a `[FOLD-IN PENDING]` block.
    - **No (the user didn't make this edit).** Flag as unexpected. Surface the diff in chat and pause. Don't continue the planning flow until the source of the change is identified. Possible causes: an earlier Claude session edited without recording, an external tool ran, the user forgot. Do not silently accept.
    - **Not sure.** Treat as *No* — flag and pause.
 5. Move to the next flagged file.
@@ -205,4 +205,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 44.*
+*No-code method — Version 45.*

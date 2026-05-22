@@ -46,6 +46,8 @@ Every project's `UX.md` follows this shape. Copy these headers at project start;
 
 If a feature's behaviour isn't decided, it doesn't belong here — it belongs in `BACKLOG.md` as a planning batch. (See *Additional source-of-truth docs* → "No placeholders, no soft gestures" — same rule applies.)
 
+**Non-GUI projects.** UX.md works for any project, not only apps with a visual interface. For CLI tools, backend services, MCP servers, data pipelines, plugins, and scripts: the "user" is whoever the project's audience is — an operator, an integrating developer, a downstream system. The "experience" is whatever that audience observes: a response, an exit code, a log line, a generated file, a hook firing correctly. Write entries the same way — one paragraph describing how the audience experiences the behaviour, plus the "the user needs this because…" line tying it to a principle. The structure doesn't change; only the concrete examples do.
+
 **Fold-ins pending section.** A `## Fold-ins pending` section sits at the bottom of `UX.md`, after all Functionalities entries. See *Fold-ins pending sections* below for the shared rules.
 
 ## MANIFEST.md structure
@@ -198,4 +200,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 44.*
+*No-code method — Version 45.*

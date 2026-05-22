@@ -52,7 +52,7 @@ Work in this method moves through two main phases — planning and build — loo
 
 **Planning sessions** decide what gets built. The no-coder pastes test notes from a previous build (and/or raises new feature/s, asks a scope question, etc), and the planning subagent runs its routine: closing the previous build's test session by walking each pending TEST-LOG row one at a time; checking drift between UX.md, MANIFEST.md, and the codebase; scanning BACKLOG.md's Open questions section (listing every entry with a one-line summary so the user can promote, drop, or leave items as-is); sorting any new ideas into Suggestions (already in scope) and Discoveries (not yet in scope, need UX.md updates first); and editing BACKLOG.md directly. The conversation stays in the same chat style as ever — questions, push-back, alternatives, second thoughts all belong in there; the subagent's structure is for what gets recorded and where, not for how the conversation feels. Planning sessions are also when source-of-truth doc edits happen, by hand — the no-coder folds in any pending content from each source-of-truth doc's own *Fold-ins pending* section, removes resolved planning batches, and reorganises build batches if priorities have shifted.
 
-**Build sessions** ship engineering work, one batch at a time. The no-coder runs `/before-build` and the before-build subagent locks the next batch: validates that the top batch's `Serves UX.md:` line resolves, populates the `Inputs:` line if the batch needs non-standard resources, enumerates the files the batch will modify into a `Files:` sub-section, estimates the verification burden — the list of distinct things that will need testing once the batch ships — and proposes a split if the list is long relative to scope. Once the no-coder okays the locked batch, `/build` runs the batch-executor subagent against the file list. The batch-executor reads any resources named in the `Inputs:` line before starting work. As each file ticks, the PreToolUse hook enforces that no file outside the list gets edited. When the last file ticks, the Stop hook routes to the after-build subagent, which updates MANIFEST.md, generates a plain-English build recap, opens a test session by appending blank-Status rows to TEST-LOG.md — one per user-observable behaviour the recap names — writes a BUILD-LOG.md entry (the persistent per-build narrative), and runs a frame-correction sweep (scanning BACKLOG.md planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs for entries that reference behaviour the build just changed).
+**Build sessions** ship engineering work, one batch at a time. The no-coder runs `/before-build` and the before-build subagent locks the next batch: validates that the top batch's `Serves UX.md:` line resolves, populates the `Inputs:` line if the batch needs non-standard resources, enumerates the files the batch will modify into a `Files:` sub-section, estimates the verification burden — the list of distinct things that will need testing once the batch ships — and proposes a split if the list is long relative to scope. Once the no-coder okays the locked batch, `/build` runs the batch-executor subagent against the file list. The batch-executor reads any resources named in the `Inputs:` line before starting work. As each file ticks, the PreToolUse hook enforces that no file outside the list gets edited. When the last file ticks, the Stop hook routes to the after-build subagent, which updates MANIFEST.md, generates a plain-English build recap, opens a test session by appending blank-Status rows to TEST-LOG.md — one per observable behaviour the recap names — writes a BUILD-LOG.md entry (the persistent per-build narrative), and runs a frame-correction sweep (scanning BACKLOG.md planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs for entries that reference behaviour the build just changed).
 
 The no-coder then `/clear`s, refreshes their copy of the project, and runs the tests the recap named. The outcomes (Pass / Fail / Skipped, plus notes) come back to the next planning session, which opens by reading them back row by row before any other work starts.
 
@@ -179,6 +179,21 @@ The two layers are complementary, not overlapping:
 
 Every deny message from the plugin's hooks is prefixed `[No-code method]` and ends with a `What to do:` line naming the specific action to take instead. In permissive modes (Accept edits, Auto, Bypass), an additional line clarifies that changing the permission mode won't help — so the no-coder doesn't waste time escalating through modes looking for one that works.
 
+### Which mode for which phase
+
+The method's "planning session" is not the same as Claude Code's "plan mode." Plan mode blocks all file edits; the planning phase needs to edit BACKLOG.md. Here's which mode to use when:
+
+| Phase | Recommended mode | Why |
+|---|---|---|
+| Planning | Accept edits | The planning subagent edits BACKLOG.md and writes fold-in blocks. Plan mode would block those. |
+| Before-build | Accept edits | Writes the Files: sub-section into BACKLOG.md. |
+| Build | Accept edits (or Auto) | Source-file edits. The plugin's hooks enforce batch boundaries regardless of mode. |
+| After-build | Accept edits (or Auto) | Writes to MANIFEST.md, TEST-LOG.md, BUILD-LOG.md. |
+| Pre-method ideation | Plan mode | Exploring the app idea before running `/setup` — no file edits needed yet. |
+| Reviewing a locked batch | Plan mode (optional) | Reading the batch before `/build` — useful for a read-only review pass. |
+
+Auto is viable during builds because the plugin's PreToolUse hooks enforce the same boundaries that Accept edits prompts the no-coder about — locked docs, batch file lists, the test-confirmation gate. The hooks fire in every mode, including Auto.
+
 ## What's editable
 
 The method ships with a default set of preferences and commitments. A new no-coder needs to distinguish three layers.
@@ -274,4 +289,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 44.*
+*No-code method — Version 45.*

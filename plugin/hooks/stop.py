@@ -237,7 +237,7 @@ def format_after_build_reason():
         "  2. Produce a plain-English build recap labelling each change "
         "`[Requested]` / `[Suggested]` per BACKLOG.md.\n"
         "  3. Open the test session by appending blank-Status rows to "
-        "TEST-LOG.md — one per user-observable behaviour the recap names.\n"
+        "TEST-LOG.md — one per observable behaviour the recap names.\n"
         "  4. Prompt the user to refresh, test, and bring per-row outcomes "
         "to the next planning session.\n\n"
         "Per `after-build.md` → *Work loop*."
