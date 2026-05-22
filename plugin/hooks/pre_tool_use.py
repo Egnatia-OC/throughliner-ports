@@ -5,17 +5,19 @@ PreToolUse hook for the no-code-method plugin.
 Runs a V29 adoption gate first (across Edit / Write / MultiEdit AND Task),
 then three checks on Edit / Write / MultiEdit and one check on Task:
 
-  (1) Locked source-of-truth doc enforcement (V19, V38 carve-out) —
+  (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs) —
       Edit/Write/MultiEdit. Locked docs are: UX.md, plus any additional
       source-of-truth docs declared in the project's CLAUDE.md path block.
       BACKLOG.md, MANIFEST.md, and TEST-LOG.md are explicitly writable — the
       planning, glossary, and test-record surfaces Claude edits during the
-      build cycle. When a writing tool targets a locked doc, the hook denies
-      and tells Claude to add a [FOLD-IN PENDING] block to the Fold-ins
-      pending section of BACKLOG.md instead. V38 exception: footer-only
-      edits (Edit tool only) that exclusively add or update the method-
-      version footer (`*No-code method — Version N.*`) are allowed — the
-      footer is metadata, not content.
+      build cycle. When a writing tool targets a locked doc's main body, the
+      hook denies and tells Claude to add a [FOLD-IN PENDING] block to the
+      doc's own Fold-ins pending section at the bottom instead. Two carve-
+      outs: V38 — footer-only edits (Edit tool only) that exclusively add
+      or update the method-version footer are allowed (metadata, not
+      content). V45 — edits within the Fold-ins pending section (Edit tool
+      only) are allowed, so Claude can append new fold-in blocks and remove
+      blocks after the user confirms fold-in.
 
   (2) Serves-line check on BACKLOG.md build-batch additions (V22) — Edit/Write/
       MultiEdit. When a writing tool targets BACKLOG.md and the proposed new
@@ -77,8 +79,7 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
 Mechanisms:
 
   - Locked-doc rule: universal-behaviour.md → Editing surfaces.
-  - Fold-in block format: DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins
-    pending.
+  - Fold-in block format: DOC-STRUCTURE.md → Fold-ins pending sections.
   - Serves-line rule: planning.md → How a new feature enters the project,
     and DOC-STRUCTURE.md → BACKLOG.md structure → Build batches.
   - V22 Q3 (case-insensitive exact match): BUILD-LOG.md → V22.
@@ -218,6 +219,9 @@ SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
 # V38: method-version footer pattern for the footer-stamp carve-out.
 FOOTER_LINE_PATTERN = re.compile(r"\*No-code method — Version \d+\.\*")
 
+# V45: fold-in section heading pattern for the fold-in section carve-out.
+FOLD_IN_SECTION_HEADING = re.compile(r"^## Fold-ins pending\s*$", re.MULTILINE)
+
 # --- V39 read-before-edit gate patterns ---
 
 # MANIFEST entry pattern: `- **Name** (optional path) — description`.
@@ -315,20 +319,20 @@ def build_locked_map(project_root: Path) -> dict:
 def make_reason(logical_name: str, permission_mode: str = "") -> str:
     """Build the deny-reason text Claude sees when a locked-doc edit is
     blocked. The reason tells Claude exactly where to place the proposed
-    change — the *Fold-ins pending* section of BACKLOG.md — so the
-    instruction is unambiguous in any project layout."""
+    change — the doc's own *Fold-ins pending* section at its bottom — so
+    the instruction is unambiguous in any project layout."""
     return (
         f"[No-code method] BLOCKED: {logical_name} is a locked source-of-"
-        "truth doc. It is read-only to Claude (the agent); only the user "
-        "can edit it, by hand during a planning session.\n\n"
+        "truth doc. The main body is read-only to Claude (the agent); only "
+        "the user can edit it, by hand during a planning session.\n\n"
         "What to do: add a `[FOLD-IN PENDING]` block to the *Fold-ins "
-        f"pending* section of BACKLOG.md, with destination `{logical_name}` "
-        "and origin `mid-build edit attempt — <today's date>`. The user "
-        f"will fold the block into {logical_name} by hand during their next "
-        "planning session, or drop it. Surface this addition plainly in "
-        "your response to the user. Canonical block format and section "
-        "placement: see DOC-STRUCTURE.md → BACKLOG.md structure → Fold-ins "
-        "pending."
+        f"pending* section at the bottom of `{logical_name}`, with origin "
+        "`mid-build edit attempt — <today's date>`. The hook allows edits "
+        "within that section. The user will fold the block into "
+        f"{logical_name}'s main body by hand during their next planning "
+        "session, or drop it. Surface this addition plainly in your "
+        "response to the user. Canonical block format: see "
+        "DOC-STRUCTURE.md → Fold-ins pending sections."
         + _mode_suffix(permission_mode)
     )
 
@@ -535,6 +539,40 @@ def is_footer_only_edit(tool_name, tool_input):
     old_stripped = FOOTER_LINE_PATTERN.sub("", old).strip()
     new_stripped = FOOTER_LINE_PATTERN.sub("", new).strip()
     return old_stripped == new_stripped
+
+
+# --- V45 Fold-in section carve-out helper ---
+
+
+def is_fold_in_section_edit(tool_name, tool_input, doc_path):
+    """V45: Return True if a writing-tool call on a locked doc exclusively
+    modifies content within the Fold-ins pending section.
+
+    Only Edit qualifies — Write replaces the entire file (too broad) and
+    MultiEdit can bundle fold-in + other changes. The check reads the doc,
+    finds the ## Fold-ins pending heading, and verifies the old_string
+    appears entirely at or after that heading. Since the Edit tool requires
+    old_string to be unique in the file, there is exactly one position to
+    check."""
+    if tool_name != "Edit":
+        return False
+    old = tool_input.get("old_string")
+    if not isinstance(old, str):
+        return False
+
+    doc_text = safe_read_text(doc_path)
+    if doc_text is None:
+        return False
+
+    heading_match = FOLD_IN_SECTION_HEADING.search(doc_text)
+    if not heading_match:
+        return False
+
+    old_pos = doc_text.find(old)
+    if old_pos < 0:
+        return False
+
+    return old_pos >= heading_match.start()
 
 
 # --- V25 batch file-list boundary check helpers ---
@@ -1092,7 +1130,10 @@ def main() -> int:
     if logical_name:
         # V38: narrow carve-out — footer-only edits are metadata, not
         # content, and don't need [FOLD-IN PENDING] routing.
-        if not is_footer_only_edit(tool_name, tool_input):
+        # V45: fold-in section carve-out — edits within the ## Fold-ins
+        # pending section are allowed (appending/removing fold-in blocks).
+        if (not is_footer_only_edit(tool_name, tool_input)
+                and not is_fold_in_section_edit(tool_name, tool_input, target_path)):
             return emit_deny(make_reason(logical_name, permission_mode))
 
     # V22: Serves-line check fires on BACKLOG.md edits whose new content

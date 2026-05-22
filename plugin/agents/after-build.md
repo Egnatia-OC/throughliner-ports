@@ -99,9 +99,9 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    If `BUILD-LOG.md` already has an entry for this session (same Session identifier in its topmost `## <token>` heading), do not append a duplicate — this is the BUILD-LOG counterpart of the test-session idempotency check.
 
-6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan `BACKLOG.md`'s *Planning batches* and *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption.
+6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan `BACKLOG.md` planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption.
 
-   For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[FOLD-IN PENDING] block for *<doc>* assumes [old behaviour] — review at next planning session."
+   For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[FOLD-IN PENDING] block in *<doc>* assumes [old behaviour] — review at next planning session."
 
    If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG.md."
 
@@ -133,4 +133,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 42.*
+*No-code method — Version 43.*

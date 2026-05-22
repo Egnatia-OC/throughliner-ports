@@ -10,15 +10,9 @@ Security, privacy, data integrity, or safety concerns Claude has surfaced and th
 
 For the canonical entry format, see `DOC-STRUCTURE.md` → *BACKLOG.md structure → Red flags*.
 
-## Fold-ins pending
-
-Proposed source-of-truth content that Claude (the agent) has formed but cannot write directly. Each block waits here until the user folds it into the destination doc by hand during their next planning session (or drops it). Created by any route that would otherwise write a read-only doc — new-project, migration, mid-build hook intercept, planning resolution — all land here. Items are removed once folded in or dropped. Section starts empty for new projects.
-
-For the canonical block format, see `DOC-STRUCTURE.md` → *BACKLOG.md structure → Fold-ins pending*.
-
 ## Planning batches
 
-Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a fold-in-pending block to the *Fold-ins pending* section above (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer in.
+Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a `[FOLD-IN PENDING]` block to the destination doc's *Fold-ins pending* section (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer in.
 
 ### Planning batch: [short descriptive name]
 
@@ -47,6 +41,9 @@ A change only belongs here if it serves a `UX.md` entry (or an entry in a releva
 - [Suggested] [Change description]
 - [Requested] [Change description]
 
+Inputs:
+- `[path/to/resource]` — [why this batch needs it]
+
 Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
@@ -59,12 +56,35 @@ Serves UX.md: [entry name(s)].
 - [Suggested] [Change description]
 - [Requested] [Change description]
 
+Inputs:
+- `[path/to/resource]` — [why this batch needs it]
+
 Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 
 Serves UX.md: [entry name(s)].
-[For batches touching an additional source-of-truth doc, add a `Serves <DOC>: ...` line. Two forms: `Serves <DOC>: [entry/section name].` when the batch implements the doc's content (e.g., `Serves SYSTEM-PROMPT.md: tone and presentation section.`); `Serves <DOC>: [delivery mechanism].` when the batch's purpose is to carry the doc to its runtime destination rather than implement any of its content (e.g., `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt.`).]
+[For batches touching an additional source-of-truth doc, add a `Serves <DOC>: ...` line. Two forms: `Serves <DOC>: [entry/section name].` when the batch implements the doc's content (e.g., `Serves SYSTEM-PROMPT.md: tone and presentation section.`); `Serves <DOC>: [delivery mechanism].` when the batch's purpose is to carry the doc to its runtime destination rather than implement any of its content (e.g., `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt.`).
+
+`Inputs:` is optional — omit it entirely if the batch only needs the standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) that Claude reads every session. Include it when the batch depends on a specific additional resource: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference.]
+
+## Open questions
+
+Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning subagent scans this section at the start of every planning session and lists all entries with their triggers.
+
+When an open question matures to the point where it blocks a specific build, promote it to a planning batch above.
+
+<!--
+Entry format:
+
+### [Short question title]
+
+[One paragraph framing the question.]
+
+**Why it matters.** [Brief context — who raised it, what's at risk.]
+
+**Next step.** [What would resolve or promote this — e.g. "promote to planning batch if X happens", "fold into next batch touching Y", "park until Z".]
+-->
 
 ---
-*No-code method — Version 42.*
+*No-code method — Version 43.*

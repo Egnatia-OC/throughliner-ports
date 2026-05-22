@@ -20,5 +20,11 @@ named UX state) can omit the path.
 Full spec: `DOC-STRUCTURE.md` → MANIFEST.md structure.
 -->
 
+## Fold-ins pending
+
+Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Fold these into the main body during your next planning session, then delete the block. Section starts empty for new projects.
+
+For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
+
 ---
-*No-code method — Version 42.*
+*No-code method — Version 43.*

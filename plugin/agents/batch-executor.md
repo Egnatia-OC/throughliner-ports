@@ -28,9 +28,10 @@ Identify the unticked files (`ticked: false`). Those are your work list. Already
 ## First action — load the project's current state
 
 1. Read `BACKLOG.md` (path declared in the project's `CLAUDE.md` path block). You need it open because every file you complete requires a tick edit.
-2. Read each unticked file (if it exists) to understand current state.
-3. Read `MANIFEST.md` for context on the named elements you'll touch.
-4. Read the relevant `UX.md` entries named in `serves_ux` — they explain the user concern the batch serves.
+2. Read any resources named in the batch's `Inputs:` line (if present). These are non-standard docs the batch needs before starting work — specs, research files, external references. Standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are omitted from the Inputs line because you read them every session anyway.
+3. Read each unticked file (if it exists) to understand current state.
+4. Read `MANIFEST.md` for context on the named elements you'll touch.
+5. Read the relevant `UX.md` entries named in `serves_ux` — they explain the user concern the batch serves.
 
 ## Per-file work loop
 
@@ -113,4 +114,4 @@ The rules above derive from:
 
 ---
 
-*No-code method — Version 42.*
+*No-code method — Version 43.*

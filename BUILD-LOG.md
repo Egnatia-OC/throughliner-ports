@@ -6,6 +6,32 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v47 — 2026-05-22 — Distributed fold-ins + BACKLOG open-questions + batch Inputs line
+
+**What shipped.** V45 scope. Three structural changes to the method's document architecture: (1) **Distributed fold-ins** — `[FOLD-IN PENDING]` blocks moved from a centralized section in BACKLOG.md to a `## Fold-ins pending` section at the bottom of each destination source-of-truth doc (UX.md, MANIFEST.md, additional SOT docs). PreToolUse hook gained `is_fold_in_section_edit()` — a new carve-out allowing edits within the fold-in section while keeping the rest of locked docs protected (same pattern as V38's footer-stamp carve-out). Templates (UX, MANIFEST, ADDITIONAL-DOC) each gained the new section. (2) **Open questions section in BACKLOG.md** — new fourth section (Red flags → Planning batches → Build batches → Open questions) for non-blocking parking-lot items. Planning subagent scans all entries with one-line summaries every session. Distinct from planning batches (blocking) — coexist, don't merge. (3) **Batch Inputs line** — optional `Inputs:` bullet list in build batches listing non-standard resources needed before starting work. Before-build subagent populates during batch lock-in; batch-executor reads before starting work. Standard docs omitted.
+
+Files touched: `plugin/templates/BACKLOG-TEMPLATE.md`, `plugin/templates/UX-TEMPLATE.md`, `plugin/templates/MANIFEST-TEMPLATE.md`, `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/pre_tool_use.py`, `plugin/hooks/universal-behaviour.md`, `plugin/agents/planning.md`, `plugin/agents/before-build.md`, `plugin/agents/batch-executor.md`, `plugin/agents/after-build.md`, `plugin/agents/setup.md`, `Crash course.md`. Plus footer bumps on all plugin-side files. Method version V42 → V43; plugin 0.42.0 → 0.43.0.
+
+**Decisions taken and why.**
+
+- **Fold-in sections go at the end of locked docs, before the footer.** The PreToolUse hook detects edits within the section by checking whether `old_string`'s position falls at or after the `## Fold-ins pending` heading. End-of-doc placement makes position detection simple and reliable.
+- **Open questions coexist with planning batches rather than replacing them.** Planning batches are blocking (they name what they block via a `Blocks:` line); open questions are non-blocking parking. Different purposes, different lifecycles. Open questions mature into planning batches when they start blocking something specific.
+- **No BACKLOG-specific fold-ins section.** Originally considered, then dropped. BACKLOG.md is writable by Claude — no fold-in mechanism needed for it. Keeps BACKLOG at four sections.
+- **Planning subagent handles migration from old centralized fold-ins.** No `/setup` run needed. During normal planning-session work, if the planning subagent finds fold-in blocks in the old BACKLOG.md location, it redistributes them to destination docs.
+- **Inputs line between change list and Files sub-section.** Natural reading order: what the batch does (change list) → what it needs to read first (Inputs) → what files it will edit (Files).
+
+**Pivots and surprises.**
+
+- Context compaction mid-session. No work lost — continuation picked up cleanly at subagent updates.
+- Two additional subagents (after-build.md, setup.md) needed fold-in destination updates beyond the three originally scoped.
+
+**Carried forward.**
+
+- Smoke test: trigger the fold-in section carve-out against a test project — write a `[FOLD-IN PENDING]` block to UX.md's fold-in section and verify the hook allows it while blocking a main-body edit. Testable against Taskflow via `--plugin-dir`.
+- `Crash course.md` → *When you need more* references `plugin/docs/NO-CODE-METHOD.md` which doesn't exist — the behavioural rules live in `plugin/hooks/universal-behaviour.md`. Pre-existing issue, not introduced this session.
+
+---
+
 ## v46 — 2026-05-22 — /setup UX + per-project opt-out
 
 **What shipped.** V44 scope. Three major changes: (1) `.no-code-method-skip` marker architecture removed from the public plugin — `OPT_OUT_MARKER_NAME`, `has_opt_out_marker()`, and case 5 (opted out) removed from `project_state.py`, `pre_tool_use.py`, `session_start.py`, `setup.md` (formerly `adopt.md`), `scaffold.py`, `SKILL.md`, `universal-behaviour.md`, `VOCABULARY.md`, and `Crash course.md`. Per-project opt-out is now Claude Code's built-in `/plugin` → Installed → toggle off. Dev-project's `.no-code-method-skip` stays as a legacy escape hatch (`_LEGACY_SKIP_MARKER`). (2) `/adopt` renamed to `/setup` across the entire plugin surface — skill directory (`plugin/skills/adopt/` → `plugin/skills/setup/`), subagent body (`adopt.md` → `setup.md`), subagent type (`no-code-method:adopt` → `no-code-method:setup`), all hook references, all doc references, Crash course, planning artefacts. (3) Three OPEN-QUESTIONS UX friction items resolved: "scaffold" jargon replaced with plain English in user-facing `/setup` dialogue; next-action prompt added to successful-path recaps (cases 1, 2, 3); Pass/Fail/Skipped one-line explanations added to planning subagent's per-row read-back. V46 scope (cd-shifts-cwd marker walk-up) closed — marker removal made it moot. Permission-prompt surface researched: no difference between marketplace and `--plugin-dir` (written to `research/marketplace-install-permission-surface.md`). Method version V41 → V42; plugin 0.41.0 → 0.42.0.

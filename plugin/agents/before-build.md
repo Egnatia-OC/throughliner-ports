@@ -40,14 +40,15 @@ You do not re-organise the build queue here. Planning is the structural authorit
 After the validate pass:
 
 1. **Enumerate Files:.** For each bullet in the top batch's change list, identify the file(s) it requires modifying. Use Glob/Grep against the codebase plus MANIFEST.md entries. For each file, write a one-sentence summary of the only change happening in that file. If a file requires a rewrite rather than a surgical edit, the summary says so.
-2. **Edit BACKLOG.md** to insert (or refresh, if a prior before-build run left one) the `Files:` sub-section under the top batch, in the canonical shape from `DOC-STRUCTURE.md` → *Files: sub-section*:
+2. **Populate the Inputs: line (if needed).** Check whether the batch needs to read any non-standard resources before starting work — docs, specs, research files, or external references not in the default set (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md are always read and are omitted). If it does, write an `Inputs:` bullet list into BACKLOG.md between the change list and the `Files:` sub-section, one entry per resource: `` `<path or reference>` — <why this batch needs it> ``. If no non-standard inputs are needed, omit the line entirely. Full rules: `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure → Inputs: line*.
+3. **Edit BACKLOG.md** to insert (or refresh, if a prior before-build run left one) the `Files:` sub-section under the top batch, in the canonical shape from `DOC-STRUCTURE.md` → *Files: sub-section*:
 
        Files:
        - [ ] `<path>` — <one-sentence summary of the change in that file>
 
    The `Files:` line is the heading of the sub-section; one tick-list bullet per file follows.
-3. **Estimate verification burden.** List the distinct user-observable behaviours that will need testing after the build lands. This list is NOT written into BACKLOG.md — it's a chat output, [BRIEF]-tagged.
-4. **Apply the Batch-sizing principle.** If the verification list is long relative to the change scope, propose a split before proceeding (see halt C below). If it sits inside the sub-rules' thresholds, proceed to the recap. Sub-rules below.
+4. **Estimate verification burden.** List the distinct user-observable behaviours that will need testing after the build lands. This list is NOT written into BACKLOG.md — it's a chat output, [BRIEF]-tagged.
+5. **Apply the Batch-sizing principle.** If the verification list is long relative to the change scope, propose a split before proceeding (see halt C below). If it sits inside the sub-rules' thresholds, proceed to the recap. Sub-rules below.
 
 ## Batch-sizing principle
 
@@ -102,7 +103,7 @@ Hand control back to main Claude via the recap. Main Claude relays the recap to 
 
 - **Do not run the build.** Before-build stops at file-list lock. Batch-executor (a separate invocation) is what edits source files.
 - **Do not edit any file other than BACKLOG.md.** Source files, `UX.md`, `MANIFEST.md`, additional source-of-truth docs — all off-limits here. The PreToolUse hook will block them; do not try.
-- **Do not reorder Red flags, Fold-ins pending, or Planning batches.** Only the Build batches section is in scope, and within it, only the top batch's Files: sub-section and (under halt C only) splitting the top batch.
+- **Do not reorder Red flags or Planning batches.** Only the Build batches section is in scope, and within it, only the top batch's Inputs: line, Files: sub-section, and (under halt C only) splitting the top batch.
 - **Do not add files to Files: outside the current batch's change list scope.** The Files: list is derived from the change list; if a file isn't covered by the change bullets, it doesn't belong on the list. Prerequisite-carve-out additions happen at build time inside batch-executor, not here.
 - **Do not invoke sub-subagents.** You do not have the Task tool.
 
@@ -112,4 +113,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 42.*
+*No-code method — Version 43.*

@@ -22,9 +22,9 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 - The Sonnet-search language across method docs (universal-behaviour, subagent bodies, Crash course) is reworded to "offer to conduct research on anything you're uncertain of" — shifting responsibility from user to agent.
 - Research files are reference material: no MANIFEST tracking, no BACKLOG entries. Zero maintenance burden.
 
-**Relationship to existing entries.** Adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — the `Inputs:` line for build batches is the natural place to reference research files that inform a specific build. Adjacent to [[Graduate sovereign implementer development onto sovereign implementer]] — the method's own dev project already uses this pattern.
+**Relationship to existing entries.** Adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — the `Inputs:` line for build batches is the natural place to reference research files that inform a specific build. Adjacent to [[Graduate sovereign implementer development onto sovereign implementer]] — the method's own dev project already uses this pattern.
 
-**Next step.** Park until promoted. Could bundle with V45 (the `Inputs:` line needs something to point at) or schedule independently. The Sonnet-search reword is a standalone fix that could land in any session touching universal-behaviour or subagent bodies. **Promote sooner** if a consumer project reaches a moment where research findings would have been useful but weren't persisted.
+**Next step.** **Promoted to V51** (session v47, 2026-05-22). Scope file at `planning/sessions/V51.md`.
 
 ---
 
@@ -43,7 +43,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Relationship to existing entries.** Prerequisite-adjacent for [[Graduate sovereign implementer development onto sovereign implementer]] — the current dev project's `BUILD-LOG.md` is already unwieldy. Pairs naturally with [[`research/` folder convention + automatic research persistence]] — build entries link to research files.
 
-**Next step.** Park until promoted. Natural bundle with V45 (BACKLOG restructuring) or as a standalone structural session. Needs template and after-build subagent changes. **Promote sooner** if a consumer project's BUILD-LOG.md grows large enough to cause context-window pressure during planning reads.
+**Next step.** **Promoted to V52** (session v47, 2026-05-22). Scope file at `planning/sessions/V52.md`.
 
 ---
 
@@ -59,7 +59,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 2. **Planning-subagent automatic detection** — subagent identifies security-shaped scope (keyword/pattern triggers: `auth`, `password`, `token`, `secret`, `delete`, `payment`, etc.) and surfaces a verbal heads-up in the planning recap. No persistent doc carrier; the warning lives in the conversation.
 3. **Both** — automatic detection at planning time plus persistence in the batch as a section.
 
-**Next step.** Park until promoted. Trigger to promote: a Taskflow batch surfaces real security-shaped scope where the absence of this mechanism causes friction, OR a subsequent batch-structure ideation/session revisits V-file→consumer-batch section propagation and bundles this in.
+**Next step.** **Folded into V49** (session v47, 2026-05-22). Red-flag marker bundled into V49's consumer-batch structure overhaul as a sixth batch section.
 
 ---
 
@@ -79,9 +79,9 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/setup` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
 7. ~~**"Pass / Fail / Skipped" not explained.**~~ **Resolved V44 (session v46, 2026-05-22).** Per-row read-back in `planning.md` now includes one-line explanation for each option.
 
-**Relationship to existing entries.** Item 3 is adjacent to [[Distributed fold-ins + open questions section in BACKLOG]] (V45) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
+**Relationship to existing entries.** Item 3 is adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
 
-**Next step.** Four of seven items resolved (1, 2, 4, 7). Remaining: item 3 (fold-in UX — larger design question, may feed into or follow V45), item 5 (after-build commit/tag prompt — small subagent fix), item 6 (template placeholder cleanup — small template fix). Items 5 and 6 can bundle into any future session touching the relevant subagent/template.
+**Next step.** Four of seven items resolved (1, 2, 4, 7). **Remaining items promoted in session v47 (2026-05-22):** item 3 (fold-in UX) bundled into V45; item 5 (after-build commit/tag prompt) bundled into V48; item 6 (template placeholder cleanup) bundled into V49. All seven items now scheduled or resolved.
 
 ---
 
@@ -104,7 +104,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
 
-**Next step.** Park. Revisit after V45 ships (fold-in restructuring may change item 4's shape; BACKLOG.md structural changes may affect item 1's hook target). Items are independent of each other and can be promoted individually. **Promote sooner** if a consumer project hits a routing misclassification (item 6), a silent BACKLOG parse failure (item 1), or a compaction-loses-build-state incident (item 5) — those are the three with the highest consequence-of-inaction.
+**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 (BACKLOG parse validation) → V46 (repurposed slot). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → V54. Items 5, 6 (compaction context, opener routing) → V55. Scope files at `planning/sessions/V46.md`, `V54.md`, `V55.md`.
 
 ---
 
@@ -118,14 +118,14 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Prerequisites (all tracked as separate entries).**
 
-1. **[[Distributed fold-ins + open questions section in BACKLOG]]** — **Promoted to V45 (session v41, 2026-05-21).** Gives the method a parking lot for unresolved questions (replaces this project's bespoke OPEN-QUESTIONS.md) and restructures BACKLOG.md. Includes the Inputs line for build batches (replaces Vxx Inputs sections).
+1. **Distributed fold-ins + open questions section in BACKLOG** — **Shipped V43 (session v47, 2026-05-22).** Gave the method a parking lot for unresolved questions (open-questions section in BACKLOG.md) and restructured fold-in blocks to live in destination docs' own `## Fold-ins pending` sections. Includes the Inputs line for build batches.
 2. **[[Automated vs. manual test split + non-UI test types]]** — **Promoted to V48 (renumbered V46 → V48 in session v43, 2026-05-22).** The primary blocker. The method's test model must accommodate run-and-read, trigger-and-observe, and generate-and-inspect test types, and support Claude-run automated tests. Without this, the build cycle can't verify plugin work.
 3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
 4. **[[UX.md adaptation for non-GUI projects]]** — **Promoted to V47 (renumbered V43 → V47 in session v43, 2026-05-22).** Vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
 
 **What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). BUILD-LOG.md narrative (already in the consumer method since V33).
 
-**Next step.** Park. This entry is the meta-goal; the prerequisites have their own promotion triggers. As of session v43 (2026-05-22), all four prerequisites have been scheduled (V47 vocab, V45 fold-ins, V48 test split; #3 already done in v40) and after V48 ships, graduation becomes promotable on its own evaluation. Graduate when all four prerequisites have shipped and been verified in at least one build cycle. **Promote sooner** if an external reason (public release, new contributor) makes dogfooding urgent before all prerequisites land.
+**Next step.** **Promoted to V59** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before V59. Scope file at `planning/sessions/V59.md`.
 
 ---
 
@@ -153,25 +153,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Distributed fold-ins + open questions section in BACKLOG
-
-**The question.** Should fold-ins move from a centralised section in BACKLOG.md to the bottom of each destination doc (UX.md, MANIFEST.md, BACKLOG.md itself), and should BACKLOG.md gain an open-questions section scanned during planning?
-
-**Why it matters.** Surfaced 2026-05-21, discussion session. Two related design problems: (1) BACKLOG.md currently houses source-of-truth content destined for other docs (UX.md entries, MANIFEST.md entries) alongside build batches — semantically wrong, since BACKLOG is about what gets built, not about parking SOT content for unrelated docs. (2) The method has no parking lot for unresolved questions that aren't blocking a specific build batch. This project's own OPEN-QUESTIONS.md has been load-bearing (10 entries with trigger conditions), but consumer projects have no equivalent.
-
-**Design so far.**
-
-- Each spine doc gains a fold-in section at its bottom. Claude appends proposed content there; the user folds it into the main body during planning. Content lives next to its destination instead of being routed through BACKLOG.
-- Locked docs (UX.md, MANIFEST.md) need an **append-only carve-out** in PreToolUse — same pattern as V38's footer-stamp carve-out (`is_footer_only_edit()`), but for appending to the fold-in section.
-- BACKLOG.md structure becomes: Red flags → Build batches → BACKLOG-specific fold-ins (resolved features not yet batched) → Open questions.
-- Open questions are scanned by the planning subagent during its existing drift-check sweep at the top of every planning session — not left to chance.
-- Planning batches (the current `Blocks:` mechanism) — relationship to the new open-questions section not yet resolved. May merge, may coexist.
-- **Inputs line for build batches.** Each batch gains an `Inputs:` line listing non-standard reads specific to that batch — an OPEN-QUESTIONS entry, a specific additional doc, a research artifact, an external reference. Foundational docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are already read every session by SessionStart, so `Inputs:` only lists what's beyond the standard set. Closes the gap left by Vxx scope files' Inputs sections: without it, Claude has to guess what to read before starting a batch.
-
-**Next step.** Promoted to V45 (session v41, 2026-05-21). Placed ahead of V48 because V48 (test split, renumbered from V46 in session v43) needs both the open-questions section as a parking lot for between-session design decisions and the `Inputs:` line as the natural carrier for per-batch test specs. Prerequisite #1 for [[Graduate sovereign implementer development onto sovereign implementer]]. **Promote sooner** only if real Taskflow use surfaces the "nowhere to park unresolved questions" gap before V43–V44 ship.
-
----
-
 ## Bash `cd` inside a session shifts plugin cwd, breaking parent-folder opt-out marker
 
 **The question.** During V39 dev work, a Bash command early in the session (`cd sovereign-implementer/ && git describe --tags --abbrev=0`) shifted Claude Code's session cwd from the parent `No code method/` folder to `sovereign-implementer/`. Subsequent PreToolUse hook invocations received `sovereign-implementer/` as `cwd`, and the V29 adoption gate's `has_opt_out_marker` check (which reads `<cwd>/.no-code-method-skip`) found nothing — the marker that opts out the dev project lives at the parent folder, not inside `sovereign-implementer/`. The gate started blocking every Edit. Workaround: write a second `.no-code-method-skip` at `sovereign-implementer/`. But the deeper question is whether the plugin should be resilient to `cd`-induced cwd drift mid-session.
@@ -190,7 +171,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-bearing ancestor)**. Cheap, covers both real cases (dev project + monorepo), and the bound keeps it from over-reaching into the user's home directory.
 
-**Next step.** Promoted to V46 (renumbered V47 → V46 in session v43, 2026-05-22). Decisions pre-made (shape A marker-walk-up, bounded by first `CLAUDE.md`/`.git/`-bearing ancestor); shapes B and C rejected. Smallest of V44–V48. **Promote sooner** only if a consumer hits this in normal use, OR if V42's git-diff drift detection trips the dev project again before V46 ships.
+**Next step.** **Resolved — V44 removed the `.no-code-method-skip` marker architecture from the public plugin (session v46, 2026-05-22), making the walk-up fix moot.** Original V46 scope closed. The legacy `_LEGACY_SKIP_MARKER` in the dev project's `project_state.py` doesn't need a walk-up — it's a niche escape hatch for `--plugin-dir` users only. V46 slot repurposed for BACKLOG parse validation.
 
 ---
 
@@ -206,7 +187,7 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 - *Hook-script direct-invocation suite.* Add a `tests/` directory at repo root with scripts that pipe fake hook input into each hook script and assert on stdout. Catches parser / arithmetic bugs pre-smoke-test. Doesn't catch Claude Code integration issues (those still need `--plugin-dir`). Low cost; partial coverage.
 - *Fixture-driven integration suite.* Harness that spins up a fixture project, runs `claude --plugin-dir`, and asserts on resulting BACKLOG.md / TEST-LOG.md state. Highest fidelity; highest cost; brittle against Claude Code version changes.
 
-**Next step.** Park. Revisit when (a) the plugin surface stabilises post-V35 E2E test, or (b) a regression slips through hand-verification that automation would have caught. **Promote sooner** if hand-verification scaling becomes a real bottleneck.
+**Next step.** **Promoted to V53** (session v47, 2026-05-22). Hook-script direct-invocation suite shape. Scope file at `planning/sessions/V53.md`.
 
 ---
 
@@ -238,7 +219,7 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 - Component-based: drop rows whose component no longer exists in `MANIFEST.md`.
 - Manual: an explicit per-planning-session option to archive rows to an external file (preserving audit, removing from context).
 
-**Next step.** **V34, 2026-05-21: unpaired from [[TEST-LOG ordering — newest at top vs bottom]] after V36 promotion.** Ordering doesn't need real row-count data and ships in V36; pruning still does. Fold into a V37+ planning session post-V35 once Taskflow's TEST-LOG.md has enough rows to inform the cutoff rule — likely after several batches have shipped through real use. **Promote sooner** if Taskflow's TEST-LOG.md crosses a meaningful row count before V37 — would benefit from real data first.
+**Next step.** **Promoted to V56** (session v47, 2026-05-22). Scope file at `planning/sessions/V56.md`.
 
 ---
 
@@ -275,38 +256,9 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 - **B. Converge on inline.** Flip planning and before-build. Drops the read overhead. Cost: doc-code parity audit becomes primary discipline against drift; cadence needs formalising in `BUILD-METHOD.md`.
 - **C. Keep the divergence; document the rule.** Stable rules go inline; evolving rules read-spec-on-entry. Re-evaluate per agent per version. Cost: new internal classification to maintain.
 
-**Next step.** Park. Revisit once V26–V35 ship and the rate of `NO-CODE-METHOD.md` changes (or its post-V32 successor location) settles. If the spec is stable across consecutive versions, B is fine; if it churns, A; mixed, C. **Promote sooner** if an audit flags meaningful drift in `batch-executor.md`, which forces A.
+**Next step.** **Promoted to V57** (session v47, 2026-05-22). Direction decided at session start based on spec stability across V45–V56. Scope file at `planning/sessions/V57.md`.
 
 **V37, 2026-05-21: targets shifted, tension unchanged.** V32's two-write rule moved the runtime spec targets from `NO-CODE-METHOD.md` to `plugin/docs/DOC-STRUCTURE.md` and `plugin/docs/VOCABULARY.md`; `adopt.md` joins `planning.md` and `before-build.md` as a read-at-entry subagent. The underlying inline-vs-read-at-entry question is the same shape, just against the new targets. Stays parked at the same threshold: promote if `plugin/docs/` churns enough (or stabilises enough) to make convergence the obviously right call, or if a parity audit flags meaningful drift in `batch-executor.md`.
-
----
-
-## Stop-hook 8-block cap — only matters if we move to multi-batch-per-turn chains
-
-**The question.** Claude Code's Stop hook caps at 8 consecutive blocks per user turn; the 9th ends the turn with a warning regardless. Override via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`. Does the plugin need defensive design against this, or does our `stop_hook_active`-respecting design make the cap inert?
-
-**Why it matters.** Surfaced V25 while wiring the Stop hook for auto-continuation. The cap would bite if a user turn produced 9+ redirects back-to-back.
-
-**Working notes.** V25's Stop hook respects `stop_hook_active` and redirects at most once per user turn (V25 success criterion: explicit user gating between batches). Chain length is always 1; the cap can't trigger. It would only matter in a future workflow that drops the `stop_hook_active` check — where the 8-cap becomes a useful guardrail for the right reasons. No defensive code in V25.
-
-**Next step.** Park. Revisit if a future session proposes multi-batch-per-turn auto-continuation (no current PLAN.md row). **Promote sooner** if a consumer hits the cap in normal use — that means `stop_hook_active` isn't doing what we think.
-
----
-
-## Prose-only rewrite of the method (post-plugin-build)
-
-**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and `[FOLD-IN PENDING]` rely on Claude Code primitives. For users wanting the method's discipline in plain chat with Claude, another AI tool, or any context where the plugin shape doesn't fit, we'll eventually need a tool-agnostic prose-only rewrite.
-
-**Why it matters.** Surfaced V20 planning. Without the rewrite, the method is structurally bound to Claude Code: locking via PreToolUse, session-start reads via SessionStart, routing via injected context. None exist elsewhere. Users without Claude Code can't run the method as a working system. Prose-only restores accessibility — but only after the plugin shape stabilises, or the rewrite chases a moving target.
-
-**Working notes.**
-
-- Likely shape: prose-only `NO-CODE-METHOD.md` re-expressing every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart foundational reads (becomes at-session-start narrative in `CLAUDE.md`), PreToolUse locking (trust-based convention + chat-time flagging), slash commands (operational procedures in prose).
-- Plugin still evolving (V32–V35 ahead). Rewriting before it settles means redoing.
-
-**Next step.** Park until V35 (final E2E Taskflow test) ships. Then: list each plugin-specific mechanism, design a prose-only equivalent, schedule sessions. **Promote sooner** if public release approaches before migration completes — that scenario forces the rewrite onto the critical path.
-
-**V37, 2026-05-21: rewrite delivered by V32; entry overtaken.** V32's two-write rule split canonical method content into plugin-side (operational) and docs-only (project-agnostic) artefact sets. The docs-only side at the repo root — `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/` — is the prose-only rewrite this entry called for. Ongoing parity is held by the two-write discipline (`BUILD-METHOD.md` → *Two-write rule for canonical docs*), not by a future rewrite session. **Revised next step:** consciously drop with a one-line `BUILD-LOG.md` note pointing at V32. A future major prose-only sweep, if ever needed (e.g. ahead of a public release), will earn its own session driven by concrete need rather than this parked entry.
 
 ---
 
@@ -330,4 +282,21 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 6. *Where the idea earns its keep eventually.* If the method goes public (course revival, published plugin with consumers), aggregated cross-user session data is genuinely valuable — AEX/DEX/HEX are designed for that scale. Single-user, in-development is the wrong scale.
 
-**Next step.** Park. Revisit after V35 ships and the method has settled into stable use across a few real project cycles. The question then becomes concrete: list 2–3 design decisions that would have benefited from logged evidence — if non-empty, define a minimal log against them; if empty, drop and record the reasoning in `BUILD-LOG.md`. **Promote sooner** if the method moves toward public release before V35 wraps.
+**Next step.** **Promoted to V58** (session v47, 2026-05-22). Scope file at `planning/sessions/V58.md`. Focus on mechanical measures (regression count, intervention count, turn count) to avoid vibes-as-data.
+
+---
+
+## Prose-only rewrite of the method (post-plugin-build)
+
+**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and `[FOLD-IN PENDING]` rely on Claude Code primitives. For users wanting the method's discipline in plain chat with Claude, another AI tool, or any context where the plugin shape doesn't fit, we'll eventually need a tool-agnostic prose-only rewrite.
+
+**Why it matters.** Surfaced V20 planning. Without the rewrite, the method is structurally bound to Claude Code: locking via PreToolUse, session-start reads via SessionStart, routing via injected context. None exist elsewhere. Users without Claude Code can't run the method as a working system. Prose-only restores accessibility — but only after the plugin shape stabilises, or the rewrite chases a moving target.
+
+**Working notes.**
+
+- Likely shape: prose-only `NO-CODE-METHOD.md` re-expressing every plugin-enforced rule as a discipline held in conversation. Plain-prose equivalents needed for: SessionStart foundational reads (becomes at-session-start narrative in `CLAUDE.md`), PreToolUse locking (trust-based convention + chat-time flagging), slash commands (operational procedures in prose).
+- Plugin still evolving (V32–V35 ahead). Rewriting before it settles means redoing.
+
+**V37, 2026-05-21: rewrite delivered by V32; entry overtaken.** V32's two-write rule split canonical method content into plugin-side (operational) and docs-only (project-agnostic) artefact sets. The docs-only side at the repo root — `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/` — is the prose-only rewrite this entry called for. Ongoing parity is held by the two-write discipline (`BUILD-METHOD.md` → *Two-write rule for canonical docs*), not by a future rewrite session.
+
+**Next step.** **Indefinitely parked** (session v47, 2026-05-22). Kept as last entry in OPEN-QUESTIONS. Promote if a real audience for the prose-only set emerges (public release, non-Claude-Code users).

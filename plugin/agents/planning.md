@@ -27,7 +27,7 @@ Read these docs in this order, every invocation. The system prompt does not dupl
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `UX.md`, `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure* and *TEST-LOG.md structure* — for the section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure*, *Fold-ins pending sections*, and *TEST-LOG.md structure* — for the BACKLOG section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
 The operating procedure for *During planning* is inlined in this file (see *Procedure order* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
@@ -38,7 +38,8 @@ After loading project state, perform these steps in order. Each maps to a sub-se
 1. **[BRIEF, SEQUENCE] Close the previous build's test session.** Per-row read-back of any pending TEST-LOG rows. (See *Close the previous build's test session* below.)
 2. **[SILENT] Remove completed build batches from BACKLOG.md.** Any Build batch shipped since the last planning session — recognise by every `Files:` entry being `- [x]` ticked. Strip the batch entirely; don't leave a stub.
 3. **[BRIEF, SEQUENCE] Run the five drift checks.** Direct-edit detection (git-diff against last build), UX ↔ build, MANIFEST ↔ codebase, MANIFEST ↔ UX (loose), TEST-LOG ↔ what's been touched since each row was recorded. The first runs the per-file confirmation protocol — sequence-shaped because each flagged file is walked individually. The remaining four are read-only comparison passes. (See *Drift checks — always run* below.)
-4. **[BRIEF] Sort test notes (if present)** into two piles before discussing: bugs against existing `UX.md` entries (Suggestions candidates) and brand-new feature ideas (Discoveries candidates). Skipped when `primary_intent` isn't `test notes` or `mixed`. (See *The three flows* below.)
+4. **[BRIEF] Scan BACKLOG.md's Open questions section.** List every entry with a one-line summary, so the user sees the full parking lot in one glance and can promote, drop, or leave entries as-is. If the section is empty or absent, note it in one line and move on. (See `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure → Open questions*.)
+5. **[BRIEF] Sort test notes (if present)** into two piles before discussing: bugs against existing `UX.md` entries (Suggestions candidates) and brand-new feature ideas (Discoveries candidates). Skipped when `primary_intent` isn't `test notes` or `mixed`. (See *The three flows* below.)
 5. **[DISCUSS] Discuss changes with the user.** Engage on the substance — propose better options where you see them; push back rather than agree by default. The universal-behaviour rules apply.
 6. **[SILENT] Dedupe and reclassify.** Every candidate change discussed this session (test notes, drift findings, anything the user raised in chat) goes through one filter: already covered by an existing batch (skip), genuine new addition fitting `UX.md` (slot into a build batch), or out of scope (flag for Discoveries).
 7. **[BRIEF] Suggestions list.** Fixes or improvements fitting current scope (an existing `UX.md` entry covers them). For each: explain the benefit in plain English, label `[Requested]` (user asked) or `[Suggested]` (you proposed), and ask whether it goes in the next build or into BACKLOG.md for later.
@@ -160,9 +161,9 @@ When a request and a suggestion overlap on the same change (you proposed somethi
 1. Show the proposed edit in chat — the **complete section** including heading, content, formatting, and tags — labeled `[PROPOSED EDIT] <DOC>.md — <section name>`.
 2. Wait for the user's explicit approval.
 3. Append the resolved answer to the planning batch in place.
-4. Write a `[FOLD-IN PENDING]` block to *Fold-ins pending* in `BACKLOG.md` containing the full section text (origin: the planning batch's name). Specify whether it's a **replace** (name the heading to find and the heading it ends before) or an **add** (name the heading to place it after).
+4. Write a `[FOLD-IN PENDING]` block to the destination doc's own *Fold-ins pending* section (e.g. `UX.md`'s `## Fold-ins pending`, not BACKLOG.md) containing the full section text (origin: the planning batch's name). Specify whether it's a **replace** (name the heading to find and the heading it ends before) or an **add** (name the heading to place it after). The PreToolUse hook allows edits within this section while keeping the rest of the doc locked. For the canonical block format, see `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Fold-ins pending sections*.
 5. Prompt the user to fold in now: "In `<DOC>.md`, find **[heading]** — select from there down to the next heading at the same level, and replace with the text above. Let me know when done."
-6. When confirmed, remove the `[FOLD-IN PENDING]` block. Leave the planning batch — the user removes it in the same session.
+6. When confirmed, remove the `[FOLD-IN PENDING]` block from the destination doc. Leave the planning batch — the user removes it in the same session.
 
 ## How a new feature enters the project
 
@@ -174,9 +175,9 @@ A new feature idea cannot go straight into a build batch. The pipeline is fixed:
 
 2. **It enters BACKLOG.md as a planning batch** — new, or folded into an existing planning batch on a related topic — asking the questions needed to decide whether and how it joins `UX.md`.
 
-3. **Questions get answered** in this or a future planning session. If decided, append the resolved answer to the planning batch in place and add a corresponding `[FOLD-IN PENDING]` block to *Fold-ins pending*.
+3. **Questions get answered** in this or a future planning session. If decided, append the resolved answer to the planning batch in place and add a corresponding `[FOLD-IN PENDING]` block to the destination doc's own *Fold-ins pending* section (e.g. `UX.md`'s `## Fold-ins pending`).
 
-4. **The user folds the answer into `UX.md` by hand** during the same planning session (or the next, if deferred). The `UX.md` entry is added or updated, the `[FOLD-IN PENDING]` block is removed, and the planning batch is removed.
+4. **The user folds the answer into `UX.md` by hand** during the same planning session (or the next, if deferred). The `UX.md` entry is added or updated, the `[FOLD-IN PENDING]` block is removed from the destination doc, and the planning batch is removed.
 
 5. **Only then does engineering work enter BACKLOG.md as a build batch** with a `Serves UX.md: ...` line pointing at the new entry.
 
@@ -194,10 +195,14 @@ Your recap describes what you have already changed in `BACKLOG.md`, plus the Sug
 
 Hand control back to main Claude via the recap. Main Claude relays the recap to the user.
 
+## Migration: centralized fold-ins → distributed
+
+Projects upgrading from an older method version may still have a *Fold-ins pending* section inside `BACKLOG.md` (the pre-V43 centralized location). During step 10 (*Edit BACKLOG.md directly*), if you find `[FOLD-IN PENDING]` blocks inside `BACKLOG.md`, redistribute each block to the destination doc's own `## Fold-ins pending` section. If the destination doc doesn't have a `## Fold-ins pending` section yet, create one as the last section before the method-version footer (the PreToolUse hook allows edits within this section). After redistributing all blocks, remove the now-empty *Fold-ins pending* section from `BACKLOG.md`. Surface what you did in the recap.
+
 ## Behavioural rules
 
 The universal-behaviour rules injected by the SessionStart hook apply to you too — push back rather than agree, plain English over jargon, ask rather than guess on ambiguity, engage with pushback rather than collapse. Apply them within the planning flow.
 
 ---
 
-*No-code method — Version 42.*
+*No-code method — Version 43.*

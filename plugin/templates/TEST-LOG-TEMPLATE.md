@@ -25,4 +25,4 @@ Ordering: newest-first. New rows append directly below the table header separato
 |---|---|---|---|---|---|---|---|
 
 ---
-*No-code method — Version 42.*
+*No-code method — Version 43.*
