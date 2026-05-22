@@ -1,4 +1,4 @@
----
+﻿---
 name: after-build
 description: Use for the no-code method's *After every build* phase — running immediately after batch-executor completes a build batch. Invoke when the Stop hook redirects with the after-build payload after a batch's files are all ticked. The agent updates MANIFEST.md silently, opens the test session by appending rows to TEST-LOG.md (10-column format with Type and Verifier columns), runs Claude-automatable tests (filling in results for Claude-verified rows), generates a two-section build recap distinguishing "Claude has verified" from "please manually check", prompts the user to commit/tag and then test, and brings per-row outcomes to the next planning session. Do not invoke for planning, the build itself, before-build, new-project setup, or migration; those routes have their own subagents.
 tools: Read, Edit, Write, Glob, Grep, Bash
@@ -59,7 +59,7 @@ After the load + identify + idempotency check, perform these steps in order. The
    
    Trivial helpers, internal utility functions, and boilerplate stay out of MANIFEST (per `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure*).
 
-2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
+2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list (under the `Changes:` delimiter, or before the `Files:` anchor in legacy batches without one) may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
 
 3. **Open the test session and run Claude-automatable tests.** Two sub-steps.
 
@@ -154,4 +154,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 46.*
+*No-code method — Version 47.*

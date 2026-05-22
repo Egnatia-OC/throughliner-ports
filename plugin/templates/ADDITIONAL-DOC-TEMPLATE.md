@@ -1,4 +1,4 @@
-# [DOC NAME].md — [Project Name]
+﻿# [DOC NAME].md — [Project Name]
 
 [Brief intro: what this doc is for, who its audience is (the user? Claude at runtime? a third party?), and when it applies (e.g. "paid tier only", "internal API only"). Treat this header with the same care as `UX.md`'s header — it's the orientation a future reader needs to know whether to read on.]
 
@@ -42,4 +42,4 @@ Proposed entries or updates that Claude has queued for this doc. Each block desc
 For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

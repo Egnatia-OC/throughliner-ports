@@ -1,4 +1,4 @@
-# Crash course
+﻿# Crash course
 
 *A standalone primer for the no-code method as a Claude Code plugin.*
 
@@ -37,7 +37,7 @@ Six markdown files sit in the project root once `/setup` has scaffolded the proj
 
 - **CLAUDE.md** — entry point. Tells Claude Code where every other doc lives via a JSON path block, and carries any project-specific behavioural notes. Read by Claude at every session start.
 - **UX.md** — user-facing description of the app. Every entry corresponds to something the no-coder can experience and test in the current build, plus a mandatory "the user needs this because…" line tying the entry back to a UX principle or other user context. Source of truth — Claude cannot edit this file; the no-coder maintains it by hand during planning sessions.
-- **BACKLOG.md** — deferred work, in four fixed-order sections: Red flags (security/privacy/data integrity), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority), and Open questions (non-blocking parking-lot items worth tracking but not blocking any specific batch). Build batches may carry an optional `Inputs:` line listing non-standard resources the batch needs before starting work.
+- **BACKLOG.md** — deferred work, in four fixed-order sections: Red flags (security/privacy/data integrity), Planning batches (open questions blocking a build batch), Build batches (engineering work, top-to-bottom by priority), and Open questions (non-blocking parking-lot items worth tracking but not blocking any specific batch). Each build batch carries scope-context sections (Goal, Outputs, Success criteria, and conditionally Decisions/Dependencies/Red flags) written during planning, plus build-operations sections (Changes, Inputs, Files, Tests, Serves) populated during before-build.
 - **MANIFEST.md** — a flat alphabetical glossary of named codebase elements the no-coder might want to look up. Each entry pairs a name with the file path it lives at (in parentheses) and a one-line description. Maintained by Claude during builds; not read cover-to-cover. The path field anchors a read-before-edit gate in the PreToolUse hook — Claude must have the MANIFEST entry and the matching `UX.md` entry in view before editing a file that has a MANIFEST entry; see *What's inside the plugin* below.
 - **TEST-LOG.md** — a row-per-test record of every shipped build batch's outcomes. Ten columns: # / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes. When a batch ships, Claude appends rows, runs Claude-automatable tests (filling in results for Claude-verified rows), and leaves user-verified rows for the no-coder to confirm per-row during the next planning session.
 - **BUILD-LOG.md** — a running record of decisions, changes, and reasoning for every build, newest-first. Written by Claude after each build completes. Not read cover-to-cover — search when you need the "why" behind a previous build's choices. Entry shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward.
@@ -52,11 +52,42 @@ Work in this method moves through two main phases — planning and build — loo
 
 **Planning sessions** decide what gets built. The no-coder pastes test notes from a previous build (and/or raises new feature/s, asks a scope question, etc), and the planning subagent runs its routine: closing the previous build's test session by walking each pending TEST-LOG row one at a time; checking drift between UX.md, MANIFEST.md, and the codebase; scanning BACKLOG.md's Open questions section (listing every entry with a one-line summary so the user can promote, drop, or leave items as-is); sorting any new ideas into Suggestions (already in scope) and Discoveries (not yet in scope, need UX.md updates first); and editing BACKLOG.md directly. The conversation stays in the same chat style as ever — questions, push-back, alternatives, second thoughts all belong in there; the subagent's structure is for what gets recorded and where, not for how the conversation feels. Planning sessions are also when source-of-truth doc edits happen, by hand — the no-coder folds in any pending content from each source-of-truth doc's own *Fold-ins pending* section, removes resolved planning batches, and reorganises build batches if priorities have shifted.
 
-**Build sessions** ship engineering work, one batch at a time. The no-coder runs `/before-build` and the before-build subagent locks the next batch: validates that the top batch's `Serves UX.md:` line resolves, populates the `Inputs:` line if the batch needs non-standard resources, enumerates the files the batch will modify into a `Files:` sub-section, writes a `Tests:` sub-section listing what to verify with each test's type and verifier (Claude or user), and proposes a split if the test list is long relative to scope. Once the no-coder okays the locked batch, `/build` runs the batch-executor subagent against the file list. The batch-executor reads any resources named in the `Inputs:` line before starting work. As each file ticks, the PreToolUse hook enforces that no file outside the list gets edited. When the last file ticks, the Stop hook routes to the after-build subagent, which updates MANIFEST.md, opens the test session by appending rows to TEST-LOG.md, runs Claude-automatable tests (filling in results for tests Claude can verify — command output, file contents, structural checks), generates a two-section build recap distinguishing "Claude has verified" from "please manually check", writes a BUILD-LOG.md entry (the persistent per-build narrative), runs a frame-correction sweep, and prompts the no-coder to commit/tag and then test.
+**Build sessions** ship engineering work, one batch at a time. By this point the batch already carries its scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) from planning. The no-coder runs `/before-build` and the before-build subagent locks the batch's build-operations region: validates that the top batch's `Serves UX.md:` line resolves, populates the `Inputs:` line if the batch needs non-standard resources, enumerates the files the batch will modify into a `Files:` sub-section, writes a `Tests:` sub-section listing what to verify with each test's type and verifier (Claude or user), and proposes a split if the test list is long relative to scope. Once the no-coder okays the locked batch, `/build` runs the batch-executor subagent against the file list. The batch-executor reads any resources named in the `Inputs:` line before starting work. As each file ticks, the PreToolUse hook enforces that no file outside the list gets edited. When the last file ticks, the Stop hook routes to the after-build subagent, which updates MANIFEST.md, opens the test session by appending rows to TEST-LOG.md, runs Claude-automatable tests (filling in results for tests Claude can verify — command output, file contents, structural checks), generates a two-section build recap distinguishing "Claude has verified" from "please manually check", writes a BUILD-LOG.md entry (the persistent per-build narrative), runs a frame-correction sweep, and prompts the no-coder to commit/tag and then test.
 
 The no-coder then `/clear`s, refreshes their copy of the project, and runs the user-verified tests the recap named. The outcomes (Pass / Fail / Skipped, plus notes) come back to the next planning session, which opens by reading the user-verified rows back row by row before any other work starts.
 
 The two-phase loop is the spine. Everything else is detail on what happens inside one phase or the other.
+
+## The method absorbs mid-stream ideation
+
+Non-coders absorb ideas mid-stream. A test reveals a missing feature; a conversation surfaces a risk; a friend's comment reshapes a priority. The method expects this — the planning phase exists precisely to catch mid-stream ideas and route them somewhere durable before they're forgotten or quietly acted on.
+
+But catching an idea is only half the job. The other half is scoping it with enough structure that the no-coder knows what they're committing to before the build starts. A build batch that says only "add dark mode" gives no anchor for testing ("how do I know it worked?"), no record of what the batch is for ("why are we doing this?"), and no surface for Claude to push back against ("is this the right scope?"). The result is a build that drifts, a test session that tests the wrong things, and a no-coder who can't tell whether what shipped matches what they asked for.
+
+The method's response is to give every build batch the same scoping structure that a careful planning conversation would produce — a Goal stating why the batch exists, Outputs describing what changes the user will experience, Success criteria naming the observable conditions for "done," and (where relevant) the unresolved decisions, dependencies, and security concerns the batch carries. These sections are written during planning, not during the build — the no-coder speaks the substance aloud in conversation, and the planning subagent records it into the batch. By the time the build starts, the batch carries its own context. The no-coder doesn't have to remember why they asked for this three sessions ago; the batch says so.
+
+## Anatomy of a batch
+
+A build batch in BACKLOG.md has two regions: **scope context** at the top (the strategic frame) and **build operations** below (the tactical execution surface).
+
+**Scope context** — written by the planning subagent when the batch is created:
+
+- **Goal.** One paragraph: why does this batch exist, and what will be different when it ships.
+- **Outputs.** Prose describing what changes the user will experience.
+- **Success criteria.** Observable, testable conditions for knowing the batch succeeded.
+- **Decisions to make this batch.** Unresolved scope questions within the batch — things to decide during the build. Omitted if all decisions are already made.
+- **Dependencies.** What the batch needs from outside itself — another batch shipped first, a planning batch resolved, an external resource available. Omitted if none.
+- **Red flags.** Security, privacy, or data-integrity concerns specific to this batch's scope. Not always present — the planning subagent writes this section only when it detects the batch touches a security-shaped surface (auth, secrets, PII, deletion, payment). When absent, the batch has no flagged security concerns.
+
+**Build operations** — populated by the before-build subagent during batch lock-in:
+
+- **Changes:** The list of concrete changes, each labeled `[Requested]` (the no-coder asked) or `[Suggested]` (Claude proposed).
+- **Inputs:** (optional) Non-standard resources the batch needs beyond the default docs.
+- **Files:** The file-by-file task list — `- [ ]` per file, ticked as each is completed.
+- **Tests:** (optional) What to verify once built, with each test's type and verifier (Claude or user).
+- **Serves UX.md:** Which UX.md entry the batch implements.
+
+The `Changes:` line is a structural delimiter — it separates the scope-context sections (which may contain their own lists and paragraphs) from the change list (which the parser needs to extract cleanly for the build recap). Everything above it is "why and what"; everything below it is "how."
 
 ## Walkthrough — Taskflow Day 1
 
@@ -103,7 +134,7 @@ Take the dark-mode item:
 2. **Planning batch.** Claude adds a planning batch in BACKLOG.md named *Dark mode* with the questions to answer: *Is this app used at night frequently enough to justify maintaining a parallel theme? Follow OS setting or have its own toggle? Which existing UX entries assume light-background contrast and would need revisiting?* The batch closes with `Blocks: scope decision — no build batch yet.`
 3. **Planning session.** The no-coder and Claude answer the questions. Suppose: yes, follow OS setting, two existing UX entries need a contrast pass.
 4. **UX.md updated.** A new *Dark mode* entry is added with the *user needs this because…* line. The two affected entries get a quick revisit.
-5. **Build batch.** A build batch enters BACKLOG.md ending with `Serves UX.md: Dark mode (and the two reviewed entries).`
+5. **Build batch.** A build batch enters BACKLOG.md with scope-context sections (Goal: "add OS-following dark mode"; Outputs: "the app follows the OS light/dark setting"; Success criteria: "switching OS theme switches app theme") and a `Serves UX.md: Dark mode` line.
 
 If step 3 had answered "no," steps 4 and 5 would not happen. UX.md stays as it was, the planning batch is removed as resolved, no build batch is ever created. That short-circuit case is just as valid an outcome as "yes, build it."
 
@@ -302,4 +333,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

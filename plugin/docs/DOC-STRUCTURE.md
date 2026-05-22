@@ -1,4 +1,4 @@
-# Document structure specifications
+﻿# Document structure specifications
 
 *Mode: planning, migration.*
 
@@ -187,11 +187,56 @@ Each block specifies whether it's a **replace** (swap the section between headin
 
   **One planning batch per discrete decision.** If a message contains multiple unrelated feature requests or scope questions, create separate planning batches. Bundle only when two items are tightly coupled (deciding one inevitably decides the other). Unrelated items in a single batch create a batch whose `Blocks:` line can't cleanly name what it blocks and whose resolution can't fold into a single entry.
 
-- **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build. Each batch: heading, list of changes, optional `Inputs:` line, `Files:` sub-section, then a `Serves UX.md: ...` line listing implemented entries (and/or `Serves <DOC>: ...` for additional source-of-truth docs). If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `planning.md` → *Procedure order* step 2). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
+- **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build (after any one currently in progress). Each batch has two regions: **scope context** (Goal through Dependencies/Red flags — the strategic frame) and **build operations** (Changes through Serves — the tactical execution surface). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `planning.md` → *Procedure order* step 2). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
 
-Build batches must serve an entry in a source-of-truth doc — see `planning.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in `BACKLOG.md` regardless of scope.
+  Build batches must serve an entry in a source-of-truth doc — see `planning.md` → *How a new feature enters the project*. Red flags are the only deferred items that don't need such an entry; they live in `BACKLOG.md` regardless of scope. If a build batch's purpose is to carry an additional source-of-truth doc to its runtime destination rather than implement its content, the `Serves <DOC>:` line names the delivery mechanism instead of a section (e.g. `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt`).
 
-**Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list may carry `[Requested]` (user asked) or `[Suggested]` (Claude proposed) immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change enters BACKLOG.md, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent for the build recap. The `Files:` sub-section does **not** carry labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from both, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and don't appear in BACKLOG.md change-list bullets ahead of the build.
+  **Batch structure — full shape.** Sections appear in this order within each batch. The scope-context sections are written by the planning subagent when the batch is created; the build-operations sections are populated by the before-build subagent during batch lock-in.
+
+  ```
+  ### Batch: [short descriptive name]
+
+  **Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
+
+  **Outputs.** [Prose — what changes the user will experience after the batch ships.]
+
+  **Success criteria.** [Observable, testable conditions for knowing the batch succeeded.]
+
+  **Decisions to make this batch.** [Unresolved scope questions within this batch. Omit if all decisions are made.]
+
+  **Dependencies.** [What this batch needs from outside itself. Omit if none.]
+
+  **Red flags.** [Security/privacy/data-integrity concerns for this batch. Only present when detected.]
+
+  Changes:
+  - [Requested] [Change description — one line]
+  - [Suggested] [Change description]
+
+  Inputs:
+  - `[path/to/resource]` — [why this batch needs it]
+
+  Files:
+  - [ ] `[path/to/file]` — [one-sentence summary of the change]
+
+  Tests:
+  - [Test description] [Look and click] [User]
+
+  Serves UX.md: [entry name(s)].
+  ```
+
+  **Scope-context sections.** Five sections frame the batch's purpose. The first three (Goal, Outputs, Success criteria) are always present; the last two (Decisions to make this batch, Dependencies) are omitted when empty. A sixth conditional section (Red flags) appears only when the planning subagent detects security-shaped scope (see *Red flags sub-section* below).
+
+  - **Goal.** One paragraph: why does this batch exist? Written in plain English, naming the user-facing change.
+  - **Outputs.** Prose describing what changes the user will experience after the batch ships. The pre-build pin between a planning conversation and the eventual UX.md entry — prose matches that pipeline stage.
+  - **Success criteria.** Observable, testable conditions. How the no-coder (or Claude, for automatable tests) will know the batch succeeded. Prose or a short list; avoid `- ` bullet format to keep the parser's change-list extraction clean.
+  - **Decisions to make this batch.** Unresolved scope questions within this batch — things that must be decided during the build, not parked as open questions. Distinct from the section-level Open questions (parking lot for non-blocking items) and from planning batches (blocking questions with a `Blocks:` line). Omit entirely if all decisions are made at planning time.
+  - **Dependencies.** What this batch needs from outside itself: another batch shipped first, a planning batch resolved, an external resource provisioned. Peer to `Blocks:` on planning batches — `Blocks:` points forward ("resolving me unblocks X"), Dependencies points backward ("before starting me, Y must have happened"). Omit if none.
+
+  **Red flags sub-section.** Appears only when the planning subagent detects security-shaped scope — the batch touches auth, secrets, PII, deletion of user data, payment, third-party API keys, or similar surfaces. Written by the planning subagent at batch-creation time; not a static always-present section. Contains specific concerns and mitigations for this batch's scope. Distinct from the top-level Red flags section in BACKLOG.md (which holds concerns deferred with no active plan); this sub-section holds concerns attached to an active batch.
+
+  **`Changes:` delimiter.** The `Changes:` line separates scope-context sections from the change list. Required for new batches; the parser falls back to legacy behaviour (extract all `- ` bullets before `Files:`) for batches without it. The delimiter keeps the parser's change-list extraction clean when scope sections contain bullet-formatted content.
+
+  **Change list — `[Requested]`/`[Suggested]` labels.** Each bullet in a build batch's change list carries `[Requested]` (user asked) or `[Suggested]` (Claude proposed) immediately after the leading `- `, e.g. `- [Requested] Fix drag-to-postpone overshoot on tablet`. Labels are written by the planning subagent when the change enters BACKLOG.md, preserved by the before-build subagent when the batch is locked, and read by the after-build subagent for the build recap. The `Files:` sub-section does **not** carry labels — a single `[Requested]` change can touch many files, and a single file can absorb edits from both, so labels attach to changes, not files. `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` carve-out labels are added by the batch-executor at recap time and don't appear in BACKLOG.md change-list bullets ahead of the build.
 
 **`Inputs:` line.** An optional bullet list of non-standard resources the batch needs before starting work. Each entry: `` `<path or reference>` — <why this batch needs it> ``. Sits between the change list and the `Files:` sub-section. Standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) are omitted — they're read every session. Only list what's beyond the standard set: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference. Written by the before-build subagent during batch lock-in; consumed by the batch-executor, which reads every named input before starting work.
 
@@ -215,4 +260,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

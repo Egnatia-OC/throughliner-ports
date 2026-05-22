@@ -1,4 +1,4 @@
-# BUILD-LOG.md
+﻿# BUILD-LOG.md
 
 A running record of decisions, changes, and reasoning for every build, newest-first. Maintained by Claude during builds (the after-build subagent writes one entry per completed batch). Not for cover-to-cover reading — search and scan when you need the "why" behind a previous build's choices.
 
@@ -19,4 +19,4 @@ Entry format (newest first):
 -->
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

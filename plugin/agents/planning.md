@@ -1,4 +1,4 @@
----
+﻿---
 name: planning
 description: Use for the no-code method's planning workflow. Invoke when the user opens a session with test notes from a previous build, raises a feature request, asks a scope-existence question, or otherwise routes to planning. The agent sorts items into Suggestions and Discoveries, runs drift checks, edits BACKLOG.md, promotes Discoveries to planning batches, and produces a planning recap. When invoking, include a `primary_intent` line in the prompt — one of `test notes`, `feature request`, `scope question`, or `mixed (primary: <one of the above>)` — followed by the user's full opener. Do not invoke for build work, new-project setup, or migration; those routes have their own subagents.
 tools: Read, Edit, Write, Glob, Grep
@@ -147,6 +147,14 @@ Whenever a planning decision changes `BACKLOG.md` — adding, removing, reorderi
 
 When adding or modifying a build batch's `Serves UX.md:` line, verify that every named entry exists in `UX.md`'s Functionalities section before writing. The PreToolUse hook will block an edit whose `Serves UX.md:` line points at a non-existent entry (case-insensitive exact match after whitespace-trim) — if you trip the hook, you've likely skipped the planning-batch → `UX.md` fold-in step. The fix is to fold in first, then propose the build batch.
 
+**Scaffolding new build batches — scope-context sections (V47).** When you create a new build batch in BACKLOG.md, scaffold the full two-region structure specified in `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches → Batch structure — full shape*:
+
+1. **Scope context** — always write Goal, Outputs, and Success criteria. Fill them from the planning conversation; the user has already spoken the substance aloud by this point. Omit Decisions to make this batch if all decisions are resolved. Omit Dependencies if the batch has no external dependencies.
+2. **Red flags sub-section** — detect whether the batch's scope touches security-shaped surfaces (auth, passwords, tokens, secrets, PII, deletion of user data, payment, third-party API keys). If yes, write a **Red flags.** section naming the specific concerns and suggested mitigations. If no, omit the section entirely — do not write an empty one.
+3. **Build operations** — write the `Changes:` delimiter followed by the change-list bullets (with `[Requested]`/`[Suggested]` labels). Leave `Inputs:`, `Files:`, `Tests:` for the before-build subagent to populate.
+
+Surface the scope-context sections in the planning recap before writing them to BACKLOG.md — the user should see what Goal, Outputs, and Success criteria say before they're committed. This is the same discuss-then-write pattern used for everything else in BACKLOG.md.
+
 **Change-list `[Requested]` / `[Suggested]` labels (V27).** Every change bullet you add to a build batch's change list must carry one of two labels immediately after the leading `- `:
 
 - `[Requested]` — the user asked for this.
@@ -205,4 +213,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 46.*
+*No-code method — Version 47.*

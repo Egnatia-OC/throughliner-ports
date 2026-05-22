@@ -66,7 +66,7 @@ If, mid-build, you realise the verification burden is much higher than the pre-b
 
 1. **Halt.** Do not continue editing.
 2. **Surface in chat.** State what changed in your estimate — what new behaviour you didn't account for, why the test list ballooned. Propose a split of the remaining (still-unticked) files into smaller batches.
-3. **On the user's okay**, edit `BACKLOG.md` to re-organise. Completed (`- [x]`) files stay in the current batch. Unticked files move to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's `Serves` line(s) unless the split crosses serve-line boundaries.
+3. **On the user's okay**, edit `BACKLOG.md` to re-organise. Completed (`- [x]`) files stay in the current batch. Unticked files move to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries.
 4. **Label `[Re-batch, not in plan]`** in the build recap.
 
 Mechanism: `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → Re-batching carve-out.
@@ -114,4 +114,4 @@ The rules above derive from:
 
 ---
 
-*No-code method — Version 46.*
+*No-code method — Version 47.*

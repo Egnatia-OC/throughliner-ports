@@ -6,6 +6,31 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v51 — 2026-05-22 — Consumer-batch structure overhaul
+
+**What shipped.** V49 scope. Adds five scope-context sections to consumer-project BACKLOG build batches — Goal, Outputs, Success criteria, Decisions to make this batch, Dependencies — plus a conditional Red flags sub-section and the `Changes:` delimiter that separates scope-context from build-operations content. The batch now has two regions: scope context (everything between the `### Batch:` heading and `Changes:`) and build operations (`Changes:` through `Serves`). Template placeholder cleanup (UX friction item 6): BACKLOG-TEMPLATE's example batches replaced with HTML-comment format specs. `/setup` case 4 extended to detect old-format batches and insert stub scope-context sections + `Changes:` delimiter.
+
+Files touched: `plugin/scripts/parse_backlog.py` (backwards-compatible `Changes:` delimiter support — new `CHANGES_LINE_PATTERN`, updated `parse_batch_body()` to bound change-list extraction), `plugin/docs/DOC-STRUCTURE.md` (two-region batch structure, scope-context sections, Red flags sub-section, `Changes:` delimiter — full rewrite of Build batches sub-section), `plugin/docs/VOCABULARY.md` (5 new entries: Scope-context sections, Changes: delimiter, Decisions to make this batch, Dependencies (batch section), Red flags sub-section (batch-level)), `plugin/templates/BACKLOG-TEMPLATE.md` (example batches replaced with HTML-comment format spec), `plugin/agents/planning.md` (new "Scaffolding new build batches" section for scope-context + red-flag detection), `plugin/agents/before-build.md` (Changes: references in work loop steps 1–3, scope-context inheritance in halt C), `plugin/agents/after-build.md` (Changes: delimiter reference for label reading), `plugin/agents/batch-executor.md` (scope-context inheritance in re-batching carve-out), `plugin/agents/setup.md` (case 4 old-format batch migration), `plugin/hooks/post_tool_use.py` (warning message updated for Changes: anchor), `Crash course.md` (BACKLOG bullet updated, two new sections — "The method absorbs mid-stream ideation" + "Anatomy of a batch", walkthrough step 5 updated). Plus footer bumps on all 16 plugin-side files. Method version V46 → V47; plugin 0.46.0 → 0.47.0; PLUGIN_METHOD_VERSION 46 → 47.
+
+**Decisions taken and why.**
+
+- **`Changes:` delimiter rather than scope-context fence.** The parser extracts change-list bullets by matching `- ` lines before `Files:`. Scope-context sections (especially Dependencies) can contain `- ` bullets that would pollute the change list. A `Changes:` delimiter bounding the extraction region was cheaper and more robust than trying to detect and exclude scope-section bullets. Backwards compatible: parser falls back to the legacy "everything before `Files:`" behaviour when no `Changes:` line is present.
+- **Red flags as auto-detected conditional section, not always-present.** Planning subagent detects security-shaped scope (auth, secrets, PII, deletion, payment, third-party API keys) and writes the Red flags sub-section only when triggered. Non-security batches don't carry an empty Red flags section.
+- **HTML-comment format specs in BACKLOG-TEMPLATE (UX friction item 6).** The old template had two rendered example batches with full placeholder content — a wall of red/green diff when `/setup` wrote real content over them. HTML comments (matching the pattern TEST-LOG-TEMPLATE and MANIFEST-TEMPLATE already use) are invisible in rendered markdown and don't create diff noise.
+- **Stub scope-context for `/setup` case 4 migration.** Old-format batches get `[To be filled in during the next planning session.]` stubs for Goal, Outputs, and Success criteria, plus the `Changes:` delimiter. Decisions, Dependencies, and Red flags omitted (they're conditional). Fills enough structure for the parser to work correctly without inventing scope that planning should decide.
+
+**Pivots and surprises.**
+
+- PowerShell's string handling mangled em dash (U+2014) and backtick characters when attempting inline Python parser tests. Solved by writing a proper `test_parser.py` with test content in Python strings (cleaned up post-test).
+- This session spans two context windows. The previous chat completed all substantive edits; this continuation ran the parser test, cleaned up temp files, and handled the close-out steps.
+
+**Carried forward.**
+
+- OPEN-QUESTIONS: "Post-adopt UX friction" item 6 (template placeholder cleanup) resolved (6 of 7 now done). "Red-flag / threat-class marker" entry should note partial resolution (batch-level Red flags shipped; threat-class marker for UX.md entries is the remaining half).
+- Smoke tests deferred: V43 mode-aware messaging + V45 fold-in section carve-out + V46 automated test pass + V49 batch structure — all testable against Taskflow with the plugin installed via local marketplace.
+
+---
+
 ## v50 — 2026-05-22 — Automated vs. manual test split + non-UI test types
 
 **What shipped.** V48 scope — the single biggest method-level change to the build cycle since V27. Introduces four named test types (Look and click, Run and read, Trigger and observe, Generate and inspect), a per-row Claude/User verifier split, 10-column TEST-LOG format (adding Type and Verifier columns, renaming User Notes → Notes), a Tests: sub-section in BACKLOG.md build batches, Claude-automated test execution during after-build, a two-section build recap ("Claude has verified" / "Please manually check"), and a commit/tag prompt in after-build's closing sequence (UX friction item 5). Backwards-compatible: the shared regex in project_state.py handles both 10-column and legacy 8-column rows; `/setup` case 4 backfills defaults for 8-column projects.

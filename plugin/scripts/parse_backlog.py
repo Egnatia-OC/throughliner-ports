@@ -54,8 +54,8 @@ Output (stdout, JSON, compact):
   Paths are returned relative as-written; callers resolve against the
   project root.
 
-Spec: DOC-STRUCTURE.md → BACKLOG.md structure → Build batches, and the
-**`Files:` sub-section** sub-section.
+Spec: DOC-STRUCTURE.md → BACKLOG.md structure → Build batches, the
+**`Changes:` delimiter** (V47), and the **`Files:` sub-section**.
 """
 
 import json
@@ -74,6 +74,9 @@ NEXT_TOP_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
 
 # Batch heading: `### Batch: <name>`. Captures the name.
 BATCH_HEADING_PATTERN = re.compile(r"^### Batch:\s*(.+?)\s*$", re.MULTILINE)
+
+# `Changes:` sub-section anchor (V47 — separates scope sections from change list).
+CHANGES_LINE_PATTERN = re.compile(r"^Changes:\s*$", re.MULTILINE)
 
 # `Files:` sub-section anchor.
 FILES_LINE_PATTERN = re.compile(r"^Files:\s*$", re.MULTILINE)
@@ -175,7 +178,12 @@ def parse_batch_body(heading, body):
     if not files_match:
         return None
 
-    change_list = extract_change_bullets(body[:files_match.start()])
+    changes_match = CHANGES_LINE_PATTERN.search(body)
+    if changes_match and changes_match.start() < files_match.start():
+        change_region = body[changes_match.end():files_match.start()]
+    else:
+        change_region = body[:files_match.start()]
+    change_list = extract_change_bullets(change_region)
     after_files = body[files_match.end():]
 
     files = []

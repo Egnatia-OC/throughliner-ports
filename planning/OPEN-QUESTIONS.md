@@ -59,7 +59,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 2. **Planning-subagent automatic detection** — subagent identifies security-shaped scope (keyword/pattern triggers: `auth`, `password`, `token`, `secret`, `delete`, `payment`, etc.) and surfaces a verbal heads-up in the planning recap. No persistent doc carrier; the warning lives in the conversation.
 3. **Both** — automatic detection at planning time plus persistence in the batch as a section.
 
-**Next step.** **Folded into V49** (session v47, 2026-05-22). Red-flag marker bundled into V49's consumer-batch structure overhaul as a sixth batch section.
+**Next step.** **Partially shipped V47 (session v51, 2026-05-22).** Batch-level Red flags sub-section shipped as part of V49's consumer-batch structure overhaul — planning subagent auto-detects security-shaped scope and writes a persistent Red flags section into the batch. The remaining half (threat-class marker on UX.md entries) is unscheduled.
 
 ---
 
@@ -76,12 +76,12 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 3. **Fold-in UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
 4. ~~**Claude Code's permission modes vs. the UX.md lock.**~~ **Resolved by V43 research (session v43, 2026-05-22).** PreToolUse hooks fire in all permission modes, including Auto and bypass — the method's lock is complementary to, not redundant with, Claude Code's permission system. Mode-aware deny messages shipped in V43.
 5. ~~**After-build doesn't prompt commit/tag.**~~ **Resolved V46 (session v50, 2026-05-22).** After-build closing sequence now prompts commit/tag before the /clear prompt.
-6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/setup` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
+6. ~~**Template carries excessive placeholder content.**~~ **Resolved V47 (session v51, 2026-05-22).** BACKLOG-TEMPLATE's example batches replaced with HTML-comment format specs (matching TEST-LOG-TEMPLATE and MANIFEST-TEMPLATE pattern).
 7. ~~**"Pass / Fail / Skipped" not explained.**~~ **Resolved V44 (session v46, 2026-05-22).** Per-row read-back in `planning.md` now includes one-line explanation for each option.
 
 **Relationship to existing entries.** Item 3 is adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
 
-**Next step.** Five of seven items resolved (1, 2, 4, 5, 7). **Remaining items promoted in session v47 (2026-05-22):** item 3 (fold-in UX) bundled into V45; item 6 (template placeholder cleanup) bundled into V49. All seven items now scheduled or resolved.
+**Next step.** Six of seven items resolved (1, 2, 4, 5, 6, 7). **Remaining item:** item 3 (fold-in UX) bundled into V45, promoted in session v47.
 
 ---
 

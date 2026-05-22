@@ -152,7 +152,7 @@ def main():
         "\n\n"
         "Fix the formatting before continuing. Common causes:\n"
         "  - Batch heading doesn't match `### Batch: <name>`\n"
-        "  - `Files:` anchor line is missing or misspelled\n"
+        "  - `Changes:` or `Files:` anchor line is missing or misspelled\n"
         "  - File bullets don't match `- [ ] `path` — summary`\n"
         "  - Template placeholder brackets around a real path or "
         "heading"

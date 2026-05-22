@@ -39,9 +39,9 @@ You do not re-organise the build queue here. Planning is the structural authorit
 
 After the validate pass:
 
-1. **Enumerate Files:.** For each bullet in the top batch's change list, identify the file(s) it requires modifying. Use Glob/Grep against the codebase plus MANIFEST.md entries. For each file, write a one-sentence summary of the only change happening in that file. If a file requires a rewrite rather than a surgical edit, the summary says so.
-2. **Populate the Inputs: line (if needed).** Check whether the batch needs to read any non-standard resources before starting work — docs, specs, research files, or external references not in the default set (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md are always read and are omitted). If it does, write an `Inputs:` bullet list into BACKLOG.md between the change list and the `Files:` sub-section, one entry per resource: `` `<path or reference>` — <why this batch needs it> ``. If no non-standard inputs are needed, omit the line entirely. Full rules: `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure → Inputs: line*.
-3. **Edit BACKLOG.md** to insert (or refresh, if a prior before-build run left one) the `Files:` sub-section under the top batch, in the canonical shape from `DOC-STRUCTURE.md` → *Files: sub-section*:
+1. **Enumerate Files:.** For each bullet in the top batch's change list (under the `Changes:` delimiter), identify the file(s) it requires modifying. Use Glob/Grep against the codebase plus MANIFEST.md entries. For each file, write a one-sentence summary of the only change happening in that file. If a file requires a rewrite rather than a surgical edit, the summary says so.
+2. **Populate the Inputs: line (if needed).** Check whether the batch needs to read any non-standard resources before starting work — docs, specs, research files, or external references not in the default set (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md are always read and are omitted). If it does, write an `Inputs:` bullet list into BACKLOG.md between the `Changes:` change list and the `Files:` sub-section, one entry per resource: `` `<path or reference>` — <why this batch needs it> ``. If no non-standard inputs are needed, omit the line entirely. Full rules: `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG.md structure → Inputs: line*.
+3. **Edit BACKLOG.md** to insert (or refresh, if a prior before-build run left one) the `Files:` sub-section under the top batch's build-operations region (after `Changes:` and `Inputs:` if present), in the canonical shape from `DOC-STRUCTURE.md` → *Files: sub-section*:
 
        Files:
        - [ ] `<path>` — <one-sentence summary of the change in that file>
@@ -76,7 +76,7 @@ Three scenarios halt before you produce the recap. All surface in chat and wait 
 
 **(B) Top batch's change list is too vague to enumerate Files: confidently.** Example: a bullet that reads "Improve onboarding" with no specifics. Halt before guessing. Surface the ambiguity in chat, name the missing detail, and ask the user. Guessing would seed batch-executor with a malformed Files: list and force the prerequisite carve-out to fire repeatedly during the build — neither serves the method.
 
-**(C) Verification-burden estimate triggers a split.** Per *Batch-sizing principle* above. Halt before you finalise Files: in BACKLOG.md. Surface the verification list in chat, propose a split, and wait for user okay. On user okay, edit BACKLOG.md to split: the current batch keeps the changes (and Files: entries) whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's `Serves` line(s) unless the split crosses serve-line boundaries (same protocol as batch-executor's re-batching carve-out). Then re-run the work loop on whichever batch is now top.
+**(C) Verification-burden estimate triggers a split.** Per *Batch-sizing principle* above. Halt before you finalise Files: in BACKLOG.md. Surface the verification list in chat, propose a split, and wait for user okay. On user okay, edit BACKLOG.md to split: the current batch keeps the changes (and Files: entries) whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries (same protocol as batch-executor's re-batching carve-out). Then re-run the work loop on whichever batch is now top.
 
 This is the only place reorganise authority lives in before-build.
 
@@ -119,4 +119,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 46.*
+*No-code method — Version 47.*

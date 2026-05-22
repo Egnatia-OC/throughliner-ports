@@ -1,4 +1,4 @@
-# MANIFEST.md — [Project Name]
+﻿# MANIFEST.md — [Project Name]
 
 A flat, alphabetical glossary of named elements in the codebase that the user might want context on. One line per entry. Maintained by Claude during builds. Not intended to be read cover-to-cover — use it as a reference when you encounter a name you want context on, and as the basis for drift checks against `UX.md`.
 
@@ -27,4 +27,4 @@ Proposed entries or updates that Claude has queued for this doc. Each block desc
 For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

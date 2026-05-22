@@ -1,4 +1,4 @@
----
+﻿---
 name: setup
 description: Use to handle the /setup skill-command's four-case dialogue. The subagent classifies the current project root into one of four cases (empty / existing code no docs / existing code foreign docs / already adopted) and runs the matching flow — scaffolding spine docs, migrating foreign CLAUDE.md content to method spec, refreshing templates, or cancelling cleanly. Resolves the unadopted-folder state that the SessionStart advisory and PreToolUse enforcement gate are protecting. Do not invoke for planning, building, or any other workflow phase — those have their own subagents.
 tools: Read, Edit, Write, Bash, Glob, Grep
@@ -217,7 +217,16 @@ On confirmation, edit every footer via `Edit` — including locked docs like `UX
 
 Don't skip any doc silently. If a doc's footer is already current, omit it from the list above.
 
-**After footer bumps — TEST-LOG backwards-compatibility migration (V46).** Check whether `TEST-LOG.md` uses the pre-V46 8-column format (header row contains `User Notes` instead of `Notes`, and lacks `Type` and `Verifier` columns). If it does:
+**After footer bumps — BACKLOG batch-structure migration (V47).** Check whether `BACKLOG.md` contains build batches in the pre-V47 format (no scope-context sections, no `Changes:` delimiter). Detection: a `### Batch:` heading followed directly by `- [Requested]` or `- [Suggested]` change bullets with no `**Goal.**` section between the heading and the bullets.
+
+For each old-format batch found:
+
+1. Insert stub scope-context sections between the batch heading and the change list: `**Goal.**` [To be filled in during the next planning session.], `**Outputs.**` [To be filled in during the next planning session.], `**Success criteria.**` [To be filled in during the next planning session.]. Omit Decisions, Dependencies, and Red flags (they're conditional sections — empty by default).
+2. Insert a `Changes:` delimiter line immediately before the first change-list bullet.
+
+Surface the migration in the recap: "Migrated N build batch(es) in BACKLOG.md to V47 format (scope-context sections and Changes: delimiter added; fill in Goal/Outputs/Success criteria during the next planning session)." If all batches already have the new format or no build batches exist, skip silently.
+
+**After BACKLOG migration — TEST-LOG backwards-compatibility migration (V46).** Check whether `TEST-LOG.md` uses the pre-V46 8-column format (header row contains `User Notes` instead of `Notes`, and lacks `Type` and `Verifier` columns). If it does:
 
 1. Replace the header row with the 10-column header: `| # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |` and update the separator row to match.
 2. For every existing data row, insert `Look and click` in the Type column and `User` in the Verifier column (the V46 defaults for pre-existing rows).
@@ -253,4 +262,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 46.*
+*No-code method — Version 47.*

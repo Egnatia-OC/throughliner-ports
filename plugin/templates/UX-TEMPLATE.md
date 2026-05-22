@@ -1,4 +1,4 @@
-# UX.md — [Project Name] User Experience
+﻿# UX.md — [Project Name] User Experience
 
 This document describes every functionality and UI element as the user experiences it, and why the user needs it. Every entry must correspond to something that actually exists in the current build. If an entry cannot be traced to an existing feature, it is not a current user experience — it is a plan, and it belongs in `BACKLOG.md`.
 
@@ -53,4 +53,4 @@ Proposed entries or updates that Claude has queued for this doc. Each block desc
 For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*

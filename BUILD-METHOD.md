@@ -132,11 +132,11 @@ Future sessions might be tempted to re-introduce a "subagents read NO-CODE-METHO
 
 ## Testing — what we actually do
 
-Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <path>` against a scratch directory (`~/v<N>-scratch`) or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` (V29 — formerly `/init-project`; renamed from `/adopt` in V44) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
+Testing here means **smoke-testing in Claude Code** — installing the plugin via local marketplace and running a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` (V29 — formerly `/init-project`; renamed from `/adopt` in V44) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
 
 **Pre-install testing options:**
 
-- **Smoke test via `--plugin-dir`.** Session-scoped install. Highest fidelity available without global install — hooks, agents, slash commands, subagents, and surrounding Claude Code session behaviour all run through real machinery. Standard for any session shipping testable code.
+- **Smoke test via local marketplace install.** Install the plugin via `/plugin marketplace add` + `/plugin install`, then test in a desktop-app burner session. Highest fidelity — hooks, agents, slash commands, subagents, and surrounding Claude Code session behaviour all run through real machinery. Standard for any session shipping testable code. Run `/reload-plugins` to pick up changes after edits.
 
 - **Hook script direct invocation.** `echo '{"cwd": "/path/to/test/folder", "session_id": "test"}' | python plugin/hooks/session_start.py`. Validates input parsing, file reads, stdout shape. Useful for catching syntax errors and arithmetic mistakes pre-smoke-test, or for fast iteration. Doesn't validate that Claude Code actually triggers the hook.
 
@@ -146,9 +146,7 @@ Testing here means **smoke-testing in Claude Code** via `claude --plugin-dir <pa
 
 **What we don't do** (and why "not doing X" ≠ "untested"):
 
-- **No global install** via `~/.claude/plugins/` or a marketplace. Real limitation but doesn't make the smoke test less real. Future sessions may add it (e.g. release process); for now `--plugin-dir` is operational.
-
-- **No marketplace publication.** Packaging task, not testing.
+- **No public marketplace publication.** The plugin is installed locally via `/plugin marketplace add` pointing at the repo on disk. Public distribution is a separate, later step.
 
 - **No automated CI.** Smoke tests are hand-run by Alex post-session on her Windows machine. Deliberate — CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention.
 
@@ -158,7 +156,7 @@ The separation exists because inline test prose in BUILD-LOG turned out unsearch
 
 **The V25 consumer-side TEST-LOG is different.** V25 builds a `TEST-LOG.md` mechanism for projects that *use* the method — tracking tests against a consumer's app. This project's TEST-LOG is dev-internal and predates that. Siblings, not the same thing.
 
-**Pitfall.** "Live install + back-test" as a single-session deliverable keeps resurfacing and is **not viable** because the plugin isn't packaged for global install. `--plugin-dir` smoke tests are the working substitute and they ARE happening per session. Don't conflate. A session genuinely needing global-install testing needs a packaging session first.
+**Pitfall.** "Live install + back-test" as a single-session deliverable keeps resurfacing. The plugin is now installable via local marketplace — smoke tests should use that path. Don't conflate a smoke test (does the component work?) with a release test (does the published package install cleanly?).
 
 ---
 

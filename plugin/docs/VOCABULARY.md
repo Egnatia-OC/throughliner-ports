@@ -1,4 +1,4 @@
-# Vocabulary — no-code method
+﻿# Vocabulary — no-code method
 
 Method-specific terms used across the plugin (subagent bodies, hook deny messages, slash commands, templates). Cross-references elsewhere point here rather than redefining inline. A frozen prose snapshot of these definitions exists at `VOCABULARY.md` in the no-code-method repo root (V39 freeze — two-write rule shelved in session v40).
 
@@ -49,6 +49,16 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Verifier.** The `Verifier` column in `TEST-LOG.md`, recording who verified (or will verify) each test row: `Claude` or `User`. Claude-verified rows are filled in by the after-build subagent during the automated test pass; user-verified rows are left blank for the user to confirm during the planning read-back. The split is per-row, not per-type — a single batch can have both Claude-verified and user-verified rows across any test type.
 
+- **Scope-context sections.** The five (optionally six) sections at the top of a build batch in `BACKLOG.md` that frame the batch's purpose: Goal, Outputs, Success criteria, Decisions to make this batch, Dependencies, and (conditionally) Red flags. Written by the planning subagent when the batch is created. The first three are always present; the last two are omitted when empty; Red flags appears only when the planning subagent detects security-shaped scope. Full spec: `DOC-STRUCTURE.md` → *Build batches → Scope-context sections*.
+
+- **Changes: delimiter.** The `Changes:` line in a build batch that separates scope-context sections from the change list. Required for new batches. The BACKLOG parser (`parse_backlog.py`) uses it to bound change-list extraction; without it, scope-section bullets would pollute the change list. Legacy batches without the delimiter fall back to the old extraction behaviour (all `- ` bullets before `Files:`). Full spec: `DOC-STRUCTURE.md` → *Build batches → `Changes:` delimiter*.
+
+- **Decisions to make this batch.** A scope-context section in a build batch listing unresolved scope questions within the batch — things that must be decided during the build. Distinct from the section-level Open questions in BACKLOG.md (non-blocking parking lot) and from planning batches (blocking questions with a `Blocks:` line). Omitted if all decisions are made at planning time.
+
+- **Dependencies (batch section).** A scope-context section in a build batch describing what the batch needs from outside itself: another batch shipped first, a planning batch resolved, an external resource provisioned. Peer to `Blocks:` on planning batches — `Blocks:` points forward ("resolving me unblocks X"), Dependencies points backward ("before starting me, Y must have happened"). Omitted if the batch has no external dependencies.
+
+- **Red flags sub-section (batch-level).** A conditional scope-context section in a build batch, present only when the planning subagent detects security-shaped scope (auth, secrets, PII, deletion, payment, third-party API keys). Contains specific concerns and mitigations for this batch. Distinct from the top-level Red flags section in BACKLOG.md, which holds concerns deferred with no active plan.
+
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 
 - **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by the after-build subagent. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
@@ -70,4 +80,4 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep `BUILD-LOG.md` for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 5 (retest after change).
 
 ---
-*No-code method — Version 46.*
+*No-code method — Version 47.*
