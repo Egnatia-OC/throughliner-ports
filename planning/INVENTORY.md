@@ -74,7 +74,7 @@ Two patterns exist in the current plugin:
 
 **As of V29, four commands shipped:** `/setup` (V29, skill-with-flags — replaces V19's `/init-project`), `/before-build` (V25, commands-directory), `/build` (V25, commands-directory). Remaining commands below are forward-looking architectural reference with planned-V annotations — a reader (human or Claude) should not assume *Pending* commands exist in the installed plugin.
 
-- `/setup` → four-case adoption dispatch (empty / existing-code-no-docs / existing-code-foreign-docs / already-adopted). Scaffolds the 6 spine templates in cases 1 and 2 (BUILD-LOG, CLAUDE, BACKLOG, MANIFEST, UX, TEST-LOG; ADDITIONAL-DOC handled by `/add-sot-doc`) and creates `planning/drafts/` directory; migrates / overwrites / leaves-alone in case 3; refreshes templates in case 4. Per-project opt-out via `/plugin` → Installed → toggle off. **Shipped V29** (as `/adopt`) — replaces V19's `/init-project` and the V17-planned `/new-project` + `/migrate`. Renamed `/adopt` → `/setup` in V44. Skill body at `plugin/skills/setup/SKILL.md` invokes the `no-code-method:setup` subagent. Scaffold script at `plugin/skills/setup/scripts/scaffold.py`.
+- `/setup` → four-case adoption dispatch (empty / existing-code-no-docs / existing-code-foreign-docs / already-adopted). Scaffolds the 6 spine templates in cases 1 and 2 (BUILD-LOG, CLAUDE, BACKLOG, MANIFEST, UX, TEST-LOG; ADDITIONAL-DOC handled by `/add-sot-doc`) and creates `planning/drafts/` and `research/` directories; migrates / overwrites / leaves-alone in case 3; refreshes templates in case 4. Per-project opt-out via `/plugin` → Installed → toggle off. **Shipped V29** (as `/adopt`) — replaces V19's `/init-project` and the V17-planned `/new-project` + `/migrate`. Renamed `/adopt` → `/setup` in V44. Skill body at `plugin/skills/setup/SKILL.md` invokes the `no-code-method:setup` subagent. Scaffold script at `plugin/skills/setup/scripts/scaffold.py`.
 - `/add-sot-doc <name>` → scaffolds additional-doc template. *Pending — not yet scheduled in `PLAN.md`.*
 - `/plan` → planning subagent. *Pending — auto-route via main-Claude classification is the only invocation path as of V22; explicit `/plan` skill-command lands in a future session.*
 - `/before-build` → before-build subagent. **Shipped V25** at `plugin/commands/before-build.md`. Commands-directory; `allowed-tools: Task`.
@@ -122,4 +122,4 @@ Two patterns exist in the current plugin:
 - **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
 
 ---
-*No-code method — Version 48.*
+*No-code method — Version 49.*

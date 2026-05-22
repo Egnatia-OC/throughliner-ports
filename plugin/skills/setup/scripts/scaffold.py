@@ -215,10 +215,13 @@ def cmd_write(target_dir: Path) -> int:
     drafts_dir = target_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
+    research_dir = target_dir / "research"
+    research_dir.mkdir(exist_ok=True)
+
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["BACKLOG/", "planning/drafts/"],
+        "directories_created": ["BACKLOG/", "planning/drafts/", "research/"],
         "target_path": str(target_dir),
     })
 

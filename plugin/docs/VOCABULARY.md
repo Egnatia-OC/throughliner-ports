@@ -59,6 +59,8 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Red flags sub-section (batch-level).** A conditional scope-context section in a build batch, present only when the planning subagent detects security-shaped scope (auth, secrets, PII, deletion, payment, third-party API keys). Contains specific concerns and mitigations for this batch. Distinct from the top-level Red flags section in BACKLOG.md, which holds concerns deferred with no active plan.
 
+- **Research file.** A `research/<topic>.md` file holding findings from research Claude conducts during a session — a library's behaviour, an API's status, a platform capability, or any external fact Claude verified rather than guessed. Written automatically when Claude researches; persists indefinitely as reference material. No MANIFEST tracking, no BACKLOG entries, no fold-in mechanism — zero maintenance burden. Can be listed on a build batch's `Inputs:` line when a specific batch depends on the findings. Full rules: `DOC-STRUCTURE.md` → *research/ folder*.
+
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 
 - **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by the after-build subagent. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
@@ -80,4 +82,4 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep `BUILD-LOG.md` for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 5 (retest after change).
 
 ---
-*No-code method — Version 48.*
+*No-code method — Version 49.*

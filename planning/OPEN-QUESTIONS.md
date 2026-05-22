@@ -8,26 +8,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## `research/` folder convention + automatic research persistence
-
-**The question.** Should the method formalise a `research/` folder (scaffolded at `/setup` time) where the agent automatically writes findings as `.md` files whenever it researches something — without requiring the user to ask?
-
-**Why it matters.** Surfaced 2026-05-22, ideation session. Two problems: (1) The method currently tells the agent to "prompt the user to do a Sonnet search" — a Cowork-era workaround. Claude Code has built-in web search; the agent should research directly. (2) Research findings have no designated home. They either vanish with the conversation or get manually pasted somewhere. The sovereign-implementer project's own `research/` folder (one `.md` per topic) has proven the pattern works — `research/platform-capabilities-audit.md`, `research/plugin-marketplace-scoping.md`, etc.
-
-**Design so far.**
-
-- `/setup` scaffolds an empty `research/` folder at project root.
-- When the agent hits uncertainty sufficient to research, it researches and writes findings to `research/<topic>.md` automatically. No user prompt needed, no size threshold.
-- Build log entries link to relevant research files rather than embedding findings inline.
-- The Sonnet-search language across method docs (universal-behaviour, subagent bodies, Crash course) is reworded to "offer to conduct research on anything you're uncertain of" — shifting responsibility from user to agent.
-- Research files are reference material: no MANIFEST tracking, no BACKLOG entries. Zero maintenance burden.
-
-**Relationship to existing entries.** Adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — the `Inputs:` line for build batches is the natural place to reference research files that inform a specific build. Adjacent to [[Graduate sovereign implementer development onto sovereign implementer]] — the method's own dev project already uses this pattern.
-
-**Next step.** **Promoted to 0051** (session v47, 2026-05-22). Scope file at `planning/sessions/0051-research-folder-convention.md`.
-
----
-
 ## BUILD-LOG restructuring — per-build files in a folder with index
 
 **The question.** Should BUILD-LOG.md be replaced by a `build-log/` folder containing one file per build plus a lightweight index, to reduce how much Claude must read?

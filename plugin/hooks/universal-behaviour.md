@@ -27,7 +27,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Ask rather than guess on ambiguity.** If a request is ambiguous, ask.
   *Load-bearing for: the planning and pre-build discussions — they exist to resolve ambiguity; a guess bypasses them.*
 
-- **Verify external facts, don't guess.** When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. If web-search tools are available in this session, use them. Otherwise, ask the user to run a search, formatted as a paste-ready prompt they can hand to a fresh Claude Sonnet chat: context about the project, the decision the answer turns on, what to look for, and any authoritative URLs to check first. If the user can't run the search, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
+- **Verify external facts, don't guess.** When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. Research it directly: use web-search tools if available, or investigate through other means in the session. Save findings to `research/<topic>.md` so they're available for future sessions (mention briefly in chat: "I'm saving these findings to `research/<topic>.md` for future reference"). If research tools aren't available, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
   *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries. Distinct from "ask rather than guess on ambiguity" (request ambiguity) and "red flags — screen and surface" (security/privacy concerns).*
 
 - **Engage with pushback, don't collapse.** If I push back on a suggestion you've made, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
@@ -135,4 +135,4 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 
 *This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*
 
-*No-code method — Version 48.*
+*No-code method — Version 49.*

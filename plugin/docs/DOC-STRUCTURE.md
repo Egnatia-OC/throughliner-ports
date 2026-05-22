@@ -149,6 +149,20 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Access.** Read/write to Claude. No locking — drafts are working material, not source-of-truth docs.
 
+## research/ folder
+
+**Location.** `research/<topic>.md` — project root relative. Created by `/setup` scaffold (empty directory).
+
+**Purpose.** Home for findings from any research Claude conducts during a session. When Claude investigates an external fact — a library's behaviour, an API's status, a platform capability, anything it could verify rather than guess — it saves findings to `research/<topic>.md` and mentions briefly in chat what it found and where it saved it.
+
+**Naming convention.** Free-form kebab-case filenames (e.g. `marketplace-options.md`, `drag-library-comparison.md`). No date prefix — the file's own content carries date context where relevant.
+
+**Lifecycle.** Written when Claude conducts research; persists indefinitely as reference material. Not deleted when consumed — research stays available for future sessions. No MANIFEST tracking, no BACKLOG entries, no fold-in mechanism. Zero maintenance burden.
+
+**Referencing from build batches.** Research files are valid entries on a build batch's `Inputs:` line when the batch depends on what the research found (e.g. `` `research/drag-library-comparison.md` — informs which library to use ``).
+
+**Access.** Read/write to Claude. Not a source-of-truth doc — no locking, no structural spec beyond the filename convention.
+
 ## Fold-ins pending sections
 
 Every read-only source-of-truth doc (`UX.md`, `MANIFEST.md`, and any additional source-of-truth docs) carries a `## Fold-ins pending` section at its bottom. This is where Claude queues proposed content it cannot write directly into the doc's main body (because the doc is locked). The user folds the content in by hand during the next planning session, then deletes the block.
@@ -275,4 +289,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 48.*
+*No-code method — Version 49.*

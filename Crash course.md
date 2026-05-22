@@ -27,7 +27,7 @@ A first session in Sovereign Implementer is distinct from a normal build sequenc
 
 - Open Claude Code in the project folder. Run `/setup`.
 - `/setup` detects which case applies — empty folder, existing code without docs, existing code with non-method docs, already method-managed, or opted out — and runs the matching dialogue.
-- For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG/ folder, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates a `planning/drafts/` folder, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
+- For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG/ folder, BUILD-LOG.md, MANIFEST.md, TEST-LOG.md) and creates `planning/drafts/` and `research/` folders, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
 - The dialogue's outputs land as `[FOLD-IN PENDING]` blocks in the destination docs' own *Fold-ins pending* sections (e.g. UX.md's `## Fold-ins pending`). The no-coder folds the UX content into UX.md's main body by hand (the doc is read-only to Claude), and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line pointing at the entry it implements.
 - After the fold-in, the project is ready for its first build. Run `/before-build` to lock the next batch, then `/build` to execute it. The plugin orchestrates the rest.
 
@@ -43,6 +43,8 @@ Five markdown files and one folder sit in the project root once `/setup` has sca
 - **BUILD-LOG.md** — a running record of decisions, changes, and reasoning for every build, newest-first. Written by Claude after each build completes. Not read cover-to-cover — search when you need the "why" behind a previous build's choices. Entry shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward.
 
 `/setup` also creates a `planning/drafts/` folder — a destination-agnostic holding area for substantive chat content not yet ready for a specific doc (comparison tables, structural sketches, option matrices). Drafts complement fold-in sections on source-of-truth docs (see *Editing surfaces* below), which are for source-of-truth doc content specifically. Drafts are written when content is "good enough to walk away from" and deleted when consumed.
+
+`/setup` also creates a `research/` folder at the project root — a home for findings from any research Claude conducts during a session. When Claude investigates an external fact (a library's behaviour, an API's status, a platform capability), it saves findings to `research/<topic>.md` automatically and mentions briefly in chat what it found. Research files are reference material with zero maintenance burden: no MANIFEST tracking, no BACKLOG entries, no fold-in mechanism. They persist for future sessions and can be listed in a build batch's `Inputs:` line when a specific batch depends on what the research found.
 
 A project can also declare additional source-of-truth docs — for example, `SYSTEM-PROMPT.md` for a Claude/MCP integration project, or `COPY.md` for a project where the user-facing text is itself the deliverable. These get the same lock-from-Claude treatment as `UX.md`.
 
@@ -315,7 +317,7 @@ Iteratively developed. Has not yet been used to ship an app. The first real Task
 
 A known headwind for any methodology relying on `CLAUDE.md`-style instructions: roughly 30% of the time, Claude will not follow them. The method designs around this by making source-of-truth docs read-only to Claude (so big design changes cannot slip in mid-build) and by making most non-trivial decisions reviewable in chat. But the headwind is real, and any no-coder should expect to recognise drift and recover from it as part of the skill.
 
-Claude will sometimes hand the no-coder a paste-ready prompt and ask them to run a web search (or run one in a separate Claude Sonnet chat) before proceeding. This is a method discipline, not Claude being lazy — it's how the method prevents wrong external facts from getting baked into source-of-truth docs and scope files. If the no-coder can't run the search, Claude marks the uncertain claim with `[UNVERIFIED]` and proceeds conservatively.
+Claude will sometimes pause mid-session to research an external fact — checking a library's status, verifying an API's behaviour, confirming how a platform feature works. When it does, it saves findings to `research/<topic>.md` in the project's `research/` folder and mentions briefly what it found. This is a method discipline: it's how the method prevents wrong external facts from getting baked into source-of-truth docs and scope files. If research tools aren't available in the session, Claude marks the uncertain claim with `[UNVERIFIED]` and proceeds conservatively.
 
 Claude Code's built-in **plan panel** (the Shift+Tab plan-mode surface) does not show the method's build sequence. The panel is Claude-Code-internal — populated only by Claude itself via its native plan-mode flow, with no plugin-facing write surface to inject the method's current and queued build batches. Where the real sequence lives is `BACKLOG.md` → Build batches; the top batch is what's next. If the plan panel reads empty mid-build, that is not the plugin losing track of where it is — that is the panel showing what it can show. Open the project's `BACKLOG.md` to see the actual queue.
 
@@ -333,4 +335,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 48.*
+*No-code method — Version 49.*

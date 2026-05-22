@@ -6,6 +6,30 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v53 — 2026-05-22 — Research folder convention + Sonnet-search reword
+
+**What shipped.** V51 scope (0051). Two changes: (1) `/setup` now scaffolds a `research/` folder at project root, and all "prompt the user to do a Sonnet search" language replaced with "research it directly and save findings to `research/<topic>.md`" — shifting research responsibility from the user to the agent. (2) New `research/` folder spec in DOC-STRUCTURE.md (Location, Purpose, Naming convention, Lifecycle, Referencing from build batches, Access) and "Research file" definition in VOCABULARY.md.
+
+Files touched: `plugin/skills/setup/scripts/scaffold.py` (mkdir `research/`, updated emit payload), `plugin/agents/setup.md` (research/ mentions in cases 1–3 recaps), `plugin/hooks/universal-behaviour.md` (rewrote "Verify external facts" required behaviour — agent researches directly, writes to `research/<topic>.md`, falls back to `[UNVERIFIED]` tag), `plugin/docs/DOC-STRUCTURE.md` (new `## research/ folder` section), `plugin/docs/VOCABULARY.md` (new "Research file" entry), `Crash course.md` (scaffold description + research/ paragraph + Sonnet-search caveat rewrite), `planning/INVENTORY.md` (updated `/setup` description). Plus footer bumps on all 18 plugin-side files. Method version V48 → V49; plugin 0.48.0 → 0.49.0; PLUGIN_METHOD_VERSION 48 → 49.
+
+**Decisions taken and why.**
+
+- **Free-form naming for research files.** `<topic>.md` with kebab-case, not numbered or date-stamped. Research files are reference material, not a sequence — alphabetical folder listing is the natural browse mode. Consistent with the dev project's existing research folder.
+- **Brief mention when writing research, not a multi-line recap.** One sentence in chat ("I'm saving these findings to `research/<topic>.md` for future reference") keeps the user informed without cluttering the conversation. The file itself is the artefact.
+- **`[UNVERIFIED: <what>]` fallback.** When research tools aren't available, the agent marks the claim inline. This makes uncertainty visible in the build artefacts rather than silently passing unverified assumptions.
+
+**Pivots and surprises.**
+
+- Grep sweep confirmed only two files contained Sonnet-search language (universal-behaviour.md, Crash course.md). No subagent bodies needed rewriting — they already referenced research files correctly in their Inputs-line context.
+- Session spanned two context windows due to the footer-bump volume.
+
+**Carried forward.**
+
+- Smoke tests deferred: V43 mode-aware messaging + V45 fold-in section carve-out + V46 automated test pass + V49 batch structure + V51 research folder — all testable against Taskflow in a desktop-app burner session with the plugin installed via local marketplace.
+- OPEN-QUESTIONS: V51 entry removed. Remaining entries unchanged.
+
+---
+
 ## v52 — 2026-05-22 — ADR-style numbering + per-batch BACKLOG file-split
 
 **What shipped.** V50 scope (0050). Two structural overhauls in one session: dev-side scope files renamed from `V*.md` to `NNNN-kebab-title.md` format (0051–0059 created; V50.md retained as current session's file, deleted at close); consumer-side BACKLOG split from a single `BACKLOG.md` into a `BACKLOG/` folder with `INDEX.md` (carrying Red flags, Planning batches, Build batch reference list, Open questions) plus per-batch files (`NNNN-batch-name.md`). Shared `allocate_number.py` for 4-digit number allocation across both dev and consumer sides. All four hook scripts updated for folder-aware BACKLOG detection (`is_backlog_file()`, `resolve_backlog_dir()` helpers in `project_state.py`). Parser auto-detects folder vs single-file mode. `/setup` case 4 migrates old single-file BACKLOG.md to folder format. All five subagent bodies updated for two-format BACKLOG handling. Scaffold script extended to create `BACKLOG/` directory with `INDEX-TEMPLATE.md`. `Crash course.md` updated to describe folder structure. `BUILD-METHOD.md` updated with triple-distinction (session tag / scope-file number / method version) and allocation rule. PLAN.md and OPEN-QUESTIONS.md references updated from V-number format to NNNN format. INVENTORY.md updated with new components. All plugin-side footers bumped. Method version V47 → V48; plugin 0.47.0 → 0.48.0; PLUGIN_METHOD_VERSION 47 → 48.
