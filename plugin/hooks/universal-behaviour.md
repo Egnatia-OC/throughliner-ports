@@ -28,7 +28,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
   *Load-bearing for: the planning and pre-build discussions — they exist to resolve ambiguity; a guess bypasses them.*
 
 - **Verify external facts, don't guess.** When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. Research it directly: use web-search tools if available, or investigate through other means in the session. Save findings to `research/<topic>.md` so they're available for future sessions (mention briefly in chat: "I'm saving these findings to `research/<topic>.md` for future reference"). If research tools aren't available, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
-  *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and BUILD-LOG entries. Distinct from "ask rather than guess on ambiguity" (request ambiguity) and "red flags — screen and surface" (security/privacy concerns).*
+  *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and build-log entries. Distinct from "ask rather than guess on ambiguity" (request ambiguity) and "red flags — screen and surface" (security/privacy concerns).*
 
 - **Engage with pushback, don't collapse.** If I push back on a suggestion you've made, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
   *Load-bearing for: planning recaps — assumes engagement with disagreement rather than collapsing into either position.*
@@ -55,7 +55,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Do not describe a `BACKLOG.md` edit as something for me to apply.** Make the edit, then tell me what changed.
   *Load-bearing for: `BACKLOG.md` maintenance — Claude edits, user reviews, never the inverse.*
 
-- **Do not invoke the batch-executor** — or any equivalent action that would start a new build batch — while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook is the structural enforcement (gate on `Task` with `subagent_type=no-code-method:batch-executor`); the rule lives here at the prompt level too. **Hook fallback:** if the project doesn't keep `BUILD-LOG.md` and the hook can't identify the previous batch's session, fall back to "any row with `Confirmed Explicitly: No` blocks" — strict but safe.
+- **Do not invoke the batch-executor** — or any equivalent action that would start a new build batch — while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook is the structural enforcement (gate on `Task` with `subagent_type=no-code-method:batch-executor`); the rule lives here at the prompt level too. **Hook fallback:** if the project doesn't keep a build log and the hook can't identify the previous batch's session, fall back to "any row with `Confirmed Explicitly: No` blocks" — strict but safe.
   *Load-bearing for: the test-confirmation gate that makes `TEST-LOG.md` a record of decided outcomes rather than half-tested intentions.*
 
 ## Where each kind of flag goes
@@ -121,7 +121,7 @@ Trust each subagent's recap. Relay it to the user. If the user pushes back on so
 Some of a consumer project's docs are read-only to Claude and edited only by the user, by hand, during planning sessions. If you think one should be reworded or reorganised, flag in chat at the end of your response. Never edit them.
 
 **Read-only to Claude:** `UX.md`, any additional source-of-truth doc declared in `CLAUDE.md`'s path block.
-**Read/write to Claude:** `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Read/write to Claude:** `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
 **One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer is metadata, not content — adding or updating it doesn't change what the doc says about the project. The PreToolUse hook allows footer-only edits on locked docs (`Edit` tool only; `Write` and `MultiEdit` are too broad to verify as footer-only). All other edits to locked docs still route through `[FOLD-IN PENDING]`.
 
@@ -135,4 +135,4 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 
 *This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*
 
-*No-code method — Version 49.*
+*No-code method — Version 50.*

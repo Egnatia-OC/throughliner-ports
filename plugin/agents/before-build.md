@@ -17,7 +17,7 @@ A short prompt from main Claude announcing the route. No structured payload — 
 Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md` (may point to `build-log/INDEX.md` in folder mode), `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, and *Tests: sub-section* — for the canonical shape of what you'll be writing into the batch's BACKLOG file.
 
 The operating procedure for *Before build* — including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement — is inlined in this file (see *Work loop* and *Batch-sizing principle* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
@@ -119,4 +119,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 49.*
+*No-code method — Version 50.*

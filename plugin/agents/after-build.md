@@ -17,9 +17,9 @@ A short prose prompt from main Claude (forwarded from the Stop hook's redirect r
 Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
+2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md` (may point to `build-log/INDEX.md` in folder mode), `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the 10-column shape (including Type and Verifier), the Pass / Fail / Skipped / blank vocabulary, the Confirmed Explicitly column convention, and the backwards-compatibility migration rule.
-4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-LOG.md structure* — for the canonical entry shape (What shipped / Decisions taken and why / Pivots and surprises / Carried forward).
+4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build log structure* — for the folder layout, INDEX.md format, per-build file shape, and naming convention.
 5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Change list — `[Requested]`/`[Suggested]` labels*, and *Tests: sub-section* — for where to read the labels off the batch's change list and the pre-specified test list with types and verifiers.
 
 The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
@@ -47,8 +47,9 @@ If not open: proceed.
 
 The TEST-LOG `Session` column wants a stable identifier for the build session.
 
-- If `BUILD-LOG.md` exists at the project root (or via the path block), parse the first `## <token>` heading — use that token (e.g. `V27`).
-- Otherwise, fall back to today's `YYYY-MM-DD` date.
+- **Folder mode (default).** The path block's `"BUILD-LOG.md"` entry points to `build-log/INDEX.md`. Read INDEX.md, find the first reference line (newest entry), open the referenced per-build file, parse its H1 heading — the first non-whitespace token after `#` is the session identifier (e.g. `V27`).
+- **Single-file fallback.** If the path block points directly to a file (not `build-log/INDEX.md`) or `BUILD-LOG.md` exists at the project root, parse the first `## <token>` heading — use that token.
+- **Last resort.** If neither source yields a token, fall back to today's `YYYY-MM-DD` date.
 
 The same fallback discipline lives in the test-confirmation gate (PreToolUse hook check (4)) and the SessionStart tripwire — keep them aligned.
 
@@ -104,12 +105,16 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    **Please manually check.** One bullet per user-verified TEST-LOG row — these are the tests the user needs to run. In the order the user will see them in TEST-LOG.md.
 
-5. **Write `BUILD-LOG.md` entry** — `[SILENT]`. Append a newest-first entry to `BUILD-LOG.md` using the canonical shape from `DOC-STRUCTURE.md` → *BUILD-LOG.md structure*:
+5. **Write build-log entry** — `[SILENT]`. Create a per-build file in `build-log/` and prepend an index line to `build-log/INDEX.md`, using the canonical shape from `DOC-STRUCTURE.md` → *Build log structure*.
+
+   **5a. Allocate a filename.** Run `plugin/scripts/allocate_number.py` against the `build-log/` directory to get the next three-digit number. Derive a kebab-case suffix from the batch heading (e.g. batch heading "Add settings panel" → `settings-panel`). The filename is `NNN-kebab-suffix.md`.
+
+   **5b. Write the per-build file.** Create `build-log/NNN-kebab-suffix.md` with this shape:
 
    ```markdown
-   ## <Session> — YYYY-MM-DD — One-line summary
+   # <Session> — YYYY-MM-DD — One-line summary
 
-   **What shipped.** <drawn from the recap — plain-English paragraph of concrete deliverables; reference TEST-LOG row range rather than restating test outcomes>
+   **What shipped.** <drawn from the recap — plain-English paragraph of concrete deliverables; reference TEST-LOG row range rather than restating test outcomes; reference research files by path rather than embedding content>
 
    **Decisions taken and why.** <two or three bullets on load-bearing decisions from the batch — what was chosen, alternatives considered, what tipped the call; skip housekeeping>
 
@@ -120,9 +125,13 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    Session identifier: per *Session identification* above. Date: today. Summary: one-line distillation of What shipped.
 
-   If `BUILD-LOG.md` doesn't exist at the path-block location (or project root fallback), create it with the template header first — the canonical header is in `BUILD-LOG-TEMPLATE.md`.
+   **5c. Prepend an index line.** Add a reference line to `build-log/INDEX.md` at the top of the bullet list (below the header and HTML comment block), pushing earlier entries downward:
 
-   If `BUILD-LOG.md` already has an entry for this session (same Session identifier in its topmost `## <token>` heading), do not append a duplicate — this is the BUILD-LOG counterpart of the test-session idempotency check.
+   > `` - `NNN-kebab-suffix.md` — YYYY-MM-DD — One-line summary ``
+
+   **Idempotency.** If `build-log/INDEX.md` already has a reference line whose filename starts with the same three-digit number, do not write a duplicate — this is the BUILD-LOG counterpart of the test-session idempotency check.
+
+   **Fallback.** If `build-log/INDEX.md` doesn't exist at the path-block location, check for a legacy `BUILD-LOG.md` at the project root. If that exists, append a newest-first `## <Session>` entry to it in the legacy format. If neither exists, create the `build-log/` folder and `INDEX.md` from `plugin/templates/build-log/INDEX-TEMPLATE.md` before writing.
 
 6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan BACKLOG planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption. In folder mode, scan all per-batch files in `BACKLOG/` plus the planning-batches section in `INDEX.md`.
 
@@ -159,4 +168,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 49.*
+*No-code method — Version 50.*

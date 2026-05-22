@@ -11,9 +11,9 @@ Three modes, each writes a single JSON object to stdout:
                to the right dialogue branch on entry.
 
   check  Recursively scan cwd for any file whose name matches one of the
-         destination filenames (BUILD-LOG.md, CLAUDE.md, UX.md, BACKLOG.md,
-         MANIFEST.md, TEST-LOG.md). No writes. Output: {target_path,
-         conflicts, ready}.
+         destination filenames (CLAUDE.md, UX.md, MANIFEST.md, TEST-LOG.md)
+         or directory names (BACKLOG, build-log). No writes. Output:
+         {target_path, conflicts, ready}.
 
   write  Copy the bundled templates from plugin/templates/ into cwd root,
          renaming each template to its destination filename. Refuses if the
@@ -56,7 +56,6 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Filenames and directory names that the method's runtime expects in a project.
 # The recursive scan looks for these anywhere under cwd.
 DESTINATION_FILENAMES = (
-    "BUILD-LOG.md",
     "CLAUDE.md",
     "MANIFEST.md",
     "UX.md",
@@ -66,15 +65,15 @@ DESTINATION_FILENAMES = (
 # Directory names that conflict if they already exist at the project root.
 DESTINATION_DIRNAMES = (
     "BACKLOG",
+    "build-log",
 )
 
 # Mapping: template filename (in plugin/templates/) -> destination filename
 # (in cwd root). Order is preserved for the success report.
-# BACKLOG is handled separately (folder scaffold).
+# BACKLOG and build-log are handled separately (folder scaffolds).
 TEMPLATE_TO_DESTINATION = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
     ("UX-TEMPLATE.md", "UX.md"),
-    ("BUILD-LOG-TEMPLATE.md", "BUILD-LOG.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
     ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
@@ -82,6 +81,10 @@ TEMPLATE_TO_DESTINATION = (
 # BACKLOG folder template: INDEX-TEMPLATE.md → BACKLOG/INDEX.md.
 BACKLOG_INDEX_TEMPLATE = "BACKLOG/INDEX-TEMPLATE.md"
 BACKLOG_INDEX_DEST = "INDEX.md"
+
+# build-log folder template: INDEX-TEMPLATE.md → build-log/INDEX.md.
+BUILD_LOG_INDEX_TEMPLATE = "build-log/INDEX-TEMPLATE.md"
+BUILD_LOG_INDEX_DEST = "INDEX.md"
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */setup five-case branching* wording for stability in the
@@ -194,6 +197,9 @@ def cmd_write(target_dir: Path) -> int:
     backlog_index_tpl = src_dir / BACKLOG_INDEX_TEMPLATE
     if not backlog_index_tpl.is_file():
         missing.append(BACKLOG_INDEX_TEMPLATE)
+    build_log_index_tpl = src_dir / BUILD_LOG_INDEX_TEMPLATE
+    if not build_log_index_tpl.is_file():
+        missing.append(BUILD_LOG_INDEX_TEMPLATE)
     if missing:
         return emit({
             "written": False,
@@ -212,6 +218,11 @@ def cmd_write(target_dir: Path) -> int:
     shutil.copyfile(backlog_index_tpl, backlog_dir / BACKLOG_INDEX_DEST)
     written.append("BACKLOG/INDEX.md")
 
+    build_log_dir = target_dir / "build-log"
+    build_log_dir.mkdir(exist_ok=True)
+    shutil.copyfile(build_log_index_tpl, build_log_dir / BUILD_LOG_INDEX_DEST)
+    written.append("build-log/INDEX.md")
+
     drafts_dir = target_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -221,7 +232,7 @@ def cmd_write(target_dir: Path) -> int:
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["BACKLOG/", "planning/drafts/", "research/"],
+        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/"],
         "target_path": str(target_dir),
     })
 

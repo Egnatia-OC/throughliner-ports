@@ -6,6 +6,26 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v54 — 2026-05-22 — BUILD-LOG restructured to build-log/ folder
+
+**What shipped.** V50 scope (0052). Replaced monolithic `BUILD-LOG.md` with a `build-log/` folder containing one file per build plus an `INDEX.md` carrying the newest-first reference list. Same folder-mode pattern as BACKLOG/ (V48). `/setup` scaffolds `build-log/` with `INDEX-TEMPLATE.md`. Path block key stays `"BUILD-LOG.md"` but points to `build-log/INDEX.md`. Session identification updated across all hooks and subagents for folder mode with legacy single-file fallback. Old `BUILD-LOG-TEMPLATE.md` deleted.
+
+Files touched: `plugin/templates/build-log/INDEX-TEMPLATE.md` (created), `plugin/templates/BUILD-LOG-TEMPLATE.md` (deleted), `plugin/templates/CLAUDE-TEMPLATE.md` (path block), `plugin/skills/setup/scripts/scaffold.py` (folder scaffold), `plugin/scripts/project_state.py` (folder-mode session identification), `plugin/hooks/session_start.py` (folder-mode session identification + SPINE_FOLDER_PATHS + version bump), `plugin/hooks/pre_tool_use.py` (SCAFFOLD_DIRS + user-facing messages), `plugin/hooks/stop.py` (docstring), `plugin/docs/DOC-STRUCTURE.md` (full section rewrite), `plugin/docs/VOCABULARY.md` (definitions), `plugin/hooks/universal-behaviour.md` (editing surfaces), all 5 subagent bodies (session identification, load lists, scaffold references), `Crash course.md` (references throughout), `planning/INVENTORY.md` (project-side docs, bundled artefacts, component descriptions), `planning/OPEN-QUESTIONS.md` (removed resolved entry). Footer bumps V49 → V50 across all 16 plugin-side files + Crash course + INVENTORY. Plugin 0.49.0 → 0.50.0; PLUGIN_METHOD_VERSION 49 → 50.
+
+**Decisions taken and why.**
+
+- **3-digit sequential numbers for build-log entries.** Scope file framed `BUILD-001.md` originally. Matches the pattern from allocate_number.py. 3 digits vs BACKLOG's 4 digits because consumer projects will have far fewer builds than BACKLOG batches.
+- **No case 4 migration logic.** User pointed out no consumer project has ever used sovereign implementer for real — there are no existing BUILD-LOG.md files to migrate. Eliminated a chunk of planned work.
+- **Bullet list for INDEX.md, not a markdown table.** Matches BACKLOG/INDEX.md's reference-list pattern. Easier to parse, easier to prepend.
+- **Path block key stays `"BUILD-LOG.md"`.** Changing the key would break existing path-block parsing across all hooks. The value changes to `build-log/INDEX.md`.
+- **One-line research cross-reference convention.** Build entries link to `research/<topic>.md` by path rather than embedding content — consistent with research/ folder spec from V49.
+
+**Pivots and surprises.** None.
+
+**Carried forward.** Deferred smoke tests accumulating: V43 mode-aware messaging, V45 fold-in carve-out, V46 automated test pass, V48 BACKLOG folder-split, V49 batch structure, V49 research folder, V50 build-log folder — all testable in a single desktop-app burner session via local marketplace.
+
+---
+
 ## v53 — 2026-05-22 — Research folder convention + Sonnet-search reword
 
 **What shipped.** V51 scope (0051). Two changes: (1) `/setup` now scaffolds a `research/` folder at project root, and all "prompt the user to do a Sonnet search" language replaced with "research it directly and save findings to `research/<topic>.md`" — shifting research responsibility from the user to the agent. (2) New `research/` folder spec in DOC-STRUCTURE.md (Location, Purpose, Naming convention, Lifecycle, Referencing from build batches, Access) and "Research file" definition in VOCABULARY.md.

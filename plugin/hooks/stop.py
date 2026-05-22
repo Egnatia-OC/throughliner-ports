@@ -3,7 +3,7 @@
 Stop hook for the no-code-method plugin.
 
 Fires when Claude's turn ends in Claude Code. Routes to one of four
-outcomes depending on BACKLOG.md, TEST-LOG.md, and BUILD-LOG.md state:
+outcomes depending on BACKLOG, TEST-LOG.md, and build-log state:
 
   - **Previous batch's test session still open** → exit silently. (V28.)
     TEST-LOG.md has unconfirmed previous-session rows, which means the

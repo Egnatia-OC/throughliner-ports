@@ -8,25 +8,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## BUILD-LOG restructuring — per-build files in a folder with index
-
-**The question.** Should BUILD-LOG.md be replaced by a `build-log/` folder containing one file per build plus a lightweight index, to reduce how much Claude must read?
-
-**Why it matters.** Surfaced 2026-05-22, ideation session. The current monolithic BUILD-LOG.md grows with every build. Claude reads the entire file to write one entry or to check build history during planning. Per-build files mean the agent reads only the entries it needs. The index preserves scan-the-full-history capability in one place.
-
-**Design so far.**
-
-- `build-log/` folder replaces `BUILD-LOG.md`. `/setup` scaffolds the folder.
-- One file per build (naming TBD — `BUILD-001.md`, `BUILD-002.md`, or batch-name-based).
-- Lightweight index file at `build-log/INDEX.md` — one line per build with a short summary and link. The after-build subagent writes the build entry and appends the index line in the same pass.
-- Research files referenced from build entries are linked, not embedded — research lives in `research/`, build entries point to it.
-
-**Relationship to existing entries.** Prerequisite-adjacent for [[Graduate sovereign implementer development onto sovereign implementer]] — the current dev project's `BUILD-LOG.md` is already unwieldy. Pairs naturally with [[`research/` folder convention + automatic research persistence]] — build entries link to research files.
-
-**Next step.** **Promoted to 0052** (session v47, 2026-05-22). Scope file at `planning/sessions/0052-build-log-restructuring.md`.
-
----
-
 ## Red-flag / threat-class marker for security-shaped batches
 
 **The question.** Should BACKLOG batches that touch security-shaped surfaces (auth, secrets, PII, deletion of user data, third-party API keys) carry an explicit *Red flags* or *Caution* marker — as a new batch sub-section, as planning-subagent behaviour that detects security-shaped scope and surfaces a verbal heads-up at scoping time, or both?
@@ -103,7 +84,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
 4. **[[UX.md adaptation for non-GUI projects]]** — **Promoted to V47 (renumbered V43 → V47 in session v43, 2026-05-22).** Vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
 
-**What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). BUILD-LOG.md narrative (already in the consumer method since V33).
+**What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). Build-log narrative (folder-mode since V50; already in the consumer method since V33).
 
 **Next step.** **Promoted to 0059** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before 0059. Scope file at `planning/sessions/0059-graduation-dev-onto-method.md`.
 
@@ -202,7 +183,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 3. *Defining "went well" is the hardest part, and the artifact says so itself.* Without a mechanical success criterion, "well" becomes vibes-encoded-as-data — worse than vibes, because numeric scores feel objective when they aren't.
 
-4. *Existing retrospective mechanisms already cover this qualitatively.* `BUILD-LOG.md` captures what shipped, decisions, surprises, carry-forwards. `OPEN-QUESTIONS.md` captures unresolved tensions. Discoveries → planning batches captures emergent needs. These fit small-sample, single-user, evolving-method conditions. If insufficient later, cheaper incremental move is structured fields in BUILD-LOG entries ("what worked / what didn't / hypothesis for next time"), not a separate measurement system.
+4. *Existing retrospective mechanisms already cover this qualitatively.* The build log captures what shipped, decisions, surprises, carry-forwards. `OPEN-QUESTIONS.md` captures unresolved tensions. Discoveries → planning batches captures emergent needs. These fit small-sample, single-user, evolving-method conditions. If insufficient later, cheaper incremental move is structured fields in build-log entries ("what worked / what didn't / hypothesis for next time"), not a separate measurement system.
 
 5. *What current decision would this change?* V17's architecture, V18's hook-event choice, V19's hook-deny-redirect mechanic — none would have been called differently with a session-performance log. The artifact's own bar is "does the evidence change my decisions?" From V19's vantage, no.
 

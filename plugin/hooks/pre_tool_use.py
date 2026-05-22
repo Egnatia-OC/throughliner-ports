@@ -69,9 +69,9 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       `no-code-method:batch-executor`. When TEST-LOG.md has rows with
       `Confirmed Explicitly: No` left over from the previous build batch's
       test session, the hook denies the batch-executor invocation. The gate
-      identifies the previous session from BUILD-LOG.md when the project
+      identifies the previous session from the build log when the project
       keeps one; otherwise it falls back to strict mode (any unconfirmed row
-      blocks). Strict fallback also fires when BUILD-LOG.md is present but
+      blocks). Strict fallback also fires when the build log is present but
       unparseable — the deny message names the parse failure so the user can
       fix the right thing. Spec: universal-behaviour.md → Prohibited
       behaviours → "Do not invoke the batch-executor".
@@ -99,7 +99,7 @@ blocking. A hook that blocks unexpectedly is far more disruptive than one
 that occasionally fails to enforce. The universal-behaviour rules surfaced
 via the SessionStart hook are the soft-net for any case this hook can't
 deterministically catch. The one exception is the test-confirmation gate's
-strict fallback — when TEST-LOG.md has unconfirmed rows AND BUILD-LOG.md
+strict fallback — when TEST-LOG.md has unconfirmed rows AND the build log
 can't be used for session-narrowing, the gate denies; safe-by-default per
 V26 Q3 and V27 Q4.
 
@@ -164,7 +164,6 @@ METHOD_SUBAGENT_PREFIX = "no-code-method:"
 SCAFFOLD_NAMES = frozenset({
     "UX.md",
     "BACKLOG.md",
-    "BUILD-LOG.md",
     "MANIFEST.md",
     "TEST-LOG.md",
     "CLAUDE.md",
@@ -172,6 +171,7 @@ SCAFFOLD_NAMES = frozenset({
 
 SCAFFOLD_DIRS = frozenset({
     "BACKLOG",
+    "build-log",
 })
 
 # Path-block keys treated as writable. Everything else in the path block —
@@ -999,7 +999,7 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
 def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, session_id):
     """Compose the deny-reason text. Names the unconfirmed rows by # and
     Test Description, explains which mode the gate is in (narrowed by
-    BUILD-LOG.md vs. strict fallback), and points at the read-back."""
+    build log vs. strict fallback), and points at the read-back."""
     row_lines = []
     for r in unconfirmed_rows:
         component = r.get("component") or "(no component)"
@@ -1012,24 +1012,27 @@ def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, sessi
     if build_log_status == "ok":
         mode_explanation = (
             f"Gate identified the previous build batch's session as "
-            f"`{session_id}` (from BUILD-LOG.md). The rows above belong "
+            f"`{session_id}` (from the build log). The rows above belong "
             "to that session and are still unconfirmed."
         )
     elif build_log_status == "missing":
         mode_explanation = (
-            "BUILD-LOG.md not found — gate is in strict fallback mode: "
+            "Build log not found — gate is in strict fallback mode: "
             "any row with `Confirmed Explicitly: No` blocks. If this "
-            "project keeps a BUILD-LOG.md, add it to CLAUDE.md's path "
-            "block (or place it at the project root) so the gate can "
-            "narrow to the previous session's rows."
+            "project keeps a build log, add it to CLAUDE.md's path "
+            "block (key `\"BUILD-LOG.md\"` pointing to "
+            "`build-log/INDEX.md`) so the gate can narrow to the "
+            "previous session's rows."
         )
     else:  # 'unparseable'
         mode_explanation = (
-            "BUILD-LOG.md present but unparseable — no `## <session-tag>` "
-            "heading could be matched at the top of the file. Gate is in "
-            "strict fallback mode: any row with `Confirmed Explicitly: "
-            "No` blocks. Fix BUILD-LOG.md's heading format (expected "
-            "`## <tag> — ...` newest first) or confirm the rows above "
+            "Build log present but unparseable — no session identifier "
+            "could be extracted. Gate is in strict fallback mode: any "
+            "row with `Confirmed Explicitly: No` blocks. For folder "
+            "mode, check that build-log/INDEX.md has a reference line "
+            "and the per-build file has an H1 heading. For legacy "
+            "single-file mode, check that BUILD-LOG.md has a "
+            "`## <tag> — ...` heading. Or confirm the rows above "
             "to proceed."
         )
 
@@ -1053,8 +1056,8 @@ def check_test_confirmation_gate(project_root, tool_input):
 
     The lenient principle applies for the missing-file cases (no
     TEST-LOG.md → allow; no rows → allow). The strict-fallback path only
-    fires when TEST-LOG.md exists AND has unconfirmed rows AND BUILD-LOG.md
-    can't narrow them to the previous session — safety-by-default per V26
+    fires when TEST-LOG.md exists AND has unconfirmed rows AND the build
+    log can't narrow them to the previous session — safety-by-default per V26
     Q3 + V27 Q4.
 
     V28: the row-collection + session-narrowing logic moved to

@@ -109,18 +109,22 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Backwards compatibility.** Projects with existing 8-column TEST-LOG rows (pre-V48) get migrated on `/setup` case 4 (refresh): the `Type` column is backfilled to `Look and click` and the `Verifier` column to `User` for all existing rows. The `User Notes` column header is renamed to `Notes`. This is a one-time mechanical migration.
 
-## BUILD-LOG.md structure
+## Build log structure
 
-**Header.** Brief statement of what `BUILD-LOG.md` is: a running record of decisions, changes, and reasoning for every build, newest-first. Maintained by Claude during builds (the after-build subagent writes one entry per completed batch). Not for cover-to-cover reading.
+**Location.** `build-log/` folder at the project root. One file per build, plus a lightweight `INDEX.md` carrying the build order. Created by `/setup` scaffold.
 
-Starts empty. Entry-format reminder lives in an HTML comment until the first build.
+**INDEX.md.** Header, an HTML comment with the canonical formats, then a newest-first bullet list of per-build file references. Each entry:
 
-**Entries.** One per build, newest first. Each entry:
+> `- `NNN-batch-name.md` — YYYY-MM-DD — One-line summary`
+
+The after-build subagent appends one line per build at the top of the list (below the header and comment block), pushing earlier entries downward.
+
+**Per-build files.** One file per build, named `NNN-batch-name.md` (three-digit sequential number allocated via `plugin/scripts/allocate_number.py`, plus a kebab-case suffix derived from the batch heading). Each file:
 
 ```markdown
-## <Session> — YYYY-MM-DD — One-line summary
+# <Session> — YYYY-MM-DD — One-line summary
 
-**What shipped.** Short plain-English paragraph describing concrete deliverables. Reference TEST-LOG row range rather than restating test outcomes.
+**What shipped.** Short plain-English paragraph describing concrete deliverables. Reference TEST-LOG row range rather than restating test outcomes. Reference research files by path rather than embedding their content.
 
 **Decisions taken and why.** Two or three bullets on load-bearing decisions — what was chosen, alternatives considered, what tipped the call. Skip housekeeping; focus on choices shaping future sessions.
 
@@ -131,11 +135,13 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Session identifier.** Matches `TEST-LOG.md`'s `Session` column convention — project-internal tag (e.g. `V27`) if the project keeps tags, `YYYY-MM-DD` otherwise. The after-build subagent uses the same *Session identification* logic for both.
 
-**Ordering.** Newest-first. A reader looking for recent context opens the file and reads from the top.
+**Ordering.** INDEX.md is newest-first. A reader scanning the full history opens INDEX.md; a reader looking for the most recent build's context opens the first referenced file.
 
-**Maintenance.** After-build writes one entry per completed batch. The planning subagent reads for session identification (test-confirmation gate hook fallback). Entries are permanent — not pruned, not edited after the fact. If a later build invalidates a decision recorded in an earlier entry, the later entry says so in its own *Pivots and surprises*; the earlier entry stays as-is.
+**Maintenance.** After-build writes one per-build file and appends one index line per completed batch. The planning subagent reads the index for session identification (test-confirmation gate hook fallback). Entries are permanent — not pruned, not edited after the fact. If a later build invalidates a decision recorded in an earlier entry, the later entry says so in its own *Pivots and surprises*; the earlier entry stays as-is.
 
-**Template.** `templates/BUILD-LOG-TEMPLATE.md` (mirrored at `plugin/templates/BUILD-LOG-TEMPLATE.md`) is empty by default — header and an HTML comment with the canonical entry format. Same convention as `MANIFEST-TEMPLATE.md` and `TEST-LOG-TEMPLATE.md`.
+**Research cross-references.** Build entries reference research files by path (e.g. `` `research/drag-library-comparison.md` ``) rather than embedding their content. Research lives in `research/`; build entries link to it.
+
+**Template.** `plugin/templates/build-log/INDEX-TEMPLATE.md` is the scaffold source — header, HTML comment with canonical formats, footer. Same convention as `MANIFEST-TEMPLATE.md` and `TEST-LOG-TEMPLATE.md`. The `CLAUDE.md` path block entry `"BUILD-LOG.md"` points to `build-log/INDEX.md`.
 
 ## planning/drafts/ folder
 
@@ -143,7 +149,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Purpose.** Destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Complements fold-in sections on source-of-truth docs (destination-specific content queued for fold-in — see *Fold-ins pending sections* below). Drafts hold everything else: comparison tables, structural sketches, protocol rules, column shapes, option matrices — content that has value for a future session but doesn't yet have a clear home.
 
-**Lifecycle.** Written during builds or planning when content is "good enough to walk away from" — the bar is preservation, not polish. Deleted when consumed (folded into a spec, a source-of-truth doc, or a BACKLOG batch) — in the same session as the consumption, so the file and its destination stay in sync. Dead-end drafts are pruned with a one-line note in the next `BUILD-LOG.md` entry.
+**Lifecycle.** Written during builds or planning when content is "good enough to walk away from" — the bar is preservation, not polish. Deleted when consumed (folded into a spec, a source-of-truth doc, or a BACKLOG batch) — in the same session as the consumption, so the file and its destination stay in sync. Dead-end drafts are pruned with a one-line note in the next build-log entry.
 
 **Format.** One file per topic, kebab-case filename (e.g. `settings-panel-layout.md`, `notification-channel-options.md`). No required internal shape — the content is pre-decision, so no template.
 
@@ -289,4 +295,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 49.*
+*No-code method — Version 50.*

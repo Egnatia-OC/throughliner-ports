@@ -10,7 +10,7 @@ This section declares the path for each of the project's docs, relative to the p
 {
   "UX.md": "UX.md",
   "BACKLOG.md": "BACKLOG/INDEX.md",
-  "BUILD-LOG.md": "BUILD-LOG.md",
+  "BUILD-LOG.md": "build-log/INDEX.md",
   "MANIFEST.md": "MANIFEST.md",
   "TEST-LOG.md": "TEST-LOG.md"
 }
@@ -26,4 +26,4 @@ If the project has additional source-of-truth docs (see `DOC-STRUCTURE.md` → *
 
 
 ---
-*No-code method — Version 49.*
+*No-code method — Version 50.*

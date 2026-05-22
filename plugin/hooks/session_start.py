@@ -87,6 +87,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
     FOOTER_PATTERN,
     TEST_LOG_DATA_ROW_PATTERN,
+    BUILD_LOG_ENTRY_HEADING_PATTERN,
+    BUILD_LOG_INDEX_REF_PATTERN,
     has_method_footer,
     extract_footer_version,
     has_substantial_work,
@@ -101,17 +103,20 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 49
+PLUGIN_METHOD_VERSION = 50
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
 # TEST-LOG.md added in V26 (spine-doc promotion) / V27 (detection wiring).
-SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md")
+SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 
 # Folder-mode spine doc paths (relative to project root). Checked in addition
 # to SPINE_FILENAMES for tier 2 detection.
-SPINE_FOLDER_PATHS = (Path("BACKLOG") / "INDEX.md",)
+SPINE_FOLDER_PATHS = (
+    Path("BACKLOG") / "INDEX.md",
+    Path("build-log") / "INDEX.md",
+)
 
 # CLAUDE.md's path block is the first fenced JSON code block in the file.
 # Same pattern as pre_tool_use.py — see V18's path block format spec.
@@ -144,11 +149,11 @@ BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
 # project_state.py (V48 extraction — the 10-column format made local
 # 8-column copies a misparse hazard on new rows).
 
-# BUILD-LOG.md's first `## <token>` heading names the latest session
-# (newest-first). Used to narrow the tripwire's "unconfirmed rows" to the
-# previous build batch's rows. When BUILD-LOG.md is missing or unparseable,
-# the tripwire falls back to "any unconfirmed row" — same strict-fallback
-# semantics as the test-confirmation gate (V26 Q3, V27 Q4).
+# Legacy single-file BUILD-LOG.md heading pattern: `## <token>` names the
+# latest session (newest-first). Used as fallback when there is no
+# build-log/ folder. When neither folder nor file is found, the tripwire
+# falls back to "any unconfirmed row" — same strict-fallback semantics as
+# the test-confirmation gate (V26 Q3, V27 Q4).
 BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 
 # V29 adoption-state constants (BUILD_MANIFEST_NAMES, SOURCE_DIR_NAMES,
@@ -331,25 +336,44 @@ def is_row_confirmed(row):
 
 
 def identify_previous_session_from_build_log(project_root, resolved):
-    """Try to identify the previous build batch's session from BUILD-LOG.md.
+    """Try to identify the previous build batch's session from the build log.
+
+    Supports folder mode (build-log/INDEX.md → per-build file) and legacy
+    single-file mode (BUILD-LOG.md with ## headings).
 
     Returns (session_id, status) where status is one of 'ok' (heading
-    parsed), 'missing' (BUILD-LOG.md absent), or 'unparseable' (present
-    but no `## <token>` heading matched).
+    parsed), 'missing' (build log absent), or 'unparseable' (present
+    but no session heading matched).
 
     Looks at the path block first (via `resolved`), then falls back to
-    BUILD-LOG.md at the project root."""
+    build-log/INDEX.md or BUILD-LOG.md at the project root."""
     candidate = None
     build_log_data = resolved.get("BUILD-LOG.md")
     if build_log_data:
         candidate, _text = build_log_data
     if candidate is None or not candidate.exists():
+        candidate = project_root / "build-log" / "INDEX.md"
+    if not candidate.exists():
         candidate = project_root / "BUILD-LOG.md"
     if not candidate.exists():
         return None, "missing"
     text = safe_read_text(candidate)
     if text is None:
         return None, "unparseable"
+
+    if candidate.name.upper() == "INDEX.MD":
+        ref_match = BUILD_LOG_INDEX_REF_PATTERN.search(text)
+        if not ref_match:
+            return None, "unparseable"
+        entry_file = candidate.parent / ref_match.group(1)
+        entry_text = safe_read_text(entry_file)
+        if entry_text is None:
+            return None, "unparseable"
+        heading_match = BUILD_LOG_ENTRY_HEADING_PATTERN.search(entry_text)
+        if not heading_match:
+            return None, "unparseable"
+        return heading_match.group(1).strip(), "ok"
+
     match = BUILD_LOG_SESSION_HEADING_PATTERN.search(text)
     if not match:
         return None, "unparseable"
@@ -412,17 +436,17 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
     if build_log_status == "ok":
         mode_note = (
             f"Identified previous build batch's session as `{session_id}` "
-            "from BUILD-LOG.md. Rows below are unconfirmed from that "
+            "from the build log. Rows below are unconfirmed from that "
             "session."
         )
     elif build_log_status == "missing":
         mode_note = (
-            "BUILD-LOG.md not found — strict fallback: every row with "
+            "Build log not found — strict fallback: every row with "
             "`Confirmed Explicitly: No` is treated as pending."
         )
     else:  # unparseable
         mode_note = (
-            "BUILD-LOG.md present but unparseable — strict fallback: every "
+            "Build log present but unparseable — strict fallback: every "
             "row with `Confirmed Explicitly: No` is treated as pending."
         )
 

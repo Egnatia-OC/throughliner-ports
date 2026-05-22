@@ -5,7 +5,7 @@ project_state.py — shared helpers for reading project state from disk.
 Used by the no-code-method plugin's hooks (pre_tool_use.py, stop.py — and
 potentially future hooks, subagents, or skills) to read the project's
 state files in a consistent way: CLAUDE.md's path block, BACKLOG.md (via
-the parse_backlog.py subprocess), TEST-LOG.md, and BUILD-LOG.md.
+the parse_backlog.py subprocess), TEST-LOG.md, and build-log/.
 
 Centralised here so the V27 test-confirmation gate logic in pre_tool_use.py
 and the V28 TEST-LOG-aware Stop hook in stop.py share one definition of
@@ -23,15 +23,15 @@ Mechanisms referenced:
   - TEST-LOG.md row shape: DOC-STRUCTURE.md → *TEST-LOG.md structure*
     (10-column data row as of V48; backwards-compatible with 8-column
     pre-V48 rows).
-  - BUILD-LOG.md session-heading convention: DOC-STRUCTURE.md →
-    *BUILD-LOG.md structure* (newest-first, `## <session-tag>` heading
-    at the top of the file).
+  - Build log session-heading convention: DOC-STRUCTURE.md →
+    *Build log structure* (folder mode: per-build file with `# <session-tag>`
+    heading; legacy single-file: `## <session-tag>` heading).
 
 History:
   - V19 introduced extract_path_block (in pre_tool_use.py).
   - V25 added run_parser as a third caller of parse_backlog.py, with a
     duplicate copy in stop.py — comments noted the extraction was due.
-  - V27 added the TEST-LOG / BUILD-LOG helpers (in pre_tool_use.py).
+  - V27 added the TEST-LOG / build-log helpers (in pre_tool_use.py).
   - V28 extracted everything to this module so stop.py could become
     TEST-LOG-aware without a third copy.
   - V29 added the adoption-state primitives (FOOTER_PATTERN,
@@ -78,12 +78,17 @@ TEST_LOG_DATA_ROW_PATTERN = re.compile(
     re.MULTILINE,
 )
 
-# BUILD-LOG.md's first `## <token>` heading names the latest (newest-first)
-# session. The capture is intentionally permissive — the dev-side
-# convention is `## V27 — YYYY-MM-DD — summary`, but a consumer project
-# may use any session-tag shape. We just need a string that matches the
+# BUILD-LOG session heading patterns. Two formats:
+#   Single-file (legacy): `## <token> — YYYY-MM-DD — summary`
+#   Per-build file (V50+): `# <token> — YYYY-MM-DD — summary`
+# The capture is intentionally permissive — a consumer project may use
+# any session-tag shape. We just need a string that matches the
 # corresponding Session column in TEST-LOG.md.
 BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
+BUILD_LOG_ENTRY_HEADING_PATTERN = re.compile(r"^#\s+(\S+)", re.MULTILINE)
+
+# build-log/ INDEX.md reference line: `- `NNN-name.md` — ...`
+BUILD_LOG_INDEX_REF_PATTERN = re.compile(r"^-\s+`(\d{3}-.+?\.md)`", re.MULTILINE)
 
 # --- V29 adoption-state primitives ---
 #
@@ -449,27 +454,48 @@ def is_row_confirmed(row):
 
 
 def identify_previous_session(project_root):
-    """Try to identify the previous build batch's session from BUILD-LOG.md.
+    """Try to identify the previous build batch's session from the build log.
+
+    Supports two formats:
+      - Folder mode (V50+): path block points to `build-log/INDEX.md`.
+        Reads the first reference line, opens the referenced per-build
+        file, parses its `# <token>` heading.
+      - Single-file (legacy): path block points to `BUILD-LOG.md`.
+        Parses the first `## <token>` heading directly.
 
     Returns a tuple (session_id, status) where status is one of:
-      - 'ok' — BUILD-LOG.md found and a session heading parsed
-      - 'missing' — BUILD-LOG.md not present in the path block or at
+      - 'ok' — build log found and a session heading parsed
+      - 'missing' — build log not present in the path block or at
         project root
-      - 'unparseable' — BUILD-LOG.md present but no `## <token>` heading
-        could be matched
-
-    BUILD-LOG.md is a per-project dev-internal record; consumer projects
-    may not keep one. The lookup tries the path block first, then the
-    project root as a convention fallback.
+      - 'unparseable' — build log present but no session heading could
+        be matched
     """
     candidate = resolve_path_block_entry(project_root, "BUILD-LOG.md")
     if candidate is None or not candidate.exists():
         candidate = Path(project_root) / "BUILD-LOG.md"
     if not candidate.exists():
-        return None, "missing"
+        build_log_dir = Path(project_root) / "build-log" / "INDEX.md"
+        if build_log_dir.exists():
+            candidate = build_log_dir
+        else:
+            return None, "missing"
     text = safe_read_text(candidate)
     if text is None:
         return None, "unparseable"
+
+    if candidate.name.upper() == "INDEX.MD":
+        ref_match = BUILD_LOG_INDEX_REF_PATTERN.search(text)
+        if not ref_match:
+            return None, "unparseable"
+        entry_file = candidate.parent / ref_match.group(1)
+        entry_text = safe_read_text(entry_file)
+        if entry_text is None:
+            return None, "unparseable"
+        heading_match = BUILD_LOG_ENTRY_HEADING_PATTERN.search(entry_text)
+        if not heading_match:
+            return None, "unparseable"
+        return heading_match.group(1).strip(), "ok"
+
     match = BUILD_LOG_SESSION_HEADING_PATTERN.search(text)
     if not match:
         return None, "unparseable"

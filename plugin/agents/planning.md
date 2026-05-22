@@ -26,7 +26,7 @@ Trust `primary_intent` as your starting flow. Do not re-classify it. *But* — s
 Read these docs in this order, every invocation. The system prompt does not duplicate their contents — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `UX.md`, `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there. In folder mode, also read the per-batch files in `BACKLOG/` to see the current batch queue.
+2. The path block's destinations: `UX.md`, `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md` (may point to `build-log/INDEX.md` in folder mode), `MANIFEST.md`, `TEST-LOG.md`, and any additional source-of-truth docs declared there. In folder mode, also read the per-batch files in `BACKLOG/` to see the current batch queue.
 3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Fold-ins pending sections*, and *TEST-LOG.md structure* — for the BACKLOG section order, the canonical block formats (planning batch, build batch with `Serves` line, `[FOLD-IN PENDING]`), and the TEST-LOG column shape.
 
 The operating procedure for *During planning* is inlined in this file (see *Procedure order* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
@@ -75,7 +75,7 @@ This isn't pedantry. A bulk "yeah all good" recorded against twelve rows silentl
 
 **Skipped requires a reason** (see `${CLAUDE_PLUGIN_ROOT}/docs/VOCABULARY.md` → *Skipped*). If the user says "skipped" without a reason, ask for one before recording. Skipped does not satisfy the test-confirmation gate as a passing outcome; it satisfies it only as "accounted for."
 
-**Identifying which rows belong to the previous batch:** if the project keeps a `BUILD-LOG.md`, the first `## <token>` heading there names the latest session — filter `TEST-LOG.md` to rows whose `Session` column matches that token. Otherwise (no BUILD-LOG, or BUILD-LOG unparseable), apply the same strict fallback the PreToolUse gate uses: every row with `Confirmed Explicitly: No` counts as pending. Either way, the goal is the same — every pending row from the previous batch must reach `Confirmed Explicitly: Yes` before any other planning sub-step runs.
+**Identifying which rows belong to the previous batch:** if the project has a `build-log/` folder (path block's `"BUILD-LOG.md"` points to `build-log/INDEX.md`), read INDEX.md, find the first reference line (newest entry), open the referenced per-build file, parse its H1 heading — the first token is the session identifier. If the project keeps a legacy single-file `BUILD-LOG.md`, parse the first `## <token>` heading instead. Filter `TEST-LOG.md` to rows whose `Session` column matches that token. Otherwise (no build log, or build log unparseable), apply the same strict fallback the PreToolUse gate uses: every row with `Confirmed Explicitly: No` counts as pending. Either way, the goal is the same — every pending row from the previous batch must reach `Confirmed Explicitly: Yes` before any other planning sub-step runs.
 
 **When the read-back is already done:** if every row from the previous batch is already `Confirmed Explicitly: Yes`, or if `TEST-LOG.md` is empty / the project hasn't shipped its first batch yet, the test session is already closed — log a one-line "test session already closed; proceeding to the rest of *During planning*" in chat and move to the dedupe step.
 
@@ -122,7 +122,7 @@ Catches in-file content changes the previous drift checks miss — a manual edit
 **What counts as expected (no confirmation needed).** Files in either of these sets are silently accepted:
 
 - Files listed in the most recent build batch's `Files:` sub-section (the batch covered them, ticked or not).
-- The method's writable surface: `MANIFEST.md`, `BUILD-LOG.md`, `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`. (Locked docs that received a footer-only edit during `/setup` refresh also fall here — see `universal-behaviour.md` → *Editing surfaces* → footer carve-out.)
+- The method's writable surface: `MANIFEST.md`, `build-log/` files, `BUILD-LOG.md` (legacy), `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`. (Locked docs that received a footer-only edit during `/setup` refresh also fall here — see `universal-behaviour.md` → *Editing surfaces* → footer carve-out.)
 
 Every other changed file is a candidate for the confirmation protocol below.
 
@@ -215,4 +215,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 49.*
+*No-code method — Version 50.*

@@ -179,11 +179,11 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - `plugin/templates/UX-TEMPLATE.md`
 - `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file format)
 - `plugin/templates/BACKLOG/INDEX-TEMPLATE.md`
-- `plugin/templates/BUILD-LOG-TEMPLATE.md`
+- `plugin/templates/build-log/INDEX-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
-- Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `adopt.md`)
+- Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `setup.md`)
 - `Crash course.md` (repo root, but plugin-side audience — documents how to install and use the plugin)
 
 ### Docs-only side — SHELVED in v40 (no longer bumped)
