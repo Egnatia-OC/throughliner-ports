@@ -8,7 +8,7 @@ file order) whose `Files:` sub-section contains at least one `- [ ]` bullet.
 Batches that are placeholders (no `Files:` section or empty `Files:` list)
 and batches that are complete (all `- [x]`) are skipped past.
 
-Three call sites consume this parser (V25):
+Four call sites consume this parser (V25, extended V46):
 
   - The Stop hook embeds the JSON payload in its redirect reason to hand
     batch-executor the right batch.
@@ -16,6 +16,8 @@ Three call sites consume this parser (V25):
     invokes a build manually.
   - The PreToolUse hook calls the parser at edit-time to look up the
     current batch's declared file list for the boundary check.
+  - The PostToolUse hook (V46) imports `find_top_unticked_batch` directly
+    (not subprocess) to validate BACKLOG.md format after each edit.
 
 The parser is deliberately lenient: any failure (missing file, unparseable
 section, malformed batch) results in `{}` on stdout and exit 0. Callers

@@ -89,11 +89,11 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **The question.** An audit of sovereign-implementer's method docs against the current Claude Code plugin surface identified six rules currently enforced only by prose (Claude reads and follows them) that could become plugin automation. Should any or all be scheduled?
 
-**Why it matters.** Surfaced 2026-05-21, ideation session. The plugin uses 3 of 18 available hook events (SessionStart, PreToolUse, Stop) and 1 of 5 hook types (command scripts). Six prose directives were identified where automation would reduce reliance on Claude reading and correctly applying rules from docs.
+**Why it matters.** Surfaced 2026-05-21, ideation session. The plugin uses 4 of 18 available hook events (SessionStart, PreToolUse, PostToolUse, Stop) and 1 of 5 hook types (command scripts). Six prose directives were identified where automation would reduce reliance on Claude reading and correctly applying rules from docs.
 
 **The six items.**
 
-1. **BACKLOG.md parse validation after edits.** PostToolUse hook runs `parse_backlog.py` after each BACKLOG.md edit and surfaces parse failures immediately, rather than silently returning `{}` when the Stop hook or `/build` tries to consume the output later. Rule source: implicit structural assumption across all subagents and the Stop hook.
+1. ~~**BACKLOG.md parse validation after edits.**~~ **Shipped V44 (session v48, 2026-05-22).** PostToolUse hook at `plugin/hooks/post_tool_use.py`. Fires after Edit/Write/MultiEdit on BACKLOG.md; imports `find_top_unticked_batch` directly; surfaces `additionalContext` warning when unticked file bullets exist but the parser returns `{}`.
 2. **`Serves <DOC>:` validation for additional source-of-truth docs.** PreToolUse extension. Currently validates `Serves UX.md:` lines only. Consumer projects declaring additional docs in their CLAUDE.md path block get no validation on `Serves <DOC>:` lines. Rule source: DOC-STRUCTURE.md.
 3. **Red flags non-empty warning at SessionStart.** SessionStart already reads BACKLOG.md — add a check for non-empty Red flags section and surface prominently. Rule source: DOC-STRUCTURE.md + universal-behaviour.md.
 4. **Fold-in aging reminder.** Planning subagent scans `[FOLD-IN PENDING]` blocks for age (using existing `Surfaced [date]` field) and flags any older than 1–2 planning sessions. Rule source: DOC-STRUCTURE.md.
@@ -104,7 +104,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
 
-**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 (BACKLOG parse validation) → V46 (repurposed slot). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → V54. Items 5, 6 (compaction context, opener routing) → V55. Scope files at `planning/sessions/V46.md`, `V54.md`, `V55.md`.
+**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → V54. Items 5, 6 (compaction context, opener routing) → V55. Scope files at `planning/sessions/V54.md`, `V55.md`.
 
 ---
 

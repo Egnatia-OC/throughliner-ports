@@ -6,6 +6,29 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v48 — 2026-05-22 — BACKLOG.md PostToolUse parse validation hook
+
+**What shipped.** V46 scope. New PostToolUse hook (`plugin/hooks/post_tool_use.py`) — the plugin's first use of the PostToolUse hook event. Fires after every Edit/Write/MultiEdit via hooks.json matcher; filters for BACKLOG.md edits by resolving the target path through CLAUDE.md's path block. When the edit targeted BACKLOG.md, imports `find_top_unticked_batch` directly from `parse_backlog.py` (no subprocess overhead) and validates the file's structural format. Detection heuristic: if the file contains unticked file bullets with non-placeholder paths but the parser returns `{}`, the format is broken — surfaces an immediate `additionalContext` warning naming common causes. Template-placeholder paths excluded via `TEMPLATE_PLACEHOLDER_PATTERN` to avoid false positives on freshly-scaffolded projects. Full-file search rather than section-bounded, so corrupted `## Build batches` headings are themselves caught.
+
+Files touched: `plugin/hooks/post_tool_use.py` (new), `plugin/hooks/hooks.json`, `plugin/scripts/parse_backlog.py` (docstring), `planning/INVENTORY.md`, `Crash course.md`. Plus footer bumps on all plugin-side files. Method version V43 → V44; plugin 0.43.0 → 0.44.0.
+
+**Decisions taken and why.**
+
+- **Direct import of `find_top_unticked_batch` rather than subprocess.** The PostToolUse hook fires on every writing-tool call (pre-filtered by matcher to Edit/Write/MultiEdit). Subprocess overhead on every edit would be noticeable. Direct import into the same Python process is faster and the parser is already designed as a pure function on text input.
+- **Full-file search for unticked bullets rather than section-bounded.** First implementation used `## Build batches` section boundaries (matching the parser's own detection), but testing revealed a blind spot: when a corrupted heading (`## Batch:` instead of `### Batch:`) truncates the section, the pre-check can't find the bullets any more than the parser can. Full-file search catches this.
+- **Non-blocking warning via `additionalContext`, not a deny.** PostToolUse hooks can't deny (the tool already ran). The warning tells Claude what went wrong and what to fix. Claude reads it as part of the next context injection.
+
+**Pivots and surprises.**
+
+- V46 scope file named `plugin/hooks/stop_hook.py` as an input reference, but the actual file is `plugin/hooks/stop.py`. Minor discrepancy in the scope file, not a functional issue.
+
+**Carried forward.**
+
+- OPEN-QUESTIONS "Six prose directives" item 1 resolved. Items 2–6 remain on their scheduled scope files (V54, V55).
+- Smoke test via `--plugin-dir`: edit BACKLOG.md with a malformed batch header in a test project and verify the warning fires in a live Claude Code session. Deferred to a future E2E testing session.
+
+---
+
 ## v47 — 2026-05-22 — Distributed fold-ins + BACKLOG open-questions + batch Inputs line
 
 **What shipped.** V45 scope. Three structural changes to the method's document architecture: (1) **Distributed fold-ins** — `[FOLD-IN PENDING]` blocks moved from a centralized section in BACKLOG.md to a `## Fold-ins pending` section at the bottom of each destination source-of-truth doc (UX.md, MANIFEST.md, additional SOT docs). PreToolUse hook gained `is_fold_in_section_edit()` — a new carve-out allowing edits within the fold-in section while keeping the rest of locked docs protected (same pattern as V38's footer-stamp carve-out). Templates (UX, MANIFEST, ADDITIONAL-DOC) each gained the new section. (2) **Open questions section in BACKLOG.md** — new fourth section (Red flags → Planning batches → Build batches → Open questions) for non-blocking parking-lot items. Planning subagent scans all entries with one-line summaries every session. Distinct from planning batches (blocking) — coexist, don't merge. (3) **Batch Inputs line** — optional `Inputs:` bullet list in build batches listing non-standard resources needed before starting work. Before-build subagent populates during batch lock-in; batch-executor reads before starting work. Standard docs omitted.
