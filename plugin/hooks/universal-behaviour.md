@@ -150,4 +150,4 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 
 *This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*
 
-*No-code method — Version 52.*
+*No-code method — Version 53.*

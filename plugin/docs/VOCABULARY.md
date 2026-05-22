@@ -67,6 +67,8 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Opener classification.** The UserPromptSubmit hook's keyword-based detection of the user's first prompt type at session start: setup request, test notes, or resume. Injected as `additionalContext` with a routing hint. Conservative — better to give no hint than a wrong one; ambiguous prompts produce no classification. A hint, not a gate: Claude makes the final routing decision using the routing table in `universal-behaviour.md`. The hook no-ops on subsequent prompts (detected by searching the transcript for its own marker string).
 
+- **Row pruning (TEST-LOG).** Automatic deletion of TEST-LOG rows whose Component no longer matches any MANIFEST.md entry name, plus any rows with Status `Superseded`. Runs at each planning session before drift checks (planning subagent step 2c). Cross-component rows (plain-English descriptions of flows, not targeting a single MANIFEST entry) are exempt. Git history preserves deleted rows for audit. Full rules: `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*.
+
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 
 - **Build log entry.** Persistent per-build narrative in `build-log/NNN-name.md`, written by the after-build subagent. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. One file per build; `build-log/INDEX.md` carries the newest-first reference list. The chat recap (see *Build recap* below) is the ephemeral counterpart. Full rules: `DOC-STRUCTURE.md` → *Build log structure*.
@@ -88,4 +90,4 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep a build log for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 5 (retest after change).
 
 ---
-*No-code method — Version 52.*
+*No-code method — Version 53.*

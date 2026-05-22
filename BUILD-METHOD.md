@@ -254,7 +254,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/
 | `planning/OPEN-QUESTIONS.md` | **Living.** Method-level questions not yet session-ready. Each entry has a *Next step*. | Per entry: when resolved. File: never. |
 | `planning/claude-code-plugin-feasibility-response.md`, `planning/OPUS-FEASIBILITY-PROMPT.md` | **Historical.** Why V17 made specific architectural decisions. | Never. Could move to `planning/archive/` if `planning/` clutters. |
 | `BUILD-LOG.md` | **Historical.** Append-only at top (newest first). | Never. |
-| `TEST-LOG.md` | **Living.** One row per smoke-test check, newest at bottom. Status may flip if a later session breaks something, then back when fixed. | Never. Rows aren't removed when components change substantially; marked Superseded with a new row recording the post-change retest. |
+| `TEST-LOG.md` | **Living.** One row per smoke-test check, newest at top (newest-first). Status may flip if a later session breaks something, then back when fixed. | Rows whose component is removed from MANIFEST.md are deleted by the planning subagent's pruning step (V53). Changed-component rows stay (drift check 5 handles retests). |
 | `BUILD-METHOD.md` (this file) | **Living.** Working manual. Updated in place. | Never. |
 
 ### Drafts in flight

@@ -46,29 +46,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Six prose directives identified for pluginification
-
-**The question.** An audit of sovereign-implementer's method docs against the current Claude Code plugin surface identified six rules currently enforced only by prose (Claude reads and follows them) that could become plugin automation. Should any or all be scheduled?
-
-**Why it matters.** Surfaced 2026-05-21, ideation session. The plugin uses 4 of 18 available hook events (SessionStart, PreToolUse, PostToolUse, Stop) and 1 of 5 hook types (command scripts). Six prose directives were identified where automation would reduce reliance on Claude reading and correctly applying rules from docs.
-
-**The six items.**
-
-1. ~~**BACKLOG.md parse validation after edits.**~~ **Shipped V44 (session v48, 2026-05-22).** PostToolUse hook at `plugin/hooks/post_tool_use.py`. Fires after Edit/Write/MultiEdit on BACKLOG.md; imports `find_top_unticked_batch` directly; surfaces `additionalContext` warning when unticked file bullets exist but the parser returns `{}`.
-2. **`Serves <DOC>:` validation for additional source-of-truth docs.** PreToolUse extension. Currently validates `Serves UX.md:` lines only. Consumer projects declaring additional docs in their CLAUDE.md path block get no validation on `Serves <DOC>:` lines. Rule source: DOC-STRUCTURE.md.
-3. **Red flags non-empty warning at SessionStart.** SessionStart already reads BACKLOG.md — add a check for non-empty Red flags section and surface prominently. Rule source: DOC-STRUCTURE.md + universal-behaviour.md.
-4. **Deferred build-material aging.** Planning subagent detects BACKLOG items whose origin batch number is behind the current front and surfaces them at the top of planning sessions. Rule source: DOC-STRUCTURE.md.
-5. ~~**Context preservation before compaction.**~~ **Shipped V52 (session v57, 2026-05-22).** PreCompact hook at `plugin/hooks/pre_compact.py`. Blocks compaction during active builds; recommends handoff rather than injecting context (PreCompact cannot inject additionalContext — can only block/allow). Session handoff protocol added to `universal-behaviour.md`.
-6. ~~**Opener routing classification.**~~ **Shipped V52 (session v57, 2026-05-22).** UserPromptSubmit hook at `plugin/hooks/user_prompt_submit.py`. Classifies first prompt (test notes / setup / resume) via keyword detection; injects routing hint as additionalContext. Conservative — no hint on ambiguous prompts.
-
-**Relationship to existing build batches.** Checked against V42–V47: no overlap. V45 (distributed fold-ins) is adjacent to item 4 but doesn't address age tracking. None block a scheduled session.
-
-**Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
-
-**Next step.** **All six items shipped.** Item 1 shipped V44 (session v48). Items 2, 3, 4 shipped V51 (session v56, scope 0054). Items 5, 6 shipped V52 (session v57, scope 0055). Entry fully resolved.
-
----
-
 ## Graduate sovereign implementer development onto sovereign implementer
 
 **The question.** Can the no-code method's own development project switch from its bespoke dev environment (Vxx scope files, BUILD-METHOD.md, OPEN-QUESTIONS.md, two-write rule) to using the method's own plugin — dogfooding sovereign implementer to build sovereign implementer?
@@ -89,50 +66,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 **Next step.** **Promoted to 0059** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before 0059. Scope file at `planning/sessions/0059-graduation-dev-onto-method.md`.
 
 ---
-
----
-
-## Bash `cd` inside a session shifts plugin cwd, breaking parent-folder opt-out marker
-
-**The question.** During V39 dev work, a Bash command early in the session (`cd sovereign-implementer/ && git describe --tags --abbrev=0`) shifted Claude Code's session cwd from the parent `No code method/` folder to `sovereign-implementer/`. Subsequent PreToolUse hook invocations received `sovereign-implementer/` as `cwd`, and the V29 adoption gate's `has_opt_out_marker` check (which reads `<cwd>/.no-code-method-skip`) found nothing — the marker that opts out the dev project lives at the parent folder, not inside `sovereign-implementer/`. The gate started blocking every Edit. Workaround: write a second `.no-code-method-skip` at `sovereign-implementer/`. But the deeper question is whether the plugin should be resilient to `cd`-induced cwd drift mid-session.
-
-**Why it matters.** Surfaced V39 mid-session, 2026-05-21. Three flavours of consequence:
-
-1. **Dev-project ergonomics.** The no-code-method's own dev project sits at `No code method/` with the dev subtree at `sovereign-implementer/`. A single Bash `cd` (which Claude will reach for naturally — `git describe`, `git log`, anything subdir-scoped) can deadlock the session against the plugin's own gate. V39 had to recover from this mid-build.
-2. **Consumer projects.** Any consumer who opts out via `.no-code-method-skip` at their project root would experience the same break if Claude `cd`s into a sub-folder. Less common (consumer projects are usually opened at the actual root), but possible — e.g. a monorepo with multiple sub-projects.
-3. **Mental model.** Users (and Claude itself) reasonably expect the session's project to be the folder they opened, not whichever folder Bash last `cd`'d into. The plugin's current behaviour quietly diverges from that.
-
-**Working notes.** Three shapes worth considering.
-
-- **A. Marker-walk-up.** `has_opt_out_marker` walks from cwd upward to the filesystem root, looking for `.no-code-method-skip` at any ancestor. Smallest change; covers both monorepo sub-projects and the dev-project's cd-drift case. Risk: walking too far could pick up an unrelated opt-out marker (e.g. user has one at `~`). Mitigation: bound the walk by some marker (e.g. the first `.git/` ancestor, or the first ancestor with a `CLAUDE.md`).
-- **B. Pin cwd at SessionStart.** SessionStart writes the resolved project root to a session-local cache (the existing transcript/session-id key); subsequent hooks read project_root from there rather than from each call's `cwd`. Eliminates cd drift entirely. Risk: cross-hook coordination via filesystem cache is a new mechanism with its own failure modes.
-- **C. Document the gotcha, fix nothing.** Add to `BUILD-METHOD.md` and Crash course: "don't `cd` mid-session; if you must, place opt-out markers at every potential cwd." Cheapest. Pushes the burden onto users and Claude — drift will recur.
-
-Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-bearing ancestor)**. Cheap, covers both real cases (dev project + monorepo), and the bound keeps it from over-reaching into the user's home directory.
-
-**Next step.** **Resolved — V44 removed the `.no-code-method-skip` marker architecture from the public plugin (session v46, 2026-05-22), making the walk-up fix moot.** Original V46 scope closed. The legacy `_LEGACY_SKIP_MARKER` in the dev project's `project_state.py` doesn't need a walk-up — it's a niche escape hatch for `--plugin-dir` users only. V46 slot repurposed for BACKLOG parse validation.
-
----
-
-## ~~Automated testing / CI for the method's dev project~~ — RESOLVED v55
-
-Resolved by v55 (scope 0053). The hook-script direct-invocation suite shipped as `tests/` at repo root: pytest-based, 124 tests, fixture-driven, covering all hooks and shared helpers. See `BUILD-METHOD.md` → *Automated test suite (V53 — pytest)* for docs. Automated CI pipeline remains deliberately absent — the suite runs locally before commits.
-
----
-
-## TEST-LOG row pruning
-
-**The question.** Should `TEST-LOG.md` gain an actual pruning mechanism (deletion-based) to bound the file's growth? Current rule (`DOC-STRUCTURE.md` → *TEST-LOG.md structure → Pruning rule*): rows are never deleted, only flipped to `Superseded` when a component is substantially changed or removed. The file grows monotonically over a project's life.
-
-**Why it matters.** Surfaced V30 Crash course review, 2026-05-20. Drift check 5 (retest after change — `plugin/agents/planning.md` → *Drift checks — always run*) walks every Pass-confirmed row to judge whether its component has been touched. As a project ages, this scales linearly with batches shipped. Real context cost. Counter-argument: audit trail value — "passed at the time" is worth keeping; deletion risks losing the trail.
-
-**Working notes.** Three approaches worth weighing.
-
-- Time-based: drop Superseded rows older than N versions.
-- Component-based: drop rows whose component no longer exists in `MANIFEST.md`.
-- Manual: an explicit per-planning-session option to archive rows to an external file (preserving audit, removing from context).
-
-**Next step.** **Promoted to 0056** (session v47, 2026-05-22). Scope file at `planning/sessions/0056-test-log-row-pruning.md`.
 
 ---
 

@@ -109,10 +109,10 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 **Ordering.** Newest-first. New rows append at the top of the table body, directly below the header separator (`|---|...|`), pushing earlier rows downward. Within a single batch's append (one after-build run), rows go in recap order — lowest `#` at the top of that batch's block — so the user reads them top-to-bottom in the order they tested. A reader looking for the most recent batch's outcomes opens the file and reads from the top. *Existing rows in projects whose `TEST-LOG.md` predates this rule stay where they are — newest-first applies to new appends only.*
 
-**Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days.
+**Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days. Two mechanisms handle the two cases differently.
 
-- **Substantial change → status flips by appending a new row.** Drift check 5 (`planning.md` → *Drift checks — always run*, fifth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
-- **Component removed → row marked Superseded** in Status, with Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
+- **Substantial change → status flips by appending a new row.** Drift check 5 (`planning.md` → *Drift checks — always run*, fifth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, Notes naming the change. The original row stays — the component still exists in MANIFEST.md, so the row's history has value until the next retest.
+- **Component removed → rows deleted by the planning subagent.** At each planning session, the planning subagent's pruning step (step 2c in `planning.md`) cross-references TEST-LOG rows against MANIFEST.md. Rows whose Component matches no current MANIFEST entry — and are not cross-component descriptive phrases — are deleted. Rows with Status `Superseded` (a legacy status from pre-V53 pruning rules) are also deleted. The subagent surfaces what was pruned in chat. Git history preserves the deleted rows for audit purposes. Cross-component rows (plain-English descriptions of flows spanning multiple components) are exempt from automatic pruning.
 
 **Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an HTML comment with the canonical entry format and Status / Confirmed Explicitly / Type / Verifier vocabularies, then the empty table. The comment stays at the top as a permanent format reminder; rows append below it at the top of the table body, per *Ordering* above. No placeholder row — same convention as `MANIFEST.md`.
 
@@ -306,4 +306,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 52.*
+*No-code method — Version 53.*

@@ -38,6 +38,7 @@ After loading project state, perform these steps in order. Each maps to a sub-se
 1. **[BRIEF, SEQUENCE] Close the previous build's test session.** Per-row read-back of any pending TEST-LOG rows. (See *Close the previous build's test session* below.)
 2. **[SILENT] Remove completed build batches from BACKLOG.** Any Build batch shipped since the last planning session — recognise by every `Files:` entry being `- [x]` ticked. Strip the batch entirely; don't leave a stub. In folder mode: delete the per-batch file and remove its reference line from INDEX.md.
 2b. **[BRIEF] Flag aging build batches (folder mode only).** Detect build batches that predate the most recently completed batch — items that have been deferred while newer work shipped ahead of them. In single-file mode, skip silently. (See *Deferred build-material aging* below.)
+2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, and any rows with Status `Superseded`. (See *TEST-LOG row pruning* below.)
 3. **[BRIEF, SEQUENCE] Run the five drift checks.** Direct-edit detection (git-diff against last build), UX ↔ build, MANIFEST ↔ codebase, MANIFEST ↔ UX (loose), TEST-LOG ↔ what's been touched since each row was recorded. The first runs the per-file confirmation protocol — sequence-shaped because each flagged file is walked individually. The remaining four are read-only comparison passes. (See *Drift checks — always run* below.)
 4. **[BRIEF] Scan BACKLOG's Open questions section.** List every entry with a one-line summary, so the user sees the full parking lot in one glance and can promote, drop, or leave entries as-is. If the section is empty or absent, note it in one line and move on. (See `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure → Open questions*.)
 5. **[BRIEF] Sort test notes (if present)** into two piles before discussing: bugs against existing `UX.md` entries (Suggestions candidates) and brand-new feature ideas (Discoveries candidates). Skipped when `primary_intent` isn't `test notes` or `mixed`. (See *The three flows* below.)
@@ -234,10 +235,28 @@ Where MMMM is the most recently completed batch number (the threshold). Read eac
 
 **No aging items.** If no batches are aging (or the project is in single-file mode, or only one batch exists, or no gaps exist in the sequence), skip this step silently — don't surface "no aging found."
 
+## TEST-LOG row pruning
+
+Before drift checks, prune TEST-LOG.md of rows whose tested component no longer exists. This bounds the file's growth and reduces drift check 5's workload.
+
+**Mechanism:**
+
+1. Read MANIFEST.md — collect all entry names (the bold text at the start of each `- **Name**` entry, trimmed).
+2. Walk every TEST-LOG.md row. For each:
+   - If Status is `Superseded` → delete the row (legacy status from pre-V53 pruning rules; the row is already flagged as obsolete).
+   - If the Component column matches a current MANIFEST entry name (case-insensitive) → keep.
+   - If the Component column is a cross-component descriptive phrase (not targeting a single codebase element — e.g. "drag-to-reorder flow", "settings → calendar sync") → keep (exempt from automatic pruning).
+   - If the Component names a specific codebase element that no longer appears in MANIFEST → delete the row.
+3. Surface in chat: "Pruned N rows from TEST-LOG.md — [list of row #s, component names, and brief reason]." If nothing was pruned, skip silently.
+
+**Why not archive.** Deleted rows are recoverable via git history. An archive file would add a maintenance surface for content nobody revisits. Git is the archive.
+
+**What stays.** Rows for components that still exist in MANIFEST stay regardless of age — their validity is phase-based (ends when the component changes or is removed), not time-based. Cross-component rows stay because no single MANIFEST entry governs their relevance.
+
 ## Behavioural rules
 
 The universal-behaviour rules injected by the SessionStart hook apply to you too — push back rather than agree, plain English over jargon, ask rather than guess on ambiguity, engage with pushback rather than collapse. Apply them within the planning flow.
 
 ---
 
-*No-code method — Version 52.*
+*No-code method — Version 53.*
