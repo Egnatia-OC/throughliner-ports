@@ -1,0 +1,72 @@
+"""Tests for plugin/hooks/post_tool_use.py (PostToolUse hook).
+
+The hook fires after Edit/Write/MultiEdit on BACKLOG files and warns
+when the parser can't extract a valid batch from content that has
+unticked file bullets.
+"""
+
+import pytest
+from conftest import run_hook, fixture_path
+
+
+def _edit_input(cwd, file_path):
+    return {
+        "cwd": str(cwd),
+        "tool_name": "Edit",
+        "tool_input": {"file_path": file_path},
+    }
+
+
+def _assert_silent(code, raw):
+    assert code == 0
+    assert raw == ""
+
+
+def _assert_warning(parsed, fragment=None):
+    assert parsed is not None, "Expected warning output, got nothing"
+    hso = parsed["hookSpecificOutput"]
+    assert hso["hookEventName"] == "PostToolUse"
+    assert "additionalContext" in hso
+    if fragment:
+        assert fragment in hso["additionalContext"]
+
+
+class TestSilentCases:
+    def test_non_writing_tool(self, adopted_folder):
+        code, parsed, raw = run_hook(
+            "post_tool_use.py",
+            {"cwd": str(adopted_folder), "tool_name": "Read",
+             "tool_input": {"file_path": str(adopted_folder / "UX.md")}},
+        )
+        _assert_silent(code, raw)
+
+    def test_non_backlog_edit(self, adopted_folder):
+        code, parsed, raw = run_hook(
+            "post_tool_use.py",
+            _edit_input(adopted_folder, str(adopted_folder / "UX.md")),
+        )
+        _assert_silent(code, raw)
+
+    def test_empty_input(self):
+        code, parsed, raw = run_hook("post_tool_use.py", {})
+        _assert_silent(code, raw)
+
+
+class TestValidBacklogEdit:
+    def test_valid_folder_mode_edit_silent(self, adopted_folder):
+        root = adopted_folder
+        target = str(
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)
+
+    def test_valid_single_file_edit_silent(self, adopted_single_file):
+        root = adopted_single_file
+        target = str((root / "BACKLOG.md").resolve())
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)

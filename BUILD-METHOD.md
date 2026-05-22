@@ -150,7 +150,7 @@ Testing here means **smoke-testing in Claude Code** — installing the plugin vi
 
 - **No public marketplace publication.** The plugin is installed locally via `/plugin marketplace add` pointing at the repo on disk. Public distribution is a separate, later step.
 
-- **No automated CI.** Smoke tests are hand-run by Alex post-session on her Windows machine. Deliberate — CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention.
+- **No automated CI pipeline.** The pytest suite (below) runs locally; there is no GitHub Actions or similar CI wiring. Smoke tests are hand-run by Alex post-session on her Windows machine. Deliberate — CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention.
 
 **Where outcomes go.** Each check goes to `sovereign-implementer/TEST-LOG.md` as one row: stable ID, session, component, status (Pass / Fail / Skipped + reason), notes. `BUILD-LOG.md` *What shipped* references the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating outcomes. TEST-LOG is canonical and queryable; BUILD-LOG carries prose narrative.
 
@@ -159,6 +159,27 @@ The separation exists because inline test prose in BUILD-LOG turned out unsearch
 **The V25 consumer-side TEST-LOG is different.** V25 builds a `TEST-LOG.md` mechanism for projects that *use* the method — tracking tests against a consumer's app. This project's TEST-LOG is dev-internal and predates that. Siblings, not the same thing.
 
 **Pitfall.** "Live install + back-test" as a single-session deliverable keeps resurfacing. The plugin is now installable via local marketplace — smoke tests should use that path. Don't conflate a smoke test (does the component work?) with a release test (does the published package install cleanly?).
+
+### Automated test suite (V53 — pytest)
+
+The repo carries a pytest-based test suite at `tests/` that validates hook scripts and shared helpers without a live Claude Code session. Run from `sovereign-implementer/`:
+
+```
+python -m pytest tests/ -v
+```
+
+**What it covers:**
+
+- **Hook subprocess tests** (`test_session_start.py`, `test_pre_tool_use.py`, `test_pre_tool_use_git_guard.py`, `test_post_tool_use.py`, `test_stop.py`) — pipe synthetic JSON into each hook script via subprocess, assert on exit code + stdout JSON shape. Tests every deny path (V29 adoption gate, locked-doc enforcement, serves-line check, batch boundary, V39 read-before-edit, V27 test-confirmation gate, V34 git guard) and every silent/allow path.
+- **Unit tests** (`test_project_state.py`, `test_parse_backlog.py`) — import the shared helpers directly and test individual functions: footer detection, path-block parsing, tier classification, adopt-case detection, TEST-LOG row parsing, BACKLOG parsing (single-file and folder mode), CLI invocation.
+
+**Fixtures** live at `tests/fixtures/` — committed synthetic project directories covering every tier: empty folder (tier 1), tier 2 (two variants: missing CLAUDE.md; unparseable path block), tier 3 (two variants: folder-mode BACKLOG; legacy single-file BACKLOG), unadopted-with-work (foreign CLAUDE.md + build manifest).
+
+**Shared helpers** live in `tests/conftest.py`: `run_hook()` (pipe JSON into a hook subprocess), `run_script()` (run a script from `plugin/scripts/`), `fixture_path()` (resolve a named fixture directory), plus pytest fixtures for each test directory.
+
+**Relationship to smoke tests.** The pytest suite validates input parsing, file reads, deny/allow logic, and stdout shape — everything that can be tested without a running Claude Code session. Smoke tests (live install via local marketplace) remain the authority for "does Claude Code actually fire the hook and honour the output." The two are complementary: the suite catches regressions fast; smoke tests catch wiring issues.
+
+**When to run.** Before committing any change to hook scripts or shared helpers. The suite runs in under 5 seconds.
 
 ---
 

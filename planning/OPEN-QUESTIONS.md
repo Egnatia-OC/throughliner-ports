@@ -114,19 +114,9 @@ Leaning: **A (marker-walk-up, bounded by first `CLAUDE.md`-bearing or `.git/`-be
 
 ---
 
-## Automated testing / CI for the method's dev project
+## ~~Automated testing / CI for the method's dev project~~ — RESOLVED v55
 
-**The question.** `BUILD-METHOD.md` → *Testing — what we actually do* asserts no automated CI: smoke tests are hand-run by Alex post-session, framed as deliberate — "CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention." Should the decision be revisited as the plugin's surface grows, and if so, what shape of automation would earn its place?
-
-**Why it matters.** Surfaced V30 retrospective, 2026-05-20. The "one tag at a time with full attention" framing assumes Alex hand-verifies everything. As the plugin surface grows, hand-verification scales linearly and becomes both more expensive and more error-prone. V25 and V27 each shipped with bugs that smoke tests caught after the fact; a more systematic pre-flight check might have caught some earlier. The trade-off is between manual-only discipline (defensible while the method is small and single-user) and introducing automation (defensible if the surface keeps growing).
-
-**Working notes.** Three shapes worth considering.
-
-- *Keep as-is.* Status quo. Defensible while the method spec is still churning. Cost: hand-verification scales with surface.
-- *Hook-script direct-invocation suite.* Add a `tests/` directory at repo root with scripts that pipe fake hook input into each hook script and assert on stdout. Catches parser / arithmetic bugs pre-smoke-test. Doesn't catch Claude Code integration issues (those still need `--plugin-dir`). Low cost; partial coverage.
-- *Fixture-driven integration suite.* Harness that spins up a fixture project, runs `claude --plugin-dir`, and asserts on resulting BACKLOG.md / TEST-LOG.md state. Highest fidelity; highest cost; brittle against Claude Code version changes.
-
-**Next step.** **Promoted to 0053** (session v47, 2026-05-22). Hook-script direct-invocation suite shape. Scope file at `planning/sessions/0053-automated-testing-ci.md`.
+Resolved by v55 (scope 0053). The hook-script direct-invocation suite shipped as `tests/` at repo root: pytest-based, 124 tests, fixture-driven, covering all hooks and shared helpers. See `BUILD-METHOD.md` → *Automated test suite (V53 — pytest)* for docs. Automated CI pipeline remains deliberately absent — the suite runs locally before commits.
 
 ---
 

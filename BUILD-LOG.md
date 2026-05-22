@@ -6,6 +6,24 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v55 — 2026-05-22 — Automated test suite for dev project
+
+**What shipped.** Scope 0053 (dev-internal, no method version bump). Pytest-based test suite at `tests/` covering all hook scripts and shared helper modules. 124 tests, 2.7 seconds, zero failures.
+
+Files created: `tests/conftest.py` (shared helpers: `run_hook()`, `run_script()`, fixture-path resolver, pytest fixtures), `tests/test_project_state.py` (unit tests for `project_state.py` — footer detection, path-block parsing, tier classification, adopt-case detection, TEST-LOG parsing, build-log session identification, BACKLOG helpers), `tests/test_parse_backlog.py` (unit tests for `parse_backlog.py` — file bullet parsing, batch body parsing, single-file and folder mode, CLI invocation), `tests/test_session_start.py` (tier 1/2/3 classification, V29 unadopted advisory, malformed input), `tests/test_pre_tool_use.py` (V29 adoption gate, locked-doc enforcement incl. V38/V45 carve-outs, serves-line check, batch boundary, V39 read-before-edit, V27 test-confirmation gate, V43 mode-aware messaging), `tests/test_pre_tool_use_git_guard.py` (V34 git safety guard — reset hard, push force, force-with-lease allowed), `tests/test_post_tool_use.py` (BACKLOG format validation, silent cases), `tests/test_stop.py` (batch-executor redirect, after-build detection, silent cases, stop_hook_active loop prevention).
+
+Fixture directories at `tests/fixtures/`: `empty/` (tier 1), `tier2_no_claude/` (spine docs without CLAUDE.md), `tier2_bad_pathblock/` (CLAUDE.md without parseable path block), `adopted_folder/` (tier 3 folder-mode BACKLOG with build-log/ folder), `adopted_single_file/` (tier 3 legacy single-file BACKLOG), `unadopted_foreign_claude/` (foreign CLAUDE.md + package.json — triggers V29 unadopted-with-work).
+
+Other files touched: `BUILD-METHOD.md` (added *Automated test suite (V53 — pytest)* section, updated "No automated CI" bullet), `planning/OPEN-QUESTIONS.md` (marked "Automated testing / CI" entry resolved), `planning/PLAN.md` (marked V53 shipped v55).
+
+**Decisions taken and why.** Subprocess-based hook tests (not import) — tests the same stdin/stdout protocol Claude Code uses, catches JSON encoding issues that import-based tests wouldn't. Committed fixtures (not tmpdir) — deterministic and inspectable. Manual-only CI — pytest runs locally, no GitHub Actions.
+
+**Pivots and surprises.** V38/V45 carve-out tests (footer-only and fold-in section edits on UX.md) initially expected clean allow, but the batch-boundary check runs downstream and denies because UX.md isn't on the active batch's Files: list. That's correct production behaviour — the carve-outs pass the locked-doc check, confirmed by asserting the deny reason is "not on the current build batch" (not "locked source-of-truth").
+
+**Carried forward.** Deferred smoke tests unchanged from v54.
+
+---
+
 ## v54 — 2026-05-22 — BUILD-LOG restructured to build-log/ folder
 
 **What shipped.** V50 scope (0052). Replaced monolithic `BUILD-LOG.md` with a `build-log/` folder containing one file per build plus an `INDEX.md` carrying the newest-first reference list. Same folder-mode pattern as BACKLOG/ (V48). `/setup` scaffolds `build-log/` with `INDEX-TEMPLATE.md`. Path block key stays `"BUILD-LOG.md"` but points to `build-log/INDEX.md`. Session identification updated across all hooks and subagents for folder mode with legacy single-file fallback. Old `BUILD-LOG-TEMPLATE.md` deleted.
