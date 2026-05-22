@@ -30,11 +30,17 @@ Identify the unticked files (`ticked: false`). Those are your work list. Already
 
 ## First action — load the project's current state
 
-1. Read the batch's BACKLOG file (path declared in the project's `CLAUDE.md` path block — in folder mode, read the per-batch file `BACKLOG/<batch_file>`). You need it open because every file you complete requires a tick edit.
-2. Read any resources named in the batch's `Inputs:` line (if present). These are non-standard docs the batch needs before starting work — specs, research files, external references. Standard docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) are omitted from the Inputs line because you read them every session anyway.
-3. Read each unticked file (if it exists) to understand current state.
-4. Read `MANIFEST.md` for context on the named elements you'll touch.
-5. Read the relevant `UX.md` entries named in `serves_ux` — they explain the user concern the batch serves.
+Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
+
+1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
+2. The batch's BACKLOG file (path declared in the project's `CLAUDE.md` path block — in folder mode, read the per-batch file `BACKLOG/<batch_file>`). You need it open because every file you complete requires a tick edit.
+3. Read any resources named in the batch's `Inputs:` line (if present). These are non-standard docs the batch needs before starting work — specs, research files, external references. Standard docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) are omitted from the Inputs line because you read them every session anyway.
+4. Read each unticked file (if it exists) to understand current state.
+5. `MANIFEST.md` — for context on the named elements you'll touch.
+6. The relevant `UX.md` entries named in `serves_ux` — they explain the user concern the batch serves.
+7. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure → Files: sub-section* and *BACKLOG structure → Red flags* — for tick state semantics, prerequisite label format, and Red flag entry format.
+
+The operating procedure for the build loop is inlined in this file (see *Per-file work loop* and *Halt-and-confirm* sections below). You no longer need a separate spec reference list — the doc reads above give you the canonical formats at runtime.
 
 ## Per-file work loop
 
@@ -99,22 +105,10 @@ Carve-out flags you raised during your turn (`[Prerequisite, not in plan]` files
 
 Three kinds of flag you may need to surface (per `universal-behaviour.md` → *Where each kind of flag goes*). Surface them inline as you notice them — your turn ends with the completion note, not a recap, so the flags need to live in your in-turn output where main Claude can relay them. After-build will also see anything written into BACKLOG.md (red flags entries) and produce its own flag summary in the recap.
 
-- **Red flags** — security, privacy, data integrity, or safety concerns noticed during the build. Surface in chat first; if the user defers with no active plan, add a `[RED FLAG]` entry to BACKLOG's *Red flags* section yourself (BACKLOG is writable to you). In folder mode, add the entry to INDEX.md's Red flags section. Canonical format: see DOC-STRUCTURE.md → *BACKLOG structure → Red flags*. After-build will see the entry and surface it in the recap.
+- **Red flags** — security, privacy, data integrity, or safety concerns noticed during the build. Surface in chat first; if the user defers with no active plan, add a `[RED FLAG]` entry to BACKLOG's *Red flags* section yourself (BACKLOG is writable to you). In folder mode, add the entry to INDEX.md's Red flags section. Canonical format: per `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*. After-build will see the entry and surface it in the recap.
 - **Out-of-scope improvements** you noticed but did not act on. Surface in chat during your turn. They become Discoveries in the next planning session. After-build cannot see these (chat-only signal), so the user has to remember them — keep them prominent.
 - **UX.md changes** the build implies — user-facing behaviour that has changed in a way `UX.md` should reflect. Surface in chat, suggesting the change. Do not edit `UX.md` — it's locked.
 
-## Spec references
-
-The rules above derive from:
-
-- `universal-behaviour.md` → *Required behaviours* (no stealth-fix, red-flag surfacing)
-- `universal-behaviour.md` → *Prohibited behaviours → Two exceptions* (prerequisite + re-batching carve-outs)
-- `after-build.md` → *Work loop* (the broader *After every build* responsibilities — MANIFEST update, recap, test-session-open, user prompts — belong to the **after-build** subagent as of V27, not to batch-executor)
-- `universal-behaviour.md` → *Where each kind of flag goes* (flag taxonomy)
-- `universal-behaviour.md` → *Editing surfaces* (which docs are locked to you)
-- `DOC-STRUCTURE.md` → *BACKLOG structure → Files: sub-section* (tick state semantics, prerequisite label format)
-- `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags* (Red flag entry format)
-
 ---
 
-*No-code method — Version 53.*
+*No-code method — Version 54.*
