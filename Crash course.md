@@ -46,7 +46,7 @@ Five markdown files and one folder sit in the project root once `/setup` has sca
 
 `/setup` also creates a `research/` folder at the project root — a home for findings from any research Claude conducts during a session. When Claude investigates an external fact (a library's behaviour, an API's status, a platform capability), it saves findings to `research/<topic>.md` automatically and mentions briefly in chat what it found. Research files are reference material with zero maintenance burden: no MANIFEST tracking, no BACKLOG entries, no proposed-edit mechanism. They persist for future sessions and can be listed in a build batch's `Inputs:` line when a specific batch depends on what the research found.
 
-A project can also declare additional source-of-truth docs — for example, `SYSTEM-PROMPT.md` for a Claude/MCP integration project, or `COPY.md` for a project where the user-facing text is itself the deliverable. These get the same lock-from-Claude treatment as `UX.md`.
+A project can also declare additional source-of-truth docs. These get the same lock-from-Claude treatment as `UX.md`. Common examples: `SYSTEM-PROMPT.md` for a Claude/MCP integration project (describes what Claude receives at connection time); `COPY.md` for a project where user-facing text is the deliverable; `PATTERNS.md` or `CONVENTIONS.md` for coding conventions and architectural patterns Claude should follow consistently across builds; `API.md` for projects exposing an API. The project decides what it needs — these are suggestions, not a required set.
 
 ## The session shape
 

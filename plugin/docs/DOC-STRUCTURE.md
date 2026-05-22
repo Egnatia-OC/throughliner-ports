@@ -8,7 +8,16 @@ Method terms (planning batch, build batch, Serves line, source-of-truth doc, etc
 
 ## Additional source-of-truth docs
 
-Some projects need an extra source-of-truth doc the three spine docs don't cover — e.g. a Claude/MCP project may need `SYSTEM-PROMPT.md`; a copy-driven project may need `COPY.md`. Spine docs remain the spine — additional docs sit alongside. The project decides the doc's purpose, audience, and name.
+Some projects need an extra source-of-truth doc the three spine docs don't cover. Spine docs remain the spine — additional docs sit alongside. The project decides the doc's purpose, audience, and name.
+
+**Common examples:**
+
+- **`SYSTEM-PROMPT.md`** — for Claude/MCP projects. Describes the system prompt Claude receives at connection time. The audience is Claude-as-runtime, not the end user.
+- **`COPY.md`** — for projects where user-facing text is itself the deliverable (marketing sites, onboarding flows, notification copy). Locks the words from mid-build drift.
+- **`PATTERNS.md`** or **`CONVENTIONS.md`** — coding conventions, architectural patterns, test-writing style, file-naming rules. Describes how to build, not what to build. Useful when the project has established patterns Claude should follow consistently across builds.
+- **`API.md`** — for projects exposing an API. Describes endpoints, payloads, and guarantees at intent level — what the integrating developer experiences, not implementation details.
+
+These are suggestions, not a required set. If the project needs a source-of-truth doc not listed here, create one — same rules apply.
 
 Same structural rules as `UX.md` apply:
 
