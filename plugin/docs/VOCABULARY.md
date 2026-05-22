@@ -40,6 +40,15 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Planning session (not plan mode).** The method's "planning session" is a phase where the no-coder and Claude discuss what to build next — confirming test outcomes, running drift checks, sorting ideas, editing BACKLOG.md. This is distinct from Claude Code's "plan mode" (Shift+Tab), which is a permission mode that blocks all file edits. The planning session requires Accept edits mode because the planning subagent writes to BACKLOG.md and source-of-truth doc fold-in sections. Plan mode is useful at two other moments: pre-method ideation (exploring the app idea before running `/setup`) and optionally reviewing the locked batch before `/build`.
 
+- **Test type.** One of four named categories describing the shape of a test — what the tester does and what they observe. The four types:
+  - **Look and click** — open an app or interface, interact, observe behaviour. The only type that existed before V48. Structural/factual checks within this type (element exists, text matches, navigation works) can be verified by Claude via preview tools; judgement/taste/visual-nuance checks (does this feel right, is this the layout I want) stay with the user.
+  - **Run and read** — execute a command, read stdout/stderr or a return value. CLI tools, scripts, data pipelines. Fully automatable by Claude.
+  - **Trigger and observe** — set up conditions, trigger an event, verify the system responded. Plugins, hooks, webhooks, scheduled tasks. Fully automatable by Claude.
+  - **Generate and inspect** — run a process that produces a file or artefact, open it, verify contents. Reports, exports, generated documents. Fully automatable by Claude.
+  The test type is recorded per row in `TEST-LOG.md`'s `Type` column. Slice is by *what's being checked* (structural/factual → Claude; judgement/taste → user), not by type — all four types can have both Claude-verified and user-verified rows.
+
+- **Verifier.** The `Verifier` column in `TEST-LOG.md`, recording who verified (or will verify) each test row: `Claude` or `User`. Claude-verified rows are filled in by the after-build subagent during the automated test pass; user-verified rows are left blank for the user to confirm during the planning read-back. The split is per-row, not per-type — a single batch can have both Claude-verified and user-verified rows across any test type.
+
 - **Halt-and-confirm protocol.** Pattern subagents use when they hit a condition the user must decide on: surface in chat, propose the action (or list options), wait for response before proceeding. Used by before-build (validation failure, vague change list, verification burden triggers a split) and batch-executor (prerequisite and re-batching carve-outs).
 
 - **Build log entry.** Persistent per-build narrative in `BUILD-LOG.md`, written by the after-build subagent. Shape: What shipped / Decisions taken and why / Pivots and surprises / Carried forward. Newest-first. The chat recap (see *Build recap* below) is the ephemeral counterpart.
@@ -50,15 +59,15 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 
 - **Frame-correction sweep.** After-build check: when a build substantively changes how a feature works, scan `BACKLOG.md` planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' fold-in sections for entries that reference the old behaviour. Candidates flagged in chat for review at the next planning session. `UX.md` drift is not part of the sweep — already caught by drift check 2 (UX.md ↔ what's built) during planning.
 
-- **Test session.** The state `TEST-LOG.md` enters after a build ships. *Opened* during *After every build* by writing one row per observable behaviour the recap names, with blank `Status` and `Confirmed Explicitly: No`. *Closed* during the next planning session's first sub-step by per-row read-back: the user names each pending row and gives its outcome (Pass / Fail / Skipped). An unclosed test session blocks the next build batch (test-confirmation gate).
+- **Test session.** The state `TEST-LOG.md` enters after a build ships. *Opened* during *After every build* by writing one row per observable behaviour the recap names. Claude-verified rows (`Verifier: Claude`) have their `Status` filled in by the after-build subagent during the automated test pass and `Confirmed Explicitly` set to `Yes`; user-verified rows (`Verifier: User`) have blank `Status` and `Confirmed Explicitly: No`. *Closed* during the next planning session's first sub-step by per-row read-back of user-verified rows: the user names each pending row and gives its outcome (Pass / Fail / Skipped). An unclosed test session blocks the next build batch (test-confirmation gate).
 
 - **Pass.** A `TEST-LOG.md` row `Status` meaning: the user ran the test and the behaviour matched. Pass with `Confirmed Explicitly: Yes` is the only outcome that closes a row positively.
 
-- **Fail.** Row `Status` meaning: the user ran the test and the behaviour did not match. Requires a `User Notes` line describing what actually happened, so the regression has context in future sessions.
+- **Fail.** Row `Status` meaning: the user ran the test and the behaviour did not match. Requires a `Notes` entry describing what actually happened, so the regression has context in future sessions.
 
-- **Skipped.** Row `Status` meaning: the user did not run the test this round, by explicit choice. Requires a reason in `User Notes` (a Skipped without a reason is a Fail or a blank). Skipped satisfies the test-confirmation gate only as an "accounted for" outcome, not a passing one. The row stays in TEST-LOG and may be retested in a future session (typically promoted via Rule 5's drift check).
+- **Skipped.** Row `Status` meaning: the user did not run the test this round, by explicit choice. Requires a reason in `Notes` (a Skipped without a reason is a Fail or a blank). Skipped satisfies the test-confirmation gate only as an "accounted for" outcome, not a passing one. The row stays in TEST-LOG and may be retested in a future session (typically promoted via Rule 5's drift check).
 
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep `BUILD-LOG.md` for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 5 (retest after change).
 
 ---
-*No-code method — Version 45.*
+*No-code method — Version 46.*

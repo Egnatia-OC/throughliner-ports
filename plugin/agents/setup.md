@@ -217,9 +217,17 @@ On confirmation, edit every footer via `Edit` — including locked docs like `UX
 
 Don't skip any doc silently. If a doc's footer is already current, omit it from the list above.
 
+**After footer bumps — TEST-LOG backwards-compatibility migration (V46).** Check whether `TEST-LOG.md` uses the pre-V46 8-column format (header row contains `User Notes` instead of `Notes`, and lacks `Type` and `Verifier` columns). If it does:
+
+1. Replace the header row with the 10-column header: `| # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |` and update the separator row to match.
+2. For every existing data row, insert `Look and click` in the Type column and `User` in the Verifier column (the V46 defaults for pre-existing rows).
+3. Rename the `User Notes` column header to `Notes` (already handled by step 1's header replacement, but verify no HTML comment or template text in the file still references the old name — update those too).
+
+Surface the migration in the recap: "Migrated TEST-LOG.md from 8-column to 10-column format (Type and Verifier columns added; existing rows default to Look and click / User)." If TEST-LOG.md is already 10-column or empty, skip silently.
+
 **Recap:**
 
-> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed).
+> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed). [If TEST-LOG migration happened: "Migrated TEST-LOG.md from 8-column to 10-column format."]
 
 **On option 2 (cancel):**
 
@@ -245,4 +253,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 45.*
+*No-code method — Version 46.*

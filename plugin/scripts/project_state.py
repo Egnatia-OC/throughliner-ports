@@ -21,7 +21,8 @@ Mechanisms referenced:
   - Path block format: CLAUDE-TEMPLATE.md (a fenced JSON code block in
     CLAUDE.md mapping logical names → relative paths).
   - TEST-LOG.md row shape: DOC-STRUCTURE.md → *TEST-LOG.md structure*
-    (the 8-column data row).
+    (10-column data row as of V48; backwards-compatible with 8-column
+    pre-V48 rows).
   - BUILD-LOG.md session-heading convention: DOC-STRUCTURE.md →
     *BUILD-LOG.md structure* (newest-first, `## <session-tag>` heading
     at the top of the file).
@@ -58,7 +59,9 @@ PARSER_PATH = Path(__file__).parent / "parse_backlog.py"
 # real input.
 PARSER_TIMEOUT_SECONDS = 10
 
-# Match a TEST-LOG.md data row in the 8-column table format.
+# Match a TEST-LOG.md data row in the 10-column table format (V48+).
+# Also matches the legacy 8-column format (pre-V48) — the last two
+# groups (Type, Verifier) will be empty strings for 8-column rows.
 # Header and separator rows don't match because they don't start with
 # a numeric ID.
 TEST_LOG_DATA_ROW_PATTERN = re.compile(
@@ -67,9 +70,11 @@ TEST_LOG_DATA_ROW_PATTERN = re.compile(
     r"\s*([^|]*?)\s*\|"      # Session
     r"\s*([^|]*?)\s*\|"      # Component
     r"\s*([^|]*?)\s*\|"      # Test Description
+    r"(?:\s*([^|]*?)\s*\|"   # Type (V48+, optional group)
+    r"\s*([^|]*?)\s*\|)?"    # Verifier (V48+, optional group)
     r"\s*([^|]*?)\s*\|"      # Status
     r"\s*([^|]*?)\s*\|"      # Confirmed Explicitly
-    r"\s*([^|]*?)\s*\|",     # User Notes
+    r"\s*([^|]*?)\s*\|",     # Notes
     re.MULTILINE,
 )
 
@@ -395,25 +400,34 @@ def run_parser(backlog_path):
 def parse_test_log_rows(text):
     """Parse TEST-LOG.md text into a list of row dicts.
 
-    Each dict has keys: id, date, session, component, description, status,
-    confirmed_explicitly, user_notes. Whitespace inside cells is trimmed.
-    Returns an empty list if the file has no data rows. Malformed rows
-    are silently skipped — the parser is lenient, the caller only acts
-    on rows it can definitively identify.
+    Each dict has keys: id, date, session, component, description, type,
+    verifier, status, confirmed_explicitly, notes. Whitespace inside cells
+    is trimmed. Handles both 10-column (V48+) and legacy 8-column formats.
+    For 8-column rows, type defaults to "Look and click" and verifier to
+    "User". Returns an empty list if the file has no data rows. Malformed
+    rows are silently skipped.
     """
     if not isinstance(text, str):
         return []
     rows = []
     for m in TEST_LOG_DATA_ROW_PATTERN.finditer(text):
+        test_type = (m.group(6) or "").strip() if m.group(6) is not None else "Look and click"
+        verifier = (m.group(7) or "").strip() if m.group(7) is not None else "User"
+        if not test_type:
+            test_type = "Look and click"
+        if not verifier:
+            verifier = "User"
         rows.append({
             "id": m.group(1).strip(),
             "date": m.group(2).strip(),
             "session": m.group(3).strip(),
             "component": m.group(4).strip(),
             "description": m.group(5).strip(),
-            "status": m.group(6).strip(),
-            "confirmed_explicitly": m.group(7).strip(),
-            "user_notes": m.group(8).strip(),
+            "type": test_type,
+            "verifier": verifier,
+            "status": m.group(8).strip(),
+            "confirmed_explicitly": m.group(9).strip(),
+            "notes": m.group(10).strip(),
         })
     return rows
 

@@ -75,13 +75,13 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 2. ~~**No next-action prompt after `/setup`.**~~ **Resolved V44 (session v46, 2026-05-22).** All successful-path recaps in `setup.md` (cases 1, 2, 3) now close with guidance on how to start a planning session.
 3. **Fold-in UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
 4. ~~**Claude Code's permission modes vs. the UX.md lock.**~~ **Resolved by V43 research (session v43, 2026-05-22).** PreToolUse hooks fire in all permission modes, including Auto and bypass — the method's lock is complementary to, not redundant with, Claude Code's permission system. Mode-aware deny messages shipped in V43.
-5. **After-build doesn't prompt commit/tag.** After-build tells the user to "/clear and switch back to planning mode" but never mentions committing or tagging. The method recommends tagging (and drift check 1 depends on it), but the user isn't told.
+5. ~~**After-build doesn't prompt commit/tag.**~~ **Resolved V46 (session v50, 2026-05-22).** After-build closing sequence now prompts commit/tag before the /clear prompt.
 6. **Template carries excessive placeholder content.** BACKLOG-TEMPLATE.md ships with multiple example batches using bracketed placeholders. When `/setup` writes BACKLOG.md, the diff shows a wall of red/green that obscures the real content. Consider stripping examples after real content is written.
 7. ~~**"Pass / Fail / Skipped" not explained.**~~ **Resolved V44 (session v46, 2026-05-22).** Per-row read-back in `planning.md` now includes one-line explanation for each option.
 
 **Relationship to existing entries.** Item 3 is adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
 
-**Next step.** Four of seven items resolved (1, 2, 4, 7). **Remaining items promoted in session v47 (2026-05-22):** item 3 (fold-in UX) bundled into V45; item 5 (after-build commit/tag prompt) bundled into V48; item 6 (template placeholder cleanup) bundled into V49. All seven items now scheduled or resolved.
+**Next step.** Five of seven items resolved (1, 2, 4, 5, 7). **Remaining items promoted in session v47 (2026-05-22):** item 3 (fold-in UX) bundled into V45; item 6 (template placeholder cleanup) bundled into V49. All seven items now scheduled or resolved.
 
 ---
 
@@ -119,7 +119,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 **Prerequisites (all tracked as separate entries).**
 
 1. **Distributed fold-ins + open questions section in BACKLOG** — **Shipped V43 (session v47, 2026-05-22).** Gave the method a parking lot for unresolved questions (open-questions section in BACKLOG.md) and restructured fold-in blocks to live in destination docs' own `## Fold-ins pending` sections. Includes the Inputs line for build batches.
-2. **[[Automated vs. manual test split + non-UI test types]]** — **Promoted to V48 (renumbered V46 → V48 in session v43, 2026-05-22).** The primary blocker. The method's test model must accommodate run-and-read, trigger-and-observe, and generate-and-inspect test types, and support Claude-run automated tests. Without this, the build cycle can't verify plugin work.
+2. ~~**[[Automated vs. manual test split + non-UI test types]]**~~ — **Shipped V46 (session v50, 2026-05-22).** Four named test types (Look and click, Run and read, Trigger and observe, Generate and inspect), Claude/User verifier split, 10-column TEST-LOG, Tests: sub-section in build batches, Claude-automated test pass in after-build.
 3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
 4. **[[UX.md adaptation for non-GUI projects]]** — **Promoted to V47 (renumbered V43 → V47 in session v43, 2026-05-22).** Vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
 
@@ -128,28 +128,6 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 **Next step.** **Promoted to V59** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before V59. Scope file at `planning/sessions/V59.md`.
 
 ---
-
-## Automated vs. manual test split + non-UI test types
-
-**The question.** The method's after-build test model assumes the user manually verifies everything ("refresh, click through, report what you see"). But Claude Code can run many tests itself — anything with an objective pass/fail. Should the build cycle accommodate automated Claude-run tests alongside manual user-run tests, and should the method formally recognise test types beyond UI interaction?
-
-**Why it matters.** Surfaced 2026-05-21, discussion session. Two compounding problems: (1) The after-build prompt and TEST-LOG row format are shaped around UI testing. Non-UI projects (CLI tools, plugins, APIs, document generators) can't use the test model as written. (2) Many tests — especially non-UI ones — have objective pass/fail criteria that Claude Code can verify without user involvement. The current model pushes ALL verification onto the user, including mechanical checks Claude could handle faster and more reliably. This is the single biggest blocker to using the method on its own development (dogfooding), where nearly all tests are "run a hook script, check the output."
-
-**Four test types identified.** The method currently serves only the first.
-
-1. **Look and click (UI interaction).** Open an app or website, interact, observe behaviour. Partially automatable (Claude Code's preview tool can screenshot and check structure), but subjective assessment stays with the user.
-2. **Run and read (command execution).** Execute a command in the terminal, read the output. CLI tools, scripts, data pipelines. Fully automatable by Claude — run the command, check stdout/stderr against expected output.
-3. **Trigger and observe (integration/trigger).** Do something that should cause the system to respond, verify it did. Plugins, hooks, webhooks, automations, scheduled tasks. Fully automatable by Claude — set up conditions, trigger, check response. This is the shape of sovereign implementer's own tests (run a hook with test input, verify the output).
-4. **Generate and inspect (artifact inspection).** Run a process that produces a file, open the file and verify it. Reports, exports, spreadsheets, generated documents. Fully automatable by Claude — run the process, read the output file, check against expectations.
-
-**Design questions to resolve.**
-
-- **Where in the build cycle do automated tests run?** During the build (batch-executor tests as it goes), after the build (after-build runs an automated pass before prompting the user), or both?
-- **TEST-LOG format.** Needs to track who verified each row (Claude vs. user) and what type of test was run. Current row format doesn't accommodate this.
-- **After-build prompt language.** Currently assumes all testing is user-performed. Needs to distinguish: "Claude has already verified X; please manually check Y."
-- **Test specification.** Where does the build batch specify what tests to run and which are automatable? An extension of the Inputs line, or a separate `Tests:` section per batch?
-
-**Next step.** Promoted to V48 (renumbered V46 → V48 in session v43, 2026-05-22). Depends on V47 (non-GUI vocab settled) and V45 (Inputs line; per-batch test spec is the natural peer). After V48 ships, three of four prerequisites for [[Graduate sovereign implementer development onto sovereign implementer]] are done. **Promote sooner** only if dogfooding becomes urgent before V47 ships, since the test-type language would shadow-decide vocabulary that V47 owns.
 
 ---
 

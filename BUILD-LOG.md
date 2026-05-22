@@ -6,6 +6,29 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v50 — 2026-05-22 — Automated vs. manual test split + non-UI test types
+
+**What shipped.** V48 scope — the single biggest method-level change to the build cycle since V27. Introduces four named test types (Look and click, Run and read, Trigger and observe, Generate and inspect), a per-row Claude/User verifier split, 10-column TEST-LOG format (adding Type and Verifier columns, renaming User Notes → Notes), a Tests: sub-section in BACKLOG.md build batches, Claude-automated test execution during after-build, a two-section build recap ("Claude has verified" / "Please manually check"), and a commit/tag prompt in after-build's closing sequence (UX friction item 5). Backwards-compatible: the shared regex in project_state.py handles both 10-column and legacy 8-column rows; `/setup` case 4 backfills defaults for 8-column projects.
+
+Files touched: `plugin/docs/VOCABULARY.md` (test type + verifier definitions, test session updated, Fail/Skipped "User Notes" → "Notes"), `plugin/docs/DOC-STRUCTURE.md` (10-column table spec, Tests: sub-section spec, backwards-compat paragraph, pruning-rule "User Notes" → "Notes"), `plugin/templates/TEST-LOG-TEMPLATE.md` (complete rewrite to 10-column), `plugin/templates/BACKLOG-TEMPLATE.md` (Tests: sub-section added to example batches), `plugin/agents/after-build.md` (step 3 rewritten for 10-column rows + automated test pass, step 4 three-part recap, step 8 commit/tag prompt), `plugin/agents/before-build.md` (step 4 Tests: population, step 5 updated reference), `plugin/agents/planning.md` (Claude-verified skip note, "User Notes" → "Notes"), `plugin/agents/setup.md` (case 4 TEST-LOG 8→10-column migration), `plugin/scripts/project_state.py` (10-column regex with optional Type/Verifier groups, parse_test_log_rows returns 10-field dicts), `plugin/hooks/session_start.py` (removed duplicate 8-column regex + parse_test_log_rows, now imports shared versions from project_state.py), `plugin/hooks/stop.py` (docstring + format_after_build_reason updated for 10-column), `Crash course.md` (10-column description, new "Four test types and the Claude/user split" section, subagent + test-session-read-back updates), `planning/INVENTORY.md` (after-build entry updated), `plugin/hooks/universal-behaviour.md` ("Why the rules" test-session entry updated for Claude-verified rows). Plus footer bumps on all 16 plugin-side files. Method version V45 → V46; plugin 0.45.0 → 0.46.0; PLUGIN_METHOD_VERSION 45 → 46.
+
+**Decisions taken and why.**
+
+- **Tests run after the build (after-build), not during (batch-executor).** Batch-executor's job is to implement; testing during implementation creates mid-build interruptions that can derail the session. After-build already writes TEST-LOG rows and produces the recap — adding the automated test pass there keeps the boundary clean.
+- **Verifier is per-row, not per-type.** A Look-and-click test checking "does the button exist?" is structural (Claude can verify); the same type checking "does the layout feel right?" is judgement (user). Tying verifier to type would force false assignments.
+- **Optional non-capturing group in the regex for backwards compatibility.** The `(?:...|...)?` pattern lets the same regex match both 10-column (V48+) and 8-column (pre-V48) rows without separate patterns or a migration gate.
+- **Extracted session_start.py's local 8-column regex and parse_test_log_rows.** Frame-correction sweep caught a real bug: session_start.py's 8-column regex would misparse 10-column rows (Type and Verifier columns shift all subsequent group indices), making the SessionStart tripwire flag every 10-column row as unconfirmed. Now imports the shared version from project_state.py.
+
+**Pivots and surprises.**
+
+- The session_start.py misparse bug was not in V48's scope — surfaced during the frame-correction sweep. A 10-column TEST-LOG row matched by the old 8-column regex would assign the Verifier column's value ("Claude" or "User") to the `confirmed_explicitly` field, which would never start with "Yes", falsely flagging every row as unconfirmed.
+
+**Carried forward.**
+
+- OPEN-QUESTIONS: "Automated vs. manual test split" entry removed (shipped). "Post-adopt UX friction" item 5 marked resolved (5 of 7 now done). "Graduate sovereign implementer" prerequisite 2 marked shipped (3 of 4 prerequisites done).
+
+---
+
 ## v49 — 2026-05-22 — Non-GUI vocabulary generalisation + planning/plan-mode disambiguation
 
 **What shipped.** V47 scope (both questions bundled). (1) Replaced "user-observable behaviours" with "observable behaviours" across all plugin-side operational docs — VOCABULARY.md (3 definitions), before-build.md (4 instances), after-build.md (1), planning.md (2), stop.py (1 string literal), Crash course.md (1), INVENTORY.md (1). Added a "Non-GUI projects" guidance paragraph to DOC-STRUCTURE.md under UX.md structure, explaining how non-GUI projects (CLI tools, backend services, MCP servers, plugins, scripts) adapt the "user" and "experience" concepts. (2) Added a "Planning session (not plan mode)" vocabulary entry to VOCABULARY.md clarifying the distinction. Added a "Which mode for which phase" subsection to Crash course.md's "Two layers of permission" section — a per-phase permission-mode recommendation table covering planning, before-build, build, after-build, pre-method ideation, and batch review. Researched programmatic permission-mode switching as an alternative — confirmed not possible from plugin hooks.

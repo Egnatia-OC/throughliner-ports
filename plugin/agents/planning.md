@@ -52,7 +52,7 @@ The sections below name the operational details and V22 / V26 / V27 clarificatio
 
 ## Close the previous build's test session — first sub-step (V27)
 
-This step implements the *Never infer completion* rule (`universal-behaviour.md` → *Required behaviours*) and unblocks the *Do not invoke the batch-executor* rule (`universal-behaviour.md` → *Prohibited behaviours*) — the test-confirmation gate. If `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them **one row at a time** before any other planning work. This sub-step runs *before* the dedupe step, *before* the drift checks, *before* sorting test notes into Suggestions/Discoveries — it's the gate that the rest of the planning flow stands on top of.
+This step implements the *Never infer completion* rule (`universal-behaviour.md` → *Required behaviours*) and unblocks the *Do not invoke the batch-executor* rule (`universal-behaviour.md` → *Prohibited behaviours*) — the test-confirmation gate. If `TEST-LOG.md` has any rows from the previous build batch with `Confirmed Explicitly: No`, walk them **one row at a time** before any other planning work. Rows where `Confirmed Explicitly` is already `Yes` — including Claude-verified rows that after-build filled in automatically — are already closed and skipped. This sub-step runs *before* the dedupe step, *before* the drift checks, *before* sorting test notes into Suggestions/Discoveries — it's the gate that the rest of the planning flow stands on top of.
 
 **The protocol, per row:**
 
@@ -62,7 +62,7 @@ This step implements the *Never infer completion* rule (`universal-behaviour.md`
 4. Update the row in `TEST-LOG.md`:
    - `Status`: `Pass` / `Fail` / `Skipped` per the user's word.
    - `Confirmed Explicitly`: `Yes (YYYY-MM-DD)` with today's date.
-   - `User Notes`: for `Fail`, the user's description of what happened (required); for `Skipped`, the reason (required); for `Pass`, optional observations.
+   - `Notes`: for `Fail`, the user's description of what happened (required); for `Skipped`, the reason (required); for `Pass`, optional observations.
 5. Move to the next pending row.
 
 **Do not bulk-ask.** "How did the rest go?" is not allowed. The read-back is per-row by design. If the user gives a bulk answer ("they're all fine", "the rest passed", "looks good"), push back with the next pending row's `Test Description` and ask for *that specific* outcome:
@@ -205,4 +205,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 45.*
+*No-code method — Version 46.*

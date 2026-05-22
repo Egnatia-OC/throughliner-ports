@@ -42,4 +42,4 @@ Proposed entries or updates that Claude has queued for this doc. Each block desc
 For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
 
 ---
-*No-code method — Version 45.*
+*No-code method — Version 46.*

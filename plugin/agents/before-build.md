@@ -18,7 +18,7 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Files: sub-section* — for the canonical shape of what you'll be writing into BACKLOG.md.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, and *Tests: sub-section* — for the canonical shape of what you'll be writing into BACKLOG.md.
 
 The operating procedure for *Before build* — including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement — is inlined in this file (see *Work loop* and *Batch-sizing principle* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
@@ -47,8 +47,14 @@ After the validate pass:
        - [ ] `<path>` — <one-sentence summary of the change in that file>
 
    The `Files:` line is the heading of the sub-section; one tick-list bullet per file follows.
-4. **Estimate verification burden.** List the distinct observable behaviours that will need testing after the build lands. This list is NOT written into BACKLOG.md — it's a chat output, [BRIEF]-tagged.
-5. **Apply the Batch-sizing principle.** If the verification list is long relative to the change scope, propose a split before proceeding (see halt C below). If it sits inside the sub-rules' thresholds, proceed to the recap. Sub-rules below.
+4. **Populate the Tests: sub-section.** For each distinct observable behaviour the batch will need to verify, write one test entry. For each test, decide:
+   - **Type:** which of the four test types fits — `Look and click` (UI interaction), `Run and read` (command execution), `Trigger and observe` (integration/trigger), `Generate and inspect` (artefact inspection).
+   - **Verifier:** `Claude` for structural/factual checks Claude can verify automatically (command output matches, element exists, file contains expected content), `User` for judgement/taste/visual-nuance checks (does this feel right, is this the layout I want, does the interaction feel smooth).
+
+   Write a `Tests:` sub-section into BACKLOG.md after the `Files:` sub-section, before the `Serves` line. Each entry: `- <Test description> [<Type>] [<Verifier>]`. Full spec: `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Tests: sub-section*.
+
+   If the batch has no meaningfully pre-specifiable tests (rare — e.g. a pure refactor with no observable change), omit the `Tests:` sub-section entirely. The after-build subagent will derive tests from the build recap, defaulting to `Look and click` / `User`.
+5. **Apply the Batch-sizing principle.** If the test list (from step 4) is long relative to the change scope, propose a split before proceeding (see halt C below). If it sits inside the sub-rules' thresholds, proceed to the recap. Sub-rules below.
 
 ## Batch-sizing principle
 
@@ -92,7 +98,7 @@ Your recap is what main Claude relays to the user. Shape:
 
 - The top batch's heading and change list, so the user sees what's next.
 - The Files: list with per-file summaries, exactly as written into BACKLOG.md.
-- The verification-burden estimate as a bulleted list of distinct observable tests.
+- The Tests: list with type and verifier per test, exactly as written into BACKLOG.md. Distinguish which tests Claude will run automatically and which the user will need to check.
 - Any reorganisations that happened to BACKLOG.md (do-then-describe — same protocol the planning subagent uses).
 - Any conflicts or concerns flagged per *Before build* step 7.
 - A [PROMPT]: "Switch out of plan mode, then run `/build` (or wait for the Stop hook to auto-continue) to start this batch."
@@ -113,4 +119,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 45.*
+*No-code method — Version 46.*

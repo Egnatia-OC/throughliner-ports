@@ -86,10 +86,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
     FOOTER_PATTERN,
+    TEST_LOG_DATA_ROW_PATTERN,
     has_method_footer,
     extract_footer_version,
     has_substantial_work,
     is_unadopted_with_work,
+    parse_test_log_rows,
 )
 
 # --- Constants ---
@@ -99,7 +101,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 45
+PLUGIN_METHOD_VERSION = 46
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -128,21 +130,9 @@ NEXT_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
 
 # --- V27 TEST-LOG tripwire patterns ---
 
-# Match a data row in TEST-LOG.md's 8-column table. A real data row starts
-# with a numeric ID — the header and separator rows don't match. Mirrored
-# from pre_tool_use.py — see note in that file about future shared-helper
-# extraction once a third caller accumulates.
-TEST_LOG_DATA_ROW_PATTERN = re.compile(
-    r"^\|\s*(\d+)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|"
-    r"\s*([^|]*?)\s*\|",
-    re.MULTILINE,
-)
+# TEST_LOG_DATA_ROW_PATTERN and parse_test_log_rows now imported from
+# project_state.py (V48 extraction — the 10-column format made local
+# 8-column copies a misparse hazard on new rows).
 
 # BUILD-LOG.md's first `## <token>` heading names the latest session
 # (newest-first). Used to narrow the tripwire's "unconfirmed rows" to the
@@ -294,23 +284,7 @@ def detect_top_build_batch(backlog_text: str):
 # --- V27 TEST-LOG tripwire helpers ---
 
 
-def parse_test_log_rows(text):
-    """Parse TEST-LOG.md text into a list of row dicts. Mirrors the same
-    helper in pre_tool_use.py — extraction to a shared module is the
-    natural refactor once a third caller appears."""
-    rows = []
-    for m in TEST_LOG_DATA_ROW_PATTERN.finditer(text):
-        rows.append({
-            "id": m.group(1).strip(),
-            "date": m.group(2).strip(),
-            "session": m.group(3).strip(),
-            "component": m.group(4).strip(),
-            "description": m.group(5).strip(),
-            "status": m.group(6).strip(),
-            "confirmed_explicitly": m.group(7).strip(),
-            "user_notes": m.group(8).strip(),
-        })
-    return rows
+# parse_test_log_rows imported from project_state.py — see import block above.
 
 
 def is_row_confirmed(row):

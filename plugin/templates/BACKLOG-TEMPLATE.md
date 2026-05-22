@@ -49,6 +49,10 @@ Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 
+Tests:
+- [Test description] [Look and click] [User]
+- [Test description] [Run and read] [Claude]
+
 Serves UX.md: [entry name(s)].
 
 ### Batch: [short descriptive name]
@@ -63,10 +67,15 @@ Files:
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 - [ ] `[path/to/file]` — [one-sentence summary of the change]
 
+Tests:
+- [Test description] [Look and click] [User]
+
 Serves UX.md: [entry name(s)].
 [For batches touching an additional source-of-truth doc, add a `Serves <DOC>: ...` line. Two forms: `Serves <DOC>: [entry/section name].` when the batch implements the doc's content (e.g., `Serves SYSTEM-PROMPT.md: tone and presentation section.`); `Serves <DOC>: [delivery mechanism].` when the batch's purpose is to carry the doc to its runtime destination rather than implement any of its content (e.g., `Serves SYSTEM-PROMPT.md: connection-time delivery as Claude's system prompt.`).
 
-`Inputs:` is optional — omit it entirely if the batch only needs the standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) that Claude reads every session. Include it when the batch depends on a specific additional resource: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference.]
+`Inputs:` is optional — omit it entirely if the batch only needs the standard docs (UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md) that Claude reads every session. Include it when the batch depends on a specific additional resource: a research file, an open-questions entry, a draft, an additional source-of-truth doc, or an external reference.
+
+`Tests:` is optional — omit it entirely if the before-build subagent determines no pre-specification is needed. Each entry names a test, its type (`Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`), and who verifies it (`Claude` or `User`). See `DOC-STRUCTURE.md` → *Tests: sub-section* for the full spec.]
 
 ## Open questions
 
@@ -87,4 +96,4 @@ Entry format:
 -->
 
 ---
-*No-code method — Version 45.*
+*No-code method — Version 46.*

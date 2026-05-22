@@ -83,7 +83,7 @@ If the flat list becomes hard to scan, switch to alphabetical sections by area.
 
 Starts empty. Entry-format reminder lives in an HTML comment until the first build.
 
-**Columns.** Eight, in this order:
+**Columns.** Ten, in this order:
 
 | Column | Meaning |
 |---|---|
@@ -92,18 +92,22 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 | **Session** | The build-batch session. Project-internal tag (`v26`, `v27`) **or** YYYY-MM-DD if the project doesn't tag. The mechanism only needs temporal ordering. |
 | **Component** | The named element tested. Matches a `MANIFEST.md` entry where possible; plain English if cross-component (e.g. a user flow spanning components). |
 | **Test Description** | What was checked, in one sentence. Specific enough to re-run from this alone. |
-| **Status** | `Pass`, `Fail`, `Skipped`, or blank. Blank means the test session is **open** for this row — scoped by *After every build* but not yet user-confirmed. |
-| **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Tripwire for Rule 1 ("Never infer completion"). Reaches `Yes` only when the user names this specific row in the planning read-back; bulk confirmations ("all others good") don't count. |
-| **User Notes** | Observations, surprises, reason if Skipped (required by Rule 4), regression context if Fail, anything else worth keeping. Tight prose. |
+| **Type** | One of four test types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Definitions in `VOCABULARY.md` → *Test type*. |
+| **Verifier** | `Claude` or `User`. Records who verified (or will verify) this row. Claude-verified rows are filled in during after-build's automated test pass; user-verified rows are confirmed during the planning read-back. The split is per-row, not per-type. |
+| **Status** | `Pass`, `Fail`, `Skipped`, or blank. Blank means the test session is **open** for this row — scoped by *After every build* but not yet confirmed. For Claude-verified rows, Status is filled in by the after-build subagent. For user-verified rows, Status stays blank until the planning read-back. |
+| **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Tripwire for Rule 1 ("Never infer completion"). For user-verified rows: reaches `Yes` only when the user names this specific row in the planning read-back; bulk confirmations ("all others good") don't count. For Claude-verified rows: set to `Yes` by the after-build subagent when it fills in Status. |
+| **Notes** | Observations, surprises, reason if Skipped (required by Rule 4), regression context if Fail, anything else worth keeping. Tight prose. For Claude-verified rows, the after-build subagent writes its verification evidence here (command output, check result, etc.). |
 
 **Ordering.** Newest-first. New rows append at the top of the table body, directly below the header separator (`|---|...|`), pushing earlier rows downward. Within a single batch's append (one after-build run), rows go in recap order — lowest `#` at the top of that batch's block — so the user reads them top-to-bottom in the order they tested. A reader looking for the most recent batch's outcomes opens the file and reads from the top. *Existing rows in projects whose `TEST-LOG.md` predates this rule stay where they are — newest-first applies to new appends only.*
 
 **Pruning rule (phase-based, not session-based).** A row's validity ends when its component is substantially changed or removed — not after N sessions or M days.
 
-- **Substantial change → status flips by appending a new row.** Drift check 5 (`planning.md` → *Drift checks — always run*, fifth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, User Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
-- **Component removed → row marked Superseded** in Status, with User Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
+- **Substantial change → status flips by appending a new row.** Drift check 5 (`planning.md` → *Drift checks — always run*, fifth check) flags rows whose components have changed since the row's Date. The flip appends a new row (at the top, per *Ordering* above): today's date, status `Skipped`, `Confirmed Explicitly: Yes` once the user confirms, Notes naming the change. The original row stays where it was — "passed at the time" is worth keeping as history.
+- **Component removed → row marked Superseded** in Status, with Notes pointing to the BUILD-LOG entry that removed it. Rare; only when the test description no longer makes sense post-removal.
 
-**Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an HTML comment with the canonical entry format and Status / Confirmed Explicitly vocabularies, then the empty table. The comment stays at the top as a permanent format reminder; rows append below it at the top of the table body, per *Ordering* above. No placeholder row — same convention as `MANIFEST.md`.
+**Template.** `templates/TEST-LOG-TEMPLATE.md` (mirrored at `plugin/templates/TEST-LOG-TEMPLATE.md`) is empty by default — header, an HTML comment with the canonical entry format and Status / Confirmed Explicitly / Type / Verifier vocabularies, then the empty table. The comment stays at the top as a permanent format reminder; rows append below it at the top of the table body, per *Ordering* above. No placeholder row — same convention as `MANIFEST.md`.
+
+**Backwards compatibility.** Projects with existing 8-column TEST-LOG rows (pre-V48) get migrated on `/setup` case 4 (refresh): the `Type` column is backfilled to `Look and click` and the `Verifier` column to `User` for all existing rows. The `User Notes` column header is renamed to `Notes`. This is a one-time mechanical migration.
 
 ## BUILD-LOG.md structure
 
@@ -193,6 +197,17 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
 
 **`Files:` sub-section.** A GitHub-style task list — one `- [ ]` per file, `- [x]` when done — of every file the batch will modify, each shaped `` - [ ] `<path>` — <one-sentence summary of the change in that file> ``. It is the build-time enforcement surface: the PreToolUse hook blocks `Edit`/`Write`/`MultiEdit` on any file not in the current batch's `Files:` list. Prerequisite carve-outs (a file added mid-build per `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → *Prerequisite carve-out*) are appended with a trailing `[Prerequisite, not in plan]` label, recording both presence and provenance.
 
+**`Tests:` sub-section.** An optional list of tests the batch should verify once built, each with a test type and verifier assignment. Sits after the `Files:` sub-section, before the `Serves` line. Written by the before-build subagent during batch lock-in. Each entry:
+
+> `- <Test description> [<Type>] [<Verifier>]`
+
+Where `<Type>` is one of `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`; and `<Verifier>` is `Claude` or `User`. Example:
+
+> `- Run the CLI with --help flag and verify the output lists all commands [Run and read] [Claude]`
+> `- Open the settings screen and verify the toggle appears [Look and click] [User]`
+
+The after-build subagent uses the `Tests:` sub-section as the basis for opening the test session — each entry becomes one TEST-LOG row with the specified type and verifier. If the `Tests:` sub-section is absent (legacy batches, or batches where the before-build subagent determined no pre-specification was needed), the after-build subagent derives tests from the build recap as before, defaulting to `Look and click` type and `User` verifier.
+
 **`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
 
 - **Open questions.** Questions worth tracking that aren't blocking a specific build batch. Each entry has a question title (as a heading), a paragraph framing the question, a *Why it matters* line with brief context, and a *Next step* line describing what would promote it to a planning batch or resolve it. The planning subagent scans this section at the start of every planning session and lists all entries with one-line summaries.
@@ -200,4 +215,4 @@ Build batches must serve an entry in a source-of-truth doc — see `planning.md`
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 45.*
+*No-code method — Version 46.*

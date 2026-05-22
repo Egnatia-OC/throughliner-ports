@@ -1,6 +1,6 @@
 ---
 name: after-build
-description: Use for the no-code method's *After every build* phase — running immediately after batch-executor completes a build batch. Invoke when the Stop hook redirects with the after-build payload after a batch's files are all ticked. The agent updates MANIFEST.md silently, generates a plain-English build recap with `[Requested]`/`[Suggested]` labels, opens the test session by appending blank-Status rows to TEST-LOG.md, then prompts the user to refresh, test, and bring per-row outcomes to the next planning session. Do not invoke for planning, the build itself, before-build, new-project setup, or migration; those routes have their own subagents.
+description: Use for the no-code method's *After every build* phase — running immediately after batch-executor completes a build batch. Invoke when the Stop hook redirects with the after-build payload after a batch's files are all ticked. The agent updates MANIFEST.md silently, opens the test session by appending rows to TEST-LOG.md (10-column format with Type and Verifier columns), runs Claude-automatable tests (filling in results for Claude-verified rows), generates a two-section build recap distinguishing "Claude has verified" from "please manually check", prompts the user to commit/tag and then test, and brings per-row outcomes to the next planning session. Do not invoke for planning, the build itself, before-build, new-project setup, or migration; those routes have their own subagents.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ---
 
@@ -18,9 +18,9 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
 2. The path block's destinations: `BACKLOG.md`, `BUILD-LOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the column shape, the Pass / Fail / Skipped / blank vocabulary, and the Confirmed Explicitly column convention.
+3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure* — for the 10-column shape (including Type and Verifier), the Pass / Fail / Skipped / blank vocabulary, the Confirmed Explicitly column convention, and the backwards-compatibility migration rule.
 4. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-LOG.md structure* — for the canonical entry shape (What shipped / Decisions taken and why / Pivots and surprises / Carried forward).
-5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches* and *Change list — `[Requested]`/`[Suggested]` labels* — for where to read the labels off the batch's change list.
+5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Change list — `[Requested]`/`[Suggested]` labels*, and *Tests: sub-section* — for where to read the labels off the batch's change list and the pre-specified test list with types and verifiers.
 
 The operating procedure for *After every build* — silent MANIFEST update, recap shape, test-session-open, post-build prompts — is inlined in this file (see *Work loop* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
@@ -61,23 +61,43 @@ After the load + identify + idempotency check, perform these steps in order. The
 
 2. **Read the batch's `[Requested]` / `[Suggested]` labels off BACKLOG.md** (per V27 Q3). Each bullet in the batch's change list may carry a `[Requested]` or `[Suggested]` prefix immediately after the leading `- `. The PreToolUse hook (V25 batch boundary check) prevented any prerequisite or out-of-scope file edits during the build; any prerequisite carve-outs you find in the `Files:` list bear a trailing `[Prerequisite, not in plan]` label. There are no `[Re-batch, not in plan]` labels at change-list level — that's a recap-time label only.
 
-3. **Open the test session** by appending rows to `TEST-LOG.md` — one row per distinct observable behaviour your recap will name as needing testing. **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row:
+3. **Open the test session and run Claude-automatable tests.** Two sub-steps.
+
+   **3a. Write all TEST-LOG rows.** Append rows to `TEST-LOG.md` — one row per distinct observable behaviour, drawing from the batch's `Tests:` sub-section in BACKLOG.md if present (each entry becomes one row with the specified type and verifier), or deriving tests from the build recap if no `Tests:` sub-section exists (default to `Look and click` type and `User` verifier). **Position:** new rows go at the top of the table body, directly below the header separator (`|---|...|`), pushing any rows from earlier batches downward — this is the newest-first ordering documented in `DOC-STRUCTURE.md` → *TEST-LOG.md structure → Ordering*. Within this batch's append, write the rows in recap order — lowest `#` at the top of the block — so they read top-to-bottom in the order the user will test them. Each row (10-column format):
    
    - `#` — next available three-digit ID (read the current max from TEST-LOG and increment).
    - `Date` — today's `YYYY-MM-DD`.
    - `Session` — per *Session identification* above.
    - `Component` — match a `MANIFEST.md` entry name where possible; plain English if cross-component.
    - `Test Description` — one sentence, specific enough that someone can re-run the test from it alone.
-   - `Status` — **blank** (this is the "test session open" state).
-   - `Confirmed Explicitly` — `No`.
-   - `User Notes` — blank.
+   - `Type` — one of `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`.
+   - `Verifier` — `Claude` or `User`.
+   - `Status` — **blank** for user-verified rows. For Claude-verified rows, leave blank initially (filled in step 3b).
+   - `Confirmed Explicitly` — `No` for all rows initially.
+   - `Notes` — blank initially.
    
-   These rows define the test session that the next planning session's first sub-step (Rule 2 of *During planning*) will close via per-row read-back. Per the test-confirmation gate (Rule 3, enforced by PreToolUse check (4)), the next build batch cannot start until these rows reach `Confirmed Explicitly: Yes`.
+   **3b. Run Claude-automatable tests.** For each row where `Verifier` is `Claude`, run the test now:
+   
+   - **Run and read:** execute the command described in the Test Description. Compare output against expected behaviour.
+   - **Trigger and observe:** set up the conditions, trigger the event, verify the response.
+   - **Generate and inspect:** run the process, read the output file, check against expectations.
+   - **Look and click (Claude structural checks only):** if available, use preview tools (`preview_inspect`, `preview_console_logs`, `preview_network`, `preview_click`) for structural/factual checks. Do NOT use screenshots or visual judgement — those stay with the user.
+   
+   For each Claude-verified test that passes: edit the row to set `Status` to `Pass`, `Confirmed Explicitly` to `Yes (YYYY-MM-DD)`, and `Notes` to a brief summary of what was checked and the result (e.g. "Ran `python script.py --help`; output lists all 5 expected commands").
+   
+   For each Claude-verified test that fails: edit the row to set `Status` to `Fail`, `Confirmed Explicitly` to `Yes (YYYY-MM-DD)`, and `Notes` to what went wrong. Surface the failure prominently in the recap (step 4).
+   
+   User-verified rows (`Verifier: User`) stay with blank `Status` and `Confirmed Explicitly: No`. These define the test session that the next planning session's first sub-step will close via per-row read-back. Per the test-confirmation gate, the next build batch cannot start until ALL rows (both Claude-verified and user-verified) reach `Confirmed Explicitly: Yes`.
 
-4. **Build recap** — `[BRIEF]` chat output (per *After every build* step 2). Plain English, no jargon. One bullet per change:
+4. **Build recap** — `[BRIEF]` chat output (per *After every build* step 2). Plain English, no jargon. Three parts:
+
+   **Changes shipped.** One bullet per change:
    - Each bullet labelled `[Requested]` or `[Suggested]` from the BACKLOG.md change list.
    - Carve-out additions made during the build (visible in BACKLOG.md as `[Prerequisite, not in plan]` on `Files:` entries, or as a batch split note for `[Re-batch, not in plan]`) get those labels appended in the recap.
-   - The verification list — one bullet per row you wrote to TEST-LOG.md, in the order the user will see them — so the user knows what to test.
+
+   **Claude has verified.** One bullet per Claude-verified TEST-LOG row, with its result (Pass or Fail) and a one-line summary of what was checked. If any Claude-verified test failed, flag it prominently — the user needs to decide whether to proceed or fix before testing their own items.
+
+   **Please manually check.** One bullet per user-verified TEST-LOG row — these are the tests the user needs to run. In the order the user will see them in TEST-LOG.md.
 
 5. **Write `BUILD-LOG.md` entry** — `[SILENT]`. Append a newest-first entry to `BUILD-LOG.md` using the canonical shape from `DOC-STRUCTURE.md` → *BUILD-LOG.md structure*:
 
@@ -112,8 +132,9 @@ After the load + identify + idempotency check, perform these steps in order. The
    - User-facing changes the build implies `UX.md` should reflect (do not edit `UX.md` — it is locked to you; the flag is the only action).
    - Any Red flag concerns surfaced during the build. If the user deferred any, confirm the `BACKLOG.md` Red flags entry was written per the canonical format.
 
-8. **Closing prompts** (per *After every build* steps 6–7):
-   - `[PROMPT]` "Refresh your download of the project and begin testing. Bring per-row test outcomes (Pass / Fail / Skipped) to the next planning session — the planning subagent will walk each TEST-LOG row by row asking for the outcome."
+8. **Closing prompts** (per *After every build* steps 6–8):
+   - `[PROMPT]` "Commit and tag this build before testing. A commit preserves the exact state the tests run against; a tag gives the drift checks a reference point for the next planning session." If the project uses git (`.git/` exists at project root), suggest: `git add -A && git commit -m "<batch heading>"` and `git tag <session tag>`. If the project doesn't use git, skip the suggestion.
+   - `[PROMPT]` "Refresh your download of the project and begin testing. Bring per-row test outcomes (Pass / Fail / Skipped) for the user-verified tests to the next planning session — the planning subagent will walk each pending TEST-LOG row by row asking for the outcome."
    - `[PROMPT]` "`/clear` and switch back to planning mode when testing is complete."
 
 Hand control back to main Claude via the recap. Main Claude relays the recap to the user.
@@ -133,4 +154,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 45.*
+*No-code method — Version 46.*
