@@ -6,6 +6,30 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v57 — 2026-05-22 — New hook events (compaction guard + opener routing)
+
+**What shipped.** Scope 0055. Two new Claude Code hook events the plugin hadn't used before: PreCompact (compaction guard) and UserPromptSubmit (opener classification). (1) PreCompact hook at `plugin/hooks/pre_compact.py` — blocks context compaction when a build batch is in progress (unticked files in BACKLOG), surfaces a user-facing reason (long sessions cost tokens and adherence degrades) plus a paste-ready prompt the user can give Claude to prepare a handoff. Allows silently when no active build. (2) UserPromptSubmit hook at `plugin/hooks/user_prompt_submit.py` — keyword-based classification of the user's first prompt each session (setup, test notes, resume), injected as `additionalContext` routing hint. Conservative: test notes need 2+ keyword hits; ambiguous prompts produce no classification. First-prompt detection via transcript marker search. (3) Session handoff protocol added to `universal-behaviour.md` — 4-step process (tick files, annotate in-progress, record decisions in Handoff notes: block, tell user). (4) Hook-assisted classification paragraph added to routing table in `universal-behaviour.md`. Both hooks registered in `hooks.json`. Doc-code parity: DOC-STRUCTURE (Handoff notes block in batch structure), VOCABULARY (session handoff, handoff notes, opener classification), Crash course (both hooks in "What's inside the plugin"), INVENTORY (both hook entries). OPEN-QUESTIONS "six prose directives" entry fully resolved (all 6 items shipped). Footer bumps V51 → V52; plugin 0.51.0 → 0.52.0; PLUGIN_METHOD_VERSION 51 → 52. Tests: 17 new tests (6 PreCompact + 11 UserPromptSubmit); full suite 147 passed.
+
+**Decisions taken and why.** PreCompact cannot inject `additionalContext` (platform limitation — only `decision` + `reason`), so the design reframed from "preserve context through compaction" to "block compaction and recommend handoff." The user's real motivation is token cost and adherence, not state loss — the block reason reflects that. Handoff notes live in the batch itself (no separate file) because the batch already carries tick state and the next session reads it via SessionStart. UserPromptSubmit uses a self-referential transcript marker for first-prompt detection — same pattern as PreToolUse's V39 block-once, naturally resets on `/clear`.
+
+**Pivots and surprises.** The scope file assumed PreCompact could inject `additionalContext` — research confirmed it cannot. Complete design reframe from context injection to compaction blocking + handoff protocol.
+
+**Carried forward.** Deferred smoke tests unchanged from v56.
+
+---
+
+## v56 — 2026-05-22 — Validation + warnings bundle
+
+**What shipped.** Scope 0054. Four items from the "six prose directives" OPEN-QUESTIONS entry (items 2, 3, 4) plus the `[FOLD-IN PENDING]` → `[PROPOSED EDIT PENDING]` rename. (1) `Serves <DOC>:` validation extended to additional source-of-truth docs — PreToolUse now reads all docs declared in the path block (not just UX.md), matches `Serves <DOC>:` entries against `##` headings (excluding structural sections like Proposed edits pending), and denies with a doc-specific message on mismatch. (2) Red flags non-empty warning at SessionStart — when BACKLOG's Red flags section has entries, they're surfaced prominently in the session-start advisory with a per-flag list and an instruction to acknowledge each one. (3) Deferred build-material aging in planning subagent — folder-mode detection of BACKLOG batches whose allocation number predates completed batches, surfaced at planning step 2b. (4) `[FOLD-IN PENDING]` renamed to `[PROPOSED EDIT PENDING]` and `Fold-ins pending` renamed to `Proposed edits pending` across all live plugin files — subagent bodies, hook scripts, templates, DOC-STRUCTURE, VOCABULARY, Crash course. Footer bumps V50 → V51; plugin 0.50.0 → 0.51.0; PLUGIN_METHOD_VERSION 50 → 51. Tests extended: 8 new tests for Serves-DOC validation + red-flag detection in session_start. Scope file 0060 (Taskflow E2E prep and testing) created.
+
+**Decisions taken and why.** Additional-doc entries matched against `##` headings (not `###`) because additional docs use `##` for their content sections, unlike UX.md which nests entries under `### Functionalities`. Structural sections (`Proposed edits pending`) excluded from the match set by a frozen set in the hook — extensible if more structural section names emerge. The `[FOLD-IN PENDING]` → `[PROPOSED EDIT PENDING]` rename was bundled here because the four items already touched the same files.
+
+**Pivots and surprises.** None.
+
+**Carried forward.** Deferred smoke tests unchanged from v55. OPEN-QUESTIONS "six prose directives" entry: items 2, 3, 4 resolved; items 5, 6 remain (→ 0055).
+
+---
+
 ## v55 — 2026-05-22 — Automated test suite for dev project
 
 **What shipped.** Scope 0053 (dev-internal, no method version bump). Pytest-based test suite at `tests/` covering all hook scripts and shared helper modules. 124 tests, 2.7 seconds, zero failures.

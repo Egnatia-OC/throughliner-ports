@@ -1,5 +1,5 @@
 {
-  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). PreToolUse runs four checks on Edit/Write/MultiEdit (locked-doc read-only, Serves-line resolution, batch file-list boundary, read-before-edit gate) and one check on Task (test-confirmation gate on no-code-method:batch-executor invocations — V27), plus a git safety guard on Bash (blocks git reset --hard and git push --force — V34). PostToolUse validates BACKLOG.md format after every edit by running the parser and warning immediately if the structure is broken (V46). Stop redirects Claude either to the after-build subagent when a batch has just finished, or back into the top unticked build batch in BACKLOG.md (auto-continuation; respects `stop_hook_active` for one-redirect-per-turn).",
+  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact). PreToolUse runs four checks on Edit/Write/MultiEdit (locked-doc read-only, Serves-line resolution, batch file-list boundary, read-before-edit gate) and one check on Task (test-confirmation gate on no-code-method:batch-executor invocations — V27), plus a git safety guard on Bash (blocks git reset --hard and git push --force — V34). PostToolUse validates BACKLOG.md format after every edit by running the parser and warning immediately if the structure is broken (V46). Stop redirects Claude either to the after-build subagent when a batch has just finished, or back into the top unticked build batch in BACKLOG.md (auto-continuation; respects `stop_hook_active` for one-redirect-per-turn). PreCompact blocks compaction when a build batch is in progress and recommends the user ask Claude to prepare a handoff before starting a fresh session (V52). UserPromptSubmit classifies the user's first prompt of a session into a routing category and injects the classification as context (V52).",
   "hooks": {
     "SessionStart": [
       {
@@ -48,6 +48,26 @@
           {
             "type": "command",
             "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/stop.py\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre_compact.py\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/user_prompt_submit.py\""
           }
         ]
       }

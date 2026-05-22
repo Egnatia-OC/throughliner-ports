@@ -86,6 +86,8 @@ Tags compose freely when meanings don't conflict (e.g. `[BRIEF, PROMPT]`). Genui
 
 When you (main Claude, not a subagent) receive an opener at session start, classify and route by type. Routes are exclusive; pick the highest-priority match.
 
+**Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the user's first prompt and injects a routing hint as `additionalContext` when it detects clear signals (test notes, setup request, resume). The hint is a suggestion, not a gate — if it doesn't match the user's intent, use the routing table below and your own judgement. The hook no-ops on subsequent prompts in the same session.
+
 **Detect first (no opener content needed):**
 
 - **Template state.** Spine docs are present at declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in `BACKLOG.md`, `MANIFEST.md` empty). Recommend `/setup` — case 4 detects the template state and offers to walk the user through case 1's four new-project prompts to seed the docs. Wait for the user's okay.
@@ -116,6 +118,19 @@ When you (main Claude, not a subagent) receive an opener at session start, class
 
 Trust each subagent's recap. Relay it to the user. If the user pushes back on something in the recap, relay it back to the subagent rather than answering yourself.
 
+## Session handoff
+
+When the user asks you to prepare a handoff (typically after the PreCompact hook blocks compaction and the user accepts the recommendation), update the current build batch so the next session can pick up cleanly:
+
+1. **Tick all completed files.** Every file whose changes are fully written should be `- [x]`.
+2. **Annotate in-progress files.** If work started on a file but isn't finished, add a brief note to its `Files:` entry describing what's done and what remains — e.g. `` - [ ] `app/src/Settings.kt` — layout done, validation logic remaining ``.
+3. **Record decisions.** Any decisions made during this build that aren't captured elsewhere on disk — approach chosen, alternatives rejected, edge cases discovered — add as a brief `Handoff notes:` block at the bottom of the batch, before the `Serves` line. Keep it tight: the next Claude needs context, not a narrative.
+4. **Tell the user the handoff is ready.** Name what's done, what's remaining, and confirm they can start a new session. The next session's SessionStart hook will read the batch and route to resume.
+
+The `Handoff notes:` block is consumed by the next session — once the batch completes, the after-build subagent strips it (it's build-time context, not a permanent record; the build-log entry captures the narrative).
+
+**Why handoff matters.** Long sessions cost more tokens and Claude's adherence to the method degrades as context grows. A fresh session re-reads the method docs and starts with full adherence. The PreCompact hook blocks compaction during active builds to give the user the option of a clean handoff rather than a lossy compression.
+
 ## Editing surfaces
 
 Some of a consumer project's docs are read-only to Claude and edited only by the user, by hand, during planning sessions. If you think one should be reworded or reorganised, flag in chat at the end of your response. Never edit them.
@@ -135,4 +150,4 @@ For `BACKLOG.md` (highest edit volume), the protective rule is the discussion co
 
 *This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*
 
-*No-code method — Version 51.*
+*No-code method — Version 52.*

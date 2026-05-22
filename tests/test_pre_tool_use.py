@@ -159,7 +159,7 @@ class TestLockedDocEnforcement:
         data = _edit_input(
             root, ux_path,
             old_string="*No-code method — Version 50.*",
-            new_string="*No-code method — Version 51.*",
+            new_string="*No-code method — Version 52.*",
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         if raw:
@@ -175,13 +175,13 @@ class TestLockedDocEnforcement:
         ux_path = str((root / "UX.md").resolve())
         data = _edit_input(
             root, ux_path,
-            old_string="## Proposed edits pending\n\n*No-code method — Version 51.*",
+            old_string="## Proposed edits pending\n\n*No-code method — Version 52.*",
             new_string=(
                 "## Proposed edits pending\n\n"
                 "[PROPOSED EDIT PENDING]\n"
                 "Origin: mid-build edit attempt — 2026-05-22.\n"
                 "Content: New feature.\n\n"
-                "*No-code method — Version 51.*"
+                "*No-code method — Version 52.*"
             ),
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)

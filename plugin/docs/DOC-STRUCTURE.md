@@ -259,6 +259,8 @@ BACKLOG consolidates everything deferred. Two formats, auto-detected by the plug
   Serves UX.md: [entry name(s)].
   ```
 
+  **`Handoff notes:` block.** An optional free-text block added at the bottom of the batch (before the `Serves` line) when a session ends mid-build and the user accepts the PreCompact hook's recommendation to prepare a handoff rather than allow context compaction. Contains decisions made, approach chosen, alternatives rejected, and edge cases discovered — build-time context the next session needs to resume cleanly. Written by Claude during the handoff step; stripped by the after-build subagent when the batch completes (the build-log entry captures the narrative). Not present in new batches; appears only during partially-delivered builds. Full protocol: `universal-behaviour.md` → *Session handoff*.
+
   **Scope-context sections.** Five sections frame the batch's purpose. The first three (Goal, Outputs, Success criteria) are always present; the last two (Decisions to make this batch, Dependencies) are omitted when empty. A sixth conditional section (Red flags) appears only when the planning subagent detects security-shaped scope (see *Red flags sub-section* below).
 
   - **Goal.** One paragraph: why does this batch exist? Written in plain English, naming the user-facing change.
@@ -295,4 +297,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 51.*
+*No-code method — Version 52.*

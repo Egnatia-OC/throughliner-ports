@@ -58,14 +58,14 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 2. **`Serves <DOC>:` validation for additional source-of-truth docs.** PreToolUse extension. Currently validates `Serves UX.md:` lines only. Consumer projects declaring additional docs in their CLAUDE.md path block get no validation on `Serves <DOC>:` lines. Rule source: DOC-STRUCTURE.md.
 3. **Red flags non-empty warning at SessionStart.** SessionStart already reads BACKLOG.md — add a check for non-empty Red flags section and surface prominently. Rule source: DOC-STRUCTURE.md + universal-behaviour.md.
 4. **Deferred build-material aging.** Planning subagent detects BACKLOG items whose origin batch number is behind the current front and surfaces them at the top of planning sessions. Rule source: DOC-STRUCTURE.md.
-5. **Context preservation before compaction.** PreCompact hook injects a structured summary of current build state (which batch, ticked/unticked files, active subagent) so mid-build context survives compaction. Rule source: none — unaddressed risk not named in any doc.
-6. **Opener routing classification.** UserPromptSubmit hook parses the user's first message, classifies it (test notes / feature request / resume / question), and injects the routing decision as structured context. Currently a prose table in universal-behaviour.md that Claude applies from reasoning alone. Rule source: universal-behaviour.md ("Routing main-Claude's openers").
+5. ~~**Context preservation before compaction.**~~ **Shipped V52 (session v57, 2026-05-22).** PreCompact hook at `plugin/hooks/pre_compact.py`. Blocks compaction during active builds; recommends handoff rather than injecting context (PreCompact cannot inject additionalContext — can only block/allow). Session handoff protocol added to `universal-behaviour.md`.
+6. ~~**Opener routing classification.**~~ **Shipped V52 (session v57, 2026-05-22).** UserPromptSubmit hook at `plugin/hooks/user_prompt_submit.py`. Classifies first prompt (test notes / setup / resume) via keyword detection; injects routing hint as additionalContext. Conservative — no hint on ambiguous prompts.
 
 **Relationship to existing build batches.** Checked against V42–V47: no overlap. V45 (distributed fold-ins) is adjacent to item 4 but doesn't address age tracking. None block a scheduled session.
 
 **Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
 
-**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, deferred build-material aging) → 0054. Items 5, 6 (compaction context, opener routing) → 0055. Scope files at `planning/sessions/0054-validation-warnings-bundle.md`, `0055-new-hook-events.md`.
+**Next step.** **All six items shipped.** Item 1 shipped V44 (session v48). Items 2, 3, 4 shipped V51 (session v56, scope 0054). Items 5, 6 shipped V52 (session v57, scope 0055). Entry fully resolved.
 
 ---
 
