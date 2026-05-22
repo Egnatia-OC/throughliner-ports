@@ -55,7 +55,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close, parity,
 
 ---
 
-## Session close: 9 steps
+## Session close: 10 steps
 
 1. **Verify doc-code parity** (audit below). If this session introduced anything the docs don't accurately describe, fix docs first. Footer bumps and BUILD-LOG entry come after, reflecting the now-current state.
 
@@ -67,13 +67,15 @@ Claude's job mid-session: do the work, surface concerns, propose. Close, parity,
 
 5. **Sweep ideas raised but not implemented.** For each: add to a future `Vxx.md`; create a new `Vxx.md` + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
 
-6. **Commit** with a clear `V<N>:` message.
+6. **Pre-commit checkpoint.** Before staging, verify steps 1–5 are all done: doc-code parity edits landed (1), frame-correction sweep ran (2), footers bumped if warranted (3), BUILD-LOG entry written (4), ideas swept (5). A missing BUILD-LOG entry is the most common skip when context runs low — check it explicitly.
 
-7. **Tag** `git tag v<N>`.
+7. **Commit** with a clear `V<N>:` message.
 
-8. **Delete this session's scope file** (e.g. `planning/sessions/0050-adr-style-numbering.md`) as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+8. **Tag** `git tag v<N>`.
 
-9. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
+9. **Delete this session's scope file** (e.g. `planning/sessions/0050-adr-style-numbering.md`) as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+
+10. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
 
 ---
 
@@ -245,7 +247,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/
 
 | File | Lifecycle | When deleted |
 |---|---|---|
-| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Provisional scope for one session. Once shipped, the commit + code + doc edits are source of truth; the scope doc is stale. | When the session ships (step 8). |
+| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Provisional scope for one session. Once shipped, the commit + code + doc edits are source of truth; the scope doc is stale. | When the session ships (step 9). |
 | `planning/drafts/<topic>.md` | **Transient.** Substantive chat content a future session might start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices. Committed when "good enough to walk away from." | When consumed (folded into spec/scope/other persistent location), in the commit of whichever session consumes it. Dead-ends pruned with a one-line note in `BUILD-LOG.md`. |
 | `planning/INVENTORY.md` | **Living.** Current plugin architecture. Updated in place. | Never. |
 | `planning/PLAN.md` | **Living.** Rolling roadmap. | Never. |
@@ -311,7 +313,7 @@ Newest first.
 
 Entries resolve and leave the file via one of four paths. The *Next step* line on each entry names a trigger that, when fired, points the entry toward one of these paths.
 
-1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into session NNNN if X" or "promote to a planning session after NNNN ships." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's scope file; the work happens within the session. Entry removed at session close, alongside the scope file's deletion (*Session close* step 8).
+1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into session NNNN if X" or "promote to a planning session after NNNN ships." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's scope file; the work happens within the session. Entry removed at session close, alongside the scope file's deletion (*Session close* step 9).
 
 2. **Promoted to its own session.** A new row is added to `planning/PLAN.md`, a new scope file is created in `planning/sessions/` (allocated via filesystem scan for the next unused 4-digit number), and the question becomes the basis for a future session. Entry removed from `OPEN-QUESTIONS.md` at promotion (not later, at the session's ship — the entry's role is over once a session exists for it).
 
