@@ -7,6 +7,6 @@
 The user sees a dashboard on login.
 The user needs this because they want a quick overview.
 
-## Fold-ins pending
+## Proposed edits pending
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

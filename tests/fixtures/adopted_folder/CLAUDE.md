@@ -8,8 +8,9 @@
   "BACKLOG.md": "BACKLOG/INDEX.md",
   "MANIFEST.md": "MANIFEST.md",
   "TEST-LOG.md": "TEST-LOG.md",
-  "BUILD-LOG.md": "build-log/INDEX.md"
+  "BUILD-LOG.md": "build-log/INDEX.md",
+  "PATTERNS.md": "PATTERNS.md"
 }
 ```
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

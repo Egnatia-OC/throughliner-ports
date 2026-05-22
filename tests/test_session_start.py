@@ -73,6 +73,23 @@ class TestTier3StateSummary:
         ctx = parsed["hookSpecificOutput"]["additionalContext"]
         assert "Add settings screen" in ctx
 
+    def test_red_flags_surfaced(self, adopted_folder):
+        """V54: Non-empty Red flags section triggers a prominent warning."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Active Red flags" in ctx
+        assert "API tokens stored in plain text" in ctx
+
+    def test_red_flags_empty_no_warning(self, adopted_single_file):
+        """Red flags section that's empty produces no warning."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_single_file)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Active Red flags" not in ctx
+
 
 class TestV29UnadoptedAdvisory:
     """V29 — unadopted folder with work emits advisory."""

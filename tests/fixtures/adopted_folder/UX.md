@@ -18,6 +18,6 @@ The user needs this because they want a quick overview of their day.
 The user can change their preferences.
 The user needs this because different users have different needs.
 
-## Fold-ins pending
+## Proposed edits pending
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

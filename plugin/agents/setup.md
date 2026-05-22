@@ -1,4 +1,4 @@
-﻿---
+---
 name: setup
 description: Use to handle the /setup skill-command's four-case dialogue. The subagent classifies the current project root into one of four cases (empty / existing code no docs / existing code foreign docs / already adopted) and runs the matching flow — scaffolding spine docs, migrating foreign CLAUDE.md content to method spec, refreshing templates, or cancelling cleanly. Resolves the unadopted-folder state that the SessionStart advisory and PreToolUse enforcement gate are protecting. Do not invoke for planning, building, or any other workflow phase — those have their own subagents.
 tools: Read, Edit, Write, Bash, Glob, Grep
@@ -67,7 +67,7 @@ After the four answers:
 
 1. **Run check:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" check`. If `ready: false`, surface the conflicts and stop (this shouldn't happen in a genuinely empty folder — if it does, something changed mid-dialogue).
 2. **Run write:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" write`. Surface the `files` list to the user.
-3. **Fold in the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. In BACKLOG, seed the first build batch — in folder mode: create a per-batch file in `BACKLOG/` (allocate a number via `plugin/scripts/allocate_number.py`) and add its reference line to INDEX.md. The four-question answers go in as `[FOLD-IN PENDING]` blocks in the destination doc's own `## Fold-ins pending` section if you want them pre-confirmed by the user in their next planning session; or fold them in directly if the user reviewed and approved each answer as you went.
+3. **Apply the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. In BACKLOG, seed the first build batch — in folder mode: create a per-batch file in `BACKLOG/` (allocate a number via `plugin/scripts/allocate_number.py`) and add its reference line to INDEX.md. The four-question answers go in as `[PROPOSED EDIT PENDING]` blocks in the destination doc's own `## Proposed edits pending` section if you want them pre-confirmed by the user in their next planning session; or apply them directly if the user reviewed and approved each answer as you went.
 
 **Recap to main Claude:**
 
@@ -95,11 +95,11 @@ Wait for the user's choice.
 1. Use the Glob tool to enumerate the project root and confirm there are no spine doc filenames in subdirectories (the `check` step does this too, but a heads-up first reads better).
 2. Run `check`. Expect `ready: true`. (If conflicts appear, surface them and stop — something is wrong with the case detection.)
 3. Run `write`.
-4. Walk the four new-project questions from case 1 to seed UX.md and BACKLOG. (The user is more likely to skip some questions here because the code is already real — be flexible. Anything not answered goes in as a `[FOLD-IN PENDING]` block in the destination doc's own `## Fold-ins pending` section for the next planning session.)
+4. Walk the four new-project questions from case 1 to seed UX.md and BACKLOG. (The user is more likely to skip some questions here because the code is already real — be flexible. Anything not answered goes in as a `[PROPOSED EDIT PENDING]` block in the destination doc's own `## Proposed edits pending` section for the next planning session.)
 
 **Recap:**
 
-> Adopted (case 2 — existing code, no docs). Created UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/` and `research/` alongside the existing code. [If the user answered some/all of the four new-project questions: name which got folded in and which are pending.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
+> Adopted (case 2 — existing code, no docs). Created UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md, CLAUDE.md at `<target_path>`; created `planning/drafts/` and `research/` alongside the existing code. [If the user answered some/all of the four new-project questions: name which were applied and which are pending.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
 
 **On option 2 (cancel):**
 
@@ -132,11 +132,11 @@ Wait for the user's choice.
 3. Propose edits as a unified plan: "Keep [content X] under *Project-specific notes*; add the path block at [position]; add the method footer at the end. Anything I should preserve I haven't named?" Iterate with the user until they're satisfied.
 4. Apply the edits via `Edit` calls on the existing `CLAUDE.md`. The PreToolUse V29 gate allows CLAUDE.md edits because it's on the scaffold-paths list.
 5. Run `check` and `write` to create the other starter docs (UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md) and the `planning/drafts/` and `research/` directories. If `check` reports any of these already exist, walk them with the user the same way — keep / overwrite / leave per file.
-6. For any content that needs to go into `UX.md` or another read-only doc, use the **preview-then-fold-in convention** (see `universal-behaviour.md` → *Editing surfaces*): show the complete section in chat labeled `[PROPOSED EDIT]`, wait for approval, write a `[FOLD-IN PENDING]` block in the destination doc's own `## Fold-ins pending` section (origin `/setup case 3`) containing the full section text, then prompt the user to fold it in now.
+6. For any content that needs to go into `UX.md` or another read-only doc, use the **preview-then-apply convention** (see `universal-behaviour.md` → *Editing surfaces*): show the complete section in chat labeled `[PROPOSED EDIT]`, wait for approval, write a `[PROPOSED EDIT PENDING]` block in the destination doc's own `## Proposed edits pending` section (origin `/setup case 3`) containing the full section text, then prompt the user to apply it now.
 
 **Recap:**
 
-> Adopted (case 3 — migrated). `CLAUDE.md` brought up to method spec; preserved [name what was preserved]. Other starter docs created: [list]. [If any `[FOLD-IN PENDING]` blocks were created: name them and where they live.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
+> Adopted (case 3 — migrated). `CLAUDE.md` brought up to method spec; preserved [name what was preserved]. Other starter docs created: [list]. [If any `[PROPOSED EDIT PENDING]` blocks were created: name them and where they live.] To start working, tell the user: "You're all set. To kick off your first planning session, just describe what you'd like to build or say 'let's plan the first build.'"
 
 **On option 2 (overwrite):**
 
@@ -250,7 +250,7 @@ Surface the migration in the recap: "Migrated TEST-LOG.md from 8-column to 10-co
 
 **Recap:**
 
-> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no fold-in blocks needed). [If BACKLOG folder-split happened: "Migrated BACKLOG.md → BACKLOG/ folder."] [If TEST-LOG migration happened: "Migrated TEST-LOG.md from 8-column to 10-column format."]
+> Refreshed (case 4). Bumped method-version footers on [list] — including locked docs via the footer-stamp carve-out (no proposed-edit blocks needed). [If BACKLOG folder-split happened: "Migrated BACKLOG.md → BACKLOG/ folder."] [If TEST-LOG migration happened: "Migrated TEST-LOG.md from 8-column to 10-column format."]
 
 **On option 2 (cancel):**
 
@@ -276,4 +276,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

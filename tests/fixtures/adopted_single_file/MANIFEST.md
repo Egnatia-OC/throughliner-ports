@@ -2,4 +2,4 @@
 
 - **DashboardScreen** (`app/src/DashboardScreen.kt`) — Main screen showing today's tasks
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

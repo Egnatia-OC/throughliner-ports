@@ -1,4 +1,4 @@
-﻿---
+---
 name: after-build
 description: Use for the no-code method's *After every build* phase — running immediately after batch-executor completes a build batch. Invoke when the Stop hook redirects with the after-build payload after a batch's files are all ticked. The agent updates MANIFEST.md silently, opens the test session by appending rows to TEST-LOG.md (10-column format with Type and Verifier columns), runs Claude-automatable tests (filling in results for Claude-verified rows), generates a two-section build recap distinguishing "Claude has verified" from "please manually check", prompts the user to commit/tag and then test, and brings per-row outcomes to the next planning session. Do not invoke for planning, the build itself, before-build, new-project setup, or migration; those routes have their own subagents.
 tools: Read, Edit, Write, Glob, Grep, Bash
@@ -133,9 +133,9 @@ After the load + identify + idempotency check, perform these steps in order. The
 
    **Fallback.** If `build-log/INDEX.md` doesn't exist at the path-block location, check for a legacy `BUILD-LOG.md` at the project root. If that exists, append a newest-first `## <Session>` entry to it in the legacy format. If neither exists, create the `build-log/` folder and `INDEX.md` from `plugin/templates/build-log/INDEX-TEMPLATE.md` before writing.
 
-6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan BACKLOG planning batches and `[FOLD-IN PENDING]` blocks across source-of-truth docs' *Fold-ins pending* sections for entries that reference the old behaviour by name, description, or assumption. In folder mode, scan all per-batch files in `BACKLOG/` plus the planning-batches section in `INDEX.md`.
+6. **Frame-correction sweep** — `[BRIEF]` if candidates found, `[SILENT]` if none. If the build substantively changed how a feature works — a rewrite, rename, new interaction pattern, changed data flow, removed or replaced behaviour — scan BACKLOG planning batches and `[PROPOSED EDIT PENDING]` blocks across source-of-truth docs' *Proposed edits pending* sections for entries that reference the old behaviour by name, description, or assumption. In folder mode, scan all per-batch files in `BACKLOG/` plus the planning-batches section in `INDEX.md`.
 
-   For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[FOLD-IN PENDING] block in *<doc>* assumes [old behaviour] — review at next planning session."
+   For each candidate found, flag in chat: "Planning batch *<name>* references [old frame] — review at next planning session." Or: "[PROPOSED EDIT PENDING] block in *<doc>* assumes [old behaviour] — review at next planning session."
 
    If no candidates (the common case — most builds don't rewrite a feature's frame): one sentence max, "No frame-correction candidates in BACKLOG."
 
@@ -168,4 +168,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

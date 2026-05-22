@@ -1,4 +1,4 @@
-﻿# Document structure specifications
+# Document structure specifications
 
 *Mode: planning, migration.*
 
@@ -15,10 +15,10 @@ Same structural rules as `UX.md` apply:
 - **Read-only in Claude Code.** See `universal-behaviour.md` → *Editing surfaces*.
 - **No placeholders, no soft gestures.** Source-of-truth docs describe decided behaviour. Don't write placeholders (`[TO FILL IN]`, `[Open: ...]`) or sentences that gesture at undecidedness ("currently undecided", "pending decision", "to be revisited", "see `BACKLOG.md`"). Open-question status lives in `BACKLOG.md` only. If a default applies while a question is being resolved, state it plainly without flagging it as provisional.
 - **Intent level, not implementation.** Describe what the user (or doc consumer, e.g. Claude for a system-prompt doc) experiences and why — not how it's wired.
-- **Folding planning answers.** Planning batches whose resolutions describe behaviour for the additional doc fold into *it*, not `UX.md`. The planning batch in `BACKLOG.md` should say so at setup so the destination is clear at fold-in time.
+- **Applying planning answers.** Planning batches whose resolutions describe behaviour for the additional doc go into *it*, not `UX.md`. The planning batch in `BACKLOG.md` should say so at setup so the destination is clear when applying the proposed edit.
 - **Build batches in the additional doc's domain** add a `Serves <DOC>: ...` line alongside or instead of `Serves UX.md: ...`, naming the entry the batch implements.
 
-Starter shape: `ADDITIONAL-DOC-TEMPLATE.md` — copy, rename, adapt. Includes a *Fold-ins pending* section at the bottom — see *Fold-ins pending sections* below.
+Starter shape: `ADDITIONAL-DOC-TEMPLATE.md` — copy, rename, adapt. Includes a *Proposed edits pending* section at the bottom — see *Proposed edits pending sections* below.
 
 ## UX.md structure
 
@@ -48,7 +48,7 @@ If a feature's behaviour isn't decided, it doesn't belong here — it belongs in
 
 **Non-GUI projects.** UX.md works for any project, not only apps with a visual interface. For CLI tools, backend services, MCP servers, data pipelines, plugins, and scripts: the "user" is whoever the project's audience is — an operator, an integrating developer, a downstream system. The "experience" is whatever that audience observes: a response, an exit code, a log line, a generated file, a hook firing correctly. Write entries the same way — one paragraph describing how the audience experiences the behaviour, plus the "the user needs this because…" line tying it to a principle. The structure doesn't change; only the concrete examples do.
 
-**Fold-ins pending section.** A `## Fold-ins pending` section sits at the bottom of `UX.md`, after all Functionalities entries. See *Fold-ins pending sections* below for the shared rules.
+**Proposed edits pending section.** A `## Proposed edits pending` section sits at the bottom of `UX.md`, after all Functionalities entries. See *Proposed edits pending sections* below for the shared rules.
 
 ## MANIFEST.md structure
 
@@ -75,7 +75,7 @@ If the flat list becomes hard to scan, switch to alphabetical sections by area.
 
 **Migration is incremental.** The after-build subagent populates the paths field on any MANIFEST entry it creates or updates during a build (`after-build.md` → *Work loop* step 1). Legacy entries without paths stay skipped by the gate until something touches them. `/setup` case 4 (refresh) offers a one-time backfill pass — see `setup.md` for the dialogue.
 
-**Fold-ins pending section.** A `## Fold-ins pending` section sits at the bottom of `MANIFEST.md`, after all entries. See *Fold-ins pending sections* below for the shared rules.
+**Proposed edits pending section.** A `## Proposed edits pending` section sits at the bottom of `MANIFEST.md`, after all entries. See *Proposed edits pending sections* below for the shared rules.
 
 ## TEST-LOG.md structure
 
@@ -147,9 +147,9 @@ The after-build subagent appends one line per build at the top of the list (belo
 
 **Location.** `planning/drafts/<topic>.md` — project root relative. Created by `/setup` scaffold (empty directory).
 
-**Purpose.** Destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Complements fold-in sections on source-of-truth docs (destination-specific content queued for fold-in — see *Fold-ins pending sections* below). Drafts hold everything else: comparison tables, structural sketches, protocol rules, column shapes, option matrices — content that has value for a future session but doesn't yet have a clear home.
+**Purpose.** Destination-agnostic carryover for substantive chat content not yet ready for a specific doc. Complements proposed-edits sections on source-of-truth docs (destination-specific content queued as proposed edits — see *Proposed edits pending sections* below). Drafts hold everything else: comparison tables, structural sketches, protocol rules, column shapes, option matrices — content that has value for a future session but doesn't yet have a clear home.
 
-**Lifecycle.** Written during builds or planning when content is "good enough to walk away from" — the bar is preservation, not polish. Deleted when consumed (folded into a spec, a source-of-truth doc, or a BACKLOG batch) — in the same session as the consumption, so the file and its destination stay in sync. Dead-end drafts are pruned with a one-line note in the next build-log entry.
+**Lifecycle.** Written during builds or planning when content is "good enough to walk away from" — the bar is preservation, not polish. Deleted when consumed (incorporated into a spec, a source-of-truth doc, or a BACKLOG batch) — in the same session as the consumption, so the file and its destination stay in sync. Dead-end drafts are pruned with a one-line note in the next build-log entry.
 
 **Format.** One file per topic, kebab-case filename (e.g. `settings-panel-layout.md`, `notification-channel-options.md`). No required internal shape — the content is pre-decision, so no template.
 
@@ -163,31 +163,31 @@ The after-build subagent appends one line per build at the top of the list (belo
 
 **Naming convention.** Free-form kebab-case filenames (e.g. `marketplace-options.md`, `drag-library-comparison.md`). No date prefix — the file's own content carries date context where relevant.
 
-**Lifecycle.** Written when Claude conducts research; persists indefinitely as reference material. Not deleted when consumed — research stays available for future sessions. No MANIFEST tracking, no BACKLOG entries, no fold-in mechanism. Zero maintenance burden.
+**Lifecycle.** Written when Claude conducts research; persists indefinitely as reference material. Not deleted when consumed — research stays available for future sessions. No MANIFEST tracking, no BACKLOG entries, no proposed-edit mechanism. Zero maintenance burden.
 
 **Referencing from build batches.** Research files are valid entries on a build batch's `Inputs:` line when the batch depends on what the research found (e.g. `` `research/drag-library-comparison.md` — informs which library to use ``).
 
 **Access.** Read/write to Claude. Not a source-of-truth doc — no locking, no structural spec beyond the filename convention.
 
-## Fold-ins pending sections
+## Proposed edits pending sections
 
-Every read-only source-of-truth doc (`UX.md`, `MANIFEST.md`, and any additional source-of-truth docs) carries a `## Fold-ins pending` section at its bottom. This is where Claude queues proposed content it cannot write directly into the doc's main body (because the doc is locked). The user folds the content in by hand during the next planning session, then deletes the block.
+Every read-only source-of-truth doc (`UX.md`, `MANIFEST.md`, and any additional source-of-truth docs) carries a `## Proposed edits pending` section at its bottom. This is where Claude queues proposed content it cannot write directly into the doc's main body (because the doc is locked). The user applies the proposed edit by hand during the next planning session, then deletes the block.
 
-**Placement.** The fold-in section is always the last section in the doc, immediately before the `---` separator and method-version footer. Nothing comes after it except the footer.
+**Placement.** The proposed-edits section is always the last section in the doc, immediately before the `---` separator and method-version footer. Nothing comes after it except the footer.
 
 **Block format.** Each pending block is a blockquote:
 
-> `**`[FOLD-IN PENDING]`**` `<DOC>.md` — [one-line description of the proposed change]. [Proposed text or shape of the change, inline or as an indented sub-quote]. **Action:** [replace | add] — [if replace: "replace the section between **[heading X]** and **[heading Y]**"; if add: "place this new section after **[heading Z]**"]. Surfaced [date]; origin: [planning batch name | new-project route | migration route | mid-build edit attempt].
+> `**`[PROPOSED EDIT PENDING]`**` `<DOC>.md` — [one-line description of the proposed change]. [Proposed text or shape of the change, inline or as an indented sub-quote]. **Action:** [replace | add] — [if replace: "replace the section between **[heading X]** and **[heading Y]**"; if add: "place this new section after **[heading Z]**"]. Surfaced [date]; origin: [planning batch name | new-project route | migration route | mid-build edit attempt].
 
 Each block specifies whether it's a **replace** (swap the section between heading X and heading Y) or an **add** (place this new section after heading Z), so the user knows exactly where to put the content.
 
-**Origins.** Fold-in blocks are created by any route that would otherwise write a read-only doc: planning-batch resolution, `/setup` new-project or migration routes, or a mid-build edit attempt intercepted by the PreToolUse hook.
+**Origins.** Proposed-edit blocks are created by any route that would otherwise write a read-only doc: planning-batch resolution, `/setup` new-project or migration routes, or a mid-build edit attempt intercepted by the PreToolUse hook.
 
-**Lifecycle.** Empty by default. Blocks are removed once the user folds them into the destination doc's main body (or drops them). During planning sessions and `/setup`, the **preview-then-fold-in convention** applies (see `universal-behaviour.md` → *Editing surfaces*): the subagent previews the complete section in chat, waits for approval, writes the fold-in block, then prompts the user to fold in immediately rather than deferring.
+**Lifecycle.** Empty by default. Blocks are removed once the user applies them to the destination doc's main body (or drops them). During planning sessions and `/setup`, the **preview-then-apply convention** applies (see `universal-behaviour.md` → *Editing surfaces*): the subagent previews the complete section in chat, waits for approval, writes the proposed-edit block, then prompts the user to apply it immediately rather than deferring.
 
-**PreToolUse carve-out.** The fold-in section is the one part of a locked doc that Claude can edit. The PreToolUse hook allows edits that fall entirely within the fold-in section (between the `## Fold-ins pending` heading and the footer separator). This covers appending new blocks and removing blocks after the user confirms fold-in. Edits to any other part of the locked doc are still denied. The detection pattern mirrors V38's footer-stamp carve-out (`is_footer_only_edit()`): both use section-boundary markers to verify the edit stays within the allowed region.
+**PreToolUse carve-out.** The proposed-edits section is the one part of a locked doc that Claude can edit. The PreToolUse hook allows edits that fall entirely within the proposed-edits section (between the `## Proposed edits pending` heading and the footer separator). This covers appending new blocks and removing blocks after the user confirms. Edits to any other part of the locked doc are still denied. The detection pattern mirrors V38's footer-stamp carve-out (`is_footer_only_edit()`): both use section-boundary markers to verify the edit stays within the allowed region.
 
-**Migration from the centralised BACKLOG fold-in section.** Projects upgrading from a version where fold-in blocks lived in BACKLOG's centralised *Fold-ins pending* section: the planning subagent redistributes any existing blocks to their destination docs' fold-in sections during its normal planning-session work. No explicit `/setup` run needed.
+**Migration from the centralised BACKLOG proposed-edits section.** Projects upgrading from a version where proposed-edit blocks lived in BACKLOG's centralised *Proposed edits pending* section: the planning subagent redistributes any existing blocks to their destination docs' proposed-edits sections during its normal planning-session work. No explicit `/setup` run needed.
 
 ## BACKLOG structure
 
@@ -206,9 +206,9 @@ BACKLOG consolidates everything deferred. Two formats, auto-detected by the plug
 
   **Red flags are concerns parked outside any active work stream.** Concerns inside an active build batch live there until the batch ships. Concerns attached to a feature in a planning batch become questions inside that batch — not Red flags. Red flags are specifically concerns the user has explicitly chosen to defer with no active plan to address them. In folder mode, this section lives in INDEX.md.
 
-- **Planning batches.** Two kinds of question live here. **(a)** Open questions that must resolve before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each batch lists the questions and ends with a `Blocks:` line — either naming the build batch(es) it holds up, or `Blocks: scope decision — no build batch yet` for an existence question. Resolution: append the answer to the batch and add a corresponding `[FOLD-IN PENDING]` block to the destination doc's *Fold-ins pending* section (with this batch's name as *origin*). Leave the planning batch in place — the user removes it during the same planning session in which they fold the answer into the destination doc by hand. If a scope-existence batch resolves to "yes, build it," the planning batch may convert to or spawn a build batch at that point, in addition to the fold-in.
+- **Planning batches.** Two kinds of question live here. **(a)** Open questions that must resolve before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist (e.g. "should this app even have a search box?"). Each batch lists the questions and ends with a `Blocks:` line — either naming the build batch(es) it holds up, or `Blocks: scope decision — no build batch yet` for an existence question. Resolution: append the answer to the batch and add a corresponding `[PROPOSED EDIT PENDING]` block to the destination doc's *Proposed edits pending* section (with this batch's name as *origin*). Leave the planning batch in place — the user removes it during the same planning session in which they apply the proposed edit to the destination doc by hand. If a scope-existence batch resolves to "yes, build it," the planning batch may convert to or spawn a build batch at that point, in addition to the proposed edit.
 
-  **One planning batch per discrete decision.** If a message contains multiple unrelated feature requests or scope questions, create separate planning batches. Bundle only when two items are tightly coupled (deciding one inevitably decides the other). Unrelated items in a single batch create a batch whose `Blocks:` line can't cleanly name what it blocks and whose resolution can't fold into a single entry.
+  **One planning batch per discrete decision.** If a message contains multiple unrelated feature requests or scope questions, create separate planning batches. Bundle only when two items are tightly coupled (deciding one inevitably decides the other). Unrelated items in a single batch create a batch whose `Blocks:` line can't cleanly name what it blocks and whose resolution can't cleanly map to a single entry.
 
 - **Build batches.** Engineering work, ordered top-to-bottom by priority. The top batch is the next build (after any one currently in progress). Each batch has two regions: **scope context** (Goal through Dependencies/Red flags — the strategic frame) and **build operations** (Changes through Serves — the tactical execution surface). Each batch must be small enough to build and test in one session — if not, split during *Before build*, not during build. Completed batches are removed during the next planning session (see `planning.md` → *Procedure order* step 2). If a build session ends with the top batch partly done (files still `- [ ]`), the batch stays at the top with its tick state intact; next session resumes the remaining files.
 
@@ -288,11 +288,11 @@ Where `<Type>` is one of `Look and click`, `Run and read`, `Trigger and observe`
 
 The after-build subagent uses the `Tests:` sub-section as the basis for opening the test session — each entry becomes one TEST-LOG row with the specified type and verifier. If the `Tests:` sub-section is absent (legacy batches, or batches where the before-build subagent determined no pre-specification was needed), the after-build subagent derives tests from the build recap as before, defaulting to `Look and click` type and `User` verifier.
 
-**`Serves UX.md:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. The PreToolUse hook (in Claude Code) blocks build-batch edits whose `Serves UX.md:` line names entries that don't exist in `UX.md`. `Serves <ADDITIONAL>.md:` lines aren't yet hook-checked.
+**`Serves <DOC>:` name matching.** Names on `Serves UX.md:` lines match `UX.md`'s Functionalities entries (### headings) case-insensitively after whitespace-trim — `Serves UX.md: Dark Mode` matches `Dark mode`, but `Dark mode toggle` would not. Names on `Serves <ADDITIONAL>.md:` lines match the additional doc's ## headings (excluding structural sections like Proposed edits pending) using the same case-insensitive whitespace-trimmed match. The PreToolUse hook blocks build-batch edits whose `Serves` line names entries that don't exist in the named doc. Writable docs (BACKLOG.md, MANIFEST.md, TEST-LOG.md, BUILD-LOG.md) are skipped — only locked source-of-truth docs are validated.
 
 - **Open questions.** Questions worth tracking that aren't blocking a specific build batch. Each entry has a question title (as a heading), a paragraph framing the question, a *Why it matters* line with brief context, and a *Next step* line describing what would promote it to a planning batch or resolve it. The planning subagent scans this section at the start of every planning session and lists all entries with one-line summaries.
 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

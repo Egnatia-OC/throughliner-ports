@@ -34,7 +34,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 1. ~~**Jargon in adopt subagent.**~~ **Resolved V44 (session v46, 2026-05-22).** "Scaffold" replaced with "create the method's starter docs" across all user-facing dialogue in `setup.md`.
 2. ~~**No next-action prompt after `/setup`.**~~ **Resolved V44 (session v46, 2026-05-22).** All successful-path recaps in `setup.md` (cases 1, 2, 3) now close with guidance on how to start a planning session.
-3. **Fold-in UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
+3. **Proposed-edit UX forces manual copy-paste.** The user must open a markdown file in a text editor, find the right section, paste content, and save — repeatedly. This is the single biggest friction point. Users with visual processing difficulties or unfamiliarity with markdown are especially penalised.
 4. ~~**Claude Code's permission modes vs. the UX.md lock.**~~ **Resolved by V43 research (session v43, 2026-05-22).** PreToolUse hooks fire in all permission modes, including Auto and bypass — the method's lock is complementary to, not redundant with, Claude Code's permission system. Mode-aware deny messages shipped in V43.
 5. ~~**After-build doesn't prompt commit/tag.**~~ **Resolved V46 (session v50, 2026-05-22).** After-build closing sequence now prompts commit/tag before the /clear prompt.
 6. ~~**Template carries excessive placeholder content.**~~ **Resolved V47 (session v51, 2026-05-22).** BACKLOG-TEMPLATE's example batches replaced with HTML-comment format specs (matching TEST-LOG-TEMPLATE and MANIFEST-TEMPLATE pattern).
@@ -42,7 +42,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Relationship to existing entries.** Item 3 is adjacent to Distributed fold-ins + open questions section in BACKLOG (shipped V43, session v47) — distributed fold-ins restructure where fold-ins live but don't address the manual-paste UX.
 
-**Next step.** Six of seven items resolved (1, 2, 4, 5, 6, 7). **Remaining item:** item 3 (fold-in UX) bundled into V45, promoted in session v47.
+**Next step.** Six of seven items resolved (1, 2, 4, 5, 6, 7). **Remaining item:** item 3 (proposed-edit UX) bundled into V45, promoted in session v47.
 
 ---
 
@@ -57,7 +57,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 1. ~~**BACKLOG.md parse validation after edits.**~~ **Shipped V44 (session v48, 2026-05-22).** PostToolUse hook at `plugin/hooks/post_tool_use.py`. Fires after Edit/Write/MultiEdit on BACKLOG.md; imports `find_top_unticked_batch` directly; surfaces `additionalContext` warning when unticked file bullets exist but the parser returns `{}`.
 2. **`Serves <DOC>:` validation for additional source-of-truth docs.** PreToolUse extension. Currently validates `Serves UX.md:` lines only. Consumer projects declaring additional docs in their CLAUDE.md path block get no validation on `Serves <DOC>:` lines. Rule source: DOC-STRUCTURE.md.
 3. **Red flags non-empty warning at SessionStart.** SessionStart already reads BACKLOG.md — add a check for non-empty Red flags section and surface prominently. Rule source: DOC-STRUCTURE.md + universal-behaviour.md.
-4. **Fold-in aging reminder.** Planning subagent scans `[FOLD-IN PENDING]` blocks for age (using existing `Surfaced [date]` field) and flags any older than 1–2 planning sessions. Rule source: DOC-STRUCTURE.md.
+4. **Deferred build-material aging.** Planning subagent detects BACKLOG items whose origin batch number is behind the current front and surfaces them at the top of planning sessions. Rule source: DOC-STRUCTURE.md.
 5. **Context preservation before compaction.** PreCompact hook injects a structured summary of current build state (which batch, ticked/unticked files, active subagent) so mid-build context survives compaction. Rule source: none — unaddressed risk not named in any doc.
 6. **Opener routing classification.** UserPromptSubmit hook parses the user's first message, classifies it (test notes / feature request / resume / question), and injects the routing decision as structured context. Currently a prose table in universal-behaviour.md that Claude applies from reasoning alone. Rule source: universal-behaviour.md ("Routing main-Claude's openers").
 
@@ -65,7 +65,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Full research.** `research/platform-capabilities-audit.md` (2026-05-21). Also catalogues unused hook events, unused hook types (prompt hooks, agent hooks), and platform capabilities (spawn_task, Claude Preview, mark_chapter, scheduled tasks) — reference material for future scoping, not actionable items.
 
-**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, fold-in aging) → 0054. Items 5, 6 (compaction context, opener routing) → 0055. Scope files at `planning/sessions/0054-validation-warnings-bundle.md`, `0055-new-hook-events.md`.
+**Next step.** **All six items promoted in session v47 (2026-05-22).** Item 1 shipped V44 (session v48). Items 2, 3, 4 (Serves-DOC validation, Red flags warning, deferred build-material aging) → 0054. Items 5, 6 (compaction context, opener routing) → 0055. Scope files at `planning/sessions/0054-validation-warnings-bundle.md`, `0055-new-hook-events.md`.
 
 ---
 
@@ -79,7 +79,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **Prerequisites (all tracked as separate entries).**
 
-1. **Distributed fold-ins + open questions section in BACKLOG** — **Shipped V43 (session v47, 2026-05-22).** Gave the method a parking lot for unresolved questions (open-questions section in BACKLOG.md) and restructured fold-in blocks to live in destination docs' own `## Fold-ins pending` sections. Includes the Inputs line for build batches.
+1. **Distributed fold-ins + open questions section in BACKLOG** — **Shipped V43 (session v47, 2026-05-22).** Gave the method a parking lot for unresolved questions (open-questions section in BACKLOG.md) and restructured proposed-edit blocks to live in destination docs' own `## Proposed edits pending` sections (then named `## Fold-ins pending`). Includes the Inputs line for build batches.
 2. ~~**[[Automated vs. manual test split + non-UI test types]]**~~ — **Shipped V46 (session v50, 2026-05-22).** Four named test types (Look and click, Run and read, Trigger and observe, Generate and inspect), Claude/User verifier split, 10-column TEST-LOG, Tests: sub-section in build batches, Claude-automated test pass in after-build.
 3. **[[Shelve the two-write rule and prose-only canonical docs]]** — **Done in session v40, 2026-05-21.** Repo-root docs-only set frozen at V39; plugin side is sole operational source. Restoring two-write maintenance is one OPEN-QUESTIONS promotion away. Removes the maintenance burden that's specific to the current dev environment and has no method-level equivalent.
 4. **[[UX.md adaptation for non-GUI projects]]** — **Promoted to V47 (renumbered V43 → V47 in session v43, 2026-05-22).** Vocabulary and doc structure changes so the method's language fits a plugin/method-spec project, not just UI apps.
@@ -185,7 +185,7 @@ Inline drifts silently if the spec is updated and the agent body isn't. Read-spe
 
 ## Prose-only rewrite of the method (post-plugin-build)
 
-**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and `[FOLD-IN PENDING]` rely on Claude Code primitives. For users wanting the method's discipline in plain chat with Claude, another AI tool, or any context where the plugin shape doesn't fit, we'll eventually need a tool-agnostic prose-only rewrite.
+**The question.** The plugin-based method (V17 onwards) is Claude-Code-specific — hooks, slash commands, and `[PROPOSED EDIT PENDING]` rely on Claude Code primitives. For users wanting the method's discipline in plain chat with Claude, another AI tool, or any context where the plugin shape doesn't fit, we'll eventually need a tool-agnostic prose-only rewrite.
 
 **Why it matters.** Surfaced V20 planning. Without the rewrite, the method is structurally bound to Claude Code: locking via PreToolUse, session-start reads via SessionStart, routing via injected context. None exist elsewhere. Users without Claude Code can't run the method as a working system. Prose-only restores accessibility — but only after the plugin shape stabilises, or the rewrite chases a moving target.
 

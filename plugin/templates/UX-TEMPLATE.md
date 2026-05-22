@@ -1,4 +1,4 @@
-﻿# UX.md — [Project Name] User Experience
+# UX.md — [Project Name] User Experience
 
 This document describes every functionality and UI element as the user experiences it, and why the user needs it. Every entry must correspond to something that actually exists in the current build. If an entry cannot be traced to an existing feature, it is not a current user experience — it is a plan, and it belongs in `BACKLOG.md`.
 
@@ -46,11 +46,11 @@ Optional patterns for entries (full spec in DOC-STRUCTURE.md → UX.md structure
   because..." line is the same as the parent's, fold it in instead.
 -->
 
-## Fold-ins pending
+## Proposed edits pending
 
-Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Fold these into the main body during your next planning session, then delete the block. Section starts empty for new projects.
+Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Apply these to the main body during your next planning session, then delete the block. Section starts empty for new projects.
 
-For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
+For the canonical block format, see `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

@@ -36,7 +36,7 @@ Two new hook events the plugin hasn't used before, bundled because both are "mak
 
 ## Open questions for this session
 
-- **PreCompact: what state to preserve.** Minimum: current batch name, ticked/unticked file list, active phase (planning/before-build/build/after-build). Maximum: add recent decisions, current subagent, pending fold-ins. Leaning: minimum — keep the summary small to survive compaction efficiently.
+- **PreCompact: what state to preserve.** Minimum: current batch name, ticked/unticked file list, active phase (planning/before-build/build/after-build). Maximum: add recent decisions, current subagent, pending proposed edits. Leaning: minimum — keep the summary small to survive compaction efficiently.
 - **PreCompact: hook availability.** Verify that PreCompact is available in the current Claude Code version. If not, fall back to a periodic state-snapshot mechanism (e.g. Stop hook writes state to a temp file that SessionStart reads on resume).
 - **UserPromptSubmit: classification confidence.** Should the hook express confidence ("likely test notes" vs. "definitely test notes")? Or binary classification with a fallback? Leaning: binary with fallback to the prose table.
 - **UserPromptSubmit: fires on every message or first only?** The routing decision matters on the first message. Subsequent messages don't need re-classification. If the hook fires on every message, it needs to no-op after the first. Check Claude Code's hook semantics.

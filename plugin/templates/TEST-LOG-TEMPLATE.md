@@ -1,4 +1,4 @@
-﻿# TEST-LOG.md
+# TEST-LOG.md
 
 This file records the test outcomes of every shipped build batch, one row per test. Maintained by Claude during builds and planning; the user reviews and confirms in planning sessions.
 
@@ -35,4 +35,4 @@ Ordering: newest-first. New rows append directly below the table header separato
 |---|---|---|---|---|---|---|---|---|---|
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

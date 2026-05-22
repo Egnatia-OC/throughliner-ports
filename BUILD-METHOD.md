@@ -89,7 +89,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 1. **Vocabulary.** New named concepts are defined in `NO-CODE-METHOD.md → Vocabulary`.
 
-2. **Mechanism descriptions.** If something works differently (new route, different fold-in destination, new enforcement point, renamed marker), `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` describe the new mechanism. Grep every reference to the old — section names, counts (`Three sections...` after a fourth lands), location phrases, cross-references — and update. Read each match; confirm surrounding sentences still parse.
+2. **Mechanism descriptions.** If something works differently (new route, different proposed-edit destination, new enforcement point, renamed marker), `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` describe the new mechanism. Grep every reference to the old — section names, counts (`Three sections...` after a fourth lands), location phrases, cross-references — and update. Read each match; confirm surrounding sentences still parse.
 
 3. **Templates.** New sections, markers, or canonical formats land in the relevant template at `plugin/templates/`. (The repo-root mirror `templates/` is frozen at V39 — see *Two-write rule for canonical docs* below.)
 

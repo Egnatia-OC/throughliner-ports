@@ -31,7 +31,7 @@ Before enumerating files or estimating burden, run two checks against BACKLOG:
        python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG absolute path>"
 
    Both paths quoted — Windows paths with spaces break unquoted invocations silently. The parser auto-detects single-file vs folder mode and emits a JSON payload to stdout (the top unticked build batch, or `{}` if none). A `{}` outcome on a non-empty Build batches section means the parser couldn't find a real batch — either the structure is malformed OR the top batch is still template-shape placeholders. Halt and route the user back to planning; do not propose fixing BACKLOG yourself.
-2. **The top batch's `Serves UX.md:` line resolves.** Every entry named on the line must exist in `UX.md`'s Functionalities section (case-insensitive after whitespace-trim — the same matching the PreToolUse hook enforces per `DOC-STRUCTURE.md` → `Serves UX.md:` name matching). A name that doesn't resolve means a planning fold-in step was skipped. Halt and route the user back to planning; do not propose adding the entry to `UX.md` yourself — `UX.md` is locked to you.
+2. **The top batch's `Serves UX.md:` line resolves.** Every entry named on the line must exist in `UX.md`'s Functionalities section (case-insensitive after whitespace-trim — the same matching the PreToolUse hook enforces per `DOC-STRUCTURE.md` → `Serves UX.md:` name matching). A name that doesn't resolve means a planning proposed-edit step was skipped. Halt and route the user back to planning; do not propose adding the entry to `UX.md` yourself — `UX.md` is locked to you.
 
 You do not re-organise the build queue here. Planning is the structural authority for BACKLOG (see `planning.md` → *BACKLOG editing — do, then describe*). By the time you run, batches are already grouped, ordered, and (where needed) split. Reorganise authority survives in before-build only as the response to the verification-burden split halt below.
 
@@ -119,4 +119,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

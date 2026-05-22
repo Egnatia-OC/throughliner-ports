@@ -158,8 +158,8 @@ class TestLockedDocEnforcement:
         ux_path = str((root / "UX.md").resolve())
         data = _edit_input(
             root, ux_path,
-            old_string="*No-code method — Version 49.*",
-            new_string="*No-code method — Version 50.*",
+            old_string="*No-code method — Version 50.*",
+            new_string="*No-code method — Version 51.*",
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         if raw:
@@ -167,21 +167,21 @@ class TestLockedDocEnforcement:
             assert "locked source-of-truth" not in reason
             assert "not on the current build batch" in reason
 
-    def test_fold_in_section_edit_passes_locked_check(self, adopted_folder):
-        """Fold-in section edit passes the locked-doc check (V45 carve-out)
-        but hits the batch-boundary check. Same pattern as above — confirm
-        the deny reason is batch-boundary, not locked-doc."""
+    def test_proposed_edits_section_edit_passes_locked_check(self, adopted_folder):
+        """Proposed-edits section edit passes the locked-doc check (V45
+        carve-out) but hits the batch-boundary check. Same pattern as
+        above — confirm the deny reason is batch-boundary, not locked-doc."""
         root = adopted_folder
         ux_path = str((root / "UX.md").resolve())
         data = _edit_input(
             root, ux_path,
-            old_string="## Fold-ins pending\n\n*No-code method — Version 50.*",
+            old_string="## Proposed edits pending\n\n*No-code method — Version 51.*",
             new_string=(
-                "## Fold-ins pending\n\n"
-                "[FOLD-IN PENDING]\n"
+                "## Proposed edits pending\n\n"
+                "[PROPOSED EDIT PENDING]\n"
                 "Origin: mid-build edit attempt — 2026-05-22.\n"
                 "Content: New feature.\n\n"
-                "*No-code method — Version 50.*"
+                "*No-code method — Version 51.*"
             ),
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
@@ -229,6 +229,62 @@ class TestServesLineCheck:
             root, path,
             old_string="something",
             new_string="Serves UX.md: Fake.",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_valid_serves_additional_doc_allowed(self, adopted_folder):
+        """V54: Serves PATTERNS.md with a valid entry passes."""
+        root = adopted_folder
+        bl_path = str(
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        data = _edit_input(
+            root, bl_path,
+            old_string="Serves UX.md: Settings.",
+            new_string="Serves PATTERNS.md: Authentication flow.",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_invalid_serves_additional_doc_denied(self, adopted_folder):
+        """V54: Serves PATTERNS.md with a nonexistent entry is denied."""
+        root = adopted_folder
+        bl_path = str(
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        data = _edit_input(
+            root, bl_path,
+            old_string="Serves UX.md: Settings.",
+            new_string="Serves PATTERNS.md: Nonexistent pattern.",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "don't exist in `PATTERNS.md`")
+
+    def test_serves_additional_doc_case_insensitive(self, adopted_folder):
+        """V54: Serves line matching is case-insensitive for additional docs."""
+        root = adopted_folder
+        bl_path = str(
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        data = _edit_input(
+            root, bl_path,
+            old_string="Serves UX.md: Settings.",
+            new_string="Serves PATTERNS.md: authentication flow.",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_serves_writable_doc_skipped(self, adopted_folder):
+        """Serves MANIFEST.md or other writable docs are not validated."""
+        root = adopted_folder
+        bl_path = str(
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        data = _edit_input(
+            root, bl_path,
+            old_string="Serves UX.md: Settings.",
+            new_string="Serves MANIFEST.md: Anything.",
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)

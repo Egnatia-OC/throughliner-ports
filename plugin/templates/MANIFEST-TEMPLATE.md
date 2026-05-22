@@ -1,4 +1,4 @@
-﻿# MANIFEST.md — [Project Name]
+# MANIFEST.md — [Project Name]
 
 A flat, alphabetical glossary of named elements in the codebase that the user might want context on. One line per entry. Maintained by Claude during builds. Not intended to be read cover-to-cover — use it as a reference when you encounter a name you want context on, and as the basis for drift checks against `UX.md`.
 
@@ -20,11 +20,11 @@ named UX state) can omit the path.
 Full spec: `DOC-STRUCTURE.md` → MANIFEST.md structure.
 -->
 
-## Fold-ins pending
+## Proposed edits pending
 
-Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Fold these into the main body during your next planning session, then delete the block. Section starts empty for new projects.
+Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Apply these to the main body during your next planning session, then delete the block. Section starts empty for new projects.
 
-For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
+For the canonical block format, see `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

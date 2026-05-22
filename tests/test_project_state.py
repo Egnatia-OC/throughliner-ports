@@ -19,7 +19,7 @@ from conftest import fixture_path
 
 class TestFooterDetection:
     def test_footer_present(self):
-        assert ps.has_method_footer("*No-code method — Version 50.*")
+        assert ps.has_method_footer("*No-code method — Version 51.*")
 
     def test_footer_absent(self):
         assert not ps.has_method_footer("# My Project\nNo footer here.")
@@ -29,7 +29,7 @@ class TestFooterDetection:
         assert not ps.has_method_footer(42)
 
     def test_extract_version_number(self):
-        assert ps.extract_footer_version("*No-code method — Version 50.*") == 50
+        assert ps.extract_footer_version("*No-code method — Version 51.*") == 51
 
     def test_extract_version_none_when_missing(self):
         assert ps.extract_footer_version("no footer") is None

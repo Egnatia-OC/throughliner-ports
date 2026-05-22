@@ -1,4 +1,4 @@
-﻿# [DOC NAME].md — [Project Name]
+# [DOC NAME].md — [Project Name]
 
 [Brief intro: what this doc is for, who its audience is (the user? Claude at runtime? a third party?), and when it applies (e.g. "paid tier only", "internal API only"). Treat this header with the same care as `UX.md`'s header — it's the orientation a future reader needs to know whether to read on.]
 
@@ -35,11 +35,11 @@ questions live in BACKLOG.md, not here. If you need to look up what's
 open for this doc, read BACKLOG.md's planning batches.
 -->
 
-## Fold-ins pending
+## Proposed edits pending
 
-Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Fold these into the main body during your next planning session, then delete the block. Section starts empty for new projects.
+Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Apply these to the main body during your next planning session, then delete the block. Section starts empty for new projects.
 
-For the canonical block format, see `DOC-STRUCTURE.md` → *Fold-ins pending sections*.
+For the canonical block format, see `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

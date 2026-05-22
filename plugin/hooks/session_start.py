@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 50
+PLUGIN_METHOD_VERSION = 51
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -127,6 +127,15 @@ PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
 # Strong signal that a doc is still in template form: the literal placeholder
 # string used in every template's heading and body.
 TEMPLATE_PLACEHOLDER_PATTERN = re.compile(r"\[Project Name\]")
+
+# V54: Red flag entry pattern — matches `**[RED FLAG]**` followed by the
+# one-line description (with or without a blockquote `>` prefix).
+RED_FLAG_ENTRY_PATTERN = re.compile(
+    r"\*\*\[RED FLAG\]\*\*\s*(.+?)$", re.MULTILINE
+)
+
+# V54: Red flags section heading in BACKLOG.
+RED_FLAGS_SECTION_PATTERN = re.compile(r"^## Red flags\s*$", re.MULTILINE)
 
 # Heading shape for a build batch in BACKLOG.md (single-file mode).
 BUILD_BATCH_HEADING_PATTERN = re.compile(r"^### Batch: (.+)$", re.MULTILINE)
@@ -319,6 +328,30 @@ def detect_top_build_batch(backlog_text: str, backlog_path=None):
                     return title
 
     return None
+
+
+def detect_red_flags(backlog_text: str) -> list:
+    """Find non-empty Red flag entries in BACKLOG's top-level Red flags section.
+
+    Returns a list of one-line descriptions (the text after **[RED FLAG]**),
+    or empty list if the section is absent or empty. Works for both single-file
+    BACKLOG.md and folder-mode INDEX.md (the Red flags section lives in
+    INDEX.md in folder mode)."""
+    section_match = RED_FLAGS_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return []
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    flags = []
+    for match in RED_FLAG_ENTRY_PATTERN.finditer(section_text):
+        desc = match.group(1).strip()
+        if desc:
+            flags.append(desc)
+    return flags
 
 
 # --- V27 TEST-LOG tripwire helpers ---
@@ -677,6 +710,24 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 "default to resume per `universal-behaviour.md` → *Routing "
                 "main-Claude's openers* (the unfinished-top-batch row). "
                 "Confirm with the user before continuing the build."
+            )
+
+        # V54: Red flags non-empty warning. Surface deferred security/
+        # privacy/data-integrity concerns prominently at session start.
+        red_flags = detect_red_flags(backlog_text)
+        if red_flags:
+            lines.append(
+                "- **Active Red flags in BACKLOG.** The following security, "
+                "privacy, or data-integrity concerns are deferred with no "
+                "active plan:"
+            )
+            for flag in red_flags:
+                lines.append(f"  - {flag}")
+            lines.append(
+                "  Surface these at the start of the session before other "
+                "work. The user must acknowledge each one — they may choose "
+                "to address one now, defer it consciously, or fold it into "
+                "the current planning session."
             )
 
     # V27 TEST-LOG tripwire: if the previous build batch's test session is

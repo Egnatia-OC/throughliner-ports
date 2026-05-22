@@ -11,24 +11,25 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       BACKLOG.md, MANIFEST.md, and TEST-LOG.md are explicitly writable — the
       planning, glossary, and test-record surfaces Claude edits during the
       build cycle. When a writing tool targets a locked doc's main body, the
-      hook denies and tells Claude to add a [FOLD-IN PENDING] block to the
-      doc's own Fold-ins pending section at the bottom instead. Two carve-
-      outs: V38 — footer-only edits (Edit tool only) that exclusively add
-      or update the method-version footer are allowed (metadata, not
-      content). V45 — edits within the Fold-ins pending section (Edit tool
-      only) are allowed, so Claude can append new fold-in blocks and remove
-      blocks after the user confirms fold-in.
+      hook denies and tells Claude to add a [PROPOSED EDIT PENDING] block
+      to the doc's own Proposed edits pending section at the bottom
+      instead. Two carve-outs: V38 — footer-only edits (Edit tool only)
+      that exclusively add or update the method-version footer are allowed
+      (metadata, not content). V45 — edits within the Proposed edits
+      pending section (Edit tool only) are allowed, so Claude can append
+      new proposed-edit blocks and remove blocks after the user confirms.
 
-  (2) Serves-line check on BACKLOG.md build-batch additions (V22) — Edit/Write/
-      MultiEdit. When a writing tool targets BACKLOG.md and the proposed new
-      content contains one or more `Serves UX.md: <entry name(s)>.` lines, the
-      hook verifies that every named entry exists in UX.md's Functionalities
-      section. Match is case-insensitive after whitespace-trim (V22 Q3
-      decision). A miss denies with a redirect message naming the unmatched
-      entries and listing the known UX.md entries so Claude can spot a typo
-      or recognise it needs to fold-in first. The check is scoped to
-      `Serves UX.md:` only — `Serves <ADDITIONAL>.md:` lines for additional
-      source-of-truth docs are out of V22 scope and pass through.
+  (2) Serves-line check on BACKLOG.md build-batch additions (V22, V54) —
+      Edit/Write/MultiEdit. When a writing tool targets BACKLOG.md and the
+      proposed new content contains one or more `Serves <DOC>: <entry>.`
+      lines, the hook verifies that every named entry exists in the target
+      doc. For UX.md, entries are ### headings under ## Functionalities.
+      For additional source-of-truth docs declared in the project's
+      CLAUDE.md path block, entries are ## headings (excluding structural
+      sections like Proposed edits pending). Match is case-insensitive after
+      whitespace-trim (V22 Q3 decision). A miss denies with a redirect
+      message naming the unmatched entries and listing the known entries
+      so Claude can spot a typo or recognise it needs to propose the edit first.
 
   (3) Batch file-list boundary check (V25) — Edit/Write/MultiEdit.
       When a top unticked build batch exists in BACKLOG.md, the hook blocks
@@ -79,7 +80,7 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
 Mechanisms:
 
   - Locked-doc rule: universal-behaviour.md → Editing surfaces.
-  - Fold-in block format: DOC-STRUCTURE.md → Fold-ins pending sections.
+  - Proposed-edit block format: DOC-STRUCTURE.md → Proposed edits pending sections.
   - Serves-line rule: planning.md → How a new feature enters the project,
     and DOC-STRUCTURE.md → BACKLOG.md structure → Build batches.
   - V22 Q3 (case-insensitive exact match): BUILD-LOG.md → V22.
@@ -222,11 +223,23 @@ ENTRY_HEADING_PATTERN = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 # format. The regex tolerates trailing whitespace.
 SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
 
+# V54: General `Serves <DOC>: <entries>.` pattern. Group 1 is the doc name,
+# group 2 is the comma-separated entry names. Subsumes SERVES_UX_PATTERN
+# but the specific pattern is kept for any code that needs UX-only matching.
+SERVES_DOC_PATTERN = re.compile(r"^Serves\s+(.+?):\s*(.+?)\.\s*$", re.MULTILINE)
+
+# V54: Section heading pattern for additional source-of-truth docs. Their
+# entries are ## headings (not ### like UX.md's Functionalities entries).
+ADDITIONAL_DOC_SECTION_PATTERN = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
+
+# V54: Structural headings excluded from additional-doc entry matching.
+STRUCTURAL_SECTION_NAMES = frozenset({"proposed edits pending"})
+
 # V38: method-version footer pattern for the footer-stamp carve-out.
 FOOTER_LINE_PATTERN = re.compile(r"\*No-code method — Version \d+\.\*")
 
-# V45: fold-in section heading pattern for the fold-in section carve-out.
-FOLD_IN_SECTION_HEADING = re.compile(r"^## Fold-ins pending\s*$", re.MULTILINE)
+# V45: proposed-edits section heading pattern for the section carve-out.
+PROPOSED_EDITS_SECTION_HEADING = re.compile(r"^## Proposed edits pending\s*$", re.MULTILINE)
 
 # --- V39 read-before-edit gate patterns ---
 
@@ -325,20 +338,21 @@ def build_locked_map(project_root: Path) -> dict:
 def make_reason(logical_name: str, permission_mode: str = "") -> str:
     """Build the deny-reason text Claude sees when a locked-doc edit is
     blocked. The reason tells Claude exactly where to place the proposed
-    change — the doc's own *Fold-ins pending* section at its bottom — so
-    the instruction is unambiguous in any project layout."""
+    change — the doc's own *Proposed edits pending* section at its bottom
+    — so the instruction is unambiguous in any project layout."""
     return (
         f"[No-code method] BLOCKED: {logical_name} is a locked source-of-"
         "truth doc. The main body is read-only to Claude (the agent); only "
         "the user can edit it, by hand during a planning session.\n\n"
-        "What to do: add a `[FOLD-IN PENDING]` block to the *Fold-ins "
-        f"pending* section at the bottom of `{logical_name}`, with origin "
+        "What to do: add a `[PROPOSED EDIT PENDING]` block to the "
+        f"*Proposed edits pending* section at the bottom of "
+        f"`{logical_name}`, with origin "
         "`mid-build edit attempt — <today's date>`. The hook allows edits "
-        "within that section. The user will fold the block into "
+        "within that section. The user will apply the proposed edit to "
         f"{logical_name}'s main body by hand during their next planning "
         "session, or drop it. Surface this addition plainly in your "
         "response to the user. Canonical block format: see "
-        "DOC-STRUCTURE.md → Fold-ins pending sections."
+        "DOC-STRUCTURE.md → Proposed edits pending sections."
         + _mode_suffix(permission_mode)
     )
 
@@ -448,6 +462,36 @@ def find_missing_serves_names(claimed: list, known_normalised: set):
     return missing
 
 
+def extract_all_serves_entries(new_content: str) -> dict:
+    """Find all `Serves <doc>: <entries>.` lines in the proposed new content.
+    Returns a dict mapping doc names to lists of entry-name strings in their
+    original casing. Comma-splits each line so multi-entry lines yield
+    multiple names."""
+    result: dict = {}
+    for match in SERVES_DOC_PATTERN.finditer(new_content):
+        doc_name = match.group(1).strip()
+        entries_str = match.group(2)
+        for raw in entries_str.split(","):
+            cleaned = raw.strip()
+            if cleaned:
+                result.setdefault(doc_name, []).append(cleaned)
+    return result
+
+
+def extract_additional_doc_entries(doc_text: str) -> set:
+    """Return the set of entry names from an additional source-of-truth doc,
+    normalised for case-insensitive matching. Entries are ## headings,
+    excluding structural sections (Proposed edits pending). Returns empty set if
+    no entries found — the caller treats this as 'nothing to check' and
+    falls through to allow."""
+    entries: set = set()
+    for match in ADDITIONAL_DOC_SECTION_PATTERN.finditer(doc_text):
+        name = normalise_entry_name(match.group(1))
+        if name and name not in STRUCTURAL_SECTION_NAMES:
+            entries.add(name)
+    return entries
+
+
 def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> str:
     """Build the deny-reason text when one or more Serves UX.md names don't
     match any UX.md entry. Includes the unmatched names and a one-line
@@ -473,9 +517,43 @@ def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> 
         f"names entries that don't exist in `UX.md`: {missing_str}.\n\n"
         "What to do: if this is a typo, fix the name. If the entry "
         "genuinely doesn't exist yet, the feature has skipped the "
-        "planning-batch → fold-in step — route through a planning batch in "
-        "BACKLOG.md, fold the answer into `UX.md` by hand during the next "
-        "planning session, and propose the build batch after that."
+        "planning-batch → proposed-edit step — route through a planning "
+        "batch in BACKLOG.md, propose the edit into `UX.md` by hand during "
+        "the next planning session, and propose the build batch after that."
+        + known_block
+    )
+
+
+def make_serves_doc_deny_reason(
+    doc_name: str, missing_names: list, known_normalised: set
+) -> str:
+    """Build the deny-reason text when one or more Serves <DOC>: names don't
+    match any entry in the named additional source-of-truth doc."""
+    missing_str = ", ".join(f"`{n}`" for n in missing_names)
+    if known_normalised:
+        sample = sorted(known_normalised)[:30]
+        known_str = ", ".join(f"`{n}`" for n in sample)
+        if len(known_normalised) > 30:
+            known_str += f", … ({len(known_normalised) - 30} more)"
+        known_block = (
+            f"\n\nCurrent `{doc_name}` section entries (case-insensitive "
+            f"match, whitespace-trimmed): {known_str}."
+        )
+    else:
+        known_block = (
+            f"\n\nNo section entries were detected in `{doc_name}` "
+            "(no ## headings found, or doc is empty)."
+        )
+    return (
+        f"[No-code method] BLOCKED: a build batch's `Serves {doc_name}:` "
+        f"line names entries that don't exist in `{doc_name}`: "
+        f"{missing_str}.\n\n"
+        "What to do: if this is a typo, fix the name. If the entry "
+        "genuinely doesn't exist yet, the feature has skipped the "
+        "planning-batch → proposed-edit step — route through a planning "
+        f"batch in BACKLOG.md, propose the edit into `{doc_name}` by hand "
+        "during the next planning session, and propose the build batch "
+        "after that."
         + known_block
     )
 
@@ -488,13 +566,18 @@ def check_serves_lines(
 ):
     """If the edit targets a BACKLOG file (BACKLOG.md in single-file mode,
     or any file inside BACKLOG/ in folder mode), validate every
-    `Serves UX.md:` line in the proposed new content against UX.md's
-    Functionalities entries.
+    `Serves <DOC>: <entry>.` line in the proposed new content against the
+    named doc's entries.
+
+    For UX.md, entries are ### headings under ## Functionalities. For
+    additional source-of-truth docs declared in the project's CLAUDE.md
+    path block (and not in WRITABLE_LOGICAL_NAMES), entries are ## headings
+    excluding structural sections.
 
     Returns:
       - None if the check doesn't apply (target isn't a BACKLOG file;
-        UX.md can't be resolved or read; no Serves UX.md lines in the
-        new content; every name matches an entry).
+        no Serves lines in the new content; every name matches; docs
+        can't be resolved or read).
       - A deny-reason string if one or more names miss.
 
     The lenient principle applies throughout — anywhere the check can't
@@ -502,25 +585,43 @@ def check_serves_lines(
     if not is_backlog_file(target_path, project_root):
         return None
 
-    ux_path = resolve_path_block_entry(project_root, "UX.md")
-    if ux_path is None:
-        return None
-
-    ux_text = safe_read_text(ux_path)
-    if ux_text is None:
-        return None
-
     new_content = collect_new_content(tool_name, tool_input)
-    claimed_names = extract_serves_ux_names(new_content)
-    if not claimed_names:
+    if not new_content:
         return None
 
-    known_normalised = extract_functionality_entries(ux_text)
-    missing = find_missing_serves_names(claimed_names, known_normalised)
-    if not missing:
+    serves_entries = extract_all_serves_entries(new_content)
+    if not serves_entries:
         return None
 
-    return make_serves_line_deny_reason(missing, known_normalised)
+    for doc_name, claimed_names in serves_entries.items():
+        if doc_name == "UX.md":
+            ux_path = resolve_path_block_entry(project_root, "UX.md")
+            if ux_path is None:
+                continue
+            ux_text = safe_read_text(ux_path)
+            if ux_text is None:
+                continue
+            known = extract_functionality_entries(ux_text)
+            missing = find_missing_serves_names(claimed_names, known)
+            if missing:
+                return make_serves_line_deny_reason(missing, known)
+        else:
+            if doc_name in WRITABLE_LOGICAL_NAMES:
+                continue
+            doc_path = resolve_path_block_entry(project_root, doc_name)
+            if doc_path is None:
+                continue
+            doc_text = safe_read_text(doc_path)
+            if doc_text is None:
+                continue
+            known = extract_additional_doc_entries(doc_text)
+            if not known:
+                continue
+            missing = find_missing_serves_names(claimed_names, known)
+            if missing:
+                return make_serves_doc_deny_reason(doc_name, missing, known)
+
+    return None
 
 
 # --- V38 Footer-stamp carve-out helper ---
@@ -548,19 +649,19 @@ def is_footer_only_edit(tool_name, tool_input):
     return old_stripped == new_stripped
 
 
-# --- V45 Fold-in section carve-out helper ---
+# --- V45 Proposed-edits section carve-out helper ---
 
 
-def is_fold_in_section_edit(tool_name, tool_input, doc_path):
+def is_proposed_edits_section_edit(tool_name, tool_input, doc_path):
     """V45: Return True if a writing-tool call on a locked doc exclusively
-    modifies content within the Fold-ins pending section.
+    modifies content within the Proposed edits pending section.
 
     Only Edit qualifies — Write replaces the entire file (too broad) and
-    MultiEdit can bundle fold-in + other changes. The check reads the doc,
-    finds the ## Fold-ins pending heading, and verifies the old_string
-    appears entirely at or after that heading. Since the Edit tool requires
-    old_string to be unique in the file, there is exactly one position to
-    check."""
+    MultiEdit can bundle proposed-edit + other changes. The check reads the
+    doc, finds the ## Proposed edits pending heading, and verifies the
+    old_string appears entirely at or after that heading. Since the Edit
+    tool requires old_string to be unique in the file, there is exactly one
+    position to check."""
     if tool_name != "Edit":
         return False
     old = tool_input.get("old_string")
@@ -571,7 +672,7 @@ def is_fold_in_section_edit(tool_name, tool_input, doc_path):
     if doc_text is None:
         return False
 
-    heading_match = FOLD_IN_SECTION_HEADING.search(doc_text)
+    heading_match = PROPOSED_EDITS_SECTION_HEADING.search(doc_text)
     if not heading_match:
         return False
 
@@ -1142,11 +1243,11 @@ def main() -> int:
     logical_name = locked_map.get(str(target_path)) if locked_map else None
     if logical_name:
         # V38: narrow carve-out — footer-only edits are metadata, not
-        # content, and don't need [FOLD-IN PENDING] routing.
-        # V45: fold-in section carve-out — edits within the ## Fold-ins
-        # pending section are allowed (appending/removing fold-in blocks).
+        # content, and don't need [PROPOSED EDIT PENDING] routing.
+        # V45: proposed-edits section carve-out — edits within the
+        # ## Proposed edits pending section are allowed.
         if (not is_footer_only_edit(tool_name, tool_input)
-                and not is_fold_in_section_edit(tool_name, tool_input, target_path)):
+                and not is_proposed_edits_section_edit(tool_name, tool_input, target_path)):
             return emit_deny(make_reason(logical_name, permission_mode))
 
     # V22: Serves-line check fires on BACKLOG.md edits whose new content

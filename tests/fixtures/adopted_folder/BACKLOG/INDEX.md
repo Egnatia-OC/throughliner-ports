@@ -2,6 +2,8 @@
 
 ## Red flags
 
+> **[RED FLAG]** API tokens stored in plain text in config.json. Found during Initial dashboard (2026-05-20). Fix: move tokens to environment variables or a secrets manager.
+
 ## Planning batches
 
 ## Build batches
@@ -10,4 +12,4 @@
 
 ## Open questions
 
-*No-code method — Version 50.*
+*No-code method — Version 51.*

@@ -1,4 +1,4 @@
-﻿# CLAUDE.md — [Project Name]
+# CLAUDE.md — [Project Name]
 
 This is the project's per-project glue file. Claude Code auto-loads it on session start. The plugin's internal canonical docs live inside the no-code-method plugin (`plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`) — one copy per plugin install. A frozen prose snapshot of the project-agnostic method spec (`NO-CODE-METHOD.md`) sits at the no-code-method repo root, snapshotted at method version V39 (two-write rule shelved in session v40); humans can browse it at https://github.com/FlintCraftTech/sovereign-implementer/blob/main/NO-CODE-METHOD.md. The two project-specific things this file owns are the path block below and any project-specific behavioural notes after it.
 
@@ -26,4 +26,4 @@ If the project has additional source-of-truth docs (see `DOC-STRUCTURE.md` → *
 
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*

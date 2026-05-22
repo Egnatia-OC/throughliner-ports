@@ -12,7 +12,7 @@ For the canonical entry format, see `DOC-STRUCTURE.md` → *BACKLOG structure �
 
 ## Planning batches
 
-Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a `[FOLD-IN PENDING]` block to the destination doc's *Fold-ins pending* section (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they fold the answer in.
+Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a `[PROPOSED EDIT PENDING]` block to the destination doc's *Proposed edits pending* section (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they apply the proposed edit.
 
 <!--
 Planning batch format:
@@ -57,8 +57,8 @@ Entry format:
 
 **Why it matters.** [Brief context — who raised it, what's at risk.]
 
-**Next step.** [What would resolve or promote this — e.g. "promote to planning batch if X happens", "fold into next batch touching Y", "park until Z".]
+**Next step.** [What would resolve or promote this — e.g. "promote to planning batch if X happens", "incorporate into next batch touching Y", "park until Z".]
 -->
 
 ---
-*No-code method — Version 50.*
+*No-code method — Version 51.*
