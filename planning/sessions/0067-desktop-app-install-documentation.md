@@ -7,13 +7,15 @@ Document the full plugin install, reinstall, and version-update procedure for th
 ## Inputs
 
 - E2E finding 4 from `planning/sessions/0060-taskflow-e2e-prep-and-testing.md`
-- `sovereign-implementer/Crash course.md` → *Install, and a first session* section
+- `sovereign-implementer/Crash course.md` → *Install, and a first session* and *Managing the plugin* sections
 - Alex's actual install experience from 0060 sessions 1–2
+- **V58 finding (v64):** The desktop app DOES have a plugin disable/enable toggle at Customise → Plugins → gear icon on the plugin. This toggle handles both disable and re-enable. The Crash course's *Managing the plugin* section (added in v64) currently overstates the desktop app limitation — it says `/plugin` is the only management path and desktop users must use the CLI. The desktop app toggle needs to be documented as the primary path for desktop users, with the CLI path as the alternative.
 
 ## Outputs
 
 - Crash course *Install, and a first session* section updated with desktop-app-specific instructions alongside the existing CLI instructions
 - Coverage of: first install via local marketplace, verifying the installed version, updating to a new plugin version, troubleshooting stale versions, full uninstall/reinstall procedure, the `settings.json` manual edit as a last resort
+- Crash course *Managing the plugin* section corrected: desktop app toggle (Customise → Plugins → gear icon) documented as the primary disable/enable path for desktop users, replacing the current "CLI-only" framing
 
 ## Success criteria
 
