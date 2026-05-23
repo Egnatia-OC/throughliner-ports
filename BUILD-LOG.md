@@ -6,6 +6,24 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v65 — 2026-05-24 — Memory-routing and research-filing rules
+
+**What shipped.** No scope file. Two plugin-side behavioural rules added to `universal-behaviour.md`, plus one new research file.
+
+1. **New required behaviour: "Route information to artifacts, not memory."** Addresses a recurring pattern where Claude identifies the correct destination for information (a scope file, BACKLOG entry, etc.) but defaults to saving it as a memory instead of writing it to the artifact. Rule: if you can name the destination, write it there. Memory is only for cross-session context with no project-level home.
+
+2. **Research-filing made mandatory.** The existing "Verify external facts, don't guess" rule's filing instruction strengthened from advisory ("Save findings to `research/<topic>.md`...") to mandatory ("**Filing is mandatory**: after completing any research... save findings to `research/<topic>.md` before moving on to the next task"). Unfiled research is lost at session end.
+
+3. **New research file: `research/memory-write-hook-feasibility.md`.** Documents that Claude Code's auto-memory writes bypass the PreToolUse hook pipeline entirely — they use an internal mechanism, not the standard Write tool. The feature request for dedicated PreMemoryWrite/PostMemoryWrite hooks ([GitHub #44820](https://github.com/anthropics/claude-code/issues/44820)) was closed as not planned. Conclusion: no mechanical gate is possible; prose rules are the only viable enforcement.
+
+**Decisions taken and why.** Mechanical enforcement was investigated first (PreToolUse deny on Write calls targeting the memory directory). Research showed this path is dead — memory writes don't flow through the hook pipeline. Prose rules in universal-behaviour.md are the fallback. Parallel dev-side rules added to project CLAUDE.md (not plugin-side, so not tracked here).
+
+**Pivots and surprises.** The V56 project-boundary check would theoretically block memory writes (path is outside project root), but only if they used the standard Write tool — which they don't.
+
+**Carried forward.** Nothing. Both rules are complete as shipped.
+
+---
+
 ## v64 — 2026-05-24 — Project-boundary PreToolUse hook
 
 **What shipped.** Scope 0065. New PreToolUse deny path — check (7)/(g) — blocks Edit/Write/MultiEdit calls targeting files outside the project root (`cwd`). Uses `Path.relative_to()` against the project root; fires before all other writing-tool checks so out-of-project files never reach locked-doc, serves-line, or batch-boundary logic. Deny message follows V43 mode-aware pattern with `[No-code method]` prefix and `What to do:` line directing users to open a separate session. Helper `make_project_boundary_deny_reason()` added alongside the existing V29 helpers. INVENTORY.md updated with check (g) and mode-aware range expanded to (a)–(g). Crash course gains project-boundary mention in both "What's inside the plugin" and "Two layers of permission" sections. BUILD-METHOD test-suite description updated. Five new tests in `TestProjectBoundary` class: edit outside denied, write outside denied, edit inside allowed, root file allowed, mode-aware suffix present. 152 tests pass (5 new + 147 existing, zero regressions). Footer bumps V57 → V58; plugin 0.57.0 → 0.58.0; PLUGIN_METHOD_VERSION 57 → 58.
