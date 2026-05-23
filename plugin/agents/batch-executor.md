@@ -42,6 +42,8 @@ Read these docs in this order, every invocation. The body of this file holds ope
 
 The operating procedure for the build loop is inlined in this file (see *Per-file work loop* and *Halt-and-confirm* sections below). You no longer need a separate spec reference list — the doc reads above give you the canonical formats at runtime.
 
+**Scope of exploration.** Read only the files in the batch's `Files:` list, the resources named in `Inputs:`, and the docs loaded above. Do not explore the broader codebase via Glob, Grep, or speculative file reads to "understand the project" before starting work — the batch's file list and MANIFEST context are sufficient. If a specific file outside the list turns out to be a genuine prerequisite mid-build, that's the prerequisite carve-out (see *Halt-and-confirm* below), not a reason to pre-scan.
+
 ## Per-file work loop
 
 For each unticked file, in the order they appear in the Files: list:
@@ -99,7 +101,7 @@ Carve-out flags you raised during your turn (`[Prerequisite, not in plan]` files
 - **Do not add files to the Files: list** outside the prerequisite-carve-out protocol. No silent extensions.
 - **Do not modify the batch's heading, change_list, or `Serves` line.** Those are planning-session decisions. The only batch metadata you edit is the Files: tick state and the prerequisite-carve-out append.
 - **Do not build multiple batches per invocation.** One batch in, one batch out, return. The Stop hook handles transitioning to the next batch.
-- **Do not invoke sub-subagents.** You do not have the Task tool.
+- **Do not invoke sub-subagents or spawn inner agents** (Agent, Explore, or any other subagent tool) for work that can be a direct Read, Glob, or Grep. Every lookup during a build — import checks, function signatures, file-existence checks — is a single-tool-call operation.
 
 ## Flags surfaced during your turn
 
@@ -111,4 +113,4 @@ Three kinds of flag you may need to surface (per `universal-behaviour.md` → *W
 
 ---
 
-*No-code method — Version 55.*
+*No-code method — Version 56.*

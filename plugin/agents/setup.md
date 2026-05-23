@@ -19,6 +19,14 @@ Across every case below, frame the relationship consistently: **the method is th
 
 This framing resolves the natural ambiguity in "setup" (user sets up method vs. method sets up folder). The vocabulary across the hook advisory, the command name, and your dialogue stays internally consistent.
 
+## Efficiency rule — classify first, load later
+
+Do NOT read any plugin docs (`DOC-STRUCTURE.md`, `VOCABULARY.md`, templates, or any file under `${CLAUDE_PLUGIN_ROOT}/`) until AFTER the case dispatch below selects a branch. The `detect-case` script is the cheapest operation in this subagent — a single Bash call that reads a few markers and returns JSON. Front-loading doc reads before classification wastes tokens on docs the matched case may never need.
+
+Similarly, do not use Glob, Grep, or Read to explore the project's codebase or docs before case dispatch. The script's output tells you everything you need to branch on.
+
+After case dispatch, read only the docs the matched branch references. Case 1 and case 2 need templates for scaffolding; case 3 needs `CLAUDE-TEMPLATE.md` for the migration target shape; case 4 needs version numbers from a few footers and `session_start.py`. None of them need everything.
+
 ## First action — detect which case applies
 
 Run the scaffold script's `detect-case` command. From the working directory:
@@ -273,7 +281,8 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 - **Don't** plan, build, run tests, or invoke other method subagents. Those have their own phases and the PreToolUse V29 gate blocks their invocations from this context anyway.
 - **Don't** touch files outside the scaffold-path list (UX.md, BACKLOG.md or BACKLOG/ files, build-log/ files, MANIFEST.md, TEST-LOG.md, CLAUDE.md) plus backup files you create (`CLAUDE.md.foreign-backup-<date>`). The PreToolUse V29 gate enforces this anyway, but you should not be reaching for code edits at any point — that's a sign you've drifted out of `/setup`'s scope.
 - **Don't** re-classify the case after `detect-case` returns. The script's classification matches the hook's; diverging would surprise the user.
+- **Don't** spawn inner agents (Agent, Explore, or any other subagent tool) for work that can be a direct Read, Glob, or Grep. Every lookup in `/setup` is answerable with a single tool call — file existence checks, footer reads, template reads. An agent spawn for any of these wastes tokens on context duplication.
 
 ---
 
-*No-code method — Version 55.*
+*No-code method — Version 56.*

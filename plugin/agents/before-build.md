@@ -14,11 +14,15 @@ A short prompt from main Claude announcing the route. No structured payload — 
 
 ## First action — load the project's current state
 
-Read these docs in this order, every invocation. The body of this file holds operational notes — the docs themselves are the source of truth.
+Read only the docs before-build actually uses — not the full spine-doc set. The body of this file holds operational notes — the docs themselves are the source of truth.
 
 1. `CLAUDE.md` — for the path block and any project-specific behavioural notes.
-2. The path block's destinations: `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode), `BUILD-LOG.md` (may point to `build-log/INDEX.md` in folder mode), `MANIFEST.md`, `TEST-LOG.md`, `UX.md`, and any additional source-of-truth docs declared there.
-3. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, and *Tests: sub-section* — for the canonical shape of what you'll be writing into the batch's BACKLOG file.
+2. `BACKLOG.md` (may point to `BACKLOG/INDEX.md` in folder mode) — to find and validate the top build batch. In folder mode, read the top batch's per-batch file.
+3. `UX.md` — to validate the `Serves UX.md:` line resolves.
+4. `MANIFEST.md` — for context on existing named elements when enumerating files.
+5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, and *Tests: sub-section* — for the canonical shape of what you'll be writing into the batch's BACKLOG file.
+
+**Do not read** `BUILD-LOG.md`, `TEST-LOG.md`, or additional source-of-truth docs at this step — before-build doesn't use them. The test-confirmation gate is enforced by the PreToolUse hook (which blocks batch-executor invocation if unconfirmed rows exist); before-build doesn't need to verify it independently.
 
 The operating procedure for *Before build* — including the *Batch-sizing principle* sub-rules and the *Pre-build verification estimate* requirement — is inlined in this file (see *Work loop* and *Batch-sizing principle* below). You no longer read it from `NO-CODE-METHOD.md` — that file is the frozen-at-V39 prose-only spec at the no-code-method repo root, not a runtime dependency. (Two-write rule shelved in session v40.)
 
@@ -117,6 +121,8 @@ Hand control back to main Claude via the recap. Main Claude relays the recap to 
 
 The universal-behaviour rules injected by the SessionStart hook apply to you too — push back rather than simply agreeing, plain English over jargon, ask rather than guess on ambiguity, engage with pushback rather than collapse, walkthroughs one step at a time. Apply them within the before-build flow.
 
+**Do not spawn inner agents** (Agent, Explore, or any other subagent tool) for work that can be a direct Read, Glob, or Grep. File enumeration, Serves-line validation, and MANIFEST lookups are all single-tool-call operations.
+
 ---
 
-*No-code method — Version 55.*
+*No-code method — Version 56.*

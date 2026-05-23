@@ -317,4 +317,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 55.*
+*No-code method — Version 56.*

@@ -93,6 +93,12 @@ Each `primary_intent` maps to a starting move:
 
 All three flows converge into the discuss-with-the-user step from *During planning*. The starting move is the only difference.
 
+### Doc-first ordering — mandatory for all three flows
+
+Before exploring the codebase via Glob, Grep, or file reads on source files, check UX.md and BACKLOG for scope existence. For feature requests and scope questions, the answer is almost always in the docs — either an entry exists in UX.md's Functionalities section, or it doesn't; either a planning or build batch already covers it, or it doesn't. Only explore code when the docs genuinely cannot answer the question (e.g. "does the codebase already have a partial implementation of X?" — MANIFEST.md might answer this, but if it doesn't, code exploration is warranted).
+
+This is a hard rule, not a preference. Exploring code before checking docs wastes tokens on information the docs already hold, and produces a worse answer — code tells you what *is*, not what was *decided*.
+
 ## Mixed-input sort
 
 Even when `primary_intent` is e.g. `test notes`, the opener may carry other items — a "by the way, can we add dark mode?" tucked alongside a paste of test output. Per the routing-priority rule in *At session start*, those secondary items don't redirect the flow; they get caught during the sort step — slotted into Suggestions or Discoveries depending on whether a matching `UX.md` entry exists. Your job is to *catch* the secondary items, not just process the primary one.
@@ -257,6 +263,8 @@ Before drift checks, prune TEST-LOG.md of rows whose tested component no longer 
 
 The universal-behaviour rules injected by the SessionStart hook apply to you too — push back rather than agree, plain English over jargon, ask rather than guess on ambiguity, engage with pushback rather than collapse. Apply them within the planning flow.
 
+**Do not spawn inner agents** (Agent, Explore, or any other subagent tool) for work that can be a direct Read, Glob, or Grep. Scope-existence checks, doc lookups, and MANIFEST cross-references are all single-tool-call operations. An agent spawn for any of these wastes tokens on context duplication and delays the planning flow.
+
 ---
 
-*No-code method — Version 55.*
+*No-code method — Version 56.*

@@ -6,6 +6,32 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v62 — 2026-05-23 — Subagent efficiency pass
+
+**What shipped.** Scope 0063. Efficiency instructions added to all five plugin subagents to reduce token cost and execution time, addressing E2E findings 1 and 7 from scope 0060 (setup ~163k tokens, planning ~75k+ for a scope-existence check). Three patterns enforced: (1) Classify/triage before doc loading — setup subagent gains a "classify first, load later" section before case dispatch, forbidding reads of DOC-STRUCTURE, VOCABULARY, templates, or any plugin-root file until after the case branch is selected. (2) Doc-first ordering — planning subagent gains a "doc-first ordering" subsection requiring UX.md and BACKLOG checks before any codebase exploration via Glob/Grep/file reads. Before-build subagent's initial reads trimmed from all path-block destinations to 5 items (CLAUDE.md, BACKLOG, UX.md, MANIFEST.md, DOC-STRUCTURE sections); BUILD-LOG, TEST-LOG, and additional docs explicitly deferred. After-build subagent's initial reads reduced to 4 items (CLAUDE.md, BACKLOG, TEST-LOG, MANIFEST) with explicit deferred-read schedule for DOC-STRUCTURE, build-log, and UX.md at their respective work-loop steps. Batch-executor gains a scope-of-exploration paragraph limiting reads to batch Files list, Inputs resources, and pre-loaded docs. (3) No inner agent spawning — all five subagents gain explicit behavioral instructions forbidding Agent/Explore tool spawning for work achievable via direct Read or Grep. Subagent tool restrictions already prevent this mechanically for most, but the E2E showed planning spawning a Haiku exploration agent — belt-and-suspenders instructions added. All 147 tests pass. Footer bumps V55 → V56; plugin 0.55.0 → 0.56.0; PLUGIN_METHOD_VERSION 55 → 56.
+
+**Decisions taken and why.** Doc-only changes (no Python hook changes) — all edits are subagent body markdown. The efficiency patterns are instructional guardrails, not mechanical enforcement. Mechanical enforcement would require new PreToolUse logic to detect agent-spawned-by-subagent contexts, which is out of scope and may not be possible (the hook can't reliably distinguish main-Claude actions from subagent actions). Instructional guardrails are the right tool here: the subagent bodies are the primary context the subagent sees, and explicit prohibition plus reasoning ("tokens are finite, every unnecessary read competes with the work you're here to do") is how the method's other behavioral rules work. Planning subagent's doc reads can't be deferred (drift checks need everything loaded), so the fix targeted doc-first ordering for codebase exploration instead of read deferral.
+
+**Pivots and surprises.** The planning subagent's inner-agent spawn observed in E2E may have been main Claude's action misattributed to the subagent, since the planning subagent's tool list doesn't include Agent. Added the explicit prohibition regardless — if a future platform change grants Agent access, the instruction is already there.
+
+**Carried forward.** Deferred smoke tests: add V56 subagent efficiency pass to the list (verify setup classifies before loading docs, planning checks docs before exploring code, no inner agents spawned — in a desktop-app burner session at 0068 E2E round 2). All prior deferred smoke tests unchanged.
+
+---
+
+## v61 — 2026-05-23 — Taskflow E2E prep and testing
+
+*Entry written in v62 — v61 shipped 0060 but context ran out before BUILD-LOG was written.*
+
+**What shipped.** Scope 0060. First real-project E2E test of the plugin against Taskflow. Nine findings surfaced across setup, planning, and session management. Six new scopes created (0063–0068) to address gaps found. Graduation (scope 0059) shelved indefinitely — context in OPEN-QUESTIONS.md. Crash course gains "sessions are stateless" paragraph. Pre_tool_use.py Windows em-dash fix committed.
+
+**Decisions taken and why.** Graduation shelved because the E2E findings showed the plugin needs more iteration before it's ready for public distribution. The six new scopes address concrete gaps found during testing. The E2E approach (run plugin against Taskflow in a desktop-app burner session, bring observations back to this project) validated as a testing method.
+
+**Pivots and surprises.** Token costs far higher than expected — setup at 163k tokens, planning at 75k+ for a scope-existence check. Prompted scope 0063 (this session's work). Windows em-dash encoding in pre_tool_use.py was a platform-specific bug not caught by tests.
+
+**Carried forward.** All nine E2E findings tracked via scopes 0063–0068. 0060 scope file kept (not deleted at v61 close) because downstream scopes reference its findings.
+
+---
+
 ## v60 — 2026-05-23 — Session performance tracking
 
 **What shipped.** Scope 0058. Structured `## Performance` section added to every per-build file in `build-log/`. Five mechanical measures captured automatically by the after-build subagent: batch completion status (Complete / Partial handoff), files-in-batch count, carve-out count (prerequisite + re-batch), Claude-verified test results (Pass/Fail breakdown), and user-verified test count pending. Optional `**Session notes:**` line for the user's subjective assessment — prompted at after-build closing but not required. (1) After-build subagent (`plugin/agents/after-build.md`) step 5b updated with the Performance section shape and per-measure derivation rules; step 8 gains a Session notes prompt. (2) DOC-STRUCTURE.md → *Build log structure* updated with Performance section spec and a **Performance section** paragraph. (3) VOCABULARY.md new entry: *Performance section*. (4) Build-log INDEX template HTML comment updated with Performance section shape. (5) Crash course build-log description updated to mention Performance. (6) BUILD-METHOD.md note added clarifying dev-project BUILD-LOG doesn't use the section. (7) INVENTORY.md after-build entry updated with V55 Performance section. (8) OPEN-QUESTIONS "Track session performance over time?" entry removed (shipped). All 147 tests pass. Footer bumps V54 → V55; plugin 0.54.0 → 0.55.0; PLUGIN_METHOD_VERSION 54 → 55.
