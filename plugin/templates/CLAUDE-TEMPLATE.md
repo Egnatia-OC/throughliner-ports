@@ -30,4 +30,4 @@ When the user asks how to install, disable, enable, or uninstall the no-code met
 
 
 ---
-*No-code method — Version 58.*
+*No-code method — Version 59.*

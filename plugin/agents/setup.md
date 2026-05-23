@@ -75,7 +75,7 @@ After the four answers:
 
 1. **Run check:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" check`. If `ready: false`, surface the conflicts and stop (this shouldn't happen in a genuinely empty folder — if it does, something changed mid-dialogue).
 2. **Run write:** `python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" write`. Surface the `files` list to the user.
-3. **Apply the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. In BACKLOG, seed the first build batch — in folder mode: create a per-batch file in `BACKLOG/` (allocate a number via `plugin/scripts/allocate_number.py`) and add its reference line to INDEX.md. The four-question answers go in as `[PROPOSED EDIT PENDING]` blocks in the destination doc's own `## Proposed edits pending` section if you want them pre-confirmed by the user in their next planning session; or apply them directly if the user reviewed and approved each answer as you went.
+3. **Apply the user's four answers.** Edit UX.md (it's allowed in this state because the PreToolUse V29 gate exempts scaffold paths during the unadopted-to-adopted transition; the V19 locked-doc check doesn't apply yet because the path block hasn't been set up). Replace template placeholders with the user's project context, principles, and functionalities. In BACKLOG, seed the first build batch — in folder mode: create a per-batch file in `BACKLOG/` (allocate a number by scanning `BACKLOG/` with Glob for files matching `[0-9]*-*.md`, extracting the highest leading number, and adding 1; start at `0001` if none exist) and add its reference line to INDEX.md. The four-question answers go in as `[PROPOSED EDIT PENDING]` blocks in the destination doc's own `## Proposed edits pending` section if you want them pre-confirmed by the user in their next planning session; or apply them directly if the user reviewed and approved each answer as you went.
 
 **Recap to main Claude:**
 
@@ -240,7 +240,7 @@ Surface the migration in the recap: "Migrated N build batch(es) in BACKLOG.md to
 1. Create a `BACKLOG/` directory at the project root.
 2. Create `BACKLOG/INDEX.md` from the single-file `BACKLOG.md` — keeping the Red flags, Planning batches, and Open questions sections, but replacing inline build batches with reference lines. Copy the file header and method footer.
 3. For each `### Batch:` inline batch in the Build batches section, extract it into a per-batch file:
-   - Allocate a number: `python "$CLAUDE_PLUGIN_ROOT/scripts/allocate_number.py" "<BACKLOG directory>"`.
+   - Allocate a number: scan `BACKLOG/` with Glob for files matching `[0-9]*-*.md`, extract the highest leading number, add 1 (start at `0001` if none exist).
    - Derive a kebab-case filename from the batch heading (strip special characters, lowercase, max ~50 chars): `NNNN-batch-name.md`.
    - Write the per-batch file with `# <batch heading>` as H1, then the full batch body (scope-context + build-operations).
    - Add `` - `NNNN-batch-name.md` — <one-line description> `` to INDEX.md's `## Build batches` section in the same priority order as the original.
@@ -265,7 +265,7 @@ If the flat file needs migrating:
 2. Create a `build-log/` directory alongside the flat file (same parent directory).
 3. **If the flat file has real build entries** (one or more `## ` headings below the file header — e.g. `## v3 — 2026-05-10 — First build`):
    a. Process entries chronologically (oldest first — they appear at the bottom of the file since the flat format is newest-first). For each entry:
-      - Allocate a number: `python "$CLAUDE_PLUGIN_ROOT/scripts/allocate_number.py" "<build-log directory>"`.
+      - Allocate a number: scan `build-log/` with Glob for files matching `[0-9]*-*.md`, extract the highest leading number, add 1 (start at `001` if none exist).
       - Derive a kebab-case suffix from the entry's one-line summary (strip special characters, lowercase, max ~50 chars): `NNN-summary-slug.md`.
       - Write the per-build file. Convert the entry's `## ` heading to `# ` (H1). Keep the full body (What shipped, Decisions, Pivots, Carried forward — and Performance if present).
    b. Create `build-log/INDEX.md` with the header from `${CLAUDE_PLUGIN_ROOT}/templates/build-log/INDEX-TEMPLATE.md` (replace `[Project Name]` with the project name from `CLAUDE.md`), the HTML comment block, then reference lines in newest-first order: `` - `NNN-summary-slug.md` — YYYY-MM-DD — One-line summary ``.
@@ -304,4 +304,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 58.*
+*No-code method — Version 59.*

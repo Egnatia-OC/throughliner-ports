@@ -161,7 +161,7 @@ When adding or modifying a build batch's `Serves UX.md:` line, verify that every
 2. **Red flags sub-section** — detect whether the batch's scope touches security-shaped surfaces (auth, passwords, tokens, secrets, PII, deletion of user data, payment, third-party API keys). If yes, write a **Red flags.** section naming the specific concerns and suggested mitigations. If no, omit the section entirely — do not write an empty one.
 3. **Build operations** — write the `Changes:` delimiter followed by the change-list bullets (with `[Requested]`/`[Suggested]` labels). Leave `Inputs:`, `Files:`, `Tests:` for the before-build subagent to populate.
 
-In folder mode: create a new per-batch file in `BACKLOG/` (allocate a number via `python "$CLAUDE_PLUGIN_ROOT/scripts/allocate_number.py" "<BACKLOG directory path>"`) and add a reference line (`` - `NNNN-batch-name.md` — one-line description ``) to INDEX.md's `## Build batches` section at the desired priority position. The batch file uses `# <batch name>` as its H1 heading, then scope-context and build-operations sections. In single-file mode: add a `### Batch: <name>` heading inline in the `## Build batches` section.
+In folder mode: create a new per-batch file in `BACKLOG/` (allocate a number by scanning `BACKLOG/` with Glob for files matching `[0-9]*-*.md`, extracting the highest leading number, and adding 1; if no matching files exist, start at `0001`) and add a reference line (`` - `NNNN-batch-name.md` — one-line description ``) to INDEX.md's `## Build batches` section at the desired priority position. The batch file uses `# <batch name>` as its H1 heading, then scope-context and build-operations sections. In single-file mode: add a `### Batch: <name>` heading inline in the `## Build batches` section.
 
 Surface the scope-context sections in the planning recap before writing them to BACKLOG — the user should see what Goal, Outputs, and Success criteria say before they're committed. This is the same discuss-then-write pattern used for everything else in BACKLOG.
 
@@ -219,7 +219,7 @@ Projects upgrading from an older method version may still have a *Proposed edits
 
 ## Deferred build-material aging
 
-In folder mode, build batches in `BACKLOG/` carry a sequential `NNNN` prefix allocated at creation time (via `allocate_number.py`). Completed batches are removed from `BACKLOG/` during step 2, leaving gaps in the number sequence. These gaps represent batches that shipped (or were dropped). Any batch still in `BACKLOG/` whose number is lower than the highest gap is aging — it was created before a batch that has already completed, yet it remains unbuilt.
+In folder mode, build batches in `BACKLOG/` carry a sequential `NNNN` prefix allocated at creation time (via Glob scan of existing filenames). Completed batches are removed from `BACKLOG/` during step 2, leaving gaps in the number sequence. These gaps represent batches that shipped (or were dropped). Any batch still in `BACKLOG/` whose number is lower than the highest gap is aging — it was created before a batch that has already completed, yet it remains unbuilt.
 
 **Detection (folder mode only):**
 
@@ -267,4 +267,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 58.*
+*No-code method — Version 59.*

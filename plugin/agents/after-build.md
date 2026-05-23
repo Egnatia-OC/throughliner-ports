@@ -64,7 +64,7 @@ The same fallback discipline lives in the test-confirmation gate (PreToolUse hoo
 
 After the load + identify + idempotency check, perform these steps in order. The first three are silent (`[SILENT]`); the fourth is a chat recap (`[BRIEF]`); the fifth and sixth are user prompts (`[PROMPT]`).
 
-1. **Update `MANIFEST.md` silently** (per *After every build* step 1, `[SILENT]` tag, and V27 Q2 — fully automatic). Detect what the batch created, renamed, or deleted via `git status --short` and `git diff --name-status HEAD`, then cross-reference against existing MANIFEST entries:
+1. **Update `MANIFEST.md` silently** (per *After every build* step 1, `[SILENT]` tag, and V27 Q2 — fully automatic). Use the batch's `Files:` list as the source of what changed — every file the batch modified is already enumerated there. Read each ticked file to determine its current state, then cross-reference against existing MANIFEST entries:
    - **Added file** that introduces a named element worth tracking → add a MANIFEST entry in the canonical one-line format from `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure*, **including the `(path)` field** naming the file. Use the multi-file or directory-level shape (see *Paths-field shape* in that section) when the element's scope is genuinely broader than one file. Preserve alphabetical order.
    - **Renamed file** corresponding to an existing MANIFEST entry → rename the entry's element name AND update its `(path)` field to the new location. Update the description if the rename signals a behavioural shift.
    - **Deleted file** corresponding to an existing MANIFEST entry → remove the entry.
@@ -114,7 +114,7 @@ After the load + identify + idempotency check, perform these steps in order. The
 
 5. **Write build-log entry** — `[SILENT]`. Create a per-build file in `build-log/` and prepend an index line to `build-log/INDEX.md`, using the canonical shape from `DOC-STRUCTURE.md` → *Build log structure*.
 
-   **5a. Allocate a filename.** Run `plugin/scripts/allocate_number.py` against the `build-log/` directory to get the next three-digit number. Derive a kebab-case suffix from the batch heading (e.g. batch heading "Add settings panel" → `settings-panel`). The filename is `NNN-kebab-suffix.md`.
+   **5a. Allocate a filename.** Scan `build-log/` with Glob for files matching `[0-9]*-*.md`, extract the leading numeric portion from each filename, find the highest number, and add 1. If no matching files exist, start at `001`. Derive a kebab-case suffix from the batch heading (e.g. batch heading "Add settings panel" → `settings-panel`). The filename is `NNN-kebab-suffix.md`.
 
    **5b. Write the per-build file.** Create `build-log/NNN-kebab-suffix.md` with this shape:
 
@@ -192,4 +192,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 58.*
+*No-code method — Version 59.*

@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v66 — 2026-05-24 — Permission prompt surface audit
+
+**What shipped.** Scope 0066. Audited why subagents generate a flood of permission prompts in Accept edits mode; root cause is a Claude Code platform bug where subagents don't inherit the parent session's permission mode or approved permissions (issues #28584, #40241, #18950). Five mitigations implemented across two categories: (a) plugin fixes — replaced `allocate_number.py` Bash calls with Glob-based allocation in all five subagent bodies (planning, before-build, batch-executor, after-build, setup), and replaced `git status`/`git diff` MANIFEST detection in after-build with batch Files-list-based detection; (b) user config and documentation — updated Crash course's "Which mode for which phase" table to recommend Auto for Build and After-build, added "Known limitation: subagent permission prompts" subsection documenting the platform bug with issue links and `/fewer-permission-prompts` recommendation. DOC-STRUCTURE.md updated (2 `allocate_number.py` references → abstract Glob-based description). INVENTORY.md updated to note subagents no longer call `allocate_number.py`. New research file `research/permission-prompt-surface-audit.md` with full audit table, classification, and remaining-unfixable analysis. BACKLOG-TEMPLATE.md straggler caught at V57 → bumped to V59. Footer bumps V58 → V59; plugin 0.58.0 → 0.59.0; PLUGIN_METHOD_VERSION 58 → 59.
+
+**Decisions taken and why.** Glob-based allocation chosen over keeping the Python script because every Bash call from a subagent generates a permission prompt due to the inheritance bug, and the allocation logic (scan for `NNNN-*.md`, find highest, add 1) is simple enough to express inline. The script itself remains in the repo for dev-side session creation. Auto mode recommended for Build/After-build because those phases make the most Bash calls (build commands, test commands) and the prompt volume in Accept edits is impractical.
+
+**Pivots and surprises.** Planning subagent has no Bash in its `tools:` line, meaning drift check 1 (`git diff` for BACKLOG staleness) can't actually run — noted but not in scope for this session. The `allocate_number.py` removal was more pervasive than expected: five subagent bodies plus DOC-STRUCTURE plus INVENTORY all referenced it.
+
+**Carried forward.** Planning subagent drift-check-1 feasibility (no Bash access) — not yet scoped. All prior deferred smoke tests carry forward to 0068 (E2E round 2), plus V59's Glob-based allocation and Auto-mode recommendation.
+
+---
+
 ## v65 — 2026-05-24 — Memory-routing and research-filing rules
 
 **What shipped.** No scope file. Two plugin-side behavioural rules added to `universal-behaviour.md`, plus one new research file.

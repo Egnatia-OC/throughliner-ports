@@ -287,12 +287,18 @@ The method's "planning session" is not the same as Claude Code's "plan mode." Pl
 |---|---|---|
 | Planning | Accept edits | The planning subagent edits BACKLOG.md and writes proposed-edit blocks. Plan mode would block those. |
 | Before-build | Accept edits | Writes the Files: sub-section into BACKLOG.md. |
-| Build | Accept edits (or Auto) | Source-file edits. The plugin's hooks enforce batch boundaries regardless of mode. |
-| After-build | Accept edits (or Auto) | Writes to MANIFEST.md, TEST-LOG.md, build-log/. |
+| Build | Auto | Source-file edits. The plugin's hooks enforce batch boundaries regardless of mode. Auto reduces permission prompts from subagents (see *Known limitation* below). |
+| After-build | Auto | Writes to MANIFEST.md, TEST-LOG.md, build-log/. Same rationale as Build. |
 | Pre-method ideation | Plan mode | Exploring the app idea before running `/setup` — no file edits needed yet. |
 | Reviewing a locked batch | Plan mode (optional) | Reading the batch before `/build` — useful for a read-only review pass. |
 
-Auto is viable during builds because the plugin's PreToolUse hooks enforce the same boundaries that Accept edits prompts the no-coder about — locked docs, batch file lists, the test-confirmation gate. The hooks fire in every mode, including Auto.
+Auto is the recommended mode for Build and After-build because the plugin's PreToolUse hooks are the real guardrails — locked docs, batch file lists, the test-confirmation gate, the destructive-git guard. The hooks fire in every mode, including Auto. Switching to Auto doesn't weaken any method protection; it reduces the permission prompts that interrupt subagent execution.
+
+### Known limitation: subagent permission prompts
+
+Claude Code's subagents currently prompt for permission on every tool call — including read-only operations like Read, Glob, and Grep — regardless of the session's permission mode. This is a Claude Code platform bug, not a plugin design problem ([#28584](https://github.com/anthropics/claude-code/issues/28584), [#40241](https://github.com/anthropics/claude-code/issues/40241), [#18950](https://github.com/anthropics/claude-code/issues/18950)). The prompt volume will drop when Claude Code fixes subagent permission inheritance.
+
+In the meantime, Auto mode produces the fewest prompts. After your first build cycle, run Claude Code's built-in `/fewer-permission-prompts` skill — it scans your session transcripts for common tool calls and adds a prioritized allowlist to the project's `.claude/settings.json`. This may not fully cover subagent calls (due to the inheritance bug), but it helps with main-conversation prompts and will cover subagents once the bug is fixed.
 
 ## What's editable
 
@@ -389,4 +395,4 @@ Reach for them when:
 For everything else, this primer is enough.
 
 ---
-*No-code method — Version 58.*
+*No-code method — Version 59.*

@@ -92,4 +92,4 @@ Method-specific terms used across the plugin (subagent bodies, hook deny message
 - **Test-confirmation gate.** Structural enforcement that a new build batch cannot start while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. Hook side (load-bearing): PreToolUse on `Task` targeting batch-executor reads TEST-LOG and refuses invocation if unconfirmed rows exist from the previous batch's session — falling back to "any unconfirmed row blocks" if the project doesn't keep a build log for session identification. Subagent side (UX): the planning subagent's first sub-step walks the user through per-row read-back. Defined by the *Do not invoke the batch-executor* rule in `universal-behaviour.md` → *Prohibited behaviours*, made trustworthy by the *Never infer completion* rule in *Required behaviours*, and made retestable over time by drift check 5 (retest after change).
 
 ---
-*No-code method — Version 58.*
+*No-code method — Version 59.*

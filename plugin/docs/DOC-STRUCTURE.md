@@ -128,7 +128,7 @@ Starts empty. Entry-format reminder lives in an HTML comment until the first bui
 
 The after-build subagent appends one line per build at the top of the list (below the header and comment block), pushing earlier entries downward.
 
-**Per-build files.** One file per build, named `NNN-batch-name.md` (three-digit sequential number allocated via `plugin/scripts/allocate_number.py`, plus a kebab-case suffix derived from the batch heading). Each file:
+**Per-build files.** One file per build, named `NNN-batch-name.md` (three-digit sequential number allocated by scanning the directory for existing numbered files, plus a kebab-case suffix derived from the batch heading). Each file:
 
 ```markdown
 # <Session> — YYYY-MM-DD — One-line summary
@@ -243,7 +243,7 @@ BACKLOG consolidates everything deferred. Two formats, auto-detected by the plug
   - `0002-second-batch-name.md` — one-line description
   ```
 
-  The `NNNN` number is allocated at creation time (via `plugin/scripts/allocate_number.py`) and never changes. Reordering means moving lines in the reference list, not renaming files.
+  The `NNNN` number is allocated at creation time (by scanning the directory for existing numbered files and picking the next unused number) and never changes. Reordering means moving lines in the reference list, not renaming files.
 
   **Batch structure — full shape.** Sections appear in this order within each batch. The scope-context sections are written by the planning subagent when the batch is created; the build-operations sections are populated by the before-build subagent during batch lock-in. In folder mode, the heading is `# <name>` (H1); in single-file mode it's `### Batch: <name>`.
 
@@ -317,4 +317,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 58.*
+*No-code method — Version 59.*

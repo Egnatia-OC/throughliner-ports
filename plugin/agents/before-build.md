@@ -80,7 +80,7 @@ Three scenarios halt before you produce the recap. All surface in chat and wait 
 
 **(B) Top batch's change list is too vague to enumerate Files: confidently.** Example: a bullet that reads "Improve onboarding" with no specifics. Halt before guessing. Surface the ambiguity in chat, name the missing detail, and ask the user. Guessing would seed batch-executor with a malformed Files: list and force the prerequisite carve-out to fire repeatedly during the build — neither serves the method.
 
-**(C) Verification-burden estimate triggers a split.** Per *Batch-sizing principle* above. Halt before you finalise Files: in BACKLOG. Surface the verification list in chat, propose a split, and wait for user okay. On user okay, split the batch: the current batch keeps the changes (and Files: entries) whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries (same protocol as batch-executor's re-batching carve-out). In folder mode: create a new per-batch file (allocate a number via `plugin/scripts/allocate_number.py <BACKLOG-dir>`) and add its reference line to INDEX.md immediately after the current batch's line. Then re-run the work loop on whichever batch is now top.
+**(C) Verification-burden estimate triggers a split.** Per *Batch-sizing principle* above. Halt before you finalise Files: in BACKLOG. Surface the verification list in chat, propose a split, and wait for user okay. On user okay, split the batch: the current batch keeps the changes (and Files: entries) whose verification surface forms one coherent unit; the rest moves to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries (same protocol as batch-executor's re-batching carve-out). In folder mode: create a new per-batch file (allocate a number by scanning `BACKLOG/` with Glob for files matching `[0-9]*-*.md`, extracting the highest leading number, and adding 1; start at `0001` if none exist) and add its reference line to INDEX.md immediately after the current batch's line. Then re-run the work loop on whichever batch is now top.
 
 This is the only place reorganise authority lives in before-build.
 
@@ -125,4 +125,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 58.*
+*No-code method — Version 59.*

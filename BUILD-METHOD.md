@@ -35,7 +35,7 @@ In order:
 1. `git describe --tags --abbrev=0` from `sovereign-implementer/` — confirm current version.
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Crash course.md` at `HEAD` — the active method (plugin-side, operational). The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) is frozen at V39 — read only if you need the prose-spec form, not for current rules.
 3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
-4. Read the active scope file from `planning/sessions/`. Scope files use the naming convention `NNNN-kebab-title.md` (e.g. `0050-adr-style-numbering.md`). The active scope file is named in PLAN.md's session list as the next unshipped row. Use the absolute path (see `CLAUDE.md → Current state` for why). If no unshipped scope file exists, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
+4. Read the active scope file from `planning/sessions/`. Scope files use the naming convention `NNNN-kebab-title.md` (e.g. `0050-adr-style-numbering.md`). To find the active scope: scan PLAN.md's session list top to bottom, skip rows ending with `**Shipped**` or `**Parked**`, and pick the first unmarked row. Use the absolute path (see `CLAUDE.md → Current state` for why). If no unmarked row exists, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
 
 Then read Alex's opener and route. `CLAUDE.md → Working with me` governs interaction shape. If the task isn't clear, report what was loaded and ask. Don't draft.
 

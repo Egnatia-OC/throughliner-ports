@@ -77,7 +77,7 @@ If, mid-build, you realise the verification burden is much higher than the pre-b
 
 1. **Halt.** Do not continue editing.
 2. **Surface in chat.** State what changed in your estimate — what new behaviour you didn't account for, why the test list ballooned. Propose a split of the remaining (still-unticked) files into smaller batches.
-3. **On the user's okay**, re-organise. Completed (`- [x]`) files stay in the current batch. Unticked files move to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries. In folder mode: create a new per-batch file (allocate a number via `plugin/scripts/allocate_number.py <BACKLOG-dir>`) and add its reference line to INDEX.md immediately after the current batch's line.
+3. **On the user's okay**, re-organise. Completed (`- [x]`) files stay in the current batch. Unticked files move to a new batch (or batches) created **immediately below** the current batch in priority. The new batches inherit the current batch's scope-context sections (Goal, Outputs, Success criteria, and any Decisions/Dependencies/Red flags) and `Serves` line(s) unless the split crosses serve-line boundaries. In folder mode: create a new per-batch file (allocate a number by scanning `BACKLOG/` with Glob for files matching `[0-9]*-*.md`, extracting the highest leading number, and adding 1; start at `0001` if none exist) and add its reference line to INDEX.md immediately after the current batch's line.
 4. **Label `[Re-batch, not in plan]`** in the build recap.
 
 Mechanism: `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* → Re-batching carve-out.
@@ -113,4 +113,4 @@ Three kinds of flag you may need to surface (per `universal-behaviour.md` → *W
 
 ---
 
-*No-code method — Version 58.*
+*No-code method — Version 59.*
