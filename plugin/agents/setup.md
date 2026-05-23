@@ -225,14 +225,15 @@ On confirmation, edit every footer via `Edit` — including locked docs like `UX
 
 Don't skip any doc silently. If a doc's footer is already current, omit it from the list above.
 
-**After footer bumps — BACKLOG batch-structure migration (V47).** Check whether `BACKLOG.md` contains build batches in the pre-V47 format (no scope-context sections, no `Changes:` delimiter). Detection: a `### Batch:` heading followed directly by `- [Requested]` or `- [Suggested]` change bullets with no `**Goal.**` section between the heading and the bullets.
+**After footer bumps — BACKLOG batch-structure migration (V47).** Check whether `BACKLOG.md` contains build batches in the pre-V47 format (no scope-context sections, no `Changes:` delimiter). Detection: a `### Batch:` heading with no `**Goal.**` section anywhere in the batch body — regardless of whether change-list bullets carry `[Requested]`/`[Suggested]` labels (pre-V47 batches often don't have them).
 
 For each old-format batch found:
 
-1. Insert stub scope-context sections between the batch heading and the change list: `**Goal.**` [To be filled in during the next planning session.], `**Outputs.**` [To be filled in during the next planning session.], `**Success criteria.**` [To be filled in during the next planning session.]. Omit Decisions, Dependencies, and Red flags (they're conditional sections — empty by default).
-2. Insert a `Changes:` delimiter line immediately before the first change-list bullet.
+1. **Extract existing prose.** Check whether any non-blank, non-bullet prose lines exist between the batch heading and the first `- ` change bullet (or `Files:` line if no change bullets). This prose is the original entry's scope content — it may not be in Goal/Outputs/Success criteria format, but it's real content the no-coder wrote.
+2. **Insert scope-context sections.** If prose was found: use it as the `**Goal.**` content verbatim, then add `**Outputs.**` and `**Success criteria.**` with `Scope not yet defined — fill during the next planning session.` If no prose was found: add all three sections (`**Goal.**`, `**Outputs.**`, `**Success criteria.**`) with `Scope not yet defined — fill during the next planning session.` Omit Decisions, Dependencies, and Red flags (they're conditional sections — empty by default). **Do not use square-bracket placeholders** like `[To be filled in...]` — before-build reads those as blocking template content and refuses to lock the batch.
+3. **Insert a `Changes:` delimiter line** immediately before the first change-list bullet.
 
-Surface the migration in the recap: "Migrated N build batch(es) in BACKLOG.md to V47 format (scope-context sections and Changes: delimiter added; fill in Goal/Outputs/Success criteria during the next planning session)." If all batches already have the new format or no build batches exist, skip silently.
+Surface the migration in the recap: "Migrated N build batch(es) in BACKLOG.md to V47 format (scope-context sections and Changes: delimiter added)." If all batches already have the new format or no build batches exist, skip silently.
 
 **After V47 migration — BACKLOG folder-split migration (V48).** Check whether the project still uses a single-file `BACKLOG.md` (detected by `CLAUDE.md`'s path block pointing directly at `BACKLOG.md` rather than `BACKLOG/INDEX.md`). If it does, migrate to folder mode:
 
@@ -255,6 +256,24 @@ Surface the migration in the recap: "Migrated BACKLOG.md → BACKLOG/ folder (IN
 3. Rename the `User Notes` column header to `Notes` (already handled by step 1's header replacement, but verify no HTML comment or template text in the file still references the old name — update those too).
 
 Surface the migration in the recap: "Migrated TEST-LOG.md from 8-column to 10-column format (Type and Verifier columns added; existing rows default to Look and click / User)." If TEST-LOG.md is already 10-column or empty, skip silently.
+
+**After TEST-LOG migration — BUILD-LOG folder migration (V50).** Check whether the project still uses a flat `BUILD-LOG.md` rather than a `build-log/` folder. Detection: `CLAUDE.md`'s path block has `"BUILD-LOG.md"` pointing to a path that does not end with `build-log/INDEX.md` (e.g. it points to `BUILD-LOG.md` or `no-code-method/BUILD-LOG.md`). If the project already uses `build-log/INDEX.md`, skip silently.
+
+If the flat file needs migrating:
+
+1. Read the flat `BUILD-LOG.md` file at the path from the path block.
+2. Create a `build-log/` directory alongside the flat file (same parent directory).
+3. **If the flat file has real build entries** (one or more `## ` headings below the file header — e.g. `## v3 — 2026-05-10 — First build`):
+   a. Process entries chronologically (oldest first — they appear at the bottom of the file since the flat format is newest-first). For each entry:
+      - Allocate a number: `python "$CLAUDE_PLUGIN_ROOT/scripts/allocate_number.py" "<build-log directory>"`.
+      - Derive a kebab-case suffix from the entry's one-line summary (strip special characters, lowercase, max ~50 chars): `NNN-summary-slug.md`.
+      - Write the per-build file. Convert the entry's `## ` heading to `# ` (H1). Keep the full body (What shipped, Decisions, Pivots, Carried forward — and Performance if present).
+   b. Create `build-log/INDEX.md` with the header from `${CLAUDE_PLUGIN_ROOT}/templates/build-log/INDEX-TEMPLATE.md` (replace `[Project Name]` with the project name from `CLAUDE.md`), the HTML comment block, then reference lines in newest-first order: `` - `NNN-summary-slug.md` — YYYY-MM-DD — One-line summary ``.
+4. **If the flat file is empty or template-only** (no `## ` entry headings beyond the file header): create `build-log/INDEX.md` from the template directly — header, HTML comment, footer. No per-build files needed.
+5. Update `CLAUDE.md`'s path block: change the `"BUILD-LOG.md"` value to point to `build-log/INDEX.md` (in the same directory prefix as the original path — e.g. `"no-code-method/BUILD-LOG.md"` becomes `"no-code-method/build-log/INDEX.md"`).
+6. Delete the old flat `BUILD-LOG.md`. If bash `rm` fails on Windows ACLs, surface the path and ask the user to delete it manually.
+
+Surface the migration in the recap: "Migrated BUILD-LOG.md → build-log/ folder (INDEX.md + N per-build file(s)). Path block updated." If the project already uses folder mode, skip silently.
 
 **Recap:**
 
@@ -285,4 +304,4 @@ If any step fails (scaffold script error, file IO error, Bash command refused), 
 
 ---
 
-*No-code method — Version 56.*
+*No-code method — Version 57.*
