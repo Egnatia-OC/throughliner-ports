@@ -20,6 +20,10 @@ The block is fenced JSON (not freeform markdown) so plugin hooks can parse it de
 
 If the project has additional source-of-truth docs (see `DOC-STRUCTURE.md` → *Additional source-of-truth docs*), add a `"<DOC>.md": "<path>"` entry to the block above for each one. If a doc is moved later, update its entry — Claude Code will catch unresolved paths at session start and propose the correction, but the declaration here is the source of truth.
 
+## Plugin management
+
+When the user asks how to install, disable, enable, or uninstall the no-code method plugin, do not guess — read the Crash course's *Managing the plugin* section first. The Crash course is a humans-only reference doc browsable at https://github.com/FlintCraftTech/sovereign-implementer/blob/main/Crash%20course.md. Key fact: the `/plugin` command is CLI-only and does not work in the Claude Code desktop app.
+
 ## Project-specific notes
 
 [Any behavioural notes, terminology, or rules specific to this project that don't belong in the method's general spec or the source-of-truth docs. Most projects can leave this section empty. Delete this instruction when filled in, or leave the section empty.]

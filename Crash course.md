@@ -21,7 +21,7 @@ Install via marketplace (persists across sessions):
 
 For development or one-off use, `claude --plugin-dir <path-to-clone>/plugin` loads the plugin for a single session without installing.
 
-**Disabling the plugin in a specific project.** Once installed via marketplace, the plugin fires in every folder. To turn it off in a particular project: open a Claude Code session in that folder, type `/plugin`, go to the Installed tab, and toggle the plugin off. The setting sticks for that project — the plugin stays active everywhere else.
+**Desktop app users.** The `/plugin` command is only available in the Claude Code CLI — it does not work in the Claude Code desktop app (Windows or Mac). This is a Claude Code platform limitation ([#42142](https://github.com/anthropics/claude-code/issues/42142)), not specific to this plugin. Desktop app users must run the install commands in a CLI terminal first: open a terminal, run `claude`, and execute the `/plugin marketplace add` and `/plugin install` commands there. Once installed, the plugin loads automatically in desktop app sessions. See *Managing the plugin* below for disable, re-enable, and uninstall instructions.
 
 A first session in Sovereign Implementer is distinct from a normal build sequence session:
 
@@ -30,6 +30,58 @@ A first session in Sovereign Implementer is distinct from a normal build sequenc
 - For an empty folder, `/setup` scaffolds the spine docs (CLAUDE.md, UX.md, BACKLOG/ folder, build-log/ folder, MANIFEST.md, TEST-LOG.md) and creates `planning/drafts/` and `research/` folders, then walks four prompts in order: project context, UX principles, core functionalities, and a first build batch sketch.
 - The dialogue's outputs land as `[PROPOSED EDIT PENDING]` blocks in the destination docs' own *Proposed edits pending* sections (e.g. UX.md's `## Proposed edits pending`). The no-coder applies the proposed edits to UX.md's main body by hand (the doc is read-only to Claude), and converts the first-build-batch sketch into a proper build batch with a `Serves UX.md:` line pointing at the entry it implements.
 - After applying the proposed edits, the project is ready for its first build. Run `/before-build` to lock the next batch, then `/build` to execute it. The plugin orchestrates the rest.
+
+## Managing the plugin
+
+All plugin management commands use the Claude Code CLI. The `/plugin` command does not work in the desktop app ([#42142](https://github.com/anthropics/claude-code/issues/42142)). Desktop app users must open a terminal, run `claude`, and use the commands below. Changes made via CLI take effect in the desktop app on the next session.
+
+### Disabling in a specific project
+
+Once installed via marketplace, the plugin fires in every folder. To turn it off in a particular project without uninstalling:
+
+Open a CLI session in that folder and run:
+
+```
+/plugin disable no-code-method@sovereign-implementer
+```
+
+Or use the interactive UI: type `/plugin`, go to the **Installed** tab, select the plugin, press Enter, and choose **Disable**.
+
+Run `/reload-plugins` afterward for the change to take effect in the current session. The disable sticks for that project folder — the plugin stays active everywhere else.
+
+### Re-enabling
+
+Open a CLI session in the project folder and run:
+
+```
+/plugin enable no-code-method@sovereign-implementer
+```
+
+Or use the interactive UI: type `/plugin`, go to the **Installed** tab, expand the **Disabled plugins** section at the bottom, select the plugin, press Enter, and choose **Enable**. Run `/reload-plugins` afterward.
+
+### Uninstalling
+
+To remove the plugin entirely:
+
+```
+/plugin uninstall no-code-method@sovereign-implementer
+```
+
+Use the CLI command, not the `/plugin` UI's uninstall option — the UI uninstall has been reported as unreliable ([#52456](https://github.com/anthropics/claude-code/issues/52456)).
+
+### For `--plugin-dir` sessions
+
+The plugin is only loaded for that one session. Close the session and start a new one without the `--plugin-dir` flag. There is nothing to disable or uninstall.
+
+### Known platform issues affecting plugin management
+
+Two Claude Code bugs may affect plugin management as of May 2026:
+
+- **Disabled plugins may still run hooks** ([#39307](https://github.com/anthropics/claude-code/issues/39307)). If you disable the plugin but its hooks still fire, uninstall it instead of disabling.
+- **`enabledPlugins: false` in settings.json may be ignored** ([#28554](https://github.com/anthropics/claude-code/issues/28554)). Editing settings.json directly may not take effect. Use the `/plugin disable` command instead.
+
+These are Claude Code platform issues, not specific to this plugin.
+
 
 ## Guardrail .md docs
 
@@ -196,7 +248,7 @@ Until `/setup` runs, **PreToolUse** denies Edit, Write, MultiEdit, and method-su
 - *Existing code, foreign docs* (most commonly: Claude Code's built-in `/init` ran first) → offers to **migrate** the existing CLAUDE.md to method spec (preserving content — Claude proposes edits and iterates with the no-coder until the migration plan is right; anything that does not fit cleanly lands as `[PROPOSED EDIT PENDING]` blocks so nothing is lost), **overwrite** the existing CLAUDE.md after backing it up, or **leave alone**.
 - *Already method-managed* → detects template state, surfaces any version mismatch, offers a **refresh** (bumps method-version footers across writable docs directly; locked docs get `[PROPOSED EDIT PENDING]` entries for the no-coder to bump by hand; project-specific content in CLAUDE.md stays intact) or **cancel**.
 
-Users who don't want the method in a particular folder don't need to go through `/setup` at all — they can disable the plugin for that project via `/plugin` → Installed → toggle off.
+Users who don't want the method in a particular folder don't need to go through `/setup` at all — they can disable the plugin for that project (see *Managing the plugin* above).
 
 Nothing destructive happens without explicit confirmation, and every destructive option backs up first.
 
