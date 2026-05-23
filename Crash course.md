@@ -58,6 +58,8 @@ Work in this method moves through two main phases — planning and build — loo
 
 The no-coder then `/clear`s, refreshes their copy of the project, and runs the user-verified tests the recap named. The outcomes (Pass / Fail / Skipped, plus notes) come back to the next planning session, which opens by reading the user-verified rows back row by row before any other work starts.
 
+**Sessions are stateless; the docs are the memory.** When a new session opens, the plugin reads the project's docs — BACKLOG, MANIFEST, TEST-LOG, build-log — to figure out where things stand. Which batches are ticked, which test rows are unconfirmed, what the last build shipped. Nothing is carried from the previous session's in-memory state. This means a no-coder can close a session, open a fresh one, and pick up where they left off — the docs are the continuity, not the session.
+
 The two-phase loop is the spine. Everything else is detail on what happens inside one phase or the other.
 
 ## The method absorbs mid-stream ideation

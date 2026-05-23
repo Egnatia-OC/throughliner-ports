@@ -63,7 +63,7 @@ Format and lifecycle: see project `CLAUDE.md` → *Open questions*.
 
 **What doesn't need a prerequisite.** Vxx scope files → BACKLOG batches (the existing batch format already covers the Outputs half; the Inputs line covers the rest). Build-log narrative (folder-mode since V50; already in the consumer method since V33).
 
-**Next step.** **Promoted to 0059** (session v47, 2026-05-22). Capstone session — all four prerequisites ship before 0059. Scope file at `planning/sessions/0059-graduation-dev-onto-method.md`.
+**Next step.** **Indefinitely shelved** (session v61, 2026-05-23). Previously promoted to 0059; scope file deleted, row moved to V60+ parking lot in PLAN.md. All four prerequisites shipped, but E2E testing (0060) revealed the plugin needs efficiency and correctness fixes (0063–0068) before dogfooding is practical. Restore when the method is stable enough to run its own dev project without burning excessive tokens or hitting missing migration paths.
 
 ---
 

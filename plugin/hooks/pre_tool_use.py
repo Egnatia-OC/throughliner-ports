@@ -236,7 +236,10 @@ ADDITIONAL_DOC_SECTION_PATTERN = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
 STRUCTURAL_SECTION_NAMES = frozenset({"proposed edits pending"})
 
 # V38: method-version footer pattern for the footer-stamp carve-out.
-FOOTER_LINE_PATTERN = re.compile(r"\*No-code method — Version \d+\.\*")
+# The em dash (U+2014) may arrive as the correct character or as a
+# mojibake sequence (â€") when Claude Code double-encodes UTF-8 on
+# Windows. The alternation handles both forms.
+FOOTER_LINE_PATTERN = re.compile(r"\*No-code method (?:—|â€”) Version \d+\.\*")
 
 # V45: proposed-edits section heading pattern for the section carve-out.
 PROPOSED_EDITS_SECTION_HEADING = re.compile(r"^## Proposed edits pending\s*$", re.MULTILINE)
