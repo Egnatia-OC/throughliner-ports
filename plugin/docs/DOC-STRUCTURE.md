@@ -140,11 +140,22 @@ The after-build subagent appends one line per build at the top of the list (belo
 **Pivots and surprises.** Anything that turned out differently than the plan expected — a bug, a wrong assumption, an external fact discovered mid-build.
 
 **Carried forward.** Items raised but not done, with destination (which planning batch, BACKLOG entry, or "not pursued — reason").
+
+## Performance
+
+- **Batch completion:** Complete / Partial (handoff)
+- **Files in batch:** N
+- **Carve-outs:** None / N prerequisite, N re-batch
+- **Claude-verified tests:** N Pass, N Fail (of N total)
+- **User-verified tests:** N pending
+- **Session notes:** (optional — added by the user after testing)
 ```
 
 **Session identifier.** Matches `TEST-LOG.md`'s `Session` column convention — project-internal tag (e.g. `V27`) if the project keeps tags, `YYYY-MM-DD` otherwise. The after-build subagent uses the same *Session identification* logic for both.
 
 **Ordering.** INDEX.md is newest-first. A reader scanning the full history opens INDEX.md; a reader looking for the most recent build's context opens the first referenced file.
+
+**Performance section.** Each per-build file ends with a `## Performance` section carrying structured mechanical measures from the build: batch completion status, file count, carve-out count, Claude-verified test results (Pass/Fail), and user-verified test count. Written by the after-build subagent from data it already has at recap time — no additional input needed. An optional `**Session notes:**` line can be added by the user after testing for subjective observations (what worked, what didn't, hypotheses for next time). The mechanical measures are queryable via grep across all build entries.
 
 **Maintenance.** After-build writes one per-build file and appends one index line per completed batch. The planning subagent reads the index for session identification (test-confirmation gate hook fallback). Entries are permanent — not pruned, not edited after the fact. If a later build invalidates a decision recorded in an earlier entry, the later entry says so in its own *Pivots and surprises*; the earlier entry stays as-is.
 
@@ -306,4 +317,4 @@ The after-build subagent uses the `Tests:` sub-section as the basis for opening 
   Open questions are distinct from planning batches: a planning batch names what it blocks (`Blocks:` line) and its resolution directly unlocks a build; an open question is non-blocking parking for ideas that aren't yet tied to a specific build. When an open question matures to the point where it blocks something specific, promote it to a planning batch.
 
 ---
-*No-code method — Version 54.*
+*No-code method — Version 55.*

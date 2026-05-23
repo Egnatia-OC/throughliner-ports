@@ -285,6 +285,8 @@ One entry per session at the top:
 **Carried forward.** Items raised but not done, with destination (which future `Vxx.md` or PLAN.md row, or "not pursued — reason").
 ```
 
+**Note:** Consumer-project build-log entries (in `build-log/`) carry an additional `## Performance` section with structured mechanical measures — see `DOC-STRUCTURE.md` → *Build log structure*. This dev-project BUILD-LOG does not use that section (it predates the mechanism and serves a different audience).
+
 Don't pad. A good entry is half a page; a great one is shorter. Audience: a friend skimming, not an auditor.
 
 ---

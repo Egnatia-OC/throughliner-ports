@@ -20,7 +20,16 @@ Entry file format (one file per build in this folder):
 **Pivots and surprises.** Anything that turned out differently than the plan expected — a bug, a wrong assumption, an external fact discovered mid-build.
 
 **Carried forward.** Items raised but not done, with destination (which planning batch, BACKLOG entry, or "not pursued — reason").
+
+## Performance
+
+- **Batch completion:** Complete / Partial (handoff)
+- **Files in batch:** N
+- **Carve-outs:** None / N prerequisite, N re-batch
+- **Claude-verified tests:** N Pass, N Fail (of N total)
+- **User-verified tests:** N pending
+- **Session notes:** (optional — added by the user after testing)
 -->
 
 ---
-*No-code method — Version 54.*
+*No-code method — Version 55.*

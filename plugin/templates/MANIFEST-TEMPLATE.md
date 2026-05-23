@@ -27,4 +27,4 @@ Proposed entries or updates that Claude has queued for this doc. Each block desc
 For the canonical block format, see `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 54.*
+*No-code method — Version 55.*

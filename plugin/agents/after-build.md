@@ -121,7 +121,23 @@ After the load + identify + idempotency check, perform these steps in order. The
    **Pivots and surprises.** <anything that turned out differently than the plan expected — carve-outs, bugs, wrong assumptions, external facts discovered mid-build; omit if none>
 
    **Carried forward.** <items raised in the end-of-recap flags that name deferred items, with destination; omit if none>
+
+   ## Performance
+
+   - **Batch completion:** <Complete | Partial (handoff)>
+   - **Files in batch:** <N>
+   - **Carve-outs:** <None | N prerequisite, N re-batch>
+   - **Claude-verified tests:** <N Pass, N Fail (of N total)>
+   - **User-verified tests:** <N pending>
    ```
+
+   The Performance section is mechanical — populated from data you already have at recap time. Each measure:
+
+   - **Batch completion** — `Complete` when all Files: entries are ticked; `Partial (handoff)` when the batch shipped with a `Handoff notes:` block (indicating the prior session prepared a handoff and this session completed it).
+   - **Files in batch** — count of `- [x]` entries in the Files: sub-section.
+   - **Carve-outs** — count of `[Prerequisite, not in plan]` labels in the Files: sub-section plus any re-batching splits. `None` when no carve-outs occurred.
+   - **Claude-verified tests** — count of TEST-LOG rows you wrote with `Verifier: Claude`, broken out by Pass/Fail. `0 Pass, 0 Fail (of 0 total)` when no Claude-verified tests exist.
+   - **User-verified tests** — count of TEST-LOG rows you wrote with `Verifier: User` (these have blank Status, awaiting the next planning read-back).
 
    Session identifier: per *Session identification* above. Date: today. Summary: one-line distillation of What shipped.
 
@@ -149,6 +165,7 @@ After the load + identify + idempotency check, perform these steps in order. The
 8. **Closing prompts** (per *After every build* steps 6–8):
    - `[PROMPT]` "Commit and tag this build before testing. A commit preserves the exact state the tests run against; a tag gives the drift checks a reference point for the next planning session." If the project uses git (`.git/` exists at project root), suggest: `git add -A && git commit -m "<batch heading>"` and `git tag <session tag>`. If the project doesn't use git, skip the suggestion.
    - `[PROMPT]` "Refresh your download of the project and begin testing. Bring per-row test outcomes (Pass / Fail / Skipped) for the user-verified tests to the next planning session — the planning subagent will walk each pending TEST-LOG row by row asking for the outcome."
+   - `[PROMPT]` "If you have any notes about how this build session went — what worked, what didn't, anything you'd do differently — you can add a `**Session notes:**` line to the Performance section of this build's log entry. This is optional; the mechanical measures are already recorded."
    - `[PROMPT]` "`/clear` and switch back to planning mode when testing is complete."
 
 Hand control back to main Claude via the recap. Main Claude relays the recap to the user.
@@ -168,4 +185,4 @@ The universal-behaviour rules injected by the SessionStart hook apply to you too
 
 ---
 
-*No-code method — Version 54.*
+*No-code method — Version 55.*
