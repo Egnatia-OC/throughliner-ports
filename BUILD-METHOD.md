@@ -172,7 +172,7 @@ python -m pytest tests/ -v
 
 **What it covers:**
 
-- **Hook subprocess tests** (`test_session_start.py`, `test_pre_tool_use.py`, `test_pre_tool_use_git_guard.py`, `test_post_tool_use.py`, `test_stop.py`) — pipe synthetic JSON into each hook script via subprocess, assert on exit code + stdout JSON shape. Tests every deny path (V29 adoption gate, locked-doc enforcement, serves-line check, batch boundary, V39 read-before-edit, V27 test-confirmation gate, V34 git guard) and every silent/allow path.
+- **Hook subprocess tests** (`test_session_start.py`, `test_pre_tool_use.py`, `test_pre_tool_use_git_guard.py`, `test_post_tool_use.py`, `test_stop.py`) — pipe synthetic JSON into each hook script via subprocess, assert on exit code + stdout JSON shape. Tests every deny path (V29 adoption gate, V56 project-boundary, locked-doc enforcement, serves-line check, batch boundary, V39 read-before-edit, V27 test-confirmation gate, V34 git guard) and every silent/allow path.
 - **Unit tests** (`test_project_state.py`, `test_parse_backlog.py`) — import the shared helpers directly and test individual functions: footer detection, path-block parsing, tier classification, adopt-case detection, TEST-LOG row parsing, BACKLOG parsing (single-file and folder mode), CLI invocation.
 
 **Fixtures** live at `tests/fixtures/` — committed synthetic project directories covering every tier: empty folder (tier 1), tier 2 (two variants: missing CLAUDE.md; unparseable path block), tier 3 (two variants: folder-mode BACKLOG; legacy single-file BACKLOG), unadopted-with-work (foreign CLAUDE.md + build manifest).

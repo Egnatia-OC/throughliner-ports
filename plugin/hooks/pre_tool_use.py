@@ -3,7 +3,14 @@
 PreToolUse hook for the no-code-method plugin.
 
 Runs a V29 adoption gate first (across Edit / Write / MultiEdit AND Task),
-then three checks on Edit / Write / MultiEdit and one check on Task:
+then four checks on Edit / Write / MultiEdit and one check on Task:
+
+  (7) Project-boundary check (V56) — Edit/Write/MultiEdit. Blocks writes
+      targeting paths outside the project root. Prevents a session in one
+      project from modifying files in another folder (e.g. a Taskflow
+      session writing to the plugin's own source code). Uses Path.relative_to
+      on already-resolved paths to detect containment. Fires after the V29
+      adoption gate and before all other writing-tool checks.
 
   (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs) —
       Edit/Write/MultiEdit. Locked docs are: UX.md, plus any additional
@@ -55,7 +62,7 @@ then three checks on Edit / Write / MultiEdit and one check on Task:
       in MANIFEST — defensive guard so the build cycle can't brick itself.
 
   (5) V29 adoption gate — Edit / Write / MultiEdit AND Task. Fires *before*
-      checks (1)–(4) so the gate isn't bypassed when the folder is
+      checks (1)–(4) and (7) so the gate isn't bypassed when the folder is
       unadopted. Denies Edit/Write/MultiEdit on non-scaffold-path files
       and Task invocations of method subagents (planning, before-build,
       batch-executor, after-build) when the folder lacks a method footer
@@ -93,10 +100,11 @@ Mechanisms:
   consult those docs (or its own SessionStart-injected rules) for specifics.
 
 The hook is deliberately lenient on edge cases — missing CLAUDE.md, an
-unparseable path block, the target file sitting outside the project root,
-UX.md missing or unparseable, no Functionalities section, TEST-LOG.md
-missing or empty: in all such cases it allows the tool call rather than
-blocking. A hook that blocks unexpectedly is far more disruptive than one
+unparseable path block, UX.md missing or unparseable, no Functionalities
+section, TEST-LOG.md missing or empty: in all such cases it allows the
+tool call rather than blocking. The one hard boundary is
+project-containment (V56): writes targeting paths outside the project
+root are always denied. A hook that blocks unexpectedly is far more disruptive than one
 that occasionally fails to enforce. The universal-behaviour rules surfaced
 via the SessionStart hook are the soft-net for any case this hook can't
 deterministically catch. The one exception is the test-confirmation gate's
@@ -1097,6 +1105,23 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
     return None
 
 
+# --- V56 project-boundary check helpers ---
+
+
+def make_project_boundary_deny_reason(target_path, project_root,
+                                      permission_mode=""):
+    """Build the deny-reason text when a writing tool targets a path outside
+    the project root."""
+    return (
+        f"[No-code method] BLOCKED: `{target_path}` is outside the project "
+        f"root (`{project_root}`). The no-code method plugin blocks edits to "
+        "files outside the project being worked on.\n\n"
+        "What to do: if you need to modify files in another project, open a "
+        "separate Claude Code session in that project's folder."
+        + _mode_suffix(permission_mode)
+    )
+
+
 # --- V27 test-confirmation gate helpers ---
 
 
@@ -1241,6 +1266,18 @@ def main() -> int:
             target_path = (project_root / target_path).resolve()
     except OSError:
         return emit_allow()
+
+    # V56 check (7): project-boundary. Block writes targeting paths outside
+    # the project root — a session in one project should not modify files in
+    # another folder.
+    try:
+        target_path.relative_to(project_root)
+    except ValueError:
+        return emit_deny(
+            make_project_boundary_deny_reason(
+                target_path, project_root, permission_mode
+            )
+        )
 
     locked_map = build_locked_map(project_root)
     logical_name = locked_map.get(str(target_path)) if locked_map else None

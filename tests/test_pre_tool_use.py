@@ -123,6 +123,47 @@ class TestV29AdoptionGate:
 
 
 # ---------------------------------------------------------------------------
+# V56 project-boundary check
+# ---------------------------------------------------------------------------
+
+class TestProjectBoundary:
+    def test_edit_outside_project_denied(self, adopted_folder):
+        outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
+        data = _edit_input(adopted_folder, outside_path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "outside the project root")
+
+    def test_write_outside_project_denied(self, adopted_folder):
+        outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
+        data = _write_input(adopted_folder, outside_path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "outside the project root")
+
+    def test_edit_inside_project_allowed(self, adopted_folder):
+        inside_path = str((adopted_folder / "app" / "src" / "SettingsScreen.kt").resolve())
+        data = _edit_input(adopted_folder, inside_path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        # Should not be denied by boundary check (may hit other checks)
+        if raw:
+            reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+            assert "outside the project root" not in reason
+
+    def test_edit_project_root_file_allowed(self, adopted_folder):
+        root_file = str((adopted_folder / "MANIFEST.md").resolve())
+        data = _edit_input(adopted_folder, root_file)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_mode_aware_suffix(self, adopted_folder):
+        outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
+        data = _edit_input(
+            adopted_folder, outside_path, permission_mode="Accept edits"
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "permission mode")
+
+
+# ---------------------------------------------------------------------------
 # Locked-doc enforcement
 # ---------------------------------------------------------------------------
 

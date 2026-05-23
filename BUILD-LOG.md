@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v64 — 2026-05-24 — Project-boundary PreToolUse hook
+
+**What shipped.** Scope 0065. New PreToolUse deny path — check (7)/(g) — blocks Edit/Write/MultiEdit calls targeting files outside the project root (`cwd`). Uses `Path.relative_to()` against the project root; fires before all other writing-tool checks so out-of-project files never reach locked-doc, serves-line, or batch-boundary logic. Deny message follows V43 mode-aware pattern with `[No-code method]` prefix and `What to do:` line directing users to open a separate session. Helper `make_project_boundary_deny_reason()` added alongside the existing V29 helpers. INVENTORY.md updated with check (g) and mode-aware range expanded to (a)–(g). Crash course gains project-boundary mention in both "What's inside the plugin" and "Two layers of permission" sections. BUILD-METHOD test-suite description updated. Five new tests in `TestProjectBoundary` class: edit outside denied, write outside denied, edit inside allowed, root file allowed, mode-aware suffix present. 152 tests pass (5 new + 147 existing, zero regressions). Footer bumps V57 → V58; plugin 0.57.0 → 0.58.0; PLUGIN_METHOD_VERSION 57 → 58.
+
+**Decisions taken and why.** Bash not blocked — parsing arbitrary shell syntax to determine file-write targets is unreliable; the 80/20 is the structured tool calls (Edit/Write/MultiEdit) whose file paths are explicit in the JSON input. Check placement chosen after target_path resolution but before locked_map build, so out-of-project paths short-circuit without wasting cycles on downstream checks. Leniency paragraph in the docstring updated to declare project-containment as the one hard boundary even in permissive modes.
+
+**Pivots and surprises.** None. Scope was well-bounded by the E2E finding.
+
+**Carried forward.** Bash boundary enforcement remains an open idea — could become a future scope if real-world sessions show shell-based cross-project writes. All prior deferred smoke tests carry forward to 0068 (E2E round 2), plus V58 project-boundary check.
+
+---
+
 ## v63 — 2026-05-24 — /setup case 4 completion
 
 **What shipped.** Scope 0064. Two gaps in `/setup` case 4 (already-adopted refresh) closed, both found during the 0060 Taskflow E2E test. (1) **BUILD-LOG folder migration** added to case 4's migration sequence — detects flat `BUILD-LOG.md`, creates `build-log/` folder with INDEX.md + per-build files extracted from existing entries, updates CLAUDE.md path block, deletes the old flat file. Parallels the existing BACKLOG folder-split and TEST-LOG column migrations. (2) **Batch stub quality** improved in the V47 batch-structure migration — detection broadened to catch pre-V47 batches regardless of whether change-list bullets carry `[Requested]`/`[Suggested]` labels (the Taskflow E2E batches didn't have them); original prose content between heading and change bullets is now extracted and used as Goal content instead of inserting `[To be filled in during the next planning session.]` placeholder; empty-scope batches get `Scope not yet defined — fill during the next planning session.` (no square brackets, so before-build doesn't treat it as blocking template content). INVENTORY.md setup entry updated with V57 migration capabilities. All 147 tests pass. Footer bumps V56 → V57; plugin 0.56.0 → 0.57.0; PLUGIN_METHOD_VERSION 56 → 57.
