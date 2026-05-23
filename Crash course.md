@@ -21,7 +21,50 @@ Install via marketplace (persists across sessions):
 
 For development or one-off use, `claude --plugin-dir <path-to-clone>/plugin` loads the plugin for a single session without installing.
 
-**Desktop app users.** The `/plugin` command is only available in the Claude Code CLI — it does not work in the Claude Code desktop app (Windows or Mac). This is a Claude Code platform limitation ([#42142](https://github.com/anthropics/claude-code/issues/42142)), not specific to this plugin. Desktop app users must run the install commands in a CLI terminal first: open a terminal, run `claude`, and execute the `/plugin marketplace add` and `/plugin install` commands there. Once installed, the plugin loads automatically in desktop app sessions. See *Managing the plugin* below for disable, re-enable, and uninstall instructions.
+**Desktop app users.** The `/plugin` command is only available in the Claude Code CLI — it does not work in the Claude Code desktop app (Windows or Mac). This is a Claude Code platform limitation ([#42142](https://github.com/anthropics/claude-code/issues/42142)), not specific to this plugin. Desktop app users must run the install commands in a CLI terminal first, then the plugin loads automatically in desktop app sessions.
+
+### Desktop app install procedure
+
+**First install:**
+
+1. Open a terminal (PowerShell on Windows, Terminal on Mac).
+2. Run `claude` to start a CLI session.
+3. Run `/plugin marketplace add <path-to-clone>` (the path to where you cloned the repo).
+4. Run `/plugin install no-code-method@sovereign-implementer`.
+5. Close the CLI session.
+6. Open the desktop app. The plugin should load automatically in your next session. To verify: open the desktop app's **Customise** menu (bottom-left gear icon) → **Plugins**. The plugin should appear in the list.
+
+**Verifying the installed version:**
+
+Open the desktop app → **Customise** → **Plugins**. Click the gear icon on the plugin entry. The version number is shown in the plugin details.
+
+**Updating to a new plugin version:**
+
+When the plugin repo is updated (you pull new changes or reclone), the marketplace install should pick up the new version because it points at the local clone. If the desktop app still shows the old version after pulling:
+
+1. Open a terminal, run `claude`.
+2. Run `/plugin uninstall no-code-method@sovereign-implementer`.
+3. Run `/plugin marketplace add <path-to-clone>` again.
+4. Run `/plugin install no-code-method@sovereign-implementer`.
+5. Close the CLI session. Close the desktop app completely — on Windows, use Task Manager to end the Claude process (the app may keep running in the background after closing the window). Reopen the desktop app.
+6. Verify the version in **Customise** → **Plugins** → gear icon.
+
+**Troubleshooting stale versions:**
+
+If you previously used `--plugin-dir` to load the plugin and then installed via marketplace, the desktop app may keep running the old `--plugin-dir` version. Symptoms: the version number in **Customise** → **Plugins** doesn't match what you installed, or hooks behave as if running an older method version. To fix:
+
+1. Open a terminal, run `claude`.
+2. Run `/plugin uninstall no-code-method@sovereign-implementer`.
+3. Close the CLI session.
+4. Open your Claude Code settings file (`~/.claude/settings.json` on Mac, `%USERPROFILE%\.claude\settings.json` on Windows). Look for any `enabledPlugins` entries referencing the old `--plugin-dir` path. Remove them.
+5. Close the desktop app completely — on Windows, use Task Manager to end the Claude process. On Mac, Cmd+Q or force-quit from Activity Monitor.
+6. Reopen the desktop app.
+7. Reinstall via CLI: `claude` → `/plugin marketplace add <path-to-clone>` → `/plugin install no-code-method@sovereign-implementer`.
+8. Verify in **Customise** → **Plugins** → gear icon.
+
+The `settings.json` manual edit (step 4) is a last resort — use it only when the CLI uninstall/reinstall cycle doesn't clear the stale version. The file may contain other plugin settings; edit only the entries related to this plugin.
+
+See *Managing the plugin* below for disable, re-enable, and uninstall instructions.
 
 A first session in Sovereign Implementer is distinct from a normal build sequence session:
 
@@ -33,13 +76,13 @@ A first session in Sovereign Implementer is distinct from a normal build sequenc
 
 ## Managing the plugin
 
-All plugin management commands use the Claude Code CLI. The `/plugin` command does not work in the desktop app ([#42142](https://github.com/anthropics/claude-code/issues/42142)). Desktop app users must open a terminal, run `claude`, and use the commands below. Changes made via CLI take effect in the desktop app on the next session.
+Once installed via marketplace, the plugin fires in every folder. The desktop app and the CLI offer different management paths.
 
 ### Disabling in a specific project
 
-Once installed via marketplace, the plugin fires in every folder. To turn it off in a particular project without uninstalling:
+**Desktop app (primary path).** Open the desktop app in the project folder where you want to disable the plugin. Open **Customise** (bottom-left gear icon) → **Plugins**. Click the gear icon on the plugin entry and toggle it off. The disable sticks for that project folder — the plugin stays active everywhere else.
 
-Open a CLI session in that folder and run:
+**CLI (alternative).** Open a CLI session in that folder and run:
 
 ```
 /plugin disable no-code-method@sovereign-implementer
@@ -47,11 +90,13 @@ Open a CLI session in that folder and run:
 
 Or use the interactive UI: type `/plugin`, go to the **Installed** tab, select the plugin, press Enter, and choose **Disable**.
 
-Run `/reload-plugins` afterward for the change to take effect in the current session. The disable sticks for that project folder — the plugin stays active everywhere else.
+Run `/reload-plugins` afterward for the change to take effect in the current session. Changes made via CLI take effect in the desktop app on the next session.
 
 ### Re-enabling
 
-Open a CLI session in the project folder and run:
+**Desktop app.** Open **Customise** → **Plugins**. Click the gear icon on the plugin entry and toggle it back on.
+
+**CLI.** Open a CLI session in the project folder and run:
 
 ```
 /plugin enable no-code-method@sovereign-implementer
@@ -61,13 +106,13 @@ Or use the interactive UI: type `/plugin`, go to the **Installed** tab, expand t
 
 ### Uninstalling
 
-To remove the plugin entirely:
+Use the CLI — the `/plugin` command is the only reliable uninstall path:
 
 ```
 /plugin uninstall no-code-method@sovereign-implementer
 ```
 
-Use the CLI command, not the `/plugin` UI's uninstall option — the UI uninstall has been reported as unreliable ([#52456](https://github.com/anthropics/claude-code/issues/52456)).
+Open a terminal, run `claude`, and run the command above. The UI uninstall option has been reported as unreliable ([#52456](https://github.com/anthropics/claude-code/issues/52456)).
 
 ### For `--plugin-dir` sessions
 
@@ -78,7 +123,7 @@ The plugin is only loaded for that one session. Close the session and start a ne
 Two Claude Code bugs may affect plugin management as of May 2026:
 
 - **Disabled plugins may still run hooks** ([#39307](https://github.com/anthropics/claude-code/issues/39307)). If you disable the plugin but its hooks still fire, uninstall it instead of disabling.
-- **`enabledPlugins: false` in settings.json may be ignored** ([#28554](https://github.com/anthropics/claude-code/issues/28554)). Editing settings.json directly may not take effect. Use the `/plugin disable` command instead.
+- **`enabledPlugins: false` in settings.json may be ignored** ([#28554](https://github.com/anthropics/claude-code/issues/28554)). Editing settings.json directly may not take effect. Use the `/plugin disable` command or the desktop app toggle instead.
 
 These are Claude Code platform issues, not specific to this plugin.
 

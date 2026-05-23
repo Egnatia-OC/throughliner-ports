@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v67 — 2026-05-24 — Desktop app install/update documentation
+
+**What shipped.** Scope 0067. Crash course updated with desktop-app-specific plugin management instructions. Two sections rewritten: *Install, and a first session* expanded from a one-paragraph desktop-app note into four subsections (first install procedure, version verification, updating to a new version, troubleshooting stale versions from prior `--plugin-dir` usage including the `settings.json` manual edit as last resort). *Managing the plugin* reframed so the desktop app toggle (Customise → Plugins → gear icon) is the primary disable/enable path for desktop users, with CLI as the alternative. Uninstall stays CLI-only due to UI uninstall unreliability (#52456). Doc-only session; no footer bump.
+
+**Decisions taken and why.** No footer bump — the session improved documentation accuracy (describing existing desktop app behaviour), not method rules or plugin behaviour. The desktop app toggle was confirmed working in v64; the install troubleshooting sequence was validated by Alex's actual experience during the 0060 E2E sessions.
+
+**Pivots and surprises.** None. Straightforward doc session.
+
+**Carried forward.** Nothing.
+
+---
+
 ## v66 — 2026-05-24 — Permission prompt surface audit
 
 **What shipped.** Scope 0066. Audited why subagents generate a flood of permission prompts in Accept edits mode; root cause is a Claude Code platform bug where subagents don't inherit the parent session's permission mode or approved permissions (issues #28584, #40241, #18950). Five mitigations implemented across two categories: (a) plugin fixes — replaced `allocate_number.py` Bash calls with Glob-based allocation in all five subagent bodies (planning, before-build, batch-executor, after-build, setup), and replaced `git status`/`git diff` MANIFEST detection in after-build with batch Files-list-based detection; (b) user config and documentation — updated Crash course's "Which mode for which phase" table to recommend Auto for Build and After-build, added "Known limitation: subagent permission prompts" subsection documenting the platform bug with issue links and `/fewer-permission-prompts` recommendation. DOC-STRUCTURE.md updated (2 `allocate_number.py` references → abstract Glob-based description). INVENTORY.md updated to note subagents no longer call `allocate_number.py`. New research file `research/permission-prompt-surface-audit.md` with full audit table, classification, and remaining-unfixable analysis. BACKLOG-TEMPLATE.md straggler caught at V57 → bumped to V59. Footer bumps V58 → V59; plugin 0.58.0 → 0.59.0; PLUGIN_METHOD_VERSION 58 → 59.
