@@ -77,13 +77,13 @@ Three plugin sub-categories: **Process** (phase orchestration), **Schemas** (doc
 
 ### Slash commands
 
-Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **skill-with-flags** (V19, skill with `disable-model-invocation: true`).
+All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
 
-- `/setup` — four-case adoption. Skill-with-flags. Scaffolds 6 spine templates + `planning/drafts/` + `research/`. **Shipped V29** (as `/adopt`; renamed V44).
+- `/setup` — four-case adoption. Scaffolds 6 spine templates + `planning/drafts/` + `research/`. **Shipped V29** (as `/adopt`; renamed V44).
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/plan` — planning subagent. *Pending; auto-route is current path.*
-- `/before-build` — before-build subagent. Commands-directory. **Shipped V25.**
-- `/build` — triggers batch-executor. Commands-directory. **Shipped V25.**
+- `/before-build` — before-build subagent. **Shipped V25.** Migrated to skills/ v71.
+- `/build` — triggers batch-executor. **Shipped V25.** Migrated to skills/ v71.
 
 ### Bundled artefacts
 
@@ -110,7 +110,7 @@ Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **sk
 | Always-loaded core skill | SessionStart `additionalContext` | Skills aren't always-loaded |
 | `batch-executor` enforces paths | PreToolUse hook enforces | Subagent config restricts tools, not paths |
 | Free-form path block | Fenced JSON | Robust hook parsing |
-| Standalone slash commands | Skills with flags | Claude Code merged commands into skills |
+| Standalone slash commands | Skills with flags (`skills/*/SKILL.md`) | Claude Code merged commands into skills; commands-directory retired v71 |
 | Stop hook auto-chains | One redirect per turn | Loop prevention |
 
 ## Risks (from Opus feasibility response)
@@ -125,4 +125,4 @@ Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **sk
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 60.*
+*No-code method — Version 61.*

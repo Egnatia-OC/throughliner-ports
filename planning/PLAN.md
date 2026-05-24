@@ -59,13 +59,18 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0065 | Project-boundary PreToolUse hook | Block Edit/Write/MultiEdit outside project root. **Shipped v64.** |
 | 0066 | Permission prompt surface audit | Glob-based allocation replaces Bash calls; Auto mode recommended. **Shipped v66.** |
 | 0067 | Desktop app install/update docs | Desktop-app procedures in Reference manual. **Shipped v67.** |
-| 0068 | Taskflow E2E round 2 | Full build cycle against Taskflow with 0063–0067 fixes. Requires batch 0001 filled. |
+| 0068 | Taskflow E2E round 2 | Full build cycle against Taskflow with 0063–0067 fixes. Skills migration. **Shipped v71.** |
 | 0069 | BACKLOG batch status tracking | Status: line (active/queued/parked/shipped) + parser + subagent transitions. **Shipped v70.** |
 | 0061 | Rename "Crash course" to "Reference manual" | Rename + update all references. Frees name for HTML guide. **Shipped v68.** |
 | 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. **Shipped v69.** |
+| 0070 | After-build close completeness | Doc-parity audit, idea sweep with routing, pre-commit checkpoint, CLAUDE.md extensibility section. |
+| 0071 | Subagent cost optimization | Planning subagent from ~31.6k to <15k tokens: conditional drift-check skip, classify-then-dispatch, Sonnet evaluation. |
+| 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. |
+| 0073 | Stop hook before-build→build chain fix | Stop hook exits silent after before-build (zero ticked = just locked). |
+| 0074 | Session-open status summary | User-facing batch count, next batch, and proceed prompt on session open. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
-48 sessions through 0068, plus V60+ TBD. Some will combine or split.
+56 sessions through 0074, plus V60+ TBD. Some will combine or split.
 
 ## Session-scope file shape
 

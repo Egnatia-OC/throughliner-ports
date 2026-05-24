@@ -24,25 +24,31 @@ For one-off use: `claude --plugin-dir <path-to-clone>/plugin` loads without inst
 
 ### Desktop app install procedure
 
-**First install:**
-1. Open a terminal (PowerShell/Terminal).
-2. Run `claude` to start a CLI session.
-3. `/plugin marketplace add <path-to-clone>`.
-4. `/plugin install no-code-method@sovereign-implementer`.
-5. Close CLI. Open desktop app. Verify: **Customise** (gear icon) → **Plugins**.
+**Packaging the plugin:**
+
+```powershell
+cd <path-to-clone>\sovereign-implementer
+Compress-Archive -Path plugin\* -DestinationPath sovereign-implementer-plugin.zip
+```
+
+This puts `.claude-plugin/plugin.json` at the zip root, which is what the desktop app expects.
+
+**Installing:**
+
+1. Click **Customise** in the top left corner.
+2. Click the plugin icon in the left sidebar.
+3. Click the **+** icon to the left of "Personal plugins."
+4. Click **Create plugin** → **Upload plugin**.
+5. Select the `.zip` file (not the folder). Click **Open**.
+
+**Updating:** Re-run the `Compress-Archive` command (delete the old zip first if it exists), then repeat steps 1–5. The desktop app replaces the previous version.
 
 **Verifying version:** Desktop app → **Customise** → **Plugins** → gear icon on plugin entry.
-
-**Updating:** After pulling new changes, if the desktop app shows the old version:
-1. CLI: `claude` → `/plugin uninstall no-code-method@sovereign-implementer`.
-2. `/plugin marketplace add <path-to-clone>` → `/plugin install no-code-method@sovereign-implementer`.
-3. Close CLI. Close desktop app completely (Windows: Task Manager to end process). Reopen.
-4. Verify version.
 
 **Troubleshooting stale versions:** If a previous `--plugin-dir` load persists:
 1. CLI: uninstall the plugin.
 2. Edit `~/.claude/settings.json` (`%USERPROFILE%\.claude\settings.json` on Windows) — remove `enabledPlugins` entries referencing the old path.
-3. Close desktop app completely. Reopen. Reinstall via CLI. Verify.
+3. Close desktop app completely. Reopen. Reinstall via CLI or re-upload zip. Verify.
 
 The `settings.json` edit is a last resort — only when CLI uninstall/reinstall doesn't clear the stale version.
 
@@ -73,11 +79,17 @@ Once installed, the plugin fires in every folder.
 
 ### Uninstalling
 
-CLI only — the reliable path:
+**Desktop app:**
+1. Click **Customise**.
+2. Click **Browse plugins**.
+3. Click **Code**.
+4. Click the gear icon on the Sovereign Implementer card.
+5. Click **Uninstall**.
+
+**CLI:**
 ```
 /plugin uninstall no-code-method@sovereign-implementer
 ```
-The UI uninstall has been reported as unreliable ([#52456](https://github.com/anthropics/claude-code/issues/52456)).
 
 ### For `--plugin-dir` sessions
 
@@ -322,4 +334,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 60.*
+*No-code method — Version 61.*

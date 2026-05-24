@@ -1,6 +1,8 @@
 ---
+name: build
 description: Build the top unticked batch from BACKLOG.md. Argument-less — out-of-order batches are handled by reordering BACKLOG.md during planning.
 allowed-tools: Read, Bash, Task
+user-invocable: true
 ---
 
 The user has invoked /build. Parse BACKLOG, then spawn batch-executor.

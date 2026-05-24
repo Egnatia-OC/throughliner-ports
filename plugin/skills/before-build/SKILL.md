@@ -1,6 +1,8 @@
 ---
+name: before-build
 description: Lock the next batch's file list and verification burden before code changes. Runs after planning; hands off with a "switch out of plan mode" prompt.
 allowed-tools: Task
+user-invocable: true
 ---
 
 The user has invoked /before-build. Spawn the before-build subagent via Task tool.
