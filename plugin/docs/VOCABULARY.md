@@ -98,4 +98,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks batch-executor. Subagent side: planning's per-row read-back.
 
 ---
-*No-code method — Version 62.*
+*No-code method — Version 63.*

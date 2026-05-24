@@ -65,7 +65,7 @@ Three plugin sub-categories: **Process** (phase orchestration), **Schemas** (doc
 
 ### Subagents (probabilistic, behavioural)
 
-- **planning** — V22 at `plugin/agents/planning.md`. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V32: inlined. V56: doc-first ordering, deferred-material aging.
+- **planning** — V22 at `plugin/agents/planning.md`. Model: Sonnet. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1; cold-start skip V63), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V32: inlined. V56: doc-first ordering, deferred-material aging. V63: classify-then-load, cold-start gate, reasoning constraint, Sonnet model.
 
 - **before-build** — V25 at `plugin/agents/before-build.md`. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. V32: inlined. Halt-and-confirm for (a) no batch, (b) malformed BACKLOG, (c) vague changes, (d) split needed.
 
@@ -125,4 +125,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 62.*
+*No-code method — Version 63.*
