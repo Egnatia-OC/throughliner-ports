@@ -1,128 +1,127 @@
 # Inventory — current architecture
 
-Two-layer split and final plugin component list. Living document — current state, not history. Originated as V17's design after the Opus feasibility check (`claude-code-plugin-feasibility-response.md`); revised as decisions land.
+Two-layer split and plugin component list. Living document — current state, not history.
 
 ## The two-layer split
 
-**Source-of-truth content (per-project):** filled-in `UX.md`, `BACKLOG.md`, `MANIFEST.md`, `CLAUDE.md`, and any project-specific additional SoT docs.
+**Source-of-truth content (per-project):** UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md, additional SoT docs.
 
-**Mechanical process (becomes plugin):** all hooks, subagents, skills, slash commands, and bundled artefacts orchestrating Claude Code in a project using the method.
+**Mechanical process (plugin):** hooks, subagents, skills, slash commands, and bundled artefacts.
 
-Three sub-categories on the plugin side (V17 walkthrough):
-
-- **Process** — phase orchestration (build sequence, routes, drift checks, proposed edits).
-- **Schemas** — what per-project docs must look like (was `DOC-STRUCTURE.md`).
-- **Behaviour contract** — how Claude must act (push back, no-stealth-fix, red-flag surfacing, etc.).
+Three plugin sub-categories: **Process** (phase orchestration), **Schemas** (doc structure specs), **Behaviour contract** (how Claude must act).
 
 ## Method-side doc fates
 
-| Doc | Home | Plugin component | Notes |
-|---|---|---|---|
-| `Crash course.md` | Method-dev repo root | Linked from plugin README (humans-only reference) | Updated as plugin architecture lands (V22 + V25 + V26); fully rewritten as standalone primer in V30; V43 added *Two layers of permission* section (explains Claude Code permission modes vs plugin hook enforcement). |
-| `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` skill-command (V29 — formerly `/init-project`) | **Path block format must change to fenced YAML/JSON in V18** for hook parsing. |
-| `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` | |
-| `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` | |
-| `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` | |
-| `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc <name>` | |
-| `DOC-STRUCTURE.md` | Plugin (live); repo root frozen at V39 | Live bundled reference doc at `plugin/docs/DOC-STRUCTURE.md`. Read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration). The V32 repo-root mirror is **frozen at V39 in session v40** — two-write rule shelved (`BUILD-METHOD.md` → *Two-write rule for canonical docs*). |
-| `VOCABULARY.md` | Plugin (live); repo root frozen at V39 | Live copy at `plugin/docs/VOCABULARY.md`. Holds method-term definitions (planning batch, build batch, test session, etc.) referenced from subagent bodies, hook deny messages, and other docs. The V32 repo-root mirror is **frozen at V39 in session v40** — two-write rule shelved. |
-| `NO-CODE-METHOD.md` | Repo root — **frozen at V39 in session v40** | Retired from plugin in V32. Lived at repo root as the canonical docs-only / project-agnostic spec — the prose-only version of the method, for use without the plugin. Subagents never read it at runtime; operating procedures are inlined into subagent bodies + `universal-behaviour.md`. Two-write maintenance shelved in v40 — the file is now a frozen V39 prose snapshot. Restoring two-write is one OPEN-QUESTIONS promotion away. |
+| Doc | Home | Plugin component |
+|---|---|---|
+| `Reference manual.md` | Repo root | Humans-only reference, linked from README |
+| `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
+| `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
+| `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
+| `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
+| `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc` |
+| `DOC-STRUCTURE.md` | Plugin (live); repo root frozen V39 | Bundled at `plugin/docs/DOC-STRUCTURE.md` |
+| `VOCABULARY.md` | Plugin (live); repo root frozen V39 | Bundled at `plugin/docs/VOCABULARY.md` |
+| `NO-CODE-METHOD.md` | Repo root — frozen V39 | Retired from plugin V32; prose-only snapshot |
 
 ## Project-side doc fates
 
-| Doc | Home |
+| Doc | Access |
 |---|---|
-| `UX.md` | Per-project; **read-only to Claude** (PreToolUse hook enforces) |
-| `BACKLOG/` (folder with `INDEX.md` + per-batch files) | Per-project; read/write to Claude (discussion-contract in subagent prompts) |
-| `MANIFEST.md` | Per-project; read/write to Claude |
-| `TEST-LOG.md` | Per-project; read/write to Claude (test-confirmation gate per V26 — V27 hook enforcement) |
-| `build-log/` (folder with `INDEX.md` + per-build files) | Per-project; read/write to Claude |
-| `CLAUDE.md` | Per-project; **path block in fenced YAML/JSON** for hook parsing |
-| Additional SoT docs | Per-project; read-only to Claude |
+| `UX.md` | Read-only to Claude (PreToolUse enforced) |
+| `BACKLOG/` | Read/write |
+| `MANIFEST.md` | Read/write |
+| `TEST-LOG.md` | Read/write (test-confirmation gate V27) |
+| `build-log/` | Read/write |
+| `CLAUDE.md` | Read/write; path block in fenced JSON |
+| Additional SoT docs | Read-only to Claude |
 
 ## Plugin components — final list
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Two responsibilities, both injected as `additionalContext`: (a) universal behavioural rules — push back on assumptions, surface red flags, plain English, no-stealth-fix, never-infer-completion, prohibited-behaviours block, flag taxonomy, response-shape tags glossary, main-Claude routing logic, editing-surfaces rule (V18; expanded V32 to absorb the rules formerly read from `NO-CODE-METHOD.md`); (b) foundational reads (CLAUDE.md, path block, SoT docs), template-state detection, resume detection (top build batch in `BACKLOG.md`), a version-footer mismatch tripwire (each SoT doc's footer vs. the plugin's current method version; mismatches surfaced in the state summary), a **TEST-LOG tripwire** (V27 — when `TEST-LOG.md` has previous-batch rows with `Confirmed Explicitly: No`, inject a routing override directing main Claude to the planning subagent regardless of opener classification, so the per-row read-back per `planning.md` → *Close the previous build's test session* runs before any new work), a **Red flags tripwire** (V54 — when BACKLOG's `## Red flags` section contains any `**[RED FLAG]**` entries, the tier 3 state summary surfaces each flag prominently with a directive to acknowledge before other work), and a prose state summary hinting at the route — added V21 (state summary + footer tripwire), V27 (TEST-LOG tripwire + `TEST-LOG.md` in `SPINE_FILENAMES`), V54 (Red flags tripwire). **Three-tier behaviour:** tier 1 (non-method folder — no `CLAUDE.md`, no method-footer spine docs) emits nothing; plugin invisible. Tier 2 (partial — `CLAUDE.md` with unparseable path block, or spine docs without `CLAUDE.md`) emits universal rules + a single-paragraph gap flag pointing at `/setup` (V29 — formerly `/init-project` and `/migrate`, now unified). Tier 3 (complete) emits universal rules + full state summary, including the TEST-LOG tripwire block when fired. Route classification of the opener stays with Claude — the hook flags only deterministic structural state, with the V27 TEST-LOG tripwire as the one routing-override exception. **V43:** tier 2 and tier 3 output now opens with a two-layer-permission-model preamble (one paragraph, prepended before universal-behaviour rules) explaining that method deny messages (`[No-code method]` prefix) fire regardless of Claude Code permission mode. *Replaces the original "always-loaded core skill" idea (skill bodies aren't always-loaded). Originally planned as `UserPromptSubmit` for per-turn re-injection, but plugin `UserPromptSubmit` hooks don't execute (anthropics/claude-code#10225). SessionStart works in plugins and is functionally equivalent given the method's `/clear`-per-build discipline — every new session re-fires the hook. Project root via stdin `cwd` JSON, not `$CLAUDE_PROJECT_DIR` (broken for plugin hooks per anthropics/claude-code#9447).*
-- **PreToolUse hook (consolidated, multiple checks).**
-  - (a) Read-only enforcement on locked files (`UX.md`, additional SoT docs). **Shipped V19.**
-  - (b) Proposed-edit redirect: `UX.md` write attempts redirected to a `[PROPOSED EDIT PENDING]` block in the destination doc's own `## Proposed edits pending` section. **Shipped V19** (redirect is the deny-reason text; Claude writes the block).
-  - (c) Batch file-list enforcement during `batch-executor`. **Shipped V25.** Parses `BACKLOG.md` via `plugin/scripts/parse_backlog.py` at edit-time to look up the current top batch's `Files:` list; blocks Edit/Write/MultiEdit on any file not on it. Prerequisite carve-outs appear on the list with `[Prerequisite, not in plan]` so the boundary updates as the batch evolves.
-  - (d) MANIFEST/UX read-before-edit enforcement. **Shipped V39.** Parses MANIFEST.md entries (using the V39 paths field `- **Name** (\`path/to/file.ext\`) — description`), and when an `Edit`/`Write`/`MultiEdit` targets a file matching one of those paths, denies the first attempt with the matching MANIFEST entry and UX.md's Functionalities entry headings inlined in the deny reason. Retries succeed via transcript scan — the deny embeds a `BLOCKED [V39 read-before-edit]: <absolute path>` marker that subsequent invocations match on (no state file, no PostToolUse tracking). Three path shapes: single file `` (`a.kt`) ``, multi-file `` (`a.kt`, `b.kt`) ``, directory-prefix `` (`dir/`) ``. Entries without a paths field skip the gate silently — incremental migration via the after-build subagent populating paths on touch. Spine docs (BACKLOG, MANIFEST, TEST-LOG, BUILD-LOG, CLAUDE) are exempt even if accidentally listed.
-  - (e) Serves-line check on `BACKLOG.md` build batch additions. **Shipped V22.** Parses every `Serves UX.md: <entry>.` line in proposed new content (Edit `new_string`, Write `content`, MultiEdit per-edit `new_string`s), matches each named entry against UX.md's Functionalities section with **case-insensitive exact match after whitespace-trim** (Q3 decision). Misses deny with a redirect listing unmatched names plus a sample of known entries so Claude can spot a typo or recognise it needs to propose the edit first. **V54** extended the check to additional source-of-truth docs declared in the path block: `Serves <DOC>:` lines where `<DOC>` resolves to a locked (read-only) doc are validated against that doc's `##` headings (excluding structural sections like `## Proposed edits pending`). Writable docs (e.g. MANIFEST.md) skip the check.
-  - **V43 mode-aware deny messaging (all checks).** Every deny message from checks (a)–(g) and the V29 adoption gate now carries a `[No-code method]` prefix and a `What to do:` closing line. Checks (a), (c), (g), and the V29 gate add a mode-aware suffix in permissive Claude Code modes (Accept edits, Auto, Bypass) clarifying that changing permission mode won't help. Checks (b), (d), (e), and (f) are mode-agnostic (format standardisation only). `permission_mode` read defensively from hook input JSON — absent or unrecognised values produce no mode-aware text.
-  - (g) Project-boundary enforcement. **Shipped V56.** Blocks Edit/Write/MultiEdit targeting paths outside the project root (`cwd`). Prevents a session in one project from modifying files in another folder. Uses `Path.relative_to` on resolved paths. Fires after the V29 adoption gate and before all other writing-tool checks. Deny message carries `[No-code method]` prefix, `What to do:` line, and mode-aware suffix.
-  - (f) Test-confirmation gate on `Task` → `batch-executor` invocation. **Shipped V27.** `PreToolUse` matcher extended from `Edit|Write|MultiEdit` to `Edit|Write|MultiEdit|Task`; hook script dispatches on `tool_name` (writing tools → (1)–(3); `Task` → (f)). (f) fires only when `subagent_type == no-code-method:batch-executor`; other Task invocations pass through. Reads `TEST-LOG.md` via the path block, parses the 8-column data rows, identifies the previous build batch's session from the build log (folder mode: INDEX.md → first reference → per-build file H1; legacy: first `## <token>` heading; path-block lookup first, then project-root fallback). Denies if rows from that session have `Confirmed Explicitly: No`. **Hook fallback** when the build log is missing OR unparseable: "any row with `Confirmed Explicitly: No` blocks" — strict but safe per V26 Q3 + V27 Q4. The unparseable-vs-missing distinction is surfaced in the deny message. Defined by the *Do not invoke the batch-executor* rule (`universal-behaviour.md` → *Prohibited behaviours*); made trustworthy by *Never infer completion* (`universal-behaviour.md` → *Required behaviours*); closed each session by the per-row read-back (`planning.md` → *Close the previous build's test session*, owned by planning per V27 extension).
-- **PreToolUse hook — git safety guard (Bash matcher).** **Shipped V34** at `plugin/hooks/pre_tool_use_git_guard.py`. Separate file and hooks.json entry from the consolidated PreToolUse hook (different matcher: `Bash` vs `Edit|Write|MultiEdit|Task`; different concern domain: destructive-command prevention vs method-doc integrity). Denies two destructive git commands: `git reset --hard` (destroys uncommitted work) and `git push --force` / `git push -f` (overwrites remote history). Does not block `git push --force-with-lease` (the safer alternative), `git reset` without `--hard`, `git commit`, `git tag`, `git push` without `--force`, or any other git operation. Deny messages carry the `[No-code method]` prefix (V43), a `What to do:` line with safer alternatives, and a mode-aware suffix in permissive modes (Accept edits, Auto, Bypass). `permission_mode` read defensively from hook input JSON. Companion to the *Recommended habits* line in docs-only `NO-CODE-METHOD.md` ("tag and push after every shipped build batch"), which gives the no-coder a named revert point that makes the force-push and hard-reset guards practical.
-- **PostToolUse hook (BACKLOG.md parse validation).** **Shipped V46** at `plugin/hooks/post_tool_use.py`. Fires after Edit/Write/MultiEdit completes; filters for BACKLOG.md edits by resolving the target path via CLAUDE.md's path block. When the edit targeted BACKLOG.md, imports `find_top_unticked_batch` from `parse_backlog.py` directly (no subprocess) and validates the file's structural format. Detection heuristic: the file contains unticked file bullets (`- [ ]`) with non-placeholder paths, but the parser returns `{}` — meaning the surrounding structure (section heading, batch heading, `Files:` anchor) is broken. Warning surfaced via `additionalContext` so Claude can fix the formatting immediately. Non-blocking (PostToolUse cannot deny — the tool already ran). Searches the full file rather than the `## Build batches` section specifically, so corrupted section headings are themselves caught. Template-placeholder bullets are excluded via `parse_backlog.TEMPLATE_PLACEHOLDER_PATTERN` to avoid false positives on freshly-scaffolded projects. Registered in `hooks.json` with matcher `Edit|Write|MultiEdit`. First PostToolUse hook in the plugin. Origin: OPEN-QUESTIONS entry "Six prose directives identified for pluginification" → item 1.
-- **PreCompact hook (compaction guard).** **Shipped V52** at `plugin/hooks/pre_compact.py`. Fires before context compaction. Blocks compaction when a build batch is in progress (unticked files exist in the top batch of BACKLOG.md). Block reason is user-facing: explains that long sessions cost more tokens and Claude's adherence to the method degrades as context grows, then includes a paste-ready prompt the user can give Claude to prepare a handoff. When no active build exists, allows compaction silently (no output). Uses `project_state.py` helpers (`safe_read_text`, `resolve_path_block_entry`, `resolve_backlog_dir`) and `parse_backlog.py` (`find_top_unticked_batch`, `find_top_unticked_batch_from_path`) for build detection. Handles both folder-mode and single-file BACKLOG. Companion to the *Session handoff* protocol in `universal-behaviour.md`.
-- **UserPromptSubmit hook (opener classification).** **Shipped V52** at `plugin/hooks/user_prompt_submit.py`. Fires on every user prompt submission. Classifies the user's first prompt of each session using keyword detection and injects the classification as `additionalContext` with a routing hint. Three categories: setup (highest priority — `/setup`, "new project", "set up", "initialize", "let's start"), test notes (requires 2+ keyword hits from Pass/Fail/Skipped/`#NNN`/test/smoke test/TEST-LOG patterns — conservative to avoid false positives), and resume ("resume", "continue where", "pick up where", "keep going", "finish the build/batch"). Feature requests and questions are left unclassified — Claude decides using the routing table. First-prompt detection: searches the transcript for its own marker string `[No-code method — opener classification]`; if present, no-ops (naturally resets after `/clear`). Output includes the marker, the classification detail, a suggested route, and an explicit "this is a hint, not a gate" disclaimer.
-- **Stop hook (build sequencer).** **Shipped V25** at `plugin/hooks/stop.py`, **extended V27**. After `batch-executor` finishes a turn, parses `BACKLOG.md` via `parse_backlog.py` to find the top unticked build batch. If one exists, returns `{"decision": "block", "reason": "<batch payload>"}` to redirect into the next batch-executor. If none exists (all batches ticked, or no batches), the V27 extension checks whether after-build has run for the just-completed batch — signal is BACKLOG.mtime vs. TEST-LOG.mtime: when BACKLOG is more recently modified (a file just ticked) AND the Build batches section has at least one `- [x]` bullet, after-build is presumed pending. Hook emits a `decision: block` redirect to `no-code-method:after-build` with a short prose reason — the after-build subagent reads BACKLOG.md and TEST-LOG.md itself to figure out which batch it's recapping. **Respects `stop_hook_active`** — one redirect per user turn (D1: explicit user gating between batches and between batch-and-after-build).
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags). V43 adds two-layer-permission preamble.
+
+- **PreToolUse hook (consolidated).** Seven checks:
+  - (a) Read-only enforcement on locked docs. V19.
+  - (b) Proposed-edit redirect on locked-doc writes. V19.
+  - (c) Batch file-list boundary enforcement. V25. Parses BACKLOG via `parse_backlog.py`.
+  - (d) MANIFEST read-before-edit gate. V39. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
+  - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
+  - (f) Test-confirmation gate on Task → batch-executor. V27. Denies when previous-batch TEST-LOG rows are unconfirmed. Build-log session identification with fallback.
+  - (g) Project-boundary enforcement. V56. Blocks writes outside project root.
+  - V43 mode-aware messaging across all checks: `[No-code method]` prefix, `What to do:` line, mode-aware suffix in permissive modes for (a), (c), (f), (g).
+
+- **PreToolUse git safety guard.** V34. Separate hook (Bash matcher). Denies `git reset --hard` and `git push --force`/`-f`. Allows `--force-with-lease`. Mode-aware deny messages.
+
+- **PostToolUse hook.** V46. Fires after BACKLOG.md edits. Imports `find_top_unticked_batch` directly; surfaces parse failures via `additionalContext`. Non-blocking (PostToolUse can't deny).
+
+- **PreCompact hook.** V52. Blocks compaction during active builds (unticked files in top batch). Surfaces handoff prompt. Silent when no build active.
+
+- **UserPromptSubmit hook.** V52. Classifies first prompt (setup / test notes / resume) via keyword detection. Injects routing hint as `additionalContext`. Conservative: test notes need 2+ keyword hits. First-prompt detection via transcript marker.
+
+- **Stop hook.** V25, extended V27. After batch-executor: parses BACKLOG for next unticked batch → redirect. If none and after-build pending → redirect to after-build. `stop_hook_active` prevents loops.
 
 ### Subagents (probabilistic, behavioural)
 
-- **planning** — test-note sort (Suggestions/Discoveries), drift checks (**inlined — drift-checker is NOT a separate subagent**, since subagents can't spawn subagents), mixed-input secondary sort, `BACKLOG.md` edits, Discoveries → planning batch promotion, **TEST-LOG row pruning (V53 — deletes rows whose Component no longer exists in MANIFEST.md, plus legacy Superseded rows, before drift checks)**, recap. **Shipped V22** at `plugin/agents/planning.md`, **extended V27**: (1) **per-row read-back of pending TEST-LOG.md rows** as the first sub-step of *During planning* — closes the test session opened by after-build's recap; read-back protocol pushes back on bulk confirmations and requires a reason for any Skipped row. (2) **Inline `[Requested]` / `[Suggested]` label-writing** on every change-list bullet added to a build batch in BACKLOG.md (V27 Q3 — labels live on change-list items, not in `Files:`). after-build reads these labels at recap. **V32:** rules inlined directly in the subagent body via a *Procedure order* section + *How a new feature enters the project* section (UX-principle-conflict rule); subagent no longer reads NO-CODE-METHOD.md at session start. Invoked by main Claude via Task with `subagent_type: "no-code-method:planning"` after opener classification (`test notes` / `feature request` / `scope question` / `mixed`, per `universal-behaviour.md` → *Routing main-Claude's openers*), or when the SessionStart V27 TEST-LOG tripwire fires (routing override — see SessionStart). Drift checks always run; only skip is "nothing built yet" (Q2; V26 fourth drift check on TEST-LOG ↔ what's-been-touched runs alongside the original three; **V42 added a fifth check — direct-edit detection via git-diff against last build, with a per-file confirmation protocol — that runs first so its file-touched list feeds checks 3 and 5**). **V54** added step 2b: **deferred build-material aging** (folder-mode BACKLOG only) — scans `NNNN-*.md` files in BACKLOG/, detects batches whose number predates the most recently completed batch (via gap detection in the sequential NNNN number space), and flags them at the top of the planning session with a pairing recommendation. Single-file mode skips silently. The `/plan` slash command is *not* yet shipped — auto-route remains the only invocation path; `/plan` lands later.
-- **before-build** — validate top build batch, enumerate `Files:`, estimate verification burden, propose splits when Batch-sizing requires. **Shipped V25** at `plugin/agents/before-build.md`, **extended V27** with a label-preservation rule (when halt-C splits a batch, every change-list bullet's `[Requested]` / `[Suggested]` label travels with it — no re-classifying to `[Suggested]` because items are "now in a different batch"). Invoked via `/before-build`. **V32:** rules inlined directly in the subagent body (including the *Batch-sizing principle* sub-rules); subagent no longer reads NO-CODE-METHOD.md at session start. Halt-and-confirm protocols cover (a) no top batch, (b) malformed `BACKLOG.md` or unresolvable `Serves UX.md:` name, (c) change list too vague to enumerate Files:, (d) verification burden triggers a split.
-- **batch-executor** — runs one build batch per fresh context. **Shipped V25** at `plugin/agents/batch-executor.md`, **scope-reduced V27** (the *After every build* responsibilities V25 absorbed — MANIFEST.md update, build recap, user prompts — move out to after-build; batch-executor's turn now ends with a short completion note when the last file ticks, and Stop routes to after-build). Invoked via `/build` or by Stop-hook redirect after the previous batch finishes. Receives a JSON payload from `parse_backlog.py` (batch heading, change list, Files: with tick state, Serves lines) via prompt. Edits each unticked file in Files: order, ticks `BACKLOG.md` per-file (partial-completion-safe). PreToolUse (c) enforces the Files: boundary at edit-time. Halt-and-confirm covers the two exceptions in `universal-behaviour.md` → *Prohibited behaviours* → *Two exceptions* (prerequisite carve-out, re-batching carve-out); the `[Prerequisite, not in plan]` and `[Re-batch, not in plan]` recap labels these imply are now surfaced by after-build (which sees carve-out evidence in BACKLOG.md). V54: converged on read-spec-on-entry (reads `DOC-STRUCTURE.md` at runtime like planning/before-build/after-build), replacing the V25 inline pattern. Operational procedure remains inlined; spec formats are read at runtime so spec updates propagate automatically.
-- **after-build** — **Shipped V27** at `plugin/agents/after-build.md`. Owns the *After every build* phase: updates `MANIFEST.md` silently (fully automatic per V27 Q2), generates the build recap with `[Requested]`/`[Suggested]` labels from BACKLOG.md (V27 Q3) plus any `[Prerequisite, not in plan]` / `[Re-batch, not in plan]` labels visible in BACKLOG.md from batch-executor's carve-outs, opens the test session by appending rows to TEST-LOG.md, **runs Claude-automatable tests and fills in results for Claude-verified rows** (V48 — two-section recap distinguishes "Claude has verified" from "please manually check"; 10-column TEST-LOG format with Type and Verifier columns), **writes a build-log entry with Performance section** (persistent per-build file in `build-log/` — V33, restructured V50; **V55 added structured mechanical measures**: batch completion, file count, carve-outs, test results), **runs the frame-correction sweep** (V33), and **prompts the user to commit/tag** (V48 — drift check 1 depends on tags) then test. Identifies the just-completed batch as the topmost fully-ticked batch in BACKLOG.md. Reads the batch's `Tests:` sub-section (V48) for pre-specified test types and verifiers; falls back to recap-derived tests defaulting to Look-and-click/User when no Tests: sub-section exists. **Idempotent** — if rows for the current session already exist in TEST-LOG.md, exits with a brief "test session already open" note rather than duplicating. Invoked by Stop-hook redirect (V27 Q1); no slash-command alternative. **V32:** rules inlined directly in the subagent body's *Work loop*. **V33:** BUILD-LOG entry writing + frame-correction sweep added to Work loop. Does NOT do the per-row test-confirmation read-back — relocated to planning per V26 Q4.
-- **setup** — **Shipped V29** at `plugin/agents/setup.md` (renamed from `adopt.md` in V44). Owns the four-case adoption dispatch: case 1 (empty folder → 4-question walk + scaffold), case 2 (existing code, no docs → scaffold alongside, or cancel), case 3 (existing code, foreign `CLAUDE.md` → migrate / overwrite / leave-alone), case 4 (already method-managed → refresh-templates or cancel). Replaces the V17-planned **new-project** and **migration** subagents (folded into cases 1+2 and case 3 respectively). Invoked by the `/setup` skill-command. Cases 1 and 2 use `plugin/skills/setup/scripts/scaffold.py` for the scaffold step; case 3 migrate walks foreign `CLAUDE.md` section-by-section via Edit. Case 4 refresh includes four migration paths: V47 batch-structure (scope-context sections + Changes: delimiter, **V57 improved to extract original prose content instead of inserting blocking placeholders**), V48 BACKLOG folder-split, V46 TEST-LOG column migration, and **V57 BUILD-LOG folder migration** (flat `BUILD-LOG.md` → `build-log/` folder with INDEX.md + per-build files, path block updated). PreToolUse V29 gate exempts `/setup` subagent's tool calls so scaffolding works against an unadopted folder (whose paths would otherwise be locked or boundary-blocked). Per-project opt-out is now handled by Claude Code's built-in plugin disable (`/plugin` → Installed → toggle off) — V44 removed the `.no-code-method-skip` marker architecture from the public plugin.
+- **planning** — V22 at `plugin/agents/planning.md`. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V32: inlined. V56: doc-first ordering, deferred-material aging.
+
+- **before-build** — V25 at `plugin/agents/before-build.md`. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. V32: inlined. Halt-and-confirm for (a) no batch, (b) malformed BACKLOG, (c) vague changes, (d) split needed.
+
+- **batch-executor** — V25 at `plugin/agents/batch-executor.md`. Runs one build batch. Receives JSON from `parse_backlog.py`. Edits per-file, ticks BACKLOG. PreToolUse (c) enforces boundary. Prerequisite and re-batching carve-outs. V54: reads DOC-STRUCTURE at runtime. V56: scope-of-exploration limits.
+
+- **after-build** — V27 at `plugin/agents/after-build.md`. MANIFEST update, recap (two-section: Claude-verified / user-verified, V48), TEST-LOG rows (10-column, V48), build-log entry with Performance section (V55), frame-correction sweep (V33), commit/tag prompt (V48). Idempotent. Invoked by Stop-hook redirect.
+
+- **setup** — V29 at `plugin/agents/setup.md` (renamed from adopt.md V44). Four cases: (1) empty → 4 questions + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57 migrations. PreToolUse exempts setup's tool calls.
 
 ### Slash commands
 
-Two patterns exist in the current plugin:
+Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **skill-with-flags** (V19, skill with `disable-model-invocation: true`).
 
-- **Commands-directory pattern** (newer, V25). Files at `plugin/commands/<name>.md` with frontmatter `description:` + optional `allowed-tools:`, and a body that is the prose prompt main Claude executes (spawning subagents via Task when needed). Used by `/before-build` and `/build`.
-- **Skill-with-flags pattern** (older, V19). Skills with `disable-model-invocation: true`, `user-invocable: true`. Claude Code v2.1.101 merged commands into skills; this pattern is the result. Used by `/setup` (V29 — formerly `/init-project`).
-
-**As of V29, four commands shipped:** `/setup` (V29, skill-with-flags — replaces V19's `/init-project`), `/before-build` (V25, commands-directory), `/build` (V25, commands-directory). Remaining commands below are forward-looking architectural reference with planned-V annotations — a reader (human or Claude) should not assume *Pending* commands exist in the installed plugin.
-
-- `/setup` → four-case adoption dispatch (empty / existing-code-no-docs / existing-code-foreign-docs / already-adopted). Scaffolds the 6 spine templates in cases 1 and 2 (build-log/, CLAUDE, BACKLOG/, MANIFEST, UX, TEST-LOG; ADDITIONAL-DOC handled by `/add-sot-doc`) and creates `planning/drafts/` and `research/` directories; migrates / overwrites / leaves-alone in case 3; refreshes templates in case 4. Per-project opt-out via `/plugin` → Installed → toggle off. **Shipped V29** (as `/adopt`) — replaces V19's `/init-project` and the V17-planned `/new-project` + `/migrate`. Renamed `/adopt` → `/setup` in V44. Skill body at `plugin/skills/setup/SKILL.md` invokes the `no-code-method:setup` subagent. Scaffold script at `plugin/skills/setup/scripts/scaffold.py`.
-- `/add-sot-doc <name>` → scaffolds additional-doc template. *Pending — not yet scheduled in `PLAN.md`.*
-- `/plan` → planning subagent. *Pending — auto-route via main-Claude classification is the only invocation path as of V22; explicit `/plan` skill-command lands in a future session.*
-- `/before-build` → before-build subagent. **Shipped V25** at `plugin/commands/before-build.md`. Commands-directory; `allowed-tools: Task`.
-- `/build` → triggers batch-executor (explicit entry; default is auto-continuation via Stop hook). **Shipped V25** at `plugin/commands/build.md`. Commands-directory; `allowed-tools: Read, Bash, Task`. Argument-less per V25 Q3 (out-of-order batches handled by reordering BACKLOG.md during planning).
+- `/setup` — four-case adoption. Skill-with-flags. Scaffolds 6 spine templates + `planning/drafts/` + `research/`. **Shipped V29** (as `/adopt`; renamed V44).
+- `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
+- `/plan` — planning subagent. *Pending; auto-route is current path.*
+- `/before-build` — before-build subagent. Commands-directory. **Shipped V25.**
+- `/build` — triggers batch-executor. Commands-directory. **Shipped V25.**
 
 ### Bundled artefacts
 
-- 8 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy single-file), BACKLOG/INDEX (folder-mode index), MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC. The 6 spine templates (using folder-mode BACKLOG and build-log) are scaffolded by `/setup` (V29 — formerly `/init-project`); ADDITIONAL-DOC lands via `/add-sot-doc`.
-- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser used by the Stop hook, PreToolUse (c), PostToolUse (V46), and `/build`. Handles both single-file (`BACKLOG.md`) and folder-mode (`BACKLOG/INDEX.md` + per-batch files) formats via auto-detection. Single source of truth for BACKLOG structure interpretation.
-- `plugin/scripts/project_state.py` — shared module imported by `pre_tool_use.py`, `stop.py`, and `post_tool_use.py` (V28 extraction, extended V48). Holds project-state readers: path-block extraction from CLAUDE.md, BACKLOG parser invocation, TEST-LOG row parsing, build-log session-narrowing (folder mode + legacy single-file), `is_test_session_open` predicate, plus V48 additions — `resolve_backlog_dir()` (returns BACKLOG folder path when in folder mode) and `is_backlog_file()` (tests whether a path is a BACKLOG file in either format). Single definition of "what does the project state currently say."
-- `plugin/scripts/allocate_number.py` — shared 4-digit number allocator. Scans a directory for `NNNN-*.md` files and returns the next available number. V59 removed all subagent calls to this script (replaced with Glob-based allocation to avoid Bash permission prompts); now used only by dev-side session creation.
-- `plugin/docs/DOC-STRUCTURE.md` — structural-spec reference at canonical bundled path (V30 relocation from repo root; mirrored at repo root in V32 as part of the docs-only set). Read by planning, before-build, and adopt subagents when their *Mode* tag applies (planning, migration).
-- `plugin/docs/VOCABULARY.md` — method-term definitions (planning batch, build batch, test session, etc.); new in V32 as the canonical plugin-side home for the vocabulary that used to live in `NO-CODE-METHOD.md` → *Vocabulary*. Mirrored at repo root for the docs-only set.
-- `plugin/hooks/universal-behaviour.md` — plugin-side canonical home for the universal behavioural rules (V18), prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule (V32 expansion). Injected into every Claude Code session via SessionStart `additionalContext`.
-- `.claude-plugin/marketplace.json` — **repo root, not inside `plugin/`.** Marketplace registration manifest. Names the marketplace (`sovereign-implementer`), owner (`FlintCraftTech`), and a single plugin entry pointing at `./plugin` via relative-path source. Used by `/plugin marketplace add` + `/plugin install` for both local and public GitHub distribution. Validated by `claude plugin validate .`. Distinct from `plugin/.claude-plugin/plugin.json` (the plugin-level identity manifest). **Shipped V37.**
+- 8 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy), BACKLOG/INDEX, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC.
+- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode.
+- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
+- `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
+- `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup subagents.
+- `plugin/docs/VOCABULARY.md` — method-term definitions.
+- `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart.
+- `.claude-plugin/marketplace.json` — marketplace registration. V37.
 
-## Design decisions taken in V17
+## Design decisions (V17)
 
-- **D1 — build orchestration mode.** Stop hook proposes next batch; user gates. Naturally enforced by `stop_hook_active` loop prevention.
-- **D2 — planning vs before-build subagent.** Two separate subagents for clean isolation of the file-list-lock step.
-- **D3 — auto-route on test-note paste.** SessionStart hook surfaces structural state; main Claude classifies the opener (test notes / feature request / scope question / mixed) and spawns planning via Task with the classification as `primary_intent`. (V17 wording said the hook itself auto-launches the subagent; in implementation, hooks inject context and Claude decides — the route remains automatic but main Claude is the launcher.) Explicit `/plan` is the override (not yet shipped — lands later).
-- **A — V18 = research session.** Not needed; research done by Opus during V17. V18 becomes the first build session.
-- **B — Vxx folders ARE method versions.** Contents expand to include plugin components alongside (and eventually replacing) method docs. Footer convention extends.
+- **D1** — Stop hook proposes next batch; user gates via `stop_hook_active`.
+- **D2** — Separate planning and before-build subagents for file-list-lock isolation.
+- **D3** — SessionStart injects state; main Claude classifies opener and spawns planning.
 
-## Architecture revisions made in V17 (vs walkthrough first-pass)
+## Architecture revisions (V17)
 
-| Original (Chunks A/B/C) | Revised | Reason |
+| Original | Revised | Reason |
 |---|---|---|
-| `drift-checker` subagent invoked BY `planning` subagent | Inline drift logic into planning subagent prompt | Subagents can't spawn other subagents |
-| Always-loaded core skill (universal behaviours) | `SessionStart` hook injecting `additionalContext` | Skill bodies aren't always-loaded. (V17 first chose `UserPromptSubmit`; V18 pivoted to `SessionStart` because `UserPromptSubmit`-in-plugin is blocked by anthropics/claude-code#10225.) |
-| `batch-executor` enforces file-list isolation directly | PreToolUse hook enforces; `batch-executor` receives the list via prompt | Subagent config restricts tools, not paths |
-| `CLAUDE.md` path block as free-form markdown bullets | Fenced YAML/JSON code block | Robust hook parsing |
-| Slash commands as standalone components | Slash commands as skills with `disable-model-invocation: true` + `user-invocable: true` + `agent: <subagent>` | Claude Code v2.1.101 merged commands into skills |
-| Stop hook auto-chains batches | One redirect per user turn (`stop_hook_active`) | Platform-level loop prevention |
+| `drift-checker` subagent | Inline into planning | Subagents can't spawn subagents |
+| Always-loaded core skill | SessionStart `additionalContext` | Skills aren't always-loaded |
+| `batch-executor` enforces paths | PreToolUse hook enforces | Subagent config restricts tools, not paths |
+| Free-form path block | Fenced JSON | Robust hook parsing |
+| Standalone slash commands | Skills with flags | Claude Code merged commands into skills |
+| Stop hook auto-chains | One redirect per turn | Loop prevention |
 
-## Risks taken on (from Opus feasibility response)
+## Risks (from Opus feasibility response)
 
-- Hook fragility around shell environments — defensive shell scripts required; test on a clean shell.
-- Stop-hook infinite loops if `stop_hook_active` not respected — test the loop-exit path before shipping.
-- Plugin skills can't define hooks (security) — all hook logic at plugin level (`hooks/hooks.json`), not inside individual skills.
-- Subagent context isolation: only channel in is the prompt — long prompts eat the subagent's own context budget.
-- Cache invalidation on plugin update is manual — `/reload-plugins` required.
-- The "vibe coder distributing a plugin" UX gap — local-install requires CLI muscle; consider a one-click install script.
-- **Method-still-being-refined risk acknowledged and accepted at V17 close.** Current method docs are large enough that context bloat is itself preventing realistic adherence testing; the plugin's per-component context isolation is the testability fix, not a freeze of an unstable method.
-- **`UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225).** UserPromptSubmit hooks declared in plugin `hooks.json` register and match but never execute. Other hook types (SessionStart, PreToolUse, Stop, PostToolUse) work fine. Discovered V18 web-search; pivoted V18's universal-behaviour rules from UserPromptSubmit to SessionStart. If the bug closes upstream and per-turn re-injection becomes valuable (e.g. very long sessions), revisit moving the rules back.
+- Hook fragility around shell environments — defensive scripts required.
+- Stop-hook loops if `stop_hook_active` not respected.
+- Plugin skills can't define hooks — all hook logic at plugin level.
+- Subagent context isolation: only channel in is the prompt.
+- Cache invalidation on plugin update is manual (`/reload-plugins`).
+- "Vibe coder distributing a plugin" UX gap.
+- Method-still-being-refined risk accepted at V17.
+- `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
 *No-code method — Version 59.*

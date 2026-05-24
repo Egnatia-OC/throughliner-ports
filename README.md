@@ -9,11 +9,11 @@ A structured workflow for driving Claude Code as a non-coder. Spec-driven discip
 /plugin install no-code-method@sovereign-implementer
 ```
 
-Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Crash course.md](Crash%20course.md) for the full primer.
+Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Reference manual.md](Reference%20manual.md) for the full primer.
 
 ## What's here
 
-`Crash course.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
+`Reference manual.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
 
 `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` — a prose-only snapshot of the method spec, **frozen at version V39** (the two-write rule between this set and the plugin was shelved in session v40). The live operational source is plugin-side. `templates/` — frozen-at-V39 mirrors of the spine doc templates (live versions at `plugin/templates/`).
 

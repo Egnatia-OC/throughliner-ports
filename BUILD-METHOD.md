@@ -1,30 +1,26 @@
 # BUILD-METHOD.md — How this project ships
 
-How the no-code-method dev project runs: session open, middle, close, testing, where artefacts live. Sibling of `BUILD-LOG.md` (what shipped) and `planning/PLAN.md` (what's coming).
+Session open, middle, close, testing, artefact locations. Sibling of `BUILD-LOG.md` (what shipped) and `planning/PLAN.md` (what's coming).
 
-This is **not** the no-code method itself — that's what this project produces (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, `templates/`, `plugin/`). Those describe how consumers run *their* projects; this describes how Alex and Claude run *this* one.
-
-Personal and collaboration rules live in root `CLAUDE.md`. Anything here supersedes older equivalents in that file.
+This is **not** the no-code method itself — that's what this project produces (`plugin/`, `Reference manual.md`, etc.). Personal and collaboration rules live in root `CLAUDE.md`. Anything here supersedes older equivalents there.
 
 ---
 
 ## The unit of work: a session
 
-**One session = one git commit + one git tag.** A new session starts when Alex marks a new boundary. Not a calendar day, not a continuous block, not one chat conversation — tag boundaries define sessions.
-
-Tags are `v17`, `v18`, ... Current tag is `git describe --tags --abbrev=0` from `sovereign-implementer/`. Pre-V17 lives read-only in `Archive/Version 3/` through `Archive/Version 16/`. Don't edit.
+**One session = one git commit + one git tag.** Tags are `v17`, `v18`, ... Current: `git describe --tags --abbrev=0` from `sovereign-implementer/`. Pre-V17 lives read-only in `Archive/`.
 
 ### Three numbers to keep distinct
 
-The dev project carries three version-ish numbers that look similar but move independently.
+Three version-ish numbers move independently:
 
-- **Session tag** (lowercase `v`, e.g. `v52`) — one git tag per session, no matter what the session did (build, planning, ideation, doc tweak). Always increments. `git describe --tags --abbrev=0` shows the most recent.
-- **Method version** (uppercase `V`, e.g. `V48`) — the footer number consumers see (`*No-code method — Version N.*`). Only bumps on substantive method or plugin change; pure planning, scoping, or ideation sessions don't move it.
-- **Scope-file number** (4-digit, e.g. `0050`) — the leading number in a scope-file's filename (`planning/sessions/0050-adr-style-numbering.md`). Allocated at creation time, never reused, never renumbered. Filename order carries creation order only; build order lives in PLAN.md's session list.
+- **Session tag** (lowercase `v`, e.g. `v52`) — one per session regardless of type. Always increments.
+- **Method version** (uppercase `V`, e.g. `V48`) — consumer-facing footer. Only bumps on substantive method/plugin change; planning-only sessions skip.
+- **Scope-file number** (4-digit, e.g. `0050`) — leading number in `planning/sessions/0050-adr-style-numbering.md`. Allocated at creation, never reused. Filename order = creation order; build order lives in PLAN.md.
 
-So the three diverge. Session tag `v52` may coexist with method version `V48` and scope file `0050` — that's correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked together until a method-changing session bumps them in tandem.
+So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked until a method-changing session bumps them together.
 
-**Historical note.** V18–V23 conflated session tag and method version — every session bumped the footer regardless. Going forward they're separated; historical mismatches stay (no retroactive corrections). Scope files prior to V50 used the `V<N>.md` convention; V50 retroactively renamed them to `NNNN-kebab-title.md`. Git history and commit messages still reference the old V-numbers; that divergence is permanent and documented.
+**History.** V18–V23 conflated session tag and method version. Going forward they're separated; historical mismatches stay. Scope files prior to V50 used `V<N>.md`; V50 renamed to `NNNN-kebab-title.md`. Git history still references old V-numbers; that divergence is permanent.
 
 ---
 
@@ -32,166 +28,135 @@ So the three diverge. Session tag `v52` may coexist with method version `V48` an
 
 In order:
 
-1. `git describe --tags --abbrev=0` from `sovereign-implementer/` — confirm current version.
-2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Crash course.md` at `HEAD` — the active method (plugin-side, operational). The repo-root prose-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`) is frozen at V39 — read only if you need the prose-spec form, not for current rules.
+1. `git describe --tags --abbrev=0` — confirm current version.
+2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Reference manual.md` at `HEAD`. (Repo-root prose set frozen at V39 — read only for prose-spec form, not current rules.)
 3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
-4. Read the active scope file from `planning/sessions/`. Scope files use the naming convention `NNNN-kebab-title.md` (e.g. `0050-adr-style-numbering.md`). To find the active scope: scan PLAN.md's session list top to bottom, skip rows ending with `**Shipped**` or `**Parked**`, and pick the first unmarked row. Use the absolute path (see `CLAUDE.md → Current state` for why). If no unmarked row exists, say so in the session opener and wait for direction — don't invent a scope. Don't wait to be asked.
+4. Read the active scope file from `planning/sessions/`. To find it: scan PLAN.md's session list top to bottom, skip `**Shipped**`/`**Parked**` rows, pick the first unmarked. Use absolute paths. If none exists, say so and wait — don't invent a scope.
 
-Then read Alex's opener and route. `CLAUDE.md → Working with me` governs interaction shape. If the task isn't clear, report what was loaded and ask. Don't draft.
+Then read Alex's opener and route. If the task isn't clear, report what was loaded and ask. Don't draft.
 
 ---
 
-## Session middle: planning, building, or both
+## Session middle
 
 Three shapes, often blended:
 
-**Implementation sessions** ship plugin code (hooks, subagents, slash commands, skills) or method-doc structural changes. End with a smoke test plus doc-parity edits in the same commit.
+**Implementation** — ships plugin code or method-doc structural changes. Ends with smoke test + doc-parity edits in same commit.
 
-**Doc-only sessions** ship rewrites without testable code — terminology sweep (V23), parity catch-up (V20), OPEN-QUESTIONS resolution as prose. No smoke test; doc-code parity audit still runs at close.
+**Doc-only** — rewrites without testable code (terminology sweep, parity catch-up, OQ resolution as prose). No smoke test; doc-code parity audit still runs.
 
-**Planning sessions** rescope the roadmap — split or merge sessions, write or revise `Vxx.md` scope files, add or resolve OPEN-QUESTIONS, restructure PLAN.md. Usually still produce a tagged commit because rescoping is version-worthy.
+**Planning** — rescope the roadmap: split/merge sessions, write/revise scope files, add/resolve OQs, restructure PLAN.md. Usually still produces a tagged commit.
 
-Claude's job mid-session: do the work, surface concerns, propose. Close, parity, and testing rules apply regardless of middle shape.
+Claude's job mid-session: do the work, surface concerns, propose. Close/parity/testing rules apply regardless.
 
 ---
 
 ## Session close: 10 steps
 
-1. **Verify doc-code parity** (audit below). If this session introduced anything the docs don't accurately describe, fix docs first. Footer bumps and BUILD-LOG entry come after, reflecting the now-current state.
+1. **Doc-code parity** (audit below). Fix docs before footers and BUILD-LOG.
 
-2. **Frame-correction sweep.** If this session substantively corrected a load-bearing frame — something the next-session Claude reading old scope files would absorb wrongly — audit `planning/sessions/Vxx.md` for references to the old frame. Fix in this session's commit. The bar isn't "anything changed" but "the change rewrites how future-Claude should think about [X]." Examples: V23 settling that `--plugin-dir` smoke tests ARE live testing (implicit reframe of the live-install dependency carried in pre-V23 scope files); V29's pivot from `systemMessage` halt to SessionStart advisory + PreToolUse enforcement. Both broke prior scope files that referenced the old frame. Frame corrections aren't always self-identifying — the audit prompt is the trigger, not pre-detection. Added V29 after V29's own open hit a pre-V23 frame in its scope file and required rework before substantive work could begin.
+2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from old scope files — audit `planning/sessions/` for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]." Added V29 after its own open hit a pre-V23 frame in the scope file.
 
-3. **Bump method-version footers** — only if the session substantively changed the method or plugin. Dev-internal-only sessions skip entirely. When warranted: every method-side file and template footer matches the new session number, plus `plugin.json` `version` and `PLUGIN_METHOD_VERSION` in `session_start.py`. Full list in *Footer bumps* below.
+3. **Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in *Footer bumps* below.
 
-4. **Add a `BUILD-LOG.md` entry** for this session, shape in *BUILD-LOG entry shape*. Newest first.
+4. **BUILD-LOG entry** — shape in *BUILD-LOG entry shape*. Newest first.
 
-5. **Sweep ideas raised but not implemented.** For each: add to a future `Vxx.md`; create a new `Vxx.md` + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
+5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
 
-6. **Pre-commit checkpoint.** Before staging, verify steps 1–5 are all done: doc-code parity edits landed (1), frame-correction sweep ran (2), footers bumped if warranted (3), BUILD-LOG entry written (4), ideas swept (5). A missing BUILD-LOG entry is the most common skip when context runs low — check it explicitly.
+6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing BUILD-LOG entry is the most common skip when context runs low — check explicitly.
 
-7. **Commit** with a clear `V<N>:` message.
+7. **Commit** with `V<N>:` message.
 
 8. **Tag** `git tag v<N>`.
 
-9. **Delete this session's scope file** (e.g. `planning/sessions/0050-adr-style-numbering.md`) as part of the commit. If bash refuses on Windows ACLs, hand-delete via Windows Explorer first. (Session scopes are transient — see *Planning artefacts* below.)
+9. **Delete this session's scope file** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Explorer first.
 
-10. **Push commit + tag.** `git push origin main` and `git push origin v<N>`. Pause only for secrets, credentials, or personal info; otherwise push by default.
+10. **Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 ---
 
 ## Doc-code parity
 
-Plugin code (hooks, agents, skills, slash commands, bundled artefacts) and descriptive docs (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `Crash course.md`, templates, `planning/INVENTORY.md`) must stay aligned. When a session ships code introducing a new concept, mechanism, section, marker, location, or rule, the same session updates the docs. Don't ship code referring to something the docs don't describe; don't leave docs describing what the code no longer does.
+Plugin code and descriptive docs must stay aligned. When a session ships code introducing a new concept, mechanism, section, marker, location, or rule, the same session updates the docs. Don't ship code the docs don't describe; don't leave docs describing what code no longer does.
 
-Catching a gap in the session that created it is cheap. Three sessions later it's expensive. Silent drift compounds.
+Catching a gap in the session that created it is cheap. Three sessions later it's expensive.
 
-**During the session.** As code depends on something existing in the docs — a hook deny message naming a section, a skill body pointing at a docs block, a subagent referencing a marker — check the dependency is documented. If not, the doc update is part of *this* session.
+**During the session.** As code depends on something in the docs — a hook deny message naming a section, a skill body pointing at a docs block — check the dependency is documented. If not, the doc update is part of *this* session.
 
-**At session close.** Audit this session's code changes against the docs — scoped to what changed, not a full re-read:
+**At session close.** Audit this session's code changes against docs — scoped to what changed:
 
-1. **Vocabulary.** New named concepts are defined in `NO-CODE-METHOD.md → Vocabulary`.
+1. **Vocabulary.** New named concepts defined in `VOCABULARY.md`.
+2. **Mechanism descriptions.** If something works differently, `DOC-STRUCTURE.md` and `universal-behaviour.md` describe the new mechanism. Grep every reference to the old — section names, counts, location phrases — and update.
+3. **Templates.** New sections, markers, canonical formats → `plugin/templates/`. (Repo-root `templates/` frozen at V39.)
+4. **Inventory.** New/changed plugin components → `planning/INVENTORY.md`.
+5. **Reference manual.** Load-bearing concept/mechanism changes → `Reference manual.md` reflects it at narrative altitude.
+6. **Ghost references.** Audit for paragraphs asserting state contradicted by `BUILD-LOG.md` or actual code. On disagreement, BUILD-LOG wins.
 
-2. **Mechanism descriptions.** If something works differently (new route, different proposed-edit destination, new enforcement point, renamed marker), `NO-CODE-METHOD.md` and `DOC-STRUCTURE.md` describe the new mechanism. Grep every reference to the old — section names, counts (`Three sections...` after a fourth lands), location phrases, cross-references — and update. Read each match; confirm surrounding sentences still parse.
-
-3. **Templates.** New sections, markers, or canonical formats land in the relevant template at `plugin/templates/`. (The repo-root mirror `templates/` is frozen at V39 — see *Two-write rule for canonical docs* below.)
-
-4. **Inventory.** New plugin components or changed responsibilities → `planning/INVENTORY.md` (living — see *Planning artefacts*).
-
-5. **Crash course.** Load-bearing concept, mechanism, or named element changes → `Crash course.md` reflects it at narrative altitude. Preserve narrative voice; don't mirror the spec's structure.
-
-6. **Ghost references.** Audit for paragraphs asserting state contradicted by `BUILD-LOG.md` or actual code. V22: INVENTORY listed future slash commands as if shipped. V23-era: `CLAUDE.md` asserted "the plugin has never been installed in Claude Code" while V18/V19/V21/V22 BUILD-LOG entries each described `claude --plugin-dir` smoke tests with hooks firing. Recording errors lead future-Claude wrong. When a doc paragraph makes a state claim, cross-check against BUILD-LOG; on disagreement, BUILD-LOG wins.
-
-**Escape clause.** If the audit surfaces a gap whose doc work would dominate the session's scope — a structural rewrite touching many sections, a Vocabulary re-org, anything where the doc change is itself a method-level design decision — surface in chat, weigh fold-in-now vs. new-session, decide together. **Default lean: fold in now.** Cost is usually overstated; shipping inconsistency is worse than overrunning by 15 minutes. `OPEN-QUESTIONS.md` is for the genuinely large rewrites.
+**Escape clause.** If the audit surfaces a gap whose doc work would dominate the session — surface in chat, weigh fold-in vs. new-session, decide together. **Default: fold in now.** Cost is usually overstated; shipping inconsistency is worse.
 
 ---
 
 ## Two-write rule for canonical docs
 
-> **SHELVED in session v40, 2026-05-21.** The docs-only repo-root set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) is frozen at method version V39. Every method-side substantive change now lands on the plugin side only. The body of this section is retained for resume-ability — if a real audience for the prose-only spec emerges, restoring the two-write discipline is a parking-lot promotion away. Background: `planning/OPEN-QUESTIONS.md` entry *Shelve the two-write rule and prose-only canonical docs* (resolved in session v40), and BUILD-LOG.md entry for v40.
+> **SHELVED in v40.** Repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) frozen at V39. All substantive changes now land plugin-side only. Section retained for resume-ability. Background: `planning/OPEN-QUESTIONS.md` entry and BUILD-LOG v40.
 
-V32 split canonical method content into two parallel artefact sets:
+V32 split canonical content into two parallel sets: **plugin-side** (operational — `plugin/docs/`, `plugin/hooks/universal-behaviour.md`, `plugin/templates/`, agent bodies) and **docs-only** (project-agnostic prose at repo root). Plugin is the leader; docs-only follows. Cross-references legitimately diverge (plugin-side → plugin homes; docs-only → sibling sections). Substance stays identical.
 
-- **Plugin-side canonical docs** (the operational system). Live inside `plugin/` — `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`, the bundled templates at `plugin/templates/`, plus the agent bodies that inline operating procedures (`planning.md`, `before-build.md`, `after-build.md`, `batch-executor.md`, `adopt.md`). These are what the plugin runtime reads. **The plugin is the leader** — when the method substantively changes, the plugin gets edited first.
-
-- **Docs-only canonical docs** (the project-agnostic system). Live at the repo root — `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, the templates at `templates/`. Maintained as the prose-only / no-plugin version of the method for chat-with-Claude or other AI-tool contexts where the plugin shape doesn't fit. The docs-only set follows the plugin's lead — kept as fresh as the plugin via the two-write discipline below.
-
-`Crash course.md` (repo root) is plugin-side only — it documents how to install and use the plugin. It does not appear in the docs-only set.
-
-### The two-write discipline
-
-When a session substantively changes a method rule (a new step in *During planning*, a new flag-taxonomy row, a renamed concept in *Vocabulary*, etc.), update both copies of every affected canonical doc. Doc-code parity audits at session close must check both sides. Drift between the two sides is the risk this arrangement carries — the discipline is the defence.
-
-Cross-references inside the two copies legitimately diverge:
-
-- **Plugin-side** cross-refs point at plugin homes (`universal-behaviour.md`, `VOCABULARY.md`, `planning.md`, etc.). The plugin's subagents read these at runtime.
-- **Docs-only side** cross-refs point at sibling sections of `NO-CODE-METHOD.md` (and the docs-only `DOC-STRUCTURE.md` / `VOCABULARY.md`). A no-plugin reader follows references inside the prose spec without needing to know about plugin internals.
-
-The substance — the actual rules, definitions, structural specs — stays identical across both sides. Cross-references are the explicit exception.
+`Reference manual.md` is plugin-side only — not in the docs-only set.
 
 ### Don't propose re-coupling
 
-Future sessions might be tempted to re-introduce a "subagents read NO-CODE-METHOD.md at runtime" pattern as a parity defence. That's exactly what V32 dismantles. The discipline of the two-write rule is the intended defence, not runtime coupling.
+Don't reintroduce "subagents read NO-CODE-METHOD.md at runtime." The two-write discipline is the intended parity defence, not runtime coupling.
 
 ---
 
-## Testing — what we actually do
+## Testing
 
-Testing here means **smoke-testing in Claude Code** — installing the plugin via local marketplace and running a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks register and fire; slash commands appear in `/hooks` and `/agents`; subagents invoke through normal mechanism; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` (V29 — formerly `/init-project`; renamed from `/adopt` in V44) scaffolds templates and handles its other case branches. V18, V19, V21, V22 each shipped with smoke tests (V20, V23 were doc-only). Outcomes go to `TEST-LOG.md`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; subagents invoke; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `TEST-LOG.md`.
 
-**Pre-install testing options:**
+**Pre-install options:**
 
-- **Smoke test via local marketplace install.** Install the plugin via `/plugin marketplace add` + `/plugin install`, then test in a desktop-app burner session. Highest fidelity — hooks, agents, slash commands, subagents, and surrounding Claude Code session behaviour all run through real machinery. Standard for any session shipping testable code. Run `/reload-plugins` to pick up changes after edits.
+- **Local marketplace install.** `/plugin marketplace add` + `/plugin install`, then test in burner session. Highest fidelity. Standard for testable code. `/reload-plugins` picks up edits.
+- **Hook direct invocation.** `echo '{"cwd": "/path", "session_id": "test"}' | python plugin/hooks/session_start.py`. Validates parsing + stdout shape pre-smoke-test.
+- **Parser CLI.** `python plugin/scripts/parse_backlog.py <BACKLOG.md path>` — inspect output.
+- **Code review.** Read and reason. Catches structural errors; misses runtime issues.
 
-- **Hook script direct invocation.** `echo '{"cwd": "/path/to/test/folder", "session_id": "test"}' | python plugin/hooks/session_start.py`. Validates input parsing, file reads, stdout shape. Useful for catching syntax errors and arithmetic mistakes pre-smoke-test, or for fast iteration. Doesn't validate that Claude Code actually triggers the hook.
+**What we don't do:**
 
-- **Parser script CLI run.** `python plugin/scripts/parse_backlog.py <BACKLOG.md path>` — inspect output. Validates parser behaviour against real input.
+- **No public marketplace.** Plugin installed locally via `/plugin marketplace add`. Public distribution is later.
+- **No CI.** Pytest runs locally; smoke tests are hand-run by Alex on Windows.
 
-- **Code review.** Read and reason. Catches structural and wiring errors; misses runtime issues.
+**Where outcomes go.** Each check → `TEST-LOG.md` as one row. `BUILD-LOG.md` references the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating.
 
-**What we don't do** (and why "not doing X" ≠ "untested"):
-
-- **No public marketplace publication.** The plugin is installed locally via `/plugin marketplace add` pointing at the repo on disk. Public distribution is a separate, later step.
-
-- **No automated CI pipeline.** The pytest suite (below) runs locally; there is no GitHub Actions or similar CI wiring. Smoke tests are hand-run by Alex post-session on her Windows machine. Deliberate — CI's value is regression-catching across many simultaneous changes; this project ships one tag at a time with full attention.
-
-**Where outcomes go.** Each check goes to `sovereign-implementer/TEST-LOG.md` as one row: stable ID, session, component, status (Pass / Fail / Skipped + reason), notes. `BUILD-LOG.md` *What shipped* references the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating outcomes. TEST-LOG is canonical and queryable; BUILD-LOG carries prose narrative.
-
-The separation exists because inline test prose in BUILD-LOG turned out unsearchable. The `CLAUDE.md` paragraph asserting "the plugin has never been installed in Claude Code" went unchallenged for three sessions while V18/V19/V21/V22 BUILD-LOG entries each described `claude --plugin-dir` smoke tests with hooks firing. The information was there; it wasn't in a shape future-Claude could read at session start. TEST-LOG is.
-
-**The V25 consumer-side TEST-LOG is different.** V25 builds a `TEST-LOG.md` mechanism for projects that *use* the method — tracking tests against a consumer's app. This project's TEST-LOG is dev-internal and predates that. Siblings, not the same thing.
-
-**Pitfall.** "Live install + back-test" as a single-session deliverable keeps resurfacing. The plugin is now installable via local marketplace — smoke tests should use that path. Don't conflate a smoke test (does the component work?) with a release test (does the published package install cleanly?).
+**Pitfall.** "Live install + back-test" as single-session deliverable keeps resurfacing. Don't conflate a smoke test (does it work?) with a release test (does the published package install?).
 
 ### Automated test suite (V53 — pytest)
 
-The repo carries a pytest-based test suite at `tests/` that validates hook scripts and shared helpers without a live Claude Code session. Run from `sovereign-implementer/`:
+Pytest suite at `tests/`, run from `sovereign-implementer/`:
 
 ```
 python -m pytest tests/ -v
 ```
 
-**What it covers:**
+**Coverage:**
+- **Hook subprocess tests** — pipe synthetic JSON into each hook, assert on exit code + stdout shape. Tests every deny path (adoption gate, project-boundary, locked-doc, serves-line, batch boundary, read-before-edit, test-confirmation gate, git guard) and every allow path.
+- **Unit tests** — import shared helpers directly: footer detection, path-block parsing, tier classification, adopt-case detection, TEST-LOG row parsing, BACKLOG parsing (single-file and folder mode), CLI invocation.
 
-- **Hook subprocess tests** (`test_session_start.py`, `test_pre_tool_use.py`, `test_pre_tool_use_git_guard.py`, `test_post_tool_use.py`, `test_stop.py`) — pipe synthetic JSON into each hook script via subprocess, assert on exit code + stdout JSON shape. Tests every deny path (V29 adoption gate, V56 project-boundary, locked-doc enforcement, serves-line check, batch boundary, V39 read-before-edit, V27 test-confirmation gate, V34 git guard) and every silent/allow path.
-- **Unit tests** (`test_project_state.py`, `test_parse_backlog.py`) — import the shared helpers directly and test individual functions: footer detection, path-block parsing, tier classification, adopt-case detection, TEST-LOG row parsing, BACKLOG parsing (single-file and folder mode), CLI invocation.
+**Fixtures** at `tests/fixtures/` — synthetic project directories covering every tier.
 
-**Fixtures** live at `tests/fixtures/` — committed synthetic project directories covering every tier: empty folder (tier 1), tier 2 (two variants: missing CLAUDE.md; unparseable path block), tier 3 (two variants: folder-mode BACKLOG; legacy single-file BACKLOG), unadopted-with-work (foreign CLAUDE.md + build manifest).
+**Shared helpers** in `tests/conftest.py`: `run_hook()`, `run_script()`, `fixture_path()`, plus pytest fixtures for each test directory.
 
-**Shared helpers** live in `tests/conftest.py`: `run_hook()` (pipe JSON into a hook subprocess), `run_script()` (run a script from `plugin/scripts/`), `fixture_path()` (resolve a named fixture directory), plus pytest fixtures for each test directory.
+**Relationship to smoke tests.** Pytest validates parsing, deny/allow logic, stdout shape — everything without a running Claude Code session. Smoke tests remain authority for "does Claude Code actually fire the hook." Complementary: suite catches regressions fast; smoke tests catch wiring.
 
-**Relationship to smoke tests.** The pytest suite validates input parsing, file reads, deny/allow logic, and stdout shape — everything that can be tested without a running Claude Code session. Smoke tests (live install via local marketplace) remain the authority for "does Claude Code actually fire the hook and honour the output." The two are complementary: the suite catches regressions fast; smoke tests catch wiring issues.
-
-**When to run.** Before committing any change to hook scripts or shared helpers. The suite runs in under 5 seconds.
+**When to run.** Before committing any hook script or shared helper change. Runs in under 5 seconds.
 
 ---
 
 ## Footer bumps: the full list
 
-When a session substantively changes the method or plugin (test in *Session tag vs. method version*), every method-side `*No-code method — Version N.*` footer bumps to match. **Dev-internal-only sessions skip entirely** — no footer bumps, no `plugin.json`, no `PLUGIN_METHOD_VERSION`.
+When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal-only sessions skip entirely.**
 
 Method-side = describes how the consumer method works. Dev-internal files (`BUILD-LOG.md`, `TEST-LOG.md`, `PLAN.md`, `OPEN-QUESTIONS.md`, this file) don't carry the footer.
-
-The list splits in V32 along the two-write architecture (see *Two-write rule for canonical docs* above). Both sides bump together.
 
 ### Plugin-side (the leader)
 
@@ -200,33 +165,25 @@ The list splits in V32 along the two-write architecture (see *Two-write rule for
 - `plugin/hooks/universal-behaviour.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
-- `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file format)
+- `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file)
 - `plugin/templates/BACKLOG/INDEX-TEMPLATE.md`
 - `plugin/templates/build-log/INDEX-TEMPLATE.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
-- Every footer-carrying subagent under `plugin/agents/` (currently `planning.md`, `before-build.md`, `batch-executor.md`, `after-build.md`, `setup.md`)
-- `Crash course.md` (repo root, but plugin-side audience — documents how to install and use the plugin)
+- Every footer-carrying subagent under `plugin/agents/`
+- `Reference manual.md` (repo root, but plugin-side)
 
-### Docs-only side — SHELVED in v40 (no longer bumped)
+### Docs-only side — SHELVED in v40
 
-> Files below are frozen at method version V39 per *Two-write rule for canonical docs* above. They retain their V39 footer in perpetuity unless the two-write rule is restored. Do not bump them when the plugin-side bumps.
+> Frozen at V39. Retain V39 footer in perpetuity. Do not bump.
 
-- `NO-CODE-METHOD.md` (repo root)
-- `DOC-STRUCTURE.md` (repo root)
-- `VOCABULARY.md` (repo root)
-- `templates/CLAUDE-TEMPLATE.md`
-- `templates/UX-TEMPLATE.md`
-- `templates/BACKLOG-TEMPLATE.md`
-- `templates/BUILD-LOG-TEMPLATE.md`
-- `templates/MANIFEST-TEMPLATE.md`
-- `templates/TEST-LOG-TEMPLATE.md`
-- `templates/ADDITIONAL-DOC-TEMPLATE.md`
+- `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` (repo root)
+- `templates/` (all seven files)
 
-### Cross-cutting (dev-internal but version-tagged)
+### Cross-cutting
 
-- `planning/INVENTORY.md` — carries the footer for sync purposes, even though it's dev-internal.
+- `planning/INVENTORY.md` — carries the footer for sync, even though dev-internal.
 
 ### New files added this session
 
@@ -237,122 +194,120 @@ Add new method-describing files to the right column above as part of the session
 - `plugin/.claude-plugin/plugin.json` — `version` → `0.<N>.0`
 - `plugin/hooks/session_start.py` — `PLUGIN_METHOD_VERSION` → `N`
 
-V21's smoke test caught a footer miss via the SessionStart tripwire — `plugin/templates/*.md` hadn't been bumped while `templates/*.md` had. The two-location rule is easy to miss; the tripwire backstops it.
+V21's smoke test caught a footer miss via the SessionStart tripwire. The two-location rule is easy to miss; the tripwire backstops it.
 
-**`universal-behaviour.md` does not carry the `*No-code method — Version N.*` footer** — it carries a longer signature paragraph instead (see the file). It's listed in the plugin-side bump list above because its substance is method-canonical and must move in lockstep with the version trackers.
+**`universal-behaviour.md` carries a longer signature paragraph instead of the standard footer** — listed in the bump list because its substance is method-canonical and must move in lockstep.
 
 ---
 
-## Planning artefacts: what lives where, and for how long
+## Planning artefacts
 
-| File | Lifecycle | When deleted |
+| File | Lifecycle | Deleted when |
 |---|---|---|
-| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Provisional scope for one session. Once shipped, the commit + code + doc edits are source of truth; the scope doc is stale. | When the session ships (step 9). |
-| `planning/drafts/<topic>.md` | **Transient.** Substantive chat content a future session might start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices. Committed when "good enough to walk away from." | When consumed (folded into spec/scope/other persistent location), in the commit of whichever session consumes it. Dead-ends pruned with a one-line note in `BUILD-LOG.md`. |
-| `planning/INVENTORY.md` | **Living.** Current plugin architecture. Updated in place. | Never. |
+| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Scope for one session. Once shipped, commit + code + docs are source of truth. | Session ships (step 9). |
+| `planning/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
+| `planning/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
 | `planning/PLAN.md` | **Living.** Rolling roadmap. | Never. |
 | `planning/OPEN-QUESTIONS.md` | **Living.** Method-level questions not yet session-ready. Each entry has a *Next step*. | Per entry: when resolved. File: never. |
-| `planning/claude-code-plugin-feasibility-response.md`, `planning/OPUS-FEASIBILITY-PROMPT.md` | **Historical.** Why V17 made specific architectural decisions. | Never. Could move to `planning/archive/` if `planning/` clutters. |
-| `BUILD-LOG.md` | **Historical.** Append-only at top (newest first). | Never. |
-| `TEST-LOG.md` | **Living.** One row per smoke-test check, newest at top (newest-first). Status may flip if a later session breaks something, then back when fixed. | Rows whose component is removed from MANIFEST.md are deleted by the planning subagent's pruning step (V53). Changed-component rows stay (drift check 5 handles retests). |
-| `BUILD-METHOD.md` (this file) | **Living.** Working manual. Updated in place. | Never. |
+| `planning/*.md` (feasibility docs) | **Historical.** V17 architectural decisions. | Never. |
+| `BUILD-LOG.md` | **Historical.** Append-only, newest first. | Never. |
+| `TEST-LOG.md` | **Living.** One row per check, newest at top. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
+| `BUILD-METHOD.md` (this file) | **Living.** Working manual. | Never. |
 
 ### Drafts in flight
 
-`planning/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. The drafting session commits the file as part of its own commit; "good enough to walk away from" is the bar, not "polished." Files are deleted in the commit of whichever session consumes them (folding into a spec, `Vxx.md`, or persistent location). Dead-end drafts: prune with a one-line note in next `BUILD-LOG.md`.
+`planning/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. Committed in the drafting session's commit; "good enough to walk away from" is the bar. Deleted when consumed. Dead-end drafts: prune with BUILD-LOG note.
 
-**Corollary.** If a scope file's *Inputs* names content not reachable from the committed repo — phrasings like "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or "the [X] draft" without a committed path — that's a bug. Fix at the source: get the content into `planning/drafts/` retroactively if it still exists in chat history, or restate the input as something the next session can rebuild from what is in the repo. Don't hunt at the destination. The session-open scan in `CLAUDE.md → scope file inputs must be in the repo` catches the reading side; this catches the writing side.
-
-Worked example: V20 → V26 failure. A "Sonnet draft" with canonical TEST-LOG column shape and protocol rules was generated in V20 planning chat. Never committed. V20's session-close wrote "Alex has the file locally; pull it into this session as the starting shape" into the V26 scope file. V26 session-open halted on a reference to content that no longer existed in retrievable form. `planning/drafts/` makes this impossible going forward.
+**Corollary.** If a scope file's *Inputs* names content not reachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get the content into `planning/drafts/` retroactively or restate as something the next session can rebuild from repo contents. The session-open scan in `CLAUDE.md` catches the reading side; this catches the writing side.
 
 ---
 
 ## BUILD-LOG entry shape
 
-`BUILD-LOG.md` is the running record of decisions, changes, and reasoning, newest-first. It exists so Alex can talk progress with vibe-coding friends without making them read every commit, and so future-Alex (and future-Claude) can reconstruct *why* (commit messages cover *what*).
+`BUILD-LOG.md` is the running record of decisions, changes, and reasoning, newest-first. It exists so Alex can talk progress without making people read commits, and so future sessions can reconstruct *why*.
 
-One entry per session at the top:
+One entry per session:
 
 ```markdown
 ## V<N> — YYYY-MM-DD — One-line summary
 
-**What shipped.** Short plain-English paragraph describing concrete deliverables. Files added, files changed structurally, plugin components installed, smoke-test outcomes inline.
+**What shipped.** Short paragraph: concrete deliverables, files added/changed, components installed, smoke-test outcomes.
 
-**Decisions taken and why.** Two or three bullets on load-bearing decisions — what was chosen, alternatives considered, what tipped the call. Skip housekeeping (footer bumps, README touch-ups); focus on choices shaping future sessions.
+**Decisions taken and why.** Two or three bullets on load-bearing decisions. Skip housekeeping.
 
-**Pivots and surprises.** Anything that turned out differently than the scope expected — a bug, a wrong assumption in INVENTORY, an external fact discovered mid-session. Reference issue numbers / docs.
+**Pivots and surprises.** What differed from scope expectations.
 
-**Carried forward.** Items raised but not done, with destination (which future `Vxx.md` or PLAN.md row, or "not pursued — reason").
+**Carried forward.** Items raised but not done, with destination.
 ```
 
-**Note:** Consumer-project build-log entries (in `build-log/`) carry an additional `## Performance` section with structured mechanical measures — see `DOC-STRUCTURE.md` → *Build log structure*. This dev-project BUILD-LOG does not use that section (it predates the mechanism and serves a different audience).
+**Note:** Consumer build-log entries carry an additional `## Performance` section — see `DOC-STRUCTURE.md`. This dev BUILD-LOG doesn't use it.
 
-Don't pad. A good entry is half a page; a great one is shorter. Audience: a friend skimming, not an auditor.
+Don't pad. Half a page is good; shorter is better.
 
 ---
 
 ## OPEN-QUESTIONS entry shape
 
-`planning/OPEN-QUESTIONS.md` is the parking lot for method-level questions raised but not yet session-ready. PLAN.md is for sessions with known shape; INVENTORY.md for current architecture; BUILD-LOG.md is historical — there was no home for "a real concern was raised; think before scoping."
+`planning/OPEN-QUESTIONS.md` is the parking lot for method-level questions raised but not yet session-ready.
 
 Each entry:
 
 ```markdown
 ## One-line question title
 
-**The question.** A paragraph framing it clearly.
+**The question.** Clear framing paragraph.
 
-**Why it matters.** Brief context — who raised it, what assumption(s) it breaks, what's at risk.
+**Why it matters.** Who raised it, what assumptions it breaks.
 
-**Working notes.** Optional. Rough shapes the response could take, alternatives weighed, partial thinking. Skip if nothing useful yet.
+**Working notes.** Optional. Rough shapes, alternatives weighed.
 
-**Next step.** Where this is going — "fold into Vxx if [condition]", "promote to new session after Vyy ships", "decide by [date]", or "park". Every entry has one.
+**Next step.** Where this is going — "fold into NNNN if [condition]", "promote after NNNN ships", "decide by [date]", or "park". Every entry has one.
 ```
 
 Newest first.
 
-### Graduation paths — four ways an entry leaves
+### Graduation paths
 
-Entries resolve and leave the file via one of four paths. The *Next step* line on each entry names a trigger that, when fired, points the entry toward one of these paths.
+Four ways an entry leaves:
 
-1. **Folded into an upcoming session's scope.** The most common path. *Next step* names a condition like "fold into session NNNN if X" or "promote to a planning session after NNNN ships." At session-open time, the routine scan (*Session open* → step 3) looks for entries whose *Next step* names the current session. When matched, the entry's question becomes part of that session's scope file; the work happens within the session. Entry removed at session close, alongside the scope file's deletion (*Session close* step 9).
+1. **Folded into a session.** *Next step* names a condition; session-open scan (step 3) matches it; question becomes part of that session's scope. Entry removed at session close.
 
-2. **Promoted to its own session.** A new row is added to `planning/PLAN.md`, a new scope file is created in `planning/sessions/` (allocated via filesystem scan for the next unused 4-digit number), and the question becomes the basis for a future session. Entry removed from `OPEN-QUESTIONS.md` at promotion (not later, at the session's ship — the entry's role is over once a session exists for it).
+2. **Promoted to its own session.** New PLAN.md row + scope file created. Entry removed at promotion (not at the session's ship — the entry's role is over once a session exists).
 
-3. **Partial fold-in.** Some entries resolve only partly — a session addresses one shape of the question while leaving others parked. The entry stays in `OPEN-QUESTIONS.md` with a date-tagged update note recording what was folded ("V22, 2026-05-14: shape #1 partially folded into V22's planning subagent."). The *Next step* may be revised at the same time to reflect what's still open. Real example: the *Method response to direct-edit users* entry, which V22 partially folded but kept open for the remaining shapes.
+3. **Partial fold-in.** Session addresses one shape, others stay parked. Entry stays with a date-tagged update note. *Next step* revised to reflect what's still open.
 
-4. **Consciously dropped.** Entry deemed no longer relevant — drift, scope change, idea proven wrong. One-line reason recorded in `BUILD-LOG.md` for the session that drops it; entry removed.
+4. **Dropped.** No longer relevant. One-line reason in BUILD-LOG; entry removed.
 
-The session-open scan (step 3 of *Session open*) is what makes graduation triggers fire. There is no fixed schedule — graduation happens when conditions written in the entry's *Next step* match the current session's context.
+The session-open scan is what makes graduation triggers fire.
 
 ---
 
 ## TEST-LOG entry shape
 
-`sovereign-implementer/TEST-LOG.md` is the smoke-test record. One row per check per session:
+`TEST-LOG.md` is the smoke-test record. One row per check per session:
 
 | Column | Meaning |
 |---|---|
-| **#** | Stable three-digit ID (`001`, `002`, ...). Never reused. |
-| **Date** | YYYY-MM-DD of the session. |
-| **Session** | Session tag (`V18`, `V19`, ...). |
-| **Test** | What was checked, one sentence. Specific enough to re-run from this description. |
+| **#** | Stable three-digit ID. Never reused. |
+| **Date** | YYYY-MM-DD. |
+| **Session** | Session tag. |
+| **Test** | What was checked, one sentence. Specific enough to re-run. |
 | **Component** | Plugin component(s) exercised. |
-| **Status** | `Pass`, `Fail`, or `Skipped`. Skipped requires a reason in *Notes*. |
-| **Notes** | Observations, surprises, the discovery the test surfaced, or skip reason. Keep tight. |
+| **Status** | `Pass`, `Fail`, or `Skipped` (reason in Notes). |
+| **Notes** | Observations, surprises, skip reason. Keep tight. |
 
-**When to add.** During or immediately after the smoke test, while outcome is fresh. Append at bottom (opposite of BUILD-LOG — TEST-LOG is queried by "is X tested?" where ID order matters more than recency).
+**When to add.** During/after the smoke test, while fresh.
 
-**When status flips.** Previously-Pass now Fails: *append a new row* with the same Test description, today's session, `Fail` — don't edit the old. Same in reverse when the fix lands. Row-per-event keeps history intact.
+**Status flips.** Previously-Pass now Fails: *append a new row* with same Test, today's session, `Fail` — don't edit the old. Same in reverse. Row-per-event keeps history intact.
 
-**When a component changes substantially.** Old row's Status → `Superseded` with a note pointing at the session that changed the component. New rows record the retest in post-change shape. Rarer than a Pass/Fail flip — only when the test description itself no longer makes sense.
+**Component changes.** Old row → `Superseded` with note pointing at the changing session. New rows record the retest. Only when the test description itself no longer makes sense.
 
-**Linking from BUILD-LOG.** Each BUILD-LOG entry running a smoke test names the TEST-LOG row range in *What shipped* ("smoke-tested in `~\v24-scratch`; see TEST-LOG #023-028"). Prose narrative in BUILD-LOG; per-check record in TEST-LOG. Don't duplicate.
+**BUILD-LOG linking.** Each BUILD-LOG entry names the TEST-LOG row range in *What shipped*. Prose in BUILD-LOG; per-check in TEST-LOG. Don't duplicate.
 
 ---
 
 ## Plugin migration context
 
-From V17, this project is engaged in a **plugin migration** — distributing the no-code method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `planning/INVENTORY.md`, `planning/PLAN.md`, `planning/claude-code-plugin-feasibility-response.md`. The "method" now includes plugin components, not just markdown.
+From V17, this project distributes the method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `planning/INVENTORY.md`, `planning/PLAN.md`, `planning/claude-code-plugin-feasibility-response.md`.
 
-Context for working in the project, not a procedural rule. Session structure, doc-code parity, and testing semantics apply whether the session ships plugin code or method-doc prose.
+Context for working in the project, not a procedural rule.
