@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 59
+PLUGIN_METHOD_VERSION = 60
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -151,6 +151,10 @@ BATCH_REF_PATTERN = re.compile(r"^-\s+`(\d{4}-.+?\.md)`", re.MULTILINE)
 
 # H1 heading in a per-batch file (folder mode): `# <batch name>`.
 BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
+
+# Status: line — batch lifecycle state. Shipped/parked batches are skipped.
+STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
+_SKIP_STATUSES = frozenset(("shipped", "parked"))
 
 # --- V27 TEST-LOG tripwire patterns ---
 
@@ -286,13 +290,20 @@ def find_method_spine_docs(project_root: Path):
     return found
 
 
-def detect_top_build_batch(backlog_text: str, backlog_path=None):
-    """Find the first batch name in the `## Build batches` section.
+def _batch_status(text: str) -> str:
+    """Extract the Status: value from batch text. Returns lowercase status
+    or 'queued' if absent."""
+    m = STATUS_LINE_PATTERN.search(text)
+    return m.group(1).lower() if m else "queued"
 
-    In single-file mode, searches for `### Batch:` headings inline. In
-    folder mode (when `backlog_path` is provided and the section contains
-    batch reference lines instead of headings), reads the first referenced
-    batch file's `# <name>` heading.
+
+def detect_top_build_batch(backlog_text: str, backlog_path=None):
+    """Find the first actionable batch name in the `## Build batches` section.
+
+    Skips batches with Status: shipped or Status: parked. In single-file
+    mode, searches for `### Batch:` headings inline. In folder mode (when
+    `backlog_path` is provided and the section contains batch reference
+    lines instead of headings), reads each referenced batch file.
 
     Returns the batch title, or None if no real batch is present. Template
     placeholder titles like `[short descriptive name]` are filtered out."""
@@ -306,26 +317,39 @@ def detect_top_build_batch(backlog_text: str, backlog_path=None):
         section_text = section_text[:next_section.start()]
 
     # Single-file mode: inline `### Batch:` headings.
-    batch_match = BUILD_BATCH_HEADING_PATTERN.search(section_text)
-    if batch_match:
-        title = batch_match.group(1).strip()
-        if title.startswith("[") and title.endswith("]"):
-            return None
-        return title
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            if _batch_status(body) in _SKIP_STATUSES:
+                continue
+            return title
+        return None
 
     # Folder mode: reference lines like `- `0001-name.md``.
     if backlog_path is not None:
-        ref_match = BATCH_REF_PATTERN.search(section_text)
-        if ref_match:
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
             batch_file = backlog_path.parent / ref_match.group(1)
             batch_text = safe_read_text(batch_file)
-            if batch_text:
-                h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
-                if h1_match:
-                    title = h1_match.group(1).strip()
-                    if title.startswith("[") and title.endswith("]"):
-                        return None
-                    return title
+            if not batch_text:
+                continue
+            if _batch_status(batch_text) in _SKIP_STATUSES:
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if h1_match:
+                title = h1_match.group(1).strip()
+                if title.startswith("[") and title.endswith("]"):
+                    continue
+                return title
 
     return None
 

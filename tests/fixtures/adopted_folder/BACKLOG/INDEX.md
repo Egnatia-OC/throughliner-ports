@@ -8,7 +8,9 @@
 
 ## Build batches
 
+- `0000-shipped-batch.md` — Shipped batch
 - `0001-add-settings-screen.md` — Add settings screen
+- `0002-parked-batch.md` — Parked feature
 
 ## Open questions
 

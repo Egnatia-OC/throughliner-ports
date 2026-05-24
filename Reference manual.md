@@ -127,6 +127,8 @@ Every batch gets the same structure: Goal (why), Outputs (what changes), Success
 
 Two regions: **scope context** (strategic) and **build operations** (tactical).
 
+**Status tracking.** An optional `Status:` line at the top of the batch body tracks lifecycle state: `queued` (default — absent means queued), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by after-build). The parser skips shipped and parked batches. State machine: `queued → active → shipped`, with `active ↔ parked` via planning.
+
 **Scope context** (planning subagent):
 - **Goal.** Why this batch exists.
 - **Outputs.** What changes the user experiences.
@@ -320,4 +322,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 59.*
+*No-code method — Version 60.*

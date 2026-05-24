@@ -114,6 +114,9 @@ NEXT_TOP_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
 # batches section. Indicates at least one batch has been worked on.
 TICKED_FILE_BULLET_PATTERN = re.compile(r"^- \[[xX]\] ", re.MULTILINE)
 
+# Detects `Status: shipped` — batches already processed by after-build.
+STATUS_SHIPPED_PATTERN = re.compile(r"^Status:\s*shipped\s*$", re.MULTILINE)
+
 # Logical name for the after-build subagent. Used in the redirect reason
 # so Claude knows which subagent_type to pass to the Task tool.
 AFTER_BUILD_SUBAGENT_TYPE = "no-code-method:after-build"
@@ -190,7 +193,11 @@ def has_ticked_file_in_build_batches(backlog_text, backlog_dir=None):
                 if entry.name.upper() == "INDEX.MD":
                     continue
                 text = safe_read_text(entry)
-                if text and TICKED_FILE_BULLET_PATTERN.search(text):
+                if not text:
+                    continue
+                if STATUS_SHIPPED_PATTERN.search(text):
+                    continue
+                if TICKED_FILE_BULLET_PATTERN.search(text):
                     return True
         except OSError:
             pass

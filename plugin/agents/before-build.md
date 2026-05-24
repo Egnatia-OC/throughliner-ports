@@ -40,6 +40,7 @@ You don't reorganise the build queue. Planning owns BACKLOG structure. Reorganis
 3. **Write Files: sub-section** into the batch's BACKLOG file (per-batch file in folder mode) after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
 4. **Write Tests: sub-section.** One entry per distinct observable behaviour. Each entry: `- <description> [<Type>] [<Verifier>]`. Types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Verifier: `Claude` (structural/factual) or `User` (judgement/taste/visual). Full spec: `DOC-STRUCTURE.md` → *Tests: sub-section*. If no pre-specifiable tests (rare), omit entirely.
 5. **Apply batch-sizing principle.** Long test list relative to change scope → propose split (halt C).
+6. **Set Status: active.** Write `Status: active` line at the top of the batch body (after the heading, before Goal). If a `Status:` line already exists (e.g. from a previous before-build that was interrupted), replace it. This marks the batch as locked and in progress.
 
 ## Batch-sizing principle
 
@@ -86,4 +87,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 59.*
+*No-code method — Version 60.*

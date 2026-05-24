@@ -88,7 +88,7 @@ Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **sk
 ### Bundled artefacts
 
 - 8 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy), BACKLOG/INDEX, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC.
-- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode.
+- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup subagents.
@@ -125,4 +125,4 @@ Two patterns: **commands-directory** (V25, `plugin/commands/<name>.md`) and **sk
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 59.*
+*No-code method — Version 60.*

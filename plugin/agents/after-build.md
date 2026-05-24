@@ -93,14 +93,16 @@ TEST-LOG's Session column needs a stable build-session identifier:
      ```
    - **5c.** Prepend index line to `build-log/INDEX.md`. Idempotency: skip if same-numbered line exists. Fallback: legacy BUILD-LOG.md or create build-log/ from template.
 
-6. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
+6. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser and stop hook.
 
-7. **End-of-recap flags:**
+7. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
+
+8. **End-of-recap flags:**
    - Out-of-scope improvements.
    - UX.md changes implied (don't edit — flag only).
    - Red flag concerns (confirm BACKLOG entry written if deferred).
 
-8. **Closing prompts:**
+9. **Closing prompts:**
    - `[PROMPT]` Commit and tag before testing.
    - `[PROMPT]` Refresh and begin testing. Bring per-row outcomes to next planning session.
    - `[PROMPT]` Optional: add `**Session notes:**` to Performance section.
@@ -121,4 +123,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 59.*
+*No-code method — Version 60.*

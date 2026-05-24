@@ -39,6 +39,8 @@ and build operations (Changes through Serves). Full spec: DOC-STRUCTURE.md → B
 
 ### Batch: [short descriptive name]
 
+Status: [queued|active|parked|shipped]  ← written by subagents; absent = queued
+
 **Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
 
 **Outputs.** [Prose — what changes the user will experience after the batch ships.]
@@ -95,4 +97,4 @@ Entry format:
 -->
 
 ---
-*No-code method — Version 59.*
+*No-code method — Version 60.*

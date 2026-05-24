@@ -68,10 +68,63 @@ class TestParseBatchBody:
         result = pb.parse_batch_body("Test batch", body)
         assert result is not None
         assert result["batch_heading"] == "Test batch"
+        assert result["status"] == "queued"
         assert len(result["files"]) == 1
         assert result["files"][0]["path"] == "app/main.py"
         assert result["serves_ux"] == ["Dashboard"]
         assert result["change_list"] == ["[Requested] Do the thing"]
+
+    def test_status_active(self):
+        body = (
+            "\nStatus: active\n\n"
+            "Changes:\n- [Requested] X\n\n"
+            "Files:\n- [ ] `a.py` — A\n\n"
+            "Serves UX.md: Y.\n"
+        )
+        result = pb.parse_batch_body("Active batch", body)
+        assert result is not None
+        assert result["status"] == "active"
+
+    def test_status_shipped(self):
+        body = (
+            "\nStatus: shipped\n\n"
+            "Changes:\n- [Requested] X\n\n"
+            "Files:\n- [x] `a.py` — A\n\n"
+            "Serves UX.md: Y.\n"
+        )
+        result = pb.parse_batch_body("Shipped batch", body)
+        assert result is not None
+        assert result["status"] == "shipped"
+
+    def test_status_parked(self):
+        body = (
+            "\nStatus: parked\n\n"
+            "Changes:\n- [Requested] X\n\n"
+            "Files:\n- [ ] `a.py` — A\n\n"
+            "Serves UX.md: Y.\n"
+        )
+        result = pb.parse_batch_body("Parked batch", body)
+        assert result is not None
+        assert result["status"] == "parked"
+
+    def test_status_absent_defaults_to_queued(self):
+        body = (
+            "\nChanges:\n- [Requested] X\n\n"
+            "Files:\n- [ ] `a.py` — A\n\n"
+            "Serves UX.md: Y.\n"
+        )
+        result = pb.parse_batch_body("No status", body)
+        assert result is not None
+        assert result["status"] == "queued"
+
+    def test_status_case_insensitive(self):
+        body = (
+            "\nStatus: Active\n\n"
+            "Files:\n- [ ] `a.py` — A\n"
+        )
+        result = pb.parse_batch_body("Case test", body)
+        assert result is not None
+        assert result["status"] == "active"
 
     def test_no_files_line_returns_none(self):
         body = "\nChanges:\n- Something\n"
@@ -123,6 +176,71 @@ class TestFindTopUntickedBatch:
         )
         assert pb.find_top_unticked_batch(text) == {}
 
+    def test_skips_shipped_batch(self):
+        text = (
+            "## Build batches\n\n"
+            "### Batch: Old batch\n\n"
+            "Status: shipped\n\n"
+            "Files:\n"
+            "- [x] `a.py` — Done\n\n"
+            "### Batch: Next batch\n\n"
+            "Files:\n"
+            "- [ ] `b.py` — To do\n\n"
+            "## Open questions\n"
+        )
+        result = pb.find_top_unticked_batch(text)
+        assert result != {}
+        assert result["batch_heading"] == "Next batch"
+
+    def test_skips_parked_batch(self):
+        text = (
+            "## Build batches\n\n"
+            "### Batch: Parked batch\n\n"
+            "Status: parked\n\n"
+            "Files:\n"
+            "- [ ] `a.py` — Paused\n\n"
+            "### Batch: Active batch\n\n"
+            "Files:\n"
+            "- [ ] `b.py` — To do\n\n"
+            "## Open questions\n"
+        )
+        result = pb.find_top_unticked_batch(text)
+        assert result != {}
+        assert result["batch_heading"] == "Active batch"
+
+    def test_all_shipped_returns_empty(self):
+        text = (
+            "## Build batches\n\n"
+            "### Batch: Done\n\n"
+            "Status: shipped\n\n"
+            "Files:\n"
+            "- [x] `a.py` — Done\n\n"
+            "## Open questions\n"
+        )
+        assert pb.find_top_unticked_batch(text) == {}
+
+    def test_returns_active_batch(self):
+        text = (
+            "## Build batches\n\n"
+            "### Batch: In progress\n\n"
+            "Status: active\n\n"
+            "Files:\n"
+            "- [ ] `a.py` — Working\n\n"
+            "## Open questions\n"
+        )
+        result = pb.find_top_unticked_batch(text)
+        assert result != {}
+        assert result["batch_heading"] == "In progress"
+        assert result["status"] == "active"
+
+    def test_status_in_output(self):
+        text = (fixture_path("adopted_single_file") / "BACKLOG.md").read_text(
+            encoding="utf-8"
+        )
+        result = pb.find_top_unticked_batch(text)
+        assert result != {}
+        assert result["status"] == "queued"
+
 
 # ---------------------------------------------------------------------------
 # find_top_unticked_batch_from_path (auto-detecting, folder mode)
@@ -145,6 +263,30 @@ class TestFindTopUntickedBatchFromPath:
 
     def test_missing_file_returns_empty(self):
         assert pb.find_top_unticked_batch_from_path(Path("/nonexistent.md")) == {}
+
+    def test_folder_mode_skips_shipped_and_parked(self):
+        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        result = pb.find_top_unticked_batch_from_path(index_path)
+        assert result != {}
+        assert result["batch_heading"] == "Add settings screen"
+        assert result["status"] == "queued"
+
+    def test_folder_mode_status_in_output(self):
+        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        result = pb.find_top_unticked_batch_from_path(index_path)
+        assert "status" in result
+
+    def test_folder_mode_shipped_batch_parsed(self):
+        batch_path = fixture_path("adopted_folder") / "BACKLOG" / "0000-shipped-batch.md"
+        result = pb.parse_batch_file(batch_path)
+        assert result is not None
+        assert result["status"] == "shipped"
+
+    def test_folder_mode_parked_batch_parsed(self):
+        batch_path = fixture_path("adopted_folder") / "BACKLOG" / "0002-parked-batch.md"
+        result = pb.parse_batch_file(batch_path)
+        assert result is not None
+        assert result["status"] == "parked"
 
 
 # ---------------------------------------------------------------------------

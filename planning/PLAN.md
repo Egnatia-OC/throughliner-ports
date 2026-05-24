@@ -60,7 +60,7 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0066 | Permission prompt surface audit | Glob-based allocation replaces Bash calls; Auto mode recommended. **Shipped v66.** |
 | 0067 | Desktop app install/update docs | Desktop-app procedures in Reference manual. **Shipped v67.** |
 | 0068 | Taskflow E2E round 2 | Full build cycle against Taskflow with 0063–0067 fixes. Requires batch 0001 filled. |
-| 0069 | BACKLOG batch status tracking | Status: line (active/queued/parked/shipped) + parser + subagent transitions. |
+| 0069 | BACKLOG batch status tracking | Status: line (active/queued/parked/shipped) + parser + subagent transitions. **Shipped v70.** |
 | 0061 | Rename "Crash course" to "Reference manual" | Rename + update all references. Frees name for HTML guide. **Shipped v68.** |
 | 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. **Shipped v69.** |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |

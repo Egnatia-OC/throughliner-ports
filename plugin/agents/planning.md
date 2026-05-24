@@ -36,7 +36,7 @@ The operating procedure is inlined below. `NO-CODE-METHOD.md` is frozen at V39 �
 After loading state, perform in order:
 
 1. **[BRIEF, SEQUENCE] Close previous build's test session.** Per-row read-back of pending TEST-LOG rows.
-2. **[SILENT] Remove completed build batches.** Any batch with every `Files:` entry ticked. In folder mode: delete per-batch file + remove INDEX.md reference.
+2. **[SILENT] Remove completed build batches.** Any batch with `Status: shipped` (or, for legacy batches without Status, every `Files:` entry ticked). In folder mode: delete per-batch file + remove INDEX.md reference.
 2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
@@ -141,6 +141,8 @@ Make every change yourself. Never list pending edits for the user.
 
 When adding a `Serves UX.md:` line, verify every named entry exists in UX.md Functionalities (case-insensitive). PreToolUse blocks mismatches.
 
+**Parking and unparking batches.** When the user wants to pause a batch: write `Status: parked` at the top of the batch body (after heading, before Goal). When unparking: remove the `Status:` line entirely (absent = queued). The parser skips parked batches — they won't appear as the top batch for builds.
+
 **Scaffolding new build batches (V47):** write the full two-region structure per `DOC-STRUCTURE.md` → *Build batches → Batch structure — full shape*:
 
 1. **Scope context** — always Goal, Outputs, Success criteria. Omit Decisions/Dependencies if resolved/none.
@@ -220,4 +222,4 @@ Universal-behaviour rules apply to you — push back, plain English, ask on ambi
 
 ---
 
-*No-code method — Version 59.*
+*No-code method — Version 60.*

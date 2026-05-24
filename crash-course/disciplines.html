@@ -107,6 +107,9 @@
       <h2>Anatomy of a batch</h2>
       <p>Every batch has two regions, written at different times by different subagents.</p>
 
+      <h3>Status tracking</h3>
+      <p>An optional <code>Status:</code> line at the top of the batch tracks its lifecycle: <code>queued</code> (default), <code>active</code> (locked for build), <code>parked</code> (paused), or <code>shipped</code> (complete). Subagents write transitions automatically.</p>
+
       <h3>Scope context <span class="badge badge-adapted">written during planning</span></h3>
       <ul>
         <li><strong>Goal.</strong> Why this batch exists.</li>

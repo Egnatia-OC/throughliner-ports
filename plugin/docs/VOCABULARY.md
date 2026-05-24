@@ -49,6 +49,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Verifier.** TEST-LOG column: `Claude` or `User`. Claude rows filled by after-build; user rows confirmed during planning read-back.
 
+- **Batch status.** Lifecycle state of a build batch, tracked via an optional `Status:` line at the top of the batch body. Four values: `queued` (default — absent means queued), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by after-build). The parser and session-start hook skip `shipped` and `parked` batches when finding the top build batch. State machine: `queued → active → shipped`, with `active ↔ parked` via planning. Full spec: `DOC-STRUCTURE.md` → *Status: line*.
+
 - **Scope-context sections.** Five (optionally six) sections framing a build batch: Goal, Outputs, Success criteria, Decisions, Dependencies, Red flags. First three always present. Full spec: `DOC-STRUCTURE.md`.
 
 - **Changes: delimiter.** Separates scope-context from change list in a build batch. Required for new batches; parser falls back for legacy.
@@ -88,4 +90,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks batch-executor. Subagent side: planning's per-row read-back.
 
 ---
-*No-code method — Version 59.*
+*No-code method — Version 60.*

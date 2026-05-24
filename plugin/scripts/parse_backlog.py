@@ -4,9 +4,10 @@ parse_backlog.py — shared BACKLOG parser for the no-code-method plugin.
 
 Locates the top unticked build batch and emits its data as JSON on stdout.
 The "top unticked batch" is the first build batch (in priority order) whose
-`Files:` sub-section contains at least one `- [ ]` bullet. Batches that
-are placeholders (no `Files:` section or empty `Files:` list) and batches
-that are complete (all `- [x]`) are skipped past.
+`Files:` sub-section contains at least one `- [ ]` bullet. Batches with
+`Status: shipped` or `Status: parked` are skipped. Batches that are
+placeholders (no `Files:` section or empty `Files:` list) and batches
+that are complete (all `- [x]`) are also skipped past.
 
 Supports two BACKLOG formats (auto-detected):
 
@@ -50,6 +51,7 @@ Output (stdout, JSON, compact):
     {
       "batch_heading": "<batch name>",
       "batch_file":    "<filename — only present in folder mode>",
+      "status":        "<queued|active|parked|shipped — default: queued>",
       "change_list":   ["<bullet text>", ...],
       "files": [
         {
@@ -130,6 +132,12 @@ PREREQ_LABEL = "[Prerequisite, not in plan]"
 # not in batch headings or file paths — outside this pattern's scope.
 TEMPLATE_PLACEHOLDER_PATTERN = re.compile(r"^\[[^\]]+\]$")
 
+# `Status:` line — batch lifecycle state. Four values: queued, active,
+# parked, shipped. Absent = queued (default).
+STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
+
+SKIP_STATUSES = frozenset(("shipped", "parked"))
+
 
 # --- Helpers ---
 
@@ -197,6 +205,9 @@ def parse_batch_body(heading, body):
     if not files_match:
         return None
 
+    status_match = STATUS_LINE_PATTERN.search(body)
+    status = status_match.group(1).lower() if status_match else "queued"
+
     changes_match = CHANGES_LINE_PATTERN.search(body)
     if changes_match and changes_match.start() < files_match.start():
         change_region = body[changes_match.end():files_match.start()]
@@ -236,6 +247,7 @@ def parse_batch_body(heading, body):
 
     return {
         "batch_heading": heading.strip(),
+        "status": status,
         "change_list": change_list,
         "files": files,
         "serves_ux": serves_ux,
@@ -302,6 +314,8 @@ def find_top_unticked_batch(text):
         batch = parse_batch_body(heading, body)
         if batch is None:
             continue
+        if batch["status"] in SKIP_STATUSES:
+            continue
         if all(f["ticked"] for f in batch["files"]):
             continue
         return batch
@@ -336,6 +350,8 @@ def find_top_unticked_batch_folder(index_path: Path):
         batch_path = backlog_dir / filename
         batch = parse_batch_file(batch_path)
         if batch is None:
+            continue
+        if batch["status"] in SKIP_STATUSES:
             continue
         if all(f["ticked"] for f in batch["files"]):
             continue

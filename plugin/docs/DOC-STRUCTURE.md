@@ -190,6 +190,8 @@ Two formats, auto-detected:
   # [name]                                          ← folder (H1)
   ### Batch: [name]                                  ← single-file
 
+  Status: [queued|active|parked|shipped]             ← optional; absent = queued
+
   **Goal.** [Why this batch exists.]
   **Outputs.** [What changes the user experiences.]
   **Success criteria.** [Observable conditions for success.]
@@ -215,6 +217,8 @@ Two formats, auto-detected:
 
   **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by after-build when batch completes.
 
+  **Status: line.** Tracks batch lifecycle. Four values: `queued` (default — no line needed), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by after-build). Position: first line of batch body, before Goal. The parser skips `shipped` and `parked` batches when finding the top build batch. Absent = queued.
+
   **Scope-context sections.** Goal/Outputs/Success criteria always present. Decisions/Dependencies omitted when empty. Red flags only when security-shaped scope detected.
 
   **Changes: delimiter.** Separates scope-context from change list. Required for new batches; parser falls back for legacy.
@@ -232,4 +236,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 59.*
+*No-code method — Version 60.*
