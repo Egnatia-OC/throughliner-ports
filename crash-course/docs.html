@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your docs — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html" aria-current="page">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Your docs</h1>
+
+    <section data-source="manual:guardrail-docs" data-transform="adapted">
+      <p>After <code>/setup</code>, your project has six files and two folders. Together they act as guardrails &mdash; they hold your design decisions, queued work, and test outcomes so Claude knows where things stand at the start of every session.</p>
+    </section>
+
+    <section data-source="manual:guardrail-docs" data-transform="adapted">
+      <h2>The spine docs</h2>
+
+      <div class="doc-grid">
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+            <path d="M24 16v16M16 24h16" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <h3>CLAUDE.md</h3>
+          <p>Entry point. Tells Claude where your docs live and how to behave. Read every session.</p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+            <circle cx="24" cy="22" r="5" stroke="#16A34A" stroke-width="2"/>
+            <path d="M14 36c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#16A34A" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3>UX.md</h3>
+          <p>Your app from the user's perspective. Every entry is something experienceable, with a "the user needs this because&hellip;" rationale. <strong>You maintain this &mdash; Claude can only read it.</strong></p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+            <rect x="14" y="15" width="20" height="3" rx="1.5" fill="#D97706"/>
+            <rect x="14" y="22" width="16" height="3" rx="1.5" fill="#D97706"/>
+            <rect x="14" y="29" width="18" height="3" rx="1.5" fill="#D97706"/>
+          </svg>
+          <h3>BACKLOG/</h3>
+          <p>Deferred and queued work. INDEX.md lists everything; each batch gets its own file with scope and build details.</p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+            <path d="M15 16h18M15 22h18M15 28h12M15 34h14" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3>MANIFEST.md</h3>
+          <p>Flat glossary of every named thing in your codebase. Name, file path, description. Claude maintains it during builds.</p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+            <path d="M16 24l4 4 8-8" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="14" y="32" width="20" height="2" rx="1" fill="#DC2626"/>
+          </svg>
+          <h3>TEST-LOG.md</h3>
+          <p>One row per test, 10 columns. Claude adds rows after builds; you confirm outcomes before the next build can start.</p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#F1F5F9" stroke="#475569" stroke-width="2"/>
+            <path d="M15 16h18M15 22h14M15 28h16M15 34h10" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3>build-log/</h3>
+          <p>Per-build narrative files: what shipped, decisions made, surprises, carried-forward items, and performance notes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-source="manual:guardrail-docs" data-transform="adapted">
+      <h2>Also created by /setup</h2>
+
+      <div class="doc-grid">
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#FCE7F3" stroke="#DB2777" stroke-width="2"/>
+            <path d="M24 14l-6 10h12l-6 10" stroke="#DB2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>planning/drafts/</h3>
+          <p>Holding area for ideas not yet ready for a specific doc. Zero maintenance burden.</p>
+        </div>
+
+        <div class="doc-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="40" height="40" rx="6" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+            <circle cx="22" cy="22" r="7" stroke="#059669" stroke-width="2"/>
+            <path d="M27 27l7 7" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <h3>research/</h3>
+          <p>Findings from Claude's research. Persists across sessions for future reference.</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-source="manual:guardrail-docs" data-transform="adapted">
+      <h2>Additional source-of-truth docs</h2>
+      <p>Projects can declare extra locked docs &mdash; things like <code>SYSTEM-PROMPT.md</code>, <code>COPY.md</code>, or <code>PATTERNS.md</code>. Same locking rules as UX.md: Claude reads but can't edit.</p>
+    </section>
+
+    <nav class="page-nav">
+      <a href="cycle.html">&larr; The cycle</a>
+      <a href="getting-started.html" class="next">Get started &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

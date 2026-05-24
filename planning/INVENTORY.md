@@ -15,6 +15,7 @@ Three plugin sub-categories: **Process** (phase orchestration), **Schemas** (doc
 | Doc | Home | Plugin component |
 |---|---|---|
 | `Reference manual.md` | Repo root | Humans-only reference, linked from README |
+| `crash-course/` | Repo root | HTML guide for testers/early adopters; derived from Reference manual |
 | `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
 | `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
 | `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |

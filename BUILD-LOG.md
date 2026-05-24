@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## v69 — 2026-05-24 — HTML Crash Course guide
+
+**What shipped.** Scope 0062. Eight-page HTML guide at `crash-course/`: index (pitch + quick start), cycle (planning → build flow), docs (SVG icon grid for each spine doc), getting started (install + /setup cases), walkthrough (Taskflow Day 1 worked example), disciplines (four disciplines + drift checks + batch anatomy), why the rules (per-rule reasoning blocks), reference (test types, editing surfaces, permissions, safety net, plugin internals, caveats). CSS-only responsive nav (checkbox-hack hamburger on mobile). Tag system (`data-source`, `data-transform`) on every section for Reference manual → guide parity tracking. BUILD-METHOD updated with guide parity chain rule. INVENTORY updated. No footer bump — documentation deliverable, not method/plugin behaviour change.
+
+**Decisions.** CSS-only nav (no JavaScript). Inline SVGs rather than separate asset files. All 8 pages in one session since the content already existed in the Reference manual — the work was structural, not authorial. No method version bump because the guide doesn't change how the method or plugin operates.
+
+**Pivots.** None.
+
+**Carried forward.** Nothing.
+
+---
+
 ## v68 — 2026-05-24 — Rename "Crash course" to "Reference manual"
 
 **What shipped.** Scope 0061. `Crash course.md` renamed to `Reference manual.md` via `git mv`. All live references updated across 11 files: BUILD-LOG.md, BUILD-METHOD.md, PLAN.md, INVENTORY.md, README.md, plugin/README.md, CLAUDE-TEMPLATE.md, project-level CLAUDE.md, 0069 scope file, permission-prompt-surface-audit.md research file. URL-encoded links (`Crash%20course.md`) updated in both READMEs. H1 heading updated. Archive/ untouched (read-only). Doc-only; no footer bump.

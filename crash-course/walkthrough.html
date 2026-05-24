@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walkthrough — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html" aria-current="page">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Walkthrough &mdash; Taskflow Day 1</h1>
+    <p data-source="manual:walkthrough" data-transform="added">A worked example showing how a real project goes from empty folder to first build and beyond.</p>
+
+    <section data-source="manual:walkthrough-scratch" data-transform="adapted">
+      <h2>Starting from scratch</h2>
+      <p>Taskflow begins as an empty folder. Running <code>/setup</code> walks through four prompts:</p>
+
+      <div class="card">
+        <h3>1. Project context</h3>
+        <p>What the app does and what makes it distinct. For Taskflow: a task-planning app that treats today as the only screen that matters.</p>
+      </div>
+
+      <div class="card">
+        <h3>2. UX principles</h3>
+        <p>High-level rules for how the app should feel. Taskflow's principles: <em>Reduce planning pressure. Drag is the primary verb. No date pickers, no shame.</em></p>
+      </div>
+
+      <div class="card">
+        <h3>3. Core functionalities</h3>
+        <p>Three to five features, each with a "user needs this because&hellip;" line. These seed UX.md.</p>
+      </div>
+
+      <div class="card">
+        <h3>4. First batch sketch</h3>
+        <p>The smallest end-to-end buildable thing. For Taskflow: the one-day-at-a-time view.</p>
+      </div>
+
+      <p>Answers land as <code>[PROPOSED EDIT PENDING]</code> blocks. You apply them to UX.md, seed the first build batch, and you're ready.</p>
+    </section>
+
+    <section data-source="manual:walkthrough-risk" data-transform="adapted">
+      <h2>Risk accepted in action</h2>
+      <p>Taskflow's <strong>One-day-at-a-time view</strong> entry in UX.md ends with a <em>Risk accepted</em> line explaining why there's deliberately no week view. This isn't a TODO or a compromise &mdash; it's a recorded decision that protects against re-litigation six months later.</p>
+      <div class="callout">
+        <p>If someone asks "why no week view?" the answer is on the page, with the reasoning that was current when the decision was made.</p>
+      </div>
+    </section>
+
+    <section data-source="manual:walkthrough-test" data-transform="adapted">
+      <h2>First build, first test note</h2>
+      <p>The build ships. You test the result and write down what you notice:</p>
+      <blockquote style="border-left:3px solid #e2e8f0; padding-left:1rem; color:#64748b; margin:1rem 0;">
+        "Couldn't find a due date &mdash; intentional? Screen hard to read at night &mdash; dark mode?"
+      </blockquote>
+      <p>Paste those notes into a new session. The planning route picks them up.</p>
+    </section>
+
+    <section data-source="manual:walkthrough-feature" data-transform="adapted">
+      <h2>How a test note becomes a feature</h2>
+      <p>The dark-mode item follows the full pipeline:</p>
+
+      <ol class="steps">
+        <li><strong>Idea raised.</strong> Test note mentions "screen hard to read at night."</li>
+        <li><strong>Planning batch.</strong> The planning subagent creates a batch with design questions: justify a parallel theme? OS setting or manual toggle? Which UX entries need contrast review?</li>
+        <li><strong>Questions answered.</strong> You decide: yes, OS-based, two entries need a contrast pass.</li>
+        <li><strong>UX.md updated.</strong> You add a new <em>Dark mode</em> entry with rationale.</li>
+        <li><strong>Build batch.</strong> Created with <code>Serves UX.md: Dark mode</code>. Ready for <code>/before-build</code>.</li>
+      </ol>
+
+      <p>If step 3 answers "no" &mdash; the idea doesn't justify the work &mdash; steps 4 and 5 don't happen. That's equally valid. The pipeline filters, not just queues.</p>
+
+      <div class="callout">
+        <p><strong>UX principle conflicts</strong> get surfaced in chat immediately &mdash; they aren't quietly routed into a batch.</p>
+      </div>
+    </section>
+
+    <section data-source="manual:mid-stream" data-transform="adapted">
+      <h2>The method absorbs mid-stream ideation</h2>
+      <p>Ideas arrive at unpredictable moments &mdash; during tests, conversations, feedback. The planning phase catches and routes them. But catching alone isn't enough; <strong>scoping matters</strong>.</p>
+      <p>A batch that says only "add dark mode" gives no testing anchor, no record of purpose, no surface for pushback. So every batch gets the same structure: Goal (why), Outputs (what changes), and Success criteria (how you'll know it worked). Written during planning &mdash; you speak the substance, the subagent records it.</p>
+    </section>
+
+    <nav class="page-nav">
+      <a href="getting-started.html">&larr; Get started</a>
+      <a href="disciplines.html" class="next">Disciplines &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

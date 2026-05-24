@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The disciplines — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html" aria-current="page">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>The disciplines</h1>
+    <p data-source="manual:four-disciplines" data-transform="adapted">Four structural habits keep the method working. They're not suggestions &mdash; each one is enforced by hooks, subagent behaviour, or doc structure.</p>
+
+    <section data-source="manual:four-disciplines" data-transform="adapted">
+      <h2>The four disciplines</h2>
+
+      <div class="card">
+        <h3>1. "The user needs this because&hellip;"</h3>
+        <p>Every UX.md entry ends with a rationale line. Forces you to articulate <em>why</em> before anything gets built. Protects against drift &mdash; six months later, the reason is still on the page.</p>
+      </div>
+
+      <div class="card">
+        <h3>2. The flag taxonomy</h3>
+        <p>Every concern Claude raises has exactly one home:</p>
+        <ul>
+          <li><strong>Red flags</strong> &rarr; BACKLOG Red flags section. Persistent, visible.</li>
+          <li><strong>Suggestions</strong> &rarr; chat. In-scope ideas for the current session.</li>
+          <li><strong>Discoveries</strong> &rarr; planning batches. Out-of-scope ideas queued for later.</li>
+        </ul>
+        <p>No concerns get lost. None get mixed up.</p>
+      </div>
+
+      <div class="card">
+        <h3>3. The feature pipeline</h3>
+        <p>Rigid by design. Nothing skips a step:</p>
+        <div class="flow" style="margin-top:1rem;">
+          <div class="flow-step">Planning batch</div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="flow-step">Questions answered</div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="flow-step">UX.md entry</div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="flow-step">Build batch</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>4. The test-confirmation gate</h3>
+        <p>You can't start a new build batch while previous test rows are unconfirmed. The planning subagent reads back each row one by one; bulk confirmations aren't accepted. A PreToolUse hook enforces this structurally.</p>
+      </div>
+    </section>
+
+    <section data-source="manual:drift-checks" data-transform="adapted">
+      <h2>Drift checks</h2>
+      <p>Five automated checks run at the start of every planning session. Each catches a different kind of desynchronisation:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Check</th><th>What it catches</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Direct-edit detection</strong></td>
+              <td>Uses git diff to find files changed outside a build. Asks per-file: "Was this you?"</td>
+            </tr>
+            <tr>
+              <td><strong>UX.md &harr; what's built</strong></td>
+              <td>Feature-to-feature comparison. Surfaces features described but not built, or built but not described.</td>
+            </tr>
+            <tr>
+              <td><strong>MANIFEST &harr; codebase</strong></td>
+              <td>Name-to-name comparison. Catches renamed or deleted components still listed.</td>
+            </tr>
+            <tr>
+              <td><strong>MANIFEST &harr; UX.md</strong></td>
+              <td>Loose purpose check. Is each component serving something the user experiences? Plumbing is exempt.</td>
+            </tr>
+            <tr>
+              <td><strong>TEST-LOG &harr; code-touch</strong></td>
+              <td>Per-row: has the tested component changed since the test passed? Flags stale results.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-source="manual:batch-anatomy" data-transform="adapted">
+      <h2>Anatomy of a batch</h2>
+      <p>Every batch has two regions, written at different times by different subagents.</p>
+
+      <h3>Scope context <span class="badge badge-adapted">written during planning</span></h3>
+      <ul>
+        <li><strong>Goal.</strong> Why this batch exists.</li>
+        <li><strong>Outputs.</strong> What changes the user will experience.</li>
+        <li><strong>Success criteria.</strong> Observable conditions that mean it worked.</li>
+        <li><strong>Decisions.</strong> Unresolved scope questions (omitted once resolved).</li>
+        <li><strong>Dependencies.</strong> What's needed from outside (omitted if none).</li>
+        <li><strong>Red flags.</strong> Security or risk concerns (only when auto-detected).</li>
+      </ul>
+
+      <h3>Build operations <span class="badge badge-adapted">written during before-build</span></h3>
+      <ul>
+        <li><strong>Changes:</strong> Labeled <code>[Requested]</code> or <code>[Suggested]</code>.</li>
+        <li><strong>Inputs:</strong> Non-standard resources needed.</li>
+        <li><strong>Files:</strong> Checkbox task list of files to create or edit.</li>
+        <li><strong>Tests:</strong> Type and verifier per test.</li>
+        <li><strong>Serves UX.md:</strong> Which UX entry the batch implements.</li>
+      </ul>
+
+      <p>The <code>Changes:</code> delimiter separates the two regions. Everything above is strategic; everything below is tactical.</p>
+    </section>
+
+    <nav class="page-nav">
+      <a href="walkthrough.html">&larr; Walkthrough</a>
+      <a href="why-the-rules.html" class="next">Why the rules &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

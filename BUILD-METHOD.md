@@ -94,6 +94,17 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 **Escape clause.** If the audit surfaces a gap whose doc work would dominate the session — surface in chat, weigh fold-in vs. new-session, decide together. **Default: fold in now.** Cost is usually overstated; shipping inconsistency is worse.
 
+### Guide parity (crash-course/)
+
+The HTML crash course at `crash-course/` derives from `Reference manual.md`. Three-layer chain: **plugin spec docs → Reference manual → crash-course guide.** Each HTML section carries `data-source` and `data-transform` attributes:
+
+- `data-source="manual:<section-id>"` — source section in the Reference manual.
+- `data-transform="verbatim"` — word-for-word; auto-update on manual change.
+- `data-transform="adapted"` — same concept, plainer language; flag for review on manual change.
+- `data-transform="added"` — new context not in the manual; no update unless the concept is removed.
+
+When a session changes `Reference manual.md`, grep `crash-course/` for matching `data-source` values. `verbatim` sections update mechanically; `adapted` sections need review; `added` sections need a judgment call.
+
 ---
 
 ## Two-write rule for canonical docs

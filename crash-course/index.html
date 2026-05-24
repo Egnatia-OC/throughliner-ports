@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No-code method — Crash Course</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero" data-source="manual:what-this-is" data-transform="adapted">
+      <h1>The no-code method</h1>
+      <p class="subtitle">A Claude Code plugin that keeps your app on track.</p>
+    </div>
+
+    <section data-source="manual:what-this-is" data-transform="adapted">
+      <h2>What is this?</h2>
+      <p>A structured workflow for non-coders building apps with Claude Code. You describe what your app should do; Claude writes the code. The plugin makes sure Claude follows a rigid process: planning before building, testing before moving on, and keeping written records of every decision.</p>
+      <p>Without it, Claude drifts. It forgets decisions, builds things nobody asked for, and skips steps. The plugin prevents that with enforced guardrails &mdash; locked documents Claude can't edit, file-boundary enforcement it can't bypass, and phase gates it can't skip.</p>
+    </section>
+
+    <section data-source="manual:what-this-is" data-transform="adapted">
+      <h2>Who is it for?</h2>
+      <p>People who already know what their app should be, but don't write code. You bring the product vision; the method structures how Claude turns it into working software.</p>
+      <p>Prior Claude Code experience helps but isn't required. Extensive plan-mode use before your first build is recommended.</p>
+    </section>
+
+    <section data-source="manual:what-this-costs" data-transform="adapted">
+      <h2>What does it cost?</h2>
+      <div class="callout">
+        <p><strong>Two sessions minimum per feature.</strong> One to plan, one to build. Every shipped feature traces to a written rationale. Nothing gets built that nobody decided to build.</p>
+      </div>
+      <p>That's the trade-off: you move slower, but you never lose track of why something was built, whether it was tested, or what was decided along the way.</p>
+    </section>
+
+    <section data-transform="added">
+      <h2>Quick start</h2>
+      <ol class="steps">
+        <li><a href="getting-started.html">Install the plugin</a> and run <code>/setup</code> in your project folder.</li>
+        <li>Describe your app. The plugin walks you through four prompts.</li>
+        <li>Run <code>/before-build</code> to lock your first batch, then <code>/build</code> to execute it.</li>
+        <li>Test. Bring results to your next planning session.</li>
+      </ol>
+    </section>
+
+    <nav class="page-nav">
+      <span></span>
+      <a href="cycle.html" class="next">The cycle &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

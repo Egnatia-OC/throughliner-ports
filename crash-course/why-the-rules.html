@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why the rules — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html" aria-current="page">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Why the rules</h1>
+    <p data-source="manual:why-the-rules" data-transform="adapted">Every rule exists because something went wrong without it. Here's each one with the reasoning.</p>
+
+    <section data-source="manual:why-the-rules" data-transform="adapted">
+      <div class="rule">
+        <h3>Push back rather than agree</h3>
+        <p>Drift checks and red-flag surfacing assume Claude will push back when something looks wrong. If Claude defaults to agreement, those safety nets are disabled in practice even though the code still runs.</p>
+      </div>
+
+      <div class="rule">
+        <h3>State regressions plainly</h3>
+        <p>The after-build recap is your record of what happened. If Claude silently fixes a regression instead of reporting it, you lose visibility into what broke and whether the fix was actually right.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Lock batch scope once agreed</h3>
+        <p>Scope creep during a build makes testing unpredictable, breaks the planning-gate filter, and undermines session predictability. If the scope needs to change, that's a new planning discussion &mdash; not a mid-build addition.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Five drift checks at different levels</h3>
+        <p>Each check catches a different kind of desynchronisation: file-temporal, feature-to-feature, name-to-name, purpose-level, per-row code-touch. Bundling them into one check produces noise; separate passes catch what each is designed for.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Lock source-of-truth docs</h3>
+        <p>Build sessions are the wrong environment for design changes. UX.md and other source-of-truth docs are read-only during builds so design decisions get proper deliberation in planning sessions.</p>
+      </div>
+
+      <div class="rule">
+        <h3>No placeholders in source-of-truth docs</h3>
+        <p>These docs are read by Claude at session start. Placeholders like <code>[TODO]</code> or <code>[TBD]</code> confuse the reader &mdash; is this an instruction or an unfinished thought? Every entry should be the actual instruction.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Project-specific UX principles</h3>
+        <p>Generic principles ("be intuitive," "be fast") are too abstract to guard real decisions. Project-specific principles like "no date pickers, no shame" give Claude concrete criteria to push back against scope that violates them.</p>
+      </div>
+
+      <div class="rule">
+        <h3>MANIFEST starts flat</h3>
+        <p>Most projects never need sections in their MANIFEST. Pre-sectioning forces premature architecture decisions. Start flat; add structure only when navigability demands it.</p>
+      </div>
+
+      <div class="rule">
+        <h3>BACKLOG is a folder, not four files</h3>
+        <p>INDEX.md gives you one place to see what's outstanding. Per-batch files handle the content volume. The split is about content volume, not category.</p>
+      </div>
+
+      <div class="rule">
+        <h3>"Risk accepted" as a labelled line</h3>
+        <p>When you deliberately accept a trade-off (no week view, no offline mode), recording it as a labelled line keeps the reasoning on the page. Six months later, anyone asking "why not?" finds the answer without archaeology.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Per-row test read-back</h3>
+        <p>Bulk confirmations ("all tests passed") silently flip rows the user didn't actually verify. Row-by-row read-back means every confirmation is deliberate.</p>
+      </div>
+    </section>
+
+    <nav class="page-nav">
+      <a href="disciplines.html">&larr; Disciplines</a>
+      <a href="reference.html" class="next">Reference &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

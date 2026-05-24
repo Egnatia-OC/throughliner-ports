@@ -62,7 +62,7 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0068 | Taskflow E2E round 2 | Full build cycle against Taskflow with 0063–0067 fixes. Requires batch 0001 filled. |
 | 0069 | BACKLOG batch status tracking | Status: line (active/queued/parked/shipped) + parser + subagent transitions. |
 | 0061 | Rename "Crash course" to "Reference manual" | Rename + update all references. Frees name for HTML guide. **Shipped v68.** |
-| 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. |
+| 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. **Shipped v69.** |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
 48 sessions through 0068, plus V60+ TBD. Some will combine or split.

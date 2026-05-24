@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting started — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html" aria-current="page">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Getting started</h1>
+
+    <section data-source="manual:install" data-transform="adapted">
+      <h2>Install the plugin</h2>
+      <p>The plugin installs via Claude Code's marketplace system. Once installed, it persists across sessions.</p>
+
+      <ol class="steps">
+        <li>Clone the repository: <pre><code>git clone https://github.com/FlintCraftTech/sovereign-implementer.git</code></pre></li>
+        <li>In Claude Code, run: <pre><code>/plugin marketplace add &lt;path-to-clone&gt;</code></pre></li>
+        <li>Then: <pre><code>/plugin install no-code-method@sovereign-implementer</code></pre></li>
+        <li>Open a session in your project folder. Hooks fire at session start.</li>
+      </ol>
+
+      <p>For one-off use without installing: <code>claude --plugin-dir &lt;path-to-clone&gt;/plugin</code></p>
+    </section>
+
+    <section data-source="manual:desktop-install" data-transform="adapted">
+      <h2>Desktop app users</h2>
+      <div class="callout-warn callout">
+        <p><code>/plugin</code> is CLI-only &mdash; it doesn't work in the desktop app. Run install commands in a CLI terminal first; the plugin then loads automatically in desktop sessions.</p>
+      </div>
+
+      <h3>First install</h3>
+      <ol class="steps">
+        <li>Open a terminal (PowerShell or Terminal).</li>
+        <li>Run <code>claude</code> to start a CLI session.</li>
+        <li>Run <code>/plugin marketplace add &lt;path-to-clone&gt;</code></li>
+        <li>Run <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>Close the CLI session. Open the desktop app. Verify under <strong>Customise</strong> (gear icon) &rarr; <strong>Plugins</strong>.</li>
+      </ol>
+
+      <h3>Checking your version</h3>
+      <p>Desktop app &rarr; <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; gear icon on the plugin entry.</p>
+
+      <h3>Updating</h3>
+      <p>After pulling new changes, if the desktop app shows the old version:</p>
+      <ol class="steps">
+        <li>CLI: <code>claude</code> &rarr; <code>/plugin uninstall no-code-method@sovereign-implementer</code></li>
+        <li><code>/plugin marketplace add &lt;path-to-clone&gt;</code> &rarr; <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>Close the CLI. Close the desktop app completely (on Windows: Task Manager to end the process). Reopen.</li>
+        <li>Verify the version.</li>
+      </ol>
+    </section>
+
+    <section data-source="manual:first-session" data-transform="adapted">
+      <h2>Your first session</h2>
+      <p>Open Claude Code in your project folder and run <code>/setup</code>. The plugin detects your situation and runs the matching dialogue:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Situation</th><th>What happens</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Empty folder</td><td>Scaffolds all spine docs, walks you through four prompts.</td></tr>
+            <tr><td>Existing code, no docs</td><td>Scaffolds docs alongside your code.</td></tr>
+            <tr><td>Foreign docs present</td><td>Offers to migrate, overwrite, or leave them.</td></tr>
+            <tr><td>Already managed</td><td>Refreshes footers and runs any migrations.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The four prompts (empty folder)</h3>
+      <ol class="steps">
+        <li><strong>Project context.</strong> What the app does and what makes it distinct.</li>
+        <li><strong>UX principles.</strong> High-level rules for how the app should feel.</li>
+        <li><strong>Core functionalities.</strong> Three to five features with "user needs this because&hellip;" lines.</li>
+        <li><strong>First batch sketch.</strong> The smallest end-to-end buildable thing.</li>
+      </ol>
+
+      <p>Answers land as <code>[PROPOSED EDIT PENDING]</code> blocks in the spine docs. You apply them to UX.md by hand, then seed the first build batch.</p>
+    </section>
+
+    <section data-source="manual:managing" data-transform="adapted">
+      <h2>Managing the plugin</h2>
+      <p>Once installed, the plugin fires in every folder. Here's how to control it.</p>
+
+      <h3>Disable in a specific project</h3>
+      <ul>
+        <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; gear icon &rarr; toggle off.</li>
+        <li><strong>CLI:</strong> <code>/plugin disable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+      </ul>
+
+      <h3>Re-enable</h3>
+      <ul>
+        <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; toggle on.</li>
+        <li><strong>CLI:</strong> <code>/plugin enable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+      </ul>
+
+      <h3>Uninstall</h3>
+      <p>CLI only (the UI uninstall has been reported as unreliable):</p>
+      <pre><code>/plugin uninstall no-code-method@sovereign-implementer</code></pre>
+
+      <div class="callout-warn callout">
+        <p><strong>Known issue:</strong> Disabled plugins may still run hooks. If you need a plugin fully off, uninstall rather than disabling.</p>
+      </div>
+    </section>
+
+    <nav class="page-nav">
+      <a href="docs.html">&larr; Your docs</a>
+      <a href="walkthrough.html" class="next">Walkthrough &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>
