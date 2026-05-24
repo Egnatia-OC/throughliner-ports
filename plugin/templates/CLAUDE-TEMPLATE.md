@@ -26,6 +26,10 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 [Behavioural notes, terminology, or rules specific to this project. Most projects can leave this empty.]
 
+## After-build steps
+
+<!-- Optional. Steps here run during after-build, after standard steps and before closing prompts. Use for project-specific close actions — e.g. regenerating an API doc, updating a changelog, syncing a config file. Each step should be one sentence the agent can act on. Delete this section if unused. -->
+
 
 ---
-*No-code method — Version 61.*
+*No-code method — Version 62.*

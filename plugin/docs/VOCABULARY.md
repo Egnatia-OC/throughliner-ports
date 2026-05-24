@@ -83,6 +83,14 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Frame-correction sweep.** After-build check: scan BACKLOG and proposed-edit blocks for references to old behaviour when a build changes a feature's frame.
 
+- **Doc-parity check.** After-build step: for each renamed/deleted/moved file in the batch, grep spine docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) for stale references. Scoped to blast radius. Findings flagged in recap.
+
+- **Idea sweep.** After-build step: review the session for ideas, suggestions, or observations raised but not implemented. Each triaged to BACKLOG, build-log *Carried forward*, or recap flag. Nothing left unrouted.
+
+- **Pre-commit checkpoint.** After-build step: verify MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, doc-parity check done. Complete any missing steps before prompting commit.
+
+- **After-build steps.** Optional `## After-build steps` section in CLAUDE.md. Project-specific close actions executed by after-build between standard steps and closing prompts. Examples: regenerating an API doc, updating a changelog.
+
 - **Test session.** TEST-LOG state after a build ships. Opened by after-build (rows written). Closed by next planning session (per-row read-back). Unclosed sessions block next build.
 
 - **Pass / Fail / Skipped.** TEST-LOG Status values. Pass: behaviour matched. Fail: didn't match (Notes required). Skipped: user chose not to test (reason required in Notes); satisfies gate only as "accounted for."
@@ -90,4 +98,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks batch-executor. Subagent side: planning's per-row read-back.
 
 ---
-*No-code method — Version 61.*
+*No-code method — Version 62.*

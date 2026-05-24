@@ -1,6 +1,6 @@
 ---
 name: after-build
-description: Use after batch-executor completes a batch. Updates MANIFEST silently, opens the test session (TEST-LOG rows with Type/Verifier columns), runs Claude-automatable tests, generates a two-section recap, writes the build-log entry, and prompts user to commit/tag and test.
+description: Use after batch-executor completes a batch. Updates MANIFEST silently, runs doc-parity check, opens the test session (TEST-LOG rows with Type/Verifier columns), runs Claude-automatable tests, generates a two-section recap, writes the build-log entry, sweeps ideas, runs project-specific after-build steps, verifies all steps via pre-commit checkpoint, and prompts user to commit/tag and test.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ---
 
@@ -52,9 +52,11 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in BACKLOG. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **Open test session + run Claude tests.** Two sub-steps.
+3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 9. Scoped to blast radius of what changed, not a full doc audit.
 
-   **3a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` sub-section if present, else derive from recap (default: `Look and click` / `User`). **Position:** top of table body (below header separator), pushing earlier rows down. Within batch: recap order (lowest # at top). 10-column format:
+4. **Open test session + run Claude tests.** Two sub-steps.
+
+   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` sub-section if present, else derive from recap (default: `Look and click` / `User`). **Position:** top of table body (below header separator), pushing earlier rows down. Within batch: recap order (lowest # at top). 10-column format:
    - `#` — next three-digit ID.
    - `Date` — YYYY-MM-DD.
    - `Session` — per identification above.
@@ -62,20 +64,20 @@ TEST-LOG's Session column needs a stable build-session identifier:
    - `Test Description` — one sentence, re-runnable.
    - `Type` — `Look and click` / `Run and read` / `Trigger and observe` / `Generate and inspect`.
    - `Verifier` — `Claude` or `User`.
-   - `Status` — blank initially (Claude rows filled in 3b).
+   - `Status` — blank initially (Claude rows filled in 4b).
    - `Confirmed Explicitly` — `No`.
    - `Notes` — blank initially.
 
-   **3b. Run Claude-automatable tests.** For each `Verifier: Claude` row, execute the test. Pass → set Status/Confirmed/Notes. Fail → same, and flag prominently in recap. User-verified rows stay blank — they define the test session for next planning's read-back.
+   **4b. Run Claude-automatable tests.** For each `Verifier: Claude` row, execute the test. Pass → set Status/Confirmed/Notes. Fail → same, and flag prominently in recap. User-verified rows stay blank — they define the test session for next planning's read-back.
 
-4. **[BRIEF] Build recap.** Three parts:
+5. **[BRIEF] Build recap.** Three parts:
    - **Changes shipped.** One bullet per change, labeled `[Requested]`/`[Suggested]`. Carve-outs get their labels.
    - **Claude has verified.** One bullet per Claude-verified row with Pass/Fail result.
    - **Please manually check.** One bullet per user-verified row, in TEST-LOG order.
 
-5. **[SILENT] Write build-log entry.**
-   - **5a.** Allocate filename: scan `build-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading.
-   - **5b.** Write per-build file:
+6. **[SILENT] Write build-log entry.**
+   - **6a.** Allocate filename: scan `build-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading.
+   - **6b.** Write per-build file:
      ```markdown
      # <Session> — YYYY-MM-DD — Summary
 
@@ -91,18 +93,25 @@ TEST-LOG's Session column needs a stable build-session identifier:
      - **Claude-verified tests:** <N Pass, N Fail (of N total)>
      - **User-verified tests:** <N pending>
      ```
-   - **5c.** Prepend index line to `build-log/INDEX.md`. Idempotency: skip if same-numbered line exists. Fallback: legacy BUILD-LOG.md or create build-log/ from template.
+   - **6c.** Prepend index line to `build-log/INDEX.md`. Idempotency: skip if same-numbered line exists. Fallback: legacy BUILD-LOG.md or create build-log/ from template.
 
-6. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser and stop hook.
+7. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser and stop hook.
 
-7. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
-8. **End-of-recap flags:**
+9. **End-of-recap flags:**
+   - Stale references found by doc-parity check (step 3).
    - Out-of-scope improvements.
    - UX.md changes implied (don't edit — flag only).
    - Red flag concerns (confirm BACKLOG entry written if deferred).
 
-9. **Closing prompts:**
+10. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
+
+11. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+
+12. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), doc-parity check done (step 3). If any missing, complete now.
+
+13. **Closing prompts:**
    - `[PROMPT]` Commit and tag before testing.
    - `[PROMPT]` Refresh and begin testing. Bring per-row outcomes to next planning session.
    - `[PROMPT]` Optional: add `**Session notes:**` to Performance section.
@@ -123,4 +132,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 61.*
+*No-code method — Version 62.*

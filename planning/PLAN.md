@@ -63,14 +63,18 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0069 | BACKLOG batch status tracking | Status: line (active/queued/parked/shipped) + parser + subagent transitions. **Shipped v70.** |
 | 0061 | Rename "Crash course" to "Reference manual" | Rename + update all references. Frees name for HTML guide. **Shipped v68.** |
 | 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. **Shipped v69.** |
-| 0070 | After-build close completeness | Doc-parity audit, idea sweep with routing, pre-commit checkpoint, CLAUDE.md extensibility section. |
+| 0070 | After-build close completeness | Doc-parity audit, idea sweep with routing, pre-commit checkpoint, CLAUDE.md extensibility section. **Shipped v72.** |
 | 0071 | Subagent cost optimization | Planning subagent from ~31.6k to <15k tokens: conditional drift-check skip, classify-then-dispatch, Sonnet evaluation. |
 | 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. |
 | 0073 | Stop hook before-build→build chain fix | Stop hook exits silent after before-build (zero ticked = just locked). |
 | 0074 | Session-open status summary | User-facing batch count, next batch, and proceed prompt on session open. |
+| 0075 | Dev-side log folder migration | BUILD-LOG.md + TEST-LOG.md → folder structures. Dev-side only, no plugin changes. |
+| 0076 | Plugin-side TEST-LOG folder migration | test-log/ folder convention for consumer projects. Mirrors V50 build-log migration. Depends on 0075. |
+| 0077 | Greenfield E2E: burner app from scratch | Planning-from-scratch → full build cycle on throwaway app. Tests the most important untested path. Soft dependency on 0071–0074. |
+| 0078 | Post-fix E2E validation (Taskflow) | Re-run build cycle confirming 0072–0074 fixes work. Hard dependency on 0072+0073+0074. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
-56 sessions through 0074, plus V60+ TBD. Some will combine or split.
+60 sessions through 0078, plus V60+ TBD. Some will combine or split.
 
 ## Session-scope file shape
 

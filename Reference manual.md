@@ -123,7 +123,7 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 **Planning sessions** decide what gets built. The planning subagent: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth doc edits happen by hand — the no-coder applies proposed edits, removes resolved batches, reorganises priorities.
 
-**Build sessions** ship engineering work. `/before-build` locks the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/build` runs the batch-executor against the file list. PreToolUse enforces batch boundaries. When done, the after-build subagent updates MANIFEST, opens the test session, runs Claude-automatable tests, generates a two-section recap ("Claude has verified" / "please manually check"), writes the build-log entry, and prompts commit/tag/test.
+**Build sessions** ship engineering work. `/before-build` locks the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/build` runs the batch-executor against the file list. PreToolUse enforces batch boundaries. When done, the after-build subagent updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific after-build steps from CLAUDE.md, verifies all steps via a pre-commit checkpoint, and prompts commit/tag/test.
 
 The no-coder `/clear`s, refreshes, runs user-verified tests, and brings outcomes to the next planning session.
 
@@ -334,4 +334,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 61.*
+*No-code method — Version 62.*

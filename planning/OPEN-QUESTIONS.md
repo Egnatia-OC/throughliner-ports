@@ -32,6 +32,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 **Why it matters.** Surfaced 2026-05-24. Ideation on porting the dev-side session close to the plugin raised the question of user-extensible workflows (e.g. adding project-specific close steps, enabling footer bumps). CLAUDE.md is already the per-project customization point and already read by subagents, so a recognised section there is the simpler path. A separate config file would be a new mechanism to maintain. Worth revisiting if CLAUDE.md extensibility proves insufficient.
 
+**Working notes.** 2026-05-25: Doc-parity check (0070) scoped to spine docs only. Users with additional source-of-truth docs declared in CLAUDE.md's path block may want those included in the parity check. The path block already provides discovery — wiring them in is a natural extension if CLAUDE.md-section extensibility proves too coarse.
+
 **Next step.** Parked. Revisit if the CLAUDE.md-section approach ships and users hit limits.
 
 ---
