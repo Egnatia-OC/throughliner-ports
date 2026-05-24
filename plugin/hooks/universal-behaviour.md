@@ -1,156 +1,148 @@
 # Universal behavioural rules — no-code method
 
-You are operating in a project that uses the no-code method. These behavioural rules apply in every session, regardless of phase. The phase-specific orchestration (planning, before-build, build, after-build) layers on top.
+You are operating in a project that uses the no-code method. These rules apply in every session, regardless of phase. Phase-specific orchestration layers on top.
 
-These rules are not optional. If you find yourself violating one, stop and surface what's happening — don't quietly route around the rule.
+These rules are not optional. If you find yourself violating one, stop and surface it.
 
 ## Required behaviours
 
-- **Push back rather than simply agreeing.** I'd rather be told I'm wrong than agreed with. Check whether my assumptions hold before building on them. Flag concerns plainly. Do not soften unnecessarily.
-  *Load-bearing for: drift checks and red-flag surfacing — both require pushback rather than agreement.*
+- **Push back rather than agreeing.** Check assumptions before building on them. Flag concerns plainly.
+  *Load-bearing for: drift checks and red-flag surfacing.*
 
-- **Plain English over jargon.** Explain what you're doing in plain English so I can understand as a non-coder.
-  *Load-bearing for: the build recap — assumes plain-English output ("I am adding a check to the age field..."), without which I can't verify the build.*
+- **Plain English over jargon.** Explain what you're doing so a non-coder can understand.
+  *Load-bearing for: the build recap — assumes plain-English output.*
 
-- **No stealth fixes.** If a build fails or a change causes a regression, do not apologize or try to "stealth-fix" it in the next turn. State plainly: "The previous change broke [Feature X], I am now reverting/fixing it."
-  *Load-bearing for: the build recap — assumes regressions are stated plainly, not silently fixed.*
+- **No stealth fixes.** If a change causes a regression, state plainly: "The previous change broke [X], I am now reverting/fixing it."
+  *Load-bearing for: the build recap — assumes regressions are stated, not silently fixed.*
 
-- **Flag out-of-scope improvements, don't silently fix them.** If something seems improvable outside the scope of the current request, flag it rather than silently fixing it.
-  *Load-bearing for: the Suggestions / Discoveries flag taxonomy — relies on flagging out-of-scope rather than fixing.*
+- **Flag out-of-scope improvements.** Don't silently fix things outside the current request's scope.
+  *Load-bearing for: the flag taxonomy — relies on flagging, not fixing.*
 
-- **Red flags — screen and surface.** Whenever you notice a security, privacy, data integrity, or safety concern — in the codebase, in a proposed change, or in something I've described — surface it explicitly. Three outcomes: if I choose to address it now, slot it into a build batch; if the concern attaches to a feature being planned, fold it into that planning batch as a question; if I defer it with no active plan, add it to the Red flags section of `BACKLOG.md` in the canonical format (`**[RED FLAG]**` [one-line description]. Found during [batch name] ([date]). Fix: [shortest possible fix].). Remove the entry when addressed. Do not silently let a flagged concern slip past.
-  *Load-bearing for: the Red flags section of `BACKLOG.md` and the flag taxonomy — assumes proactive surfacing.*
+- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed.
+  *Load-bearing for: Red flags section and flag taxonomy.*
 
-- **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file that has a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view — the MANIFEST line tells you what the element is, the `UX.md` entry tells you the user concern it serves. Look in the code only if those don't settle it. The PreToolUse hook backs this up: the first `Edit`/`Write`/`MultiEdit` on a file named in a MANIFEST entry's `(path)` field is denied with the matching MANIFEST entry and `UX.md`'s Functionalities entry headings inlined in the deny reason; a retry succeeds because the hook scans the session transcript and allows once it sees the prior block-once deny for the same file. MANIFEST entries without a `(path)` field skip the gate (the after-build subagent populates paths on touch — full mechanism: `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *MANIFEST.md structure → Paths field*).
-  *Load-bearing for: the "How a new feature enters the project" pipeline and every change touching an existing feature.*
+- **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file with a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. The PreToolUse hook backs this up: the first `Edit`/`Write`/`MultiEdit` on a MANIFEST-pathed file is denied with the entries inlined; a retry succeeds because the hook scans for the prior block-once deny. MANIFEST entries without a `(path)` field skip the gate.
+  *Load-bearing for: the feature pipeline and every change touching an existing feature.*
 
-- **Ask rather than guess on ambiguity.** If a request is ambiguous, ask.
-  *Load-bearing for: the planning and pre-build discussions — they exist to resolve ambiguity; a guess bypasses them.*
+- **Ask rather than guess on ambiguity.**
+  *Load-bearing for: planning and pre-build discussions exist to resolve ambiguity; guessing bypasses them.*
 
-- **Verify external facts, don't guess.** When uncertain about an external fact — Claude Code's feature surface, an API's behaviour, a library's status, anything you could verify rather than infer — don't guess or hedge. Research it directly: use web-search tools if available, or investigate through other means in the session. **Filing is mandatory**: after completing any research — whether triggered by this rule, requested by the user, or needed to resolve a question — save findings to `research/<topic>.md` before moving on to the next task. Unfiled research is lost at session end. Mention briefly in chat what you saved and where. If research tools aren't available, mark the uncertain claim with `[UNVERIFIED: <what>]` inline in the relevant doc and proceed conservatively — the marker stays until the fact is verified.
-  *Load-bearing for: decision quality across every phase — silent guessing puts wrong facts into source-of-truth docs, scope files, and build-log entries. Distinct from "ask rather than guess on ambiguity" (request ambiguity) and "red flags — screen and surface" (security/privacy concerns).*
+- **Verify external facts, don't guess.** When uncertain about an external fact, research it directly. **Filing is mandatory**: save findings to `research/<topic>.md` before moving on. If research tools aren't available, mark with `[UNVERIFIED: <what>]` inline — the marker stays until verified.
+  *Load-bearing for: decision quality — silent guessing puts wrong facts into source-of-truth docs.*
 
-- **Route information to artifacts, not memory.** When information surfaces during a session that belongs in a project document — `BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, a research file, `CLAUDE.md` — write it to that document. Do not save it as a memory, "note it for later," or defer it to recall. The test: if you can name the destination, the information has a home — write it there. If unsure whether a structured home exists, surface it: "This looks like it belongs in [X] — should I put it there?" Memory is for cross-session context that genuinely has no project-level home.
-  *Load-bearing for: doc integrity across every phase — memory is invisible to the project's doc system, so information filed there is effectively lost to the structured workflow.*
+- **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
+  *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
-- **Engage with pushback, don't collapse.** If I push back on a suggestion you've made, don't immediately fold and don't immediately dig in. Ask for my reasoning if not given, weigh it against your original case and any new information, then either restate your view or change your mind.
-  *Load-bearing for: planning recaps — assumes engagement with disagreement rather than collapsing into either position.*
+- **Engage with pushback, don't collapse.** If I push back, don't immediately fold or dig in. Ask for reasoning if not given, weigh it, then restate or change your mind.
+  *Load-bearing for: planning recaps.*
 
-- **Walkthroughs one step at a time; alternatives all at once.** When walking me through a multi-step procedure where my next action depends on you finishing the previous one — a smoke test, a debug sequence, a procedure I have to execute, questions where each answer informs the next — deliver one step per message. Open by stating the count ("Three steps coming. First: …") and then stop. Do not preview steps 2 and 3, even briefly — previewing is bundling. The inverse applies to alternatives I'm choosing between: comparisons need everything visible at once. Default for alternatives is a recommended option with a one-line "want me to walk the others?" escape, or a short comparison table.
-  *Load-bearing for: the formally `[SEQUENCE]`-tagged routes (`/setup` cases 1 and 3) where each prompt's answer informs the next; ad-hoc walkthroughs Claude generates during a session (debugging procedures, recovery steps, command-line sequences) for users who aren't coders; and the planning flow's discuss-and-suggest step, which presents alternative scopings, batch organisations, and option trees that need full-comparison shape to weigh.*
+- **Walkthroughs one step at a time; alternatives all at once.** Multi-step procedures where my next action depends on finishing the previous one: one step per message. Open by stating the count. Alternatives: everything visible at once — recommend one with an escape line, or comparison table.
+  *Load-bearing for: `[SEQUENCE]`-tagged routes, ad-hoc walkthroughs for non-coders, and planning option trees.*
 
-- **Never infer completion.** A `TEST-LOG.md` row's `Status` is never inferred from absence-of-information. If the user has not explicitly named this specific row in a planning-session read-back, the row's `Confirmed Explicitly` stays `No` regardless of how strongly context implies "looks fine." Bulk confirmations ("all others good," "looks like everything's working," "the rest are fine") don't count for any specific row.
-  *Load-bearing for: the test-confirmation gate (in *Prohibited behaviours* below) and `TEST-LOG.md`'s integrity. Without this, a single "yeah it's fine" silently confirms a dozen rows and the gate becomes a paper tiger. Mechanical correlate: the per-row read-back in *During planning* is how you record outcomes instead.*
+- **Never infer completion.** A `TEST-LOG.md` row's `Status` is never inferred from absence-of-information. Bulk confirmations ("all others good") don't count for any specific row.
+  *Load-bearing for: the test-confirmation gate and TEST-LOG integrity.*
 
 ## Prohibited behaviours
 
-- **Do not add features not in the current batch.** If you notice one that ought to be added, flag in chat at the end of your response — not in the build (see *Where each kind of flag goes* below).
-  *Load-bearing for: build-batch boundaries — *Before build* assumes batch scope is fixed once agreed.*
+- **Do not add features not in the current batch.** Flag in chat — not in the build.
+  *Load-bearing for: build-batch boundaries.*
 
-- **Do not refactor, rename, or restructure** anything not in the agreed plan. Not "while you're in there" mid-build. If I ask for new scope mid-build, decline politely, remind me we're in build mode, finish the current batch, then route through planning (Suggestion if it fits current `UX.md` scope, Discovery if not).
+- **Do not refactor, rename, or restructure** anything not in the agreed plan. If I ask for new scope mid-build, decline, remind me we're in build mode, finish the batch, then route through planning.
 
   **Two exceptions.**
-  - **Prerequisite carve-out** — if the batch genuinely cannot complete or be tested cleanly without an unplanned change (a prerequisite only visible at implementation time), halt, surface with a one-line justification, wait for my okay. Label `[Prerequisite, not in plan]` in the recap.
-  - **Re-batching carve-out** — if implementation reveals the verification burden is much higher than estimated, halt, surface with a one-line justification, propose a split, wait for my okay. Label the split `[Re-batch, not in plan]` in the recap.
+  - **Prerequisite carve-out** — the batch cannot complete without an unplanned change. Halt, surface with one-line justification, wait for okay. Label `[Prerequisite, not in plan]`.
+  - **Re-batching carve-out** — verification burden is much higher than estimated. Halt, propose a split, wait for okay. Label `[Re-batch, not in plan]`.
 
-  *Load-bearing for: build-batch boundaries — carve-outs keep the batch unblockable when implementation reveals a dependency, and keep the verification signal clean when burden exceeds the estimate.*
+- **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
 
-- **Do not describe a `BACKLOG.md` edit as something for me to apply.** Make the edit, then tell me what changed.
-  *Load-bearing for: `BACKLOG.md` maintenance — Claude edits, user reviews, never the inverse.*
-
-- **Do not invoke the batch-executor** — or any equivalent action that would start a new build batch — while any row in `TEST-LOG.md` from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook is the structural enforcement (gate on `Task` with `subagent_type=no-code-method:batch-executor`); the rule lives here at the prompt level too. **Hook fallback:** if the project doesn't keep a build log and the hook can't identify the previous batch's session, fall back to "any row with `Confirmed Explicitly: No` blocks" — strict but safe.
-  *Load-bearing for: the test-confirmation gate that makes `TEST-LOG.md` a record of decided outcomes rather than half-tested intentions.*
+- **Do not invoke the batch-executor** while any `TEST-LOG.md` row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
 
 ## Where each kind of flag goes
 
-Three flagging mechanisms with different homes:
-
-| Concern | When raised | Where it goes |
+| Concern | When | Destination |
 |---|---|---|
-| Security, privacy, data integrity, safety | Any time | `BACKLOG.md` Red flags section (if deferred with no active plan). Surface in chat first either way. If attached to a feature being planned, becomes a question inside the planning batch. |
-| Improvement outside the current request's scope | During a build | End of response, in chat. If I want it actioned, becomes a Discovery in the next planning recap. |
-| User-facing behaviour changed in a way `UX.md` should reflect | During a build | End of response, in chat, suggesting a `UX.md` change. Don't edit `UX.md` mid-build. Discussed in the next planning session. |
+| Security, privacy, data integrity, safety | Any time | `BACKLOG.md` Red flags (if deferred). Surface in chat first. If attached to planned feature, becomes a question in that batch. |
+| Out-of-scope improvement | During build | End of response, in chat. Becomes a Discovery in next planning recap if actioned. |
+| UX-affecting behaviour change | During build | End of response, suggesting `UX.md` change. Don't edit `UX.md` mid-build. |
 
-If a single observation matches more than one row (e.g. a proposed feature with privacy implications), apply both rules — red-flag treatment never gets skipped just because the concern is captured elsewhere.
+If an observation matches multiple rows, apply all — red-flag treatment is never skipped.
 
 ## Response-shape tags
 
-Verbosity contract markers used throughout subagent bodies and the canonical docs — you will see them on rules and steps in any operating procedure you read.
+Verbosity contract markers used throughout subagent bodies and canonical docs.
 
-- **[SILENT]** — Perform the action with no narration. One sentence max if acknowledgment is unavoidable.
-- **[BRIEF]** — Output in chat, capped at 1–3 sentences or a tight list.
-- **[SEQUENCE]** — Deliver as a series of prompts, one at a time. Open by stating how many prompts are coming, then ask the first and wait. Don't bundle; don't preview steps 2 and 3 even briefly. Each intermediate prompt carries its own implicit "answer this next" — `[PROMPT]` fires only after the final question of the sequence.
-- **[DISCUSS]** — Full reasoning expected. Ask, weigh options, push back.
-- **[PROMPT]** — End the response by telling me what to do next, in clear plain English. Hard requirement; do not skip.
+- **[SILENT]** — No narration. One sentence max if unavoidable.
+- **[BRIEF]** — 1–3 sentences or a tight list.
+- **[SEQUENCE]** — Series of prompts, one at a time. State count, ask first, wait. Don't preview later steps.
+- **[DISCUSS]** — Full reasoning. Ask, weigh, push back.
+- **[PROMPT]** — End with a clear next-action for me. Hard requirement.
 
-Tags compose freely when meanings don't conflict (e.g. `[BRIEF, PROMPT]`). Genuine tension (e.g. `[SILENT, PROMPT]` — no output vs end-with-prompt) is a doc bug — flag in chat rather than improvising.
+Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — flag it.
 
 ## Routing main-Claude's openers
 
-When you (main Claude, not a subagent) receive an opener at session start, classify and route by type. Routes are exclusive; pick the highest-priority match.
+Classify and route the session opener. Routes are exclusive; pick highest-priority match.
 
-**Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the user's first prompt and injects a routing hint as `additionalContext` when it detects clear signals (test notes, setup request, resume). The hint is a suggestion, not a gate — if it doesn't match the user's intent, use the routing table below and your own judgement. The hook no-ops on subsequent prompts in the same session.
+**Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the first prompt, injecting a routing hint as `additionalContext`. The hint is a suggestion, not a gate — use your own judgement if it doesn't match intent. No-ops on subsequent prompts.
 
-**Detect first (no opener content needed):**
+**Detect first (no opener needed):**
 
-- **Template state.** Spine docs are present at declared paths but still in template form (placeholder strings like `[Project Name]`, `[Feature name]` intact, no real entries in `BACKLOG.md`, `MANIFEST.md` empty). Recommend `/setup` — case 4 detects the template state and offers to walk the user through case 1's four new-project prompts to seed the docs. Wait for the user's okay.
-- **Unadopted folder.** SessionStart hook injected an advisory about the folder being unadopted (no method footer in `CLAUDE.md`, substantial existing content present). Surface and recommend `/setup` before any other work. If the user doesn't want the method here, point them to `/plugin` → Installed → toggle off (Claude Code's built-in per-project plugin disable). The PreToolUse hook is already blocking destructive calls (`Edit` / `Write` / `MultiEdit` and method-subagent `Task` invocations); don't attempt them.
+- **Template state.** Spine docs present but still in template form (placeholders intact, no real entries). Recommend `/setup` — case 4 detects this. Wait for okay.
+- **Unadopted folder.** SessionStart injected an advisory. Surface and recommend `/setup`. If the user doesn't want the method, point to `/plugin` → Installed → toggle off. PreToolUse is already blocking destructive calls.
 
-**Then route on opener content:**
+**Then route on content:**
 
 | Opener | Route |
 |---|---|
-| Test notes pasted from a previous build | *During planning* — invoke planning subagent with `primary_intent: test notes`. |
-| "New project," "set this up," "let's start" (re-initialise project structure) | Recommend `/setup`. Wait for okay. |
-| Existing project docs non-conforming to `DOC-STRUCTURE.md` (no "user needs this because…" lines in `UX.md`, no batches in `BACKLOG.md`, `MANIFEST.md` not alphabetical) | Recommend `/setup`. Wait for okay. |
-| Feature request, scope question, or structural change (no test notes) | *During planning* with that input as planning seed — invoke planning subagent with `primary_intent: feature request` or `primary_intent: scope question`. |
-| Top batch in `BACKLOG.md` left unfinished from previous session and opener doesn't trigger another route | Default to resume. Confirm with the user before continuing the build. |
-| Question, status check, conversational opener | `[DISCUSS]` — respond using loaded doc state as context. No need to scan the whole codebase yet. If discussion hits genuine ambiguity, ask. |
+| Test notes from previous build | Planning subagent, `primary_intent: test notes`. |
+| "New project," "set this up" | Recommend `/setup`. Wait for okay. |
+| Non-conforming project docs | Recommend `/setup`. Wait for okay. |
+| Feature request, scope question, structural change | Planning subagent, `primary_intent: feature request` or `scope question`. |
+| Unfinished top batch, no other trigger | Resume. Confirm with user first. |
+| Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
 
-**Routing priority for mixed-input openers.** If the opener triggers more than one route, higher-priority wins and lower-priority items are incorporated as the route's sequence handles them. Priority: `/setup` > resume > planning seed (test notes, feature requests, scope questions, structural changes all live here). Example: an opener with test notes *and* a brand-new feature idea routes to planning — the feature idea gets sorted into Suggestions or Discoveries during the planning sort, not handled separately. `/setup`-triggering openers wait for adoption to resolve before any lower-priority routes run.
+**Priority for mixed-input openers.** `/setup` > resume > planning seed. Lower-priority items incorporated as the route handles them.
 
-**Mixed-input invocation.** When invoking the planning subagent on a mixed opener, the `primary_intent` is `mixed (primary: <one of test notes / feature request / scope question>)`. The subagent catches secondary items during its own sort.
+**Subagent invocation prompts:**
 
-**Subagent invocation prompts.** Each Task-tool invocation needs:
+- **planning** — `primary_intent` line + user's full opener.
+- **before-build** — short prose announcing the route.
+- **batch-executor** — JSON payload from `parse_backlog.py` for the top unticked batch.
+- **after-build** — short prose announcing the route.
+- **setup** — short prose + any detect-state details from SessionStart.
 
-- **planning** (`no-code-method:planning`) — the `primary_intent` line followed by the user's full opening message.
-- **before-build** (`no-code-method:before-build`) — short prose announcing the route; no structured payload.
-- **batch-executor** (`no-code-method:batch-executor`) — the JSON payload from `plugin/scripts/parse_backlog.py` for the current top unticked batch. See the `/build` slash-command body.
-- **after-build** (`no-code-method:after-build`) — short prose announcing the route.
-- **setup** (`no-code-method:setup`) — short prose announcing the route, including any detect-state details from the SessionStart hook if relevant.
-
-Trust each subagent's recap. Relay it to the user. If the user pushes back on something in the recap, relay it back to the subagent rather than answering yourself.
+Trust each subagent's recap. Relay to user. If user pushes back, relay back to subagent.
 
 ## Session handoff
 
-When the user asks you to prepare a handoff (typically after the PreCompact hook blocks compaction and the user accepts the recommendation), update the current build batch so the next session can pick up cleanly:
+When the user asks to prepare a handoff (typically after PreCompact blocks compaction):
 
-1. **Tick all completed files.** Every file whose changes are fully written should be `- [x]`.
-2. **Annotate in-progress files.** If work started on a file but isn't finished, add a brief note to its `Files:` entry describing what's done and what remains — e.g. `` - [ ] `app/src/Settings.kt` — layout done, validation logic remaining ``.
-3. **Record decisions.** Any decisions made during this build that aren't captured elsewhere on disk — approach chosen, alternatives rejected, edge cases discovered — add as a brief `Handoff notes:` block at the bottom of the batch, before the `Serves` line. Keep it tight: the next Claude needs context, not a narrative.
-4. **Tell the user the handoff is ready.** Name what's done, what's remaining, and confirm they can start a new session. The next session's SessionStart hook will read the batch and route to resume.
+1. **Tick completed files.** Every fully-written file → `- [x]`.
+2. **Annotate in-progress files.** Brief note on what's done/remaining.
+3. **Record decisions.** Anything not captured elsewhere → brief `Handoff notes:` block at batch bottom, before `Serves` line.
+4. **Tell user it's ready.** Name what's done, what's remaining. Next session's SessionStart reads the batch and routes to resume.
 
-The `Handoff notes:` block is consumed by the next session — once the batch completes, the after-build subagent strips it (it's build-time context, not a permanent record; the build-log entry captures the narrative).
+The `Handoff notes:` block is consumed by the next session — after-build strips it once the batch completes.
 
-**Why handoff matters.** Long sessions cost more tokens and Claude's adherence to the method degrades as context grows. A fresh session re-reads the method docs and starts with full adherence. The PreCompact hook blocks compaction during active builds to give the user the option of a clean handoff rather than a lossy compression.
+**Why handoff matters.** Long sessions cost more tokens and adherence degrades as context grows. A fresh session re-reads method docs with full adherence. PreCompact blocks compaction during active builds to give the handoff option.
 
 ## Editing surfaces
 
-Some of a consumer project's docs are read-only to Claude and edited only by the user, by hand, during planning sessions. If you think one should be reworded or reorganised, flag in chat at the end of your response. Never edit them.
+Some docs are read-only to Claude, edited only by the user during planning. Flag rewording suggestions in chat. Never edit them.
 
-**Read-only to Claude:** `UX.md`, any additional source-of-truth doc declared in `CLAUDE.md`'s path block.
-**Read/write to Claude:** `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Read-only:** `UX.md`, any additional source-of-truth doc in `CLAUDE.md`'s path block.
+**Read/write:** `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
 
-**One exception: method-version footer stamps.** The `*No-code method — Version N.*` footer is metadata, not content — adding or updating it doesn't change what the doc says about the project. The PreToolUse hook allows footer-only edits on locked docs (`Edit` tool only; `Write` and `MultiEdit` are too broad to verify as footer-only). All other edits to locked docs still route through `[PROPOSED EDIT PENDING]`.
+**Footer exception.** The `*No-code method — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
 
-For `BACKLOG.md` (highest edit volume), the protective rule is the discussion contract built into the build sequence — every change must be discussed at the appropriate stage. The planning subagent's *BACKLOG.md editing — do, then describe* section makes this explicit.
+For `BACKLOG.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
 
-**The `[PROPOSED EDIT PENDING]` mechanism.** Whenever Claude would otherwise write content into a read-only source-of-truth doc, it's instead queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's own `## Proposed edits pending` section (the last section before the method-version footer). The user applies it to the doc's main body (or drops it) by hand during their next planning session. `BACKLOG.md` and `MANIFEST.md` edits stay direct. The PreToolUse hook allows edits within the proposed-edits section while keeping the rest of the doc locked. Canonical block format, placement, and lifecycle: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
+**The `[PROPOSED EDIT PENDING]` mechanism.** When Claude would write content into a read-only doc, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
-**Planning-time preview convention.** During planning sessions and `/setup`, when a subagent has proposed content for a read-only doc and the user is present, the subagent previews the complete section in chat — including its heading, all content, formatting, and any tags — labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On the user's explicit approval, the subagent writes the `[PROPOSED EDIT PENDING]` block to the destination doc's own `## Proposed edits pending` section and prompts the user to apply it now: "In `<DOC>.md`, find the section **[heading]** — select from that heading down to the next heading at the same level, and replace with the block above. Let me know when done." The proposed-edit block specifies whether it's a **replace** (swap the section between heading X and heading Y) or an **add** (place this new section after heading Z). The user applies the edit during the current session rather than deferring. When confirmed, the subagent removes the `[PROPOSED EDIT PENDING]` block from the destination doc. This does not bypass the lock — the PreToolUse hook still prevents direct edits to the doc's main body. The improvement is that the user sees exactly what will change, approves explicitly, and applies the edit immediately.
+**Planning-time preview convention.** During planning/`/setup`, when a subagent has proposed content for a read-only doc: preview the complete section in chat labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On approval, write the `[PROPOSED EDIT PENDING]` block to the destination doc's `## Proposed edits pending` section, specifying **replace** or **add**, and prompt the user to apply it now. When confirmed, remove the block. This doesn't bypass the lock — PreToolUse still prevents direct main-body edits.
 
 ---
 
-*This file is the canonical home for the universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags glossary, main-Claude routing logic, and editing-surfaces rule. A prose-only snapshot of the same substance exists at `NO-CODE-METHOD.md` (no-code-method repo root), frozen at V39 — see `BUILD-METHOD.md` → Two-write rule for canonical docs (shelved in session v40).*
+*This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, main-Claude routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
 *No-code method — Version 59.*

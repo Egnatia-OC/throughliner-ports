@@ -1,45 +1,34 @@
 # [DOC NAME].md — [Project Name]
 
-[Brief intro: what this doc is for, who its audience is (the user? Claude at runtime? a third party?), and when it applies (e.g. "paid tier only", "internal API only"). Treat this header with the same care as `UX.md`'s header — it's the orientation a future reader needs to know whether to read on.]
+[Brief intro: what this doc is for, who its audience is, when it applies. Same care as UX.md's header — orient a future reader on whether to keep reading.]
 
-This doc only describes what has been decided. Open questions live in `BACKLOG.md` as planning batches, not here as placeholders or as sentences that gesture at the doc's own undecidedness. (Same rule as `UX.md`. Full source-of-truth-doc rules: see `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.)
+Only decided content lives here. Open questions belong in `BACKLOG.md` as planning batches. (Same rule as `UX.md`. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.)
 
-This doc is read-only to Claude (the agent) — the PreToolUse hook in the no-code-method plugin enforces it. Edits happen by hand during planning sessions. If Claude thinks something here should be reworded or reorganised, it flags it in chat at the end of the response.
+Read-only to Claude — the PreToolUse hook enforces it. Edits happen by hand during planning. If Claude thinks something should change, it flags in chat.
 
 ---
 
-## [Section name — a coherent area of behaviour the doc covers]
+## [Section name]
 
-[Decided content. Sub-sections as needed. Stay at intent level — describe what the consumer of the doc experiences and why, not how it's wired underneath.]
+[Decided content. Stay at intent level — what the consumer experiences and why, not how it's wired.]
 
-## [Section name — another area]
+## [Section name]
 
 [As above.]
 
 <!--
-Optional sections that often help in additional source-of-truth docs.
-Add only the ones that earn their place; do not stub them out empty:
-
-- An audience-appropriate "what this project is" intro near the top
-  (e.g., for a system-prompt doc: "what the app is, in Claude's terms" —
-  short, since the *concepts* of the app live in UX.md).
-
-- A "Tone and presentation" section for cross-cutting rules that apply
-  across every section above.
-
-- Cross-references to UX.md or other docs, in italics, where features
-  compose.
-
-Do NOT add an "Open questions" section pointing at BACKLOG.md. Open
-questions live in BACKLOG.md, not here. If you need to look up what's
-open for this doc, read BACKLOG.md's planning batches.
+Optional sections — add only what earns its place:
+- "What this project is" intro (audience-appropriate)
+- "Tone and presentation" for cross-cutting rules
+- Cross-references to UX.md in italics where features compose
+Do NOT add an "Open questions" section — those live in BACKLOG.md.
 -->
 
 ## Proposed edits pending
 
-Proposed entries or updates that Claude has queued for this doc. Each block describes the proposed change, its origin, and whether it replaces an existing section or adds a new one. Apply these to the main body during your next planning session, then delete the block. Section starts empty for new projects.
+Claude-queued entries or updates. Apply during planning, then delete. Starts empty.
 
-For the canonical block format, see `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
+Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
 *No-code method — Version 59.*

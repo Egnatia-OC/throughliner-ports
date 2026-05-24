@@ -1,63 +1,51 @@
 # BACKLOG — [Project Name] Deferred Work
 
-All deferred work in one place. Four sections, in this order; top section first, top item first. Build batches live in individual files in this folder — this index carries the build order.
+All deferred work in one place. Four sections, top-to-bottom priority. Build batches live in individual files — this index carries the order.
 
-*Full spec for these sections: `DOC-STRUCTURE.md` → BACKLOG structure.*
+*Full spec: `DOC-STRUCTURE.md` → BACKLOG structure.*
 
 ## Red flags
 
-Security, privacy, data integrity, or safety concerns Claude has surfaced and the user has chosen to defer. Items are removed when addressed. Section starts empty for new projects.
+Security, privacy, data integrity, or safety concerns surfaced by Claude and deferred by the user. Removed when addressed. Starts empty.
 
-For the canonical entry format, see `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*.
+Format: `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*.
 
 ## Planning batches
 
-Two kinds of question live here. **(a)** Open questions that must be resolved before some build batch can run. **(b)** Scope-existence questions whose resolution decides whether a build batch should ever exist. Each planning batch is a heading, the questions to answer, and a `Blocks:` line. Resolution: append the answer to the planning batch and add a `[PROPOSED EDIT PENDING]` block to the destination doc's *Proposed edits pending* section (with this batch's name in the block's *origin* field). Leave the planning batch in place — the user removes it by hand during the same planning session in which they apply the proposed edit.
+Two kinds: **(a)** questions blocking a specific build batch, **(b)** scope-existence questions deciding whether a build batch should exist. Each has a heading, questions, and a `Blocks:` line. Resolution: append the answer and add a `[PROPOSED EDIT PENDING]` block to the destination doc. Leave the batch in place — the user removes it when applying the edit.
 
 <!--
-Planning batch format:
+### Planning batch: [short name]
 
-### Planning batch: [short descriptive name]
-
-- [Question to answer — one line]
-- [Question to answer]
+- [Question]
+- [Question]
 
 Blocks: [build batch name].
-
-For scope-existence questions, use: Blocks: scope decision — no build batch yet.
+(For scope-existence: Blocks: scope decision — no build batch yet.)
 -->
 
 ## Build batches
 
-Engineering work, ordered top-to-bottom by priority. The top entry is the next build (after any one currently in progress). Each batch lives in its own file in this folder — reorder entries here to change priority without renaming files.
-
-A change only belongs here if it serves a `UX.md` entry (or an entry in a relevant additional source-of-truth doc). Items that don't trace to such an entry are Discoveries, not build items — they need a planning batch (or a `UX.md` update) before they enter this section.
+Engineering work, top-to-bottom priority. Each batch lives in its own file — reorder lines here to change priority. A change belongs here only if it serves a `UX.md` entry (or additional source-of-truth doc). Items without such traceability are Discoveries — they need a planning batch first.
 
 <!--
-Build-order list format — one entry per batch file:
-
 - `NNNN-batch-name.md` — [one-line description]
 
-The NNNN number is allocated at creation time and never changes. Reordering
-means moving lines in this list, not renaming files.
+NNNN is allocated at creation, never changes. Reorder by moving lines.
 -->
 
 ## Open questions
 
-Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning subagent scans this section at the start of every planning session and lists all entries with their triggers.
-
-When an open question matures to the point where it blocks a specific build, promote it to a planning batch above.
+Questions worth tracking that don't block a specific build yet. Each has a question, context, and a next-step trigger. The planning subagent scans this section at every planning session start. When a question blocks something specific, promote to a planning batch.
 
 <!--
-Entry format:
-
 ### [Short question title]
 
 [One paragraph framing the question.]
 
-**Why it matters.** [Brief context — who raised it, what's at risk.]
+**Why it matters.** [Context.]
 
-**Next step.** [What would resolve or promote this — e.g. "promote to planning batch if X happens", "incorporate into next batch touching Y", "park until Z".]
+**Next step.** [What resolves or promotes this.]
 -->
 
 ---

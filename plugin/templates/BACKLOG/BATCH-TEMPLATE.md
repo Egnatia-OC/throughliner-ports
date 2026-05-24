@@ -1,31 +1,29 @@
 # [Batch name]
 
-<!--
-Build batch file — two regions: scope context (Goal through Dependencies/Red flags)
-and build operations (Changes through Serves). Full spec: DOC-STRUCTURE.md → Build batches.
--->
+<!-- Two regions: scope context (Goal–Red flags) and build operations (Changes–Serves).
+Full spec: DOC-STRUCTURE.md → Build batches. -->
 
-**Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
+**Goal.** [Why this batch exists; what's different when it ships.]
 
-**Outputs.** [Prose — what changes the user will experience after the batch ships.]
+**Outputs.** [What the user experiences after the batch ships.]
 
-**Success criteria.** [Observable, testable conditions for knowing the batch succeeded.]
+**Success criteria.** [Observable, testable conditions for success.]
 
-**Decisions to make this batch.** [Unresolved scope questions. Omit if all decisions are made.]
+**Decisions to make this batch.** [Unresolved scope questions. Omit if resolved.]
 
-**Dependencies.** [What this batch needs from outside itself. Omit if none.]
+**Dependencies.** [What this batch needs from outside. Omit if none.]
 
-**Red flags.** [Security/privacy/data-integrity concerns. Only present when detected.]
+**Red flags.** [Security/privacy/data-integrity concerns. Only when detected.]
 
 Changes:
-- [Requested] [Change description — one line]
+- [Requested] [Change description]
 - [Suggested] [Change description]
 
 Inputs:
-- `[path/to/resource]` — [why this batch needs it]
+- `[path/to/resource]` — [why needed]
 
 Files:
-- [ ] `[path/to/file]` — [one-sentence summary of the change]
+- [ ] `[path/to/file]` — [one-sentence summary]
 
 Tests:
 - [Test description] [Look and click] [User]
