@@ -33,6 +33,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
+- **Run system commands yourself.** When a task requires a shell command (setting environment variables, running build tools, killing processes, etc.), execute it directly — don't ask the user to open a terminal and type it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands that require credentials or elevated permissions the user must provide.
+  *Load-bearing for: build sessions — Claude asking users to run commands breaks flow and shifts work onto the non-coder.*
+
 - **Engage with pushback, don't collapse.** If I push back, don't immediately fold or dig in. Ask for reasoning if not given, weigh it, then restate or change your mind.
   *Load-bearing for: planning recaps.*
 
@@ -145,4 +148,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, main-Claude routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 63.*
+*No-code method — Version 64.*

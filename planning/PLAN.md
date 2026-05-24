@@ -65,7 +65,7 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0062 | HTML Crash Course guide | Multi-page HTML guide for testers/early adopters. Depends on 0061. **Shipped v69.** |
 | 0070 | After-build close completeness | Doc-parity audit, idea sweep with routing, pre-commit checkpoint, CLAUDE.md extensibility section. **Shipped v72.** |
 | 0071 | Subagent cost optimization | Planning subagent from ~31.6k to <15k tokens: conditional drift-check skip, classify-then-dispatch, Sonnet evaluation. **Shipped v73.** |
-| 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. |
+| 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. **Shipped v74.** |
 | 0073 | Stop hook before-build→build chain fix | Stop hook exits silent after before-build (zero ticked = just locked). |
 | 0074 | Session-open status summary | User-facing batch count, next batch, and proceed prompt on session open. |
 | 0075 | Dev-side log folder migration | BUILD-LOG.md + TEST-LOG.md → folder structures. Dev-side only, no plugin changes. |

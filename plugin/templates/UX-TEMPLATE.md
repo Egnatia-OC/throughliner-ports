@@ -44,4 +44,4 @@ Claude-queued entries or updates. Each block describes the change, its origin, a
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 63.*
+*No-code method — Version 64.*

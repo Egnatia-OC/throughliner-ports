@@ -6,6 +6,18 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+## V64 — 2026-05-25 — After-build source-code boundary
+
+**What shipped.** Scope 0072. Two prose changes addressing E2E round 2 findings #1 and #4: (1) after-build.md — hard prohibition on editing source files, build scripts, or any non-method file added to "What you must not do." Build failures surfaced in recap and TEST-LOG notes, not fixed inline. (2) Consent-violation pattern explicitly named and prohibited — after-build must not create conditions that override a user's explicit refusal. (3) universal-behaviour.md — "Run system commands yourself" rule added to Required behaviours, addressing finding #9 (Claude asking user to run PowerShell commands). All footers bumped V63→V64, plugin 0.63.0→0.64.0.
+
+**Decisions.** Prose-only approach chosen per scope file's open question — no PreToolUse hook enforcement on after-build's file writes. The subagent body is the right layer because it governs judgment, not tool access. Hook enforcement deferred to a follow-up if prose fails in E2E testing.
+
+**Pivots.** None. Scope delivered as specified.
+
+**Carried forward.** Whether prose is sufficient will be tested in 0078 (post-fix E2E validation). If after-build still attempts source edits after this change, a PreToolUse check scoped to after-build's tool calls becomes a scope file.
+
+---
+
 ## V63 — 2026-05-25 — Subagent cost optimization
 
 **What shipped.** Scope 0071. Planning subagent optimized for cold-start projects: (1) classify-then-load — restructured "First action" to check MANIFEST + TEST-LOG before loading full doc set; cold-start projects skip BUILD-LOG and TEST-LOG structure docs; (2) cold-start gate — procedure steps 1–3 (test-session close, batch cleanup, aging, pruning, drift checks) skipped when MANIFEST is empty and TEST-LOG has no data rows; (3) reasoning constraint directive — concise-thinking instruction added to behavioural rules; (4) model: sonnet — planning subagent frontmatter routes to Sonnet (~40% cheaper); (5) tool-list audit — all five subagents audited, lists already tight, no changes needed. Research file updated with `model:` frontmatter and `loadProjectInstructions` findings. INVENTORY updated. 0078 scope file updated to make 0071 verification non-optional; 0077 PLAN.md row updated to note cold-start gate testing. All footers bumped V62→V63, plugin 0.62.0→0.63.0. 166 tests pass.

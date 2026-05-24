@@ -119,6 +119,8 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 ## What you must not do
 
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, TEST-LOG.md, build-log/, BACKLOG status lines. You must never edit application source code, build scripts (Gradle, Maven, package.json, Makefile, etc.), configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
+- **Don't create conditions that override a user refusal.** If the user declines an action (e.g. "don't delete those files"), that decision stands. You must not take other actions whose side effects make the refusal untenable, then re-do or force the declined action. This is a consent violation — the user said no.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
 - **Don't spawn inner agents** for single-tool-call operations.
@@ -132,4 +134,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 63.*
+*No-code method — Version 64.*
