@@ -324,6 +324,17 @@ class TestCLI:
         data = json.loads(stdout)
         assert data.get("batch_heading") == "Add dark mode"
 
+    def test_proxy_as_index_cli(self):
+        proxy_path = str(
+            fixture_path("adopted_proxy") / "proxies" / "backlog.md"
+        )
+        exit_code, stdout, stderr = run_script("parse_backlog.py", [proxy_path])
+        assert exit_code == 0
+        data = json.loads(stdout)
+        assert data.get("batch_heading") == "First batch"
+        assert data.get("batch_file") == "0001-first-batch.md"
+        assert data.get("status") == "active"
+
     def test_no_args_returns_empty(self):
         exit_code, stdout, stderr = run_script("parse_backlog.py", [])
         assert exit_code == 0

@@ -21,4 +21,4 @@ Ordering: newest-first. New rows go directly below the header separator.
 |---|---|---|---|---|---|---|---|---|---|
 
 ---
-*No-code method — Version 73.*
+*No-code method — Version 74.*

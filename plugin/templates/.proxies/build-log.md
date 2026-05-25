@@ -14,7 +14,7 @@ Entry file format:
 
 **What shipped.** Concrete deliverables. Reference TEST-LOG rows rather than restating outcomes; reference research files by path rather than embedding.
 
-**Decisions taken and why.** Load-bearing choices — what was chosen, alternatives, what tipped the call. Skip housekeeping.
+**Decisions taken and why.** Load-bearing decisions — what was chosen, alternatives, what tipped the call. Skip housekeeping.
 
 **Pivots and surprises.** What turned out differently than planned.
 
@@ -31,4 +31,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 73.*
+*No-code method — Version 74.*

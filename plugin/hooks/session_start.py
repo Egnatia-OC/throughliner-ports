@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 72
+PLUGIN_METHOD_VERSION = 74
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -116,6 +116,8 @@ SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 SPINE_FOLDER_PATHS = (
     Path("BACKLOG") / "INDEX.md",
     Path("build-log") / "INDEX.md",
+    Path("proxies") / "backlog.md",
+    Path("proxies") / "build-log.md",
 )
 
 METHOD_DIR = "_method"
@@ -308,6 +310,21 @@ def _batch_status(text: str) -> str:
     return m.group(1).lower() if m else "queued"
 
 
+def _resolve_backlog_dir(backlog_path: Path) -> Path:
+    """Resolve the BACKLOG/ directory for per-batch file lookups.
+
+    When the index is INDEX.md inside BACKLOG/, the dir is the parent.
+    When the index is a proxy at proxies/backlog.md, the BACKLOG/ dir
+    is a sibling of the proxies/ directory (i.e. _method/BACKLOG/).
+    Falls back to the path's parent."""
+    if backlog_path.name.upper() == "INDEX.MD":
+        return backlog_path.parent
+    if (backlog_path.name.lower() == "backlog.md"
+            and backlog_path.parent.name == "proxies"):
+        return backlog_path.parent.parent / "BACKLOG"
+    return backlog_path.parent
+
+
 def detect_top_build_batch(backlog_text: str, backlog_path=None):
     """Find the first actionable batch name in the `## Build batches` section.
 
@@ -348,8 +365,9 @@ def detect_top_build_batch(backlog_text: str, backlog_path=None):
 
     # Folder mode: reference lines like `- `0001-name.md``.
     if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
         for ref_match in BATCH_REF_PATTERN.finditer(section_text):
-            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_file = backlog_dir / ref_match.group(1)
             batch_text = safe_read_text(batch_file)
             if not batch_text:
                 continue
@@ -397,8 +415,9 @@ def count_batch_statuses(backlog_text: str, backlog_path=None) -> dict:
         return counts
 
     if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
         for ref_match in BATCH_REF_PATTERN.finditer(section_text):
-            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_file = backlog_dir / ref_match.group(1)
             batch_text = safe_read_text(batch_file)
             if not batch_text:
                 continue
@@ -452,8 +471,9 @@ def detect_top_batch_details(backlog_text: str, backlog_path=None):
         return None
 
     if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
         for ref_match in BATCH_REF_PATTERN.finditer(section_text):
-            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_file = backlog_dir / ref_match.group(1)
             batch_text = safe_read_text(batch_file)
             if not batch_text:
                 continue
@@ -524,6 +544,10 @@ def identify_previous_session_from_build_log(project_root, resolved):
     if build_log_data:
         candidate, _text = build_log_data
     if candidate is None or not candidate.exists():
+        candidate = project_root / METHOD_DIR / "proxies" / "build-log.md"
+    if not candidate.exists():
+        candidate = project_root / METHOD_DIR / "build-log" / "INDEX.md"
+    if not candidate.exists():
         candidate = project_root / "build-log" / "INDEX.md"
     if not candidate.exists():
         candidate = project_root / "BUILD-LOG.md"
@@ -533,11 +557,20 @@ def identify_previous_session_from_build_log(project_root, resolved):
     if text is None:
         return None, "unparseable"
 
-    if candidate.name.upper() == "INDEX.MD":
+    # Proxy-as-index (proxies/build-log.md) or folder INDEX.md:
+    # both carry reference lines to per-build files.
+    if (candidate.name.upper() == "INDEX.MD"
+            or (candidate.name.lower() == "build-log.md"
+                and candidate.parent.name == "proxies")):
         ref_match = BUILD_LOG_INDEX_REF_PATTERN.search(text)
         if not ref_match:
             return None, "unparseable"
-        entry_file = candidate.parent / ref_match.group(1)
+        # Resolve per-build file relative to build-log/ dir.
+        if candidate.parent.name == "proxies":
+            build_log_dir = candidate.parent.parent / "build-log"
+        else:
+            build_log_dir = candidate.parent
+        entry_file = build_log_dir / ref_match.group(1)
         entry_text = safe_read_text(entry_file)
         if entry_text is None:
             return None, "unparseable"

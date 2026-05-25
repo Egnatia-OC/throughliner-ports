@@ -200,6 +200,12 @@ class TestIdentifyPreviousSession:
         _id, status = ps.identify_previous_session(root)
         assert status == "missing"
 
+    def test_proxy_mode(self):
+        root = fixture_path("adopted_proxy")
+        session_id, status = ps.identify_previous_session(root)
+        assert status == "ok"
+        assert session_id == "B001"
+
 
 # ---------------------------------------------------------------------------
 # get_unconfirmed_previous_session_rows
@@ -252,3 +258,19 @@ class TestBacklogHelpers:
     def test_resolve_backlog_dir_single_file_returns_none(self):
         root = fixture_path("adopted_single_file")
         assert ps.resolve_backlog_dir(root) is None
+
+    def test_proxy_as_index_is_backlog(self):
+        root = fixture_path("adopted_proxy")
+        target = root / "proxies" / "backlog.md"
+        assert ps.is_backlog_file(target, root)
+
+    def test_proxy_as_index_batch_file_is_backlog(self):
+        root = fixture_path("adopted_proxy")
+        target = root / "BACKLOG" / "0001-first-batch.md"
+        assert ps.is_backlog_file(target, root)
+
+    def test_resolve_backlog_dir_proxy_mode(self):
+        root = fixture_path("adopted_proxy")
+        d = ps.resolve_backlog_dir(root)
+        assert d is not None
+        assert d.name == "BACKLOG"

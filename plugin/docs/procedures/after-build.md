@@ -83,7 +83,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
      - **Claude-verified tests:** <N Pass, N Fail (of N total)>
      - **User-verified tests:** <N pending>
      ```
-   - **6c.** Prepend index line to `build-log/INDEX.md`. Idempotency: skip if same-numbered line exists. Fallback: legacy BUILD-LOG.md or create build-log/ from template.
+   - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
 7. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser.
 
@@ -97,11 +97,13 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 10. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
 
-11. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+11. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — after-build always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
-12. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), doc-parity check done (step 3). If any missing, complete now.
+12. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
 
-13. **Closing prompts:**
+13. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), proxies regenerated (step 11), doc-parity check done (step 3). If any missing, complete now.
+
+14. **Closing prompts:**
    - `[PROMPT]` Commit and tag before testing.
    - `[PROMPT]` Refresh and begin testing. Bring per-row outcomes to next planning session.
    - `[PROMPT]` Optional: add `**Session notes:**` to Performance section.
@@ -123,4 +125,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 73.*
+*No-code method — Version 74.*

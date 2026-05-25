@@ -75,7 +75,7 @@ Five procedure docs at `plugin/docs/procedures/`, read into main context on dema
 
 - **after-build.md** — V27 origin, procedure doc V66. MANIFEST update, doc-parity check (V62), recap (two-section: Claude-verified / user-verified, V48), TEST-LOG rows (10-column, V48), build-log entry with Performance section (V55), frame-correction sweep (V33), idea sweep (V62), CLAUDE.md after-build steps (V62), pre-commit checkpoint (V62), commit/tag prompt (V48). Idempotent.
 
-- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69 migrations. PreToolUse exempts setup's tool calls.
+- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70 migrations. PreToolUse exempts setup's tool calls.
 
 ### Slash commands
 
@@ -90,7 +90,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ### Bundled artefacts
 
-- 13 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy), BACKLOG/INDEX, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, research/search-queries/QUERY-TEMPLATE. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects.
+- 14 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog and .proxies/build-log serve as operational indexes for their respective folder-mode docs (V70).
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
@@ -128,4 +128,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 73.*
+*No-code method — Version 74.*

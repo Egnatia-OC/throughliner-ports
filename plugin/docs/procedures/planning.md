@@ -30,8 +30,8 @@ If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log
 
 **Step 3 — load remaining docs:**
 
-- **Always:** `UX.md`, `BACKLOG.md`/`INDEX.md` (+ per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
-- **Not cold start only:** `BUILD-LOG.md`/`build-log/INDEX.md`, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
+- **Always:** `UX.md`, `BACKLOG.md` (resolves to `_method/proxies/backlog.md` or legacy `BACKLOG/INDEX.md`; + per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
+- **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md` or legacy `build-log/INDEX.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
 
 ## Procedure order
 
@@ -216,4 +216,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 73.*
+*No-code method — Version 74.*

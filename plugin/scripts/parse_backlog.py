@@ -324,10 +324,26 @@ def find_top_unticked_batch(text):
 # --- Folder mode ---
 
 
+def resolve_backlog_dir_from_index(index_path: Path) -> Path:
+    """Resolve the BACKLOG/ directory that holds per-batch files.
+
+    When the index is INDEX.md inside BACKLOG/, the dir is the parent.
+    When the index is a proxy at proxies/backlog.md, the BACKLOG/ dir
+    is a sibling of the proxies/ directory (i.e. _method/BACKLOG/).
+    Falls back to the index's parent if neither pattern matches."""
+    if index_path.name.upper() == "INDEX.MD":
+        return index_path.parent
+    if (index_path.name.lower() == "backlog.md"
+            and index_path.parent.name == "proxies"):
+        return index_path.parent.parent / "BACKLOG"
+    return index_path.parent
+
+
 def find_top_unticked_batch_folder(index_path: Path):
-    """Folder mode: read INDEX.md, extract the ordered list of batch file
-    references from `## Build batches`, read each batch file in order,
-    and return the first with unticked files. Returns {} if none found."""
+    """Folder mode: read the index (INDEX.md or proxies/backlog.md),
+    extract the ordered list of batch file references from
+    `## Build batches`, read each batch file in order, and return the
+    first with unticked files. Returns {} if none found."""
     text = safe_read_text(index_path)
     if text is None:
         return {}
@@ -343,7 +359,7 @@ def find_top_unticked_batch_folder(index_path: Path):
     if not batch_refs:
         return {}
 
-    backlog_dir = index_path.parent
+    backlog_dir = resolve_backlog_dir_from_index(index_path)
     for filename in batch_refs:
         batch_path = backlog_dir / filename
         batch = parse_batch_file(batch_path)
@@ -363,11 +379,14 @@ def find_top_unticked_batch_folder(index_path: Path):
 
 def is_folder_mode(index_path: Path) -> bool:
     """Detect whether the BACKLOG is in folder mode. True if the file is
-    named INDEX.md and lives inside a directory (the BACKLOG/ folder),
-    AND the `## Build batches` section contains batch reference lines
-    OR no `### Batch:` headings (empty or reference-only). Falls back to
-    single-file mode on any ambiguity."""
-    if index_path.name.upper() != "INDEX.MD":
+    a proxy-as-index (backlog.md in a proxies/ dir) or named INDEX.md
+    inside a directory, AND the `## Build batches` section contains batch
+    reference lines OR no `### Batch:` headings (empty or reference-only).
+    Falls back to single-file mode on any ambiguity."""
+    name_upper = index_path.name.upper()
+    if name_upper != "INDEX.MD" and name_upper != "BACKLOG.MD":
+        return False
+    if name_upper == "BACKLOG.MD" and index_path.parent.name != "proxies":
         return False
     text = safe_read_text(index_path)
     if text is None:

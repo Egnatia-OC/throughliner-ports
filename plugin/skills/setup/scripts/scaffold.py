@@ -70,6 +70,7 @@ METHOD_DIR_FILENAMES = (
 METHOD_DIR_DIRNAMES = (
     "BACKLOG",
     "build-log",
+    "proxies",
 )
 
 # The method subfolder name at project root.
@@ -87,16 +88,10 @@ TEMPLATE_TO_METHOD_DIR = (
     ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
 
-# BACKLOG folder template: INDEX-TEMPLATE.md → _method/BACKLOG/INDEX.md.
-BACKLOG_INDEX_TEMPLATE = "BACKLOG/INDEX-TEMPLATE.md"
-BACKLOG_INDEX_DEST = "INDEX.md"
-
-# build-log folder template: INDEX-TEMPLATE.md → _method/build-log/INDEX.md.
-BUILD_LOG_INDEX_TEMPLATE = "build-log/INDEX-TEMPLATE.md"
-BUILD_LOG_INDEX_DEST = "INDEX.md"
-
 # Proxy templates: .proxies/<name>.md → _method/proxies/<name>.md.
-PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md")
+# backlog.md and build-log.md serve as indexes for their respective folders.
+PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md",
+                   "backlog.md", "build-log.md")
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */setup five-case branching* wording for stability in the
@@ -218,12 +213,6 @@ def cmd_write(target_dir: Path) -> int:
         tpl for tpl, _ in TEMPLATE_TO_METHOD_DIR
         if not (src_dir / tpl).is_file()
     )
-    backlog_index_tpl = src_dir / BACKLOG_INDEX_TEMPLATE
-    if not backlog_index_tpl.is_file():
-        missing.append(BACKLOG_INDEX_TEMPLATE)
-    build_log_index_tpl = src_dir / BUILD_LOG_INDEX_TEMPLATE
-    if not build_log_index_tpl.is_file():
-        missing.append(BUILD_LOG_INDEX_TEMPLATE)
     for proxy_name in PROXY_TEMPLATES:
         if not (src_dir / ".proxies" / proxy_name).is_file():
             missing.append(f".proxies/{proxy_name}")
@@ -255,17 +244,9 @@ def cmd_write(target_dir: Path) -> int:
 
     backlog_dir = method_dir / "BACKLOG"
     backlog_dir.mkdir(exist_ok=True)
-    content = backlog_index_tpl.read_text(encoding="utf-8")
-    content = content.replace("[Project Name]", project_name)
-    (backlog_dir / BACKLOG_INDEX_DEST).write_text(content, encoding="utf-8")
-    written.append(f"{METHOD_DIR}/BACKLOG/INDEX.md")
 
     build_log_dir = method_dir / "build-log"
     build_log_dir.mkdir(exist_ok=True)
-    content = build_log_index_tpl.read_text(encoding="utf-8")
-    content = content.replace("[Project Name]", project_name)
-    (build_log_dir / BUILD_LOG_INDEX_DEST).write_text(content, encoding="utf-8")
-    written.append(f"{METHOD_DIR}/build-log/INDEX.md")
 
     drafts_dir = method_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)

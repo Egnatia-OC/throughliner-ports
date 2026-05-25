@@ -119,12 +119,12 @@ Starts empty. Format reminder in HTML comment.
 
 ## Build log structure
 
-**Location.** `build-log/` at project root. One file per build + `INDEX.md`.
+**Location.** `build-log/` inside `_method/`. One file per build. Index lives at `_method/proxies/build-log.md` (the proxy IS the index). Legacy: `build-log/INDEX.md` at project root or inside `_method/`.
 
-**INDEX.md.** Header, HTML comment, newest-first bullet list:
+**Index (proxies/build-log.md).** Header, HTML comment, newest-first bullet list:
 > `- \`NNN-batch-name.md\` — YYYY-MM-DD — Summary`
 
-After-build prepends one line per build.
+After-build prepends one line per build. Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
 
 **Per-build files.** `NNN-batch-name.md`:
 
@@ -155,7 +155,7 @@ After-build prepends one line per build.
 
 **Research cross-references.** Reference by path, don't embed.
 
-**Template.** `plugin/templates/build-log/INDEX-TEMPLATE.md`. Path block: `"BUILD-LOG.md"` → `build-log/INDEX.md`.
+**Template.** `plugin/templates/.proxies/build-log.md`. Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
 
 ## planning/drafts/ folder
 
@@ -192,7 +192,7 @@ Lightweight index files that summarize source-of-truth docs. Claude reads proxie
 
 **Missing proxies.** If the proxies directory is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
 
-**File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `test-log.md`, `research.md`.
+**File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `test-log.md`, `research.md`, `backlog.md`, `build-log.md`.
 
 **Format — all proxies:**
 
@@ -238,12 +238,25 @@ Source: `_method/research/` directory (not a single file). State summary: file c
 
 Entries: one line per file. Format: `- <filename> — <first heading or one-phrase summary>`. No line numbers.
 
+### BACKLOG index proxy (backlog.md)
+
+Source: `_method/BACKLOG/` directory. Unlike other proxies, this file IS the operational index — it carries the four BACKLOG sections (Red flags, Planning batches, Build batches, Open questions) with batch reference lines pointing at per-batch files. Not a summary; the file is directly edited by Claude during planning.
+
+Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`. Parser resolves batch files relative to `_method/BACKLOG/`.
+
+### Build-log index proxy (build-log.md)
+
+Source: `_method/build-log/` directory. Like the BACKLOG proxy, this IS the operational index — carries the newest-first reference list to per-build files. After-build prepends index lines here.
+
+Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`. Session-start resolves per-build files relative to `_method/build-log/`.
+
 ### Regeneration rules
 
-Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date.
+Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `backlog.md` and `build-log.md` are directly edited (they ARE the operational documents, not summaries).
 
 - **`/setup`** generates initial proxies after scaffolding.
 - **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
+- **After-build** regenerates stale proxies (MANIFEST, TEST-LOG, build-log at minimum).
 
 ## Proposed edits pending sections
 
@@ -264,9 +277,10 @@ Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Propos
 
 ## BACKLOG structure
 
-Two formats, auto-detected:
+Three formats, auto-detected:
 - **Single-file (legacy):** `BACKLOG.md` with everything inline. Path block → `BACKLOG.md`.
-- **Folder (V48+):** `BACKLOG/` with `INDEX.md` + per-batch files. Path block → `BACKLOG/INDEX.md`. Default for new projects.
+- **Folder with INDEX (V48–V72):** `BACKLOG/` with `INDEX.md` + per-batch files. Path block → `BACKLOG/INDEX.md`.
+- **Proxy-as-index (V73+, default):** `BACKLOG/` with per-batch files only. Index lives at `_method/proxies/backlog.md`. Path block → `_method/proxies/backlog.md`.
 
 **Maintained by Claude during planning.** Claude edits directly; user reviews.
 
@@ -331,4 +345,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 73.*
+*No-code method — Version 74.*

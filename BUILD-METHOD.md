@@ -177,8 +177,8 @@ Method-side = describes how the consumer method works. Dev-internal files (`buil
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
 - `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file)
-- `plugin/templates/BACKLOG/INDEX-TEMPLATE.md`
-- `plugin/templates/build-log/INDEX-TEMPLATE.md`
+- `plugin/templates/.proxies/backlog.md`
+- `plugin/templates/.proxies/build-log.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`

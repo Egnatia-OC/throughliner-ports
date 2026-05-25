@@ -486,11 +486,18 @@ def identify_previous_session(project_root):
     if text is None:
         return None, "unparseable"
 
-    if candidate.name.upper() == "INDEX.MD":
+    is_index = (candidate.name.upper() == "INDEX.MD"
+                or (candidate.name.lower() == "build-log.md"
+                    and candidate.parent.name == "proxies"))
+    if is_index:
         ref_match = BUILD_LOG_INDEX_REF_PATTERN.search(text)
         if not ref_match:
             return None, "unparseable"
-        entry_file = candidate.parent / ref_match.group(1)
+        if (candidate.name.lower() == "build-log.md"
+                and candidate.parent.name == "proxies"):
+            entry_file = candidate.parent.parent / "build-log" / ref_match.group(1)
+        else:
+            entry_file = candidate.parent / ref_match.group(1)
         entry_text = safe_read_text(entry_file)
         if entry_text is None:
             return None, "unparseable"
@@ -555,13 +562,17 @@ def get_unconfirmed_previous_session_rows(project_root):
 
 def resolve_backlog_dir(project_root):
     """If the BACKLOG is in folder mode (path block points to
-    BACKLOG/INDEX.md), return the resolved BACKLOG/ directory path.
+    BACKLOG/INDEX.md or proxies/backlog.md), return the resolved
+    BACKLOG/ directory path.
     Returns None if single-file mode or path block can't be resolved."""
     backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None:
         return None
     if backlog_path.name.upper() == "INDEX.MD":
         return backlog_path.parent
+    if (backlog_path.name.lower() == "backlog.md"
+            and backlog_path.parent.name == "proxies"):
+        return backlog_path.parent.parent / "BACKLOG"
     return None
 
 

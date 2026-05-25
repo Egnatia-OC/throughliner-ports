@@ -116,7 +116,9 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After TEST-LOG — BUILD-LOG folder migration (V50).** If flat `BUILD-LOG.md`: create `build-log/`, extract entries to per-build files, create INDEX.md, update path block, delete old file.
 
-**After BUILD-LOG — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
+**After BUILD-LOG — INDEX relocation to proxies (V70).** If path block points at `BACKLOG/INDEX.md` or `_method/BACKLOG/INDEX.md`: move INDEX.md content into `_method/proxies/backlog.md` (create proxies/ dir if needed), delete `BACKLOG/INDEX.md`, update path block to `_method/proxies/backlog.md`. Same for `build-log/INDEX.md` → `_method/proxies/build-log.md`. If `_method/proxies/` dir already has these files, skip.
+
+**After INDEX relocation — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
 
 **Recap:** "Refreshed (case 4). Bumped footers on [list]. [Migrations performed.]"
 
@@ -140,4 +142,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 73.*
+*No-code method — Version 74.*
