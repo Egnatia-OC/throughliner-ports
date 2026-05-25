@@ -13,7 +13,7 @@ Test the build phase of the procedure-doc architecture. Picks up where 0084 left
 ## Outputs
 
 - Updated research file: `research/e2e-greenfield-post-redesign.md` — build-phase findings appended.
-- New scope files or OPEN-QUESTIONS entries for any build-phase issues.
+- New scope files or BACKLOG.md open-question entries for any build-phase issues.
 - Token cost baseline for procedure-doc architecture (if full cycle completes).
 
 ## Success criteria

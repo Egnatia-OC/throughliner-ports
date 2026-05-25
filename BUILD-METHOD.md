@@ -1,6 +1,6 @@
 # BUILD-METHOD.md — How this project ships
 
-Session open, middle, close, testing, artefact locations. Sibling of `build-log/` (what shipped) and `planning/PLAN.md` (what's coming).
+Session open, middle, close, testing, artefact locations. Sibling of `build-log/` (what shipped) and `planning/BACKLOG.md` (what's coming).
 
 This is **not** the no-code method itself — that's what this project produces (`plugin/`, `Reference manual.md`, etc.). Personal and collaboration rules live in root `CLAUDE.md`. Anything here supersedes older equivalents there.
 
@@ -16,11 +16,11 @@ Three version-ish numbers move independently:
 
 - **Session tag** (lowercase `v`, e.g. `v52`) — one per session regardless of type. Always increments.
 - **Method version** (uppercase `V`, e.g. `V48`) — consumer-facing footer. Only bumps on substantive method/plugin change; planning-only sessions skip.
-- **Scope-file number** (4-digit, e.g. `0050`) — leading number in `planning/sessions/0050-adr-style-numbering.md`. Allocated at creation, never reused. Filename order = creation order; build order lives in PLAN.md.
+- **Scope-file number** (4-digit, e.g. `0050`) — leading number in `planning/scopes/0050-adr-style-numbering.md`. Allocated at creation, never reused. Filename order = creation order; build order lives in BACKLOG.md.
 
 So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked until a method-changing session bumps them together.
 
-**History.** V18–V23 conflated session tag and method version. Going forward they're separated; historical mismatches stay. Scope files prior to V50 used `V<N>.md`; V50 renamed to `NNNN-kebab-title.md`. Git history still references old V-numbers; that divergence is permanent.
+**History.** V18–V23 conflated session tag and method version. Going forward they're separated; historical mismatches stay. Scope files prior to 0050 used `V<N>.md`; 0050 renamed to `NNNN-kebab-title.md`. Git history still references old V-numbers; that divergence is permanent.
 
 ---
 
@@ -30,8 +30,8 @@ In order:
 
 1. `git describe --tags --abbrev=0` — confirm current version.
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Reference manual.md` at `HEAD`. (Repo-root prose set frozen at V39 — read only for prose-spec form, not current rules.)
-3. Scan `planning/OPEN-QUESTIONS.md` for entries whose *Next step* names the current session.
-4. Read the active scope file from `planning/sessions/`. To find it: scan PLAN.md's session list top to bottom, skip `**Shipped**`/`**Parked**` rows, pick the first unmarked. Use absolute paths. If none exists, say so and wait — don't invent a scope.
+3. Scan `planning/BACKLOG.md` → *Open questions* for entries whose *Next step* names the current batch.
+4. Read the active scope file from `planning/scopes/`. To find it: scan BACKLOG.md's batch list top to bottom, skip `**Shipped**`/`**Parked**` rows, pick the first unmarked. Use absolute paths. If none exists, say so and wait — don't invent a scope.
 
 Then read Alex's opener and route. If the task isn't clear, report what was loaded and ask. Don't draft.
 
@@ -45,7 +45,7 @@ Three shapes, often blended:
 
 **Doc-only** — rewrites without testable code (terminology sweep, parity catch-up, OQ resolution as prose). No smoke test; doc-code parity audit still runs.
 
-**Planning** — rescope the roadmap: split/merge sessions, write/revise scope files, add/resolve OQs, restructure PLAN.md. Usually still produces a tagged commit.
+**Planning** — rescope the roadmap: split/merge batches, write/revise scope files, add/resolve open questions, restructure BACKLOG.md. Usually still produces a tagged commit.
 
 Claude's job mid-session: do the work, surface concerns, propose. Close/parity/testing rules apply regardless.
 
@@ -55,13 +55,13 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 1. **Doc-code parity** (audit below). Fix docs before footers and BUILD-LOG.
 
-2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from old scope files — audit `planning/sessions/` for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]." Added V29 after its own open hit a pre-V23 frame in the scope file.
+2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from old scope files — audit `planning/scopes/` for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]." Added V29 after its own open hit a pre-V23 frame in the scope file.
 
 3. **Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in *Footer bumps* below.
 
 4. **Build-log entry** — create a new file in `build-log/`; shape in *BUILD-LOG entry shape*. Prepend index line to `build-log/INDEX.md`.
 
-5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + PLAN.md row; note in build-log entry as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
+5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + BACKLOG.md row; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
 
 6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
@@ -69,7 +69,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 8. **Tag** `git tag v<N>`.
 
-9. **Delete this session's scope file** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Explorer first.
+9. **Delete this batch's scope file** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Explorer first.
 
 10. **Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
@@ -109,7 +109,7 @@ When a session changes `Reference manual.md`, grep `crash-course/` for matching 
 
 ## Two-write rule for canonical docs
 
-> **SHELVED in v40.** Repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) frozen at V39. All substantive changes now land plugin-side only. Section retained for resume-ability. Background: `planning/OPEN-QUESTIONS.md` entry and BUILD-LOG v40.
+> **SHELVED in v40.** Repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) frozen at V39. All substantive changes now land plugin-side only. Section retained for resume-ability. Background: `planning/BACKLOG.md` → *Open questions* entry and BUILD-LOG v40.
 
 V32 split canonical content into two parallel sets: **plugin-side** (operational — `plugin/docs/`, `plugin/hooks/universal-behaviour.md`, `plugin/templates/`, agent bodies) and **docs-only** (project-agnostic prose at repo root). Plugin is the leader; docs-only follows. Cross-references legitimately diverge (plugin-side → plugin homes; docs-only → sibling sections). Substance stays identical.
 
@@ -167,7 +167,7 @@ python -m pytest tests/ -v
 
 When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal-only sessions skip entirely.**
 
-Method-side = describes how the consumer method works. Dev-internal files (`build-log/`, `test-log/`, `PLAN.md`, `OPEN-QUESTIONS.md`, this file) don't carry the footer.
+Method-side = describes how the consumer method works. Dev-internal files (`build-log/`, `test-log/`, `BACKLOG.md`, this file) don't carry the footer.
 
 ### Plugin-side (the leader)
 
@@ -215,11 +215,10 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 | File | Lifecycle | Deleted when |
 |---|---|---|
-| `planning/sessions/NNNN-kebab-title.md` | **Transient.** Scope for one session. Once shipped, commit + code + docs are source of truth. | Session ships (step 9). |
+| `planning/scopes/NNNN-kebab-title.md` | **Transient.** Scope for one batch. Once shipped, commit + code + docs are source of truth. | Batch ships (step 9). |
 | `planning/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
 | `planning/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
-| `planning/PLAN.md` | **Living.** Rolling roadmap. | Never. |
-| `planning/OPEN-QUESTIONS.md` | **Living.** Method-level questions not yet session-ready. Each entry has a *Next step*. | Per entry: when resolved. File: never. |
+| `planning/BACKLOG.md` | **Living.** Rolling roadmap + open questions. | Never. |
 | `planning/*.md` (feasibility docs) | **Historical.** V17 architectural decisions. | Never. |
 | `build-log/` | **Historical.** One file per session, INDEX.md newest first. | Never. |
 | `test-log/` | **Living.** One file per session, one row per check. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
@@ -260,14 +259,16 @@ Don't pad. Half a page is good; shorter is better.
 
 ---
 
-## OPEN-QUESTIONS entry shape
+## Open-questions entry shape
 
-`planning/OPEN-QUESTIONS.md` is the parking lot for method-level questions raised but not yet session-ready.
+Open questions live in `planning/BACKLOG.md` → *Open questions* section. Parking lot for method-level questions not yet batch-ready.
 
 Each entry:
 
 ```markdown
-## One-line question title
+### One-line question title
+
+**Surfaced.** vNN.
 
 **The question.** Clear framing paragraph.
 
@@ -284,13 +285,13 @@ Newest first.
 
 Four ways an entry leaves:
 
-1. **Folded into a session.** *Next step* names a condition; session-open scan (step 3) matches it; question becomes part of that session's scope. Entry removed at session close.
+1. **Folded into a batch.** *Next step* names a condition; session-open scan (step 3) matches it; question becomes part of that batch's scope. Entry removed at session close.
 
-2. **Promoted to its own session.** New PLAN.md row + scope file created. Entry removed at promotion (not at the session's ship — the entry's role is over once a session exists).
+2. **Promoted to its own batch.** New BACKLOG.md row + scope file created. Entry removed at promotion (not at the batch's ship — the entry's role is over once a scope file exists).
 
-3. **Partial fold-in.** Session addresses one shape, others stay parked. Entry stays with a date-tagged update note. *Next step* revised to reflect what's still open.
+3. **Partial fold-in.** Batch addresses one shape, others stay parked. Entry stays with a date-tagged update note. *Next step* revised to reflect what's still open.
 
-4. **Dropped.** No longer relevant. One-line reason in BUILD-LOG; entry removed.
+4. **Dropped.** No longer relevant. One-line reason in build-log; entry removed.
 
 The session-open scan is what makes graduation triggers fire.
 
@@ -322,6 +323,6 @@ The session-open scan is what makes graduation triggers fire.
 
 ## Plugin migration context
 
-From V17, this project distributes the method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `planning/INVENTORY.md`, `planning/PLAN.md`, `planning/claude-code-plugin-feasibility-response.md`.
+From V17, this project distributes the method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `planning/INVENTORY.md`, `planning/BACKLOG.md`, `planning/claude-code-plugin-feasibility-response.md`.
 
 Context for working in the project, not a procedural rule.
