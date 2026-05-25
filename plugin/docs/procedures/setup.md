@@ -28,7 +28,7 @@ Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": 
 
 No CLAUDE.md, no substantial work.
 
-**Open:** "Fresh folder. I'll ask four questions, then create starter docs (UX.md, BACKLOG/, build-log/, MANIFEST.md, CLAUDE.md, TEST-LOG.md) plus `planning/drafts/` and `research/`."
+**Open:** "Fresh folder. I'll ask four questions, then create starter docs (UX.md, BACKLOG/, build-log/, MANIFEST.md, CLAUDE.md, TEST-LOG.md) plus `planning/drafts/`, `research/`, and `research/search-queries/`."
 
 **Four questions (one per message, wait for each):**
 
@@ -136,4 +136,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 69.*
+*No-code method — Version 70.*

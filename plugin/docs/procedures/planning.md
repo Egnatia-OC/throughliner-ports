@@ -44,7 +44,7 @@ After loading state, perform in order:
 2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
-4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry. If empty/absent, note in one line.
+4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with its `Surfaced` tag. Flag entries older than 5 build cycles as potentially neglected. If empty/absent, note in one line.
 5. **[BRIEF] Sort test notes** into Suggestions candidates (bugs against existing UX entries) and Discoveries candidates (new ideas). Skip if not `test notes`/`mixed`.
 5. **[DISCUSS] Discuss changes with user.** Propose better options; push back by default.
 6. **[SILENT] Dedupe and reclassify.** Every candidate: already covered (skip), fits UX.md (build batch), or out of scope (Discovery).
@@ -216,4 +216,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 69.*
+*No-code method — Version 70.*

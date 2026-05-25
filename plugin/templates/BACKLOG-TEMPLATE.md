@@ -89,6 +89,8 @@ Entry format:
 
 ### [Short question title]
 
+**Surfaced.** [Session tag or build-cycle identifier when this entry was created, e.g. "Batch: auth overhaul".]
+
 [One paragraph framing the question.]
 
 **Why it matters.** [Brief context — who raised it, what's at risk.]
@@ -97,4 +99,4 @@ Entry format:
 -->
 
 ---
-*No-code method — Version 69.*
+*No-code method — Version 70.*

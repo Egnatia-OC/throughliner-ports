@@ -232,11 +232,32 @@ Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls.
 
 Nothing destructive without confirmation; every destructive option backs up first.
 
+## Research search flow
+
+Claude watches for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints. When it spots one, it drafts a search query, proposes it to you, and waits for approval before executing.
+
+**`/research`** triggers the flow explicitly. Claude also suggests searches proactively when it recognises an information gap.
+
+**Three execution mechanisms**, in priority order:
+1. **MCP search tool** — if a Gemini search MCP server (e.g. `yukukotani/mcp-gemini-google-search`) is installed. Preferred.
+2. **WebSearch** — Claude's built-in search tool, when MCP is unavailable.
+3. **Copyable prompt** — a formatted query for the user to paste into Gemini, ChatGPT, Perplexity, or another research environment. When neither tool is available.
+
+**Query files** are saved to `research/search-queries/YYYY-MM-DD-topic-slug.md` — structured records with trigger, decision it informs, query, good-answer criteria, response, and outcome. Distinct from free-form `research/<topic>.md` files.
+
+**MCP server setup** (optional — the fallback paths work without it):
+1. Install `yukukotani/mcp-gemini-google-search` (or another MCP server exposing a search tool).
+2. Get a Gemini API key from Google AI Studio.
+3. Set the environment variable `GEMINI_API_KEY` with your key.
+4. Register the MCP server in Claude Code's settings.
+
+The plugin doesn't ship or store API keys — the user brings their own.
+
 ## What's inside the plugin
 
 - **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build, build, after-build, setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
-- **Slash commands** (`/setup`, `/before-build`, `/build`): user-facing entry points that direct Claude to the matching procedure doc.
+- **Slash commands** (`/setup`, `/before-build`, `/build`, `/research`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
@@ -342,4 +363,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 69.*
+*No-code method — Version 70.*

@@ -165,6 +165,27 @@ After-build prepends one line per build.
 
 `research/<topic>.md`. Created by `/setup`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
 
+## Search query files (research/search-queries/)
+
+`research/search-queries/YYYY-MM-DD-topic-slug.md`. Created by the `/research` flow (skill or proactive suggestion). Structured records of research queries and their results — distinct from general `research/<topic>.md` files, which are free-form findings.
+
+**Naming.** `YYYY-MM-DD-topic-slug.md`. Date is the query date; slug describes the topic. Same topic researched on different dates gets separate files.
+
+**Template.** `plugin/templates/research/search-queries/QUERY-TEMPLATE.md`. Six sections:
+
+- **Trigger** — what was happening when the need arose.
+- **Decision it informs** — what choice is blocked without the answer.
+- **Query** — the exact search query sent.
+- **Good-answer criteria** — what a useful response would contain.
+- **Response** — search results, filled after return.
+- **Outcome** — what was done with the result.
+
+**Frontmatter.** YAML: `status` (pending/complete/discarded), `date`, `session-context`.
+
+**Lifecycle.** Created at `pending`. Updated to `complete` when response is filed and outcome recorded. `discarded` if the query was sent but the result wasn't useful and no action was taken. Files persist indefinitely — same as `research/` files.
+
+**Folder creation.** `/setup` scaffolds `research/search-queries/` alongside `research/`.
+
 ## Proxy files (.proxies/)
 
 Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `.proxies/` at project root. Created by `/setup`; regenerated during planning after editing source docs.
@@ -307,7 +328,7 @@ Two formats, auto-detected:
 
   **Serves name matching.** Case-insensitive whitespace-trimmed match against doc headings. PreToolUse blocks mismatches on locked docs.
 
-- **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
+- **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 69.*
+*No-code method — Version 70.*

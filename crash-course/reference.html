@@ -138,7 +138,6 @@
         <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules.</li>
         <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard.</li>
         <li><strong>PostToolUse</strong> &mdash; validates BACKLOG format after edits.</li>
-        <li><strong>Stop</strong> &mdash; routes between batches or to after-build.</li>
         <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>
@@ -154,7 +153,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
+      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code>, <code>/research</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

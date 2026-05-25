@@ -1,24 +1,54 @@
 # Open questions
 
-Method-level questions not yet ready to be a session. Each stays until resolved — folded into a session's scope, promoted to its own session, or dropped with a reason in `build-log/`. Newest first. Removed when resolved.
+Method-level questions not yet ready to be a session. Each stays until resolved — folded into a session's scope, promoted to its own session, or dropped with a reason in `build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
 
 Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Parent-directory CLAUDE.md inheritance — placement constraint
+## Remove timestamps from build-log and other docs
 
-**The question.** Should the plugin document the risk that placing a project folder inside another project's tree causes Claude Code's parent-directory CLAUDE.md inheritance to poison the session? And if so, where — Reference manual, setup procedure warning, or both?
+**Surfaced.** v82.
 
-**Why it matters.** Surfaced twice during E2E testing (v79, findings 1 and 5). When the Polite Fart Announcer burner folder was placed inside the no-code-method tree, the parent CLAUDE.md made Claude think it was in the method dev project. The v79 research file noted "not a plugin bug but a placement constraint worth documenting" — but it was never documented anywhere. This is a real footgun for users who organise projects in nested folders.
+**The question.** Should timestamps be removed from build-log entries and any other method docs that carry them? The performance tracking section (shipped V58/v60) added structured timestamps to per-build log files. No clear use case for the timestamp data has emerged — session tags already provide ordering, and the method doesn't use elapsed-time data for any decision.
 
-**Working notes.** The plugin can't control Claude Code's inheritance behaviour. The fix is awareness: warn users during `/setup` if the project root has a parent-directory CLAUDE.md, and document the constraint in the Reference manual. Could also add a SessionStart check that detects parent CLAUDE.md files and surfaces an advisory.
+**Why it matters.** Timestamps add visual noise and token cost without serving a downstream consumer. If nothing reads them or acts on them, they're dead weight in every build-log entry going forward.
 
-**Next step.** Ready to promote. Small scope — documentation + optional SessionStart advisory. Restored during 2026-05-25 ideation session.
+**Next step.** Audit which docs carry timestamps (build-log entry template, performance section shape, any others). Write a small scope to remove them from templates and procedure docs, or fold into a nearby session touching build-log structure (0089).
+
+---
+
+## Bulk-tersify skill for doc compression
+
+**Surfaced.** v82 (2026-05-25 ideation).
+
+**The question.** Should the plugin include a `/tersify` (or similar) skill that rewrites method docs to be shorter without losing meaning — reducing token cost when Claude reads them at session open?
+
+**Why it matters.** Every token in a method doc competes with working context. Docs accumulate detail over many sessions — each addition is justified, but the aggregate grows past what the content warrants. A non-coder can't confidently trim procedural docs they didn't write. A skill that systematically shortens prose while preserving every rule, constraint, and procedure would directly reduce the context-bloat problem the plugin exists to solve.
+
+**Working notes.** Candidate targets: procedure docs (`plugin/docs/procedures/`), DOC-STRUCTURE.md, VOCABULARY.md, universal-behaviour.md, Reference manual. Scope-file and build-log templates could also benefit. The skill would need a diff-review step — show the user what changed and what was cut before committing, since "shorter" and "same meaning" are judgment calls. Could run against one file at a time or batch a folder. Planning-phase only (docs are unlocked).
+
+**Next step.** Park until after the proxy layer and doc-folder restructure (0087) ship. Both will change which docs exist and where they live — tersifying before that wastes effort on files about to move or merge.
+
+---
+
+## Lost-feature sweep as a planning skill
+
+**Surfaced.** v82 (2026-05-25 ideation).
+
+**The question.** Should the plugin include a `/sweep` (or similar) skill that systematically scans cancelled sessions, parked scope files, OPEN-QUESTIONS entries with stale rationale, and build-log "carried forward" items — surfacing features that were dropped, deferred under conditions nobody re-evaluated, or promised but never scoped?
+
+**Why it matters.** Surfaced 2026-05-25 during an ideation session that manually did exactly this. The process — read PLAN.md for cancelled/parked rows, read their scope files, cross-reference build-log "carried forward" sections, check OQ parking rationale against what's shipped since — is mechanical enough to be a repeatable procedure. Doing it by hand took significant context window and required knowing where to look. A planning-phase skill could run this as a pre-flight before roadmap rescoping, catching items that silently fell off the map.
+
+**Working notes.** The sweep found six items across ~65 sessions: one genuinely lost output (after-build proxy regeneration), one partially shipped remainder with no home (UX threat-class marker), one undocumented constraint (parent-directory inheritance), and three items frozen under stale rationale. The pattern: cancellation and parking are one-way — nothing triggers a re-evaluation when the reason for parking stops being true.
+
+**Next step.** Park until the planning procedure stabilises post-proxy-layer. The sweep reads PLAN.md, scope files, build-log entries, and OPEN-QUESTIONS — all of which are changing shape through 0089/0090. Promote once those ship and the doc structure is stable.
 
 ---
 
 ## Project-boundary hook bypass via Bash
+
+**Surfaced.** v73.
 
 **The question.** The project-boundary PreToolUse hook (0065) blocks `Edit`/`Write`/`MultiEdit` outside the project root, but `Bash` commands (`sed`, `echo >`, PowerShell `Set-Content`, etc.) bypass it entirely. Should the plugin add a Bash-matcher PreToolUse check for common file-write patterns, similar to how the git safety guard matches `git reset --hard` and `git push --force`?
 
@@ -32,6 +62,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 ## Structured-markdown validator as a plugin component
 
+**Surfaced.** v71 (0068 E2E round 2).
+
 **The question.** Should the plugin include a general-purpose structured-markdown linter that validates BACKLOG batch format, TEST-LOG column counts, scope-context section completeness, and other method-specific document shapes — beyond what `parse_backlog.py` currently does?
 
 **Why it matters.** Surfaced 2026-05-24 during E2E testing research. `parse_backlog.py` validates BACKLOG structure, but TEST-LOG, build-log entries, and scope-context sections have no equivalent validation. Malformed docs cause silent failures downstream (subagents misread state, hooks gate on wrong data). A general lint could run as a PostToolUse check or a planning-session pre-flight.
@@ -42,6 +74,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 ## Plugin testing framework beyond bespoke pytest
 
+**Surfaced.** v71 (0068 E2E round 2).
+
 **The question.** Should the project invest in a reusable plugin testing framework — run a hook against synthetic input and assert on output shape/content, without a full Claude Code session — or is the current bespoke pytest suite sufficient?
 
 **Why it matters.** Surfaced 2026-05-24 during E2E testing research. The pytest suite at `tests/` covers hook subprocess tests and unit tests, but it's custom-built for this project. A framework could make it easier to add tests for new hooks, validate subagent prompts, and regression-test deny/allow paths. Counter-argument: the bespoke suite works, runs in under 5 seconds, and covers 124 tests — a framework might add abstraction without proportional value.
@@ -51,6 +85,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 ---
 
 ## Plugin settings layer / per-project config file
+
+**Surfaced.** v71 (0068 E2E round 2).
 
 **The question.** Should the plugin support a separate config file (or settings layer) that lets users override or extend plugin-owned workflows — as opposed to using CLAUDE.md sections for extensibility?
 
@@ -63,6 +99,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 ---
 
 ## Red-flag / threat-class marker for security-shaped batches
+
+**Surfaced.** v43.
 
 **The question.** Should BACKLOG batches touching security surfaces (auth, secrets, PII, deletion, payment) carry an explicit *Red flags* marker — as a batch sub-section, as planning-subagent auto-detection, or both?
 
@@ -77,6 +115,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 ---
 
 ## Graduate sovereign implementer onto sovereign implementer
+
+**Surfaced.** v40.
 
 **The question.** Can this dev project dogfood the method's own plugin?
 
@@ -96,6 +136,8 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 ---
 
 ## Prose-only rewrite of the method
+
+**Surfaced.** v23.
 
 **The question.** Tool-agnostic prose-only version for users without Claude Code.
 

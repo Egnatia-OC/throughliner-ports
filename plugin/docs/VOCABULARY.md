@@ -65,6 +65,10 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Research file.** `research/<topic>.md`. Findings from Claude's research. Persists indefinitely, zero maintenance. Valid on `Inputs:` lines. Full rules: `DOC-STRUCTURE.md`.
 
+- **Search query file.** `research/search-queries/YYYY-MM-DD-topic-slug.md`. Structured record of a research query: trigger, decision it informs, query, good-answer criteria, response, outcome. Created by the `/research` flow. Distinct from free-form research files. Full spec: `DOC-STRUCTURE.md` → *Search query files*.
+
+- **Proactive research.** Claude watches for decisions that would benefit from external information, drafts a search query, proposes it to the user, and executes via MCP search tool, WebSearch, or copyable prompt. `/research` triggers the flow explicitly; the universal-behaviour rule triggers it proactively. Full rule: `universal-behaviour.md` → *Proactive research*.
+
 - **Session handoff.** Preparing a batch for clean resume: tick completed, annotate in-progress, record decisions in `Handoff notes:`, notify user. Protocol: `universal-behaviour.md` → *Session handoff*.
 
 - **Handoff notes.** `Handoff notes:` block at batch bottom during handoff. Build-time context for resume. Stripped by after-build when batch completes.
@@ -100,4 +104,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 69.*
+*No-code method — Version 70.*

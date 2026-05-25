@@ -235,6 +235,9 @@ def cmd_write(target_dir: Path) -> int:
     research_dir = target_dir / "research"
     research_dir.mkdir(exist_ok=True)
 
+    search_queries_dir = research_dir / "search-queries"
+    search_queries_dir.mkdir(exist_ok=True)
+
     proxies_dir = target_dir / ".proxies"
     proxies_dir.mkdir(exist_ok=True)
     proxy_src = src_dir / ".proxies"
@@ -247,7 +250,7 @@ def cmd_write(target_dir: Path) -> int:
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/", ".proxies/"],
+        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/", "research/search-queries/", ".proxies/"],
         "target_path": str(target_dir),
     })
 

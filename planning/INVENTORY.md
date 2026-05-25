@@ -82,6 +82,7 @@ Five procedure docs at `plugin/docs/procedures/`, read into main context on dema
 All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
 
 - `/setup` — four-case adoption. Scaffolds 6 spine templates + `planning/drafts/` + `research/` + `.proxies/`. **Shipped V29** (as `/adopt`; renamed V44).
+- `/research` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70.**
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/plan` — planning procedure. *Pending; auto-route is current path.*
 - `/before-build` — before-build procedure. **Shipped V25.** Migrated to skills/ v71.
@@ -89,7 +90,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ### Bundled artefacts
 
-- 12 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy), BACKLOG/INDEX, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research.
+- 13 templates under `plugin/templates/`: build-log/INDEX, CLAUDE, BACKLOG (legacy), BACKLOG/INDEX, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, research/search-queries/QUERY-TEMPLATE.
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
@@ -127,4 +128,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 69.*
+*No-code method — Version 70.*

@@ -30,6 +30,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Verify external facts, don't guess.** When uncertain about an external fact, research it directly. **Filing is mandatory**: save findings to `research/<topic>.md` before moving on. If research tools aren't available, mark with `[UNVERIFIED: <what>]` inline — the marker stays until verified.
   *Load-bearing for: decision quality — silent guessing puts wrong facts into source-of-truth docs.*
 
+- **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/research` slash command triggers this flow explicitly; this rule is about doing it without being asked.
+  *Load-bearing for: decision quality — proactive research catches gaps before they become wrong assumptions baked into code or docs.*
+
 - **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
@@ -156,4 +159,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 69.*
+*No-code method — Version 70.*
