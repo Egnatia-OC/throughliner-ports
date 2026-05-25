@@ -29,13 +29,14 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 | Doc | Access |
 |---|---|
-| `UX.md` | Read-only to Claude (PreToolUse enforced) |
+| `UX.md` | Phase-aware (V67): editable during planning; locked during build (PreToolUse enforced, with footer + proposed-edits carve-outs) |
 | `BACKLOG/` | Read/write |
 | `MANIFEST.md` | Read/write |
 | `TEST-LOG.md` | Read/write (test-confirmation gate V27) |
 | `build-log/` | Read/write |
 | `CLAUDE.md` | Read/write; path block in fenced JSON |
-| Additional SoT docs | Read-only to Claude |
+| Additional SoT docs | Phase-aware (V67): editable during planning; locked during build |
+| Source-code files | Phase-aware (V67): locked during planning; editable during build via batch Files: list |
 
 ## Plugin components — final list
 
@@ -43,11 +44,11 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 - **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; directive mandates Claude present it before routing). V43 adds two-layer-permission preamble.
 
-- **PreToolUse hook (consolidated).** Seven checks:
-  - (a) Read-only enforcement on locked docs. V19.
-  - (b) Proposed-edit redirect on locked-doc writes. V19.
-  - (c) Batch file-list boundary enforcement. V25. Parses BACKLOG via `parse_backlog.py`.
-  - (d) MANIFEST read-before-edit gate. V39. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
+- **PreToolUse hook (consolidated).** Seven checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
+  - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
+  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions).
+  - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. Parses BACKLOG via `parse_backlog.py`.
+  - (d) MANIFEST read-before-edit gate. V39, V67 build-phase only. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
   - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
   - (f) Test-confirmation gate on build-phase file edits. V27, reframed V66. Denies when an active batch exists and previous-batch TEST-LOG rows are unconfirmed. Build-log session identification with fallback.
   - (g) Project-boundary enforcement. V56. Blocks writes outside project root.
@@ -125,4 +126,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 66.*
+*No-code method — Version 67.*

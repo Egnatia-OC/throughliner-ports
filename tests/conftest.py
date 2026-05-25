@@ -90,3 +90,8 @@ def tier2_no_claude():
 @pytest.fixture
 def tier2_bad_pathblock():
     return fixture_path("tier2_bad_pathblock")
+
+
+@pytest.fixture
+def planning_phase():
+    return fixture_path("planning_phase")

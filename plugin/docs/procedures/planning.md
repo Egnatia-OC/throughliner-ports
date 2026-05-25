@@ -120,7 +120,7 @@ Catches in-file changes the other checks miss — manual edits that leave no MAN
 
 **Expected (no confirmation needed):**
 - Files in most recent batch's `Files:` sub-section.
-- Method writable surface: `MANIFEST.md`, `build-log/`, `BUILD-LOG.md`, `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`. (Footer-only edits on locked docs also pass.)
+- Method writable surface (planning phase): all path-block docs (`UX.md`, `MANIFEST.md`, additional source-of-truth docs), `build-log/`, `BUILD-LOG.md`, `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`, `research/` files.
 
 Everything else → confirmation protocol.
 
@@ -157,14 +157,7 @@ Surface scope-context in recap before writing to BACKLOG.
 
 **Change-list labels (V27).** Every change bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the after-build recap's source chain. Overlap: user confirmed your suggestion → `[Requested]`. Merge: combined item → `[Requested]`.
 
-**Read-only docs.** UX.md and additional source-of-truth docs are locked (PreToolUse enforces). For proposed content, use the preview-then-apply convention:
-
-1. Show complete section in chat: `[PROPOSED EDIT] <DOC>.md — <section>`.
-2. Wait for approval.
-3. Append resolved answer to planning batch.
-4. Write `[PROPOSED EDIT PENDING]` block to destination doc's `## Proposed edits pending` section, specifying **replace** or **add**. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
-5. Prompt user to apply now.
-6. When confirmed, remove the block.
+**Source-of-truth docs (V67).** UX.md and additional source-of-truth docs are directly editable by Claude during planning phase — no `[PROPOSED EDIT PENDING]` ceremony needed. Edit them directly on user approval. PreToolUse allows these edits because no `Status: active` batch exists.
 
 ## How a new feature enters the project
 
@@ -172,8 +165,8 @@ Fixed pipeline — no shortcuts:
 
 1. **Idea raised.** If it conflicts with an existing UX principle, surface the conflict first — don't quietly route it into a batch. Chat surfaces tension immediately; the batch resolves it.
 2. **Enters BACKLOG as planning batch** asking questions needed for UX.md entry.
-3. **Questions answered** in this or future planning session. Resolved → append to batch + `[PROPOSED EDIT PENDING]` in destination doc.
-4. **User applies proposed edit to UX.md by hand.** Block removed, planning batch removed.
+3. **Questions answered** in this or future planning session. Resolved → append to batch + edit UX.md directly (V67 — source-of-truth docs are open during planning).
+4. **Planning batch removed** once UX.md entry exists.
 5. **Only then** does a build batch enter BACKLOG with `Serves UX.md:` pointing at the new entry.
 
 If you're proposing a build batch with no UX.md match, stop — you've skipped a step. When the user says "let's add X," frame the planning-first response as routing, not refusal.
@@ -222,4 +215,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 66.*
+*No-code method — Version 67.*

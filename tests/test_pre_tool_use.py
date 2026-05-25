@@ -365,6 +365,75 @@ class TestTestConfirmationGate:
 # Malformed / edge-case inputs
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# V67 Phase-aware permission flip — planning phase
+# ---------------------------------------------------------------------------
+
+class TestPlanningPhasePermissions:
+    """V67: during planning phase (no active batch), source-of-truth docs
+    are directly editable and source code is locked."""
+
+    def test_ux_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        ux_path = str((root / "UX.md").resolve())
+        data = _edit_input(root, ux_path, old_string="Dashboard", new_string="Home")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_source_code_locked_during_planning(self, planning_phase):
+        root = planning_phase
+        target = str((root / "app" / "src" / "DashboardScreen.kt").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "source-code file")
+
+    def test_backlog_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        bl_path = str((root / "BACKLOG" / "INDEX.md").resolve())
+        data = _edit_input(root, bl_path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_manifest_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        path = str((root / "MANIFEST.md").resolve())
+        data = _edit_input(root, path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_research_file_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        path = str((root / "research" / "api-options.md").resolve())
+        data = _edit_input(root, path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_test_log_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        path = str((root / "TEST-LOG.md").resolve())
+        data = _edit_input(root, path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_claude_md_editable_during_planning(self, planning_phase):
+        root = planning_phase
+        path = str((root / "CLAUDE.md").resolve())
+        data = _edit_input(root, path)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_planning_source_lock_mode_aware(self, planning_phase):
+        root = planning_phase
+        target = str((root / "app" / "src" / "DashboardScreen.kt").resolve())
+        data = _edit_input(root, target, permission_mode="Auto")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "permission mode")
+
+
+# ---------------------------------------------------------------------------
+# Malformed / edge-case inputs
+# ---------------------------------------------------------------------------
+
 class TestMalformedInputs:
     def test_empty_dict(self):
         code, parsed, raw = run_hook("pre_tool_use.py", {})

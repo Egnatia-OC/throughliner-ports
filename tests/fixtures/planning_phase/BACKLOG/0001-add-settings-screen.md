@@ -1,7 +1,5 @@
 # Add settings screen
 
-Status: active
-
 **Goal.** Add a settings screen so users can change their preferences.
 
 **Outputs.** A new settings screen accessible from the dashboard.
@@ -13,6 +11,5 @@ Changes:
 
 Files:
 - [ ] `app/src/SettingsScreen.kt` — New settings screen component
-- [ ] `app/src/DashboardScreen.kt` — Add navigation to settings
 
 Serves UX.md: Settings.

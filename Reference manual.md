@@ -58,7 +58,7 @@ See *Managing the plugin* below for disable/re-enable/uninstall.
 - Open Claude Code in the project folder. Run `/setup`.
 - `/setup` detects the case (empty, existing code, foreign docs, already managed) and runs the matching dialogue.
 - For empty folders: scaffolds spine docs and walks four prompts (project context, UX principles, core functionalities, first batch sketch).
-- Outputs land as `[PROPOSED EDIT PENDING]` blocks. The no-coder applies them to UX.md by hand, converts the sketch into a build batch with a `Serves UX.md:` line.
+- Claude writes directly to UX.md during setup (planning phase — docs are open). The no-coder converts the first-batch sketch into a build batch with a `Serves UX.md:` line.
 - Run `/before-build` to lock the batch, then `/build` to execute. The plugin orchestrates the rest.
 
 ## Managing the plugin
@@ -121,7 +121,7 @@ Projects can declare additional source-of-truth docs (e.g. `SYSTEM-PROMPT.md`, `
 
 Two phases loop: **planning** and **build**. `/clear` or new session separates them.
 
-**Planning sessions** decide what gets built. The planning procedure: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth doc edits happen by hand — the no-coder applies proposed edits, removes resolved batches, reorganises priorities.
+**Planning sessions** decide what gets built. The planning procedure: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth docs (UX.md, additional docs) are directly editable by Claude during planning — no ceremony needed. The no-coder removes resolved batches and reorganises priorities.
 
 **Build sessions** ship engineering work. `/before-build` locks the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/build` runs the build against the file list. PreToolUse enforces batch boundaries. When done, the after-build procedure updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific after-build steps from CLAUDE.md, verifies all steps via a pre-commit checkpoint, and prompts commit/tag/test.
 
@@ -168,7 +168,7 @@ Empty folder → `/setup` → four prompts:
 3. **Core functionalities.** Three to five features with "user needs this because…" lines.
 4. **First batch sketch.** Smallest end-to-end buildable thing.
 
-Answers land as `[PROPOSED EDIT PENDING]` blocks. No-coder applies them, seeds the first build batch.
+Claude writes answers directly to UX.md (planning phase — docs are open). No-coder seeds the first build batch.
 
 ### Risk accepted in action
 
@@ -272,20 +272,28 @@ Three layers:
 
 **The build sequence — fixed.** Four-phase cycle is the spine.
 
-### Editing surfaces
+### Editing surfaces — phase-aware
 
-| Doc | Claude edit access |
-|---|---|
-| `UX.md` | **read-only** |
-| Additional source-of-truth docs | **read-only** |
-| `BACKLOG.md` | read/write |
-| `MANIFEST.md` | read/write |
-| `TEST-LOG.md` | read/write |
-| `CLAUDE.md` | read/write |
+Permissions flip based on project phase:
 
-**Footer exception.** Footer stamps are metadata — PreToolUse allows footer-only edits on locked docs.
+| Doc | Planning phase | Build phase |
+|---|---|---|
+| `UX.md` | **read/write** | **locked** |
+| Additional source-of-truth docs | **read/write** | **locked** |
+| `BACKLOG.md` | read/write | read/write |
+| `MANIFEST.md` | read/write | read/write |
+| `TEST-LOG.md` | read/write | read/write |
+| `CLAUDE.md` | read/write | read/write |
+| Source code files | **locked** | batch file list only |
+| `research/` files | read/write | read/write |
 
-**`[PROPOSED EDIT PENDING]` mechanism.** Claude queues content in the destination doc's `## Proposed edits pending` section. Preview-then-apply convention during planning: show in chat → approval → write block → prompt to apply now.
+**Phase detection.** Planning = no `Status: active` batch in BACKLOG. Build = active batch present (written by before-build).
+
+**During planning,** Claude edits source-of-truth docs directly — no ceremony needed.
+
+**During build,** the `[PROPOSED EDIT PENDING]` mechanism applies: Claude queues content in the destination doc's `## Proposed edits pending` section. The no-coder applies it next planning session.
+
+**Footer exception.** Footer stamps are metadata — PreToolUse allows footer-only edits on locked docs regardless of phase.
 
 ## Why the rules
 
@@ -334,4 +342,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 66.*
+*No-code method — Version 67.*

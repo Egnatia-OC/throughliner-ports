@@ -55,7 +55,7 @@ Substantial work but no CLAUDE.md.
 **Option 1:**
 1. Glob check for spine-doc filenames in subdirs.
 2. Run `check` (expect `ready: true`), then `write`.
-3. Walk four new-project questions. User more likely to skip — anything unanswered becomes `[PROPOSED EDIT PENDING]` in destination doc.
+3. Walk four new-project questions. User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session.
 
 **Recap:** "Adopted (case 2). Created [docs] alongside existing code. [Which questions answered/pending.]"
 
@@ -74,7 +74,7 @@ CLAUDE.md present but no method footer. Probably from Claude Code's `/init` — 
 2. Read CLAUDE-TEMPLATE.md for target shape.
 3. Propose unified plan. Iterate until satisfied.
 4. Apply edits. Run `check` + `write` for other docs.
-5. Content for locked docs → preview-then-apply convention.
+5. Source-of-truth docs are directly editable during setup (planning phase).
 
 **Option 2 (overwrite):**
 1. Backup: `cp CLAUDE.md CLAUDE.md.foreign-backup-<date>`.
@@ -130,4 +130,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 66.*
+*No-code method — Version 67.*

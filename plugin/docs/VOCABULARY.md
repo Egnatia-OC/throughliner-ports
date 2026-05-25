@@ -18,9 +18,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Red flag.** Security/privacy/data-integrity/safety concern. Surface in chat; if deferred with no active plan, add to BACKLOG Red flags: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [fix]. Only deferred items not needing a UX.md entry.
 
-- **Source-of-truth doc.** Doc describing decided behaviour the build must conform to. `UX.md` is always one. Read-only to Claude; edited by user during planning. Full rule: `universal-behaviour.md` → *Editing surfaces*.
+- **Source-of-truth doc.** Doc describing decided behaviour the build must conform to. `UX.md` is always one. Phase-aware editing: directly editable during planning; locked during build (with `[PROPOSED EDIT PENDING]` carve-out). Full rule: `universal-behaviour.md` → *Editing surfaces — phase-aware*.
 
-- **Additional source-of-truth doc.** Project-specific beyond UX.md — e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`. Same locking rules. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
+- **Additional source-of-truth doc.** Project-specific beyond UX.md — e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`. Same phase-aware rules. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
 
 - **Adopted folder.** Project's CLAUDE.md carries the method footer. Safety net stays silent.
 
@@ -30,9 +30,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Drift check.** Five checks at every planning session start: (1) direct-edit detection (git-diff + per-file confirmation), (2) UX↔build, (3) MANIFEST↔codebase, (4) MANIFEST↔UX (loose), (5) TEST-LOG↔code-touch. Full procedure: `planning.md`.
 
-- **Proposed edit.** Content queued as `[PROPOSED EDIT PENDING]` in a read-only doc's *Proposed edits pending* section because the main body is locked. User applies by hand. Origins: planning resolution, `/setup`, or intercepted mid-build edit. Preview-then-apply convention applies during planning/setup. Footer stamps are the one exception to the lock.
+- **Proposed edit.** Content queued as `[PROPOSED EDIT PENDING]` in a source-of-truth doc's *Proposed edits pending* section because the main body is locked during build phase. User applies by hand. Origins: intercepted mid-build edit. Only used during build phase — during planning, Claude edits source-of-truth docs directly. Footer stamps are the one exception to the build-phase lock.
 
-- **Proposed-edits section.** `## Proposed edits pending` at bottom of every read-only doc. Where Claude queues blocks. PreToolUse allows edits within this section only. Full spec: `DOC-STRUCTURE.md`.
+- **Proposed-edits section.** `## Proposed edits pending` at bottom of every source-of-truth doc. Where Claude queues blocks during build phase. PreToolUse allows edits within this section only (during build). Full spec: `DOC-STRUCTURE.md`.
 
 - **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by before-build; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
 
@@ -98,4 +98,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 66.*
+*No-code method — Version 67.*

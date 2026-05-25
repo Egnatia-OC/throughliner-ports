@@ -60,24 +60,6 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 ---
 
-## Post-adopt and mid-loop UX friction (V42 smoke-test observations)
-
-**The question.** Seven UX friction points from V42's live smoke test.
-
-**The seven items.**
-
-1. ~~Jargon in adopt subagent.~~ **Resolved V44.**
-2. ~~No next-action prompt after `/setup`.~~ **Resolved V44.**
-3. **Proposed-edit UX forces manual copy-paste.** Biggest friction point — user must open markdown, find section, paste, save. Distributed fold-ins restructured where edits live but don't address the paste UX.
-4. ~~Permission modes vs. UX.md lock.~~ **Resolved V43.**
-5. ~~After-build commit/tag prompt.~~ **Resolved V46.**
-6. ~~Template placeholder cleanup.~~ **Resolved V47.**
-7. ~~Pass/Fail/Skipped explanations.~~ **Resolved V44.**
-
-**Next step.** Six of seven resolved. **Remaining:** item 3 (proposed-edit UX).
-
----
-
 ## Graduate sovereign implementer onto sovereign implementer
 
 **The question.** Can this dev project dogfood the method's own plugin?

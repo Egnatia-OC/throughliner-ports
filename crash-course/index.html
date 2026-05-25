@@ -692,7 +692,7 @@
         <li><strong>Sorts new ideas</strong> &mdash; classifies them as <em>Suggestions</em> (in scope) or <em>Discoveries</em> (out of scope, queued for later).</li>
         <li><strong>Edits BACKLOG directly</strong> &mdash; records everything in the right place.</li>
       </ol>
-      <p>Source-of-truth doc edits (like UX.md changes) happen by hand &mdash; you apply proposed edits, remove resolved batches, reorganise priorities.</p>
+      <p>Source-of-truth docs (like UX.md) are directly editable by Claude during planning &mdash; no ceremony needed. You remove resolved batches and reorganise priorities.</p>
 
       <h2 id="build-sessions">Build sessions</h2>
       <p>Build sessions ship engineering work. Three slash commands drive the process:</p>
@@ -776,7 +776,7 @@
       </div>
 
       <h2 id="additional-sot">Additional source-of-truth docs</h2>
-      <p>Projects can declare extra locked docs &mdash; things like <code>SYSTEM-PROMPT.md</code>, <code>COPY.md</code>, or <code>PATTERNS.md</code>. Same locking rules as UX.md: Claude reads but can't edit.</p>
+      <p>Projects can declare extra source-of-truth docs &mdash; things like <code>SYSTEM-PROMPT.md</code>, <code>COPY.md</code>, or <code>PATTERNS.md</code>. Same phase-aware rules as UX.md: editable during planning, locked during builds.</p>
     </section>
 
     <!-- ════════════════════════════════════════════ -->
@@ -844,7 +844,7 @@
         <li><strong>Core functionalities.</strong> Three to five features with rationale lines.</li>
         <li><strong>First batch sketch.</strong> The smallest end-to-end buildable thing.</li>
       </ol>
-      <p>Answers land as <code>[PROPOSED EDIT PENDING]</code> blocks in the spine docs. You apply them to UX.md by hand, then seed the first build batch.</p>
+      <p>Claude writes answers directly to UX.md (docs are open during setup). Then you seed the first build batch.</p>
 
       <h2 id="managing">Managing the plugin</h2>
       <p>Once installed, the plugin fires in every folder. Here's how to control it.</p>
@@ -897,7 +897,7 @@
         <h3>4. First batch sketch</h3>
         <p>The smallest end-to-end buildable thing. For Taskflow: the one-day-at-a-time view.</p>
       </div>
-      <p>Answers land as <code>[PROPOSED EDIT PENDING]</code> blocks. You apply them to UX.md, seed the first build batch, and you're ready.</p>
+      <p>Claude writes answers directly to UX.md (docs are open during setup). You seed the first build batch, and you're ready.</p>
 
       <h2 id="risk-accepted">Risk accepted in action</h2>
       <p>Taskflow's <strong>One-day-at-a-time view</strong> entry in UX.md ends with a <em>Risk accepted</em> line explaining why there's deliberately no week view. This isn't a TODO or a compromise &mdash; it's a recorded decision that protects against re-litigation six months later.</p>
@@ -1091,23 +1091,27 @@
       </div>
       <p>All rows must reach <code>Confirmed Explicitly: Yes</code> before the next build can start.</p>
 
-      <h2 id="editing-surfaces">Editing surfaces</h2>
-      <p>Who can edit what:</p>
+      <h2 id="editing-surfaces">Editing surfaces &mdash; phase-aware</h2>
+      <p>Permissions flip based on the project phase:</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Document</th><th>Claude's access</th></tr></thead>
+          <thead><tr><th>Document</th><th>Planning phase</th><th>Build phase</th></tr></thead>
           <tbody>
-            <tr><td>UX.md</td><td><strong>Read-only</strong></td></tr>
-            <tr><td>Additional source-of-truth docs</td><td><strong>Read-only</strong></td></tr>
-            <tr><td>BACKLOG/</td><td>Read/write</td></tr>
-            <tr><td>MANIFEST.md</td><td>Read/write</td></tr>
-            <tr><td>TEST-LOG.md</td><td>Read/write</td></tr>
-            <tr><td>CLAUDE.md</td><td>Read/write</td></tr>
+            <tr><td>UX.md</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>TEST-LOG.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>Source code</td><td><strong>Locked</strong></td><td>Batch file list only</td></tr>
+            <tr><td>research/ files</td><td>Read/write</td><td>Read/write</td></tr>
           </tbody>
         </table>
       </div>
-      <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs.</p>
-      <p><strong>Proposed edits:</strong> When Claude needs to suggest changes to a locked doc, it writes <code>[PROPOSED EDIT PENDING]</code> blocks in the doc's Proposed edits section. You review and apply them by hand.</p>
+      <p><strong>Phase detection:</strong> Planning = no active batch. Build = <code>Status: active</code> batch present.</p>
+      <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony.</p>
+      <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You apply them next planning session.</p>
+      <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits regardless of phase.</p>
 
       <h2 id="permission-modes">Permission modes</h2>
       <p>Claude Code has its own permission system (Ask/Accept/Plan/Auto/Bypass). The plugin's PreToolUse hooks are a separate layer &mdash; they fire in <em>every</em> mode, including Bypass.</p>

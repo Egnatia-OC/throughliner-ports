@@ -67,27 +67,31 @@
     </section>
 
     <section data-source="manual:editing-surfaces" data-transform="adapted">
-      <h2>Editing surfaces</h2>
-      <p>Who can edit what:</p>
+      <h2>Editing surfaces &mdash; phase-aware</h2>
+      <p>Permissions flip based on the project phase:</p>
 
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Document</th><th>Claude's access</th></tr>
+            <tr><th>Document</th><th>Planning phase</th><th>Build phase</th></tr>
           </thead>
           <tbody>
-            <tr><td>UX.md</td><td><strong>Read-only</strong></td></tr>
-            <tr><td>Additional source-of-truth docs</td><td><strong>Read-only</strong></td></tr>
-            <tr><td>BACKLOG/</td><td>Read/write</td></tr>
-            <tr><td>MANIFEST.md</td><td>Read/write</td></tr>
-            <tr><td>TEST-LOG.md</td><td>Read/write</td></tr>
-            <tr><td>CLAUDE.md</td><td>Read/write</td></tr>
+            <tr><td>UX.md</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>TEST-LOG.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>Source code</td><td><strong>Locked</strong></td><td>Batch file list only</td></tr>
+            <tr><td>research/ files</td><td>Read/write</td><td>Read/write</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs.</p>
-      <p><strong>Proposed edits:</strong> When Claude needs to suggest changes to a locked doc, it writes <code>[PROPOSED EDIT PENDING]</code> blocks in the doc's Proposed edits section. You review and apply them by hand.</p>
+      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by before-build).</p>
+      <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony needed.</p>
+      <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You review and apply them next planning session.</p>
+      <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs regardless of phase.</p>
     </section>
 
     <section data-source="manual:permissions" data-transform="adapted">

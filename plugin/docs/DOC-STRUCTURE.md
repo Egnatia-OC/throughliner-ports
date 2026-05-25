@@ -11,7 +11,7 @@ Method terms defined in `VOCABULARY.md` (sibling). Each procedure doc's opening 
 Some projects need an extra source-of-truth doc the spine docs don't cover. Common examples: `SYSTEM-PROMPT.md` (Claude/MCP projects), `COPY.md` (user-facing text is the deliverable), `PATTERNS.md` (coding conventions), `API.md` (endpoint/payload specs). Not a required set — create as needed.
 
 Same structural rules as `UX.md`:
-- **Read-only in Claude Code.** See `universal-behaviour.md` → *Editing surfaces*.
+- **Phase-aware editing.** Directly editable during planning; locked during build (with `[PROPOSED EDIT PENDING]` carve-out). See `universal-behaviour.md` → *Editing surfaces — phase-aware*.
 - **No placeholders.** Source-of-truth docs describe decided behaviour. Open-question status lives in BACKLOG only.
 - **Intent level, not implementation.**
 - **Planning answers** for the additional doc go into *it*, not `UX.md`.
@@ -236,4 +236,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 66.*
+*No-code method — Version 67.*

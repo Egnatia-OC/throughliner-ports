@@ -13,10 +13,11 @@ Runs seven checks on Edit / Write / MultiEdit calls:
   (7) Project-boundary check (V56) — blocks writes targeting paths outside
       the project root.
 
-  (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs) —
-      locked docs are UX.md plus additional source-of-truth docs in the
-      path block. Two carve-outs: V38 footer-only edits, V45 proposed-edits
-      section edits.
+  (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs,
+      V67 phase-aware) — during build phase, locked docs are UX.md plus
+      additional source-of-truth docs in the path block. Two carve-outs:
+      V38 footer-only edits, V45 proposed-edits section edits. During
+      planning phase, source-of-truth docs are directly editable.
 
   (2) Serves-line check (V22, V54) — validates `Serves <DOC>: <entry>.`
       lines in BACKLOG edits against the named doc's entries.
@@ -26,8 +27,10 @@ Runs seven checks on Edit / Write / MultiEdit calls:
       from the previous batch. Originally gated Task→batch-executor; V66
       moved it to the writing-tools path after subagent removal.
 
-  (3) Batch file-list boundary check (V25) — blocks edits on files not on
-      the active batch's Files: list. Open mode when no batch is active.
+  (3) Batch file-list boundary check (V25, V67 phase-aware) — during build
+      phase, blocks edits on files not on the active batch's Files: list.
+      During planning phase, blocks edits to source-code files (anything
+      not a path-block doc, CLAUDE.md, or research/ file).
 
   (6) Read-before-edit gate (V39) — blocks first edit on MANIFEST-pathed
       files until Claude has the MANIFEST entry and UX context in view.
@@ -976,6 +979,109 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
     return None
 
 
+# --- V67 phase-detection helpers ---
+
+
+def detect_phase(project_root):
+    """Determine the project's current phase from the BACKLOG batch status.
+
+    Returns "build" if the top batch has Status: active. Returns "planning"
+    otherwise (no batch, queued batch, or BACKLOG unreadable).
+
+    Phase drives two permission flips:
+      - Planning: source-of-truth docs (UX.md, additional) are directly
+        editable; source code is locked.
+      - Build: source-of-truth docs are locked (with carve-outs); batch
+        file list is open.
+    """
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None or not backlog_path.exists():
+        return "planning"
+    batch = run_parser(backlog_path)
+    if not isinstance(batch, dict) or not batch:
+        return "planning"
+    status = batch.get("status", "queued")
+    if status == "active":
+        return "build"
+    return "planning"
+
+
+def is_path_block_doc(target_path, project_root):
+    """True if target_path resolves to any entry in CLAUDE.md's path block,
+    or is CLAUDE.md itself. Used during planning phase to identify method-
+    managed docs that remain editable."""
+    target_str = str(target_path)
+    claude_md_path = (project_root / "CLAUDE.md").resolve()
+    if target_str == str(claude_md_path):
+        return True
+    text = safe_read_text(project_root / "CLAUDE.md")
+    if text is None:
+        return False
+    path_block = extract_path_block(text)
+    if not path_block:
+        return False
+    for logical_name, relative_path in path_block.items():
+        if not isinstance(relative_path, str) or not relative_path:
+            continue
+        try:
+            resolved = (project_root / relative_path).resolve()
+        except OSError:
+            continue
+        if target_str == str(resolved):
+            return True
+        if relative_path.endswith("/") or relative_path.upper().endswith("INDEX.MD"):
+            parent = resolved.parent if relative_path.upper().endswith("INDEX.MD") else resolved
+            try:
+                target_path.relative_to(parent)
+                return True
+            except ValueError:
+                continue
+    return False
+
+
+def is_research_file(target_path, project_root):
+    """True if target_path is inside the project's research/ directory."""
+    research_dir = (project_root / "research").resolve()
+    try:
+        target_path.relative_to(research_dir)
+        return True
+    except ValueError:
+        return False
+
+
+def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
+    """Deny message when source code is edited during planning phase."""
+    return (
+        f"[No-code method] BLOCKED: `{target_path}` is a source-code file "
+        "and cannot be edited during the planning phase. Source code is only "
+        "editable during a build, via the batch's `Files:` list.\n\n"
+        "What to do: if you're planning a change to this file, describe it "
+        "in a build batch in `BACKLOG.md` — it will become editable once "
+        "the batch is activated by before-build. If you need to edit "
+        "project docs (UX.md, BACKLOG, MANIFEST, etc.), those are open "
+        "during planning."
+        + _mode_suffix(permission_mode)
+    )
+
+
+def check_planning_phase_source_lock(project_root, target_path,
+                                     permission_mode=""):
+    """V67: during planning phase, block edits to source-code files.
+
+    Source code = anything not a path-block doc, not CLAUDE.md, and not
+    inside research/. Returns a deny-reason string if the edit should be
+    blocked, None to allow.
+
+    Only called when phase == "planning". BACKLOG and MANIFEST exemptions
+    are handled by the caller (check_batch_file_list) before reaching here,
+    but is_path_block_doc covers them too as a safety net."""
+    if is_path_block_doc(target_path, project_root):
+        return None
+    if is_research_file(target_path, project_root):
+        return None
+    return make_planning_phase_source_lock_reason(target_path, permission_mode)
+
+
 # --- V56 project-boundary check helpers ---
 
 
@@ -1143,16 +1249,23 @@ def main() -> int:
             )
         )
 
-    locked_map = build_locked_map(project_root)
-    logical_name = locked_map.get(str(target_path)) if locked_map else None
-    if logical_name:
-        # V38: narrow carve-out — footer-only edits are metadata, not
-        # content, and don't need [PROPOSED EDIT PENDING] routing.
-        # V45: proposed-edits section carve-out — edits within the
-        # ## Proposed edits pending section are allowed.
-        if (not is_footer_only_edit(tool_name, tool_input)
-                and not is_proposed_edits_section_edit(tool_name, tool_input, target_path)):
-            return emit_deny(make_reason(logical_name, permission_mode))
+    # V67: detect project phase for permission flips.
+    phase = detect_phase(project_root)
+
+    # Check (1): locked source-of-truth doc enforcement.
+    # V67: only enforced during build phase. During planning, source-of-truth
+    # docs (UX.md, additional docs) are directly editable.
+    if phase == "build":
+        locked_map = build_locked_map(project_root)
+        logical_name = locked_map.get(str(target_path)) if locked_map else None
+        if logical_name:
+            # V38: narrow carve-out — footer-only edits are metadata, not
+            # content, and don't need [PROPOSED EDIT PENDING] routing.
+            # V45: proposed-edits section carve-out — edits within the
+            # ## Proposed edits pending section are allowed.
+            if (not is_footer_only_edit(tool_name, tool_input)
+                    and not is_proposed_edits_section_edit(tool_name, tool_input, target_path)):
+                return emit_deny(make_reason(logical_name, permission_mode))
 
     # V22: Serves-line check fires on BACKLOG.md edits whose new content
     # contains one or more `Serves UX.md: <entry>.` lines. Anywhere the
@@ -1167,28 +1280,40 @@ def main() -> int:
     # (active batch with unticked files) and TEST-LOG has unconfirmed rows
     # from the previous batch, block file edits. Reframed in V66: originally
     # gated Task→batch-executor; now gates build-phase file edits directly.
-    gate_deny_reason = check_test_confirmation_gate(project_root)
-    if gate_deny_reason:
-        return emit_deny(gate_deny_reason)
+    # V67: only fires during build phase.
+    if phase == "build":
+        gate_deny_reason = check_test_confirmation_gate(project_root)
+        if gate_deny_reason:
+            return emit_deny(gate_deny_reason)
 
-    # V25: batch file-list boundary check. When a top unticked build batch
-    # exists in BACKLOG.md, deny any edit whose target isn't on the batch's
-    # `Files:` list (with BACKLOG.md and MANIFEST.md exempt; open mode when
-    # no batch is active).
-    boundary_deny_reason = check_batch_file_list(project_root, target_path,
-                                                  permission_mode)
-    if boundary_deny_reason:
-        return emit_deny(boundary_deny_reason)
+    # V25/V67: batch file-list boundary check — phase-aware.
+    # Build phase: deny any edit whose target isn't on the batch's Files:
+    # list (with BACKLOG.md and MANIFEST.md exempt).
+    # Planning phase: deny edits to source-code files (anything not a
+    # path-block doc, CLAUDE.md, or research/ file).
+    if phase == "build":
+        boundary_deny_reason = check_batch_file_list(project_root, target_path,
+                                                      permission_mode)
+        if boundary_deny_reason:
+            return emit_deny(boundary_deny_reason)
+    else:
+        planning_deny = check_planning_phase_source_lock(
+            project_root, target_path, permission_mode
+        )
+        if planning_deny:
+            return emit_deny(planning_deny)
 
     # V39: read-before-edit gate. If the target file is named in a MANIFEST
     # entry's (path) field and the session transcript doesn't already have a
     # prior block-once deny for this file, deny with MANIFEST + UX context
     # inlined. The marker line `BLOCKED [V39 read-before-edit]: <abs path>`
     # in the deny reason is what subsequent transcript scans match on, so the
-    # retry succeeds.
-    v39_deny_reason = check_read_before_edit(project_root, target_path, data)
-    if v39_deny_reason:
-        return emit_deny(v39_deny_reason)
+    # retry succeeds. V67: only fires during build phase (planning doesn't
+    # edit source code, so the gate is moot).
+    if phase == "build":
+        v39_deny_reason = check_read_before_edit(project_root, target_path, data)
+        if v39_deny_reason:
+            return emit_deny(v39_deny_reason)
 
     return emit_allow()
 

@@ -118,12 +118,12 @@ class TestV74SessionOpenStatus:
         assert "Mandatory" in ctx
 
     def test_batch_counts_folder_mode(self, adopted_folder):
-        """Folder mode: 1 queued, 1 parked (shipped excluded)."""
+        """Folder mode: 1 active, 1 parked (shipped excluded)."""
         code, parsed, _ = run_hook(
             "session_start.py", {"cwd": str(adopted_folder)}
         )
         ctx = parsed["hookSpecificOutput"]["additionalContext"]
-        assert "1 queued" in ctx
+        assert "1 active" in ctx
         assert "1 parked" in ctx
 
     def test_next_batch_details_folder_mode(self, adopted_folder):

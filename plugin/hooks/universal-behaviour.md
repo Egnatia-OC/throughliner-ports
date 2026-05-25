@@ -123,23 +123,34 @@ The `Handoff notes:` block is consumed by the next session — after-build strip
 
 **Why handoff matters.** Long sessions cost more tokens and adherence degrades as context grows. A fresh session re-reads method docs with full adherence. PreCompact blocks compaction during active builds to give the handoff option.
 
-## Editing surfaces
+## Editing surfaces — phase-aware (V67)
 
-Some docs are read-only to Claude, edited only by the user during planning. Flag rewording suggestions in chat. Never edit them.
+Editing permissions flip based on the project's current phase. Phase detection: if the top BACKLOG build batch has `Status: active`, the project is in **build phase**. Otherwise it's in **planning phase**.
 
-**Read-only:** `UX.md`, any additional source-of-truth doc in `CLAUDE.md`'s path block.
-**Read/write:** `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+### Planning phase
+
+Source-of-truth docs are directly editable by Claude. Source code is locked.
+
+**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`, `research/` files.
+**Locked:** Source-code files (anything not listed above). PreToolUse denies with a planning-phase message pointing at the build-batch mechanism.
+
+No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits source-of-truth docs directly.
+
+### Build phase
+
+Source-of-truth docs are locked. Source code on the batch file list is open.
+
+**Editable:** Files on the active batch's `Files:` list, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Locked:** `UX.md`, additional source-of-truth docs. PreToolUse denies with a build-phase message pointing at the `[PROPOSED EDIT PENDING]` mechanism.
 
 **Footer exception.** The `*No-code method — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
 
 For `BACKLOG.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
 
-**The `[PROPOSED EDIT PENDING]` mechanism.** When Claude would write content into a read-only doc, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
-
-**Planning-time preview convention.** During planning/`/setup`, when Claude has proposed content for a read-only doc: preview the complete section in chat labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On approval, write the `[PROPOSED EDIT PENDING]` block to the destination doc's `## Proposed edits pending` section, specifying **replace** or **add**, and prompt the user to apply it now. When confirmed, remove the block. This doesn't bypass the lock — PreToolUse still prevents direct main-body edits.
+**The `[PROPOSED EDIT PENDING]` mechanism (build phase only).** When Claude would write content into a locked source-of-truth doc during a build, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 66.*
+*No-code method — Version 67.*

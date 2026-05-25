@@ -269,7 +269,7 @@ class TestFindTopUntickedBatchFromPath:
         result = pb.find_top_unticked_batch_from_path(index_path)
         assert result != {}
         assert result["batch_heading"] == "Add settings screen"
-        assert result["status"] == "queued"
+        assert result["status"] == "active"
 
     def test_folder_mode_status_in_output(self):
         index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
