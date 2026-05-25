@@ -33,6 +33,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
+- **Read proxies first, dip for detail.** If `.proxies/` exists, read the proxy file before reading the full source doc. Use the proxy's line numbers (`L<N>`) to read only the relevant section of the full doc via offset/limit. If `.proxies/` is missing, fall back to reading the full doc directly. Format spec: `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
+  *Load-bearing for: context-window efficiency — full docs burn context; proxies give enough to target reads.*
+
 - **Run system commands yourself.** When a task requires a shell command (setting environment variables, running build tools, killing processes, etc.), execute it directly — don't ask the user to open a terminal and type it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands that require credentials or elevated permissions the user must provide.
   *Load-bearing for: build sessions — Claude asking users to run commands breaks flow and shifts work onto the non-coder.*
 
@@ -153,4 +156,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 67.*
+*No-code method — Version 68.*

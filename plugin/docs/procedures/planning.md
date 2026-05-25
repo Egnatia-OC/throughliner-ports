@@ -53,6 +53,7 @@ After loading state, perform in order:
 9. **[SILENT] Edit BACKLOG directly.** Never describe edits for user to apply.
 10. **[SILENT] Promote Discoveries** the user hasn't dropped into planning batches.
 11. **[BRIEF] Recap.** What changed in BACKLOG + Suggestions/Discoveries lists. Name deferred decisions explicitly.
+12. **[SILENT] Regenerate proxies.** If `.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*. Skip if no `.proxies/` directory.
 
 ## Close previous build's test session (V27)
 
@@ -215,4 +216,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 67.*
+*No-code method — Version 68.*

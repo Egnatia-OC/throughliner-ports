@@ -42,6 +42,8 @@ After answers:
 2. Run `write`. Surface files list.
 3. Apply answers — edit UX.md (PreToolUse exempts scaffold paths during transition). Seed BACKLOG batch (folder mode: create per-batch file + INDEX.md reference).
 
+After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
+
 **Recap:** "Adopted (case 1). Created [docs list]. User's answers folded into UX.md and BACKLOG."
 
 ---
@@ -56,6 +58,8 @@ Substantial work but no CLAUDE.md.
 1. Glob check for spine-doc filenames in subdirs.
 2. Run `check` (expect `ready: true`), then `write`.
 3. Walk four new-project questions. User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session.
+
+After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
 
 **Recap:** "Adopted (case 2). Created [docs] alongside existing code. [Which questions answered/pending.]"
 
@@ -130,4 +134,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 67.*
+*No-code method — Version 68.*

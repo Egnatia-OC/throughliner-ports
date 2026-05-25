@@ -86,6 +86,9 @@ BACKLOG_INDEX_DEST = "INDEX.md"
 BUILD_LOG_INDEX_TEMPLATE = "build-log/INDEX-TEMPLATE.md"
 BUILD_LOG_INDEX_DEST = "INDEX.md"
 
+# Proxy templates: .proxies/<name>.md → .proxies/<name>.md (same names).
+PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md")
+
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */setup five-case branching* wording for stability in the
 # setup procedure dialogue.
@@ -200,6 +203,9 @@ def cmd_write(target_dir: Path) -> int:
     build_log_index_tpl = src_dir / BUILD_LOG_INDEX_TEMPLATE
     if not build_log_index_tpl.is_file():
         missing.append(BUILD_LOG_INDEX_TEMPLATE)
+    for proxy_name in PROXY_TEMPLATES:
+        if not (src_dir / ".proxies" / proxy_name).is_file():
+            missing.append(f".proxies/{proxy_name}")
     if missing:
         return emit({
             "written": False,
@@ -229,10 +235,19 @@ def cmd_write(target_dir: Path) -> int:
     research_dir = target_dir / "research"
     research_dir.mkdir(exist_ok=True)
 
+    proxies_dir = target_dir / ".proxies"
+    proxies_dir.mkdir(exist_ok=True)
+    proxy_src = src_dir / ".proxies"
+    for proxy_name in PROXY_TEMPLATES:
+        proxy_tpl = proxy_src / proxy_name
+        if proxy_tpl.is_file():
+            shutil.copyfile(proxy_tpl, proxies_dir / proxy_name)
+            written.append(f".proxies/{proxy_name}")
+
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/"],
+        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/", ".proxies/"],
         "target_path": str(target_dir),
     })
 

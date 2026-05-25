@@ -150,6 +150,65 @@ After-build prepends one line per build.
 
 `research/<topic>.md`. Created by `/setup`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
 
+## Proxy files (.proxies/)
+
+Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `.proxies/` at project root. Created by `/setup`; regenerated during planning after editing source docs.
+
+**Missing proxies.** If `.proxies/` is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
+
+**File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `test-log.md`, `research.md`.
+
+**Format — all proxies:**
+
+```markdown
+<!-- proxy | source: <relative-path> | generated: YYYY-MM-DD -->
+
+# <title>
+
+<state summary — key metrics, 2–4 lines>
+
+## Entries
+
+<one line per entry, format varies by type>
+```
+
+**HTML comment header.** `source` is the path relative to project root. `generated` is the date the proxy was last written.
+
+**State summary.** Enough for Claude to decide whether to dip into the full doc. Counts, status breakdowns, date ranges.
+
+**Entries section.** One line per entry. `L<N>` = starting line number in the source doc (for offset/limit reads).
+
+### UX proxy (ux.md)
+
+Source: `UX.md`. State summary: project context (one sentence), principle count, functionality count.
+
+Entries: one line per UX principle, then one line per functionality. Format: `- L<N> **<name>** — <one-phrase summary>`.
+
+### MANIFEST proxy (manifest.md)
+
+Source: `MANIFEST.md`. State summary: entry count.
+
+Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description omitted — dip for detail.
+
+### TEST-LOG proxy (test-log.md)
+
+Source: `TEST-LOG.md`. State summary: total rows, pass/fail/skipped/pending counts, unconfirmed count, date range.
+
+Entries: unconfirmed rows only. Format: `- #<NNN> <component> — <test description> [<status or blank>]`. Confirmed rows omitted — summary counts are sufficient.
+
+### Research index proxy (research.md)
+
+Source: `research/` directory (not a single file). State summary: file count.
+
+Entries: one line per file. Format: `- <filename> — <first heading or one-phrase summary>`. No line numbers.
+
+### Regeneration rules
+
+Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date.
+
+- **`/setup`** generates initial proxies after scaffolding.
+- **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
+
 ## Proposed edits pending sections
 
 Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Proposed edits pending` at its bottom — where Claude queues content it can't write directly.
@@ -236,4 +295,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 67.*
+*No-code method — Version 68.*
