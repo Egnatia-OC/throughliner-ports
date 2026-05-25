@@ -477,7 +477,11 @@ def identify_previous_session(project_root):
         if build_log_dir.exists():
             candidate = build_log_dir
         else:
-            return None, "missing"
+            build_log_dir = Path(project_root) / "_method" / "build-log" / "INDEX.md"
+            if build_log_dir.exists():
+                candidate = build_log_dir
+            else:
+                return None, "missing"
     text = safe_read_text(candidate)
     if text is None:
         return None, "unparseable"

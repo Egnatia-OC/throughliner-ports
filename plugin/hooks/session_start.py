@@ -105,18 +105,20 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # doc's footer against the plugin's expected method version.
 PLUGIN_METHOD_VERSION = 72
 
-# Spine doc filenames the hook scans for at the project root when CLAUDE.md
-# is missing — to distinguish tier 1 from tier 2. Detection is tightened by
+# Spine doc filenames the hook scans for when CLAUDE.md is missing — to
+# distinguish tier 1 from tier 2. Checked at both project root (legacy
+# layout) and inside _method/ (0087+ layout). Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
-# TEST-LOG.md added in V26 (spine-doc promotion) / V27 (detection wiring).
 SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 
-# Folder-mode spine doc paths (relative to project root). Checked in addition
-# to SPINE_FILENAMES for tier 2 detection.
+# Folder-mode spine doc paths (relative to each scan root — project root
+# and _method/). Checked in addition to SPINE_FILENAMES for tier 2 detection.
 SPINE_FOLDER_PATHS = (
     Path("BACKLOG") / "INDEX.md",
     Path("build-log") / "INDEX.md",
 )
+
+METHOD_DIR = "_method"
 
 # CLAUDE.md's path block is the first fenced JSON code block in the file.
 # Same pattern as pre_tool_use.py — see V18's path block format spec.
@@ -276,23 +278,26 @@ def is_template_state(text: str) -> bool:
 
 
 def find_method_spine_docs(project_root: Path):
-    """Return a list of spine doc paths at the project root that carry the
-    method footer. Tightens tier 2 detection — an unrelated BACKLOG.md from
-    some other context will not falsely trigger method-aware behaviour.
+    """Return a list of spine doc paths that carry the method footer.
+    Tightens tier 2 detection — an unrelated BACKLOG.md from some other
+    context will not falsely trigger method-aware behaviour.
 
-    Checks both single-file spine docs (UX.md, BACKLOG.md, etc.) and
-    folder-mode paths (BACKLOG/INDEX.md)."""
+    Checks both the _method/ subdirectory (0087+ layout) and the project
+    root (legacy layout). Also checks folder-mode paths (BACKLOG/INDEX.md)
+    at both locations."""
     found = []
-    for name in SPINE_FILENAMES:
-        candidate = project_root / name
-        text = safe_read_text(candidate)
-        if text is not None and has_method_footer(text):
-            found.append(candidate)
-    for rel_path in SPINE_FOLDER_PATHS:
-        candidate = project_root / rel_path
-        text = safe_read_text(candidate)
-        if text is not None and has_method_footer(text):
-            found.append(candidate)
+    scan_roots = [project_root / METHOD_DIR, project_root]
+    for scan_root in scan_roots:
+        for name in SPINE_FILENAMES:
+            candidate = scan_root / name
+            text = safe_read_text(candidate)
+            if text is not None and has_method_footer(text):
+                found.append(candidate)
+        for rel_path in SPINE_FOLDER_PATHS:
+            candidate = scan_root / rel_path
+            text = safe_read_text(candidate)
+            if text is not None and has_method_footer(text):
+                found.append(candidate)
     return found
 
 

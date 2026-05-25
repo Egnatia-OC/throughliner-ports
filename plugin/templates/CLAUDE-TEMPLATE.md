@@ -17,11 +17,11 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
 
 ```json
 {
-  "UX.md": "UX.md",
-  "BACKLOG.md": "BACKLOG/INDEX.md",
-  "BUILD-LOG.md": "build-log/INDEX.md",
-  "MANIFEST.md": "MANIFEST.md",
-  "TEST-LOG.md": "TEST-LOG.md"
+  "UX.md": "_method/UX.md",
+  "BACKLOG.md": "_method/BACKLOG/INDEX.md",
+  "BUILD-LOG.md": "_method/build-log/INDEX.md",
+  "MANIFEST.md": "_method/MANIFEST.md",
+  "TEST-LOG.md": "_method/TEST-LOG.md"
 }
 ```
 
@@ -41,4 +41,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 72.*
+*No-code method — Version 73.*

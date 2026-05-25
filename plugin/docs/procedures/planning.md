@@ -53,7 +53,7 @@ After loading state, perform in order:
 9. **[SILENT] Edit BACKLOG directly.** Never describe edits for user to apply.
 10. **[SILENT] Promote Discoveries** the user hasn't dropped into planning batches.
 11. **[BRIEF] Recap.** What changed in BACKLOG + Suggestions/Discoveries lists. Name deferred decisions explicitly.
-12. **[SILENT] Regenerate proxies.** If `.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*. Skip if no `.proxies/` directory.
+12. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
 ## Close previous build's test session (V27)
 
@@ -121,7 +121,7 @@ Catches in-file changes the other checks miss — manual edits that leave no MAN
 
 **Expected (no confirmation needed):**
 - Files in most recent batch's `Files:` sub-section.
-- Method writable surface (planning phase): all path-block docs (`UX.md`, `MANIFEST.md`, additional source-of-truth docs), `build-log/`, `BUILD-LOG.md`, `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`, `research/` files.
+- Method writable surface (planning phase): all path-block docs (`UX.md`, `MANIFEST.md`, additional source-of-truth docs), `build-log/`, `BUILD-LOG.md`, `TEST-LOG.md`, BACKLOG files, `CLAUDE.md`, `_method/research/` files.
 
 Everything else → confirmation protocol.
 
@@ -216,4 +216,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 72.*
+*No-code method — Version 73.*

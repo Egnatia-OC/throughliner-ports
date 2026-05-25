@@ -28,7 +28,7 @@ Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": 
 
 No CLAUDE.md, no substantial work.
 
-**Open:** "Fresh folder. I'll ask four questions, then create starter docs (UX.md, BACKLOG/, build-log/, MANIFEST.md, CLAUDE.md, TEST-LOG.md) plus `planning/drafts/`, `research/`, and `research/search-queries/`."
+**Open:** "Fresh folder. I'll ask four questions, then create starter docs inside `_method/` (UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
 
 **Four questions (one per message, wait for each):**
 
@@ -46,7 +46,7 @@ After answers:
    - **Q3 →** UX.md Functionalities section. Write every functionality with its experience description and rationale.
    - **Q4 →** Seed BACKLOG batch (folder mode: create per-batch file with `Status: queued` line + INDEX.md reference).
 
-After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
+After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
 **Recap:** "Adopted (case 1). Created [docs list]. User's answers folded into UX.md and BACKLOG."
 
@@ -63,7 +63,7 @@ Substantial work but no CLAUDE.md.
 2. Run `check` (expect `ready: true`), then `write`.
 3. Walk four new-project questions (same as Case 1). User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session. Apply answered questions using the same Q1–Q4 mapping as Case 1 step 3.
 
-After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
+After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
 **Recap:** "Adopted (case 2). Created [docs] alongside existing code. [Which questions answered/pending.]"
 
@@ -140,4 +140,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 72.*
+*No-code method — Version 73.*

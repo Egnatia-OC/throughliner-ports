@@ -102,18 +102,19 @@ Only loaded for that session. Close and start without the flag.
 
 ## Guardrail docs
 
-Six items sit in the project root after `/setup`, plus two folders:
+After `/setup`, CLAUDE.md sits at the project root and everything else lives inside `_method/`:
 
-- **CLAUDE.md** — entry point. Product overview (what the product is, who it's for, what friction it solves, milestones) plus JSON path block telling Claude where docs live. Read every session.
-- **UX.md** — user-facing app description. Every entry corresponds to something experienceable + a "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains by hand during planning.
-- **BACKLOG/** — deferred work. `INDEX.md` carries four sections: Red flags, Planning batches, Build batches (reference list), Open questions. Each build batch lives in its own file (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. Reordering = moving lines in INDEX.md, not renaming files.
-- **MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each entry: name + file path + description. Maintained by Claude during builds. The path field anchors a read-before-edit gate.
-- **TEST-LOG.md** — row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude appends rows, runs automatable tests, leaves user-verified rows for planning read-back. Rows pruned when their component leaves MANIFEST.
-- **build-log/** — per-build narrative files + INDEX.md. What shipped / Decisions / Pivots / Carried forward / Performance. Queryable via grep across builds.
+- **CLAUDE.md** (project root) — entry point. Product overview (what the product is, who it's for, what friction it solves, milestones) plus JSON path block telling Claude where docs live. Read every session.
+- **_method/UX.md** — user-facing app description. Every entry corresponds to something experienceable + a "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains by hand during planning.
+- **_method/BACKLOG/** — deferred work. `INDEX.md` carries four sections: Red flags, Planning batches, Build batches (reference list), Open questions. Each build batch lives in its own file (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. Reordering = moving lines in INDEX.md, not renaming files.
+- **_method/MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each entry: name + file path + description. Maintained by Claude during builds. The path field anchors a read-before-edit gate.
+- **_method/TEST-LOG.md** — row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude appends rows, runs automatable tests, leaves user-verified rows for planning read-back. Rows pruned when their component leaves MANIFEST.
+- **_method/build-log/** — per-build narrative files + INDEX.md. What shipped / Decisions / Pivots / Carried forward / Performance. Queryable via grep across builds.
 
-`/setup` also creates:
-- **planning/drafts/** — holding area for content not yet ready for a specific doc.
-- **research/** — findings from Claude's research. Zero maintenance. Persists for future sessions.
+`/setup` also creates inside `_method/`:
+- **_method/planning/drafts/** — holding area for content not yet ready for a specific doc.
+- **_method/research/** — findings from Claude's research. Zero maintenance. Persists for future sessions.
+- **_method/proxies/** — lightweight index files summarizing source-of-truth docs for context efficiency.
 
 Projects can declare additional source-of-truth docs (e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`) — same locking rules as UX.md.
 
@@ -371,4 +372,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 72.*
+*No-code method — Version 73.*

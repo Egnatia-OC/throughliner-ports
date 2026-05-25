@@ -57,36 +57,45 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # The recursive scan looks for these anywhere under cwd.
 DESTINATION_FILENAMES = (
     "CLAUDE.md",
+)
+
+# Filenames expected inside _method/ (not at project root).
+METHOD_DIR_FILENAMES = (
     "MANIFEST.md",
     "UX.md",
     "TEST-LOG.md",
 )
 
-# Directory names that conflict if they already exist at the project root.
-DESTINATION_DIRNAMES = (
+# Directory names that conflict if they already exist inside _method/.
+METHOD_DIR_DIRNAMES = (
     "BACKLOG",
     "build-log",
 )
 
-# Mapping: template filename (in plugin/templates/) -> destination filename
-# (in cwd root). Order is preserved for the success report.
+# The method subfolder name at project root.
+METHOD_DIR = "_method"
+
+# Mapping: template filename (in plugin/templates/) -> destination filename.
+# CLAUDE.md goes at project root; others go inside _method/.
 # BACKLOG and build-log are handled separately (folder scaffolds).
-TEMPLATE_TO_DESTINATION = (
+TEMPLATE_TO_ROOT = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
+)
+TEMPLATE_TO_METHOD_DIR = (
     ("UX-TEMPLATE.md", "UX.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
     ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
 
-# BACKLOG folder template: INDEX-TEMPLATE.md → BACKLOG/INDEX.md.
+# BACKLOG folder template: INDEX-TEMPLATE.md → _method/BACKLOG/INDEX.md.
 BACKLOG_INDEX_TEMPLATE = "BACKLOG/INDEX-TEMPLATE.md"
 BACKLOG_INDEX_DEST = "INDEX.md"
 
-# build-log folder template: INDEX-TEMPLATE.md → build-log/INDEX.md.
+# build-log folder template: INDEX-TEMPLATE.md → _method/build-log/INDEX.md.
 BUILD_LOG_INDEX_TEMPLATE = "build-log/INDEX-TEMPLATE.md"
 BUILD_LOG_INDEX_DEST = "INDEX.md"
 
-# Proxy templates: .proxies/<name>.md → .proxies/<name>.md (same names).
+# Proxy templates: .proxies/<name>.md → _method/proxies/<name>.md.
 PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md")
 
 # Human-readable case name for each case number. Mirrors V29.md's
@@ -110,31 +119,42 @@ def templates_dir() -> Path:
 
 
 def find_conflicts(target_dir: Path):
-    """Recursively scan target_dir for any file matching DESTINATION_FILENAMES,
-    any BACKLOG.md file, or any BACKLOG/ directory.
+    """Check for existing method files that would conflict with scaffolding.
+
+    Checks for CLAUDE.md at project root and method docs inside _method/.
+    Also checks for legacy root-level spine docs (pre-0087 layout).
 
     Returns a sorted list of paths relative to target_dir, as strings using
     POSIX-style separators for stable display across platforms."""
-    target_set = set(DESTINATION_FILENAMES)
-    dir_set = set(DESTINATION_DIRNAMES)
     conflicts = []
-    for path in target_dir.rglob("*"):
-        if path.is_file() and path.name in target_set:
-            try:
-                rel = path.relative_to(target_dir)
-            except ValueError:
-                rel = path
-            conflicts.append(rel.as_posix())
-        if path.is_file() and path.name == "BACKLOG.md":
-            try:
-                rel = path.relative_to(target_dir)
-            except ValueError:
-                rel = path
-            conflicts.append(rel.as_posix())
-    for dirname in dir_set:
-        candidate = target_dir / dirname
-        if candidate.is_dir():
-            conflicts.append(dirname)
+
+    # CLAUDE.md at project root
+    if (target_dir / "CLAUDE.md").is_file():
+        conflicts.append("CLAUDE.md")
+
+    method_dir = target_dir / METHOD_DIR
+    if method_dir.is_dir():
+        # Check for files inside _method/
+        for name in METHOD_DIR_FILENAMES:
+            if (method_dir / name).is_file():
+                conflicts.append(f"{METHOD_DIR}/{name}")
+        for dirname in METHOD_DIR_DIRNAMES:
+            if (method_dir / dirname).is_dir():
+                conflicts.append(f"{METHOD_DIR}/{dirname}")
+        if (method_dir / "BACKLOG.md").is_file():
+            conflicts.append(f"{METHOD_DIR}/BACKLOG.md")
+
+    # Legacy root-level spine docs (pre-0087 layout)
+    for name in METHOD_DIR_FILENAMES:
+        if (target_dir / name).is_file():
+            conflicts.append(name)
+    if (target_dir / "BACKLOG").is_dir():
+        conflicts.append("BACKLOG")
+    if (target_dir / "build-log").is_dir():
+        conflicts.append("build-log")
+    if (target_dir / "BACKLOG.md").is_file():
+        conflicts.append("BACKLOG.md")
+
     return sorted(set(conflicts))
 
 
@@ -190,13 +210,14 @@ def cmd_write(target_dir: Path) -> int:
             "expected_at": str(src_dir),
         }, exit_code=3)
 
-    # Verify every template is present before writing any of them, so we
-    # don't end up with a half-scaffolded project on a missing-template
-    # error.
     missing = [
-        tpl for tpl, _ in TEMPLATE_TO_DESTINATION
+        tpl for tpl, _ in TEMPLATE_TO_ROOT
         if not (src_dir / tpl).is_file()
     ]
+    missing.extend(
+        tpl for tpl, _ in TEMPLATE_TO_METHOD_DIR
+        if not (src_dir / tpl).is_file()
+    )
     backlog_index_tpl = src_dir / BACKLOG_INDEX_TEMPLATE
     if not backlog_index_tpl.is_file():
         missing.append(BACKLOG_INDEX_TEMPLATE)
@@ -215,50 +236,67 @@ def cmd_write(target_dir: Path) -> int:
         }, exit_code=4)
 
     project_name = target_dir.name
+    method_dir = target_dir / METHOD_DIR
+    method_dir.mkdir(exist_ok=True)
 
     written = []
-    for tpl_name, dest_name in TEMPLATE_TO_DESTINATION:
+
+    for tpl_name, dest_name in TEMPLATE_TO_ROOT:
         content = (src_dir / tpl_name).read_text(encoding="utf-8")
         content = content.replace("[Project Name]", project_name)
         (target_dir / dest_name).write_text(content, encoding="utf-8")
         written.append(dest_name)
 
-    backlog_dir = target_dir / "BACKLOG"
+    for tpl_name, dest_name in TEMPLATE_TO_METHOD_DIR:
+        content = (src_dir / tpl_name).read_text(encoding="utf-8")
+        content = content.replace("[Project Name]", project_name)
+        (method_dir / dest_name).write_text(content, encoding="utf-8")
+        written.append(f"{METHOD_DIR}/{dest_name}")
+
+    backlog_dir = method_dir / "BACKLOG"
     backlog_dir.mkdir(exist_ok=True)
     content = backlog_index_tpl.read_text(encoding="utf-8")
     content = content.replace("[Project Name]", project_name)
     (backlog_dir / BACKLOG_INDEX_DEST).write_text(content, encoding="utf-8")
-    written.append("BACKLOG/INDEX.md")
+    written.append(f"{METHOD_DIR}/BACKLOG/INDEX.md")
 
-    build_log_dir = target_dir / "build-log"
+    build_log_dir = method_dir / "build-log"
     build_log_dir.mkdir(exist_ok=True)
     content = build_log_index_tpl.read_text(encoding="utf-8")
     content = content.replace("[Project Name]", project_name)
     (build_log_dir / BUILD_LOG_INDEX_DEST).write_text(content, encoding="utf-8")
-    written.append("build-log/INDEX.md")
+    written.append(f"{METHOD_DIR}/build-log/INDEX.md")
 
-    drafts_dir = target_dir / "planning" / "drafts"
+    drafts_dir = method_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
-    research_dir = target_dir / "research"
+    research_dir = method_dir / "research"
     research_dir.mkdir(exist_ok=True)
 
     search_queries_dir = research_dir / "search-queries"
     search_queries_dir.mkdir(exist_ok=True)
 
-    proxies_dir = target_dir / ".proxies"
+    proxies_dir = method_dir / "proxies"
     proxies_dir.mkdir(exist_ok=True)
     proxy_src = src_dir / ".proxies"
     for proxy_name in PROXY_TEMPLATES:
         proxy_tpl = proxy_src / proxy_name
         if proxy_tpl.is_file():
             shutil.copyfile(proxy_tpl, proxies_dir / proxy_name)
-            written.append(f".proxies/{proxy_name}")
+            written.append(f"{METHOD_DIR}/proxies/{proxy_name}")
 
     return emit({
         "written": True,
         "files": written,
-        "directories_created": ["BACKLOG/", "build-log/", "planning/drafts/", "research/", "research/search-queries/", ".proxies/"],
+        "directories_created": [
+            f"{METHOD_DIR}/",
+            f"{METHOD_DIR}/BACKLOG/",
+            f"{METHOD_DIR}/build-log/",
+            f"{METHOD_DIR}/planning/drafts/",
+            f"{METHOD_DIR}/research/",
+            f"{METHOD_DIR}/research/search-queries/",
+            f"{METHOD_DIR}/proxies/",
+        ],
         "target_path": str(target_dir),
     })
 

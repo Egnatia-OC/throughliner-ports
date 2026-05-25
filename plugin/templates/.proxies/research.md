@@ -1,4 +1,4 @@
-<!-- proxy | source: research/ | generated: YYYY-MM-DD -->
+<!-- proxy | source: _method/research/ | generated: YYYY-MM-DD -->
 
 # research/ — proxy
 

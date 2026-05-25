@@ -1,4 +1,4 @@
-<!-- proxy | source: TEST-LOG.md | generated: YYYY-MM-DD -->
+<!-- proxy | source: _method/TEST-LOG.md | generated: YYYY-MM-DD -->
 
 # TEST-LOG.md — proxy
 

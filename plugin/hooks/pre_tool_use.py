@@ -69,23 +69,29 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # is allowed without inspection.
 WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
 
-# V29: file names /setup scaffolds at project root. When folder is
-# unadopted, Edit/Write/MultiEdit on these passes the V29 gate so /setup's
-# scaffold writes work. (Other writes are blocked.) This is the V29
-# discrimination mechanism — narrower than a runtime flag-file but
-# narrow enough that main Claude's "ignore the advisory and edit code"
-# attempts get caught.
-SCAFFOLD_NAMES = frozenset({
+# V29/V72: file names /setup scaffolds. CLAUDE.md is at project root;
+# other spine docs are inside _method/. When folder is unadopted,
+# Edit/Write/MultiEdit on these passes the V29 gate so /setup's scaffold
+# writes work. (Other writes are blocked.)
+SCAFFOLD_ROOT_NAMES = frozenset({
+    "CLAUDE.md",
+})
+
+SCAFFOLD_METHOD_DIR = "_method"
+
+SCAFFOLD_METHOD_NAMES = frozenset({
     "UX.md",
     "BACKLOG.md",
     "MANIFEST.md",
     "TEST-LOG.md",
-    "CLAUDE.md",
 })
 
-SCAFFOLD_DIRS = frozenset({
+SCAFFOLD_METHOD_DIRS = frozenset({
     "BACKLOG",
     "build-log",
+    "proxies",
+    "planning",
+    "research",
 })
 
 # Path-block keys treated as writable. Everything else in the path block —
@@ -906,21 +912,34 @@ def check_read_before_edit(project_root, target_path, hook_input):
 
 
 def is_scaffold_path(target_path, project_root):
-    """V29: True if target_path is a direct child of project_root with one
-    of the SCAFFOLD_NAMES, or a file inside a direct-child directory named
-    in SCAFFOLD_DIRS (e.g. BACKLOG/INDEX.md, BACKLOG/0001-batch.md).
+    """V29/V72: True if target_path is a scaffold path that /setup writes.
 
-    /setup's scaffolding writes land here; the adoption gate exempts these
-    paths so /setup can do its work without needing a runtime flag-file
-    mechanism. Deeper nesting (e.g. `subdir/UX.md`) doesn't qualify."""
+    CLAUDE.md is at project root. Other spine docs are inside _method/.
+    Also allows writes inside _method/'s subdirectories (BACKLOG/,
+    build-log/, proxies/, planning/, research/).
+
+    Legacy support: also allows root-level spine docs and dirs (pre-0087
+    layout) so /setup case 4 can migrate existing projects."""
     try:
         relative = Path(target_path).relative_to(project_root)
     except ValueError:
         return False
-    if len(relative.parts) == 1:
-        return relative.name in SCAFFOLD_NAMES
-    if len(relative.parts) == 2:
-        return relative.parts[0] in SCAFFOLD_DIRS
+    parts = relative.parts
+    if not parts:
+        return False
+    if len(parts) == 1:
+        return parts[0] in SCAFFOLD_ROOT_NAMES
+    if parts[0] == SCAFFOLD_METHOD_DIR:
+        if len(parts) == 2:
+            return parts[1] in SCAFFOLD_METHOD_NAMES
+        if len(parts) >= 2:
+            return parts[1] in SCAFFOLD_METHOD_DIRS
+    # Legacy root-level layout (pre-0087): allow root-level spine docs
+    # and dirs so /setup case 4 can read/migrate them.
+    if len(parts) == 1:
+        return parts[0] in SCAFFOLD_METHOD_NAMES
+    if len(parts) >= 2 and parts[0] in {"BACKLOG", "build-log"}:
+        return True
     return False
 
 
@@ -1041,13 +1060,19 @@ def is_path_block_doc(target_path, project_root):
 
 
 def is_research_file(target_path, project_root):
-    """True if target_path is inside the project's research/ directory."""
-    research_dir = (project_root / "research").resolve()
-    try:
-        target_path.relative_to(research_dir)
-        return True
-    except ValueError:
-        return False
+    """True if target_path is inside the project's research/ directory.
+    Checks both _method/research/ (0087+ layout) and root-level research/
+    (legacy layout)."""
+    for research_dir in [
+        (project_root / "_method" / "research").resolve(),
+        (project_root / "research").resolve(),
+    ]:
+        try:
+            target_path.relative_to(research_dir)
+            return True
+        except ValueError:
+            continue
+    return False
 
 
 def make_planning_phase_source_lock_reason(target_path, permission_mode=""):

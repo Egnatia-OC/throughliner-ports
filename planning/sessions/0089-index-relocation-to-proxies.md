@@ -1,8 +1,10 @@
-# 0089 — INDEX relocation to .proxies/
+# 0089 — INDEX relocation to proxies
 
 ## Goal
 
-Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.proxies/` the universal index layer for folder-based docs. BACKLOG/ and build-log/ folders keep only per-entry files. Establishes the pattern: for folder-based docs, the proxy IS the index.
+Move BACKLOG INDEX.md and build-log INDEX.md content into `_method/proxies/`, making it the universal index layer for folder-based docs. BACKLOG/ and build-log/ folders keep only per-entry files. Establishes the pattern: for folder-based docs, the proxy IS the index.
+
+> **Post-0087 note:** Consumer-side proxy directory is now `_method/proxies/` (was `.proxies/`). Template sources remain at `plugin/templates/.proxies/`. All consumer-facing paths in this scope file use `_method/proxies/`; legacy `.proxies/` fallback applies per 0087's backward-compat pattern.
 
 ## Inputs
 
@@ -17,8 +19,8 @@ Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.
 ## Outputs
 
 **Proxy files (2, replacing INDEX.md):**
-- `.proxies/backlog.md` — carries Red flags, Planning batches, Build batch references, Open questions (all four BACKLOG INDEX sections).
-- `.proxies/build-log.md` — carries the one-liner build-log index list.
+- `_method/proxies/backlog.md` — carries Red flags, Planning batches, Build batch references, Open questions (all four BACKLOG INDEX sections).
+- `_method/proxies/build-log.md` — carries the one-liner build-log index list.
 
 **Template updates:**
 - `plugin/templates/.proxies/backlog.md` — replaces `plugin/templates/BACKLOG/INDEX-TEMPLATE.md`.
@@ -29,15 +31,15 @@ Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.
 - `plugin/scripts/parse_backlog.py` — resolve BACKLOG index at `.proxies/backlog.md` (fallback to `BACKLOG/INDEX.md` for pre-proxy projects).
 
 **Procedure doc updates:**
-- `plugin/docs/procedures/after-build.md` — prepend build-log lines to `.proxies/build-log.md`. Add a proxy regeneration step: after MANIFEST update and build-log/test-log writes, regenerate all stale `.proxies/` files (UX, MANIFEST, build-log, test-log, research). Discovered 2026-05-25 ideation session — v81 shipped proxy generation for planning and setup but never added it to after-build.
-- `plugin/docs/procedures/planning.md` — read BACKLOG state from `.proxies/backlog.md`.
+- `plugin/docs/procedures/after-build.md` — prepend build-log lines to `_method/proxies/build-log.md`. Add a proxy regeneration step: after MANIFEST update and build-log/test-log writes, regenerate all stale `_method/proxies/` files (UX, MANIFEST, build-log, test-log, research). Discovered 2026-05-25 ideation session — v81 shipped proxy generation for planning and setup but never added it to after-build.
+- `plugin/docs/procedures/planning.md` — read BACKLOG state from `_method/proxies/backlog.md`.
 
 **Hook updates:**
-- `plugin/hooks/session_start.py` — find BACKLOG and build-log indexes in `.proxies/`.
-- `plugin/hooks/pre_tool_use.py` — `.proxies/` writable paths.
+- `plugin/hooks/session_start.py` — find BACKLOG and build-log indexes in `_method/proxies/`.
+- `plugin/hooks/pre_tool_use.py` — `_method/proxies/` writable paths.
 
 **Scaffold update:**
-- `plugin/skills/setup/scripts/scaffold.py` — scaffold `.proxies/backlog.md` and `.proxies/build-log.md` instead of INDEX.md files.
+- `plugin/skills/setup/scripts/scaffold.py` — scaffold `_method/proxies/backlog.md` and `_method/proxies/build-log.md` instead of INDEX.md files.
 
 **Docs:**
 - `plugin/docs/DOC-STRUCTURE.md` — update BACKLOG structure and build-log structure sections for new index location.
@@ -55,7 +57,7 @@ Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.
 - `tests/` — update fixtures and assertions for new paths. Add fallback tests.
 
 **Setup migration:**
-- `/setup` case 4: detect old INDEX.md locations → migrate content to `.proxies/`.
+- `/setup` case 4: detect old INDEX.md locations → migrate content to `_method/proxies/`.
 
 ## Success criteria
 

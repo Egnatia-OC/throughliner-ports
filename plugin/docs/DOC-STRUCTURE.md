@@ -159,15 +159,15 @@ After-build prepends one line per build.
 
 ## planning/drafts/ folder
 
-`planning/drafts/<topic>.md`. Created by `/setup`. Destination-agnostic carryover for substantive content not yet ready for a specific doc — comparison tables, structural sketches, option matrices. Written at "good enough to walk away from"; deleted when consumed; dead-ends pruned with build-log note. One file per topic, kebab-case. Read/write to Claude, no locking.
+`_method/planning/drafts/<topic>.md`. Created by `/setup` inside `_method/`. Destination-agnostic carryover for substantive content not yet ready for a specific doc — comparison tables, structural sketches, option matrices. Written at "good enough to walk away from"; deleted when consumed; dead-ends pruned with build-log note. One file per topic, kebab-case. Read/write to Claude, no locking.
 
 ## research/ folder
 
-`research/<topic>.md`. Created by `/setup`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
+`_method/research/<topic>.md`. Created by `/setup` inside `_method/`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
 
 ## Search query files (research/search-queries/)
 
-`research/search-queries/YYYY-MM-DD-topic-slug.md`. Created by the `/research` flow (skill or proactive suggestion). Structured records of research queries and their results — distinct from general `research/<topic>.md` files, which are free-form findings.
+`_method/research/search-queries/YYYY-MM-DD-topic-slug.md`. Created by the `/research` flow (skill or proactive suggestion). Structured records of research queries and their results — distinct from general `_method/research/<topic>.md` files, which are free-form findings.
 
 **Naming.** `YYYY-MM-DD-topic-slug.md`. Date is the query date; slug describes the topic. Same topic researched on different dates gets separate files.
 
@@ -182,15 +182,15 @@ After-build prepends one line per build.
 
 **Frontmatter.** YAML: `status` (pending/complete/discarded), `date`, `session-context`.
 
-**Lifecycle.** Created at `pending`. Updated to `complete` when response is filed and outcome recorded. `discarded` if the query was sent but the result wasn't useful and no action was taken. Files persist indefinitely — same as `research/` files.
+**Lifecycle.** Created at `pending`. Updated to `complete` when response is filed and outcome recorded. `discarded` if the query was sent but the result wasn't useful and no action was taken. Files persist indefinitely — same as `_method/research/` files.
 
-**Folder creation.** `/setup` scaffolds `research/search-queries/` alongside `research/`.
+**Folder creation.** `/setup` scaffolds `_method/research/search-queries/` alongside `_method/research/`.
 
-## Proxy files (.proxies/)
+## Proxy files (_method/proxies/)
 
-Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `.proxies/` at project root. Created by `/setup`; regenerated during planning after editing source docs.
+Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `_method/proxies/` (inside the method subfolder). Created by `/setup`; regenerated during planning after editing source docs. Legacy projects may have `.proxies/` at project root — check both locations.
 
-**Missing proxies.** If `.proxies/` is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
+**Missing proxies.** If the proxies directory is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
 
 **File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `test-log.md`, `research.md`.
 
@@ -234,7 +234,7 @@ Entries: unconfirmed rows only. Format: `- #<NNN> <component> — <test descript
 
 ### Research index proxy (research.md)
 
-Source: `research/` directory (not a single file). State summary: file count.
+Source: `_method/research/` directory (not a single file). State summary: file count.
 
 Entries: one line per file. Format: `- <filename> — <first heading or one-phrase summary>`. No line numbers.
 
@@ -331,4 +331,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 72.*
+*No-code method — Version 73.*

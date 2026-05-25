@@ -1,4 +1,4 @@
-<!-- proxy | source: UX.md | generated: YYYY-MM-DD -->
+<!-- proxy | source: _method/UX.md | generated: YYYY-MM-DD -->
 
 # UX.md — proxy
 

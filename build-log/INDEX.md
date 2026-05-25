@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v86-doc-folder-restructure.md](v86-doc-folder-restructure.md) — 2026-05-26 — Doc folder restructure
 - [v85-scaffold-quality-fixes.md](v85-scaffold-quality-fixes.md) — 2026-05-26 — Scaffold quality fixes
 - [v84-first-time-ux.md](v84-first-time-ux.md) — 2026-05-26 — First-time user experience
 - [v83-research-search-flow.md](v83-research-search-flow.md) — 2026-05-26 — Research search flow

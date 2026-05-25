@@ -1,14 +1,16 @@
 # 0090 — TEST-LOG folder split + proxy index
 
-Supersedes cancelled 0076. Rewritten for post-0079 procedure-doc architecture and the `.proxies/` convention from 0081/0089.
+Supersedes cancelled 0076. Rewritten for post-0079 procedure-doc architecture and the `_method/proxies/` convention from 0081/0089.
+
+> **Post-0087 note:** Consumer-side proxy directory is now `_method/proxies/` (was `.proxies/`). Template sources remain at `plugin/templates/.proxies/`. Consumer-facing paths below use `_method/proxies/`.
 
 ## Goal
 
-Split TEST-LOG.md into a `test-log/` folder with per-session files. `.proxies/test-log.md` (created as a companion proxy in 0081) becomes the folder's index — same role as `.proxies/backlog.md` and `.proxies/build-log.md` after 0089.
+Split TEST-LOG.md into a `test-log/` folder with per-session files. `_method/proxies/test-log.md` (created as a companion proxy in 0081) becomes the folder's index — same role as `_method/proxies/backlog.md` and `_method/proxies/build-log.md` after 0089.
 
 ## Inputs
 
-- 0081 outputs: `.proxies/test-log.md` template (companion proxy).
+- 0081 outputs: `_method/proxies/test-log.md` template (companion proxy).
 - 0089 outputs: INDEX relocation pattern for BACKLOG and build-log.
 - 0076 scope file — original design reference (scoped against old subagent architecture).
 - `plugin/docs/DOC-STRUCTURE.md` — current TEST-LOG structure section.
@@ -22,7 +24,7 @@ Split TEST-LOG.md into a `test-log/` folder with per-session files. `.proxies/te
 
 **Folder structure:**
 - `test-log/` — per-session files (naming convention TBD — see open questions).
-- `.proxies/test-log.md` — upgraded from companion proxy to folder index.
+- `_method/proxies/test-log.md` — upgraded from companion proxy to folder index.
 
 **Template updates:**
 - `plugin/templates/.proxies/test-log.md` — rewritten as folder index (from 0081's companion template).

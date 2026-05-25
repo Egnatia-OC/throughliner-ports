@@ -27,6 +27,6 @@ This same flow runs when you proactively suggest a search (per `universal-behavi
 - **WebSearch tool**: use Claude's built-in WebSearch. Use when MCP search is unavailable.
 - **Copyable prompt**: produce a formatted search prompt the user can paste into their preferred research environment (Gemini, ChatGPT, Perplexity, etc.). Use when neither tool is available.
 
-**5. File the results.** Save to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/research/search-queries/QUERY-TEMPLATE.md`. Fill in the Response and Outcome fields. Mention in chat what you saved and where.
+**5. File the results.** Save to `_method/research/search-queries/YYYY-MM-DD-topic-slug.md` using the template at `${CLAUDE_PLUGIN_ROOT}/templates/research/search-queries/QUERY-TEMPLATE.md`. Fill in the Response and Outcome fields. Mention in chat what you saved and where.
 
 If the response doesn't meet the good-answer criteria, say so. The user decides whether to refine and re-search or accept what's there.

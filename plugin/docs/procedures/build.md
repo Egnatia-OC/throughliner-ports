@@ -92,4 +92,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 72.*
+*No-code method — Version 73.*

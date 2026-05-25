@@ -1,4 +1,4 @@
-<!-- proxy | source: MANIFEST.md | generated: YYYY-MM-DD -->
+<!-- proxy | source: _method/MANIFEST.md | generated: YYYY-MM-DD -->
 
 # MANIFEST.md — proxy
 
