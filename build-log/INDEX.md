@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v84-first-time-ux.md](v84-first-time-ux.md) — 2026-05-26 — First-time user experience
 - [v83-research-search-flow.md](v83-research-search-flow.md) — 2026-05-26 — Research search flow
 - [v82-claude-template-product-overview.md](v82-claude-template-product-overview.md) — 2026-05-25 — CLAUDE template product overview
 - [v81-proxy-format-and-companions.md](v81-proxy-format-and-companions.md) — 2026-05-25 — Proxy format and companion proxies

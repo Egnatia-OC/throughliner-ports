@@ -62,6 +62,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     run_parser,
     get_unconfirmed_previous_session_rows,
     is_unadopted_with_work,
+    has_method_footer,
 )
 
 # Writing tools whose calls this hook inspects. Anything outside this set
@@ -1064,6 +1065,20 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
     )
 
 
+def make_unadopted_planning_deny_reason(target_path, permission_mode=""):
+    """Deny message when source code is edited in an unadopted folder
+    (no method footer in CLAUDE.md). Points at /setup instead of
+    BACKLOG/before-build, which don't exist yet."""
+    return (
+        f"[No-code method] BLOCKED: `{target_path}` cannot be edited — "
+        "this folder hasn't been set up with the no-code method yet.\n\n"
+        "What to do: run `/setup` first to set up your project, then "
+        "you can start building. Or, if you don't want the method in "
+        "this folder, disable the plugin for this project."
+        + _mode_suffix(permission_mode)
+    )
+
+
 def check_planning_phase_source_lock(project_root, target_path,
                                      permission_mode=""):
     """V67: during planning phase, block edits to source-code files.
@@ -1072,6 +1087,9 @@ def check_planning_phase_source_lock(project_root, target_path,
     inside research/. Returns a deny-reason string if the edit should be
     blocked, None to allow.
 
+    V71: when the folder is unadopted (no method footer in CLAUDE.md),
+    the deny message points at /setup instead of BACKLOG/before-build.
+
     Only called when phase == "planning". BACKLOG and MANIFEST exemptions
     are handled by the caller (check_batch_file_list) before reaching here,
     but is_path_block_doc covers them too as a safety net."""
@@ -1079,6 +1097,9 @@ def check_planning_phase_source_lock(project_root, target_path,
         return None
     if is_research_file(target_path, project_root):
         return None
+    claude_text = safe_read_text(project_root / "CLAUDE.md")
+    if claude_text is None or not has_method_footer(claude_text):
+        return make_unadopted_planning_deny_reason(target_path, permission_mode)
     return make_planning_phase_source_lock_reason(target_path, permission_mode)
 
 

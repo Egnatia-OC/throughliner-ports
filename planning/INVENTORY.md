@@ -43,11 +43,11 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; directive mandates Claude present it before routing). V43 adds two-layer-permission preamble.
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
 
 - **PreToolUse hook (consolidated).** Seven checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
-  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions).
+  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/setup`-pointing deny message instead of referencing BACKLOG/before-build.
   - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. Parses BACKLOG via `parse_backlog.py`.
   - (d) MANIFEST read-before-edit gate. V39, V67 build-phase only. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
   - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
@@ -128,4 +128,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 70.*
+*No-code method — Version 71.*

@@ -61,7 +61,7 @@ Change-list bullets may carry `[Requested]`/`[Suggested]` prefixes from planning
 - Tests: list with type and verifier. Distinguish Claude-auto vs. user-check.
 - Any BACKLOG reorganisations.
 - Any conflicts or concerns.
-- `[PROMPT]`: "Switch out of plan mode, then run `/build` to start this batch."
+- `[PROMPT]`: "Run `/build` to start building."
 
 ## What you must not do
 
@@ -76,4 +76,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 70.*
+*No-code method — Version 71.*

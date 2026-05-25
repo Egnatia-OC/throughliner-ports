@@ -11,12 +11,22 @@ from conftest import run_hook, fixture_path
 class TestTier1Silent:
     """Tier 1 (genuinely empty folder) — hook writes nothing, exit 0."""
 
-    def test_empty_folder_silent(self, empty_folder):
+    def test_empty_folder_silent(self, tmp_path):
+        code, parsed, raw = run_hook(
+            "session_start.py", {"cwd": str(tmp_path)}
+        )
+        assert code == 0
+        assert raw == ""
+
+    def test_empty_folder_parent_claude_md_warning(self, empty_folder):
+        """V71: empty folder nested under a CLAUDE.md emits a warning."""
         code, parsed, raw = run_hook(
             "session_start.py", {"cwd": str(empty_folder)}
         )
         assert code == 0
-        assert raw == ""
+        assert parsed is not None
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Parent-directory CLAUDE.md" in ctx
 
 
 class TestTier2GapFlag:

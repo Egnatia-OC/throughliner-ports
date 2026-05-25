@@ -1134,10 +1134,12 @@
       <h2 id="safety-net">The safety net</h2>
       <p>Three layers protect against working in the wrong state:</p>
       <ol>
-        <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/setup</code>.</li>
-        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/setup</code> has run.</li>
+        <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/setup</code>. It also warns if a parent directory has its own CLAUDE.md, which could affect the session.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/setup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/setup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
         <li><strong>/setup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
       </ol>
+      <h3>Parent-directory placement</h3>
+      <p>Claude Code inherits CLAUDE.md files from parent directories. If your project folder is inside another project&rsquo;s tree, the parent&rsquo;s instructions will bleed into your session. Keep project folders at independent locations.</p>
 
       <h2 id="inside-plugin">What's inside the plugin</h2>
 

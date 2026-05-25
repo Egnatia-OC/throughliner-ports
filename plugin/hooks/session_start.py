@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 70
+PLUGIN_METHOD_VERSION = 71
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -654,13 +654,26 @@ def build_unadopted_advisory_context(project_root: Path) -> str:
     """Compose the additionalContext block for an unadopted-with-work
     folder. Strong directive: do nothing substantive, route the user to
     /setup. Pairs with the systemMessage user-visible warning."""
+    parent_warning = ""
+    parent_claude_dirs = detect_parent_claude_md(project_root)
+    if parent_claude_dirs:
+        paths_md = ", ".join(f"`{p}`" for p in parent_claude_dirs)
+        parent_warning = (
+            f"\n\n**Warning:** A CLAUDE.md file was found in a parent "
+            f"directory ({paths_md}). Claude Code inherits CLAUDE.md files "
+            "from parent directories, which may affect this session. "
+            "Consider moving this project to a folder that isn't nested "
+            "inside another project's tree."
+        )
+
     return (
         "## No-code-method plugin — unadopted folder\n\n"
         "**This folder has not been adopted by the no-code-method plugin, "
         "and it contains existing work that the plugin would put at risk "
         "if you proceed normally.** No method-aware behaviour is active "
         "until the user runs `/setup`.\n\n"
-        f"Project root: `{project_root}`\n\n"
+        f"Project root: `{project_root}`"
+        + parent_warning + "\n\n"
         "**Required behaviour for this session:**\n\n"
         "- Direct the user to run `/setup` before doing anything else.\n"
         "- Do NOT attempt Edit, Write, or MultiEdit "
@@ -782,6 +795,33 @@ def collect_footer_mismatches(resolved: dict, claude_text: str):
     return mismatches
 
 
+def detect_parent_claude_md(project_root: Path) -> list:
+    """Walk up from project_root checking each parent for CLAUDE.md.
+    Returns a list of parent directory paths that contain one."""
+    parents = []
+    current = project_root.parent
+    try:
+        while current != current.parent:
+            if (current / "CLAUDE.md").exists():
+                parents.append(current)
+            current = current.parent
+    except OSError:
+        pass
+    return parents
+
+
+def format_parent_directory_warning(parents: list) -> str:
+    """Compose the advisory text for parent-directory CLAUDE.md files."""
+    paths_md = ", ".join(f"`{p}`" for p in parents)
+    return (
+        f"- **Parent-directory CLAUDE.md detected** at {paths_md}. "
+        "Claude Code inherits CLAUDE.md files from parent directories — "
+        "instructions from those files will affect this session. If this "
+        "project is independent from the parent, consider moving it to a "
+        "folder that isn't nested inside another project's tree."
+    )
+
+
 def build_state_summary(project_root: Path, claude_text: str, path_block: dict) -> str:
     """Compose the prose state summary for tier 3."""
     resolved, unresolved = resolve_path_block_docs(project_root, path_block)
@@ -789,6 +829,11 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     lines = ["## Project state (detected by SessionStart hook)", ""]
 
     lines.append(f"- **Project root:** `{project_root}`")
+
+    parent_claude_dirs = detect_parent_claude_md(project_root)
+    if parent_claude_dirs:
+        lines.append(format_parent_directory_warning(parent_claude_dirs))
+
     lines.append(
         f"- **Path block:** resolved {len(resolved)} of {len(path_block)} entries."
     )
@@ -959,7 +1004,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
 
 # --- Tier 2 output ---
 
-def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
+def build_tier_2_gap_flag(claude_text, spine_docs, project_root=None) -> str:
     """One-paragraph gap flag identifying which piece of the method shape
     is missing, and pointing at the right next step."""
     has_claude = claude_text is not None
@@ -1007,11 +1052,18 @@ def build_tier_2_gap_flag(claude_text, spine_docs) -> str:
         )
         next_step = "Run `/setup` — it routes to the right case across new-project, migration, and refresh."
 
+    parent_warning = ""
+    if project_root is not None:
+        parent_claude_dirs = detect_parent_claude_md(project_root)
+        if parent_claude_dirs:
+            parent_warning = "\n\n" + format_parent_directory_warning(parent_claude_dirs)
+
     return (
         "## No-code-method project state\n\n"
         f"**Partial method shape detected.** {gap}\n\n"
         f"{next_step} No method-aware behaviour beyond the universal "
         "rules above is available until the project's structure is complete."
+        + parent_warning
     )
 
 
@@ -1046,7 +1098,11 @@ def main() -> int:
         # Non-method folder. The plugin is invisible: no output, no rules.
         # V29 splits this tier: unadopted-with-work folders short-circuit
         # above with the advisory; what reaches here is genuinely-empty
-        # folders. They stay silent.
+        # folders. They stay silent — unless a parent-directory CLAUDE.md
+        # is detected, which could poison the session (V71).
+        parent_claude_dirs = detect_parent_claude_md(project_root)
+        if parent_claude_dirs:
+            return emit_context(format_parent_directory_warning(parent_claude_dirs))
         return 0
 
     # Tier 2 and tier 3 both get the universal rules. The tier-specific
@@ -1054,7 +1110,7 @@ def main() -> int:
     universal_rules = read_universal_rules()
 
     if tier == 2:
-        tier_output = build_tier_2_gap_flag(claude_text, spine_docs)
+        tier_output = build_tier_2_gap_flag(claude_text, spine_docs, project_root)
     else:  # tier == 3
         tier_output = build_state_summary(project_root, claude_text, path_block)
 

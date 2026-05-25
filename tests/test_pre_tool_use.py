@@ -431,6 +431,45 @@ class TestPlanningPhasePermissions:
 
 
 # ---------------------------------------------------------------------------
+# V71 Unadopted planning deny — /setup message
+# ---------------------------------------------------------------------------
+
+class TestUnadoptedPlanningDeny:
+    """V71: in an unadopted folder (no method footer), the planning-phase
+    source lock message says 'run /setup' instead of referencing BACKLOG."""
+
+    def test_unadopted_empty_folder_deny_mentions_setup(self, tmp_path):
+        target = tmp_path / "index.html"
+        target.write_text("<html></html>")
+        data = _edit_input(tmp_path, str(target))
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "/setup")
+
+    def test_unadopted_empty_folder_deny_no_backlog_reference(self, tmp_path):
+        target = tmp_path / "index.html"
+        target.write_text("<html></html>")
+        data = _edit_input(tmp_path, str(target))
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "BACKLOG" not in reason
+
+    def test_adopted_folder_deny_mentions_backlog(self, planning_phase):
+        root = planning_phase
+        target = str((root / "app" / "src" / "DashboardScreen.kt").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "BACKLOG" in reason
+
+    def test_unadopted_mode_aware(self, tmp_path):
+        target = tmp_path / "index.html"
+        target.write_text("<html></html>")
+        data = _edit_input(tmp_path, str(target), permission_mode="Auto")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "permission mode")
+
+
+# ---------------------------------------------------------------------------
 # Malformed / edge-case inputs
 # ---------------------------------------------------------------------------
 

@@ -226,11 +226,19 @@ Verifier is per-row, not per-type. Both Claude and user rows can exist across an
 
 When a session opens, **SessionStart** checks adopted vs. unadopted. Unadopted folders with substantial work trigger an advisory pointing at `/setup`.
 
-Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls.
+Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls. In unadopted folders, the deny message says "run `/setup` first" — not "describe it in a BACKLOG batch," which would be meaningless before the project is set up.
 
 `/setup` branches: empty folder → scaffold + four prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
 
 Nothing destructive without confirmation; every destructive option backs up first.
+
+### Parent-directory placement
+
+Claude Code inherits CLAUDE.md files from parent directories. If a project folder sits inside another project's tree, the parent's instructions will affect the session — potentially poisoning Claude's behaviour with rules meant for a different project.
+
+**SessionStart** detects CLAUDE.md files in parent directories and surfaces a warning. The warning fires in all tiers (empty, partial, complete, unadopted).
+
+**Best practice:** keep project folders at independent locations (e.g. `Desktop/MyApp/`, not `Desktop/OtherProject/MyApp/`). If nesting is unavoidable, the warning tells the user to consider relocating.
 
 ## Research search flow
 
@@ -363,4 +371,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 70.*
+*No-code method — Version 71.*

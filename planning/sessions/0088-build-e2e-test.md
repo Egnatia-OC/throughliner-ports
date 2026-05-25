@@ -31,5 +31,5 @@ Test the build phase of the procedure-doc architecture. Picks up where 0084 left
 
 ## Risks / dependencies
 
-- Soft dependency on 0085: if the before-build recap still says "Switch out of plan mode," the user needs to know to ignore that jargon. If 0085 shipped, it should be fixed.
+- ~~Soft dependency on 0085: resolved — 0085 shipped in v84, before-build recap now says "Run `/build` to start building."~~
 - The burner app may have stale state from 0084 testing (Status: active on the batch from the before-build that ran). May need to reset batch status or start fresh.
