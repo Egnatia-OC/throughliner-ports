@@ -1,6 +1,6 @@
 # Open questions
 
-Method-level questions not yet ready to be a session. Each stays until resolved — folded into a session's scope, promoted to its own session, or dropped with a reason in `BUILD-LOG.md`. Newest first. Removed when resolved.
+Method-level questions not yet ready to be a session. Each stays until resolved — folded into a session's scope, promoted to its own session, or dropped with a reason in `build-log/`. Newest first. Removed when resolved.
 
 Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 

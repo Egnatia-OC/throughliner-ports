@@ -1,6 +1,6 @@
 # BUILD-METHOD.md — How this project ships
 
-Session open, middle, close, testing, artefact locations. Sibling of `BUILD-LOG.md` (what shipped) and `planning/PLAN.md` (what's coming).
+Session open, middle, close, testing, artefact locations. Sibling of `build-log/` (what shipped) and `planning/PLAN.md` (what's coming).
 
 This is **not** the no-code method itself — that's what this project produces (`plugin/`, `Reference manual.md`, etc.). Personal and collaboration rules live in root `CLAUDE.md`. Anything here supersedes older equivalents there.
 
@@ -59,11 +59,11 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 3. **Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in *Footer bumps* below.
 
-4. **BUILD-LOG entry** — shape in *BUILD-LOG entry shape*. Newest first.
+4. **Build-log entry** — create a new file in `build-log/`; shape in *BUILD-LOG entry shape*. Prepend index line to `build-log/INDEX.md`.
 
-5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + PLAN.md row; note in BUILD-LOG as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
+5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + PLAN.md row; note in build-log entry as "not pursued, reason: ..."; or add to `OPEN-QUESTIONS.md`.
 
-6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing BUILD-LOG entry is the most common skip when context runs low — check explicitly.
+6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
 7. **Commit** with `V<N>:` message.
 
@@ -90,7 +90,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 3. **Templates.** New sections, markers, canonical formats → `plugin/templates/`. (Repo-root `templates/` frozen at V39.)
 4. **Inventory.** New/changed plugin components → `planning/INVENTORY.md`.
 5. **Reference manual.** Load-bearing concept/mechanism changes → `Reference manual.md` reflects it at narrative altitude.
-6. **Ghost references.** Audit for paragraphs asserting state contradicted by `BUILD-LOG.md` or actual code. On disagreement, BUILD-LOG wins.
+6. **Ghost references.** Audit for paragraphs asserting state contradicted by `build-log/` entries or actual code. On disagreement, build-log wins.
 
 **Escape clause.** If the audit surfaces a gap whose doc work would dominate the session — surface in chat, weigh fold-in vs. new-session, decide together. **Default: fold in now.** Cost is usually overstated; shipping inconsistency is worse.
 
@@ -123,7 +123,7 @@ Don't reintroduce "subagents read NO-CODE-METHOD.md at runtime." The two-write d
 
 ## Testing
 
-Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; subagents invoke; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `TEST-LOG.md`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; subagents invoke; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `test-log/`.
 
 **Pre-install options:**
 
@@ -137,7 +137,7 @@ Testing means **smoke-testing in Claude Code** — install the plugin via local 
 - **No public marketplace.** Plugin installed locally via `/plugin marketplace add`. Public distribution is later.
 - **No CI.** Pytest runs locally; smoke tests are hand-run by Alex on Windows.
 
-**Where outcomes go.** Each check → `TEST-LOG.md` as one row. `BUILD-LOG.md` references the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating.
+**Where outcomes go.** Each check → a per-session file in `test-log/`. Build-log entries reference the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating.
 
 **Pitfall.** "Live install + back-test" as single-session deliverable keeps resurfacing. Don't conflate a smoke test (does it work?) with a release test (does the published package install?).
 
@@ -167,7 +167,7 @@ python -m pytest tests/ -v
 
 When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal-only sessions skip entirely.**
 
-Method-side = describes how the consumer method works. Dev-internal files (`BUILD-LOG.md`, `TEST-LOG.md`, `PLAN.md`, `OPEN-QUESTIONS.md`, this file) don't carry the footer.
+Method-side = describes how the consumer method works. Dev-internal files (`build-log/`, `test-log/`, `PLAN.md`, `OPEN-QUESTIONS.md`, this file) don't carry the footer.
 
 ### Plugin-side (the leader)
 
@@ -221,8 +221,8 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 | `planning/PLAN.md` | **Living.** Rolling roadmap. | Never. |
 | `planning/OPEN-QUESTIONS.md` | **Living.** Method-level questions not yet session-ready. Each entry has a *Next step*. | Per entry: when resolved. File: never. |
 | `planning/*.md` (feasibility docs) | **Historical.** V17 architectural decisions. | Never. |
-| `BUILD-LOG.md` | **Historical.** Append-only, newest first. | Never. |
-| `TEST-LOG.md` | **Living.** One row per check, newest at top. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
+| `build-log/` | **Historical.** One file per session, INDEX.md newest first. | Never. |
+| `test-log/` | **Living.** One file per session, one row per check. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
 | `BUILD-METHOD.md` (this file) | **Living.** Working manual. | Never. |
 
 ### Drafts in flight
@@ -235,12 +235,12 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 ## BUILD-LOG entry shape
 
-`BUILD-LOG.md` is the running record of decisions, changes, and reasoning, newest-first. It exists so Alex can talk progress without making people read commits, and so future sessions can reconstruct *why*.
+`build-log/` is the running record of decisions, changes, and reasoning. `INDEX.md` lists entries newest-first. It exists so Alex can talk progress without making people read commits, and so future sessions can reconstruct *why*.
 
-One entry per session:
+One file per session in `build-log/`, named `vNN-slug.md`:
 
 ```markdown
-## V<N> — YYYY-MM-DD — One-line summary
+# V<N> — YYYY-MM-DD — One-line summary
 
 **What shipped.** Short paragraph: concrete deliverables, files added/changed, components installed, smoke-test outcomes.
 
@@ -251,7 +251,10 @@ One entry per session:
 **Carried forward.** Items raised but not done, with destination.
 ```
 
-**Note:** Consumer build-log entries carry an additional `## Performance` section — see `DOC-STRUCTURE.md`. This dev BUILD-LOG doesn't use it.
+After writing the file, prepend an index line to `build-log/INDEX.md`:
+`- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — One-line summary`
+
+**Note:** Consumer build-log entries carry an additional `## Performance` section — see `DOC-STRUCTURE.md`. This dev build-log doesn't use it.
 
 Don't pad. Half a page is good; shorter is better.
 
@@ -295,7 +298,7 @@ The session-open scan is what makes graduation triggers fire.
 
 ## TEST-LOG entry shape
 
-`TEST-LOG.md` is the smoke-test record. One row per check per session:
+`test-log/` is the smoke-test record. One file per session, named `vNN-slug.md`. One row per check:
 
 | Column | Meaning |
 |---|---|
@@ -313,7 +316,7 @@ The session-open scan is what makes graduation triggers fire.
 
 **Component changes.** Old row → `Superseded` with note pointing at the changing session. New rows record the retest. Only when the test description itself no longer makes sense.
 
-**BUILD-LOG linking.** Each BUILD-LOG entry names the TEST-LOG row range in *What shipped*. Prose in BUILD-LOG; per-check in TEST-LOG. Don't duplicate.
+**BUILD-LOG linking.** Each build-log entry names the TEST-LOG row range in *What shipped*. Prose in build-log; per-check in test-log. Don't duplicate.
 
 ---
 

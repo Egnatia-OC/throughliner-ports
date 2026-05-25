@@ -68,7 +68,7 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. **Shipped v74.** |
 | 0073 | ~~Stop hook before-build→build chain fix~~ | **Cancelled.** Superseded by architecture redesign — auto-chaining removed entirely. |
 | 0074 | Session-open status summary | User-facing batch counts, next batch, pending tests — mandatory presentation via hook directive. **Shipped v75.** |
-| 0075 | Dev-side log folder migration | BUILD-LOG.md + TEST-LOG.md → folder structures. Dev-side only, no plugin changes. |
+| 0075 | Dev-side log folder migration | BUILD-LOG.md + TEST-LOG.md → build-log/ + test-log/ folder structures. Dev-side only, no plugin changes. **Shipped v76.** |
 | 0076 | ~~Plugin-side TEST-LOG folder migration~~ | **Cancelled.** Scoped against subagent architecture (17 files, 5 subagent bodies). Rewrite after redesign. |
 | 0077 | ~~Greenfield E2E: burner app from scratch~~ | **Cancelled.** Intent kept — rewrite as new scope after architecture redesign lands. |
 | 0078 | ~~Post-fix E2E validation (Taskflow)~~ | **Cancelled.** Validates 0073/0074 in old architecture; 0072 already shipped. Nothing left to validate. |
@@ -76,6 +76,7 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0080 | Doc permission flip: phase-aware editing | Unlock source-of-truth docs (UX, MANIFEST, additional) during planning. Lock source code during planning. Reverse during build. Phase detected via BACKLOG batch status. Depends on 0079. |
 | 0081 | Machine-readable proxy layer | Compact proxy files in `.proxies/` for UX and MANIFEST. Header block (what/who/why) + entry index with line numbers. Claude reads proxy first, dips into full doc selectively. Depends on 0079, 0080. |
 | 0082 | CLAUDE template product overview | Product overview section in CLAUDE.md: what it is, who it's for, what friction it solves, milestones. Populated by `/setup` conversation. Depends on 0079, 0080. |
+| 0083 | Gemini search MCP server | Python MCP server + `/research` skill; query-file template; proactive search flow with user approval. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
 60 sessions through 0078, plus V60+ TBD. Four cancelled (0073, 0076, 0077, 0078) — superseded by architecture redesign (subagent removal, hook-only enforcement, main-Claude conversation ownership). New scope files for the redesign follow.

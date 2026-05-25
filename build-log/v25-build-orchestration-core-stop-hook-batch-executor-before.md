@@ -1,0 +1,10 @@
+# V25 — 2026-05-17 — Build orchestration core: Stop hook + batch-executor + before-build + slash commands + spec rewrites
+
+**What shipped.** Build orchestration core. New `parse_backlog.py` shared parser (top unticked batch → JSON; lenient on malformed; three call sites). New `stop.py` build sequencer (respects `stop_hook_active`). PreToolUse gains (c) batch file-list boundary. New `batch-executor.md` subagent (JSON payload in, tick-per-file, labelled recap, halt-and-confirm protocols; rules inlined). New `before-build.md` subagent (validate-only, read-spec-on-entry). `/before-build` and `/build` slash commands (newer commands-directory pattern). NO-CODE-METHOD *Before build* and *After every build* rewritten for subagent-aware flow; *Batch-sizing principle* added; four new Vocabulary entries. DOC-STRUCTURE, Reference manual, BACKLOG-TEMPLATE (×2), INVENTORY updated. Previous ideation edits bundled in. Four OQ entries added. 16 footers bumped V23 → V25. Pre-validation smoke tests (15/15 parser, 8/8 Stop, 9/9 PreToolUse); see TEST-LOG #031–033.
+
+**Decisions.** Parity-audit escape clause overridden for *Before build*/*After every build* rewrites — spec gap was load-bearing for shipped subagents. Before-build: validate-only (reorganise dropped — planning owns BACKLOG since V22) + read-spec-on-entry (fresh rules likely to churn). `/build` argument-less — out-of-order handled by reordering BACKLOG in planning. Ideation edits bundled — `git add -p` cost outweighed clean-tag value.
+
+**Pivots.** Validation via sister Sonnet session flipped two recommendations and dropped one halt scenario. "After-build subagent" was a ghost reference in INVENTORY — batch-executor had absorbed it. Slash-commands convention changed mid-roadmap (old skills pattern → newer commands pattern). Parser leniency (exit 0, `{}` on malformed) almost misread by `/build` draft.
+
+**Carried forward.** Windows smoke test run 2026-05-17 → TEST-LOG #034–050; three bugs logged as OQ for V26. Subagent rule-loading divergence, MANIFEST schema gap, Stop-hook cap, `/plan` command all in OQ.
+
