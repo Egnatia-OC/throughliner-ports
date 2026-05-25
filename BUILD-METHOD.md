@@ -179,8 +179,8 @@ Method-side = describes how the consumer method works. Dev-internal files (`buil
 - `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file)
 - `plugin/templates/.proxies/backlog.md`
 - `plugin/templates/.proxies/build-log.md`
+- `plugin/templates/.proxies/test-log.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
-- `plugin/templates/TEST-LOG-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - Every footer-carrying subagent under `plugin/agents/`
 - `Reference manual.md` (repo root, but plugin-side)

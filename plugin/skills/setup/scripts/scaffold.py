@@ -63,13 +63,13 @@ DESTINATION_FILENAMES = (
 METHOD_DIR_FILENAMES = (
     "MANIFEST.md",
     "UX.md",
-    "TEST-LOG.md",
 )
 
 # Directory names that conflict if they already exist inside _method/.
 METHOD_DIR_DIRNAMES = (
     "BACKLOG",
     "build-log",
+    "test-log",
     "proxies",
 )
 
@@ -85,7 +85,6 @@ TEMPLATE_TO_ROOT = (
 TEMPLATE_TO_METHOD_DIR = (
     ("UX-TEMPLATE.md", "UX.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
-    ("TEST-LOG-TEMPLATE.md", "TEST-LOG.md"),
 )
 
 # Proxy templates: .proxies/<name>.md → _method/proxies/<name>.md.
@@ -138,15 +137,21 @@ def find_conflicts(target_dir: Path):
                 conflicts.append(f"{METHOD_DIR}/{dirname}")
         if (method_dir / "BACKLOG.md").is_file():
             conflicts.append(f"{METHOD_DIR}/BACKLOG.md")
+        if (method_dir / "TEST-LOG.md").is_file():
+            conflicts.append(f"{METHOD_DIR}/TEST-LOG.md")
 
     # Legacy root-level spine docs (pre-0087 layout)
     for name in METHOD_DIR_FILENAMES:
         if (target_dir / name).is_file():
             conflicts.append(name)
+    if (target_dir / "TEST-LOG.md").is_file():
+        conflicts.append("TEST-LOG.md")
     if (target_dir / "BACKLOG").is_dir():
         conflicts.append("BACKLOG")
     if (target_dir / "build-log").is_dir():
         conflicts.append("build-log")
+    if (target_dir / "test-log").is_dir():
+        conflicts.append("test-log")
     if (target_dir / "BACKLOG.md").is_file():
         conflicts.append("BACKLOG.md")
 
@@ -248,6 +253,9 @@ def cmd_write(target_dir: Path) -> int:
     build_log_dir = method_dir / "build-log"
     build_log_dir.mkdir(exist_ok=True)
 
+    test_log_dir = method_dir / "test-log"
+    test_log_dir.mkdir(exist_ok=True)
+
     drafts_dir = method_dir / "planning" / "drafts"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -273,6 +281,7 @@ def cmd_write(target_dir: Path) -> int:
             f"{METHOD_DIR}/",
             f"{METHOD_DIR}/BACKLOG/",
             f"{METHOD_DIR}/build-log/",
+            f"{METHOD_DIR}/test-log/",
             f"{METHOD_DIR}/planning/drafts/",
             f"{METHOD_DIR}/research/",
             f"{METHOD_DIR}/research/search-queries/",

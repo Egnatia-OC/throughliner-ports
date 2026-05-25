@@ -8,7 +8,7 @@ Load only what's needed for batch identification and idempotency. Defer heavier 
 
 1. `CLAUDE.md` — path block and project notes.
 2. `BACKLOG.md`/`INDEX.md` — find the just-completed batch. In folder mode, read INDEX.md → top per-batch file.
-3. `TEST-LOG.md` — idempotency check.
+3. `TEST-LOG.md` — idempotency check. In folder mode (path block → `proxies/test-log.md`): read files in `test-log/`.
 4. `MANIFEST.md` — for the MANIFEST update.
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
@@ -27,8 +27,9 @@ If TEST-LOG already has rows matching this session whose scope covers the batch'
 
 TEST-LOG's Session column needs a stable build-session identifier:
 
-- **Folder mode:** build-log/INDEX.md → first reference → per-build file H1 → first token.
-- **Single-file:** BUILD-LOG.md → first `## <token>` heading.
+- **Proxy-as-index:** `proxies/build-log.md` → first reference → per-build file H1 → first token.
+- **Folder mode (legacy):** `build-log/INDEX.md` → first reference → per-build file H1 → first token.
+- **Single-file:** `BUILD-LOG.md` → first `## <token>` heading.
 - **Last resort:** today's YYYY-MM-DD.
 
 ## Work loop
@@ -46,8 +47,8 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 4. **Open test session + run Claude tests.** Two sub-steps.
 
-   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` sub-section if present, else derive from recap (default: `Look and click` / `User`). **Position:** top of table body (below header separator), pushing earlier rows down. Within batch: recap order (lowest # at top). 10-column format:
-   - `#` — next three-digit ID.
+   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` sub-section if present, else derive from recap (default: `Look and click` / `User`). 10-column format:
+   - `#` — next three-digit ID (global across all per-session files).
    - `Date` — YYYY-MM-DD.
    - `Session` — per identification above.
    - `Component` — match MANIFEST entry name where possible.
@@ -57,6 +58,13 @@ TEST-LOG's Session column needs a stable build-session identifier:
    - `Status` — blank initially (Claude rows filled in 4b).
    - `Confirmed Explicitly` — `No`.
    - `Notes` — blank initially.
+
+   **Folder mode (path block → `proxies/test-log.md`):**
+   - **4a-i.** Allocate filename: scan `test-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading. Write per-session file with H1 `# Test session — <Session> — YYYY-MM-DD` followed by the table.
+   - **4a-ii.** Prepend index line to `_method/proxies/test-log.md`: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. Idempotency: skip if same-numbered line exists. Fallback: `TEST-LOG.md` (single-file legacy).
+
+   **Single-file mode (path block → `TEST-LOG.md` directly):**
+   - Position rows at top of table body (below header separator). Within batch: recap order (lowest # at top).
 
    **4b. Run Claude-automatable tests.** For each `Verifier: Claude` row, execute the test. Pass → set Status/Confirmed/Notes. Fail → same, and flag prominently in recap. User-verified rows stay blank — they define the test session for next planning's read-back.
 
@@ -111,7 +119,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, TEST-LOG.md, build-log/, BACKLOG status lines. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
 - **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands. Don't take other actions whose side effects make the refusal untenable, then re-do the declined action.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
@@ -125,4 +133,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 74.*
+*No-code method — Version 75.*

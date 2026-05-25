@@ -32,7 +32,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 | `UX.md` | Phase-aware (V67): editable during planning; locked during build (PreToolUse enforced, with footer + proposed-edits carve-outs) |
 | `BACKLOG/` | Read/write |
 | `MANIFEST.md` | Read/write |
-| `TEST-LOG.md` | Read/write (test-confirmation gate V27) |
+| `test-log/` | Read/write (test-confirmation gate V27). Legacy: flat `TEST-LOG.md` |
 | `build-log/` | Read/write |
 | `CLAUDE.md` | Read/write; path block in fenced JSON |
 | Additional SoT docs | Phase-aware (V67): editable during planning; locked during build |
@@ -75,13 +75,13 @@ Five procedure docs at `plugin/docs/procedures/`, read into main context on dema
 
 - **after-build.md** — V27 origin, procedure doc V66. MANIFEST update, doc-parity check (V62), recap (two-section: Claude-verified / user-verified, V48), TEST-LOG rows (10-column, V48), build-log entry with Performance section (V55), frame-correction sweep (V33), idea sweep (V62), CLAUDE.md after-build steps (V62), pre-commit checkpoint (V62), commit/tag prompt (V48). Idempotent.
 
-- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70 migrations. PreToolUse exempts setup's tool calls.
+- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75 migrations. PreToolUse exempts setup's tool calls.
 
 ### Slash commands
 
 All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
 
-- `/setup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44).
+- `/setup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44).
 - `/research` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70.**
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/plan` — planning procedure. *Pending; auto-route is current path.*
@@ -90,7 +90,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ### Bundled artefacts
 
-- 14 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, TEST-LOG, ADDITIONAL-DOC, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog and .proxies/build-log serve as operational indexes for their respective folder-mode docs (V70).
+- 14 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog, .proxies/build-log, and .proxies/test-log serve as operational indexes for their respective folder-mode docs (V75).
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
@@ -128,4 +128,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 74.*
+*No-code method — Version 75.*

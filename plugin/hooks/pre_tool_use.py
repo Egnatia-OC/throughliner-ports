@@ -83,12 +83,12 @@ SCAFFOLD_METHOD_NAMES = frozenset({
     "UX.md",
     "BACKLOG.md",
     "MANIFEST.md",
-    "TEST-LOG.md",
 })
 
 SCAFFOLD_METHOD_DIRS = frozenset({
     "BACKLOG",
     "build-log",
+    "test-log",
     "proxies",
     "planning",
     "research",

@@ -223,6 +223,31 @@ class TestGetUnconfirmedRows:
         assert rows == []
         assert status == "missing"
 
+    def test_folder_mode_finds_unconfirmed(self):
+        root = fixture_path("adopted_test_log_folder")
+        rows, status, session_id = ps.get_unconfirmed_previous_session_rows(root)
+        assert status == "ok"
+        assert session_id == "B001"
+        assert len(rows) == 1
+        assert rows[0]["id"] == "002"
+        assert rows[0]["description"] == "Widget handles empty state"
+
+    def test_folder_mode_collect_all_rows(self):
+        root = fixture_path("adopted_test_log_folder")
+        rows, is_folder = ps.collect_all_test_log_rows(root)
+        assert is_folder is True
+        assert len(rows) == 2
+
+    def test_resolve_test_log_dir_folder_mode(self):
+        root = fixture_path("adopted_test_log_folder")
+        d = ps.resolve_test_log_dir(root)
+        assert d is not None
+        assert d.name == "test-log"
+
+    def test_resolve_test_log_dir_single_file_returns_none(self):
+        root = fixture_path("adopted_single_file")
+        assert ps.resolve_test_log_dir(root) is None
+
 
 # ---------------------------------------------------------------------------
 # is_backlog_file / resolve_backlog_dir

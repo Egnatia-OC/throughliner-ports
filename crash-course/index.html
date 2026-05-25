@@ -751,8 +751,8 @@
         </div>
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/><path d="M16 24l4 4 8-8" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="32" width="20" height="2" rx="1" fill="#DC2626"/></svg>
-          <h3>_method/TEST-LOG.md</h3>
-          <p>One row per test, 10 columns. Claude adds rows after builds; you confirm outcomes before the next build can start.</p>
+          <h3>_method/test-log/</h3>
+          <p>Per-session test files, one row per test, 10 columns. Claude writes files after builds; you confirm outcomes before the next build can start. Index at proxies/test-log.md.</p>
         </div>
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#F1F5F9" stroke="#475569" stroke-width="2"/><path d="M15 16h18M15 22h14M15 28h16M15 34h10" stroke="#475569" stroke-width="2" stroke-linecap="round"/></svg>
@@ -1101,7 +1101,7 @@
             <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
             <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
-            <tr><td>TEST-LOG.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>test-log/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>Source code</td><td><strong>Locked</strong></td><td>Batch file list only</td></tr>
             <tr><td>_method/research/ files</td><td>Read/write</td><td>Read/write</td></tr>
@@ -1123,7 +1123,7 @@
             <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
             <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
-            <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, TEST-LOG, build-log.</td></tr>
+            <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
           </tbody>
         </table>
       </div>

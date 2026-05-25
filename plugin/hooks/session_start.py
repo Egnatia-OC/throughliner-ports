@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 74
+PLUGIN_METHOD_VERSION = 75
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -118,6 +118,7 @@ SPINE_FOLDER_PATHS = (
     Path("build-log") / "INDEX.md",
     Path("proxies") / "backlog.md",
     Path("proxies") / "build-log.md",
+    Path("proxies") / "test-log.md",
 )
 
 METHOD_DIR = "_method"
@@ -586,25 +587,46 @@ def identify_previous_session_from_build_log(project_root, resolved):
 
 
 def detect_unconfirmed_test_rows(project_root, resolved):
-    """Find TEST-LOG.md rows from the previous build batch whose
+    """Find TEST-LOG rows from the previous build batch whose
     `Confirmed Explicitly` column is not `Yes`.
+
+    Supports two modes:
+      - Folder mode (V75+): path block points to proxies/test-log.md;
+        per-session files in sibling test-log/ directory.
+      - Single-file (legacy): path block points to TEST-LOG.md directly.
 
     Returns a tuple (unconfirmed_rows, build_log_status, session_id):
       - unconfirmed_rows: list of row dicts (possibly empty)
       - build_log_status: 'ok' | 'missing' | 'unparseable'
       - session_id: the identified session string, or None
 
-    Returns ([], 'no_test_log', None) when TEST-LOG.md is missing or
+    Returns ([], 'no_test_log', None) when TEST-LOG is missing or
     unreadable from the path block — there's nothing to trip on.
 
-    Strict-fallback semantics apply when BUILD-LOG.md can't narrow:
+    Strict-fallback semantics apply when BUILD-LOG can't narrow:
     any row with `Confirmed Explicitly: No` counts as unconfirmed. Same
     rule as the V27 test-confirmation gate (per V26 Q3 + V27 Q4)."""
     test_log_data = resolved.get("TEST-LOG.md")
     if not test_log_data:
         return [], "no_test_log", None
-    _path, text = test_log_data
-    rows = parse_test_log_rows(text)
+    test_log_path, text = test_log_data
+
+    if (Path(test_log_path).name.lower() == "test-log.md"
+            and Path(test_log_path).parent.name == "proxies"):
+        test_log_dir = Path(test_log_path).parent.parent / "test-log"
+        rows = []
+        if test_log_dir.is_dir():
+            try:
+                for entry_file in sorted(test_log_dir.iterdir(), reverse=True):
+                    if entry_file.suffix.lower() == ".md":
+                        entry_text = safe_read_text(entry_file)
+                        if entry_text:
+                            rows.extend(parse_test_log_rows(entry_text))
+            except OSError:
+                pass
+    else:
+        rows = parse_test_log_rows(text)
+
     if not rows:
         return [], "no_test_log", None
 

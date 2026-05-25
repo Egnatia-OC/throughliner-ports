@@ -28,7 +28,7 @@ Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": 
 
 No CLAUDE.md, no substantial work.
 
-**Open:** "Fresh folder. I'll ask four questions, then create starter docs inside `_method/` (UX.md, BACKLOG/, build-log/, MANIFEST.md, TEST-LOG.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
+**Open:** "Fresh folder. I'll ask four questions, then create starter docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
 
 **Four questions (one per message, wait for each):**
 
@@ -118,7 +118,9 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After BUILD-LOG — INDEX relocation to proxies (V70).** If path block points at `BACKLOG/INDEX.md` or `_method/BACKLOG/INDEX.md`: move INDEX.md content into `_method/proxies/backlog.md` (create proxies/ dir if needed), delete `BACKLOG/INDEX.md`, update path block to `_method/proxies/backlog.md`. Same for `build-log/INDEX.md` → `_method/proxies/build-log.md`. If `_method/proxies/` dir already has these files, skip.
 
-**After INDEX relocation — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
+**After INDEX relocation — TEST-LOG folder split (V75).** If path block points at `TEST-LOG.md` (flat file, not `proxies/test-log.md`): create `_method/test-log/`, split rows by Session into per-session files (`NNN-batch-name.md`), write `_method/proxies/test-log.md` as folder index, update path block to `_method/proxies/test-log.md`, delete old `TEST-LOG.md`. If `_method/test-log/` already exists, skip.
+
+**After TEST-LOG folder split — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
 
 **Recap:** "Refreshed (case 4). Bumped footers on [list]. [Migrations performed.]"
 
@@ -142,4 +144,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 74.*
+*No-code method — Version 75.*

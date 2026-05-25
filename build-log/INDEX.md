@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v89-test-log-folder-split.md](v89-test-log-folder-split.md) — 2026-05-26 — TEST-LOG folder split + proxy index
 - [v88-index-relocation-to-proxies.md](v88-index-relocation-to-proxies.md) — 2026-05-26 — INDEX relocation to proxies
 - [v87-dev-side-terminology-alignment.md](v87-dev-side-terminology-alignment.md) — 2026-05-26 — Dev-side terminology and BACKLOG alignment
 - [v86-doc-folder-restructure.md](v86-doc-folder-restructure.md) — 2026-05-26 — Doc folder restructure

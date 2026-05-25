@@ -86,17 +86,30 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 **Proposed edits pending section.** At bottom. See below.
 
-## TEST-LOG.md structure
+## TEST-LOG structure
 
-**Header.** Row-per-test record of build outcomes. Maintained by Claude during builds (rows added) and planning (rows confirmed per-row). The test-confirmation gate gates new builds against unconfirmed rows.
+**Location.** `test-log/` inside `_method/`. One file per build session. Index lives at `_method/proxies/test-log.md` (the proxy IS the index). Legacy: flat `TEST-LOG.md` at project root or inside `_method/`.
 
-Starts empty. Format reminder in HTML comment.
+**Index (proxies/test-log.md).** Header, HTML comment, newest-first bullet list:
+> `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``
+
+After-build prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
+
+**Per-session files.** `NNN-batch-name.md`:
+
+```markdown
+# Test session — <Session> — YYYY-MM-DD
+
+| # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| 001 | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+```
 
 **Columns (10):**
 
 | Column | Meaning |
 |---|---|
-| **#** | Stable three-digit ID. Never reused. |
+| **#** | Stable three-digit ID. Never reused (global across all per-session files). |
 | **Date** | YYYY-MM-DD. Row-per-event: status flips append new rows. |
 | **Session** | Build-batch session tag or YYYY-MM-DD. |
 | **Component** | Matches MANIFEST entry where possible; plain English if cross-component. |
@@ -107,15 +120,18 @@ Starts empty. Format reminder in HTML comment.
 | **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Bulk confirmations don't count for specific rows. |
 | **Notes** | Observations, skip reason (required), regression context. Tight prose. |
 
-**Ordering.** Newest-first. New rows at top of table body. Within a batch: recap order (lowest # at top).
+**Session identifier.** Matches build-log convention.
+
+**Ordering.** Index newest-first. Within a per-session file: recap order (lowest # at top).
 
 **Pruning rule.** Phase-based, not time-based.
 - **Substantial change** → drift check 5 flags; status flip via new appended row.
 - **Component removed** → planning procedure deletes rows with no MANIFEST match (step 2c). `Superseded` rows also deleted. Cross-component rows exempt. Git preserves history.
+- **Empty files** → when pruning empties a per-session file, delete it and remove its index line.
 
-**Template.** Empty by default — header, HTML comment, empty table. No placeholder row.
+**Template.** `plugin/templates/.proxies/test-log.md` (index). `plugin/templates/test-log/ENTRY-TEMPLATE.md` (per-session). Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
 
-**Backwards compatibility.** 8-column (pre-V48) migrated on `/setup` case 4: Type→`Look and click`, Verifier→`User`.
+**Backwards compatibility.** Flat `TEST-LOG.md` (single file) still supported. 8-column (pre-V48) migrated on `/setup` case 4: Type→`Look and click`, Verifier→`User`. `/setup` case 4 migrates flat file → folder.
 
 ## Build log structure
 
@@ -226,11 +242,11 @@ Source: `MANIFEST.md`. State summary: entry count.
 
 Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description omitted — dip for detail.
 
-### TEST-LOG proxy (test-log.md)
+### TEST-LOG index proxy (test-log.md)
 
-Source: `TEST-LOG.md`. State summary: total rows, pass/fail/skipped/pending counts, unconfirmed count, date range.
+Source: `_method/test-log/` directory. Like the BACKLOG and build-log proxies, this IS the operational index — carries the newest-first reference list to per-session test files. After-build prepends index lines here.
 
-Entries: unconfirmed rows only. Format: `- #<NNN> <component> — <test description> [<status or blank>]`. Confirmed rows omitted — summary counts are sufficient.
+Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`. Hooks resolve per-session files relative to `_method/test-log/`.
 
 ### Research index proxy (research.md)
 
@@ -252,11 +268,11 @@ Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`. Session-start r
 
 ### Regeneration rules
 
-Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `backlog.md` and `build-log.md` are directly edited (they ARE the operational documents, not summaries).
+Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `backlog.md`, `build-log.md`, and `test-log.md` are directly edited (they ARE the operational indexes, not summaries).
 
 - **`/setup`** generates initial proxies after scaffolding.
 - **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
-- **After-build** regenerates stale proxies (MANIFEST, TEST-LOG, build-log at minimum).
+- **After-build** updates operational index proxies (test-log, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
 
 ## Proposed edits pending sections
 
@@ -345,4 +361,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 74.*
+*No-code method — Version 75.*

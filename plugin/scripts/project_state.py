@@ -512,41 +512,92 @@ def identify_previous_session(project_root):
     return match.group(1).strip(), "ok"
 
 
+def resolve_test_log_dir(project_root):
+    """If the TEST-LOG is in folder mode (path block points to
+    proxies/test-log.md), return the resolved test-log/ directory path.
+    Returns None if single-file mode or path block can't be resolved."""
+    test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
+    if test_log_path is None:
+        return None
+    if (test_log_path.name.lower() == "test-log.md"
+            and test_log_path.parent.name == "proxies"):
+        return test_log_path.parent.parent / "test-log"
+    return None
+
+
+def collect_all_test_log_rows(project_root):
+    """Collect all TEST-LOG rows from either folder mode or single file.
+
+    Folder mode: path block points at proxies/test-log.md; per-session
+    files live in sibling test-log/ directory. Walks all .md files in
+    test-log/ and aggregates rows.
+
+    Single-file mode: path block points at TEST-LOG.md directly; parse
+    that one file.
+
+    Returns (rows, is_folder_mode) where rows is a list of row dicts
+    (may be empty) and is_folder_mode is True when folder mode was used.
+    Returns ([], False) on any resolution failure.
+    """
+    test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
+    if test_log_path is None or not test_log_path.exists():
+        return [], False
+
+    if (test_log_path.name.lower() == "test-log.md"
+            and test_log_path.parent.name == "proxies"):
+        test_log_dir = test_log_path.parent.parent / "test-log"
+        if not test_log_dir.is_dir():
+            return [], True
+        rows = []
+        try:
+            for entry_file in sorted(test_log_dir.iterdir(), reverse=True):
+                if entry_file.suffix.lower() == ".md":
+                    text = safe_read_text(entry_file)
+                    if text:
+                        rows.extend(parse_test_log_rows(text))
+        except OSError:
+            pass
+        return rows, True
+
+    text = safe_read_text(test_log_path)
+    if text is None:
+        return [], False
+    return parse_test_log_rows(text), False
+
+
 def get_unconfirmed_previous_session_rows(project_root):
-    """Read TEST-LOG.md and identify rows from the previous build batch's
+    """Read TEST-LOG and identify rows from the previous build batch's
     session that are not yet confirmed.
+
+    Supports two modes:
+      - Folder mode (V75+): path block points to proxies/test-log.md;
+        per-session files in sibling test-log/ directory.
+      - Single-file (legacy): path block points to TEST-LOG.md directly.
 
     Returns a tuple (rows, build_log_status, session_id):
       - rows: list of row dicts — the unconfirmed previous-session rows.
         Empty if no unconfirmed rows exist (test session closed) OR
-        TEST-LOG.md is missing, unreadable, or empty.
+        TEST-LOG is missing, unreadable, or empty.
       - build_log_status: 'ok' / 'missing' / 'unparseable' (per
         identify_previous_session). 'missing' is also returned when
-        TEST-LOG.md itself can't be resolved or read — the distinction
-        between "TEST-LOG missing" and "BUILD-LOG missing" doesn't matter
-        to callers (rows is empty in the TEST-LOG-missing case anyway).
+        TEST-LOG itself can't be resolved or read.
       - session_id: the previous session's ID (str) when BUILD-LOG could
         narrow, otherwise None.
 
     When BUILD-LOG can't narrow (status 'missing' or 'unparseable') AND
     TEST-LOG has rows, the returned rows include every unconfirmed row
-    across all sessions — strict fallback per V26 Q3 + V27 Q4
-    (safety-by-default: if we can't be sure which session each row belongs
-    to, any unconfirmed row signals an open test session).
+    across all sessions — strict fallback per V26 Q3 + V27 Q4.
 
     Callers:
       - pre_tool_use.py's check_test_confirmation_gate (V27, reframed V66):
         denies build-phase file edits when this returns non-empty rows
         and an active batch exists.
     """
-    test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
-    if test_log_path is None or not test_log_path.exists():
-        return [], "missing", None
-    text = safe_read_text(test_log_path)
-    if text is None:
-        return [], "missing", None
-    rows = parse_test_log_rows(text)
+    rows, _ = collect_all_test_log_rows(project_root)
     if not rows:
+        test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
+        if test_log_path is None or not test_log_path.exists():
+            return [], "missing", None
         return [], "ok", None
 
     session_id, build_log_status = identify_previous_session(project_root)

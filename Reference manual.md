@@ -108,13 +108,13 @@ After `/setup`, CLAUDE.md sits at the project root and everything else lives ins
 - **_method/UX.md** — user-facing app description. Every entry corresponds to something experienceable + a "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains by hand during planning.
 - **_method/BACKLOG/** — deferred work. Per-batch files only (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. The four index sections (Red flags, Planning batches, Build batches reference list, Open questions) live in `_method/proxies/backlog.md`. Reordering = moving lines in the proxy, not renaming files.
 - **_method/MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each entry: name + file path + description. Maintained by Claude during builds. The path field anchors a read-before-edit gate.
-- **_method/TEST-LOG.md** — row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude appends rows, runs automatable tests, leaves user-verified rows for planning read-back. Rows pruned when their component leaves MANIFEST.
+- **_method/test-log/** — per-session test files. Row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude writes a per-session file, runs automatable tests, leaves user-verified rows for planning read-back. Index lives at `_method/proxies/test-log.md`. Rows pruned when their component leaves MANIFEST.
 - **_method/build-log/** — per-build narrative files. What shipped / Decisions / Pivots / Carried forward / Performance. Index lives at `_method/proxies/build-log.md`. Queryable via grep across builds.
 
 `/setup` also creates inside `_method/`:
 - **_method/planning/drafts/** — holding area for content not yet ready for a specific doc.
 - **_method/research/** — findings from Claude's research. Zero maintenance. Persists for future sessions.
-- **_method/proxies/** — index and summary files. `backlog.md` and `build-log.md` are operational indexes (directly edited). `ux.md`, `manifest.md`, `test-log.md`, `research.md` are summaries regenerated for context efficiency.
+- **_method/proxies/** — index and summary files. `backlog.md`, `build-log.md`, and `test-log.md` are operational indexes (directly edited). `ux.md`, `manifest.md`, `research.md` are summaries regenerated for context efficiency.
 
 Projects can declare additional source-of-truth docs (e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`) — same locking rules as UX.md.
 
@@ -285,7 +285,7 @@ Every deny is prefixed `[No-code method]` with a `What to do:` line.
 | Planning | Accept edits | Planning procedure edits BACKLOG. |
 | Before-build | Accept edits | Writes Files: into BACKLOG. |
 | Build | Auto | Source-file edits. Hooks enforce boundaries. |
-| After-build | Auto | Writes MANIFEST, TEST-LOG, build-log. |
+| After-build | Auto | Writes MANIFEST, test-log, build-log. |
 | Pre-method ideation | Plan mode | No edits needed yet. |
 
 ### Permission prompts
@@ -312,7 +312,7 @@ Permissions flip based on project phase:
 | Additional source-of-truth docs | **read/write** | **locked** |
 | `BACKLOG.md` | read/write | read/write |
 | `MANIFEST.md` | read/write | read/write |
-| `TEST-LOG.md` | read/write | read/write |
+| `test-log/` | read/write | read/write |
 | `CLAUDE.md` | read/write | read/write |
 | Source code files | **locked** | batch file list only |
 | `research/` files | read/write | read/write |
@@ -372,4 +372,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 74.*
+*No-code method — Version 75.*

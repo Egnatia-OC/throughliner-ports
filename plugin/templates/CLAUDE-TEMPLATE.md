@@ -21,7 +21,7 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
   "BACKLOG.md": "_method/proxies/backlog.md",
   "BUILD-LOG.md": "_method/proxies/build-log.md",
   "MANIFEST.md": "_method/MANIFEST.md",
-  "TEST-LOG.md": "_method/TEST-LOG.md"
+  "TEST-LOG.md": "_method/proxies/test-log.md"
 }
 ```
 
@@ -41,4 +41,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 74.*
+*No-code method — Version 75.*

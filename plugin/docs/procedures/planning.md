@@ -22,7 +22,7 @@ Classify project state before loading the full doc set. Cold-start projects skip
 **Step 1 — always load:**
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows.
+2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows. In folder mode (path block → `proxies/test-log.md`): walk files in `test-log/`.
 
 **Step 2 — cold-start check:**
 
@@ -31,7 +31,7 @@ If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log
 **Step 3 — load remaining docs:**
 
 - **Always:** `UX.md`, `BACKLOG.md` (resolves to `_method/proxies/backlog.md` or legacy `BACKLOG/INDEX.md`; + per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
-- **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md` or legacy `build-log/INDEX.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
+- **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md` or legacy `build-log/INDEX.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG structure*.
 
 ## Procedure order
 
@@ -75,7 +75,7 @@ Implements *Never infer completion* and unblocks the test-confirmation gate. If 
 
 **Skipped requires a reason.** Skipped satisfies the gate only as "accounted for," not as passing.
 
-**Identifying previous batch rows:** if `build-log/INDEX.md` exists, read it → first reference → per-build file → H1 first token = session ID. Legacy `BUILD-LOG.md`: first `## <token>` heading. Filter TEST-LOG by matching Session. Fallback: every row with `Confirmed Explicitly: No` counts.
+**Identifying previous batch rows:** if `proxies/build-log.md` (or legacy `build-log/INDEX.md`) exists, read it → first reference → per-build file → H1 first token = session ID. Legacy `BUILD-LOG.md`: first `## <token>` heading. Filter TEST-LOG rows (across all per-session files in folder mode) by matching Session. Fallback: every row with `Confirmed Explicitly: No` counts.
 
 **Already done:** if all previous-batch rows are `Yes` or TEST-LOG is empty, log one line and proceed.
 
@@ -201,12 +201,13 @@ Single-file mode: skip. No aging items: skip silently.
 Prune before drift checks. Bounds file growth and reduces check 5's workload.
 
 1. Read MANIFEST.md — collect all entry names.
-2. Walk TEST-LOG rows:
+2. Walk TEST-LOG rows (in folder mode: across all per-session files in `test-log/`):
    - `Superseded` status → delete.
    - Component matches MANIFEST entry (case-insensitive) → keep.
    - Cross-component descriptive phrase → keep (exempt).
    - Specific element not in MANIFEST → delete.
-3. Surface: "Pruned N rows — [row #s, components, reasons]." Nothing pruned: skip silently.
+3. In folder mode: if an entire per-session file is emptied by pruning, delete the file and remove its index line from `proxies/test-log.md`.
+4. Surface: "Pruned N rows — [row #s, components, reasons]." Nothing pruned: skip silently.
 
 Deleted rows recoverable via git. Rows for existing components stay regardless of age.
 
@@ -216,4 +217,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 74.*
+*No-code method — Version 75.*

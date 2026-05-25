@@ -1,6 +1,4 @@
-# TEST-LOG.md
-
-One row per test for every shipped build batch. Maintained by Claude during builds and planning; user reviews and confirms in planning sessions. Full spec: `DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
+# Test session — <Session> — YYYY-MM-DD
 
 <!--
 Row format:
@@ -13,12 +11,7 @@ Confirmed: Yes (YYYY-MM-DD) — per-row confirmation done; No — transient pre-
 Types: Look and click, Run and read, Trigger and observe, Generate and inspect.
 
 Verifier: Claude (structural/factual, filled during after-build) or User (judgement/visual, confirmed in planning read-back).
-
-Ordering: newest-first. New rows go directly below the header separator.
 -->
 
 | # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-
----
-*No-code method — Version 74.*

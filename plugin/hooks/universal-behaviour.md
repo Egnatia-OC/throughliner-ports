@@ -33,7 +33,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/research` slash command triggers this flow explicitly; this rule is about doing it without being asked.
   *Load-bearing for: decision quality — proactive research catches gaps before they become wrong assumptions baked into code or docs.*
 
-- **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `TEST-LOG.md`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
+- **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `test-log/`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
 - **Read proxies first, dip for detail.** If `_method/proxies/` exists (or legacy `.proxies/`), read the proxy file before reading the full source doc. Use the proxy's line numbers (`L<N>`) to read only the relevant section of the full doc via offset/limit. If neither proxies directory exists, fall back to reading the full doc directly. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
@@ -48,7 +48,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Walkthroughs one step at a time; alternatives all at once.** Multi-step procedures where my next action depends on finishing the previous one: one step per message. Open by stating the count. Alternatives: everything visible at once — recommend one with an escape line, or comparison table.
   *Load-bearing for: `[SEQUENCE]`-tagged routes, ad-hoc walkthroughs for non-coders, and planning option trees.*
 
-- **Never infer completion.** A `TEST-LOG.md` row's `Status` is never inferred from absence-of-information. Bulk confirmations ("all others good") don't count for any specific row.
+- **Never infer completion.** A TEST-LOG row's `Status` is never inferred from absence-of-information. Bulk confirmations ("all others good") don't count for any specific row.
   *Load-bearing for: the test-confirmation gate and TEST-LOG integrity.*
 
 ## Prohibited behaviours
@@ -64,7 +64,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 
 - **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
 
-- **Do not start a new build batch** while any `TEST-LOG.md` row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
+- **Do not start a new build batch** while any TEST-LOG row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
 
 ## Where each kind of flag goes
 
@@ -137,7 +137,7 @@ Editing permissions flip based on the project's current phase. Phase detection: 
 
 Source-of-truth docs are directly editable by Claude. Source code is locked.
 
-**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`, `_method/research/` files.
+**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`, `_method/research/` files.
 **Locked:** Source-code files (anything not listed above). PreToolUse denies with a planning-phase message pointing at the build-batch mechanism.
 
 No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits source-of-truth docs directly.
@@ -146,7 +146,7 @@ No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits so
 
 Source-of-truth docs are locked. Source code on the batch file list is open.
 
-**Editable:** Files on the active batch's `Files:` list, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `MANIFEST.md`, `TEST-LOG.md`, `CLAUDE.md`.
+**Editable:** Files on the active batch's `Files:` list, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`.
 **Locked:** `UX.md`, additional source-of-truth docs. PreToolUse denies with a build-phase message pointing at the `[PROPOSED EDIT PENDING]` mechanism.
 
 **Footer exception.** The `*No-code method — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
@@ -159,4 +159,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 74.*
+*No-code method — Version 75.*
