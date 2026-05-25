@@ -57,7 +57,7 @@ See *Managing the plugin* below for disable/re-enable/uninstall.
 **First session:**
 - Open Claude Code in the project folder. Run `/setup`.
 - `/setup` detects the case (empty, existing code, foreign docs, already managed) and runs the matching dialogue.
-- For empty folders: scaffolds spine docs and walks four prompts (project context, UX principles, core functionalities, first batch sketch).
+- For empty folders: scaffolds spine docs and walks four prompts (product overview, UX principles, core functionalities, first batch sketch).
 - Claude writes directly to UX.md during setup (planning phase — docs are open). The no-coder converts the first-batch sketch into a build batch with a `Serves UX.md:` line.
 - Run `/before-build` to lock the batch, then `/build` to execute. The plugin orchestrates the rest.
 
@@ -104,7 +104,7 @@ Only loaded for that session. Close and start without the flag.
 
 Six items sit in the project root after `/setup`, plus two folders:
 
-- **CLAUDE.md** — entry point. JSON path block tells Claude where docs live. Read every session.
+- **CLAUDE.md** — entry point. Product overview (what the product is, who it's for, what friction it solves, milestones) plus JSON path block telling Claude where docs live. Read every session.
 - **UX.md** — user-facing app description. Every entry corresponds to something experienceable + a "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains by hand during planning.
 - **BACKLOG/** — deferred work. `INDEX.md` carries four sections: Red flags, Planning batches, Build batches (reference list), Open questions. Each build batch lives in its own file (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. Reordering = moving lines in INDEX.md, not renaming files.
 - **MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each entry: name + file path + description. Maintained by Claude during builds. The path field anchors a read-before-edit gate.
@@ -163,12 +163,12 @@ The `Changes:` delimiter separates the two regions.
 ### Starting from scratch
 
 Empty folder → `/setup` → four prompts:
-1. **Project context.** What the app does and what makes it distinct.
+1. **Product overview.** What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.
 2. **UX principles.** For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*.
 3. **Core functionalities.** Three to five features with "user needs this because…" lines.
 4. **First batch sketch.** Smallest end-to-end buildable thing.
 
-Claude writes answers directly to UX.md (planning phase — docs are open). No-coder seeds the first build batch.
+Claude writes the overview to CLAUDE.md and the project context to UX.md (planning phase — docs are open). No-coder seeds the first build batch.
 
 ### Risk accepted in action
 
@@ -342,4 +342,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 68.*
+*No-code method — Version 69.*

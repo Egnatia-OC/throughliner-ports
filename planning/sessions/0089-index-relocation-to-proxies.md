@@ -29,7 +29,7 @@ Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.
 - `plugin/scripts/parse_backlog.py` — resolve BACKLOG index at `.proxies/backlog.md` (fallback to `BACKLOG/INDEX.md` for pre-proxy projects).
 
 **Procedure doc updates:**
-- `plugin/docs/procedures/after-build.md` — prepend build-log lines to `.proxies/build-log.md`.
+- `plugin/docs/procedures/after-build.md` — prepend build-log lines to `.proxies/build-log.md`. Add a proxy regeneration step: after MANIFEST update and build-log/test-log writes, regenerate all stale `.proxies/` files (UX, MANIFEST, build-log, test-log, research). Discovered 2026-05-25 ideation session — v81 shipped proxy generation for planning and setup but never added it to after-build.
 - `plugin/docs/procedures/planning.md` — read BACKLOG state from `.proxies/backlog.md`.
 
 **Hook updates:**
@@ -62,7 +62,7 @@ Move BACKLOG INDEX.md and build-log INDEX.md content into `.proxies/`, making `.
 1. BACKLOG/ contains only per-batch files; `.proxies/backlog.md` carries the four sections.
 2. build-log/ contains only per-build files; `.proxies/build-log.md` carries the index list.
 3. Parser resolves BACKLOG from `.proxies/backlog.md` with fallback to old location.
-4. After-build prepends to `.proxies/build-log.md`.
+4. After-build prepends to `.proxies/build-log.md` and regenerates all stale proxies.
 5. Session start detects state from `.proxies/` locations.
 6. `/setup` case 4 migrates old INDEX.md files to `.proxies/`.
 7. Pre-proxy projects still work (fallback paths).

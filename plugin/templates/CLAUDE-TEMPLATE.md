@@ -1,6 +1,15 @@
 # CLAUDE.md — [Project Name]
 
-Claude Code auto-loads this file on session start. The plugin's canonical docs live inside the no-code-method plugin (`plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`). This file owns the path block below and any project-specific behavioural notes after it.
+Claude Code auto-loads this file on session start. The plugin's canonical docs live inside the no-code-method plugin (`plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/hooks/universal-behaviour.md`). This file owns the product overview, the path block, and any project-specific behavioural notes after them.
+
+## Product overview
+
+<!-- Populated during /setup. Update milestones during planning as the project evolves. -->
+
+**What it is.** 
+**Who it's for.** 
+**What friction it solves.** 
+**Milestones.** 
 
 ## Where the docs live
 
@@ -32,4 +41,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 68.*
+*No-code method — Version 69.*

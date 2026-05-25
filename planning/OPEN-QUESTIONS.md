@@ -6,6 +6,18 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 ---
 
+## Parent-directory CLAUDE.md inheritance — placement constraint
+
+**The question.** Should the plugin document the risk that placing a project folder inside another project's tree causes Claude Code's parent-directory CLAUDE.md inheritance to poison the session? And if so, where — Reference manual, setup procedure warning, or both?
+
+**Why it matters.** Surfaced twice during E2E testing (v79, findings 1 and 5). When the Polite Fart Announcer burner folder was placed inside the no-code-method tree, the parent CLAUDE.md made Claude think it was in the method dev project. The v79 research file noted "not a plugin bug but a placement constraint worth documenting" — but it was never documented anywhere. This is a real footgun for users who organise projects in nested folders.
+
+**Working notes.** The plugin can't control Claude Code's inheritance behaviour. The fix is awareness: warn users during `/setup` if the project root has a parent-directory CLAUDE.md, and document the constraint in the Reference manual. Could also add a SessionStart check that detects parent CLAUDE.md files and surfaces an advisory.
+
+**Next step.** Ready to promote. Small scope — documentation + optional SessionStart advisory. Restored during 2026-05-25 ideation session.
+
+---
+
 ## Project-boundary hook bypass via Bash
 
 **The question.** The project-boundary PreToolUse hook (0065) blocks `Edit`/`Write`/`MultiEdit` outside the project root, but `Bash` commands (`sed`, `echo >`, PowerShell `Set-Content`, etc.) bypass it entirely. Should the plugin add a Bash-matcher PreToolUse check for common file-write patterns, similar to how the git safety guard matches `git reset --hard` and `git push --force`?
@@ -24,7 +36,7 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 **Why it matters.** Surfaced 2026-05-24 during E2E testing research. `parse_backlog.py` validates BACKLOG structure, but TEST-LOG, build-log entries, and scope-context sections have no equivalent validation. Malformed docs cause silent failures downstream (subagents misread state, hooks gate on wrong data). A general lint could run as a PostToolUse check or a planning-session pre-flight.
 
-**Next step.** Park. Revisit when E2E testing surfaces concrete instances of malformed docs causing problems.
+**Next step.** Promote after the proxy layer ships (0081/0089/0090). Proxies add another structured format with specific shape requirements — validation becomes more valuable as the number of structured doc types grows. The original parking rationale ("revisit when E2E surfaces problems") was a dead trigger: two E2E rounds ran without explicitly checking for malformed-doc failures. Restored during 2026-05-25 ideation session.
 
 ---
 
@@ -56,7 +68,11 @@ Format and lifecycle: project `CLAUDE.md` → *Open questions*.
 
 **Why it matters.** Surfaced 2026-05-22. Walking V-file *Risks / dependencies* revealed conflation between build-dependency risk and security risk. Dependencies landed; Risks scoped out. No doc currently carries "be paranoid about this part."
 
-**Next step.** **Partially shipped V47 (session v51).** Batch-level Red flags sub-section shipped — planning subagent auto-detects security-shaped scope and writes a persistent section. Remaining: threat-class marker on UX.md entries — unscheduled.
+**What shipped.** Batch-level Red flags sub-section shipped V47 (session v51) — planning auto-detects security-shaped scope and writes a persistent section.
+
+**What remains.** Threat-class marker on individual UX.md entries — so security-shaped features are flagged at the spec level, not just at the batch level. A UX entry for "user authentication" or "payment processing" would carry a visible marker that downstream batch planning and build sessions can key off. Currently a feature can touch a security surface without any spec-level signal.
+
+**Next step.** Ready to promote. Could fold into a planning or UX-template session, or stand alone as a small scope. Restored from stale "unscheduled" status during 2026-05-25 ideation session.
 
 ---
 

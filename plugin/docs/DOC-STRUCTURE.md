@@ -6,6 +6,21 @@ Structural specs for project documents — required sections, entry shapes, addi
 
 Method terms defined in `VOCABULARY.md` (sibling). Each procedure doc's opening section names what that phase reads.
 
+## Product overview (CLAUDE.md)
+
+`## Product overview` at the top of CLAUDE.md, before the path block. Four fields:
+
+- **What it is.** One-sentence product description.
+- **Who it's for.** Intended user or audience.
+- **What friction it solves.** The tension or problem the product addresses.
+- **Milestones.** What the user is working toward, with rough timeframes if known.
+
+**When written.** `/setup` populates the section through conversation — Claude asks, user answers, Claude writes. Not a form. The answer also seeds UX.md's *Project context*.
+
+**When updated.** Planning sessions, when milestones shift or the product's framing evolves. Editable in both phases (CLAUDE.md is always read/write).
+
+**Existing projects.** Projects adopted before this section won't have it. `/setup` case 4 detects the missing section and asks the overview question as a backfill step.
+
 ## Additional source-of-truth docs
 
 Some projects need an extra source-of-truth doc the spine docs don't cover. Common examples: `SYSTEM-PROMPT.md` (Claude/MCP projects), `COPY.md` (user-facing text is the deliverable), `PATTERNS.md` (coding conventions), `API.md` (endpoint/payload specs). Not a required set — create as needed.
@@ -295,4 +310,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 68.*
+*No-code method — Version 69.*

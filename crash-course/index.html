@@ -732,7 +732,7 @@
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/><path d="M24 16v16M16 24h16" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round"/></svg>
           <h3>CLAUDE.md</h3>
-          <p>Entry point. Tells Claude where your docs live and how to behave. Read every session.</p>
+          <p>Entry point. Product overview (what it is, who it's for, what tension it solves, milestones) plus path block telling Claude where your docs live. Read every session.</p>
         </div>
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/><circle cx="24" cy="22" r="5" stroke="#16A34A" stroke-width="2"/><path d="M14 36c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#16A34A" stroke-width="2" stroke-linecap="round"/></svg>
@@ -839,12 +839,12 @@
 
       <h3>The four prompts (empty folder)</h3>
       <ol class="steps">
-        <li><strong>Project context.</strong> What the app does and what makes it distinct.</li>
+        <li><strong>Product overview.</strong> What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.</li>
         <li><strong>UX principles.</strong> High-level rules for how the app should feel.</li>
         <li><strong>Core functionalities.</strong> Three to five features with rationale lines.</li>
         <li><strong>First batch sketch.</strong> The smallest end-to-end buildable thing.</li>
       </ol>
-      <p>Claude writes answers directly to UX.md (docs are open during setup). Then you seed the first build batch.</p>
+      <p>Claude writes the overview to CLAUDE.md and the project context to UX.md (docs are open during setup). Then you seed the first build batch.</p>
 
       <h2 id="managing">Managing the plugin</h2>
       <p>Once installed, the plugin fires in every folder. Here's how to control it.</p>
@@ -882,8 +882,8 @@
       <p>Taskflow begins as an empty folder. Running <code>/setup</code> walks through four prompts:</p>
 
       <div class="card">
-        <h3>1. Project context</h3>
-        <p>What the app does and what makes it distinct. For Taskflow: a task-planning app that treats today as the only screen that matters.</p>
+        <h3>1. Product overview</h3>
+        <p>What the product does, who it's for, what makes it distinct or what tension it solves, and milestones. For Taskflow: a task-planning app for people who find planning tools stressful, working toward MVP.</p>
       </div>
       <div class="card">
         <h3>2. UX principles</h3>

@@ -32,7 +32,7 @@ No CLAUDE.md, no substantial work.
 
 **Four questions (one per message, wait for each):**
 
-1. **Project context.** "What does this app do, and what makes it distinct?" → UX.md *Project context*.
+1. **Product overview.** "Tell me about your product. What does it do, who is it for, and what makes it distinct — or what specific tension does it resolve? And are there milestones you're working toward?" → CLAUDE.md *Product overview* (all four fields) + UX.md *Project context* (synthesized from the product description). If the answer doesn't cover all four fields, follow up once before moving on.
 2. **UX principles.** "What 3–6 principles should guide every design decision?" → *UX principles*.
 3. **Core functionalities.** "What are the 3–5 must-have features? For each: one-paragraph experience description + one-line `user needs this because…` rationale." → *Functionalities*.
 4. **First batch sketch.** "Which is the smallest end-to-end thing we can build and test first?" → top BACKLOG batch.
@@ -40,7 +40,7 @@ No CLAUDE.md, no substantial work.
 After answers:
 1. Run `check`. If `ready: false`, surface conflicts and stop.
 2. Run `write`. Surface files list.
-3. Apply answers — edit UX.md (PreToolUse exempts scaffold paths during transition). Seed BACKLOG batch (folder mode: create per-batch file + INDEX.md reference).
+3. Apply answers — fill CLAUDE.md Product overview from Q1. Edit UX.md Project context from the same answer (PreToolUse exempts scaffold paths during transition). Seed BACKLOG batch (folder mode: create per-batch file + INDEX.md reference).
 
 After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
 
@@ -112,6 +112,8 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After TEST-LOG — BUILD-LOG folder migration (V50).** If flat `BUILD-LOG.md`: create `build-log/`, extract entries to per-build files, create INDEX.md, update path block, delete old file.
 
+**After BUILD-LOG — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
+
 **Recap:** "Refreshed (case 4). Bumped footers on [list]. [Migrations performed.]"
 
 **Option 2:** "No changes. Wrong folder?"
@@ -134,4 +136,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 68.*
+*No-code method — Version 69.*
