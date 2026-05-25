@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v85-scaffold-quality-fixes.md](v85-scaffold-quality-fixes.md) — 2026-05-26 — Scaffold quality fixes
 - [v84-first-time-ux.md](v84-first-time-ux.md) — 2026-05-26 — First-time user experience
 - [v83-research-search-flow.md](v83-research-search-flow.md) — 2026-05-26 — Research search flow
 - [v82-claude-template-product-overview.md](v82-claude-template-product-overview.md) — 2026-05-25 — CLAUDE template product overview

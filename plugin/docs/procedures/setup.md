@@ -40,7 +40,11 @@ No CLAUDE.md, no substantial work.
 After answers:
 1. Run `check`. If `ready: false`, surface conflicts and stop.
 2. Run `write`. Surface files list.
-3. Apply answers — fill CLAUDE.md Product overview from Q1. Edit UX.md Project context from the same answer (PreToolUse exempts scaffold paths during transition). Seed BACKLOG batch (folder mode: create per-batch file + INDEX.md reference).
+3. Apply answers:
+   - **Q1 →** CLAUDE.md Product overview (all four fields) + UX.md Project context (synthesized from the product description).
+   - **Q2 →** UX.md UX principles section. Write every principle the user agreed to — replace the template placeholders with the full set.
+   - **Q3 →** UX.md Functionalities section. Write every functionality with its experience description and rationale.
+   - **Q4 →** Seed BACKLOG batch (folder mode: create per-batch file with `Status: queued` line + INDEX.md reference).
 
 After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
 
@@ -57,7 +61,7 @@ Substantial work but no CLAUDE.md.
 **Option 1:**
 1. Glob check for spine-doc filenames in subdirs.
 2. Run `check` (expect `ready: true`), then `write`.
-3. Walk four new-project questions. User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session.
+3. Walk four new-project questions (same as Case 1). User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session. Apply answered questions using the same Q1–Q4 mapping as Case 1 step 3.
 
 After applying answers, regenerate proxies: read each source doc, write the matching `.proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (.proxies/)*.
 
@@ -83,7 +87,7 @@ CLAUDE.md present but no method footer. Probably from Claude Code's `/init` — 
 **Option 2 (overwrite):**
 1. Backup: `cp CLAUDE.md CLAUDE.md.foreign-backup-<date>`.
 2. Remove original (try bash `rm`; if ACL fails, ask user to delete manually).
-3. Run `write`. Walk four questions.
+3. Run `write`. Walk four questions. Apply answered questions using the same Q1–Q4 mapping as Case 1 step 3.
 
 **Option 3:** "No changes made."
 
@@ -136,4 +140,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 71.*
+*No-code method — Version 72.*

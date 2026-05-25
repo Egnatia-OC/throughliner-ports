@@ -214,19 +214,27 @@ def cmd_write(target_dir: Path) -> int:
             "expected_in": str(src_dir),
         }, exit_code=4)
 
+    project_name = target_dir.name
+
     written = []
     for tpl_name, dest_name in TEMPLATE_TO_DESTINATION:
-        shutil.copyfile(src_dir / tpl_name, target_dir / dest_name)
+        content = (src_dir / tpl_name).read_text(encoding="utf-8")
+        content = content.replace("[Project Name]", project_name)
+        (target_dir / dest_name).write_text(content, encoding="utf-8")
         written.append(dest_name)
 
     backlog_dir = target_dir / "BACKLOG"
     backlog_dir.mkdir(exist_ok=True)
-    shutil.copyfile(backlog_index_tpl, backlog_dir / BACKLOG_INDEX_DEST)
+    content = backlog_index_tpl.read_text(encoding="utf-8")
+    content = content.replace("[Project Name]", project_name)
+    (backlog_dir / BACKLOG_INDEX_DEST).write_text(content, encoding="utf-8")
     written.append("BACKLOG/INDEX.md")
 
     build_log_dir = target_dir / "build-log"
     build_log_dir.mkdir(exist_ok=True)
-    shutil.copyfile(build_log_index_tpl, build_log_dir / BUILD_LOG_INDEX_DEST)
+    content = build_log_index_tpl.read_text(encoding="utf-8")
+    content = content.replace("[Project Name]", project_name)
+    (build_log_dir / BUILD_LOG_INDEX_DEST).write_text(content, encoding="utf-8")
     written.append("build-log/INDEX.md")
 
     drafts_dir = target_dir / "planning" / "drafts"
