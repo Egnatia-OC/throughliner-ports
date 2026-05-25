@@ -1,60 +1,61 @@
-# 0081 — Machine-readable proxy layer for method docs
+# 0081 — Proxy format and companion proxies
 
 ## Goal
 
-Create compact, machine-readable proxy files for UX.md and MANIFEST.md that give Claude what it needs (entry names, paths, one-line summaries) without loading the full human-readable docs into context. Claude reads the proxy first, then dips into specific sections of the real doc when it needs detail.
+Define the proxy file format and create companion proxies for UX.md, MANIFEST.md, TEST-LOG.md, and a new index proxy for research/. This establishes `.proxies/` as the universal lightweight-index layer. Claude reads proxies first, dips into full docs for detail via offset/limit.
 
-This is the context-management replacement for subagents. Instead of a dedicated agent context that loads only what it needs, main Claude reads lightweight proxies and uses offset/limit to pull individual sections on demand.
+This is Session A of a three-way split. Session B (0089) relocates BACKLOG and build-log INDEX.md content into `.proxies/`. Session C (0090) splits TEST-LOG.md into a folder with `.proxies/test-log.md` as its index.
 
 ## Inputs
 
-- A consumer project's `UX.md` (e.g. Taskflow's) — to understand what a real UX doc looks like and what Claude typically needs from it.
-- A consumer project's `MANIFEST.md` — same.
-- `plugin/docs/DOC-STRUCTURE.md` — current doc structure spec.
-- `plugin/hooks/session_start.py` — currently reads full docs for state detection; could read proxies instead.
+- A consumer project's `UX.md` and `MANIFEST.md` (e.g. Taskflow's) — to design proxy content against real docs.
+- `plugin/docs/DOC-STRUCTURE.md` — current doc structure spec (receives proxy format section).
+- `plugin/docs/procedures/planning.md` — receives "regenerate proxies" step.
+- `plugin/docs/procedures/setup.md` — receives "generate initial proxies" step.
+- `plugin/hooks/universal-behaviour.md` — receives "read proxy first" rule.
 
 ## Outputs
 
-**Proxy format spec (1 file):**
-- `plugin/docs/DOC-STRUCTURE.md` — new section defining proxy file format. One proxy per source-of-truth doc. Compact structured format (JSON or terse markdown TBD) listing:
-  - Header block: what this doc is, who it's for, why it exists. Gives Claude orientation without opening the full doc.
-  - UX proxy: every Functionalities heading + one-line summary + line number in the real doc.
-  - MANIFEST proxy: every entry name + path + line number in the real doc.
-  - Line numbers enable Claude to read just the relevant section via offset/limit.
+**Proxy format spec:**
+- `plugin/docs/DOC-STRUCTURE.md` — new section defining proxy format: location (`.proxies/`), terse-markdown shape (header block + entry index with line numbers), regeneration rules.
 
-**Proxy generation rule (procedure doc):**
-- Planning procedure doc (from 0079) updated: at the end of planning, after editing source-of-truth docs, Claude regenerates affected proxies. This keeps proxies in sync without hooks or scripts.
+**Proxy templates (4 files):**
+- `plugin/templates/.proxies/ux.md` — template for UX proxy.
+- `plugin/templates/.proxies/manifest.md` — template for MANIFEST proxy.
+- `plugin/templates/.proxies/test-log.md` — template for TEST-LOG proxy.
+- `plugin/templates/.proxies/research.md` — template for research index.
 
-**Template updates (2 files):**
-- `plugin/templates/UX-TEMPLATE.md` — comment or note explaining the proxy companion file.
-- `plugin/templates/MANIFEST-TEMPLATE.md` — same.
+**Procedure doc updates (2 files):**
+- `plugin/docs/procedures/planning.md` — regenerate affected proxies after editing source-of-truth docs.
+- `plugin/docs/procedures/setup.md` — generate initial proxies after scaffolding.
 
-**Setup procedure update:**
-- Setup procedure doc (from 0079) updated: `/setup` generates initial proxies after scaffolding docs.
+**Behaviour rule (1 file):**
+- `plugin/hooks/universal-behaviour.md` — add "read proxy first, dip into full doc for detail" required behaviour.
 
-**Hook update (1 file):**
-- `plugin/hooks/session_start.py` — read proxies instead of full docs for state summary. Falls back to full doc if proxy is missing (backwards compatibility with pre-proxy projects).
+**Vocabulary (1 file):**
+- `plugin/docs/VOCABULARY.md` — proxy definition.
 
-**Docs:**
-- `plugin/docs/DOC-STRUCTURE.md` — proxy format spec and generation rules.
-- `plugin/hooks/universal-behaviour.md` — add "read proxy first, dip into full doc for detail" as a required behaviour.
+**Scaffold update (1 file):**
+- `plugin/skills/setup/scripts/scaffold.py` — create `.proxies/` and generate initial proxy files during `/setup`.
 
 ## Success criteria
 
-1. Claude can determine what UX features exist and what MANIFEST entries exist by reading proxy files (~20-30 lines each) instead of full docs (~200+ lines each).
-2. When Claude needs detail on a specific feature or entry, it reads only that section of the full doc using offset/limit.
-3. Proxies are regenerated by Claude at the end of planning — no scripts, no hooks, no manual maintenance.
-4. Session start hook reads proxies for state detection when available.
-5. Projects without proxies (pre-existing, not yet regenerated) still work — all proxy reads have a full-doc fallback.
+1. Proxy format spec defined and documented in DOC-STRUCTURE.md.
+2. Templates exist for all four proxy types.
+3. `/setup` scaffolds `.proxies/` with initial proxy files.
+4. Planning procedure includes proxy regeneration as a final step.
+5. universal-behaviour.md includes the "read proxy first" rule.
+6. Projects without `.proxies/` still work — all proxy reads have a full-doc fallback.
 
 ## Open questions for this session
 
-1. **Proxy format.** JSON (most compact, easy to parse) or terse markdown (more readable if a human opens it)? JSON is ~40% smaller but requires Claude to parse it. Terse markdown is slightly larger but Claude reads it natively.
-2. **Which docs get proxies.** UX.md and MANIFEST.md are clear candidates. Should BACKLOG get one? BACKLOG is already structured (batches with headings) and changes frequently — proxy staleness risk is higher.
-3. ~~**Proxy location.**~~ Resolved: dedicated folder (e.g. `.proxies/`). Each proxy includes a description of what the doc is, who it's for, and why it exists — so Claude gets orientation without opening the real doc.
+All resolved:
+1. ~~Proxy format~~ → Terse markdown.
+2. ~~Which docs~~ → UX, MANIFEST, TEST-LOG, research (companions). BACKLOG and build-log proxies come in 0089 (INDEX relocation).
+3. ~~Proxy location~~ → `.proxies/`.
 
 ## Risks / dependencies
 
-- **Depends on 0079** (procedure docs exist to receive the "regenerate proxies" step) and **0080** (docs are editable during planning, so proxy regeneration can happen).
-- **Staleness risk.** If Claude forgets to regenerate proxies after editing, they drift. Mitigation: the planning procedure's final step includes proxy regeneration. A PostToolUse hook could enforce this but adds complexity — defer unless staleness becomes a real problem.
-- **Low blast radius.** Additive — new files, new behaviour rule, session_start update. Doesn't break anything if proxies are missing.
+- Depends on 0079 (procedure docs — shipped v77) and 0080 (phase-aware editing — shipped v78).
+- Low blast radius. Additive — new files, new format spec, procedure and behaviour updates. Nothing breaks if proxies are missing (fallback to full doc).
+- TEST-LOG proxy starts as a companion to the single file; 0090 upgrades it to the folder index when TEST-LOG splits.

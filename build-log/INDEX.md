@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v80-proxy-layer-rescope.md](v80-proxy-layer-rescope.md) — 2026-05-25 — Proxy layer three-way split
 - [v79-greenfield-e2e-planning.md](v79-greenfield-e2e-planning.md) — 2026-05-25 — Greenfield E2E: post-redesign planning phase
 - [v78-doc-permission-flip.md](v78-doc-permission-flip.md) — 2026-05-25 — Phase-aware editing surfaces
 - [v77-subagent-removal-code-and-procedures.md](v77-subagent-removal-code-and-procedures.md) — 2026-05-25 — Subagent removal: code and procedures
