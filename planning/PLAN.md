@@ -1,4 +1,4 @@
-# Plan — V17 onwards
+﻿# Plan — V17 onwards
 
 Session-by-session roadmap for the plugin migration. Companion to `INVENTORY.md` and the Opus feasibility response (`claude-code-plugin-feasibility-response.md`).
 
@@ -74,10 +74,14 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0078 | ~~Post-fix E2E validation (Taskflow)~~ | **Cancelled.** Validates 0073/0074 in old architecture; 0072 already shipped. Nothing left to validate. |
 | 0079 | Subagent removal: code and procedures | Remove all 5 subagents. Convert to procedure docs. Delete Stop hook. Rewrite session_start/PreToolUse/skills to route to docs instead of spawning agents. **Shipped v77.** |
 | 0080 | Doc permission flip: phase-aware editing | Unlock source-of-truth docs (UX, MANIFEST, additional) during planning. Lock source code during planning. Reverse during build. Phase detected via BACKLOG batch status. Depends on 0079. **Shipped v78.** |
-| 0084 | Greenfield E2E: post-redesign full cycle | Full lifecycle test from `/setup` through build with a burner app. First E2E of procedure-doc architecture and greenfield path. Depends on 0079, 0080. |
+| 0084 | Greenfield E2E: post-redesign full cycle | Planning-phase E2E of procedure-doc architecture. /setup works when invoked; Claude ignores routing hint for uninformed users; build transition opaque. **Shipped v79.** |
 | 0081 | Machine-readable proxy layer | Compact proxy files in `.proxies/` for UX and MANIFEST. Header block (what/who/why) + entry index with line numbers. Claude reads proxy first, dips into full doc selectively. Depends on 0079, 0080. |
 | 0082 | CLAUDE template product overview | Product overview section in CLAUDE.md: what it is, who it's for, what friction it solves, milestones. Populated by `/setup` conversation. Depends on 0079, 0080. |
 | 0083 | Gemini search MCP server | Python MCP server + `/research` skill; query-file template; proactive search flow with user approval. |
+| 0085 | First-time user experience | /setup enforcement in PreToolUse deny + build-transition UX in before-build procedure. Depends on 0084. |
+| 0086 | Scaffold quality fixes | [Project Name] replacement, UX principle capture, Status: line, marketplace.json description. Depends on 0084. |
+| 0087 | Doc folder restructure | Move spine docs into dedicated subfolder. Large surface area. Depends on 0085, 0086. |
+| 0088 | Build E2E test | Build-phase E2E: /before-build through /build through after-build. Picks up from 0084. Depends on 0085 soft. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
 60 sessions through 0078, plus V60+ TBD. Four cancelled (0073, 0076, 0077, 0078) — superseded by architecture redesign (subagent removal, hook-only enforcement, main-Claude conversation ownership). New scope files for the redesign follow.

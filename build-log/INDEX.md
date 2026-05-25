@@ -1,4 +1,4 @@
-# Build log
+﻿# Build log
 
 Running record of decisions, changes, and reasoning. Newest first. Written for a friend skimming — half a page per session, less when possible.
 
@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v79-greenfield-e2e-planning.md](v79-greenfield-e2e-planning.md) — 2026-05-25 — Greenfield E2E: post-redesign planning phase
 - [v78-doc-permission-flip.md](v78-doc-permission-flip.md) — 2026-05-25 — Phase-aware editing surfaces
 - [v77-subagent-removal-code-and-procedures.md](v77-subagent-removal-code-and-procedures.md) — 2026-05-25 — Subagent removal: code and procedures
 - [v76-dev-side-log-folder-migration.md](v76-dev-side-log-folder-migration.md) — 2026-05-25 — Dev-side log folder migration
