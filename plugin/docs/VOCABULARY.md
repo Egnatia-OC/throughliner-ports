@@ -6,7 +6,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Build batch.** Engineering changes in BACKLOG, small enough to build and test in one session. Ends with a `Serves` line naming the source-of-truth entries it implements. May include `Inputs:` line.
 
-- **Files: sub-section.** `- [ ]`→`- [x]` task list of files a build batch will modify, with path and one-sentence summary. Written by before-build; ticked by batch-executor. PreToolUse enforces batch boundaries. Full rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
+- **Files: sub-section.** `- [ ]`→`- [x]` task list of files a build batch will modify, with path and one-sentence summary. Written by before-build; ticked during the build. PreToolUse enforces batch boundaries. Full rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
 
 - **Batch-sizing principle.** Right size = verification burden (distinct observable behaviours to test), not lines/files. Split when small batch has long test list; bundle no-behaviour items; never fragment arbitrarily. Applied during before-build.
 
@@ -34,11 +34,11 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Proposed-edits section.** `## Proposed edits pending` at bottom of every read-only doc. Where Claude queues blocks. PreToolUse allows edits within this section only. Full spec: `DOC-STRUCTURE.md`.
 
-- **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by before-build; consumed by batch-executor. Full rules: `DOC-STRUCTURE.md`.
+- **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by before-build; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
 
 - **Open question (BACKLOG).** Non-blocking parking in BACKLOG's Open questions section. Has question, *Why it matters*, *Next step* trigger. Distinct from planning batches (which name what they block). Promoted to planning batch when it blocks something specific.
 
-- **Planning session (not plan mode).** The method's planning phase — confirming tests, drift checks, sorting ideas, editing BACKLOG. Requires Accept edits mode (planning subagent writes to BACKLOG). Distinct from Claude Code's plan mode (Shift+Tab), which blocks all edits.
+- **Planning session (not plan mode).** The method's planning phase — confirming tests, drift checks, sorting ideas, editing BACKLOG. Requires Accept edits mode (planning procedure writes to BACKLOG). Distinct from Claude Code's plan mode (Shift+Tab), which blocks all edits.
 
 - **Test type.** Four categories:
   - **Look and click** — UI interaction. Structural checks → Claude; judgement → user.
@@ -71,7 +71,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Row pruning (TEST-LOG).** Auto-deletion of rows whose Component has no MANIFEST match, plus `Superseded` rows. Runs at planning step 2c. Cross-component rows exempt.
 
-- **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by before-build and batch-executor.
+- **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by the before-build and build procedures.
 
 - **Build log entry.** Per-build narrative in `build-log/NNN-name.md`. Shape: What shipped / Decisions / Pivots / Carried forward + Performance section.
 
@@ -95,7 +95,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Pass / Fail / Skipped.** TEST-LOG Status values. Pass: behaviour matched. Fail: didn't match (Notes required). Skipped: user chose not to test (reason required in Notes); satisfies gate only as "accounted for."
 
-- **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks batch-executor. Subagent side: planning's per-row read-back.
+- **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 65.*
+*No-code method — Version 66.*

@@ -1,12 +1,6 @@
----
-name: setup
-description: Use to handle /setup's four-case dialogue. Classifies project root (empty / existing code no docs / existing code foreign docs / already adopted) and runs the matching flow. Resolves the unadopted-folder state that SessionStart advisory and PreToolUse gate protect.
-tools: Read, Edit, Write, Bash, Glob, Grep
----
+# /setup procedure — no-code method
 
-# /setup subagent — no-code method
-
-You handle one job: bring a folder under the method's discipline. Main Claude spawned you when the user ran `/setup`. The dialogue stays here — main Claude only sees your final recap.
+Follow this procedure when the user runs `/setup`. Bring a folder under the method's discipline.
 
 ## Framing: the method adopts the folder
 
@@ -122,7 +116,7 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 ## Closing
 
-Final message = the Recap sentence(s). Main Claude surfaces it verbatim. Don't append extra commentary.
+Final output = the Recap sentence(s). Don't append extra commentary.
 
 ## Errors
 
@@ -130,11 +124,10 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ## What you don't do
 
-- Don't plan, build, test, or invoke other subagents.
+- Don't plan, build, or test.
 - Don't touch files outside scaffold-path list + backups.
 - Don't re-classify after detect-case.
-- Don't spawn inner agents for single-tool-call operations.
 
 ---
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

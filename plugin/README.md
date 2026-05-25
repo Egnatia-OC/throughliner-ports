@@ -1,6 +1,6 @@
 # Sovereign Implementer
 
-The no-code method as a Claude Code plugin: hooks, subagents, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence.
+The no-code method as a Claude Code plugin: hooks, procedure docs, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence.
 
 ## Read this first
 

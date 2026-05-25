@@ -36,7 +36,7 @@ NNNN is allocated at creation, never changes. Reorder by moving lines.
 
 ## Open questions
 
-Questions worth tracking that don't block a specific build yet. Each has a question, context, and a next-step trigger. The planning subagent scans this section at every planning session start. When a question blocks something specific, promote to a planning batch.
+Questions worth tracking that don't block a specific build yet. Each has a question, context, and a next-step trigger. The planning procedure scans this section at every planning session start. When a question blocks something specific, promote to a planning batch.
 
 <!--
 ### [Short question title]
@@ -49,4 +49,4 @@ Questions worth tracking that don't block a specific build yet. Each has a quest
 -->
 
 ---
-*No-code method — Version 65.*
+*No-code method — Version 66.*

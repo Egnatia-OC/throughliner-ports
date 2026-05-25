@@ -123,7 +123,7 @@ Don't reintroduce "subagents read NO-CODE-METHOD.md at runtime." The two-write d
 
 ## Testing
 
-Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; subagents invoke; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `test-log/`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; procedure docs load; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `test-log/`.
 
 **Pre-install options:**
 

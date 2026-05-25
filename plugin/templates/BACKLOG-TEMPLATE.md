@@ -39,7 +39,7 @@ and build operations (Changes through Serves). Full spec: DOC-STRUCTURE.md → B
 
 ### Batch: [short descriptive name]
 
-Status: [queued|active|parked|shipped]  ← written by subagents; absent = queued
+Status: [queued|active|parked|shipped]  ← written by Claude during builds; absent = queued
 
 **Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
 
@@ -71,7 +71,7 @@ Serves UX.md: [entry name(s)].
 
 Notes:
 - Goal, Outputs, Success criteria are always present. Decisions, Dependencies omit if empty.
-- Red flags appears only when the planning subagent detects security-shaped scope.
+- Red flags appears only when planning detects security-shaped scope.
 - Changes: delimiter is required — separates scope sections from the change list.
 - Inputs: is optional — omit if the batch only needs standard docs.
 - Tests: is optional — omit if no pre-specification needed.
@@ -80,7 +80,7 @@ Notes:
 
 ## Open questions
 
-Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning subagent scans this section at the start of every planning session and lists all entries with their triggers.
+Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning procedure scans this section at the start of every planning session and lists all entries with their triggers.
 
 When an open question matures to the point where it blocks a specific build, promote it to a planning batch above.
 
@@ -97,4 +97,4 @@ Entry format:
 -->
 
 ---
-*No-code method — Version 65.*
+*No-code method — Version 66.*

@@ -121,9 +121,9 @@ Projects can declare additional source-of-truth docs (e.g. `SYSTEM-PROMPT.md`, `
 
 Two phases loop: **planning** and **build**. `/clear` or new session separates them.
 
-**Planning sessions** decide what gets built. The planning subagent: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth doc edits happen by hand — the no-coder applies proposed edits, removes resolved batches, reorganises priorities.
+**Planning sessions** decide what gets built. The planning procedure: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth doc edits happen by hand — the no-coder applies proposed edits, removes resolved batches, reorganises priorities.
 
-**Build sessions** ship engineering work. `/before-build` locks the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/build` runs the batch-executor against the file list. PreToolUse enforces batch boundaries. When done, the after-build subagent updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific after-build steps from CLAUDE.md, verifies all steps via a pre-commit checkpoint, and prompts commit/tag/test.
+**Build sessions** ship engineering work. `/before-build` locks the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/build` runs the build against the file list. PreToolUse enforces batch boundaries. When done, the after-build procedure updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific after-build steps from CLAUDE.md, verifies all steps via a pre-commit checkpoint, and prompts commit/tag/test.
 
 The no-coder `/clear`s, refreshes, runs user-verified tests, and brings outcomes to the next planning session.
 
@@ -133,7 +133,7 @@ The no-coder `/clear`s, refreshes, runs user-verified tests, and brings outcomes
 
 Ideas arrive mid-stream — tests, conversations, feedback. The planning phase catches and routes them. But catching alone isn't enough; scoping matters. A batch that says only "add dark mode" gives no testing anchor, no record of purpose, no surface for pushback.
 
-Every batch gets the same structure: Goal (why), Outputs (what changes), Success criteria (how to know it worked), plus conditional Decisions/Dependencies/Red flags. Written during planning — the no-coder speaks the substance, the subagent records it. By build time, the batch carries its own context.
+Every batch gets the same structure: Goal (why), Outputs (what changes), Success criteria (how to know it worked), plus conditional Decisions/Dependencies/Red flags. Written during planning — the no-coder speaks the substance, Claude records it. By build time, the batch carries its own context.
 
 ## Anatomy of a batch
 
@@ -141,7 +141,7 @@ Two regions: **scope context** (strategic) and **build operations** (tactical).
 
 **Status tracking.** An optional `Status:` line at the top of the batch body tracks lifecycle state: `queued` (default — absent means queued), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by after-build). The parser skips shipped and parked batches. State machine: `queued → active → shipped`, with `active ↔ parked` via planning.
 
-**Scope context** (planning subagent):
+**Scope context** (written during planning):
 - **Goal.** Why this batch exists.
 - **Outputs.** What changes the user experiences.
 - **Success criteria.** Observable conditions for success.
@@ -149,7 +149,7 @@ Two regions: **scope context** (strategic) and **build operations** (tactical).
 - **Dependencies.** What's needed from outside (omit if none).
 - **Red flags.** Security concerns (only when detected).
 
-**Build operations** (before-build subagent):
+**Build operations** (written during before-build):
 - **Changes:** Labeled `[Requested]`/`[Suggested]`.
 - **Inputs:** Non-standard resources needed.
 - **Files:** `- [ ]`/`- [x]` task list.
@@ -226,7 +226,7 @@ Verifier is per-row, not per-type. Both Claude and user rows can exist across an
 
 When a session opens, **SessionStart** checks adopted vs. unadopted. Unadopted folders with substantial work trigger an advisory pointing at `/setup`.
 
-Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit and method-subagent calls.
+Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls.
 
 `/setup` branches: empty folder → scaffold + four prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
 
@@ -234,13 +234,13 @@ Nothing destructive without confirmation; every destructive option backs up firs
 
 ## What's inside the plugin
 
-- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. Stop hook routes between batches / to after-build. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
-- **Subagents** (own contexts): planning, before-build, batch-executor, after-build, setup. Each returns a recap main Claude relays.
-- **Slash commands** (`/setup`, `/before-build`, `/build`): user-facing entry points invoking matching subagents.
+- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
+- **Procedure docs** (read into main context on demand): planning, before-build, build, after-build, setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
+- **Slash commands** (`/setup`, `/before-build`, `/build`): user-facing entry points that direct Claude to the matching procedure doc.
 - **Templates**: starter shapes for spine docs.
-- **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by subagents via `${CLAUDE_PLUGIN_ROOT}/docs/`.
+- **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
-Hooks (deterministic) handle correctness; subagents (probabilistic) handle judgment.
+Hooks (deterministic) handle correctness; procedure docs (probabilistic) handle judgment.
 
 ## Two layers of permission
 
@@ -252,15 +252,15 @@ Every deny is prefixed `[No-code method]` with a `What to do:` line.
 
 | Phase | Mode | Why |
 |---|---|---|
-| Planning | Accept edits | Planning subagent edits BACKLOG. |
+| Planning | Accept edits | Planning procedure edits BACKLOG. |
 | Before-build | Accept edits | Writes Files: into BACKLOG. |
 | Build | Auto | Source-file edits. Hooks enforce boundaries. |
 | After-build | Auto | Writes MANIFEST, TEST-LOG, build-log. |
 | Pre-method ideation | Plan mode | No edits needed yet. |
 
-### Known limitation: subagent permission prompts
+### Permission prompts
 
-Subagents prompt on every tool call regardless of mode — a Claude Code bug ([#28584](https://github.com/anthropics/claude-code/issues/28584), [#40241](https://github.com/anthropics/claude-code/issues/40241)). Auto mode produces the fewest prompts. `/fewer-permission-prompts` helps with main-conversation prompts.
+Claude Code may prompt for permission on tool calls depending on your mode setting. Auto mode produces the fewest prompts. `/fewer-permission-prompts` helps reduce main-conversation prompts.
 
 ## What's editable
 
@@ -334,4 +334,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 65.*
+*No-code method — Version 66.*

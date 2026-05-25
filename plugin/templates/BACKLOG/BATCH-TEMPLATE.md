@@ -1,7 +1,7 @@
 # [Batch name]
 
 <!-- Two regions: scope context (Goal–Red flags) and build operations (Changes–Serves).
-Status: line written by subagents (active/shipped/parked); absent = queued.
+Status: line written by Claude during builds (active/shipped/parked); absent = queued.
 Full spec: DOC-STRUCTURE.md → Build batches. -->
 
 **Goal.** [Why this batch exists; what's different when it ships.]

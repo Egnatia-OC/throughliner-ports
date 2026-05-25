@@ -58,7 +58,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 
 - **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
 
-- **Do not invoke the batch-executor** while any `TEST-LOG.md` row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
+- **Do not start a new build batch** while any `TEST-LOG.md` row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
 
 ## Where each kind of flag goes
 
@@ -72,7 +72,7 @@ If an observation matches multiple rows, apply all — red-flag treatment is nev
 
 ## Response-shape tags
 
-Verbosity contract markers used throughout subagent bodies and canonical docs.
+Verbosity contract markers used throughout procedure docs and canonical docs.
 
 - **[SILENT]** — No narration. One sentence max if unavoidable.
 - **[BRIEF]** — 1–3 sentences or a tight list.
@@ -82,7 +82,7 @@ Verbosity contract markers used throughout subagent bodies and canonical docs.
 
 Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — flag it.
 
-## Routing main-Claude's openers
+## Routing openers
 
 Classify and route the session opener. Routes are exclusive; pick highest-priority match.
 
@@ -97,24 +97,18 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 | Opener | Route |
 |---|---|
-| Test notes from previous build | Planning subagent, `primary_intent: test notes`. |
+| Test notes from previous build | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: test notes`. |
 | "New project," "set this up" | Recommend `/setup`. Wait for okay. |
 | Non-conforming project docs | Recommend `/setup`. Wait for okay. |
-| Feature request, scope question, structural change | Planning subagent, `primary_intent: feature request` or `scope question`. |
+| Feature request, scope question, structural change | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: feature request` or `scope question`. |
 | Unfinished top batch, no other trigger | Resume. Confirm with user first. |
 | Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
 
 **Priority for mixed-input openers.** `/setup` > resume > planning seed. Lower-priority items incorporated as the route handles them.
 
-**Subagent invocation prompts:**
+**Procedure docs — how to invoke:**
 
-- **planning** — `primary_intent` line + user's full opener.
-- **before-build** — short prose announcing the route.
-- **batch-executor** — JSON payload from `parse_backlog.py` for the top unticked batch.
-- **after-build** — short prose announcing the route.
-- **setup** — short prose + any detect-state details from SessionStart.
-
-Trust each subagent's recap. Relay to user. If user pushes back, relay back to subagent.
+For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Five procedures exist: `planning.md`, `before-build.md`, `build.md`, `after-build.md`, `setup.md`. Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
 
 ## Session handoff
 
@@ -142,10 +136,10 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 **The `[PROPOSED EDIT PENDING]` mechanism.** When Claude would write content into a read-only doc, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
-**Planning-time preview convention.** During planning/`/setup`, when a subagent has proposed content for a read-only doc: preview the complete section in chat labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On approval, write the `[PROPOSED EDIT PENDING]` block to the destination doc's `## Proposed edits pending` section, specifying **replace** or **add**, and prompt the user to apply it now. When confirmed, remove the block. This doesn't bypass the lock — PreToolUse still prevents direct main-body edits.
+**Planning-time preview convention.** During planning/`/setup`, when Claude has proposed content for a read-only doc: preview the complete section in chat labeled `[PROPOSED EDIT] <DOC>.md — <section name>`. On approval, write the `[PROPOSED EDIT PENDING]` block to the destination doc's `## Proposed edits pending` section, specifying **replace** or **add**, and prompt the user to apply it now. When confirmed, remove the block. This doesn't bypass the lock — PreToolUse still prevents direct main-body edits.
 
 ---
 
-*This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, main-Claude routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
+*This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

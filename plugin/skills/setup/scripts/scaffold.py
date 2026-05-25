@@ -7,7 +7,7 @@ Three modes, each writes a single JSON object to stdout:
 
   detect-case  V29/V44: classify the current project root into one of
                /setup's cases. Output: {case: 1-4, case_name, target_path,
-               details}. No writes. Used by the /setup subagent to dispatch
+               details}. No writes. Used by the /setup procedure to dispatch
                to the right dialogue branch on entry.
 
   check  Recursively scan cwd for any file whose name matches one of the
@@ -21,11 +21,11 @@ Three modes, each writes a single JSON object to stdout:
          target_path} on success or {written: false, reason, ...} on
          failure.
 
-The /setup subagent coordinates: run detect-case on entry, branch to the
+The /setup procedure coordinates: run detect-case on entry, branch to the
 right dialogue, then run check + write (cases 1 and 2) or perform
 case-specific work (cases 3, 4). This script never asks the user
 anything directly — it has no terminal access. Interaction is the
-subagent body's job.
+procedure's job.
 
 ADDITIONAL-DOC-TEMPLATE.md is intentionally not scaffolded here. It lands
 in projects via /add-sot-doc when the project decides it needs one.
@@ -88,7 +88,7 @@ BUILD_LOG_INDEX_DEST = "INDEX.md"
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */setup five-case branching* wording for stability in the
-# subagent dialogue.
+# setup procedure dialogue.
 CASE_NAMES = {
     ADOPT_CASE_EMPTY: "empty folder",
     ADOPT_CASE_CODE_NO_DOCS: "existing code, no docs",

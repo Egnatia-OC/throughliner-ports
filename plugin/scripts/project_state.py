@@ -2,14 +2,13 @@
 """
 project_state.py — shared helpers for reading project state from disk.
 
-Used by the no-code-method plugin's hooks (pre_tool_use.py, stop.py — and
-potentially future hooks, subagents, or skills) to read the project's
-state files in a consistent way: CLAUDE.md's path block, BACKLOG.md (via
-the parse_backlog.py subprocess), TEST-LOG.md, and build-log/.
+Used by the no-code-method plugin's hooks (pre_tool_use.py, session_start.py,
+and others) to read the project's state files in a consistent way: CLAUDE.md's
+path block, BACKLOG.md (via the parse_backlog.py subprocess), TEST-LOG.md,
+and build-log/.
 
-Centralised here so the V27 test-confirmation gate logic in pre_tool_use.py
-and the V28 TEST-LOG-aware Stop hook in stop.py share one definition of
-"how do we know what the project state is right now."
+Centralised here so state-reading logic is defined once and shared across
+all hooks that need project state.
 
 The helpers are all lenient — any I/O or parse failure returns None or
 an empty collection rather than raising. Callers (the hooks) treat
@@ -273,7 +272,7 @@ def is_unadopted_with_work(project_root):
 
 
 # V29 /setup case numbers — kept here as named constants so scaffold.py
-# and the subagent body don't have to reproduce the magic numbers.
+# and the setup procedure don't have to reproduce the magic numbers.
 ADOPT_CASE_EMPTY = 1                  # genuinely empty folder
 ADOPT_CASE_CODE_NO_DOCS = 2           # existing code, no method docs
 ADOPT_CASE_CODE_FOREIGN_DOCS = 3      # existing code, foreign CLAUDE.md
@@ -294,7 +293,7 @@ def detect_adopt_case(project_root):
     disable (``/plugin`` → Installed → toggle off), which prevents the
     plugin's hooks from firing at all — no case needed here.
 
-    Used by the /setup subagent (case dispatch) and by the scaffold.py
+    Used by the /setup procedure (case dispatch) and by the scaffold.py
     `detect-case` command. SessionStart and PreToolUse use the coarser
     `is_unadopted_with_work` since they only need yes/no, not the
     specific case."""
@@ -376,8 +375,8 @@ def run_parser(backlog_path):
 
     Returns None on any failure: parser script missing, subprocess error,
     non-zero exit, empty stdout, invalid JSON. Callers (pre_tool_use.py's
-    batch-boundary check, stop.py's redirect decision, and the /build
-    slash-command) treat None as "no top batch to act on."
+    batch-boundary and test-confirmation checks, and the /build slash-
+    command) treat None as "no top batch to act on."
     """
     if not PARSER_PATH.exists():
         return None
@@ -525,11 +524,9 @@ def get_unconfirmed_previous_session_rows(project_root):
     to, any unconfirmed row signals an open test session).
 
     Callers:
-      - pre_tool_use.py's check_test_confirmation_gate (V27): denies the
-        Task → batch-executor invocation when this returns non-empty rows.
-      - stop.py's main (V28): exits silent when this returns non-empty
-        rows, deferring the batch-executor redirect until the test session
-        closes.
+      - pre_tool_use.py's check_test_confirmation_gate (V27, reframed V66):
+        denies build-phase file edits when this returns non-empty rows
+        and an active batch exists.
     """
     test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
     if test_log_path is None or not test_log_path.exists():
@@ -591,9 +588,8 @@ def is_test_session_open(project_root):
     row. Returns False on any of the lenient cases: missing or unreadable
     TEST-LOG, empty TEST-LOG, all rows confirmed.
 
-    Used by stop.py (V28) to decide whether to defer the batch-executor
-    redirect. The behaviour mirrors the test-confirmation gate's allow/deny
-    decision: gate denies iff this would return True.
+    Convenience wrapper: returns True iff the test-confirmation gate
+    would deny. Used by session_start.py for the TEST-LOG tripwire.
     """
     unconfirmed, _, _ = get_unconfirmed_previous_session_rows(project_root)
     return bool(unconfirmed)

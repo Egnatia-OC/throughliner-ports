@@ -2,120 +2,36 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs a V29 adoption gate first (across Edit / Write / MultiEdit AND Task),
-then four checks on Edit / Write / MultiEdit and one check on Task:
+Runs seven checks on Edit / Write / MultiEdit calls:
 
-  (7) Project-boundary check (V56) — Edit/Write/MultiEdit. Blocks writes
-      targeting paths outside the project root. Prevents a session in one
-      project from modifying files in another folder (e.g. a Taskflow
-      session writing to the plugin's own source code). Uses Path.relative_to
-      on already-resolved paths to detect containment. Fires after the V29
-      adoption gate and before all other writing-tool checks.
+  (5) V29 adoption gate — fires first. Denies Edit/Write/MultiEdit on
+      non-scaffold-path files when the folder lacks a method footer in
+      CLAUDE.md AND has substantial work. Allows Edit/Write/MultiEdit on
+      scaffold paths (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md,
+      TEST-LOG.md, CLAUDE.md) so /setup's scaffolding works.
+
+  (7) Project-boundary check (V56) — blocks writes targeting paths outside
+      the project root.
 
   (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs) —
-      Edit/Write/MultiEdit. Locked docs are: UX.md, plus any additional
-      source-of-truth docs declared in the project's CLAUDE.md path block.
-      BACKLOG.md, MANIFEST.md, and TEST-LOG.md are explicitly writable — the
-      planning, glossary, and test-record surfaces Claude edits during the
-      build cycle. When a writing tool targets a locked doc's main body, the
-      hook denies and tells Claude to add a [PROPOSED EDIT PENDING] block
-      to the doc's own Proposed edits pending section at the bottom
-      instead. Two carve-outs: V38 — footer-only edits (Edit tool only)
-      that exclusively add or update the method-version footer are allowed
-      (metadata, not content). V45 — edits within the Proposed edits
-      pending section (Edit tool only) are allowed, so Claude can append
-      new proposed-edit blocks and remove blocks after the user confirms.
+      locked docs are UX.md plus additional source-of-truth docs in the
+      path block. Two carve-outs: V38 footer-only edits, V45 proposed-edits
+      section edits.
 
-  (2) Serves-line check on BACKLOG.md build-batch additions (V22, V54) —
-      Edit/Write/MultiEdit. When a writing tool targets BACKLOG.md and the
-      proposed new content contains one or more `Serves <DOC>: <entry>.`
-      lines, the hook verifies that every named entry exists in the target
-      doc. For UX.md, entries are ### headings under ## Functionalities.
-      For additional source-of-truth docs declared in the project's
-      CLAUDE.md path block, entries are ## headings (excluding structural
-      sections like Proposed edits pending). Match is case-insensitive after
-      whitespace-trim (V22 Q3 decision). A miss denies with a redirect
-      message naming the unmatched entries and listing the known entries
-      so Claude can spot a typo or recognise it needs to propose the edit first.
+  (2) Serves-line check (V22, V54) — validates `Serves <DOC>: <entry>.`
+      lines in BACKLOG edits against the named doc's entries.
 
-  (3) Batch file-list boundary check (V25) — Edit/Write/MultiEdit.
-      When a top unticked build batch exists in BACKLOG.md, the hook blocks
-      Edit/Write/MultiEdit on any file that isn't on the batch's `Files:` list.
-      Exempts BACKLOG.md and MANIFEST.md (always writable per the editing-
-      surfaces rule). Open mode when no batch is active — no enforcement, all
-      edits allowed. Uses the shared `parse_backlog.py` parser (the same one
-      called by the Stop hook and the `/build` slash-command, per V25 Q1).
-      Deny message includes the current batch's Files: list and the
-      prerequisite carve-out recovery path.
+  (4) Test-confirmation gate (V27, reframed V66) — blocks build-phase file
+      edits when an active batch exists AND TEST-LOG.md has unconfirmed rows
+      from the previous batch. Originally gated Task→batch-executor; V66
+      moved it to the writing-tools path after subagent removal.
 
-  (6) Read-before-edit gate (V39) — Edit/Write/MultiEdit.
-      When the target file is named in a MANIFEST.md entry's `(path)` field,
-      the hook denies the first edit attempt with the matching MANIFEST
-      entry and UX.md's Functionalities entry headings inlined in the deny
-      reason. Retries succeed because the hook scans the session transcript
-      (`transcript_path` from the hook input) for a prior V39 block-once
-      deny on the same file — if present, allow. No state file, no
-      PostToolUse tracking. MANIFEST entries without a `(path)` field skip
-      the gate silently (incremental migration: after-build populates paths
-      on touch). Spine docs (BACKLOG.md, MANIFEST.md, TEST-LOG.md,
-      BUILD-LOG.md, CLAUDE.md) are exempt even if they accidentally appear
-      in MANIFEST — defensive guard so the build cycle can't brick itself.
+  (3) Batch file-list boundary check (V25) — blocks edits on files not on
+      the active batch's Files: list. Open mode when no batch is active.
 
-  (5) V29 adoption gate — Edit / Write / MultiEdit AND Task. Fires *before*
-      checks (1)–(4) and (7) so the gate isn't bypassed when the folder is
-      unadopted. Denies Edit/Write/MultiEdit on non-scaffold-path files
-      and Task invocations of method subagents (planning, before-build,
-      batch-executor, after-build) when the folder lacks a method footer
-      in CLAUDE.md AND has substantial work. Allows Task →
-      no-code-method:setup always (that's the resolution mechanism).
-      Allows Edit/Write/MultiEdit on scaffold paths (UX.md, BACKLOG.md,
-      BUILD-LOG.md, MANIFEST.md, TEST-LOG.md, CLAUDE.md) so /setup's
-      scaffolding works. Per-project opt-out is handled by Claude Code's
-      built-in plugin disable (/plugin → Installed → toggle off).
-
-  (4) Test-confirmation gate (V27) — Task tool with subagent_type
-      `no-code-method:batch-executor`. When TEST-LOG.md has rows with
-      `Confirmed Explicitly: No` left over from the previous build batch's
-      test session, the hook denies the batch-executor invocation. The gate
-      identifies the previous session from the build log when the project
-      keeps one; otherwise it falls back to strict mode (any unconfirmed row
-      blocks). Strict fallback also fires when the build log is present but
-      unparseable — the deny message names the parse failure so the user can
-      fix the right thing. Spec: universal-behaviour.md → Prohibited
-      behaviours → "Do not invoke the batch-executor".
-
-Mechanisms:
-
-  - Locked-doc rule: universal-behaviour.md → Editing surfaces.
-  - Proposed-edit block format: DOC-STRUCTURE.md → Proposed edits pending sections.
-  - Serves-line rule: planning.md → How a new feature enters the project,
-    and DOC-STRUCTURE.md → BACKLOG.md structure → Build batches.
-  - V22 Q3 (case-insensitive exact match): BUILD-LOG.md → V22.
-  - Test-confirmation gate: universal-behaviour.md → Required behaviours →
-    "Never infer completion" and Prohibited behaviours → "Do not invoke
-    the batch-executor"; TEST-LOG.md column shape in DOC-STRUCTURE.md →
-    TEST-LOG.md structure.
-
-  The hook doesn't repeat the mechanisms — it names them and lets Claude
-  consult those docs (or its own SessionStart-injected rules) for specifics.
-
-The hook is deliberately lenient on edge cases — missing CLAUDE.md, an
-unparseable path block, UX.md missing or unparseable, no Functionalities
-section, TEST-LOG.md missing or empty: in all such cases it allows the
-tool call rather than blocking. The one hard boundary is
-project-containment (V56): writes targeting paths outside the project
-root are always denied. A hook that blocks unexpectedly is far more disruptive than one
-that occasionally fails to enforce. The universal-behaviour rules surfaced
-via the SessionStart hook are the soft-net for any case this hook can't
-deterministically catch. The one exception is the test-confirmation gate's
-strict fallback — when TEST-LOG.md has unconfirmed rows AND the build log
-can't be used for session-narrowing, the gate denies; safe-by-default per
-V26 Q3 and V27 Q4.
-
-Why three writing tools and not more: the method's locked-docs rule is about
-deliberate written changes. NotebookEdit and other adjacent tools are not in
-scope for the spine docs. The Task matcher (V27) is narrower still — it
-only inspects calls whose `subagent_type` is `no-code-method:batch-executor`.
+  (6) Read-before-edit gate (V39) — blocks first edit on MANIFEST-pathed
+      files until Claude has the MANIFEST entry and UX context in view.
+      Block-once via transcript scan.
 
 Output protocol: stdout receives a JSON object with hookSpecificOutput
 containing hookEventName ("PreToolUse"), permissionDecision ("deny"), and
@@ -145,24 +61,9 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
     is_unadopted_with_work,
 )
 
-# Writing tools whose calls this hook inspects via checks (1)-(3). Anything
-# outside this set + the Task tool is allowed without inspection.
+# Writing tools whose calls this hook inspects. Anything outside this set
+# is allowed without inspection.
 WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
-
-# Task invocations targeting this subagent_type are inspected by check (4)
-# (V27 test-confirmation gate). Other Task invocations pass through.
-BATCH_EXECUTOR_SUBAGENT_TYPE = "no-code-method:batch-executor"
-
-# V29: Task invocations targeting /setup are always allowed even when the
-# folder is unadopted — that's the command users run to RESOLVE the
-# unadopted state, so blocking it would be a deadlock.
-SETUP_SUBAGENT_TYPE = "no-code-method:setup"
-
-# V29: method subagent prefix. Other Task calls (e.g. general-purpose
-# agents the user invokes for their own purposes) fall through the V29
-# gate so the unadopted-folder check doesn't lock down all subagent use,
-# only method ones that would misbehave against an unadopted folder.
-METHOD_SUBAGENT_PREFIX = "no-code-method:"
 
 # V29: file names /setup scaffolds at project root. When folder is
 # unadopted, Edit/Write/MultiEdit on these passes the V29 gate so /setup's
@@ -1037,35 +938,15 @@ def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
     )
 
 
-def make_v29_task_deny_reason(subagent_type, permission_mode="") -> str:
-    """V29: deny-reason for Task invocations of a method subagent (other
-    than /setup itself) in an unadopted folder. The method subagents all
-    assume a method-managed project; against an unadopted folder they
-    would fail or produce garbage."""
-    return (
-        "[No-code method] BLOCKED: this folder is unadopted, so the "
-        f"method subagent `{subagent_type}` cannot be invoked. The "
-        "planning, before-build, batch-executor, and after-build "
-        "subagents all assume a method-managed project; they would fail "
-        "or produce garbage against an unadopted folder.\n\n"
-        "What to do: run `/setup` first. After adoption completes, this "
-        "subagent will work normally. Or, if you don't want the method "
-        "in this folder, disable the plugin via `/plugin` → Installed → "
-        "toggle off."
-        + _mode_suffix(permission_mode)
-    )
-
-
 def check_v29_adoption_gate(project_root, tool_name, tool_input,
                             permission_mode=""):
-    """V29: enforce the adoption gate on Edit/Write/MultiEdit and Task
+    """V29: enforce the adoption gate on Edit/Write/MultiEdit
     calls when the folder is unadopted.
 
     Returns a deny-reason string when the call should be denied, None
     otherwise. None means either (a) the gate doesn't apply (folder is
     adopted or genuinely empty), or (b) the gate applies
-    but this specific call is exempt (Task → /setup, Edit/Write on a
-    scaffold path, non-method Task call).
+    but this specific call is exempt (Edit/Write on a scaffold path).
 
     Architecture context (Path D, V29): SessionStart emits an advisory
     when the folder is unadopted; this gate provides the enforcement.
@@ -1073,16 +954,6 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
     at SessionStart, which Claude Code's hook protocol doesn't support
     (GitHub anthropics/claude-code#10225 → #12151)."""
     if not is_unadopted_with_work(project_root):
-        return None
-
-    if tool_name == "Task":
-        subagent_type = tool_input.get("subagent_type")
-        if subagent_type == SETUP_SUBAGENT_TYPE:
-            return None
-        if isinstance(subagent_type, str) and subagent_type.startswith(
-            METHOD_SUBAGENT_PREFIX
-        ):
-            return make_v29_task_deny_reason(subagent_type, permission_mode)
         return None
 
     if tool_name in WRITING_TOOLS:
@@ -1171,32 +1042,34 @@ def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, sessi
         f"{mode_explanation}\n\n"
         f"Unconfirmed TEST-LOG.md rows:\n{rows_block}\n\n"
         "What to do: tell the user to /clear and start a planning "
-        "session. The planning subagent will walk each row above asking "
+        "session. The planning procedure will walk each row above asking "
         "Pass / Fail / Skipped — the read-back must complete before a "
         "new build batch can start."
     )
 
 
-def check_test_confirmation_gate(project_root, tool_input):
-    """V27 check (4): test-confirmation gate on Task → batch-executor.
+def check_test_confirmation_gate(project_root):
+    """V27 check (4): test-confirmation gate on build-phase file edits.
 
-    Returns a deny-reason string if any unconfirmed previous-session rows
-    exist in TEST-LOG.md. Returns None to allow.
+    Returns a deny-reason string if a build is in progress (active batch
+    with unticked files) AND any unconfirmed previous-session rows exist
+    in TEST-LOG.md. Returns None to allow.
 
     The lenient principle applies for the missing-file cases (no
-    TEST-LOG.md → allow; no rows → allow). The strict-fallback path only
-    fires when TEST-LOG.md exists AND has unconfirmed rows AND the build
-    log can't narrow them to the previous session — safety-by-default per V26
-    Q3 + V27 Q4.
+    TEST-LOG.md → allow; no rows → allow; no active batch → allow).
+    The strict-fallback path only fires when TEST-LOG.md exists AND has
+    unconfirmed rows AND the build log can't narrow them to the previous
+    session — safety-by-default per V26 Q3 + V27 Q4.
 
-    V28: the row-collection + session-narrowing logic moved to
-    project_state.get_unconfirmed_previous_session_rows so stop.py's V28
-    TEST-LOG-awareness check shares one definition of "test session open."
-    This function still composes the deny message — the deny phrasing is
-    specific to the pre-tool-use gate's role and stays here.
-    """
-    subagent_type = tool_input.get("subagent_type")
-    if subagent_type != BATCH_EXECUTOR_SUBAGENT_TYPE:
+    Reframed in V66: originally gated Task→batch-executor invocations.
+    Now gates build-phase file edits directly, since subagents were
+    removed and builds run in the main conversation."""
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None or not backlog_path.exists():
+        return None
+
+    batch = run_parser(backlog_path)
+    if not isinstance(batch, dict) or not batch:
         return None
 
     unconfirmed, build_log_status, session_id = (
@@ -1224,9 +1097,9 @@ def main() -> int:
     if not isinstance(permission_mode, str):
         permission_mode = ""
 
-    # Anything outside the writing tools + Task passes through without
-    # inspection. Cheap exit before the project-root resolution.
-    if tool_name not in WRITING_TOOLS and tool_name != "Task":
+    # Only writing tools are inspected. Cheap exit before project-root
+    # resolution.
+    if tool_name not in WRITING_TOOLS:
         return emit_allow()
 
     cwd_str = data.get("cwd")
@@ -1237,23 +1110,14 @@ def main() -> int:
     except OSError:
         return emit_allow()
 
-    # V29 check (5): adoption gate. Fires on Edit/Write/MultiEdit and Task
-    # calls when folder is unadopted-with-work. Returns None for adopted
+    # V29 check (5): adoption gate. Fires on Edit/Write/MultiEdit
+    # when folder is unadopted-with-work. Returns None for adopted
     # and genuinely-empty folders — downstream checks then run normally.
     v29_deny_reason = check_v29_adoption_gate(project_root, tool_name, tool_input,
                                                permission_mode)
     if v29_deny_reason:
         return emit_deny(v29_deny_reason)
 
-    # V27 check (4): test-confirmation gate fires on Task invocations
-    # targeting the batch-executor subagent. Other Task calls fall through.
-    if tool_name == "Task":
-        gate_deny_reason = check_test_confirmation_gate(project_root, tool_input)
-        if gate_deny_reason:
-            return emit_deny(gate_deny_reason)
-        return emit_allow()
-
-    # Writing tools (Edit/Write/MultiEdit) run checks (1)-(3).
     file_path_str = tool_input.get("file_path")
     if not isinstance(file_path_str, str) or not file_path_str:
         return emit_allow()
@@ -1298,6 +1162,14 @@ def main() -> int:
     )
     if serves_deny_reason:
         return emit_deny(serves_deny_reason)
+
+    # V27 check (4): test-confirmation gate. When a build is in progress
+    # (active batch with unticked files) and TEST-LOG has unconfirmed rows
+    # from the previous batch, block file edits. Reframed in V66: originally
+    # gated Task→batch-executor; now gates build-phase file edits directly.
+    gate_deny_reason = check_test_confirmation_gate(project_root)
+    if gate_deny_reason:
+        return emit_deny(gate_deny_reason)
 
     # V25: batch file-list boundary check. When a top unticked build batch
     # exists in BACKLOG.md, deny any edit whose target isn't on the batch's

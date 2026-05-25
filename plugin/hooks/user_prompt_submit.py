@@ -118,8 +118,9 @@ def build_context(route, detail):
             "before proceeding."
         ),
         "test_notes": (
-            "Suggested route: invoke the planning subagent with "
-            "primary_intent: test notes, passing the user's full message."
+            "Suggested route: read and follow the planning procedure at "
+            "${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md with "
+            "primary_intent: test notes."
         ),
         "resume": (
             "Suggested route: check BACKLOG for an unfinished build batch. "

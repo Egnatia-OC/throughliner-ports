@@ -184,9 +184,9 @@ def main():
         "  - In folder mode: batch file not listed in INDEX.md's "
         "Build batches section"
         "\n\n"
-        "The Stop hook and `/build` command both depend on this parser. "
-        "A format error here will silently prevent batch-executor from "
-        "finding the batch."
+        "The `/build` command and PreToolUse hook both depend on this "
+        "parser. A format error here will silently prevent the build "
+        "from finding the batch."
     )
 
 

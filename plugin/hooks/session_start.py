@@ -17,8 +17,8 @@ is installed. Two phases:
     terminates the session entirely, and `UserPromptSubmit`-in-plugins is
     broken per GitHub anthropics/claude-code#10225 → #12151). Real
     enforcement happens in the PreToolUse hook, which denies
-    Edit/Write/MultiEdit and Task→method-subagent calls from main Claude
-    until the folder is adopted. Per-project opt-out is handled by Claude
+    Edit/Write/MultiEdit calls until the folder is adopted. Per-project
+    opt-out is handled by Claude
     Code's built-in plugin disable (/plugin → Installed → toggle off).
 
   Phase 2 — tier classification (unchanged from V21)
@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 65
+PLUGIN_METHOD_VERSION = 66
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -586,11 +586,11 @@ def detect_unconfirmed_test_rows(project_root, resolved):
 def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_id):
     """Compose the additionalContext block for the TEST-LOG tripwire.
 
-    The block is intentionally directive: it tells main Claude to route
-    the next planning-subagent invocation regardless of the opener's
-    classification, because the test session is the gate. The planning
-    subagent's first sub-step (per planning.md → *Close the previous
-    build's test session*) will walk the rows below."""
+    The block is intentionally directive: it tells Claude to read and
+    follow the planning procedure regardless of the opener's
+    classification, because the test session is the gate. The procedure's
+    first step (per planning.md → *Close the previous build's test
+    session*) will walk the rows below."""
     row_lines = []
     for r in unconfirmed_rows:
         component = r.get("component") or "(no component)"
@@ -620,25 +620,25 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
     return (
         "- **TEST-LOG tripwire: previous build batch's test session is "
         "still open.** Per `universal-behaviour.md` → *Prohibited "
-        "behaviours* → 'Do not invoke the batch-executor', and per "
-        "`planning.md` → *Close the previous build's test session*, "
-        "the next planning session MUST close the test session via "
-        "per-row read-back before any new build batch can start.\n\n"
+        "behaviours* → 'Do not start a new build batch', and per "
+        "the planning procedure → *Close the previous build's test "
+        "session*, the next planning session MUST close the test session "
+        "via per-row read-back before any new build batch can start.\n\n"
         f"  {mode_note}\n\n"
         "  Unconfirmed rows:\n"
         f"{rows_block}\n\n"
         "  **Routing override.** Regardless of the user's opener "
         "classification (test notes / feature request / scope question / "
-        "conversational), invoke the planning subagent "
-        "(`no-code-method:planning`) as the next action. Begin the "
-        "subagent prompt with: *\"Before we get to your question — N "
+        "conversational), read and follow the planning procedure at "
+        "`${{CLAUDE_PLUGIN_ROOT}}/docs/procedures/planning.md`. Open "
+        "with: *\"Before we get to your question — N "
         "pending tests from session X to confirm. First: <test description "
-        "of row 1>?\"* The subagent's first sub-step is the per-row "
-        "read-back; it will walk each row above asking Pass / Fail / "
+        "of row 1>?\"* The procedure's first step is the per-row "
+        "read-back; walk each row above asking Pass / Fail / "
         "Skipped, one at a time. Do NOT attempt to start a new build "
-        "batch or invoke any other subagent until the read-back closes "
-        "the session — the PreToolUse hook will deny the batch-executor "
-        "invocation if you try."
+        "batch until the read-back closes "
+        "the session — the PreToolUse hook will deny build-phase file "
+        "edits if you try."
     )
 
 
@@ -663,7 +663,7 @@ def build_unadopted_advisory_context(project_root: Path) -> str:
         f"Project root: `{project_root}`\n\n"
         "**Required behaviour for this session:**\n\n"
         "- Direct the user to run `/setup` before doing anything else.\n"
-        "- Do NOT attempt Edit, Write, MultiEdit, or Task→method-subagent "
+        "- Do NOT attempt Edit, Write, or MultiEdit "
         "tool calls. The PreToolUse hook will deny them anyway, and "
         "attempting them creates confusing churn.\n"
         "- If the user does not want the method in this folder, they can "
@@ -945,9 +945,12 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     lines.append(
         "**Routing.** After presenting the status, read the user's opening "
         "message and route per `universal-behaviour.md` → *Routing "
-        "main-Claude's openers*. This hook does not classify the user's "
+        "openers*. This hook does not classify the user's "
         "opener — that's your call based on the user's words and the "
-        "structural state listed above. Exception: when the TEST-LOG "
+        "structural state listed above. For each phase, read and follow "
+        "the matching procedure doc at "
+        "`${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. "
+        "Exception: when the TEST-LOG "
         "tripwire above fires, the routing override there takes precedence."
     )
 

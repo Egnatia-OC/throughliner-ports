@@ -2,7 +2,8 @@
 
 Tests each deny path: V29 adoption gate, locked-doc enforcement,
 serves-line check, batch boundary check, V39 read-before-edit gate,
-and V27 test-confirmation gate. Also tests allow paths.
+V27 test-confirmation gate, and V56 project-boundary check.
+Also tests allow paths.
 """
 
 import pytest
@@ -29,16 +30,6 @@ def _write_input(cwd, file_path, content="hello", **extra):
         "cwd": str(cwd),
         "tool_name": "Write",
         "tool_input": {"file_path": file_path, "content": content},
-    }
-    d.update(extra)
-    return d
-
-
-def _task_input(cwd, subagent_type, **extra):
-    d = {
-        "cwd": str(cwd),
-        "tool_name": "Task",
-        "tool_input": {"subagent_type": subagent_type},
     }
     d.update(extra)
     return d
@@ -95,21 +86,6 @@ class TestV29AdoptionGate:
     def test_edit_scaffold_allowed(self, unadopted_foreign):
         root = unadopted_foreign
         data = _edit_input(root, str(root / "CLAUDE.md"))
-        code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_allow(code, raw)
-
-    def test_task_method_subagent_denied(self, unadopted_foreign):
-        data = _task_input(unadopted_foreign, "no-code-method:planning")
-        code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_deny(parsed, "unadopted")
-
-    def test_task_setup_allowed(self, unadopted_foreign):
-        data = _task_input(unadopted_foreign, "no-code-method:setup")
-        code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_allow(code, raw)
-
-    def test_task_non_method_allowed(self, unadopted_foreign):
-        data = _task_input(unadopted_foreign, "general-purpose")
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
 
@@ -372,17 +348,15 @@ class TestV39ReadBeforeEdit:
 
 
 # ---------------------------------------------------------------------------
-# V27 test-confirmation gate (Task → batch-executor)
+# V27 test-confirmation gate (build-phase file edits, reframed V66)
 # ---------------------------------------------------------------------------
 
 class TestTestConfirmationGate:
-    def test_all_confirmed_allows_batch_executor(self, adopted_folder):
-        data = _task_input(adopted_folder, "no-code-method:batch-executor")
-        code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_allow(code, raw)
-
-    def test_non_batch_executor_task_allowed(self, adopted_folder):
-        data = _task_input(adopted_folder, "no-code-method:planning")
+    def test_all_confirmed_allows_build_edit(self, adopted_folder):
+        """When all TEST-LOG rows are confirmed, build-phase edits are allowed."""
+        root = adopted_folder
+        target = str((root / "app" / "src" / "SettingsScreen.kt").resolve())
+        data = _edit_input(root, target)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
 

@@ -6,6 +6,7 @@ For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v77-subagent-removal-code-and-procedures.md](v77-subagent-removal-code-and-procedures.md) — 2026-05-25 — Subagent removal: code and procedures
 - [v76-dev-side-log-folder-migration.md](v76-dev-side-log-folder-migration.md) — 2026-05-25 — Dev-side log folder migration
 - [v65-session-open-status-summary.md](v65-session-open-status-summary.md) — 2026-05-25 — Session-open status summary
 - [v64-after-build-source-code-boundary.md](v64-after-build-source-code-boundary.md) — 2026-05-25 — After-build source-code boundary

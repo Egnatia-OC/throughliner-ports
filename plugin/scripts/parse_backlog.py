@@ -20,22 +20,20 @@ Supports two BACKLOG formats (auto-detected):
   files. Detected when `## Build batches` contains reference lines
   (`` - `NNNN-name.md` ``) instead of `### Batch:` headings.
 
-Four call sites consume this parser (V25, extended V46):
+Three call sites consume this parser (V25, extended V46, V66):
 
-  - The Stop hook embeds the JSON payload in its redirect reason to hand
-    batch-executor the right batch.
-  - The `/build` slash-command embeds the same payload when the user
+  - The `/build` slash-command embeds the JSON payload when the user
     invokes a build manually.
   - The PreToolUse hook calls the parser at edit-time to look up the
-    current batch's declared file list for the boundary check.
+    current batch's declared file list for the boundary check, and for
+    the test-confirmation gate's active-batch detection.
   - The PostToolUse hook (V46) imports `find_top_unticked_batch` directly
     (not subprocess) to validate BACKLOG format after each edit.
 
 The parser is deliberately lenient: any failure (missing file, unparseable
 section, malformed batch) results in `{}` on stdout and exit 0. Callers
-treat empty output as "no top unticked batch found" — the Stop hook then
-doesn't redirect, `/build` reports nothing to build, and the PreToolUse
-hook falls through to allow.
+treat empty output as "no top unticked batch found" — `/build` reports
+nothing to build, and the PreToolUse hook falls through to allow.
 
 CLI:
 

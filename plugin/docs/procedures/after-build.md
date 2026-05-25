@@ -1,16 +1,6 @@
----
-name: after-build
-description: Use after batch-executor completes a batch. Updates MANIFEST silently, runs doc-parity check, opens the test session (TEST-LOG rows with Type/Verifier columns), runs Claude-automatable tests, generates a two-section recap, writes the build-log entry, sweeps ideas, runs project-specific after-build steps, verifies all steps via pre-commit checkpoint, and prompts user to commit/tag and test.
-tools: Read, Edit, Write, Glob, Grep, Bash
----
+# After-build procedure — no-code method
 
-# After-build subagent — no-code method
-
-You run only *After every build* — never planning, builds, or before-build. Main Claude spawns you when the Stop hook detects a fully-ticked batch with no test session opened yet.
-
-## Inputs
-
-Short prose prompt from main Claude (forwarded from Stop hook). No structured payload — everything needed is in project docs, BACKLOG, and git state.
+Follow this procedure after a build batch completes (all Files: ticked). Never during planning, builds, or before-build.
 
 ## First action — load project state (minimal)
 
@@ -27,11 +17,11 @@ Load only what's needed for batch identification and idempotency. Defer heavier 
 
 Walk Build batches top-to-bottom. The just-completed batch is the topmost with entirely ticked Files: (`- [x]` only, no `- [ ]`).
 
-If topmost batch has unticked files → halt (Stop hook misfired). If no fully-ticked batch → halt with note and exit.
+If topmost batch has unticked files → halt (build not finished). If no fully-ticked batch → halt with note and stop.
 
 ## Idempotency check
 
-If TEST-LOG already has rows matching this session whose scope covers the batch's Files: → the test session is already open. State it and exit. Don't duplicate rows or re-run.
+If TEST-LOG already has rows matching this session whose scope covers the batch's Files: → the after-build steps are already done. State it and stop. Don't duplicate rows or re-run.
 
 ## Session identification
 
@@ -95,7 +85,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
      ```
    - **6c.** Prepend index line to `build-log/INDEX.md`. Idempotency: skip if same-numbered line exists. Fallback: legacy BUILD-LOG.md or create build-log/ from template.
 
-7. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser and stop hook.
+7. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser.
 
 8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
@@ -119,12 +109,11 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, TEST-LOG.md, build-log/, BACKLOG status lines. You must never edit application source code, build scripts (Gradle, Maven, package.json, Makefile, etc.), configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
-- **Don't create conditions that override a user refusal.** If the user declines an action (e.g. "don't delete those files"), that decision stands. You must not take other actions whose side effects make the refusal untenable, then re-do or force the declined action. This is a consent violation — the user said no.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, TEST-LOG.md, build-log/, BACKLOG status lines. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
+- **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands. Don't take other actions whose side effects make the refusal untenable, then re-do the declined action.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
-- **Don't spawn inner agents** for single-tool-call operations.
-- **Don't start a new build or invoke batch-executor.**
+- **Don't start a new build.**
 - **Don't infer test outcomes.** Write rows with blank Status and `Confirmed Explicitly: No`.
 - **Don't write carve-out labels into BACKLOG change list.** Those are recap-time labels only.
 
@@ -134,4 +123,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

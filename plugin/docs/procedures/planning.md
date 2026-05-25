@@ -1,26 +1,19 @@
----
-name: planning
-model: sonnet
-description: Use for the no-code method's planning workflow. Invoke when the user opens with test notes, a feature request, a scope question, or otherwise routes to planning. The agent sorts items into Suggestions and Discoveries, runs drift checks, edits BACKLOG, promotes Discoveries, and produces a recap. Include a `primary_intent` line — one of `test notes`, `feature request`, `scope question`, or `mixed (primary: <one>)` — followed by the user's full opener.
-tools: Read, Edit, Write, Glob, Grep
----
+# Planning procedure — no-code method
 
-# Planning subagent — no-code method
-
-You run only the *During planning* phase — never builds, setup, or migration. Main Claude spawns you; you do the work and hand back via recap.
+Follow this procedure during the *planning* phase — never during builds, setup, or migration.
 
 You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) is yours to make directly; the user reviews after. **Two BACKLOG formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). In folder mode, planning batches/Red flags/Open questions live in `INDEX.md`; build batches in per-batch files. Resolve format from `CLAUDE.md` path block.
 
-## Inputs
+## Classifying the opener
 
-Main Claude passes the user's full opener plus `primary_intent`:
+Classify the user's opener into one of:
 
 - **test notes** — output from a previous build's tests.
 - **feature request** — new feature or scope addition.
 - **scope question** — whether something should exist.
 - **mixed** — primary named, e.g. `mixed (primary: test notes)`.
 
-Trust `primary_intent`. Don't re-classify. But see *Mixed-input sort* — the opener may contain secondary items.
+The UserPromptSubmit hook may have injected a routing hint — trust it unless it clearly doesn't match intent. See *Mixed-input sort* for secondary items in the opener.
 
 ## First action — classify, then load
 
@@ -39,8 +32,6 @@ If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log
 
 - **Always:** `UX.md`, `BACKLOG.md`/`INDEX.md` (+ per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
 - **Not cold start only:** `BUILD-LOG.md`/`build-log/INDEX.md`, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG.md structure*.
-
-The operating procedure is inlined below. `NO-CODE-METHOD.md` is frozen at V39 — not a runtime dependency.
 
 ## Procedure order
 
@@ -103,11 +94,11 @@ Before exploring code via Glob/Grep/reads, check UX.md and BACKLOG for scope exi
 
 ## Mixed-input sort
 
-Even when `primary_intent` is e.g. `test notes`, the opener may carry secondary items. Per routing priority, those don't redirect the flow — they get caught during sort, slotted into Suggestions/Discoveries based on UX.md coverage. Catch them.
+Even when the opener's primary intent is e.g. `test notes`, it may carry secondary items. Per routing priority, those don't redirect the flow — they get caught during sort, slotted into Suggestions/Discoveries based on UX.md coverage. Catch them.
 
 ## Drift checks
 
-Five checks, five separate passes. **Skipped entirely on cold start** — the cold-start gate (procedure order) handles this. Don't skip on "nothing since last planning" — no reliable signal, and would miss manual edits.
+Five checks, five separate passes. **Skipped entirely on cold start** — the cold-start gate handles this. Don't skip on "nothing since last planning" — no reliable signal, and would miss manual edits.
 
 1. **Direct-edit detection (V42).** Git-diff against last build's state. Per-file confirmation protocol.
 2. **UX.md ↔ what's built.** Every UX entry → something experienceable; every observable behaviour → a UX entry.
@@ -189,11 +180,11 @@ If you're proposing a build batch with no UX.md match, stop — you've skipped a
 
 ## Discoveries promotion
 
-Before handing back, promote every undropped Discovery into a BACKLOG planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
+Before finishing the planning phase, promote every undropped Discovery into a BACKLOG planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
 
-## Recap output
+## Recap
 
-Describes what you already changed in BACKLOG + Suggestions/Discoveries lists. No pending edits for the user. Name deferred decisions explicitly. Hand back to main Claude.
+Present what you changed in BACKLOG + Suggestions/Discoveries lists. No pending edits for the user. Name deferred decisions explicitly.
 
 ## Migration: centralized → distributed proposed edits
 
@@ -227,12 +218,8 @@ Deleted rows recoverable via git. Rows for existing components stay regardless o
 
 ## Behavioural rules
 
-Universal-behaviour rules apply to you — push back, plain English, ask on ambiguity, engage with pushback.
-
-**Do not spawn inner agents** for work a direct Read, Glob, or Grep can handle. Scope-existence checks and doc lookups are single-tool-call operations.
-
-**Reasoning efficiency.** Keep internal reasoning concise — shorthand bullets, not full paragraphs. Routine steps (doc loading, empty-state checks, single-tool-call decisions) need minimal reasoning. Reserve detailed thinking for judgment calls: push-back framing, classification edge cases, scope conflicts, and drift-check analysis.
+Universal-behaviour rules apply — push back, plain English, ask on ambiguity, engage with pushback. Keep internal reasoning concise — shorthand bullets, not full paragraphs. Reserve detailed thinking for judgment calls.
 
 ---
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

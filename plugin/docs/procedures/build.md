@@ -1,16 +1,14 @@
----
-name: batch-executor
-description: Use for executing a single build batch from BACKLOG. Invoke after Stop hook redirect or /build. Receives batch payload (JSON from parse_backlog.py), executes unticked files, ticks each as completed, surfaces carve-outs, and hands off to after-build. One batch per invocation.
-tools: Read, Edit, Write, MultiEdit, Glob, Grep, Bash
----
+# Build procedure — no-code method
 
-# Batch-executor subagent — no-code method
+Follow this procedure to execute exactly ONE build batch, then stop. Never plan, never reorganise the queue beyond documented carve-outs.
 
-You build exactly ONE build batch per invocation, then return. Never plan, never reorganise the queue beyond documented carve-outs, never invoke other subagents.
+## What you need
 
-## What you receive
+Parse the top unticked batch from BACKLOG. Run:
 
-Prose + JSON payload from `parse_backlog.py` for the top unticked batch:
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BACKLOG absolute path>"
+
+Both paths quoted (Windows spaces). Parser emits JSON:
 
     {
       "batch_heading": "<name>",
@@ -23,6 +21,8 @@ Prose + JSON payload from `parse_backlog.py` for the top unticked batch:
       "serves_ux": ["<entry>", ...],
       "serves_doc": [{"doc": "...", "content": "..."}, ...]
     }
+
+If the parser returns `{}`, there's nothing to build — tell the user to run `/before-build` or start a planning session.
 
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
@@ -71,28 +71,20 @@ If verification burden is much higher than pre-build estimate:
 3. **On okay**, reorganise. Ticked files stay; unticked move to new batch(es) below. New batches inherit scope-context and Serves line(s). In folder mode: create new per-batch file + INDEX.md reference.
 4. **Label `[Re-batch, not in plan]`** in recap.
 
-## Completion path
+## Completion
 
-When all Files: are `- [x]`, hand back to main Claude with a short completion note: batch name + file count. Nothing more. Do not:
-
-- Update MANIFEST.md (after-build owns this)
-- Produce the build recap (after-build owns this)
-- Write TEST-LOG rows (after-build's job)
-- Prompt for refresh/test/clear (after-build's prompts)
-
-The Stop hook detects "batch finished, after-build not yet run" and redirects. Carve-out flags are already in BACKLOG for after-build to read.
+When all Files: are `- [x]`, the build is done. Proceed directly to the after-build procedure — read `${CLAUDE_PLUGIN_ROOT}/docs/procedures/after-build.md` and follow it.
 
 ## What you must not do
 
 - **Don't edit locked source-of-truth docs.** UX.md and additional docs are read-only (PreToolUse enforces). Flag UX.md changes in chat.
 - **Don't add files outside the prerequisite carve-out.**
 - **Don't modify batch heading, change_list, or Serves line.** Planning decisions. You only edit Files: tick state and prerequisite appends.
-- **Don't build multiple batches.** One in, one out, return.
-- **Don't spawn inner agents** for single-tool-call operations.
+- **Don't build multiple batches.** One batch, then after-build.
 
-## Flags during your turn
+## Flags during the build
 
-Surface inline as you notice them (your turn ends with a completion note, not a recap):
+Surface inline as you notice them:
 
 - **Red flags** — surface in chat; if deferred, add `[RED FLAG]` entry to BACKLOG Red flags section.
 - **Out-of-scope improvements** — surface in chat. Become Discoveries next planning session.
@@ -100,4 +92,4 @@ Surface inline as you notice them (your turn ends with a completion note, not a 
 
 ---
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

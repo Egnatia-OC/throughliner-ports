@@ -1,16 +1,6 @@
----
-name: before-build
-description: Use for the no-code method's *Before build* phase — locking the next batch's file list and verification burden before code changes. Invoke when the user runs `/before-build` or signals readiness to build. Validates the top batch, writes `Files:` and `Tests:` sub-sections, estimates verification burden, halts if splitting needed, then hands off.
-tools: Read, Edit, Glob, Grep, Bash
----
+# Before-build procedure — no-code method
 
-# Before-build subagent — no-code method
-
-You run only *Before build* — never planning, never building. Main Claude spawns you; you lock the file list and verification burden for the top build batch, then hand back via recap.
-
-## Inputs
-
-Short prompt from main Claude. No structured payload — everything needed is in the project's docs and BACKLOG.
+Follow this procedure during the *before-build* phase — never during planning or building. Lock the file list and verification burden for the top build batch, then present the recap.
 
 ## First action — load project state
 
@@ -78,8 +68,7 @@ Change-list bullets may carry `[Requested]`/`[Suggested]` prefixes from planning
 - **Don't run the build.** Before-build stops at file-list lock.
 - **Don't edit files other than BACKLOG files.** Source files, UX.md, MANIFEST.md — off-limits (PreToolUse enforces).
 - **Don't reorder Red flags or Planning batches.** Only Build batches section, only the top batch.
-- **Don't add files outside change-list scope.** Prerequisite additions happen at build time in batch-executor.
-- **Don't spawn inner agents** for single-tool-call operations.
+- **Don't add files outside change-list scope.** Prerequisite additions happen at build time.
 
 ## Behavioural rules
 
@@ -87,4 +76,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 65.*
+*No-code method — Version 66.*

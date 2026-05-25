@@ -4,7 +4,7 @@
 
 Structural specs for project documents — required sections, entry shapes, additional doc rules. Not loaded every session.
 
-Method terms defined in `VOCABULARY.md` (sibling). Each subagent body's *First action* section names what that phase reads.
+Method terms defined in `VOCABULARY.md` (sibling). Each procedure doc's opening section names what that phase reads.
 
 ## Additional source-of-truth docs
 
@@ -96,7 +96,7 @@ Starts empty. Format reminder in HTML comment.
 
 **Pruning rule.** Phase-based, not time-based.
 - **Substantial change** → drift check 5 flags; status flip via new appended row.
-- **Component removed** → planning subagent deletes rows with no MANIFEST match (step 2c). `Superseded` rows also deleted. Cross-component rows exempt. Git preserves history.
+- **Component removed** → planning procedure deletes rows with no MANIFEST match (step 2c). `Superseded` rows also deleted. Cross-component rows exempt. Git preserves history.
 
 **Template.** Empty by default — header, HTML comment, empty table. No placeholder row.
 
@@ -165,7 +165,7 @@ Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Propos
 
 **PreToolUse carve-out.** Edits within the proposed-edits section are allowed. Edits elsewhere in the locked doc are denied.
 
-**Migration.** Pre-V43 centralised blocks in BACKLOG → redistributed to destination docs by planning subagent.
+**Migration.** Pre-V43 centralised blocks in BACKLOG → redistributed to destination docs by the planning procedure.
 
 ## BACKLOG structure
 
@@ -236,4 +236,4 @@ Two formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 65.*
+*No-code method — Version 66.*

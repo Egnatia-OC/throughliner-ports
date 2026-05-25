@@ -101,7 +101,7 @@
           </thead>
           <tbody>
             <tr><td>Pre-method ideation</td><td>Plan mode</td><td>No edits needed yet.</td></tr>
-            <tr><td>Planning</td><td>Accept edits</td><td>Planning subagent edits BACKLOG.</td></tr>
+            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
             <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
             <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, TEST-LOG, build-log.</td></tr>
@@ -110,7 +110,7 @@
       </div>
 
       <div class="callout-warn callout">
-        <p><strong>Known limitation:</strong> Subagents prompt on every tool call regardless of permission mode. Auto mode produces the fewest prompts. <code>/fewer-permission-prompts</code> helps with main-conversation prompts.</p>
+        <p><strong>Permission prompts:</strong> Claude Code may prompt for permission on tool calls depending on your mode setting. Auto mode produces the fewest prompts.</p>
       </div>
     </section>
 
@@ -120,7 +120,7 @@
 
       <ol>
         <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/setup</code>.</li>
-        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit and method-subagent calls until <code>/setup</code> has run.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/setup</code> has run.</li>
         <li><strong>/setup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
       </ol>
     </section>
@@ -139,21 +139,21 @@
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>
 
-      <h3>Subagents (own contexts)</h3>
-      <p>Five subagents, each with their own context window so the main conversation stays light:</p>
+      <h3>Procedure docs</h3>
+      <p>Five procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
         <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
         <li><strong>Before-build</strong> &mdash; batch locking, file list population.</li>
-        <li><strong>Batch-executor</strong> &mdash; runs the build against the file list.</li>
+        <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
         <li><strong>After-build</strong> &mdash; MANIFEST update, tests, recap, build-log.</li>
         <li><strong>Setup</strong> &mdash; four-case folder detection and scaffolding.</li>
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code> &mdash; user-facing entry points that invoke matching subagents.</p>
+      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
 
       <h3>Bundled docs</h3>
-      <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by subagents at runtime for structural and terminology rules.</p>
+      <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>
     </section>
 
     <section data-source="manual:where-it-sits" data-transform="adapted">
