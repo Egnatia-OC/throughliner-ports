@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Session tag vs. method version) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 64
+PLUGIN_METHOD_VERSION = 65
 
 # Spine doc filenames the hook scans for at the project root when CLAUDE.md
 # is missing — to distinguish tier 1 from tier 2. Detection is tightened by
@@ -136,6 +136,12 @@ RED_FLAG_ENTRY_PATTERN = re.compile(
 
 # V54: Red flags section heading in BACKLOG.
 RED_FLAGS_SECTION_PATTERN = re.compile(r"^## Red flags\s*$", re.MULTILINE)
+
+# Batch Goal line: `**Goal.** <text>`.
+BATCH_GOAL_PATTERN = re.compile(r"^\*\*Goal\.\*\*\s*(.+?)$", re.MULTILINE)
+
+# Files: section entries (ticked or unticked).
+BATCH_FILES_ENTRY_PATTERN = re.compile(r"^- \[[ x]\] ", re.MULTILINE)
 
 # Heading shape for a build batch in BACKLOG.md (single-file mode).
 BUILD_BATCH_HEADING_PATTERN = re.compile(r"^### Batch: (.+)$", re.MULTILINE)
@@ -350,6 +356,110 @@ def detect_top_build_batch(backlog_text: str, backlog_path=None):
                 if title.startswith("[") and title.endswith("]"):
                     continue
                 return title
+
+    return None
+
+
+def count_batch_statuses(backlog_text: str, backlog_path=None) -> dict:
+    """Count build batches by status. Returns {queued: N, active: N, parked: N}.
+    Shipped batches are excluded (already done). Template placeholders skipped."""
+    counts = {"queued": 0, "active": 0, "parked": 0}
+    section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return counts
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            status = _batch_status(body)
+            if status in counts:
+                counts[status] += 1
+        return counts
+
+    if backlog_path is not None:
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
+            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if not batch_text:
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if h1_match:
+                title = h1_match.group(1).strip()
+                if title.startswith("[") and title.endswith("]"):
+                    continue
+            status = _batch_status(batch_text)
+            if status in counts:
+                counts[status] += 1
+
+    return counts
+
+
+def detect_top_batch_details(backlog_text: str, backlog_path=None):
+    """Get the top actionable batch's name, goal, and file count.
+
+    Returns dict {name, goal, file_count} or None if no batch found."""
+    section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return None
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    def _extract_details(body, title):
+        goal_match = BATCH_GOAL_PATTERN.search(body)
+        goal = goal_match.group(1).strip() if goal_match else None
+        file_count = len(BATCH_FILES_ENTRY_PATTERN.findall(body))
+        return {"name": title, "goal": goal, "file_count": file_count}
+
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            if _batch_status(body) in _SKIP_STATUSES:
+                continue
+            return _extract_details(body, title)
+        return None
+
+    if backlog_path is not None:
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
+            batch_file = backlog_path.parent / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if not batch_text:
+                continue
+            if _batch_status(batch_text) in _SKIP_STATUSES:
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if h1_match:
+                title = h1_match.group(1).strip()
+                if title.startswith("[") and title.endswith("]"):
+                    continue
+                return _extract_details(batch_text, title)
 
     return None
 
@@ -723,9 +833,18 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         )
 
     backlog_data = resolved.get("BACKLOG.md")
+    top_batch = None
+    batch_details = None
+    batch_counts = None
     if backlog_data:
         backlog_resolved_path, backlog_text = backlog_data
         top_batch = detect_top_build_batch(backlog_text, backlog_resolved_path)
+        batch_details = detect_top_batch_details(
+            backlog_text, backlog_resolved_path
+        )
+        batch_counts = count_batch_statuses(
+            backlog_text, backlog_resolved_path
+        )
         if top_batch:
             lines.append(
                 f"- **Top build batch in BACKLOG:** \"{top_batch}\". If "
@@ -736,8 +855,6 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 "Confirm with the user before continuing the build."
             )
 
-        # V54: Red flags non-empty warning. Surface deferred security/
-        # privacy/data-integrity concerns prominently at session start.
         red_flags = detect_red_flags(backlog_text)
         if red_flags:
             lines.append(
@@ -754,10 +871,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 "the current planning session."
             )
 
-    # V27 TEST-LOG tripwire: if the previous build batch's test session is
-    # still open (rows with Confirmed Explicitly: No), inject a routing
-    # override directing main Claude to the planning subagent regardless
-    # of opener classification. See format_test_log_tripwire_block.
+    # V27 TEST-LOG tripwire.
     unconfirmed_rows, build_log_status, session_id = detect_unconfirmed_test_rows(
         project_root, resolved
     )
@@ -768,14 +882,73 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             )
         )
 
+    # V74: User-facing session-open status summary.
+    lines.append("")
+    lines.append("## Session-open status (present to user)")
     lines.append("")
     lines.append(
-        "**Routing.** Read the user's opening message and route per "
-        "`universal-behaviour.md` → *Routing main-Claude's openers*. This "
-        "hook does not classify the user's opener — that's your call based "
-        "on the user's words and the structural state listed above. "
-        "Exception: when the TEST-LOG tripwire above fires, the routing "
-        "override there takes precedence."
+        "**Mandatory.** Present the following status summary to the user "
+        "as your first output in every session — before routing, before "
+        "asking questions, before any other action. Keep it concise (the "
+        "block below is the ceiling, not a minimum). If batch counts are "
+        "zero, say so plainly."
+    )
+    lines.append("")
+
+    status_lines = []
+    if batch_counts:
+        total_actionable = batch_counts["queued"] + batch_counts["active"]
+        parts = []
+        if batch_counts["active"]:
+            parts.append(f"{batch_counts['active']} active")
+        if batch_counts["queued"]:
+            parts.append(f"{batch_counts['queued']} queued")
+        if batch_counts["parked"]:
+            parts.append(f"{batch_counts['parked']} parked")
+        if parts:
+            status_lines.append(f"Build batches: {', '.join(parts)}.")
+        else:
+            status_lines.append("Build batches: none.")
+    else:
+        status_lines.append("Build batches: BACKLOG not found or empty.")
+
+    if batch_details:
+        goal_part = f" — {batch_details['goal']}" if batch_details["goal"] else ""
+        file_part = (
+            f" ({batch_details['file_count']} files)"
+            if batch_details["file_count"]
+            else ""
+        )
+        status_lines.append(
+            f"Next up: \"{batch_details['name']}\"{goal_part}{file_part}."
+        )
+
+    if unconfirmed_rows:
+        status_lines.append(
+            f"Pending tests: {len(unconfirmed_rows)} unconfirmed from "
+            "previous build (must close before next build)."
+        )
+
+    if backlog_data and red_flags:
+        status_lines.append(
+            f"Red flags: {len(red_flags)} deferred concern(s) to acknowledge."
+        )
+
+    status_lines.append("Ready to proceed?")
+
+    lines.append("```")
+    for sl in status_lines:
+        lines.append(sl)
+    lines.append("```")
+
+    lines.append("")
+    lines.append(
+        "**Routing.** After presenting the status, read the user's opening "
+        "message and route per `universal-behaviour.md` → *Routing "
+        "main-Claude's openers*. This hook does not classify the user's "
+        "opener — that's your call based on the user's words and the "
+        "structural state listed above. Exception: when the TEST-LOG "
+        "tripwire above fires, the routing override there takes precedence."
     )
 
     return "\n".join(lines)

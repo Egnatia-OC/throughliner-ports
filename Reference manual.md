@@ -16,7 +16,7 @@ Install via marketplace (persists across sessions):
 
 1. Clone: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
 2. In Claude Code: `/plugin marketplace add <path-to-clone>` then `/plugin install no-code-method@sovereign-implementer`.
-3. Open a session in the project folder. Hooks fire at session start. Empty or undocumented folders get an advisory pointing at `/setup`.
+3. Open a session in the project folder. Hooks fire at session start. In adopted projects, Claude presents a status summary (batch counts, next batch, pending tests) and asks if you'd like to proceed. Empty or undocumented folders get an advisory pointing at `/setup`.
 
 For one-off use: `claude --plugin-dir <path-to-clone>/plugin` loads without installing.
 
@@ -234,7 +234,7 @@ Nothing destructive without confirmation; every destructive option backs up firs
 
 ## What's inside the plugin
 
-- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state + injects behavioural rules. PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. Stop hook routes between batches / to after-build. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
+- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. Stop hook routes between batches / to after-build. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Subagents** (own contexts): planning, before-build, batch-executor, after-build, setup. Each returns a recap main Claude relays.
 - **Slash commands** (`/setup`, `/before-build`, `/build`): user-facing entry points invoking matching subagents.
 - **Templates**: starter shapes for spine docs.
@@ -334,4 +334,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 64.*
+*No-code method — Version 65.*

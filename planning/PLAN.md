@@ -66,15 +66,19 @@ Scope files: `sessions/NNNN-kebab-title.md`. Allocation: next unused 4-digit num
 | 0070 | After-build close completeness | Doc-parity audit, idea sweep with routing, pre-commit checkpoint, CLAUDE.md extensibility section. **Shipped v72.** |
 | 0071 | Subagent cost optimization | Planning subagent from ~31.6k to <15k tokens: conditional drift-check skip, classify-then-dispatch, Sonnet evaluation. **Shipped v73.** |
 | 0072 | After-build source-code boundary | Hard boundary: after-build cannot edit source/build files. Fold in "run commands yourself" rule. **Shipped v74.** |
-| 0073 | Stop hook before-build→build chain fix | Stop hook exits silent after before-build (zero ticked = just locked). |
-| 0074 | Session-open status summary | User-facing batch count, next batch, and proceed prompt on session open. |
+| 0073 | ~~Stop hook before-build→build chain fix~~ | **Cancelled.** Superseded by architecture redesign — auto-chaining removed entirely. |
+| 0074 | Session-open status summary | User-facing batch counts, next batch, pending tests — mandatory presentation via hook directive. **Shipped v75.** |
 | 0075 | Dev-side log folder migration | BUILD-LOG.md + TEST-LOG.md → folder structures. Dev-side only, no plugin changes. |
-| 0076 | Plugin-side TEST-LOG folder migration | test-log/ folder convention for consumer projects. Mirrors V50 build-log migration. Depends on 0075. |
-| 0077 | Greenfield E2E: burner app from scratch | Planning-from-scratch → full build cycle on throwaway app. Tests the most important untested path. Also verifies 0071 cold-start gate (empty MANIFEST/TEST-LOG should skip drift checks). Soft dependency on 0071–0074. |
-| 0078 | Post-fix E2E validation (Taskflow) | Re-run build cycle confirming 0072–0074 fixes work. Hard dependency on 0072+0073+0074. |
+| 0076 | ~~Plugin-side TEST-LOG folder migration~~ | **Cancelled.** Scoped against subagent architecture (17 files, 5 subagent bodies). Rewrite after redesign. |
+| 0077 | ~~Greenfield E2E: burner app from scratch~~ | **Cancelled.** Intent kept — rewrite as new scope after architecture redesign lands. |
+| 0078 | ~~Post-fix E2E validation (Taskflow)~~ | **Cancelled.** Validates 0073/0074 in old architecture; 0072 already shipped. Nothing left to validate. |
+| 0079 | Subagent removal: code and procedures | Remove all 5 subagents. Convert to procedure docs. Delete Stop hook. Rewrite session_start/PreToolUse/skills to route to docs instead of spawning agents. |
+| 0080 | Doc permission flip: phase-aware editing | Unlock source-of-truth docs (UX, MANIFEST, additional) during planning. Lock source code during planning. Reverse during build. Phase detected via BACKLOG batch status. Depends on 0079. |
+| 0081 | Machine-readable proxy layer | Compact proxy files in `.proxies/` for UX and MANIFEST. Header block (what/who/why) + entry index with line numbers. Claude reads proxy first, dips into full doc selectively. Depends on 0079, 0080. |
+| 0082 | CLAUDE template product overview | Product overview section in CLAUDE.md: what it is, who it's for, what friction it solves, milestones. Populated by `/setup` conversation. Depends on 0079, 0080. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
-60 sessions through 0078, plus V60+ TBD. Some will combine or split.
+60 sessions through 0078, plus V60+ TBD. Four cancelled (0073, 0076, 0077, 0078) — superseded by architecture redesign (subagent removal, hook-only enforcement, main-Claude conversation ownership). New scope files for the redesign follow.
 
 ## Session-scope file shape
 

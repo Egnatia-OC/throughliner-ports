@@ -106,6 +106,63 @@ class TestV29UnadoptedAdvisory:
         assert "unadopted" in ctx.lower()
 
 
+class TestV74SessionOpenStatus:
+    """V74 — user-facing session-open status summary."""
+
+    def test_status_section_present_folder_mode(self, adopted_folder):
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Session-open status (present to user)" in ctx
+        assert "Mandatory" in ctx
+
+    def test_batch_counts_folder_mode(self, adopted_folder):
+        """Folder mode: 1 queued, 1 parked (shipped excluded)."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "1 queued" in ctx
+        assert "1 parked" in ctx
+
+    def test_next_batch_details_folder_mode(self, adopted_folder):
+        """Shows next batch name, goal, and file count."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert 'Next up: "Add settings screen"' in ctx
+        assert "preferences" in ctx.lower()
+        assert "(2 files)" in ctx
+
+    def test_red_flag_count_in_status(self, adopted_folder):
+        """Red flag count appears in the status block."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "1 deferred concern" in ctx
+
+    def test_ready_prompt_present(self, adopted_folder):
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Ready to proceed?" in ctx
+
+    def test_status_section_single_file_mode(self, adopted_single_file):
+        """Single-file BACKLOG also gets the status summary."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_single_file)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Session-open status (present to user)" in ctx
+        assert "1 queued" in ctx
+        assert 'Next up: "Add dark mode"' in ctx
+        assert "(2 files)" in ctx
+
+
 class TestMalformedInput:
     """Hook handles bad stdin gracefully."""
 
