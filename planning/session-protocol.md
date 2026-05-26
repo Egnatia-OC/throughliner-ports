@@ -18,7 +18,7 @@ Three version-ish numbers move independently:
 
 - **Session tag** (lowercase `v`, e.g. `v52`) — one per session regardless of type. Always increments.
 - **Method version** (uppercase `V`, e.g. `V48`) — consumer-facing footer. Only bumps on substantive method/plugin change; planning-only sessions skip.
-- **Scope-file number** (4-digit, e.g. `0050`) — leading number in `planning/scopes/0050-adr-style-numbering.md`. Allocated at creation, never reused. Filename order = creation order; build order lives in BACKLOG.md.
+- **Batch number** (4-digit, e.g. `0050`) — leading number in BACKLOG.md queued batch headings (e.g. `### 0096 — Manifest rationale field`). Allocated at creation, never reused. Used for cross-referencing only.
 
 So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked until a method-changing session bumps them together.
 
@@ -32,10 +32,9 @@ In order:
 
 1. `git describe --tags --abbrev=0` — confirm current version.
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Reference manual.md` at `HEAD`. (Repo-root prose set frozen at V39 — read only for prose-spec form, not current rules.)
-3. Scan `planning/BACKLOG.md` → *Open questions* for entries whose *Next step* names the current batch.
-4. Read the active scope file from `planning/scopes/`. To find it: scan BACKLOG.md's batch list top to bottom, skip `**Shipped**`/`**Parked**` rows, pick the first unmarked. Use absolute paths. If none exists, say so and wait — don't invent a scope.
+3. Read `planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
 
-Then read Alex's opener and route. If the task isn't clear, report what was loaded and ask. Don't draft.
+Then read Alex's opener and route. Openers naming a session shape ("planning session," "doc-only session," etc.) are clear — route to that shape directly. If the task isn't clear, report what was loaded and ask. Don't draft.
 
 ---
 
@@ -47,7 +46,7 @@ Three shapes, often blended:
 
 **Doc-only** — rewrites without testable code (terminology sweep, parity catch-up, OQ resolution as prose). No smoke test; doc-code parity audit still runs.
 
-**Planning** — rescope the roadmap: split/merge batches, write/revise scope files, add/resolve open questions, restructure BACKLOG.md. Usually still produces a tagged commit.
+**Planning** — rescope the roadmap: split/merge batches, revise queued batch scope in BACKLOG.md, add/resolve open questions. Usually still produces a tagged commit.
 
 Claude's job mid-session: do the work, surface concerns, propose. Close/parity/testing rules apply regardless.
 
@@ -57,13 +56,13 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 1. **Doc-code parity** (see `session-reference.md` → *Doc-code parity* for audit details). Fix docs before footers and BUILD-LOG.
 
-2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from old scope files — audit `planning/scopes/` for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]." Added V29 after its own open hit a pre-V23 frame in the scope file.
+2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
 3. **Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in `session-reference.md` → *Footer bumps*.
 
 4. **Build-log entry** — create a new file in `build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `build-log/INDEX.md`.
 
-5. **Sweep ideas raised but not implemented.** Each: add to a future scope file; create new scope file + BACKLOG.md row; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
+5. **Sweep ideas raised but not implemented.** Each: add to BACKLOG.md → *Queued batches* as a new batch entry; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
 
 6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
@@ -71,7 +70,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 8. **Tag** `git tag v<N>`.
 
-9. **Delete this batch's scope file** as part of the commit. If bash refuses on Windows ACLs, hand-delete via Explorer first.
+9. **Remove this batch from BACKLOG's Queued batches section** as part of the commit.
 
 10. **Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 

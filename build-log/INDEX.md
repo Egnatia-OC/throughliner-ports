@@ -6,6 +6,7 @@ For format details, see `planning/session-reference.md` → *BUILD-LOG entry sha
 
 ---
 
+- [v92-planning-oq-promotion-and-backlog-cleanup.md](v92-planning-oq-promotion-and-backlog-cleanup.md) — 2026-05-26 — OQ promotion (0097–0101), BACKLOG cleanup, dev-side convergence strategy
 - [v91-oq-cluster-design.md](v91-oq-cluster-design.md) — 2026-05-26 — "Retire build session" OQ cluster design
 - [v90-build-method-split-and-dev-proxies.md](v90-build-method-split-and-dev-proxies.md) — 2026-05-26 — BUILD-METHOD split and dev-side proxies
 - [v89-test-log-folder-split.md](v89-test-log-folder-split.md) — 2026-05-26 — TEST-LOG folder split + proxy index

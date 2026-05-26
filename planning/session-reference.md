@@ -112,7 +112,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 | File | Lifecycle | Deleted when |
 |---|---|---|
-| `planning/scopes/NNNN-kebab-title.md` | **Transient.** Scope for one batch. Once shipped, commit + code + docs are source of truth. | Batch ships (step 9). |
+| `planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope for each queued batch. Once shipped, entry removed (step 9) — commit + code + docs are source of truth. | Batch ships (step 9). |
 | `planning/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
 | `planning/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
 | `planning/BACKLOG.md` | **Living.** Rolling roadmap + open questions. | Never. |
@@ -126,7 +126,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 `planning/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. Committed in the drafting session's commit; "good enough to walk away from" is the bar. Deleted when consumed. Dead-end drafts: prune with BUILD-LOG note.
 
-**Corollary.** If a scope file's *Inputs* names content not reachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get the content into `planning/drafts/` retroactively or restate as something the next session can rebuild from repo contents. The session-open scan in `CLAUDE.md` catches the reading side; this catches the writing side.
+**Corollary.** If a queued batch's *Inputs* names content not reachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get the content into `planning/drafts/` retroactively or restate as something the next session can rebuild from repo contents. The session-open scan in `CLAUDE.md` catches the reading side; this catches the writing side.
 
 ---
 
@@ -185,7 +185,7 @@ Four ways an entry leaves:
 
 1. **Folded into a batch.** *Next step* names a condition; session-open scan (step 3) matches it; question becomes part of that batch's scope. Entry removed at session close.
 
-2. **Promoted to its own batch.** New BACKLOG.md row + scope file created. Entry removed at promotion (not at the batch's ship — the entry's role is over once a scope file exists).
+2. **Promoted to its own batch.** New queued batch entry added to BACKLOG.md → *Queued batches*. Entry removed from *Open questions* at promotion.
 
 3. **Partial fold-in.** Batch addresses one shape, others stay parked. Entry stays with a date-tagged update note. *Next step* revised to reflect what's still open.
 

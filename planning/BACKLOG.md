@@ -86,6 +86,12 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. **Shipped v87.** |
 | 0092 | BUILD-METHOD split and dev-side proxies | Split BUILD-METHOD into protocol + reference; adopt .proxies/. Depends on 0091. **Shipped v90.** |
 
+| 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. |
+| 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
+| 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. |
+| 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. |
+| 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. |
+
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
@@ -205,103 +211,145 @@ New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
 
 **Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
 
+### 0099 — /sovrecap skill + /sovbuild rename + lock-timing fix
+
+**Goal.** Rename `/before-build` to `/sovrecap` (pre-build planning recap) and `/build` to `/sovbuild`. Fix lock timing: `Status: active` engages after the user confirms the recap and invokes `/sovbuild`, not during the recap — so BACKLOG stays editable while the user reviews the file list, test plan, and split proposals.
+
+**Outputs.**
+- `plugin/skills/sovrecap/SKILL.md` — new skill replacing `plugin/skills/before-build/`. Loads `plugin/docs/procedures/before-build.md`.
+- `plugin/skills/sovbuild/SKILL.md` — new skill replacing `plugin/skills/build/`. Loads `plugin/docs/procedures/build.md`.
+- `plugin/skills/before-build/` — deleted.
+- `plugin/skills/build/` — deleted.
+- `plugin/docs/procedures/before-build.md` — updated: `Status: active` write moved to end of procedure (after user confirms), not beginning. Ends with `[PROMPT]` nudge to `/sovbuild`.
+- `plugin/docs/procedures/build.md` — updated: completion `[PROMPT]` nudge references `/sovclose` (from 0097).
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (old skills removed, new registered).
+- Updated `Reference manual.md`, `crash-course/` (new names, recap framing).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (new skill names).
+- Hook logic updated: any hook referencing `/before-build` or `/build` by name updated to new names.
+- Tests updated.
+
+**Design decisions (resolved v91).**
+1. `/sovrecap` wraps existing before-build.md — same pattern as other skills.
+2. `/sovbuild` wraps existing build.md.
+3. Lock timing fix: the recap is a genuine pause point where the user reviews and discussion may produce findings that route back to BACKLOG. BACKLOG must be unlocked during this window. `Status: active` written only after user confirms recap and invokes `/sovbuild`.
+4. `sov` prefix on both, consistent with 0097/0098.
+5. Consumer-facing description in Reference manual and crash-course frames `/sovrecap` as "pre-build planning recap."
+
+**Success criteria.** User invokes `/sovrecap`, reviews file list and test plan, can still edit BACKLOG during discussion. On confirmation, `/sovbuild` locks the batch. No references to `/before-build` or `/build` remain in plugin code or docs.
+
+**Risks / dependencies.** Lock-timing change affects hook logic — any hook that checks `Status: active` to determine phase must still work correctly with the delayed write. Soft dep on 0097 (build.md completion nudge references `/sovclose`). Moderate surface area across hooks, docs, and tests.
+
+---
+
+### 0098 — /sovplan skill + planning ordering principles
+
+**Goal.** Give planning a skill entry point (`/sovplan`) so it matches the other phases, add explicit ordering principles to the planning procedure, and introduce a universal `[SECURITY]` marker for entries across method docs.
+
+**Outputs.**
+- `plugin/skills/sovplan/SKILL.md` — new skill. Loads `plugin/docs/procedures/planning.md`.
+- `plugin/docs/procedures/planning.md` — updated with ordering principles section (dependency analysis, "what needs to exist before this can work," project-structure reasoning). Ordering principles reference `[SECURITY]` as a prioritization input.
+- `plugin/docs/DOC-STRUCTURE.md` — `[SECURITY]` marker format defined for UX entries, BACKLOG build batches, BACKLOG planning batches, BACKLOG open questions.
+- `plugin/docs/VOCABULARY.md` — `[SECURITY]` marker defined.
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skill registered).
+- Updated `Reference manual.md`, `crash-course/` (new skill documented, marker explained).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers (planning route references `/sovplan`). Red flags rule updated to reference `[SECURITY]` marker.
+- SessionStart hook output enhanced: surface top 3 queued batches with brief orientation so user can pick without reading full BACKLOG.
+- Tests updated.
+
+**Design decisions (resolved v91, v92).**
+1. `/sovplan` wraps the existing planning.md procedure — skill loads the procedure doc, same pattern as other skills.
+2. Name uses `sov` prefix to avoid confusion with Claude Code's native plan mode (Shift+Tab), which is a different feature entirely.
+3. Ordering principles added to planning.md — not a new doc. Claude already understands dependency ordering and project structure; the procedure just needs to tell it to apply that knowledge when reordering BACKLOG.
+4. SessionStart enhancement is a hook-output change, not a new skill — surface top 3 queued batches with one-line orientation each.
+5. BACKLOG full-read confirmed as the right default despite token cost. Proxy provides optional granularity for large backlogs.
+6. `[SECURITY]` is a single inline marker that works the same way on any entry in any doc. Meaning: "this touches a sensitive surface" (auth, PII, payments, deletion, etc.). Informational — no hook enforcement. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier).
+7. Applies to: UX.md entries, BACKLOG build batch headings, BACKLOG planning batches, BACKLOG open questions. Not MANIFEST or TEST-LOG (those are execution-level, already covered by Red flags sub-section and read-before-edit gate).
+
+**Success criteria.** User invokes `/sovplan` and gets the full planning procedure. BACKLOG batch ordering reflects dependency and project-structure reasoning, not just insertion order. SessionStart presents enough context for the user to pick a topic without reading the full BACKLOG first. No confusion with Claude Code's native plan mode. `[SECURITY]` markers visible on security-shaped entries across UX and BACKLOG.
+
+**Risks / dependencies.** Ordering principles are judgment-heavy — risk of over-specifying rules that don't generalise across project types. SessionStart hook change is low-risk (additive output). `[SECURITY]` marker is informational — low risk, no enforcement to break. No hard dependencies on other queued batches.
+
+---
+
+### 0097 — /sovclose skill + /sovgit skill + after-build retirement
+
+**Goal.** Replace the after-build procedure with a `/sovclose` skill that works after any session type (not just builds), and split git operations into a dedicated `/sovgit` skill that hand-holds non-coders through commit/tag/push.
+
+**Outputs.**
+- `plugin/skills/sovclose/SKILL.md` — new skill.
+- `plugin/docs/procedures/close.md` — new procedure doc loaded by `/sovclose`.
+- `plugin/skills/sovgit/SKILL.md` — new skill.
+- `plugin/docs/procedures/git.md` — new procedure doc loaded by `/sovgit`.
+- `plugin/docs/procedures/after-build.md` — deleted (content absorbed into close.md).
+- `plugin/docs/procedures/build.md` — completion section updated: `[PROMPT]` nudge to `/sovclose` instead of auto-proceeding to after-build.
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skills registered, after-build skill removed if listed).
+- Updated `Reference manual.md`, `crash-course/` (new skills documented, after-build references replaced).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (close.md + git.md added, after-build.md removed).
+- Tests updated.
+
+**Design decisions (resolved v91).**
+1. `/sovclose` dual-path: detects `Status: active` batch with fully-ticked Files → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). No active-with-ticked-files → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts).
+2. `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations excluded.
+3. `/sovgit` owns all git operations: commit, tag, push. Plain-English narration for non-coders. Invoked via `[PROMPT]` nudge from `/sovclose`. Must handle team vs. solo git workflows — on first use, ask the user's setup and record in CLAUDE.md so the procedure adapts (e.g. solo: commit-tag-push; team: branch, commit, push, PR guidance).
+4. Build.md completion becomes `[PROMPT]` nudge to `/sovclose` — no auto-proceed.
+5. All skill-to-skill transitions use `[PROMPT]` nudges to the user, never automatic handoffs.
+6. `sov` prefix on all new skills to avoid confusion with native Claude Code features.
+
+**Success criteria.** After a build, user invokes `/sovclose` and gets the full after-build workflow without knowing it used to be a separate procedure. After a planning session, user invokes `/sovclose` and gets lighter housekeeping. `/sovgit` walks a non-coder through commit/tag/push in plain English. No automatic skill-to-skill handoffs remain.
+
+**Risks / dependencies.** Large surface area — after-build.md is 136 lines of procedure that all need a new home. Risk of regression in the after-build workflow during the move. `crash-course/` data-source attributes need updating. Depends on 0079 (shipped). No hard dependency on other queued batches.
+
+---
+
+### 0101 — Structured-markdown validator
+
+**Goal.** Extend PostToolUse validation beyond BACKLOG to cover all structured method docs — TEST-LOG, build-log, scope-context sections, and proxies. Malformed docs cause silent downstream failures (hooks gate on wrong data, proxies become stale, TEST-LOG rows lose columns). A general validator catches shape violations at write time.
+
+**Inputs.** `plugin/scripts/parse_backlog.py` (existing BACKLOG-specific parser — model for the pattern). `plugin/docs/DOC-STRUCTURE.md` (canonical shapes for all doc types). `plugin/hooks/post_tool_use.py` (current PostToolUse hook — BACKLOG validation only).
+
+**Outputs.**
+- `plugin/scripts/validate_docs.py` (or similar) — general-purpose validator covering: TEST-LOG column count (10 columns), build-log entry structure (required sections), scope-context section completeness (Goal/Outputs/Success criteria present), proxy format (HTML comment header, state summary, entries section). Callable from PostToolUse and as a standalone planning pre-flight.
+- `plugin/hooks/post_tool_use.py` — updated to call the new validator after edits to TEST-LOG files, build-log files, BACKLOG batch files, and proxy files.
+- Tests updated (validator unit tests, PostToolUse integration tests).
+
+**Design decisions (v92).**
+1. Separate script (`validate_docs.py`), not bolted onto `parse_backlog.py`. The BACKLOG parser is a data-extraction tool consumed by multiple hooks; the validator is a shape-checker. Different jobs.
+2. PostToolUse is the primary trigger — validate at write time, same pattern as BACKLOG validation. Also usable as a planning pre-flight (standalone invocation).
+3. Lenient on legacy formats — warn, don't block. Same philosophy as `parse_backlog.py`: malformed input produces a warning in `additionalContext`, not a hard deny. Claude sees the warning and can self-correct.
+4. Validation rules derived from DOC-STRUCTURE.md — the spec is the source of truth for what "well-formed" means.
+
+**Success criteria.** A TEST-LOG edit that drops a column triggers a PostToolUse warning. A build-log entry missing the Performance section triggers a warning. A proxy with a malformed HTML comment header triggers a warning. No false positives on well-formed docs. Existing `parse_backlog.py` validation unchanged.
+
+**Risks / dependencies.** Scope creep — "validate all docs" can expand indefinitely. Cap at the four doc types above (TEST-LOG, build-log, scope-context, proxies). BACKLOG validation stays in `parse_backlog.py`. No hard dependencies; benefits from proxy layer (shipped) and folder structures (shipped).
+
+---
+
+### 0100 — Bash write-guard + skill escape guidance
+
+**Goal.** Close the Bash bypass hole in PreToolUse enforcement. Currently `Edit`/`Write`/`MultiEdit` are gated by project-boundary and phase-aware locks, but Bash commands (`sed -i`, `> file`, `Set-Content`, etc.) bypass all of them. Add a Bash-matcher PreToolUse check that catches file-write patterns and applies the same rules. Separately, add escape guidance to every skill that induces write locks — so Claude tells users how to change phase via the correct skill instead of leaving them to reason around the lock.
+
+**Outputs.**
+- `plugin/hooks/pre_tool_use.py` — new Bash-matcher logic. On `Bash`/`PowerShell` tool calls, scan the command for file-write patterns. If the target path would be denied by existing rules (outside project root, or locked file in current phase), deny with the same `[No-code method]` message format and `What to do:` line.
+- Deny messages for Bash write-guard include skill escape guidance: "To edit this file, invoke `/sovplan` to switch to planning phase" (or whichever skill unlocks the target).
+- Skill escape guidance added to existing deny messages on `Edit`/`Write`/`MultiEdit` locks — not just Bash. Every deny that blocks a phase-aware edit names the skill that would unlock it.
+- Tests updated (Bash-matcher unit tests, false-positive regression tests for legitimate in-project Bash use).
+
+**Design decisions (v92).**
+1. Advisory deny, not silent block — same `[No-code method]` format as existing denies. Claude sees the deny and the escape route.
+2. Two threat surfaces: cross-project writes (Bash targeting paths outside project root) and phase-lock bypass (Bash editing locked files within project). Same matcher, same deny logic.
+3. Pattern matching targets common file-write commands: `sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`. Path extraction is best-effort — not hermetic, but catches the normal drift patterns.
+4. False-positive mitigation: only fire when the extracted path would actually be denied by existing rules. Legitimate in-project Bash (e.g. `sed` on a file in the batch's Files: list during build) passes through.
+5. Skill escape guidance on all write-lock denies (not just Bash): the deny message names which skill to invoke to change phase. This covers the case where Claude or the user tries to reason around a lock instead of using the method's own phase transitions.
+
+**Success criteria.** `sed -i` targeting a file outside the project root is denied. `Set-Content` targeting a locked UX.md during build is denied. Legitimate in-project Bash during build passes. Every phase-lock deny message names the skill that would unlock the target. No false positives on standard build-time Bash (running dev servers, test commands, git operations).
+
+**Risks / dependencies.** Bash command parsing is inherently fuzzy — complex piped commands, variable expansion, and heredocs may evade or false-positive the matcher. The git safety guard (0065) already demonstrates the pattern works for a constrained command set; file-write patterns are broader. Regression test suite essential. No hard dependencies on other queued batches, but benefits from 0097/0098/0099 shipping first (skill names in deny messages need to match).
+
+---
+
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
-
----
-
-### Retire "build session" as a formal concept — BACKLOG as sole work tracker
-
-**Surfaced.** v90 (post-session discussion).
-
-**The question.** The rigid build cycle bundles a unit of work ("build session") with lifecycle ceremony — one scope file, one commit, one git tag, one build-log entry, a 10-step close procedure. The batch in BACKLOG already *is* the unit of work. The hooks already gate on BACKLOG state, not on "being in a build session." SessionStart already reads BACKLOG to orient Claude. The skills already read BACKLOG to find work. Should "build session" dissolve as a formal concept, leaving BACKLOG batches + independent skills + hook enforcement as the operating model?
-
-**Why it matters.** Alex identified that the rigid cycle was built before hooks existed — the ceremony *was* the enforcement. Now 11 mechanical enforcement points fire based on project state, independent of the session lifecycle. The cycle adds overhead (scope file creation/deletion, mandatory build-log entries, session tags, 10-step close) without feeding into the enforcement that actually prevents drift. Loosening it would let users invoke skills independently (`/plan`, `/build`, `/close`) rather than following a prescribed sequence. Three child OQs capture specific design questions: `/close` skill, `/plan` skill, `/before-build` + `/build` merge.
-
-**Working notes.** Four-layer analysis (v90 discussion): (1) hooks fire automatically — no cycle dependency; (2) skills are standalone entry points — no cycle dependency; (3) SessionStart briefing — no cycle dependency; (4) the lifecycle document is the only layer that depends on the cycle, and it's the most failure-prone. What the cycle uniquely provides is housekeeping (build-log, parity sweep, footer bumps, git tidying) — all "tidy up after yourself" tasks, none damage-preventing. The damage-prevention is entirely in the hooks.
-
-v91 design discussion resolved the parent question: **yes, retire.** The operating model becomes BACKLOG batches + independent skills + hook enforcement. All skills to be renamed with `sov` prefix (e.g. `/sovbuild`, `/sovclose`, `/sovplan`) to eliminate confusion with native Claude Code features. New `/sovgit` skill for all git operations — non-coders need handholding through git even though Claude Code does the mechanics. Handoff audit (v91): all skill-to-skill transitions must use `[PROMPT]` nudges to the user, never automatic handoffs.
-
-**Next step.** Resolved in principle. Implementation depends on the three child OQs below reaching design resolution. Promote to batch when children are designed.
-
----
-
-### Session close as a `/close` skill
-
-**Surfaced.** v90 (post-session discussion).
-
-**The question.** The 10-step session close procedure (session-protocol.md) is the most failure-prone part of the method. Claude follows it from memory after reading a document — steps get skipped under context pressure, build-log entries get missed, uncommitted work from prior sessions gets ignored. Should session close become a `/close` skill that mechanically walks the checklist?
-
-**Why it matters.** Alex identified a pattern across multiple sessions where each Claude "acts like a separate person" — committing only its own files and ignoring orphaned work. The 10-step close is exactly the kind of procedural work skills were designed for — named action, loaded procedure, mechanical execution. A `/close` skill would enforce the full checklist including a `git status` sweep for all uncommitted work, not just the current scope's files.
-
-**Working notes.** Design questions: which of the 10 steps survive if the rigid cycle loosens? Does `/close` own the commit, or does the user commit independently? Should it include a `git status` check for all uncommitted work? Does the build-log entry step stay mandatory or become optional?
-
-v91 design decisions: `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations split out to new `/sovgit` skill — non-coders need plain-English narration through git. `/sovclose` ends with `[PROMPT]` nudging user to invoke `/sovgit` when ready. After-build procedure content (after-build.md) absorbs into `/sovclose` — it's the same housekeeping. Handoff audit finding: build.md line 76 currently auto-proceeds to after-build ("Proceed directly to the after-build procedure") — this becomes a `[PROMPT]` nudge to `/sovclose` instead. Before-build SKILL.md description uses "hands off" language — should say "ends with" or "closes with."
-
-v91 dual-path design: `/sovclose` must work after *any* session type, not just builds. Detection: check for a `Status: active` batch with fully-ticked Files:. If found → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). If not → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts). One skill, two internal paths. The user just invokes `/sovclose` regardless of what they were doing.
-
-**Next step.** Ready to promote to batch. Design direction clear; implementation is writing the skill body + procedure doc (with dual-path logic) and refactoring build.md's completion step.
-
----
-
-### Planning as a `/plan` skill
-
-**Surfaced.** v90 (post-session discussion).
-
-**The question.** Planning is the only core workflow with no skill entry point. `/build`, `/before-build`, `/setup`, and `/research` are all invocable skills. Planning depends entirely on the rigid session lifecycle and procedural documentation. Should planning become a `/plan` skill that produces structured plans — the core competency BACKLOG batches currently deliver (goal, inputs, outputs, success criteria, risks)?
-
-**Why it matters.** Alex identified structured planning as the beating heart of the project — Claude's ability to take vague intent and organize it into a structured plan is the core value for non-coders. Currently this happens only within the rigid session lifecycle. A `/plan` skill would make this competency independently accessible. Relates to Claude Code's native plan mode, which covers "how to approach this work" but not "what to work on next and why."
-
-**Working notes.** Design questions: does `/plan` produce full batch-format output, something lighter, or adapt to context? Does it write to BACKLOG automatically? How does it interact with Claude Code's native plan mode? See also OQ "Separate planning content from build content" — related but distinct (that's about internal batch structure; this is about mechanism).
-
-v91 design decisions: skill name `/sovplan` to distinguish from native plan mode. Key finding: the planning procedure doc (planning.md) grants Claude authority to reorder BACKLOG but provides **zero ordering principles** — no dependency analysis, no "what needs to exist before this can work," no project-structure reasoning. This is the core competency gap: Claude understands project structure and ordering principles that non-coders don't have, but nobody's told it to apply that knowledge. Needs explicit ordering guidance added to the planning procedure. Separate finding: the user's original idea of a session-start skill suggesting BACKLOG topics is better served by enhancing SessionStart hook output — surface top 3 queued batches with a brief orientation, let user pick, no new skill needed. BACKLOG full-read philosophy confirmed (v91): full read is the right default despite token cost; separate files caused stale-content failures. Proxy provides optional granularity. BACKLOG update timing is an open thread: planning currently happens in native /plan mode, meaning BACKLOG edits have no procedural trigger — `/sovplan` would fix this.
-
-**Next step.** Ready to promote to batch. Design direction clear; implementation is writing the skill body + procedure doc, adding ordering principles to planning.md, and enhancing SessionStart summary.
-
----
-
-### Merge `/before-build` into `/build`
-
-**Surfaced.** v90 (post-session discussion).
-
-**The question.** From the user's perspective, `/before-build` and `/build` are one action — "I want to build something." The separation is an implementation detail: `/before-build` locks the file list so hooks know what's in bounds, then `/build` does the work. Should `/build` absorb `/before-build`'s steps internally, running them first if they haven't been done?
-
-**Why it matters.** Alex asked why before-build is a separate skill from build. A user shouldn't need to know about batch file-list locking as a prerequisite step. The two-command sequence adds friction and conceptual overhead for non-coders.
-
-**Working notes.** The hooks don't care which skill triggered the BACKLOG state — they gate on the Files: list existing, not on which command wrote it. If `/build` runs before-build internally, the same writes happen and enforcement works identically. Design question: is there ever a reason to run `/before-build` without immediately building? If not, the merge is clean.
-
-v91 note: with sov-prefix, the unmerged name would be `/sovbefore-build` — awkward with double hyphen. Merge resolves this naturally (just `/sovbuild`). Reinforces the case for merging.
-
-v91 design resolution: **don't merge — rename to `/sovrecap`.** The before-build checkpoint is a genuine pause point: the user reviews the file list, test plan, and any split proposals before committing to build. Discussion during this window may produce findings that route back to BACKLOG — which requires BACKLOG to be unlocked. Separate design finding: `Status: active` (the batch lock) currently engages *before* the recap, which blocks BACKLOG edits during the discussion window. The lock should engage *after* the user confirms the recap and invokes `/sovbuild`. The skill's consumer-facing description in Reference manual and crash-course should frame it as "pre-build planning recap" or similar. The `/sovbefore-build` naming problem is solved: `/sovrecap` is clean and accurate.
-
-**Next step.** Ready to promote to batch. Implementation: rename skill to `/sovrecap`, fix lock timing (Status: active written after user confirms, not during recap), update Reference manual and crash-course descriptions.
-
----
-
-### Separate planning content from build content in BACKLOG batches
-
-**Surfaced.** v86 (0091 design discussion). Updated v91 (scope files consolidated into BACKLOG).
-
-**The question.** Each queued batch in BACKLOG bundles planning-phase content (open questions, risks, dependencies, design decisions) with build-phase content (goal, outputs, success criteria, file lists). Should these be separated — e.g. a planning section that resolves questions before a build section locks the file list?
-
-**Why it matters.** Alex has proven that planning and building can happen in separate parallel sessions (so long as you never build in parallel, and you inform the current build when a new plan lands). Clearer separation within the batch entry would make it obvious which parts are settled vs. still open.
-
-**Working notes.** Scope files were eliminated in v91 — batch scope now lives inline in BACKLOG. The old scope-file split question (separate files for planning vs. build) is resolved by the consolidation. What remains is whether the *internal structure* of a queued batch should visually separate "still deciding" from "ready to build." Parallel planning/building needs git advice: commit before switching contexts, pull before resuming a build.
-
-**Next step.** Park. The current inline format works. Revisit if the bundled structure causes confusion in practice.
-
----
-
-### Remove timestamps from build-log and other docs
-
-**Surfaced.** v82.
-
-**The question.** Should timestamps be removed from build-log entries and any other method docs that carry them? The performance tracking section (shipped V58/v60) added structured timestamps to per-build log files. No clear use case for the timestamp data has emerged — session tags already provide ordering, and the method doesn't use elapsed-time data for any decision.
-
-**Why it matters.** Timestamps add visual noise and token cost without serving a downstream consumer. If nothing reads them or acts on them, they're dead weight in every build-log entry going forward.
-
-**Next step.** Audit which docs carry timestamps (build-log entry template, performance section shape, any others). Write a small scope to remove them from templates and procedure docs, or fold into a nearby batch touching build-log structure (0089).
 
 ---
 
@@ -333,32 +381,6 @@ v91 design resolution: **don't merge — rename to `/sovrecap`.** The before-bui
 
 ---
 
-### Project-boundary hook bypass via Bash
-
-**Surfaced.** v73.
-
-**The question.** The project-boundary PreToolUse hook (0065) blocks `Edit`/`Write`/`MultiEdit` outside the project root, but `Bash` commands (`sed`, `echo >`, PowerShell `Set-Content`, etc.) bypass it entirely. Should the plugin add a Bash-matcher PreToolUse check for common file-write patterns, similar to how the git safety guard matches `git reset --hard` and `git push --force`?
-
-**Why it matters.** Surfaced 2026-05-25 during v73 session close. Claude used `sed` to edit a file outside `sovereign-implementer/` after the Edit tool was correctly blocked. The boundary enforcement is advisory (catches normal editing flow), not hermetic (can't prevent Bash-based writes). A careless or drifting Claude session could write outside the project without the hook ever firing. The git safety guard already demonstrates the pattern — match dangerous Bash substrings and deny — but file-write patterns are far more varied than git commands, so false positives are a real concern.
-
-**Working notes.** Common file-write patterns that could be matched: `sed -i`, `> file`, `>> file`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`. But every match risks blocking legitimate in-project Bash use. An alternative: instead of blocking, surface a warning via `additionalContext` when Bash targets a path outside the project root — advisory rather than deny.
-
-**Next step.** Park. Revisit if E2E testing or real-world use surfaces unintended cross-project writes from Bash. The advisory-warning approach is lower-risk than a hard deny if this gets promoted.
-
----
-
-### Structured-markdown validator as a plugin component
-
-**Surfaced.** v71 (0068 E2E round 2).
-
-**The question.** Should the plugin include a general-purpose structured-markdown linter that validates BACKLOG batch format, TEST-LOG column counts, scope-context section completeness, and other method-specific document shapes — beyond what `parse_backlog.py` currently does?
-
-**Why it matters.** Surfaced 2026-05-24 during E2E testing research. `parse_backlog.py` validates BACKLOG structure, but TEST-LOG, build-log entries, and scope-context sections have no equivalent validation. Malformed docs cause silent failures downstream (hooks gate on wrong data). A general lint could run as a PostToolUse check or a planning-session pre-flight.
-
-**Next step.** Promote after the proxy layer ships (0081/0089/0090). Proxies add another structured format with specific shape requirements — validation becomes more valuable as the number of structured doc types grows.
-
----
-
 ### Plugin testing framework beyond bespoke pytest
 
 **Surfaced.** v71 (0068 E2E round 2).
@@ -369,59 +391,6 @@ v91 design resolution: **don't merge — rename to `/sovrecap`.** The before-bui
 
 **Next step.** Park. Revisit if test maintenance burden grows or if other plugin projects would benefit from the same patterns.
 
----
-
-### Plugin settings layer / per-project config file
-
-**Surfaced.** v71 (0068 E2E round 2).
-
-**The question.** Should the plugin support a separate config file (or settings layer) that lets users override or extend plugin-owned workflows — as opposed to using CLAUDE.md sections for extensibility?
-
-**Why it matters.** Surfaced 2026-05-24. CLAUDE.md is already the per-project customization point, so a recognised section there is the simpler path. A separate config file would be a new mechanism to maintain. Worth revisiting if CLAUDE.md extensibility proves insufficient.
-
-**Next step.** Parked. Revisit if the CLAUDE.md-section approach ships and users hit limits.
 
 ---
 
-### Red-flag / threat-class marker for security-shaped batches
-
-**Surfaced.** v43.
-
-**The question.** Should BACKLOG batches touching security surfaces (auth, secrets, PII, deletion, payment) carry an explicit *Red flags* marker — as a batch sub-section, as auto-detection, or both?
-
-**What shipped.** Batch-level Red flags sub-section shipped V47 (v51) — planning auto-detects security-shaped scope and writes a persistent section.
-
-**What remains.** Threat-class marker on individual UX.md entries — so security-shaped features are flagged at the spec level, not just at the batch level.
-
-**Next step.** Ready to promote. Could fold into a planning or UX-template batch, or stand alone as a small scope.
-
----
-
-### Graduate sovereign implementer onto sovereign implementer
-
-**Surfaced.** v40.
-
-**The question.** Can this dev project dogfood the method's own plugin?
-
-**Why it matters.** Surfaced 2026-05-21. Dogfooding would surface gaps Taskflow can't and validate non-UI project types.
-
-**Prerequisites (all shipped):**
-
-1. Distributed fold-ins + open questions — **Shipped V43.**
-2. Automated vs. manual test split — **Shipped V46.**
-3. Two-write rule shelved — **Done v40.**
-4. UX.md non-GUI adaptation — **Shipped V47.**
-
-**Next step.** **Indefinitely shelved** (v61). All prerequisites shipped, but E2E testing revealed efficiency/correctness fixes needed (0063–0068). Restore when the method is stable enough to dogfood without excessive token burn.
-
----
-
-### Prose-only rewrite of the method
-
-**Surfaced.** v23.
-
-**The question.** Tool-agnostic prose-only version for users without Claude Code.
-
-**V37 note:** V32's two-write rule delivered the docs-only set at repo root. V40 froze it at V39.
-
-**Next step.** **Indefinitely parked** (v47). Promote if a real audience emerges.
