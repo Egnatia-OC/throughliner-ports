@@ -19,6 +19,7 @@ __pycache__/
 *.pyc
 .env
 .env.local
+plugin.zip
 
 # Local-only ideation / scratch work not part of the method
 Marketing/
