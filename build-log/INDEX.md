@@ -2,10 +2,11 @@
 
 Running record of decisions, changes, and reasoning. Newest first. Written for a friend skimming — half a page per session, less when possible.
 
-For format details, see `BUILD-METHOD.md` → *BUILD-LOG entry shape*.
+For format details, see `planning/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v90-build-method-split-and-dev-proxies.md](v90-build-method-split-and-dev-proxies.md) — 2026-05-26 — BUILD-METHOD split and dev-side proxies
 - [v89-test-log-folder-split.md](v89-test-log-folder-split.md) — 2026-05-26 — TEST-LOG folder split + proxy index
 - [v88-index-relocation-to-proxies.md](v88-index-relocation-to-proxies.md) — 2026-05-26 — INDEX relocation to proxies
 - [v87-dev-side-terminology-alignment.md](v87-dev-side-terminology-alignment.md) — 2026-05-26 — Dev-side terminology and BACKLOG alignment

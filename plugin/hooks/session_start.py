@@ -99,8 +99,8 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # --- Constants ---
 
 # The method version this build of the plugin carries. Bumped when the
-# session substantively changes the method or plugin (per BUILD-METHOD.md →
-# Session tag vs. method version) — dev-internal-only sessions do not bump
+# session substantively changes the method or plugin (per session-protocol.md →
+# Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
 PLUGIN_METHOD_VERSION = 75

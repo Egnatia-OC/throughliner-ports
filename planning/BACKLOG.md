@@ -4,7 +4,7 @@ Batch-by-batch roadmap for the plugin migration. Companion to `INVENTORY.md` and
 
 ## Versioning convention
 
-Batches tracked as git tags (`v17`, `v18`, …). The method footer (`*No-code method — Version N.*`) only bumps on substantive method/plugin changes — dev-internal batches leave it unchanged. Full rule: `BUILD-METHOD.md` → *Three numbers to keep distinct*.
+Batches tracked as git tags (`v17`, `v18`, …). The method footer (`*No-code method — Version N.*`) only bumps on substantive method/plugin changes — dev-internal batches leave it unchanged. Full rule: `session-protocol.md` → *Three numbers to keep distinct*.
 
 Scope files: `scopes/NNNN-kebab-title.md`. Allocation: next unused 4-digit number by scanning `planning/scopes/`. Numbers never reused or renumbered; reorder by moving rows below, not renaming files. Files are PROVISIONAL — a file existing isn't a commitment.
 
@@ -81,12 +81,15 @@ Scope files: `scopes/NNNN-kebab-title.md`. Allocation: next unused 4-digit numbe
 | 0085 | First-time user experience | /setup enforcement in PreToolUse deny + build-transition UX in before-build procedure + parent-directory CLAUDE.md inheritance advisory. Depends on 0084. **Shipped v84.** |
 | 0086 | Scaffold quality fixes | [Project Name] replacement, UX principle capture, Status: line, marketplace.json description. **Shipped v85.** |
 | 0087 | Doc folder restructure | Move spine docs into dedicated subfolder. Large surface area. Depends on 0085, 0086. **Shipped v86.** |
+| 0096 | Manifest rationale field | One-line "why it exists" on MANIFEST entries; eliminates build-log scanning for decision context. |
 | 0088 | Build E2E test | Build-phase E2E: /before-build through /build through after-build. Picks up from 0084. Depends on 0085 soft. |
 | 0089 | INDEX relocation to proxies | Move BACKLOG INDEX.md and build-log INDEX.md content into `_method/proxies/`. Folders keep only per-entry files. Depends on 0081. **Shipped v88.** |
 | 0090 | TEST-LOG folder split + proxy index | Split TEST-LOG.md into test-log/ folder; `_method/proxies/test-log.md` becomes folder index. Supersedes 0076. Depends on 0081, 0089. **Shipped v89.** |
-| 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. |
+| 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. **Shipped v87.** |
 | 0092 | BUILD-METHOD split and dev-side proxies | Split BUILD-METHOD into protocol + reference; adopt .proxies/. Depends on 0091. |
 | 0093 | Dev-side folder restructure | Cleanup pass: folder layout after 0091 + 0092 land. Depends on 0091, 0092. |
+| 0094 | Guided testing and debugging procedure | New `/test` skill + procedure doc. Step-by-step test walkthroughs for non-coders + structured debugging when tests fail. Depends on 0079 (shipped). |
+| 0095 | /test skill E2E validation | E2E test of `/test` skill against burner app. Happy path, deliberate failures, debugging protocol, planning handoff. Depends on 0094. |
 | V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
 60 batches through 0078, plus V60+ TBD. Three cancelled (0073, 0077, 0078), one superseded (0076 → 0090). New scope files for the post-redesign phase follow.
@@ -133,7 +136,7 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Working notes.** Parallel planning/building needs git advice: commit before switching contexts, pull before resuming a build. The corruption risk is parallel builds, not parallel planning. The split would reshape plugin-side procedure docs — not just dev-side folder names.
 
-**Next step.** Park until 0091 (terminology alignment) ships. The current term "scope file" and folder name `planning/scopes/` don't foreclose either direction. Promote when the terminology has settled and a concrete split design emerges.
+**Next step.** 0091 shipped (v87) — terminology settled, folder is `planning/scopes/`. Still parked: promote when a concrete split design emerges (separate planning artifact vs. build spec).
 
 ---
 

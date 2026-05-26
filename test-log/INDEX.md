@@ -1,6 +1,6 @@
 # TEST-LOG — Smoke test record (this project)
 
-One row per check per session. Status (`Pass`/`Fail`/`Skipped`) is never edited — regressions append new rows. `Superseded` only when a component changes enough to invalidate the original test. Entry-shape spec in `BUILD-METHOD.md` → *TEST-LOG entry shape*.
+One row per check per session. Status (`Pass`/`Fail`/`Skipped`) is never edited — regressions append new rows. `Superseded` only when a component changes enough to invalidate the original test. Entry-shape spec in `planning/session-reference.md` → *TEST-LOG entry shape*.
 
 ---
 

@@ -19,12 +19,12 @@ Reshape the dev-side folder layout to reflect the naming and structural changes 
 ## Success criteria
 
 - Every dev-side doc has a logical home that parallels plugin-side conventions where applicable.
-- No stale path references in CLAUDE.md, session protocol, or BACKLOG.
+- No stale path references in CLAUDE.md, session-protocol.md, session-reference.md, or BACKLOG.
 - A new Claude session can orient from CLAUDE.md without encountering dead paths.
 
 ## Open questions for this session
 
-- Does `planning/` as a parent folder still earn its keep, or do its remaining contents (BACKLOG, batches/, drafts/) promote to repo root? Plugin-side puts BACKLOG at project root.
+- Does `planning/` as a parent folder still earn its keep, or do its remaining contents (BACKLOG, scopes/, drafts/) promote to repo root? Plugin-side puts BACKLOG inside `_method/` (not at project root — only CLAUDE.md sits at root).
 - Where do `drafts/` live after the restructure? Plugin-side has no direct equivalent (closest: `research/`).
 - Do `build-log/` and `test-log/` stay at repo root? Plugin-side keeps them at project root — already aligned.
 
