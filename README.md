@@ -9,15 +9,15 @@ A structured workflow for driving Claude Code as a non-coder. Spec-driven discip
 /plugin install no-code-method@sovereign-implementer
 ```
 
-Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Reference manual.md](Reference%20manual.md) for the full primer.
+Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Reference manual.md](Guides/Reference%20manual.md) for the full primer.
 
 ## What's here
 
-`Reference manual.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
+`Guides/Reference manual.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
 
 `plugin/` — the Claude Code plugin distributing the method's rules via hooks, skills, slash commands, and templates.
 
-`planning/` — dev-internal roadmap and session scopes. `Archive/` — pre-git method versions (V3–V16).
+`Dev/` — dev-internal roadmap, batch queue, research, and tests.
 
 ## Versioning
 

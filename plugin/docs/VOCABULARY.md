@@ -22,6 +22,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Additional source-of-truth doc.** Project-specific beyond UX.md — e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`. Same phase-aware rules. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
 
+- **`[SECURITY]` marker.** Inline tag on entries that touch a sensitive surface (auth, PII, payments, deletion, access control). Applies to UX.md entries, BACKLOG build/planning batches, and BACKLOG open questions. Not MANIFEST or TEST-LOG. Informational — no hook enforcement. Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier). Format spec: `DOC-STRUCTURE.md` → *`[SECURITY]` marker*.
+
 - **Adopted folder.** Project's CLAUDE.md carries the method footer. Safety net stays silent.
 
 - **Unadopted folder.** No method footer. Safety net fires on folders with substantial content: SessionStart advisory + PreToolUse blocks. Disable via `/plugin` → Installed → toggle off. Empty folders stay silent.
@@ -106,4 +108,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 77.*
+*No-code method — Version 78.*

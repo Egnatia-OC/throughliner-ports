@@ -9,3 +9,13 @@ Before installing, read the [Reference manual](https://github.com/FlintCraftTech
 ## After install
 
 Run `/plugins` to confirm `no-code-method` is in the *Installed* tab.
+
+## Slash commands
+
+- `/setup` — scaffold or refresh method docs
+- `/sovplan` — planning session (test read-back, drift checks, BACKLOG editing)
+- `/sovrecap` — pre-build recap (file list, verification burden)
+- `/sovbuild` — lock and build the top batch
+- `/sovclose` — close a build (quality gates, record-keeping)
+- `/sovgit` — commit, tag, push walkthrough
+- `/research` — triggered research query flow

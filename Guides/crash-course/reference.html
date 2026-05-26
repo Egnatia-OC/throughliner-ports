@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html" aria-current="page">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Reference</h1>
+    <p data-transform="added">Detailed tables and technical information for when you need the specifics.</p>
+
+    <section data-source="manual:test-types" data-transform="adapted">
+      <h2>Test types</h2>
+      <p>Four test types, each with a default verifier. The verifier (Claude or user) is set per row, not per type.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Type</th><th>What it means</th><th>Typical verifier</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Look and click</strong></td>
+              <td>UI interaction &mdash; tap a button, check a screen.</td>
+              <td>Structural checks &rarr; Claude. Judgement calls &rarr; user.</td>
+            </tr>
+            <tr>
+              <td><strong>Run and read</strong></td>
+              <td>Command execution &mdash; run something, read the output.</td>
+              <td>Fully automatable.</td>
+            </tr>
+            <tr>
+              <td><strong>Trigger and observe</strong></td>
+              <td>Event-driven &mdash; cause an event, observe the response.</td>
+              <td>Fully automatable.</td>
+            </tr>
+            <tr>
+              <td><strong>Generate and inspect</strong></td>
+              <td>Artefact production &mdash; generate a file, inspect the result.</td>
+              <td>Fully automatable.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>All rows must reach <code>Confirmed Explicitly: Yes</code> before the next build can start.</p>
+    </section>
+
+    <section data-source="manual:editing-surfaces" data-transform="adapted">
+      <h2>Editing surfaces &mdash; phase-aware</h2>
+      <p>Permissions flip based on the project phase:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Document</th><th>Planning phase</th><th>Build phase</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>UX.md</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
+            <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>test-log/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>Source code</td><td><strong>Locked</strong></td><td>Batch file list only</td></tr>
+            <tr><td>_method/research/ files</td><td>Read/write</td><td>Read/write</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by <code>/sovbuild</code>).</p>
+      <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony needed.</p>
+      <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You review and apply them next planning session.</p>
+      <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs regardless of phase.</p>
+    </section>
+
+    <section data-source="manual:permissions" data-transform="adapted">
+      <h2>Permission modes</h2>
+      <p>Claude Code has its own permission system (Ask/Accept/Plan/Auto/Bypass). The plugin's PreToolUse hooks are a separate layer &mdash; they fire in <em>every</em> mode, including Bypass.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Phase</th><th>Recommended mode</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pre-method ideation</td><td>Plan mode</td><td>No edits needed yet.</td></tr>
+            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
+            <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
+            <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
+            <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout-warn callout">
+        <p><strong>Permission prompts:</strong> Claude Code may prompt for permission on tool calls depending on your mode setting. Auto mode produces the fewest prompts.</p>
+      </div>
+    </section>
+
+    <section data-source="manual:safety-net" data-transform="adapted">
+      <h2>The safety net</h2>
+      <p>Three layers protect against working in the wrong state:</p>
+
+      <ol>
+        <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/setup</code>. It also warns if a parent directory has its own CLAUDE.md, which could affect the session.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/setup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/setup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
+        <li><strong>/setup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
+      </ol>
+
+      <h3>Parent-directory placement</h3>
+      <p>Claude Code inherits CLAUDE.md files from parent directories. If your project folder is inside another project&rsquo;s tree, the parent&rsquo;s instructions will bleed into your session. Keep project folders at independent locations.</p>
+    </section>
+
+    <section data-source="manual:plugin-internals" data-transform="adapted">
+      <h2>What's inside the plugin</h2>
+
+      <h3>Hooks (deterministic enforcement)</h3>
+      <p>Python scripts that fire on Claude Code events. They enforce rules mechanically &mdash; no judgement involved.</p>
+      <ul>
+        <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules.</li>
+        <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard.</li>
+        <li><strong>PostToolUse</strong> &mdash; validates BACKLOG format after edits.</li>
+        <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
+        <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
+      </ul>
+
+      <h3>Procedure docs</h3>
+      <p>Five procedure docs, each specifying what Claude loads and does for that phase:</p>
+      <ul>
+        <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
+        <li><strong>Before-build</strong> &mdash; batch locking, file list population.</li>
+        <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
+        <li><strong>After-build</strong> &mdash; MANIFEST update, tests, recap, build-log.</li>
+        <li><strong>Setup</strong> &mdash; four-case folder detection and scaffolding.</li>
+      </ul>
+
+      <h3>Slash commands</h3>
+      <p><code>/setup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/research</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+
+      <h3>Bundled docs</h3>
+      <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>
+    </section>
+
+    <section data-source="manual:where-it-sits" data-transform="adapted">
+      <h2>Where the method sits</h2>
+      <p>Part of the spec-driven development family. Closest relative: Cline's Memory Bank (same shape &mdash; markdown as project memory, read at session start; different file structure, different audience). In the broader spec-driven literature, this maps onto the <strong>spec-anchored</strong> rigour level.</p>
+    </section>
+
+    <section data-source="manual:editable" data-transform="adapted">
+      <h2>What's editable</h2>
+      <p>Three layers of rigidity:</p>
+      <ul>
+        <li><strong>Method contract &mdash; edit at peril.</strong> Rules the machinery depends on. Each is annotated with what breaks without it.</li>
+        <li><strong>Recommended habits &mdash; edit freely.</strong> <code>/clear</code> cadence, test-prep workflow, commit timing.</li>
+        <li><strong>The build sequence &mdash; fixed.</strong> The four-phase cycle is the spine. Don't change the order.</li>
+      </ul>
+    </section>
+
+    <section data-source="manual:caveats" data-transform="adapted">
+      <h2>Caveats</h2>
+      <ul>
+        <li>Iteratively developed. Not yet used to ship a complete app from start to finish.</li>
+        <li>Claude follows CLAUDE.md-style instructions reliably about 70% of the time. The method designs around this with read-only docs and reviewable decisions, but the headwind is real.</li>
+        <li>Claude Code's plan panel doesn't show the method's build sequence &mdash; it's internal to Claude Code with no plugin write surface. The actual queue is in BACKLOG.</li>
+      </ul>
+    </section>
+
+    <section data-source="manual:more" data-transform="adapted">
+      <h2>When you need more</h2>
+      <p>The full spec lives in <code>universal-behaviour.md</code> (behavioural rules) and <code>DOC-STRUCTURE.md</code> (structural rules) inside the plugin. Reach for them when a concept needs detail, a rule's edge case matters, or the method itself is being extended.</p>
+      <p>Also on GitHub: <a href="https://github.com/FlintCraftTech/sovereign-implementer/tree/main/plugin/docs">plugin/docs</a></p>
+    </section>
+
+    <nav class="page-nav">
+      <a href="why-the-rules.html">&larr; Why the rules</a>
+      <span></span>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The cycle — No-code method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">No-code method</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cycle.html" aria-current="page">The cycle</a></li>
+        <li><a href="docs.html">Your docs</a></li>
+        <li><a href="getting-started.html">Get started</a></li>
+        <li><a href="walkthrough.html">Walkthrough</a></li>
+        <li><a href="disciplines.html">Disciplines</a></li>
+        <li><a href="why-the-rules.html">Rules</a></li>
+        <li><a href="reference.html">Reference</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>The cycle</h1>
+
+    <section data-source="manual:session-shape" data-transform="adapted">
+      <p>Every feature goes through two phases: <strong>planning</strong> and <strong>building</strong>. They alternate. A fresh Claude Code session (or <code>/clear</code>) separates them.</p>
+
+      <div class="flow">
+        <div class="flow-step">Planning</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Before-build</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step active">Build</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Close + Git</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Test &amp; review</div>
+      </div>
+    </section>
+
+    <section data-source="manual:session-shape" data-transform="adapted">
+      <h2>Planning sessions</h2>
+      <p>Planning sessions decide <em>what</em> gets built. Invoke <code>/sovplan</code> to start one. The planning procedure does five things:</p>
+      <ol>
+        <li><strong>Closes the previous test session</strong> &mdash; goes through each test row one by one, confirms pass or fail.</li>
+        <li><strong>Runs five drift checks</strong> &mdash; compares your docs against your codebase to catch anything out of sync.</li>
+        <li><strong>Scans open questions</strong> &mdash; picks up unresolved design questions from previous sessions.</li>
+        <li><strong>Sorts new ideas</strong> &mdash; classifies them as <em>Suggestions</em> (in scope) or <em>Discoveries</em> (out of scope, queued for later).</li>
+        <li><strong>Edits BACKLOG directly</strong> &mdash; records everything in the right place.</li>
+      </ol>
+      <p>Source-of-truth docs (like UX.md) are directly editable by Claude during planning &mdash; no ceremony needed. You remove resolved batches and reorganise priorities.</p>
+    </section>
+
+    <section data-source="manual:session-shape" data-transform="adapted">
+      <h2>Build sessions</h2>
+      <p>Build sessions ship engineering work. Three slash commands drive the process:</p>
+
+      <div class="card">
+        <h3><code>/sovrecap</code></h3>
+        <p>Pre-build planning recap. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large. BACKLOG stays editable during the recap so you can discuss and adjust.</p>
+      </div>
+
+      <div class="card">
+        <h3><code>/sovbuild</code></h3>
+        <p>Locks the batch and runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
+      </div>
+
+      <div class="card">
+        <h3>Close (<code>/sovclose</code> + <code>/sovgit</code>)</h3>
+        <p>When the build finishes, invoke <code>/sovclose</code>. It updates MANIFEST, checks docs for stale references, runs automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, and verifies everything via a pre-commit checkpoint. Then <code>/sovgit</code> walks you through commit, tag, and push in plain English.</p>
+      </div>
+    </section>
+
+    <section data-source="manual:session-shape" data-transform="adapted">
+      <h2>Between sessions</h2>
+      <p>You <code>/clear</code>, refresh, run any user-verified tests, and bring outcomes to the next planning session. The cycle repeats.</p>
+      <div class="callout">
+        <p><strong>Sessions are stateless; the docs are the memory.</strong> BACKLOG, MANIFEST, TEST-LOG, and build-log tell each session where things stand. Nothing carries over from in-memory state.</p>
+      </div>
+    </section>
+
+    <nav class="page-nav">
+      <a href="index.html">&larr; Home</a>
+      <a href="docs.html" class="next">Your docs &rarr;</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+  </footer>
+</body>
+</html>

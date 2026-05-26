@@ -211,10 +211,32 @@ Prune before drift checks. Bounds file growth and reduces check 5's workload.
 
 Deleted rows recoverable via git. Rows for existing components stay regardless of age.
 
+## Ordering principles
+
+When reordering BACKLOG build batches, apply these principles — they override insertion order.
+
+1. **Dependency flow.** Every batch's Dependencies must point at batches above it (already shipped or earlier in the queue). If batch B depends on batch A, A must come first. Check: for each batch, verify every named dependency resolves to a shipped batch or a batch earlier in the queue.
+2. **Project-structure reasoning.** Batches that create infrastructure other batches consume (folders, schemas, shared components) go before the batches that consume them.
+3. **Security bias.** Batches carrying a `[SECURITY]` marker — or whose scope touches auth, PII, payments, deletion, or access control — bias earlier. Security gaps compound; shipping them later means building on an insecure foundation.
+4. **Stale-reference avoidance.** If an earlier batch renames, deletes, or moves a file/skill/doc, later batches that reference the old name need their scope text updated in the same reordering pass.
+
+Claude already understands dependency ordering and project structure. These principles make the application explicit and auditable.
+
+## Batch-ordering audit
+
+Run as part of any planning session that adds, removes, or reorders batches. Four checks:
+
+1. **Forward-dependency scan.** For each batch, verify its Dependencies resolve to shipped batches or earlier queued batches. Flag violations.
+2. **Stale-reference scan.** For each batch that renames/deletes/moves a file or skill, grep later batches for references to the old name. Flag hits.
+3. **Reorder if needed.** Propose reordering to the user with one-line justification per move.
+4. **Fix scope text.** Update stale references in affected batch scope in the same pass as the reorder.
+
+Skip if no structural changes to BACKLOG were made this session.
+
 ## Behavioural rules
 
 Universal-behaviour rules apply — push back, plain English, ask on ambiguity, engage with pushback. Keep internal reasoning concise — shorthand bullets, not full paragraphs. Reserve detailed thinking for judgment calls.
 
 ---
 
-*No-code method — Version 77.*
+*No-code method — Version 78.*

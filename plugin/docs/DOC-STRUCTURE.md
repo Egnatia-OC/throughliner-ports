@@ -291,6 +291,22 @@ Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Propos
 
 **Migration.** Pre-V43 centralised blocks in BACKLOG → redistributed to destination docs by the planning procedure.
 
+## `[SECURITY]` marker
+
+Inline marker for entries that touch a sensitive surface — authentication, PII, payments, deletion, access control, etc. Works the same way on any entry in any doc.
+
+**Format.** `[SECURITY]` at the end of the entry heading or first line, before any trailing punctuation.
+
+**Applies to:**
+- UX.md Functionalities entries: `**Feature name** [SECURITY]`
+- BACKLOG build batch headings: `### Batch: Name [SECURITY]` (single-file) or `# Name [SECURITY]` (folder)
+- BACKLOG planning batches: heading line carries `[SECURITY]`
+- BACKLOG open questions: heading line carries `[SECURITY]`
+
+**Does not apply to:** MANIFEST.md, TEST-LOG (execution-level docs already covered by Red flags and the read-before-edit gate).
+
+**Informational, not enforced.** No hook gates on the marker. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier in the queue).
+
 ## BACKLOG structure
 
 Three formats, auto-detected:
@@ -361,4 +377,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 77.*
+*No-code method — Version 78.*

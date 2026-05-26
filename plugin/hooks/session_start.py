@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 76
+PLUGIN_METHOD_VERSION = 78
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -488,6 +488,70 @@ def detect_top_batch_details(backlog_text: str, backlog_path=None):
                 return _extract_details(batch_text, title)
 
     return None
+
+
+def detect_top_queued_batches(backlog_text: str, backlog_path=None, limit=3):
+    """Return up to `limit` queued batch summaries: [{name, goal}].
+
+    Skips shipped, parked, active, and template-placeholder batches.
+    Used by the session-open status to give the user enough context to
+    pick a topic without reading the full BACKLOG."""
+    results = []
+    section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return results
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    def _extract_summary(body, title):
+        goal_match = BATCH_GOAL_PATTERN.search(body)
+        goal = goal_match.group(1).strip() if goal_match else None
+        return {"name": title, "goal": goal}
+
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            if len(results) >= limit:
+                break
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            status = _batch_status(body)
+            if status != "queued":
+                continue
+            results.append(_extract_summary(body, title))
+        return results
+
+    if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
+            if len(results) >= limit:
+                break
+            batch_file = backlog_dir / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if not batch_text:
+                continue
+            status = _batch_status(batch_text)
+            if status != "queued":
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if h1_match:
+                title = h1_match.group(1).strip()
+                if title.startswith("[") and title.endswith("]"):
+                    continue
+                results.append(_extract_summary(batch_text, title))
+
+    return results
 
 
 def detect_red_flags(backlog_text: str) -> list:
@@ -941,6 +1005,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     top_batch = None
     batch_details = None
     batch_counts = None
+    top_queued = []
     if backlog_data:
         backlog_resolved_path, backlog_text = backlog_data
         top_batch = detect_top_build_batch(backlog_text, backlog_resolved_path)
@@ -948,6 +1013,9 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             backlog_text, backlog_resolved_path
         )
         batch_counts = count_batch_statuses(
+            backlog_text, backlog_resolved_path
+        )
+        top_queued = detect_top_queued_batches(
             backlog_text, backlog_resolved_path
         )
         if top_batch:
@@ -1027,6 +1095,15 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         status_lines.append(
             f"Next up: \"{batch_details['name']}\"{goal_part}{file_part}."
         )
+
+    if top_queued:
+        has_active = batch_counts and batch_counts.get("active", 0) > 0
+        upcoming = top_queued if has_active else top_queued[1:]
+        if upcoming:
+            status_lines.append("Coming up:")
+            for tq in upcoming:
+                goal_part = f" — {tq['goal']}" if tq.get("goal") else ""
+                status_lines.append(f"  - \"{tq['name']}\"{goal_part}")
 
     if unconfirmed_rows:
         status_lines.append(

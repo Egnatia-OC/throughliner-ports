@@ -18,8 +18,8 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Flag out-of-scope improvements.** Don't silently fix things outside the current request's scope.
   *Load-bearing for: the flag taxonomy — relies on flagging, not fixing.*
 
-- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed.
-  *Load-bearing for: Red flags section and flag taxonomy.*
+- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BACKLOG batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
+  *Load-bearing for: Red flags section, flag taxonomy, and `[SECURITY]` marker propagation.*
 
 - **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file with a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. The PreToolUse hook backs this up: the first `Edit`/`Write`/`MultiEdit` on a MANIFEST-pathed file is denied with the entries inlined; a retry succeeds because the hook scans for the prior block-once deny. MANIFEST entries without a `(path)` field skip the gate.
   *Load-bearing for: the feature pipeline and every change touching an existing feature.*
@@ -106,6 +106,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 | Test notes from previous build | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: test notes`. |
 | "New project," "set this up" | Recommend `/setup`. Wait for okay. |
 | Non-conforming project docs | Recommend `/setup`. Wait for okay. |
+| "Planning session," `/sovplan`, or explicit planning request | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md`. |
 | Feature request, scope question, structural change | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: feature request` or `scope question`. |
 | Unfinished top batch, no other trigger | Resume. Confirm with user first. |
 | Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
@@ -159,4 +160,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 77.*
+*No-code method — Version 78.*
