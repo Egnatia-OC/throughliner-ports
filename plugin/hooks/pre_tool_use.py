@@ -1083,7 +1083,7 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
         "editable during a build, via the batch's `Files:` list.\n\n"
         "What to do: if you're planning a change to this file, describe it "
         "in a build batch in `BACKLOG.md` — it will become editable once "
-        "the batch is activated by before-build. If you need to edit "
+        "the batch is activated by `/sovbuild`. If you need to edit "
         "project docs (UX.md, BACKLOG, MANIFEST, etc.), those are open "
         "during planning."
         + _mode_suffix(permission_mode)
@@ -1093,7 +1093,7 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
 def make_unadopted_planning_deny_reason(target_path, permission_mode=""):
     """Deny message when source code is edited in an unadopted folder
     (no method footer in CLAUDE.md). Points at /setup instead of
-    BACKLOG/before-build, which don't exist yet."""
+    BACKLOG/sovrecap, which don't exist yet."""
     return (
         f"[No-code method] BLOCKED: `{target_path}` cannot be edited — "
         "this folder hasn't been set up with the no-code method yet.\n\n"
@@ -1113,7 +1113,7 @@ def check_planning_phase_source_lock(project_root, target_path,
     blocked, None to allow.
 
     V71: when the folder is unadopted (no method footer in CLAUDE.md),
-    the deny message points at /setup instead of BACKLOG/before-build.
+    the deny message points at /setup instead of BACKLOG/sovrecap.
 
     Only called when phase == "planning". BACKLOG and MANIFEST exemptions
     are handled by the caller (check_batch_file_list) before reaching here,

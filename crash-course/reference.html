@@ -88,7 +88,7 @@
         </table>
       </div>
 
-      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by before-build).</p>
+      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by <code>/sovbuild</code>).</p>
       <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony needed.</p>
       <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You review and apply them next planning session.</p>
       <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs regardless of phase.</p>
@@ -156,7 +156,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code>, <code>/research</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/setup</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/research</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

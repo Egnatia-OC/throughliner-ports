@@ -21,9 +21,8 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 | `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
 | `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
 | `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc` |
-| `DOC-STRUCTURE.md` | Plugin (live); repo root frozen V39 | Bundled at `plugin/docs/DOC-STRUCTURE.md` |
-| `VOCABULARY.md` | Plugin (live); repo root frozen V39 | Bundled at `plugin/docs/VOCABULARY.md` |
-| `NO-CODE-METHOD.md` | Repo root — frozen V39 | Retired from plugin V32; prose-only snapshot |
+| `DOC-STRUCTURE.md` | Plugin | Bundled at `plugin/docs/DOC-STRUCTURE.md` |
+| `VOCABULARY.md` | Plugin | Bundled at `plugin/docs/VOCABULARY.md` |
 
 ## Project-side doc fates
 
@@ -87,8 +86,8 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `/research` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70.**
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/plan` — planning procedure. *Pending; auto-route is current path.*
-- `/before-build` — before-build procedure. **Shipped V25.** Migrated to skills/ v71.
-- `/build` — triggers build procedure. **Shipped V25.** Migrated to skills/ v71.
+- `/sovrecap` — pre-build planning recap (before-build procedure). **Shipped V25** (as `/before-build`); renamed V77.
+- `/sovbuild` — lock and build procedure. **Shipped V25** (as `/build`); renamed V77.
 - `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
 - `/sovgit` — git walkthrough (commit/tag/push, solo or team). **Shipped V76.**
 
@@ -132,4 +131,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 76.*
+*No-code method — Version 77.*

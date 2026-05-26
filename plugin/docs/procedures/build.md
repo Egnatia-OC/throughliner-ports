@@ -22,13 +22,17 @@ Both paths quoted (Windows spaces). Parser emits JSON:
       "serves_doc": [{"doc": "...", "content": "..."}, ...]
     }
 
-If the parser returns `{}`, there's nothing to build — tell the user to run `/before-build` or start a planning session.
+If the parser returns `{}`, there's nothing to build — tell the user to run `/sovrecap` or start a planning session.
 
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
 **Two BACKLOG formats.** `batch_file` present → folder mode (tick edits go in per-batch file). Absent → single-file `BACKLOG.md`. Resolve path from `CLAUDE.md` path block.
 
-## First action — load project state
+## First action — lock the batch
+
+**Set Status: active.** Write `Status: active` at the top of the batch body (after the heading, before Goal). If a `Status:` line already exists (e.g. from a previous build that was interrupted), replace it. This marks the batch as locked and in progress — phase-aware editing rules and PreToolUse enforcement engage from this point.
+
+## Load project state
 
 1. `CLAUDE.md` — path block and project notes.
 2. Batch's BACKLOG file — needed for tick edits.
@@ -94,4 +98,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 76.*
+*No-code method — Version 77.*

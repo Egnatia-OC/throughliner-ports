@@ -6,6 +6,7 @@ For format details, see `planning/session-reference.md` → *BUILD-LOG entry sha
 
 ---
 
+- [v95-sovrecap-sovbuild-rename-lock-timing.md](v95-sovrecap-sovbuild-rename-lock-timing.md) — 2026-05-26 — /sovrecap + /sovbuild rename + lock-timing fix
 - [v94-sovclose-sovgit-after-build-retirement.md](v94-sovclose-sovgit-after-build-retirement.md) — 2026-05-26 — /sovclose + /sovgit skills, after-build.md retired
 - [v93-batch-ordering-audit.md](v93-batch-ordering-audit.md) — 2026-05-26 — Batch ordering audit: reorder, stale-reference fixes, audit folded into 0098
 - [v92-planning-oq-promotion-and-backlog-cleanup.md](v92-planning-oq-promotion-and-backlog-cleanup.md) — 2026-05-26 — OQ promotion (0097–0101), BACKLOG cleanup, dev-side convergence strategy

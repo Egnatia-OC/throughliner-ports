@@ -150,7 +150,7 @@ When adding a `Serves UX.md:` line, verify every named entry exists in UX.md Fun
 
 1. **Scope context** — always Goal, Outputs, Success criteria. Omit Decisions/Dependencies if resolved/none.
 2. **Red flags sub-section** — only if batch touches security-shaped surfaces. Don't write an empty one.
-3. **Build operations** — `Changes:` delimiter + change-list bullets with `[Requested]`/`[Suggested]` labels. Leave `Inputs:`/`Files:`/`Tests:` for before-build.
+3. **Build operations** — `Changes:` delimiter + change-list bullets with `[Requested]`/`[Suggested]` labels. Leave `Inputs:`/`Files:`/`Tests:` for `/sovrecap`.
 
 Folder mode: allocate number by Glob scan, create per-batch file, add reference to INDEX.md. Single-file mode: inline `### Batch:` heading.
 
@@ -217,4 +217,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 76.*
+*No-code method — Version 77.*

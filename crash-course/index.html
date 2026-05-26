@@ -658,7 +658,7 @@
       <ol class="steps">
         <li><a href="#install">Install the plugin</a> and run <code>/setup</code> in your project folder.</li>
         <li>Describe your app. The plugin walks you through four prompts.</li>
-        <li>Run <code>/before-build</code> to lock your first batch, then <code>/build</code> to execute it.</li>
+        <li>Run <code>/sovrecap</code> to review your first batch, then <code>/sovbuild</code> to lock and build it.</li>
         <li>Test. Bring results to your next planning session.</li>
       </ol>
     </section>
@@ -674,7 +674,7 @@
       <div class="flow">
         <div class="flow-step">Planning</div>
         <span class="flow-arrow">&rarr;</span>
-        <div class="flow-step">Before-build</div>
+        <div class="flow-step">Recap</div>
         <span class="flow-arrow">&rarr;</span>
         <div class="flow-step active">Build</div>
         <span class="flow-arrow">&rarr;</span>
@@ -698,13 +698,13 @@
       <p>Build sessions ship engineering work. Three slash commands drive the process:</p>
 
       <div class="card">
-        <h3><code>/before-build</code></h3>
-        <p>Locks the batch. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large.</p>
+        <h3><code>/sovrecap</code></h3>
+        <p>Pre-build planning recap. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large. BACKLOG stays editable during the recap so you can discuss and adjust.</p>
       </div>
 
       <div class="card">
-        <h3><code>/build</code></h3>
-        <p>Runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
+        <h3><code>/sovbuild</code></h3>
+        <p>Locks the batch and runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
       </div>
 
       <div class="card">
@@ -917,7 +917,7 @@
         <li><strong>Planning batch.</strong> The planning procedure creates a batch with design questions: justify a parallel theme? OS setting or manual toggle? Which UX entries need contrast review?</li>
         <li><strong>Questions answered.</strong> You decide: yes, OS-based, two entries need a contrast pass.</li>
         <li><strong>UX.md updated.</strong> You add a new <em>Dark mode</em> entry with rationale.</li>
-        <li><strong>Build batch.</strong> Created with <code>Serves UX.md: Dark mode</code>. Ready for <code>/before-build</code>.</li>
+        <li><strong>Build batch.</strong> Created with <code>Serves UX.md: Dark mode</code>. Ready for <code>/sovrecap</code>.</li>
       </ol>
       <p>If step 3 answers "no" &mdash; the idea doesn't justify the work &mdash; steps 4 and 5 don't happen. That's equally valid. The pipeline filters, not just queues.</p>
       <div class="callout">
@@ -1003,7 +1003,7 @@
         <li><strong>Red flags.</strong> Security or risk concerns (only when auto-detected).</li>
       </ul>
 
-      <h3>Build operations <span class="badge badge-adapted">written during before-build</span></h3>
+      <h3>Build operations <span class="badge badge-adapted">written during /sovrecap</span></h3>
       <ul>
         <li><strong>Changes:</strong> Labeled <code>[Requested]</code> or <code>[Suggested]</code>.</li>
         <li><strong>Inputs:</strong> Non-standard resources needed.</li>
@@ -1166,7 +1166,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code>, <code>/sovclose</code>, <code>/sovgit</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
+      <p><code>/setup</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

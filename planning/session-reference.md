@@ -4,17 +4,9 @@ Companion to `session-protocol.md`. Dip into sections as needed — don't load t
 
 ---
 
-## Two-write rule for canonical docs
+## Two-write rule for canonical docs — RETIRED
 
-> **SHELVED in v40.** Repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) frozen at V39. All substantive changes now land plugin-side only. Section retained for resume-ability. Background: `planning/BACKLOG.md` → *Open questions* entry and BUILD-LOG v40.
-
-V32 split canonical content into two parallel sets: **plugin-side** (operational — `plugin/docs/`, `plugin/hooks/universal-behaviour.md`, `plugin/templates/`, agent bodies) and **docs-only** (project-agnostic prose at repo root). Plugin is the leader; docs-only follows. Cross-references legitimately diverge (plugin-side → plugin homes; docs-only → sibling sections). Substance stays identical.
-
-`Reference manual.md` is plugin-side only — not in the docs-only set.
-
-### Don't propose re-coupling
-
-Don't reintroduce "subagents read NO-CODE-METHOD.md at runtime." The two-write discipline is the intended parity defence, not runtime coupling.
+> Deleted in v95. The repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) was removed from the repo. All method content lives plugin-side only. Historical context: BUILD-LOG v32 (creation), v40 (shelved), v95 (deleted).
 
 ---
 
@@ -81,13 +73,6 @@ Method-side = describes how the consumer method works. Dev-internal files (`buil
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - Every footer-carrying subagent under `plugin/agents/`
 - `Reference manual.md` (repo root, but plugin-side)
-
-### Docs-only side — SHELVED in v40
-
-> Frozen at V39. Retain V39 footer in perpetuity. Do not bump.
-
-- `NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` (repo root)
-- `templates/` (all seven files)
 
 ### Cross-cutting
 

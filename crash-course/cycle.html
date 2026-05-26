@@ -62,13 +62,13 @@
       <p>Build sessions ship engineering work. Three slash commands drive the process:</p>
 
       <div class="card">
-        <h3><code>/before-build</code></h3>
-        <p>Locks the batch. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large.</p>
+        <h3><code>/sovrecap</code></h3>
+        <p>Pre-build planning recap. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large. BACKLOG stays editable during the recap so you can discuss and adjust.</p>
       </div>
 
       <div class="card">
-        <h3><code>/build</code></h3>
-        <p>Runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
+        <h3><code>/sovbuild</code></h3>
+        <p>Locks the batch and runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
       </div>
 
       <div class="card">

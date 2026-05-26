@@ -22,7 +22,7 @@ Supports two BACKLOG formats (auto-detected):
 
 Three call sites consume this parser (V25, extended V46, V66):
 
-  - The `/build` slash-command embeds the JSON payload when the user
+  - The `/sovbuild` slash-command embeds the JSON payload when the user
     invokes a build manually.
   - The PreToolUse hook calls the parser at edit-time to look up the
     current batch's declared file list for the boundary check, and for
@@ -32,7 +32,7 @@ Three call sites consume this parser (V25, extended V46, V66):
 
 The parser is deliberately lenient: any failure (missing file, unparseable
 section, malformed batch) results in `{}` on stdout and exit 0. Callers
-treat empty output as "no top unticked batch found" — `/build` reports
+treat empty output as "no top unticked batch found" — `/sovbuild` reports
 nothing to build, and the PreToolUse hook falls through to allow.
 
 CLI:

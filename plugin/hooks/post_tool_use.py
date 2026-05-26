@@ -20,7 +20,7 @@ Supports two BACKLOG formats:
 
 First line of defence against silent BACKLOG corruption. Without it,
 a formatting error introduced by an edit stays invisible until the Stop
-hook or `/build` tries to parse and gets empty data ({}), often
+hook or `/sovbuild` tries to parse and gets empty data ({}), often
 several turns later.
 
 Detection heuristic: the edited file contains at least one unticked
@@ -184,7 +184,7 @@ def main():
         "  - In folder mode: batch file not listed in INDEX.md's "
         "Build batches section"
         "\n\n"
-        "The `/build` command and PreToolUse hook both depend on this "
+        "The `/sovbuild` command and PreToolUse hook both depend on this "
         "parser. A format error here will silently prevent the build "
         "from finding the batch."
     )

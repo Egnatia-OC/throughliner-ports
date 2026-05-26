@@ -108,7 +108,7 @@ Footer present. User ran `/setup` anyway — refresh, habit, or version mismatch
 
 Surface planned bumps before touching anything. Edit every footer via `Edit` — the V38 carve-out allows footer-only edits on locked docs. Don't skip any silently.
 
-**After bumps — BACKLOG batch-structure migration (V47).** Check for pre-V47 format (no scope-context sections, no `Changes:` delimiter). For each old-format batch: extract existing prose → use as Goal, add Outputs/Success criteria with `Scope not yet defined — fill during the next planning session.` Insert `Changes:` delimiter. Don't use `[placeholder]` brackets — before-build reads those as blocking.
+**After bumps — BACKLOG batch-structure migration (V47).** Check for pre-V47 format (no scope-context sections, no `Changes:` delimiter). For each old-format batch: extract existing prose → use as Goal, add Outputs/Success criteria with `Scope not yet defined — fill during the next planning session.` Insert `Changes:` delimiter. Don't use `[placeholder]` brackets — `/sovrecap` reads those as blocking.
 
 **After V47 — BACKLOG folder-split (V48).** If path block points at `BACKLOG.md` (not `BACKLOG/INDEX.md`): create `BACKLOG/`, extract inline batches to per-batch files, create INDEX.md, update path block, delete old file.
 
@@ -144,4 +144,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 76.*
+*No-code method — Version 77.*

@@ -1,5 +1,5 @@
 {
   "name": "no-code-method",
-  "version": "0.76.0",
+  "version": "0.77.0",
   "description": "The no-code method as a Claude Code plugin: hooks, procedure docs, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence."
 }

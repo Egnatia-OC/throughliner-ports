@@ -31,8 +31,9 @@ So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 t
 In order:
 
 1. `git describe --tags --abbrev=0` — confirm current version.
-2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Reference manual.md` at `HEAD`. (Repo-root prose set frozen at V39 — read only for prose-spec form, not current rules.)
+2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Reference manual.md` at `HEAD`.
 3. Read `planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
+4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
 
 Then read Alex's opener and route. Openers naming a session shape ("planning session," "doc-only session," etc.) are clear — route to that shape directly. If the task isn't clear, report what was loaded and ask. Don't draft.
 
@@ -88,7 +89,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 1. **Vocabulary.** New named concepts defined in `VOCABULARY.md`.
 2. **Mechanism descriptions.** If something works differently, `DOC-STRUCTURE.md` and `universal-behaviour.md` describe the new mechanism. Grep every reference to the old — section names, counts, location phrases — and update.
-3. **Templates.** New sections, markers, canonical formats → `plugin/templates/`. (Repo-root `templates/` frozen at V39.)
+3. **Templates.** New sections, markers, canonical formats → `plugin/templates/`.
 4. **Inventory.** New/changed plugin components → `planning/INVENTORY.md`.
 5. **Reference manual.** Load-bearing concept/mechanism changes → `Reference manual.md` reflects it at narrative altitude.
 6. **Ghost references.** Audit for paragraphs asserting state contradicted by `build-log/` entries or actual code. On disagreement, build-log wins.

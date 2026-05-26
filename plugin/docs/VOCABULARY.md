@@ -6,11 +6,11 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Build batch.** Engineering changes in BACKLOG, small enough to build and test in one session. Ends with a `Serves` line naming the source-of-truth entries it implements. May include `Inputs:` line.
 
-- **Files: sub-section.** `- [ ]`→`- [x]` task list of files a build batch will modify, with path and one-sentence summary. Written by before-build; ticked during the build. PreToolUse enforces batch boundaries. Full rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
+- **Files: sub-section.** `- [ ]`→`- [x]` task list of files a build batch will modify, with path and one-sentence summary. Written by `/sovrecap`; ticked during the build. PreToolUse enforces batch boundaries. Full rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
 
-- **Batch-sizing principle.** Right size = verification burden (distinct observable behaviours to test), not lines/files. Split when small batch has long test list; bundle no-behaviour items; never fragment arbitrarily. Applied during before-build.
+- **Batch-sizing principle.** Right size = verification burden (distinct observable behaviours to test), not lines/files. Split when small batch has long test list; bundle no-behaviour items; never fragment arbitrarily. Applied during `/sovrecap`.
 
-- **Pre-build verification estimate.** List of distinct observable behaviours needing testing, stated during before-build. Drives batch-sizing splits. If wrong mid-build, re-batching carve-out applies.
+- **Pre-build verification estimate.** List of distinct observable behaviours needing testing, stated during `/sovrecap`. Drives batch-sizing splits. If wrong mid-build, re-batching carve-out applies.
 
 - **Suggestion.** During planning: fix or improvement fitting current scope (existing UX.md entry covers it). Routed into a build batch.
 
@@ -34,7 +34,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Proposed-edits section.** `## Proposed edits pending` at bottom of every source-of-truth doc. Where Claude queues blocks during build phase. PreToolUse allows edits within this section only (during build). Full spec: `DOC-STRUCTURE.md`.
 
-- **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by before-build; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
+- **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by `/sovrecap`; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
 
 - **Open question (BACKLOG).** Non-blocking parking in BACKLOG's Open questions section. Has question, *Why it matters*, *Next step* trigger. Distinct from planning batches (which name what they block). Promoted to planning batch when it blocks something specific.
 
@@ -49,7 +49,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Verifier.** TEST-LOG column: `Claude` or `User`. Claude rows filled by `/sovclose`; user rows confirmed during planning read-back.
 
-- **Batch status.** Lifecycle state of a build batch, tracked via an optional `Status:` line at the top of the batch body. Four values: `queued` (default — absent means queued), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by `/sovclose`). The parser and session-start hook skip `shipped` and `parked` batches when finding the top build batch. State machine: `queued → active → shipped`, with `active ↔ parked` via planning. Full spec: `DOC-STRUCTURE.md` → *Status: line*.
+- **Batch status.** Lifecycle state of a build batch, tracked via an optional `Status:` line at the top of the batch body. Four values: `queued` (default — absent means queued), `active` (locked by `/sovbuild`), `parked` (paused by planning), `shipped` (completed by `/sovclose`). The parser and session-start hook skip `shipped` and `parked` batches when finding the top build batch. State machine: `queued → active → shipped`, with `active ↔ parked` via planning. Full spec: `DOC-STRUCTURE.md` → *Status: line*.
 
 - **Scope-context sections.** Five (optionally six) sections framing a build batch: Goal, Outputs, Success criteria, Decisions, Dependencies, Red flags. First three always present. Full spec: `DOC-STRUCTURE.md`.
 
@@ -79,7 +79,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Row pruning (TEST-LOG).** Auto-deletion of rows whose Component has no MANIFEST match, plus `Superseded` rows. Runs at planning step 2c. Cross-component rows exempt.
 
-- **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by the before-build and build procedures.
+- **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by `/sovrecap` and `/sovbuild`.
 
 - **Build log entry.** Per-build narrative in `build-log/NNN-name.md`. Shape: What shipped / Decisions / Pivots / Carried forward + Performance section.
 
@@ -106,4 +106,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 76.*
+*No-code method — Version 77.*

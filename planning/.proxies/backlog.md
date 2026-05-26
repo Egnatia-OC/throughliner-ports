@@ -2,30 +2,26 @@
 
 # BACKLOG — Dev-side
 
-88 shipped/cancelled batch rows (V18–0092) in table at L11–L87. 5 queued batches with full scope at L91–L207. 15 open questions at L208–L415.
+95 shipped/cancelled batch rows (V18–0099) in table at L11–L96. 9 queued batches with full scope at L98–L309. 7 open questions at L312–L407.
 
-## Queued batches (L91–L207)
+## Queued batches (L98–L309)
 
-- L97 **0096** — Manifest rationale field. One-line "why it exists" on MANIFEST entries.
-- L117 **0088** — Build E2E test. Build-phase E2E: /before-build through /build through /sovclose.
-- L135 **0093** — Dev-side folder restructure. Move all dev-side content into `dev/`.
-- L171 **0094** — Guided testing and debugging procedure. New `/test` skill + procedure doc.
-- L194 **0095** — /test skill E2E validation. Depends on 0094.
+- L104 **0098** — /sovplan skill + planning ordering principles. Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker.
+- L134 **0096** — Manifest rationale field. One-line "why it exists" on MANIFEST entries.
+- L154 **0102** — Dev-side session-close convergence. Proxy regen close step + response-shape tags on session-protocol.md close steps.
+- L173 **0093** — Dev-side folder restructure. Move all dev-side content into `dev/`.
+- L209 **0088** — Build E2E test. Build-phase E2E: /sovrecap through /sovbuild through /sovclose.
+- L227 **0094** — Guided testing and debugging procedure. New `/test` skill + procedure doc.
+- L250 **0095** — /test skill E2E validation. Depends on 0094.
+- L266 **0101** — Structured-markdown validator. PostToolUse validation for TEST-LOG, build-log, scope-context, proxies.
+- L289 **0100** — Bash write-guard + skill escape guidance. Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies.
 
-## Open questions (15 entries, L208–L415)
+## Open questions (7 entries, L312–L407)
 
-- L214 **Retire "build session" — BACKLOG as sole work tracker** — parent question; cycle is ceremony on top of enforcement
-- L228 **Session close as a `/close` skill** — 10-step close is failure-prone; design session needed
-- L242 **Planning as a `/plan` skill** — only core workflow with no skill entry point
-- L256 **Merge `/before-build` into `/build`** — UX simplification; lower priority
-- L270 **Separate planning content from build content** — scope files eliminated v91; internal-structure question remains; parked
-- L284 **Remove timestamps from build-log** — audit which docs carry them
-- L296 **Bulk-tersify skill for doc compression** — park until doc structure stable
-- L310 **Lost-feature sweep as a planning skill** — park until planning procedure stabilises
-- L324 **Project-boundary hook bypass via Bash** — park
-- L338 **Structured-markdown validator** — promote after proxy layer ships
-- L350 **Plugin testing framework beyond bespoke pytest** — park
-- L362 **Plugin settings layer / per-project config** — park
-- L374 **Red-flag / threat-class marker** — ready to promote
-- L388 **Graduate sovereign implementer** — indefinitely shelved
-- L407 **Prose-only rewrite** — indefinitely parked
+- L318 **Pre-commit checkpoint as explicit checklist** — dev-side step 6 should name each artifact explicitly
+- L330 **Idea sweep with explicit routing destinations** — enforce plugin's three-way triage on dev-side
+- L342 **Opener routing table for dev sessions** — map session openers to what to load; park until 0102+0093 ship
+- L354 **Performance section in dev build-log entries** — park until dogfooding closer
+- L366 **Bulk-tersify skill for doc compression** — park until doc structure stable
+- L380 **Lost-feature sweep as a planning skill** — park until planning procedure stabilises
+- L394 **Plugin testing framework beyond bespoke pytest** — park

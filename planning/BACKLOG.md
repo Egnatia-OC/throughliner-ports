@@ -89,7 +89,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. |
 | 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
-| 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. |
+| 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. **Shipped v95.** |
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. |
 | 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
 
@@ -98,36 +98,6 @@ Shipped/cancelled batches end here. Queued batches are below with full scope con
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0099 — /sovrecap skill + /sovbuild rename + lock-timing fix
-
-**Goal.** Rename `/before-build` to `/sovrecap` (pre-build planning recap) and `/build` to `/sovbuild`. Fix lock timing: `Status: active` engages after the user confirms the recap and invokes `/sovbuild`, not during the recap — so BACKLOG stays editable while the user reviews the file list, test plan, and split proposals.
-
-**Outputs.**
-- `plugin/skills/sovrecap/SKILL.md` — new skill replacing `plugin/skills/before-build/`. Loads `plugin/docs/procedures/before-build.md`.
-- `plugin/skills/sovbuild/SKILL.md` — new skill replacing `plugin/skills/build/`. Loads `plugin/docs/procedures/build.md`.
-- `plugin/skills/before-build/` — deleted.
-- `plugin/skills/build/` — deleted.
-- `plugin/docs/procedures/before-build.md` — updated: `Status: active` write moved to end of procedure (after user confirms), not beginning. Ends with `[PROMPT]` nudge to `/sovbuild`.
-- `plugin/docs/procedures/build.md` — updated: completion `[PROMPT]` nudge references `/sovclose` (from 0097).
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (old skills removed, new registered).
-- Updated `Reference manual.md`, `crash-course/` (new names, recap framing).
-- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (new skill names).
-- Hook logic updated: any hook referencing `/before-build` or `/build` by name updated to new names.
-- Tests updated.
-
-**Design decisions (resolved v91).**
-1. `/sovrecap` wraps existing before-build.md — same pattern as other skills.
-2. `/sovbuild` wraps existing build.md.
-3. Lock timing fix: the recap is a genuine pause point where the user reviews and discussion may produce findings that route back to BACKLOG. BACKLOG must be unlocked during this window. `Status: active` written only after user confirms recap and invokes `/sovbuild`.
-4. `sov` prefix on both, consistent with 0097/0098.
-5. Consumer-facing description in Reference manual and crash-course frames `/sovrecap` as "pre-build planning recap."
-
-**Success criteria.** User invokes `/sovrecap`, reviews file list and test plan, can still edit BACKLOG during discussion. On confirmation, `/sovbuild` locks the batch. No references to `/before-build` or `/build` remain in plugin code or docs.
-
-**Risks / dependencies.** Lock-timing change affects hook logic — any hook that checks `Status: active` to determine phase must still work correctly with the delayed write. Soft dep on 0097 (build.md completion nudge references `/sovclose`). Moderate surface area across hooks, docs, and tests.
 
 ---
 
@@ -202,9 +172,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0093 — Dev-side folder restructure
 
-**Goal.** Move all dev-side content into a single `dev/` folder at repo root. Delete frozen V39 docs and `plugin.zip`. Repo root should contain only product-facing items and standard repo furniture.
+**Goal.** Move all dev-side content into a single `dev/` folder at repo root. Delete `plugin.zip`. Repo root should contain only product-facing items and standard repo furniture.
 
-**Decisions (made before scoping).** Folder name: `dev/`. Frozen V39 docs deleted (NO-CODE-METHOD.md, DOC-STRUCTURE.md, VOCABULARY.md, repo-root templates/) — all in git history. `plugin.zip` deleted. `Reference manual.md` stays at root (product-facing). `crash-course/` stays (product-facing). `Marketing/` moves into `dev/`.
+**Decisions (made before scoping).** Folder name: `dev/`. Frozen V39 docs already deleted (v95 — NO-CODE-METHOD.md, DOC-STRUCTURE.md, VOCABULARY.md, repo-root templates/). `plugin.zip` deleted. `Reference manual.md` stays at root (product-facing). `crash-course/` stays (product-facing). `Marketing/` moves into `dev/`.
 
 **Repo root after this ships:**
 ```
@@ -228,7 +198,7 @@ sovereign-implementer/
 
 **Inputs.** Current repo root layout. CLAUDE.md, session-protocol.md, session-reference.md, BACKLOG.md — all contain path references to update.
 
-**Outputs.** `dev/` folder with all dev-side content moved via `git mv`. Frozen V39 docs and `plugin.zip` deleted. Updated path references everywhere. CLAUDE.md rewritten for new layout.
+**Outputs.** `dev/` folder with all dev-side content moved via `git mv`. `plugin.zip` deleted. Updated path references everywhere. CLAUDE.md rewritten for new layout.
 
 **Success criteria.** Repo root has exactly: `plugin/`, `crash-course/`, `dev/`, `Reference manual.md`, `README.md`, `LICENSE`, `.no-code-method-skip`, `.gitignore`, `CLAUDE.md`. No dead path references. `git log --follow` works. Test suite passes from `dev/tests/`. A new session orients without stale paths.
 
@@ -244,7 +214,7 @@ sovereign-implementer/
 
 **Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
 
-**Success criteria.** `/sovrecap` activates correctly (Status: active, Files: and Tests: populated). `/sovbuild` creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
+**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` sets Status: active and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
 
 **Open questions.**
 1. Can the existing burner session be reused, or does it need a fresh session?

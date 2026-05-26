@@ -15,9 +15,7 @@ Then open a Claude Code session in your project folder. The plugin detects your 
 
 `Reference manual.md` — start here. Standalone primer covering install, the session shape, a walkthrough, and the reasoning behind the rules.
 
-`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md` — a prose-only snapshot of the method spec, **frozen at version V39** (the two-write rule between this set and the plugin was shelved in session v40). The live operational source is plugin-side. `templates/` — frozen-at-V39 mirrors of the spine doc templates (live versions at `plugin/templates/`).
-
-`plugin/` — the Claude Code plugin distributing the method's rules via hooks, subagents, slash commands, and templates.
+`plugin/` — the Claude Code plugin distributing the method's rules via hooks, skills, slash commands, and templates.
 
 `planning/` — dev-internal roadmap and session scopes. `Archive/` — pre-git method versions (V3–V16).
 

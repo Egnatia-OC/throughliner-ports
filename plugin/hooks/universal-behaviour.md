@@ -114,7 +114,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Procedure docs — how to invoke:**
 
-For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Six procedures exist: `planning.md`, `before-build.md`, `build.md`, `close.md`, `git.md`, `setup.md`. Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
+For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Six procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`. Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
 
 ## Session handoff
 
@@ -157,6 +157,6 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 ---
 
-*This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule. Prose-only snapshot at `NO-CODE-METHOD.md` (repo root), frozen at V39.*
+*This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 76.*
+*No-code method — Version 77.*

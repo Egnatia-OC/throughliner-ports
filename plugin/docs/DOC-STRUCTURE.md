@@ -342,13 +342,13 @@ Three formats, auto-detected:
 
   **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by `/sovclose` when batch completes.
 
-  **Status: line.** Tracks batch lifecycle. Four values: `queued` (default — no line needed), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Position: first line of batch body, before Goal. The parser skips `shipped` and `parked` batches when finding the top build batch. Absent = queued.
+  **Status: line.** Tracks batch lifecycle. Four values: `queued` (default — no line needed), `active` (locked by `/sovbuild`), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Position: first line of batch body, before Goal. The parser skips `shipped` and `parked` batches when finding the top build batch. Absent = queued.
 
   **Scope-context sections.** Goal/Outputs/Success criteria always present. Decisions/Dependencies omitted when empty. Red flags only when security-shaped scope detected.
 
   **Changes: delimiter.** Separates scope-context from change list. Required for new batches; parser falls back for legacy.
 
-  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, preserved by before-build, read by `/sovclose` for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) are recap-time only.
+  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, preserved by `/sovrecap`, read by `/sovclose` for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) are recap-time only.
 
   **Inputs: line.** Non-standard resources between change list and Files:. Standard docs omitted.
 
@@ -361,4 +361,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 76.*
+*No-code method — Version 77.*

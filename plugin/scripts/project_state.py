@@ -375,7 +375,7 @@ def run_parser(backlog_path):
 
     Returns None on any failure: parser script missing, subprocess error,
     non-zero exit, empty stdout, invalid JSON. Callers (pre_tool_use.py's
-    batch-boundary and test-confirmation checks, and the /build slash-
+    batch-boundary and test-confirmation checks, and the /sovbuild slash-
     command) treat None as "no top batch to act on."
     """
     if not PARSER_PATH.exists():
