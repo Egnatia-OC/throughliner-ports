@@ -126,6 +126,48 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
+### Session close as a `/close` skill
+
+**Surfaced.** v90 (post-session discussion).
+
+**The question.** The 10-step session close procedure (session-protocol.md) is the most failure-prone part of the method. Claude follows it from memory after reading a document — steps get skipped under context pressure, build-log entries get missed, uncommitted work from prior sessions gets ignored. Should session close become a `/close` skill that mechanically walks the checklist?
+
+**Why it matters.** Alex identified a pattern across multiple sessions where each Claude "acts like a separate person" — committing only its own files and ignoring orphaned work. The 10-step close is exactly the kind of procedural work skills were designed for — named action, loaded procedure, mechanical execution. A `/close` skill would enforce the full checklist including a `git status` sweep for all uncommitted work, not just the current scope's files.
+
+**Working notes.** Design questions: which of the 10 steps survive if the rigid cycle loosens? Does `/close` own the commit, or does the user commit independently? Should it include a `git status` check for all uncommitted work? Does the build-log entry step stay mandatory or become optional?
+
+**Next step.** Design session needed. Depends on resolving the broader build-cycle rigidity question — which close steps are genuinely load-bearing vs. ceremony.
+
+---
+
+### Planning as a `/plan` skill
+
+**Surfaced.** v90 (post-session discussion).
+
+**The question.** Planning is the only core workflow with no skill entry point. `/build`, `/before-build`, `/setup`, and `/research` are all invocable skills. Planning depends entirely on the rigid session lifecycle and procedural documentation. Should planning become a `/plan` skill that produces structured plans — the core competency scope files currently deliver (goal, inputs, outputs, success criteria, risks)?
+
+**Why it matters.** Alex identified scope files as the beating heart of the project — Claude's ability to take vague intent and organize it into a structured plan is the core value for non-coders. Currently this happens only within the rigid session lifecycle. Consumer projects don't get scope files at all; `/before-build` does a narrower version (file list + verification burden) without the full planning structure. A `/plan` skill would make this competency independently accessible. Relates to Claude Code's native plan mode, which covers "how to approach this work" but not "what to work on next and why."
+
+**Working notes.** Design questions: does `/plan` produce scope-file-format output, something lighter, or adapt to context? Does it write to BACKLOG automatically? How does it interact with Claude Code's native plan mode? See also OQ "Scope file split" — related but distinct (that's about format; this is about mechanism).
+
+**Next step.** Design session needed. Cross-reference "Scope file split" OQ and "/close skill" OQ.
+
+---
+
+### Merge `/before-build` into `/build`
+
+**Surfaced.** v90 (post-session discussion).
+
+**The question.** From the user's perspective, `/before-build` and `/build` are one action — "I want to build something." The separation is an implementation detail: `/before-build` locks the file list so hooks know what's in bounds, then `/build` does the work. Should `/build` absorb `/before-build`'s steps internally, running them first if they haven't been done?
+
+**Why it matters.** Alex asked why before-build is a separate skill from build. A user shouldn't need to know about batch file-list locking as a prerequisite step. The two-command sequence adds friction and conceptual overhead for non-coders.
+
+**Working notes.** The hooks don't care which skill triggered the BACKLOG state — they gate on the Files: list existing, not on which command wrote it. If `/build` runs before-build internally, the same writes happen and enforcement works identically. Design question: is there ever a reason to run `/before-build` without immediately building? If not, the merge is clean.
+
+**Next step.** Design session needed. Lower priority than `/close` and `/plan` — this is a UX simplification, not a missing capability.
+
+---
+
 ### Scope file split: separate planning content from build content
 
 **Surfaced.** v86 (0091 design discussion).
