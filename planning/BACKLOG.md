@@ -100,13 +100,103 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
+### 0097 — /sovclose skill + /sovgit skill + after-build retirement
+
+**Goal.** Replace the after-build procedure with a `/sovclose` skill that works after any session type (not just builds), and split git operations into a dedicated `/sovgit` skill that hand-holds non-coders through commit/tag/push.
+
+**Outputs.**
+- `plugin/skills/sovclose/SKILL.md` — new skill.
+- `plugin/docs/procedures/close.md` — new procedure doc loaded by `/sovclose`.
+- `plugin/skills/sovgit/SKILL.md` — new skill.
+- `plugin/docs/procedures/git.md` — new procedure doc loaded by `/sovgit`.
+- `plugin/docs/procedures/after-build.md` — deleted (content absorbed into close.md).
+- `plugin/docs/procedures/build.md` — completion section updated: `[PROMPT]` nudge to `/sovclose` instead of auto-proceeding to after-build.
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skills registered, after-build skill removed if listed).
+- Updated `Reference manual.md`, `crash-course/` (new skills documented, after-build references replaced).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (close.md + git.md added, after-build.md removed).
+- Tests updated.
+
+**Design decisions (resolved v91).**
+1. `/sovclose` dual-path: detects `Status: active` batch with fully-ticked Files → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). No active-with-ticked-files → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts).
+2. `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations excluded.
+3. `/sovgit` owns all git operations: commit, tag, push. Plain-English narration for non-coders. Invoked via `[PROMPT]` nudge from `/sovclose`. Must handle team vs. solo git workflows — on first use, ask the user's setup and record in CLAUDE.md so the procedure adapts (e.g. solo: commit-tag-push; team: branch, commit, push, PR guidance).
+4. Build.md completion becomes `[PROMPT]` nudge to `/sovclose` — no auto-proceed.
+5. All skill-to-skill transitions use `[PROMPT]` nudges to the user, never automatic handoffs.
+6. `sov` prefix on all new skills to avoid confusion with native Claude Code features.
+
+**Success criteria.** After a build, user invokes `/sovclose` and gets the full after-build workflow without knowing it used to be a separate procedure. After a planning session, user invokes `/sovclose` and gets lighter housekeeping. `/sovgit` walks a non-coder through commit/tag/push in plain English. No automatic skill-to-skill handoffs remain.
+
+**Risks / dependencies.** Large surface area — after-build.md is 136 lines of procedure that all need a new home. Risk of regression in the after-build workflow during the move. `crash-course/` data-source attributes need updating. Depends on 0079 (shipped). No hard dependency on other queued batches.
+
+---
+
+### 0099 — /sovrecap skill + /sovbuild rename + lock-timing fix
+
+**Goal.** Rename `/before-build` to `/sovrecap` (pre-build planning recap) and `/build` to `/sovbuild`. Fix lock timing: `Status: active` engages after the user confirms the recap and invokes `/sovbuild`, not during the recap — so BACKLOG stays editable while the user reviews the file list, test plan, and split proposals.
+
+**Outputs.**
+- `plugin/skills/sovrecap/SKILL.md` — new skill replacing `plugin/skills/before-build/`. Loads `plugin/docs/procedures/before-build.md`.
+- `plugin/skills/sovbuild/SKILL.md` — new skill replacing `plugin/skills/build/`. Loads `plugin/docs/procedures/build.md`.
+- `plugin/skills/before-build/` — deleted.
+- `plugin/skills/build/` — deleted.
+- `plugin/docs/procedures/before-build.md` — updated: `Status: active` write moved to end of procedure (after user confirms), not beginning. Ends with `[PROMPT]` nudge to `/sovbuild`.
+- `plugin/docs/procedures/build.md` — updated: completion `[PROMPT]` nudge references `/sovclose` (from 0097).
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (old skills removed, new registered).
+- Updated `Reference manual.md`, `crash-course/` (new names, recap framing).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (new skill names).
+- Hook logic updated: any hook referencing `/before-build` or `/build` by name updated to new names.
+- Tests updated.
+
+**Design decisions (resolved v91).**
+1. `/sovrecap` wraps existing before-build.md — same pattern as other skills.
+2. `/sovbuild` wraps existing build.md.
+3. Lock timing fix: the recap is a genuine pause point where the user reviews and discussion may produce findings that route back to BACKLOG. BACKLOG must be unlocked during this window. `Status: active` written only after user confirms recap and invokes `/sovbuild`.
+4. `sov` prefix on both, consistent with 0097/0098.
+5. Consumer-facing description in Reference manual and crash-course frames `/sovrecap` as "pre-build planning recap."
+
+**Success criteria.** User invokes `/sovrecap`, reviews file list and test plan, can still edit BACKLOG during discussion. On confirmation, `/sovbuild` locks the batch. No references to `/before-build` or `/build` remain in plugin code or docs.
+
+**Risks / dependencies.** Lock-timing change affects hook logic — any hook that checks `Status: active` to determine phase must still work correctly with the delayed write. Soft dep on 0097 (build.md completion nudge references `/sovclose`). Moderate surface area across hooks, docs, and tests.
+
+---
+
+### 0098 — /sovplan skill + planning ordering principles
+
+**Goal.** Give planning a skill entry point (`/sovplan`) so it matches the other phases, add explicit ordering principles to the planning procedure (including a batch-ordering audit), and introduce a universal `[SECURITY]` marker for entries across method docs.
+
+**Outputs.**
+- `plugin/skills/sovplan/SKILL.md` — new skill. Loads `plugin/docs/procedures/planning.md`.
+- `plugin/docs/procedures/planning.md` — updated with ordering principles section (dependency analysis, "what needs to exist before this can work," project-structure reasoning) and a batch-ordering audit step. Ordering principles reference `[SECURITY]` as a prioritization input.
+- `plugin/docs/DOC-STRUCTURE.md` — `[SECURITY]` marker format defined for UX entries, BACKLOG build batches, BACKLOG planning batches, BACKLOG open questions.
+- `plugin/docs/VOCABULARY.md` — `[SECURITY]` marker defined.
+- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skill registered).
+- Updated `Reference manual.md`, `crash-course/` (new skill documented, marker explained).
+- Updated `plugin/hooks/universal-behaviour.md` § Routing openers (planning route references `/sovplan`). Red flags rule updated to reference `[SECURITY]` marker.
+- SessionStart hook output enhanced: surface top 3 queued batches with brief orientation so user can pick without reading full BACKLOG.
+- Tests updated.
+
+**Design decisions (resolved v91, v92).**
+1. `/sovplan` wraps the existing planning.md procedure — skill loads the procedure doc, same pattern as other skills.
+2. Name uses `sov` prefix to avoid confusion with Claude Code's native plan mode (Shift+Tab), which is a different feature entirely.
+3. Ordering principles added to planning.md — not a new doc. Claude already understands dependency ordering and project structure; the procedure just needs to tell it to apply that knowledge when reordering BACKLOG. Includes a batch-ordering audit step: (a) check each batch's dependencies flow forward (no batch depends on a later batch), (b) scan for stale references to files/skills that earlier batches rename or delete, (c) reorder if needed, (d) fix affected scope text in the same pass.
+4. SessionStart enhancement is a hook-output change, not a new skill — surface top 3 queued batches with one-line orientation each.
+5. BACKLOG full-read confirmed as the right default despite token cost. Proxy provides optional granularity for large backlogs.
+6. `[SECURITY]` is a single inline marker that works the same way on any entry in any doc. Meaning: "this touches a sensitive surface" (auth, PII, payments, deletion, etc.). Informational — no hook enforcement. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier).
+7. Applies to: UX.md entries, BACKLOG build batch headings, BACKLOG planning batches, BACKLOG open questions. Not MANIFEST or TEST-LOG (those are execution-level, already covered by Red flags sub-section and read-before-edit gate).
+
+**Success criteria.** User invokes `/sovplan` and gets the full planning procedure. BACKLOG batch ordering reflects dependency and project-structure reasoning, not just insertion order. Batch-ordering audit catches forward-dependency violations and stale cross-references (files/skills renamed or deleted by earlier batches). SessionStart presents enough context for the user to pick a topic without reading the full BACKLOG first. No confusion with Claude Code's native plan mode. `[SECURITY]` markers visible on security-shaped entries across UX and BACKLOG.
+
+**Risks / dependencies.** Ordering principles are judgment-heavy — risk of over-specifying rules that don't generalise across project types. SessionStart hook change is low-risk (additive output). `[SECURITY]` marker is informational — low risk, no enforcement to break. No hard dependencies on other queued batches.
+
+---
+
 ### 0096 — Manifest rationale field
 
 **Goal.** Add a one-line rationale field to MANIFEST entries so Claude can find *why* a component exists without scanning the build log. Secondary benefit: Claude references the rationale when updating UX, reducing incorrect reasoning about why things exist.
 
-**Inputs.** `plugin/templates/MANIFEST-TEMPLATE.md`, `plugin/docs/DOC-STRUCTURE.md` § MANIFEST.md structure + MANIFEST proxy, `plugin/docs/procedures/after-build.md`, `plugin/docs/procedures/planning.md`.
+**Inputs.** `plugin/templates/MANIFEST-TEMPLATE.md`, `plugin/docs/DOC-STRUCTURE.md` § MANIFEST.md structure + MANIFEST proxy, `plugin/docs/procedures/close.md`, `plugin/docs/procedures/planning.md`.
 
-**Outputs.** MANIFEST entry format extended (`- **[Name]** (`path`) — [description]. *Rationale: [why it exists / vNN].*`). DOC-STRUCTURE.md updated. MANIFEST-TEMPLATE.md updated. MANIFEST proxy format updated (design question below). After-build procedure updated (rationale written at session close). Tests updated.
+**Outputs.** MANIFEST entry format extended (`- **[Name]** (`path`) — [description]. *Rationale: [why it exists / vNN].*`). DOC-STRUCTURE.md updated. MANIFEST-TEMPLATE.md updated. MANIFEST proxy format updated (design question below). Close procedure updated (rationale written at session close). Tests updated.
 
 **Success criteria.** New MANIFEST entries carry a rationale field. Claude updating UX can reference manifest rationale without opening build-log files. Existing entries without rationale remain valid (graceful migration).
 
@@ -116,25 +206,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 3. Should the rationale include the session tag where the component was introduced?
 4. Should the planning procedure explicitly say "check manifest rationale before rewriting UX entries"?
 
-**Risks / dependencies.** No hard dependencies. Moderate surface area (DOC-STRUCTURE, template, after-build procedure, tests). Risk of format bloat — spec a hard cap (one clause, max 15 words + optional session tag).
-
----
-
-### 0088 — Build E2E test
-
-**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/setup` and planning are validated, now test `/before-build` through `/build` through after-build in the Polite Fart Announcer burner app.
-
-**Inputs.** `research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer` (scaffolded from 0084).
-
-**Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
-
-**Success criteria.** `/before-build` activates correctly (Status: active, Files: and Tests: populated). `/build` creates `index.html` — file exists and works in browser. After-build fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
-
-**Open questions.**
-1. Can the existing burner session be reused, or does it need a fresh session?
-2. If a fix session shipped between 0084 and this, re-test the fixed behaviour first.
-
-**Risks / dependencies.** Burner app may have stale state from 0084 testing (Status: active on a batch). May need status reset or fresh start.
+**Risks / dependencies.** Soft dep on 0097 (`after-build.md` replaced by `close.md`). Moderate surface area (DOC-STRUCTURE, template, close procedure, tests). Risk of format bloat — spec a hard cap (one clause, max 15 words + optional session tag).
 
 ---
 
@@ -174,15 +246,33 @@ sovereign-implementer/
 
 ---
 
+### 0088 — Build E2E test
+
+**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/setup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
+
+**Inputs.** `research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer` (scaffolded from 0084).
+
+**Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
+
+**Success criteria.** `/sovrecap` activates correctly (Status: active, Files: and Tests: populated). `/sovbuild` creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
+
+**Open questions.**
+1. Can the existing burner session be reused, or does it need a fresh session?
+2. If a fix session shipped between 0084 and this, re-test the fixed behaviour first.
+
+**Risks / dependencies.** Soft dep on 0099 (skill names). Burner app may have stale state from 0084 testing (Status: active on a batch). May need status reset or fresh start.
+
+---
+
 ### 0094 — Guided testing and debugging procedure
 
 **Goal.** Give non-coders a step-by-step hand-holding experience when they test their app after a build. Two halves: (1) Claude walks the user through each pending User-verified test row — turning a one-line Test Description into an actionable sequence of "do this, look for that"; (2) when something fails, Claude runs a structured debugging process until the issue is understood and routed.
 
 New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
 
-**Inputs.** `plugin/docs/procedures/after-build.md` (current handoff point — step 14). `plugin/docs/DOC-STRUCTURE.md` → TEST-LOG structure. `plugin/docs/VOCABULARY.md` → test type definitions. `plugin/templates/TEST-LOG-TEMPLATE.md`. `plugin/docs/procedures/planning.md` → step 1 (read-back).
+**Inputs.** `plugin/docs/procedures/close.md` (handoff point from `/sovclose`). `plugin/docs/DOC-STRUCTURE.md` → TEST-LOG structure. `plugin/docs/VOCABULARY.md` → test type definitions. `plugin/templates/TEST-LOG-TEMPLATE.md`. `plugin/docs/procedures/planning.md` → step 1 (read-back).
 
-**Outputs.** `plugin/docs/procedures/testing.md` (new). `plugin/skills/test/SKILL.md` (new `/test` skill). Updated `after-build.md` (step 14 references `/test`). Updated `plugin/README.md` and `.claude-plugin/plugin.json`.
+**Outputs.** `plugin/docs/procedures/testing.md` (new). `plugin/skills/test/SKILL.md` (new `/test` skill). Updated `close.md` (references `/test`). Updated `plugin/README.md` and `.claude-plugin/plugin.json`.
 
 **Design decisions.**
 1. Should `/test` also handle Claude-verified tests, or only User-verified?
@@ -193,7 +283,7 @@ New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
 
 **Success criteria.** A non-coder can invoke `/test`, follow guidance through every pending row, and end with all rows having Status and Notes. Failures get structured debugging, not silence. Handles all four test types.
 
-**Risks / dependencies.** Depends on 0079 (shipped). Soft dep on 0090 (shipped). Risk: over-specifying guidance templates for diverse project types. Risk: permission model — testing is a third phase not yet modeled.
+**Risks / dependencies.** Depends on 0079 (shipped). Depends on 0097 (`after-build.md` replaced by `close.md`). Soft dep on 0090 (shipped). Risk: over-specifying guidance templates for diverse project types. Risk: permission model — testing is a third phase not yet modeled.
 
 ---
 
@@ -203,101 +293,13 @@ New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
 
 **Inputs.** `/test` skill and `plugin/docs/procedures/testing.md` (from 0094). A burner app with pending TEST-LOG rows across multiple test types. `research/e2e-greenfield-post-redesign.md`.
 
-**Outputs.** Research file `research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. After-build handoff validation.
+**Outputs.** Research file `research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. `/sovclose` handoff validation.
 
 **Test plan.** Happy path: invoke `/test`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/test` already confirmed.
 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/test` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
-
-### 0099 — /sovrecap skill + /sovbuild rename + lock-timing fix
-
-**Goal.** Rename `/before-build` to `/sovrecap` (pre-build planning recap) and `/build` to `/sovbuild`. Fix lock timing: `Status: active` engages after the user confirms the recap and invokes `/sovbuild`, not during the recap — so BACKLOG stays editable while the user reviews the file list, test plan, and split proposals.
-
-**Outputs.**
-- `plugin/skills/sovrecap/SKILL.md` — new skill replacing `plugin/skills/before-build/`. Loads `plugin/docs/procedures/before-build.md`.
-- `plugin/skills/sovbuild/SKILL.md` — new skill replacing `plugin/skills/build/`. Loads `plugin/docs/procedures/build.md`.
-- `plugin/skills/before-build/` — deleted.
-- `plugin/skills/build/` — deleted.
-- `plugin/docs/procedures/before-build.md` — updated: `Status: active` write moved to end of procedure (after user confirms), not beginning. Ends with `[PROMPT]` nudge to `/sovbuild`.
-- `plugin/docs/procedures/build.md` — updated: completion `[PROMPT]` nudge references `/sovclose` (from 0097).
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (old skills removed, new registered).
-- Updated `Reference manual.md`, `crash-course/` (new names, recap framing).
-- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (new skill names).
-- Hook logic updated: any hook referencing `/before-build` or `/build` by name updated to new names.
-- Tests updated.
-
-**Design decisions (resolved v91).**
-1. `/sovrecap` wraps existing before-build.md — same pattern as other skills.
-2. `/sovbuild` wraps existing build.md.
-3. Lock timing fix: the recap is a genuine pause point where the user reviews and discussion may produce findings that route back to BACKLOG. BACKLOG must be unlocked during this window. `Status: active` written only after user confirms recap and invokes `/sovbuild`.
-4. `sov` prefix on both, consistent with 0097/0098.
-5. Consumer-facing description in Reference manual and crash-course frames `/sovrecap` as "pre-build planning recap."
-
-**Success criteria.** User invokes `/sovrecap`, reviews file list and test plan, can still edit BACKLOG during discussion. On confirmation, `/sovbuild` locks the batch. No references to `/before-build` or `/build` remain in plugin code or docs.
-
-**Risks / dependencies.** Lock-timing change affects hook logic — any hook that checks `Status: active` to determine phase must still work correctly with the delayed write. Soft dep on 0097 (build.md completion nudge references `/sovclose`). Moderate surface area across hooks, docs, and tests.
-
----
-
-### 0098 — /sovplan skill + planning ordering principles
-
-**Goal.** Give planning a skill entry point (`/sovplan`) so it matches the other phases, add explicit ordering principles to the planning procedure, and introduce a universal `[SECURITY]` marker for entries across method docs.
-
-**Outputs.**
-- `plugin/skills/sovplan/SKILL.md` — new skill. Loads `plugin/docs/procedures/planning.md`.
-- `plugin/docs/procedures/planning.md` — updated with ordering principles section (dependency analysis, "what needs to exist before this can work," project-structure reasoning). Ordering principles reference `[SECURITY]` as a prioritization input.
-- `plugin/docs/DOC-STRUCTURE.md` — `[SECURITY]` marker format defined for UX entries, BACKLOG build batches, BACKLOG planning batches, BACKLOG open questions.
-- `plugin/docs/VOCABULARY.md` — `[SECURITY]` marker defined.
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skill registered).
-- Updated `Reference manual.md`, `crash-course/` (new skill documented, marker explained).
-- Updated `plugin/hooks/universal-behaviour.md` § Routing openers (planning route references `/sovplan`). Red flags rule updated to reference `[SECURITY]` marker.
-- SessionStart hook output enhanced: surface top 3 queued batches with brief orientation so user can pick without reading full BACKLOG.
-- Tests updated.
-
-**Design decisions (resolved v91, v92).**
-1. `/sovplan` wraps the existing planning.md procedure — skill loads the procedure doc, same pattern as other skills.
-2. Name uses `sov` prefix to avoid confusion with Claude Code's native plan mode (Shift+Tab), which is a different feature entirely.
-3. Ordering principles added to planning.md — not a new doc. Claude already understands dependency ordering and project structure; the procedure just needs to tell it to apply that knowledge when reordering BACKLOG.
-4. SessionStart enhancement is a hook-output change, not a new skill — surface top 3 queued batches with one-line orientation each.
-5. BACKLOG full-read confirmed as the right default despite token cost. Proxy provides optional granularity for large backlogs.
-6. `[SECURITY]` is a single inline marker that works the same way on any entry in any doc. Meaning: "this touches a sensitive surface" (auth, PII, payments, deletion, etc.). Informational — no hook enforcement. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier).
-7. Applies to: UX.md entries, BACKLOG build batch headings, BACKLOG planning batches, BACKLOG open questions. Not MANIFEST or TEST-LOG (those are execution-level, already covered by Red flags sub-section and read-before-edit gate).
-
-**Success criteria.** User invokes `/sovplan` and gets the full planning procedure. BACKLOG batch ordering reflects dependency and project-structure reasoning, not just insertion order. SessionStart presents enough context for the user to pick a topic without reading the full BACKLOG first. No confusion with Claude Code's native plan mode. `[SECURITY]` markers visible on security-shaped entries across UX and BACKLOG.
-
-**Risks / dependencies.** Ordering principles are judgment-heavy — risk of over-specifying rules that don't generalise across project types. SessionStart hook change is low-risk (additive output). `[SECURITY]` marker is informational — low risk, no enforcement to break. No hard dependencies on other queued batches.
-
----
-
-### 0097 — /sovclose skill + /sovgit skill + after-build retirement
-
-**Goal.** Replace the after-build procedure with a `/sovclose` skill that works after any session type (not just builds), and split git operations into a dedicated `/sovgit` skill that hand-holds non-coders through commit/tag/push.
-
-**Outputs.**
-- `plugin/skills/sovclose/SKILL.md` — new skill.
-- `plugin/docs/procedures/close.md` — new procedure doc loaded by `/sovclose`.
-- `plugin/skills/sovgit/SKILL.md` — new skill.
-- `plugin/docs/procedures/git.md` — new procedure doc loaded by `/sovgit`.
-- `plugin/docs/procedures/after-build.md` — deleted (content absorbed into close.md).
-- `plugin/docs/procedures/build.md` — completion section updated: `[PROMPT]` nudge to `/sovclose` instead of auto-proceeding to after-build.
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skills registered, after-build skill removed if listed).
-- Updated `Reference manual.md`, `crash-course/` (new skills documented, after-build references replaced).
-- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (close.md + git.md added, after-build.md removed).
-- Tests updated.
-
-**Design decisions (resolved v91).**
-1. `/sovclose` dual-path: detects `Status: active` batch with fully-ticked Files → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). No active-with-ticked-files → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts).
-2. `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations excluded.
-3. `/sovgit` owns all git operations: commit, tag, push. Plain-English narration for non-coders. Invoked via `[PROMPT]` nudge from `/sovclose`. Must handle team vs. solo git workflows — on first use, ask the user's setup and record in CLAUDE.md so the procedure adapts (e.g. solo: commit-tag-push; team: branch, commit, push, PR guidance).
-4. Build.md completion becomes `[PROMPT]` nudge to `/sovclose` — no auto-proceed.
-5. All skill-to-skill transitions use `[PROMPT]` nudges to the user, never automatic handoffs.
-6. `sov` prefix on all new skills to avoid confusion with native Claude Code features.
-
-**Success criteria.** After a build, user invokes `/sovclose` and gets the full after-build workflow without knowing it used to be a separate procedure. After a planning session, user invokes `/sovclose` and gets lighter housekeeping. `/sovgit` walks a non-coder through commit/tag/push in plain English. No automatic skill-to-skill handoffs remain.
-
-**Risks / dependencies.** Large surface area — after-build.md is 136 lines of procedure that all need a new home. Risk of regression in the after-build workflow during the move. `crash-course/` data-source attributes need updating. Depends on 0079 (shipped). No hard dependency on other queued batches.
 
 ---
 
