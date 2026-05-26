@@ -6,6 +6,7 @@ For format details, see `planning/session-reference.md` → *BUILD-LOG entry sha
 
 ---
 
+- [v91-oq-cluster-design.md](v91-oq-cluster-design.md) — 2026-05-26 — "Retire build session" OQ cluster design
 - [v90-build-method-split-and-dev-proxies.md](v90-build-method-split-and-dev-proxies.md) — 2026-05-26 — BUILD-METHOD split and dev-side proxies
 - [v89-test-log-folder-split.md](v89-test-log-folder-split.md) — 2026-05-26 — TEST-LOG folder split + proxy index
 - [v88-index-relocation-to-proxies.md](v88-index-relocation-to-proxies.md) — 2026-05-26 — INDEX relocation to proxies

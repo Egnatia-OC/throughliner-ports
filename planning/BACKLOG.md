@@ -6,7 +6,7 @@ Batch-by-batch roadmap for the plugin migration. Companion to `INVENTORY.md` and
 
 Batches tracked as git tags (`v17`, `v18`, …). The method footer (`*No-code method — Version N.*`) only bumps on substantive method/plugin changes — dev-internal batches leave it unchanged. Full rule: `session-protocol.md` → *Three numbers to keep distinct*.
 
-Scope files: `scopes/NNNN-kebab-title.md`. Allocation: next unused 4-digit number by scanning `planning/scopes/`. Numbers never reused or renumbered; reorder by moving rows below, not renaming files. Files are PROVISIONAL — a file existing isn't a commitment.
+Queued batches live inline in the *Queued batches* section below the shipped-batch table. Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationale field`). Allocation: next unused number. Numbers never reused; reorder by moving sections, not renumbering.
 
 ## The batch list
 
@@ -81,44 +81,129 @@ Scope files: `scopes/NNNN-kebab-title.md`. Allocation: next unused 4-digit numbe
 | 0085 | First-time user experience | /setup enforcement in PreToolUse deny + build-transition UX in before-build procedure + parent-directory CLAUDE.md inheritance advisory. Depends on 0084. **Shipped v84.** |
 | 0086 | Scaffold quality fixes | [Project Name] replacement, UX principle capture, Status: line, marketplace.json description. **Shipped v85.** |
 | 0087 | Doc folder restructure | Move spine docs into dedicated subfolder. Large surface area. Depends on 0085, 0086. **Shipped v86.** |
-| 0096 | Manifest rationale field | One-line "why it exists" on MANIFEST entries; eliminates build-log scanning for decision context. |
-| 0088 | Build E2E test | Build-phase E2E: /before-build through /build through after-build. Picks up from 0084. Depends on 0085 soft. |
 | 0089 | INDEX relocation to proxies | Move BACKLOG INDEX.md and build-log INDEX.md content into `_method/proxies/`. Folders keep only per-entry files. Depends on 0081. **Shipped v88.** |
 | 0090 | TEST-LOG folder split + proxy index | Split TEST-LOG.md into test-log/ folder; `_method/proxies/test-log.md` becomes folder index. Supersedes 0076. Depends on 0081, 0089. **Shipped v89.** |
 | 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. **Shipped v87.** |
 | 0092 | BUILD-METHOD split and dev-side proxies | Split BUILD-METHOD into protocol + reference; adopt .proxies/. Depends on 0091. **Shipped v90.** |
-| 0093 | Dev-side folder restructure | Move all dev-side content into `dev/`; delete frozen V39 docs and `plugin.zip`. Depends on 0091 (shipped). |
-| 0094 | Guided testing and debugging procedure | New `/test` skill + procedure doc. Step-by-step test walkthroughs for non-coders + structured debugging when tests fail. Depends on 0079 (shipped). |
-| 0095 | /test skill E2E validation | E2E test of `/test` skill against burner app. Happy path, deliberate failures, debugging protocol, planning handoff. Depends on 0094. |
-| V60+ | Remaining parked open questions | Graduation (indefinitely shelved). Prose-only rewrite (indefinitely parked). |
 
-60 batches through 0078, plus V60+ TBD. Three cancelled (0073, 0077, 0078), one superseded (0076 → 0090). New scope files for the post-redesign phase follow.
+Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
-## Scope file shape
+## Queued batches
 
-Each `scopes/NNNN-kebab-title.md` follows this shape:
+Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
 
-```markdown
-# NNNN — [Batch Name]
+---
 
-## Goal
-[One paragraph: what this batch produces.]
+### 0096 — Manifest rationale field
 
-## Inputs
-[Docs/files the batch reads / depends on.]
+**Goal.** Add a one-line rationale field to MANIFEST entries so Claude can find *why* a component exists without scanning the build log. Secondary benefit: Claude references the rationale when updating UX, reducing incorrect reasoning about why things exist.
 
-## Outputs
-[New files, edited files, plugin components.]
+**Inputs.** `plugin/templates/MANIFEST-TEMPLATE.md`, `plugin/docs/DOC-STRUCTURE.md` § MANIFEST.md structure + MANIFEST proxy, `plugin/docs/procedures/after-build.md`, `plugin/docs/procedures/planning.md`.
 
-## Success criteria
-[How we know the batch succeeded.]
+**Outputs.** MANIFEST entry format extended (`- **[Name]** (`path`) — [description]. *Rationale: [why it exists / vNN].*`). DOC-STRUCTURE.md updated. MANIFEST-TEMPLATE.md updated. MANIFEST proxy format updated (design question below). After-build procedure updated (rationale written at session close). Tests updated.
 
-## Open questions for this batch
-[Open design questions to resolve.]
+**Success criteria.** New MANIFEST entries carry a rationale field. Claude updating UX can reference manifest rationale without opening build-log files. Existing entries without rationale remain valid (graceful migration).
 
-## Risks / dependencies
-[What could derail this. Dependencies on prior batches.]
+**Open questions.**
+1. Should the manifest proxy carry rationale, or keep it dip-only? Proxy is lightweight — adding rationale makes it heavier but eliminates a dip.
+2. Inline italic suffix (`*Rationale: ...*`) vs. second line vs. parenthetical?
+3. Should the rationale include the session tag where the component was introduced?
+4. Should the planning procedure explicitly say "check manifest rationale before rewriting UX entries"?
+
+**Risks / dependencies.** No hard dependencies. Moderate surface area (DOC-STRUCTURE, template, after-build procedure, tests). Risk of format bloat — spec a hard cap (one clause, max 15 words + optional session tag).
+
+---
+
+### 0088 — Build E2E test
+
+**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/setup` and planning are validated, now test `/before-build` through `/build` through after-build in the Polite Fart Announcer burner app.
+
+**Inputs.** `research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer` (scaffolded from 0084).
+
+**Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
+
+**Success criteria.** `/before-build` activates correctly (Status: active, Files: and Tests: populated). `/build` creates `index.html` — file exists and works in browser. After-build fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
+
+**Open questions.**
+1. Can the existing burner session be reused, or does it need a fresh session?
+2. If a fix session shipped between 0084 and this, re-test the fixed behaviour first.
+
+**Risks / dependencies.** Burner app may have stale state from 0084 testing (Status: active on a batch). May need status reset or fresh start.
+
+---
+
+### 0093 — Dev-side folder restructure
+
+**Goal.** Move all dev-side content into a single `dev/` folder at repo root. Delete frozen V39 docs and `plugin.zip`. Repo root should contain only product-facing items and standard repo furniture.
+
+**Decisions (made before scoping).** Folder name: `dev/`. Frozen V39 docs deleted (NO-CODE-METHOD.md, DOC-STRUCTURE.md, VOCABULARY.md, repo-root templates/) — all in git history. `plugin.zip` deleted. `Reference manual.md` stays at root (product-facing). `crash-course/` stays (product-facing). `Marketing/` moves into `dev/`.
+
+**Repo root after this ships:**
 ```
+sovereign-implementer/
+├── plugin/
+├── crash-course/
+├── Reference manual.md
+├── README.md
+├── LICENSE
+├── .no-code-method-skip
+└── dev/
+    ├── planning/
+    ├── build-log/
+    ├── test-log/
+    ├── research/
+    ├── tests/
+    ├── Marketing/
+    ├── Archive/
+    └── session-protocol.md + session-reference.md
+```
+
+**Inputs.** Current repo root layout. CLAUDE.md, session-protocol.md, session-reference.md, BACKLOG.md — all contain path references to update.
+
+**Outputs.** `dev/` folder with all dev-side content moved via `git mv`. Frozen V39 docs and `plugin.zip` deleted. Updated path references everywhere. CLAUDE.md rewritten for new layout.
+
+**Success criteria.** Repo root has exactly: `plugin/`, `crash-course/`, `dev/`, `Reference manual.md`, `README.md`, `LICENSE`, `.no-code-method-skip`, `.gitignore`, `CLAUDE.md`. No dead path references. `git log --follow` works. Test suite passes from `dev/tests/`. A new session orients without stale paths.
+
+**Risks / dependencies.** Path references are everywhere — systematic find-and-replace needed. Absolute-path convention in CLAUDE.md must update. Test suite imports may have path assumptions. Dev-internal only — no method-version bump.
+
+---
+
+### 0094 — Guided testing and debugging procedure
+
+**Goal.** Give non-coders a step-by-step hand-holding experience when they test their app after a build. Two halves: (1) Claude walks the user through each pending User-verified test row — turning a one-line Test Description into an actionable sequence of "do this, look for that"; (2) when something fails, Claude runs a structured debugging process until the issue is understood and routed.
+
+New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
+
+**Inputs.** `plugin/docs/procedures/after-build.md` (current handoff point — step 14). `plugin/docs/DOC-STRUCTURE.md` → TEST-LOG structure. `plugin/docs/VOCABULARY.md` → test type definitions. `plugin/templates/TEST-LOG-TEMPLATE.md`. `plugin/docs/procedures/planning.md` → step 1 (read-back).
+
+**Outputs.** `plugin/docs/procedures/testing.md` (new). `plugin/skills/test/SKILL.md` (new `/test` skill). Updated `after-build.md` (step 14 references `/test`). Updated `plugin/README.md` and `.claude-plugin/plugin.json`.
+
+**Design decisions.**
+1. Should `/test` also handle Claude-verified tests, or only User-verified?
+2. How detailed should type-specific templates be? Adapt per project type, or generic?
+3. Record outcomes directly to TEST-LOG, or defer to planning read-back?
+4. Debugging depth — shallow routing vs. deep diagnostic iteration?
+5. Handle "Run and read" / "Trigger and observe" tests that Claude can't auto-run?
+
+**Success criteria.** A non-coder can invoke `/test`, follow guidance through every pending row, and end with all rows having Status and Notes. Failures get structured debugging, not silence. Handles all four test types.
+
+**Risks / dependencies.** Depends on 0079 (shipped). Soft dep on 0090 (shipped). Risk: over-specifying guidance templates for diverse project types. Risk: permission model — testing is a third phase not yet modeled.
+
+---
+
+### 0095 — /test skill E2E validation
+
+**Goal.** End-to-end test of `/test` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
+
+**Inputs.** `/test` skill and `plugin/docs/procedures/testing.md` (from 0094). A burner app with pending TEST-LOG rows across multiple test types. `research/e2e-greenfield-post-redesign.md`.
+
+**Outputs.** Research file `research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. After-build handoff validation.
+
+**Test plan.** Happy path: invoke `/test`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/test` already confirmed.
+
+**Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/test` is consistent with planning expectations. No silent failures.
+
+**Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
 
 ## Open questions
 
@@ -136,7 +221,9 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Working notes.** Four-layer analysis (v90 discussion): (1) hooks fire automatically — no cycle dependency; (2) skills are standalone entry points — no cycle dependency; (3) SessionStart briefing — no cycle dependency; (4) the lifecycle document is the only layer that depends on the cycle, and it's the most failure-prone. What the cycle uniquely provides is housekeeping (build-log, parity sweep, footer bumps, git tidying) — all "tidy up after yourself" tasks, none damage-preventing. The damage-prevention is entirely in the hooks.
 
-**Next step.** Design session needed. This is the parent question — resolving it determines the shape of the `/close`, `/plan`, and `/before-build` + `/build` OQs below.
+v91 design discussion resolved the parent question: **yes, retire.** The operating model becomes BACKLOG batches + independent skills + hook enforcement. All skills to be renamed with `sov` prefix (e.g. `/sovbuild`, `/sovclose`, `/sovplan`) to eliminate confusion with native Claude Code features. New `/sovgit` skill for all git operations — non-coders need handholding through git even though Claude Code does the mechanics. Handoff audit (v91): all skill-to-skill transitions must use `[PROMPT]` nudges to the user, never automatic handoffs.
+
+**Next step.** Resolved in principle. Implementation depends on the three child OQs below reaching design resolution. Promote to batch when children are designed.
 
 ---
 
@@ -150,7 +237,11 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Working notes.** Design questions: which of the 10 steps survive if the rigid cycle loosens? Does `/close` own the commit, or does the user commit independently? Should it include a `git status` check for all uncommitted work? Does the build-log entry step stay mandatory or become optional?
 
-**Next step.** Design session needed. Depends on resolving the broader build-cycle rigidity question — which close steps are genuinely load-bearing vs. ceremony.
+v91 design decisions: `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations split out to new `/sovgit` skill — non-coders need plain-English narration through git. `/sovclose` ends with `[PROMPT]` nudging user to invoke `/sovgit` when ready. After-build procedure content (after-build.md) absorbs into `/sovclose` — it's the same housekeeping. Handoff audit finding: build.md line 76 currently auto-proceeds to after-build ("Proceed directly to the after-build procedure") — this becomes a `[PROMPT]` nudge to `/sovclose` instead. Before-build SKILL.md description uses "hands off" language — should say "ends with" or "closes with."
+
+v91 dual-path design: `/sovclose` must work after *any* session type, not just builds. Detection: check for a `Status: active` batch with fully-ticked Files:. If found → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). If not → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts). One skill, two internal paths. The user just invokes `/sovclose` regardless of what they were doing.
+
+**Next step.** Ready to promote to batch. Design direction clear; implementation is writing the skill body + procedure doc (with dual-path logic) and refactoring build.md's completion step.
 
 ---
 
@@ -158,13 +249,15 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Surfaced.** v90 (post-session discussion).
 
-**The question.** Planning is the only core workflow with no skill entry point. `/build`, `/before-build`, `/setup`, and `/research` are all invocable skills. Planning depends entirely on the rigid session lifecycle and procedural documentation. Should planning become a `/plan` skill that produces structured plans — the core competency scope files currently deliver (goal, inputs, outputs, success criteria, risks)?
+**The question.** Planning is the only core workflow with no skill entry point. `/build`, `/before-build`, `/setup`, and `/research` are all invocable skills. Planning depends entirely on the rigid session lifecycle and procedural documentation. Should planning become a `/plan` skill that produces structured plans — the core competency BACKLOG batches currently deliver (goal, inputs, outputs, success criteria, risks)?
 
-**Why it matters.** Alex identified scope files as the beating heart of the project — Claude's ability to take vague intent and organize it into a structured plan is the core value for non-coders. Currently this happens only within the rigid session lifecycle. Consumer projects don't get scope files at all; `/before-build` does a narrower version (file list + verification burden) without the full planning structure. A `/plan` skill would make this competency independently accessible. Relates to Claude Code's native plan mode, which covers "how to approach this work" but not "what to work on next and why."
+**Why it matters.** Alex identified structured planning as the beating heart of the project — Claude's ability to take vague intent and organize it into a structured plan is the core value for non-coders. Currently this happens only within the rigid session lifecycle. A `/plan` skill would make this competency independently accessible. Relates to Claude Code's native plan mode, which covers "how to approach this work" but not "what to work on next and why."
 
-**Working notes.** Design questions: does `/plan` produce scope-file-format output, something lighter, or adapt to context? Does it write to BACKLOG automatically? How does it interact with Claude Code's native plan mode? See also OQ "Scope file split" — related but distinct (that's about format; this is about mechanism).
+**Working notes.** Design questions: does `/plan` produce full batch-format output, something lighter, or adapt to context? Does it write to BACKLOG automatically? How does it interact with Claude Code's native plan mode? See also OQ "Separate planning content from build content" — related but distinct (that's about internal batch structure; this is about mechanism).
 
-**Next step.** Design session needed. Cross-reference "Scope file split" OQ and "/close skill" OQ.
+v91 design decisions: skill name `/sovplan` to distinguish from native plan mode. Key finding: the planning procedure doc (planning.md) grants Claude authority to reorder BACKLOG but provides **zero ordering principles** — no dependency analysis, no "what needs to exist before this can work," no project-structure reasoning. This is the core competency gap: Claude understands project structure and ordering principles that non-coders don't have, but nobody's told it to apply that knowledge. Needs explicit ordering guidance added to the planning procedure. Separate finding: the user's original idea of a session-start skill suggesting BACKLOG topics is better served by enhancing SessionStart hook output — surface top 3 queued batches with a brief orientation, let user pick, no new skill needed. BACKLOG full-read philosophy confirmed (v91): full read is the right default despite token cost; separate files caused stale-content failures. Proxy provides optional granularity. BACKLOG update timing is an open thread: planning currently happens in native /plan mode, meaning BACKLOG edits have no procedural trigger — `/sovplan` would fix this.
+
+**Next step.** Ready to promote to batch. Design direction clear; implementation is writing the skill body + procedure doc, adding ordering principles to planning.md, and enhancing SessionStart summary.
 
 ---
 
@@ -178,21 +271,25 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Working notes.** The hooks don't care which skill triggered the BACKLOG state — they gate on the Files: list existing, not on which command wrote it. If `/build` runs before-build internally, the same writes happen and enforcement works identically. Design question: is there ever a reason to run `/before-build` without immediately building? If not, the merge is clean.
 
-**Next step.** Design session needed. Lower priority than `/close` and `/plan` — this is a UX simplification, not a missing capability.
+v91 note: with sov-prefix, the unmerged name would be `/sovbefore-build` — awkward with double hyphen. Merge resolves this naturally (just `/sovbuild`). Reinforces the case for merging.
+
+v91 design resolution: **don't merge — rename to `/sovrecap`.** The before-build checkpoint is a genuine pause point: the user reviews the file list, test plan, and any split proposals before committing to build. Discussion during this window may produce findings that route back to BACKLOG — which requires BACKLOG to be unlocked. Separate design finding: `Status: active` (the batch lock) currently engages *before* the recap, which blocks BACKLOG edits during the discussion window. The lock should engage *after* the user confirms the recap and invokes `/sovbuild`. The skill's consumer-facing description in Reference manual and crash-course should frame it as "pre-build planning recap" or similar. The `/sovbefore-build` naming problem is solved: `/sovrecap` is clean and accurate.
+
+**Next step.** Ready to promote to batch. Implementation: rename skill to `/sovrecap`, fix lock timing (Status: active written after user confirms, not during recap), update Reference manual and crash-course descriptions.
 
 ---
 
-### Scope file split: separate planning content from build content
+### Separate planning content from build content in BACKLOG batches
 
-**Surfaced.** v86 (0091 design discussion).
+**Surfaced.** v86 (0091 design discussion). Updated v91 (scope files consolidated into BACKLOG).
 
-**The question.** Should the current scope file — which bundles planning-phase content (open questions, risks, dependencies, design decisions) with build-phase content (goal, outputs, success criteria, file lists) — be split into two artifacts? And should "build cycle" retire as a term, since it makes the whole workflow too synonymous with its second phase when planning is its own whole thing?
+**The question.** Each queued batch in BACKLOG bundles planning-phase content (open questions, risks, dependencies, design decisions) with build-phase content (goal, outputs, success criteria, file lists). Should these be separated — e.g. a planning section that resolves questions before a build section locks the file list?
 
-**Why it matters.** Alex has proven that planning and building can happen in separate parallel sessions (so long as you never build in parallel, and you inform the current build when a new plan lands). The bundled scope file pushes users toward a one-session-does-everything pattern that isn't required. Splitting would also clarify the terminology: the planning artifact and the build spec would each have a natural name without forcing a single term to cover both.
+**Why it matters.** Alex has proven that planning and building can happen in separate parallel sessions (so long as you never build in parallel, and you inform the current build when a new plan lands). Clearer separation within the batch entry would make it obvious which parts are settled vs. still open.
 
-**Working notes.** Parallel planning/building needs git advice: commit before switching contexts, pull before resuming a build. The corruption risk is parallel builds, not parallel planning. The split would reshape plugin-side procedure docs — not just dev-side folder names.
+**Working notes.** Scope files were eliminated in v91 — batch scope now lives inline in BACKLOG. The old scope-file split question (separate files for planning vs. build) is resolved by the consolidation. What remains is whether the *internal structure* of a queued batch should visually separate "still deciding" from "ready to build." Parallel planning/building needs git advice: commit before switching contexts, pull before resuming a build.
 
-**Next step.** 0091 shipped (v87) — terminology settled, folder is `planning/scopes/`. Still parked: promote when a concrete split design emerges (separate planning artifact vs. build spec).
+**Next step.** Park. The current inline format works. Revisit if the bundled structure causes confusion in practice.
 
 ---
 
@@ -226,13 +323,13 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Surfaced.** v82 (2026-05-25 ideation).
 
-**The question.** Should the plugin include a `/sweep` (or similar) skill that systematically scans cancelled batches, parked scope files, open question entries with stale rationale, and build-log "carried forward" items — surfacing features that were dropped, deferred under conditions nobody re-evaluated, or promised but never scoped?
+**The question.** Should the plugin include a `/sweep` (or similar) skill that systematically scans cancelled batches, parked batches, open question entries with stale rationale, and build-log "carried forward" items — surfacing features that were dropped, deferred under conditions nobody re-evaluated, or promised but never scoped?
 
 **Why it matters.** Surfaced 2026-05-25 during an ideation session that manually did exactly this. The process — read BACKLOG for cancelled/parked rows, read their scope files, cross-reference build-log "carried forward" sections, check OQ parking rationale against what's shipped since — is mechanical enough to be a repeatable procedure. Doing it by hand took significant context window and required knowing where to look. A planning-phase skill could run this as a pre-flight before roadmap rescoping, catching items that silently fell off the map.
 
 **Working notes.** The sweep found six items across ~65 batches: one genuinely lost output (after-build proxy regeneration), one partially shipped remainder with no home (UX threat-class marker), one undocumented constraint (parent-directory inheritance), and three items frozen under stale rationale. The pattern: cancellation and parking are one-way — nothing triggers a re-evaluation when the reason for parking stops being true.
 
-**Next step.** Park until the planning procedure stabilises post-proxy-layer. The sweep reads BACKLOG, scope files, build-log entries, and open questions — all of which are changing shape through 0089/0090. Promote once those ship and the doc structure is stable.
+**Next step.** Park until the planning procedure stabilises. The sweep reads BACKLOG batches, build-log entries, and open questions. Promote once the doc structure is stable.
 
 ---
 
