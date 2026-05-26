@@ -126,6 +126,20 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
+### Retire "build session" as a formal concept — BACKLOG as sole work tracker
+
+**Surfaced.** v90 (post-session discussion).
+
+**The question.** The rigid build cycle bundles a unit of work ("build session") with lifecycle ceremony — one scope file, one commit, one git tag, one build-log entry, a 10-step close procedure. The batch in BACKLOG already *is* the unit of work. The hooks already gate on BACKLOG state, not on "being in a build session." SessionStart already reads BACKLOG to orient Claude. The skills already read BACKLOG to find work. Should "build session" dissolve as a formal concept, leaving BACKLOG batches + independent skills + hook enforcement as the operating model?
+
+**Why it matters.** Alex identified that the rigid cycle was built before hooks existed — the ceremony *was* the enforcement. Now 11 mechanical enforcement points fire based on project state, independent of the session lifecycle. The cycle adds overhead (scope file creation/deletion, mandatory build-log entries, session tags, 10-step close) without feeding into the enforcement that actually prevents drift. Loosening it would let users invoke skills independently (`/plan`, `/build`, `/close`) rather than following a prescribed sequence. Three child OQs capture specific design questions: `/close` skill, `/plan` skill, `/before-build` + `/build` merge.
+
+**Working notes.** Four-layer analysis (v90 discussion): (1) hooks fire automatically — no cycle dependency; (2) skills are standalone entry points — no cycle dependency; (3) SessionStart briefing — no cycle dependency; (4) the lifecycle document is the only layer that depends on the cycle, and it's the most failure-prone. What the cycle uniquely provides is housekeeping (build-log, parity sweep, footer bumps, git tidying) — all "tidy up after yourself" tasks, none damage-preventing. The damage-prevention is entirely in the hooks.
+
+**Next step.** Design session needed. This is the parent question — resolving it determines the shape of the `/close`, `/plan`, and `/before-build` + `/build` OQs below.
+
+---
+
 ### Session close as a `/close` skill
 
 **Surfaced.** v90 (post-session discussion).
