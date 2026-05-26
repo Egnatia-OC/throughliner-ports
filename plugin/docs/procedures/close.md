@@ -1,8 +1,22 @@
-# After-build procedure — no-code method
+# Close procedure — no-code method
 
-Follow this procedure after a build batch completes (all Files: ticked). Never during planning, builds, or before-build.
+Follow this procedure to close a session. Works after any session type — build, planning, or general.
 
-## First action — load project state (minimal)
+## Phase detection
+
+Determine the path:
+
+1. Parse BACKLOG for the top batch with `Status: active` and all Files: ticked (`- [x]` only, no `- [ ]`).
+2. If found → **post-build path** (full close workflow).
+3. If not found → **planning/general path** (lighter close).
+
+---
+
+## Post-build path
+
+Run when a build batch just completed (Status: active, all Files: ticked).
+
+### First action — load project state (minimal)
 
 Load only what's needed for batch identification and idempotency. Defer heavier reads to work-loop steps.
 
@@ -13,17 +27,17 @@ Load only what's needed for batch identification and idempotency. Defer heavier 
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
 
-## Identify the just-completed batch
+### Identify the just-completed batch
 
 Walk Build batches top-to-bottom. The just-completed batch is the topmost with entirely ticked Files: (`- [x]` only, no `- [ ]`).
 
 If topmost batch has unticked files → halt (build not finished). If no fully-ticked batch → halt with note and stop.
 
-## Idempotency check
+### Idempotency check
 
-If TEST-LOG already has rows matching this session whose scope covers the batch's Files: → the after-build steps are already done. State it and stop. Don't duplicate rows or re-run.
+If TEST-LOG already has rows matching this session whose scope covers the batch's Files: → the close steps are already done. State it and stop. Don't duplicate rows or re-run.
 
-## Session identification
+### Session identification
 
 TEST-LOG's Session column needs a stable build-session identifier:
 
@@ -32,7 +46,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 - **Single-file:** `BUILD-LOG.md` → first `## <token>` heading.
 - **Last resort:** today's YYYY-MM-DD.
 
-## Work loop
+### Work loop
 
 1. **[SILENT] Update MANIFEST.md.** Use the batch's Files: as source. For each ticked file:
    - Added file with trackable element → add MANIFEST entry with `(path)` field. Alphabetical order.
@@ -105,27 +119,40 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 10. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
 
-11. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — after-build always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
+11. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
 12. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
 
 13. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), proxies regenerated (step 11), doc-parity check done (step 3). If any missing, complete now.
 
-14. **Closing prompts:**
-   - `[PROMPT]` Commit and tag before testing.
-   - `[PROMPT]` Refresh and begin testing. Bring per-row outcomes to next planning session.
-   - `[PROMPT]` Optional: add `**Session notes:**` to Performance section.
-   - `[PROMPT]` `/clear` and switch to planning mode when done.
+14. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — bring per-row outcomes to your next planning session."
+
+---
+
+## Planning/general path
+
+Run when no active-with-ticked-files batch exists. Lighter close for planning, ideation, or general sessions.
+
+### Steps
+
+1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BACKLOG (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
+
+2. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Skip if no source docs were edited or no proxies directory exists.
+
+3. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
+
+---
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. The fix belongs in a new batch or the user's next session.
-- **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands. Don't take other actions whose side effects make the refusal untenable, then re-do the declined action.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it.
+- **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
 - **Don't start a new build.**
 - **Don't infer test outcomes.** Write rows with blank Status and `Confirmed Explicitly: No`.
 - **Don't write carve-out labels into BACKLOG change list.** Those are recap-time labels only.
+- **Don't perform git operations.** Commit, tag, and push belong to `/sovgit`.
 
 ## Behavioural rules
 
@@ -133,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 75.*
+*No-code method — Version 76.*

@@ -71,9 +71,11 @@ Five procedure docs at `plugin/docs/procedures/`, read into main context on dema
 
 - **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BACKLOG, (c) vague changes, (d) split needed.
 
-- **build.md** — V25 origin, procedure doc V66. Runs one build batch. Receives JSON from `parse_backlog.py`. Edits per-file, ticks BACKLOG. PreToolUse (c) enforces boundary. Prerequisite and re-batching carve-outs. V54: reads DOC-STRUCTURE at runtime. V56: scope-of-exploration limits. On completion, directs Claude to read after-build.md.
+- **build.md** — V25 origin, procedure doc V76. Runs one build batch. Receives JSON from `parse_backlog.py`. Edits per-file, ticks BACKLOG. PreToolUse (c) enforces boundary. Prerequisite and re-batching carve-outs. V54: reads DOC-STRUCTURE at runtime. V56: scope-of-exploration limits. On completion, `[PROMPT]` nudge to `/sovclose`.
 
-- **after-build.md** — V27 origin, procedure doc V66. MANIFEST update, doc-parity check (V62), recap (two-section: Claude-verified / user-verified, V48), TEST-LOG rows (10-column, V48), build-log entry with Performance section (V55), frame-correction sweep (V33), idea sweep (V62), CLAUDE.md after-build steps (V62), pre-commit checkpoint (V62), commit/tag prompt (V48). Idempotent.
+- **close.md** — V76 origin (absorbed after-build.md). Dual-path: post-build (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry with Performance section, frame-correction sweep, idea sweep, CLAUDE.md after-build steps, pre-commit checkpoint, `/sovgit` nudge) or planning/general (idea sweep, proxy regeneration, `/sovgit` nudge). Idempotent.
+
+- **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance.
 
 - **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75 migrations. PreToolUse exempts setup's tool calls.
 
@@ -87,6 +89,8 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `/plan` — planning procedure. *Pending; auto-route is current path.*
 - `/before-build` — before-build procedure. **Shipped V25.** Migrated to skills/ v71.
 - `/build` — triggers build procedure. **Shipped V25.** Migrated to skills/ v71.
+- `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
+- `/sovgit` — git walkthrough (commit/tag/push, solo or team). **Shipped V76.**
 
 ### Bundled artefacts
 
@@ -101,7 +105,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ## Design decisions (V17)
 
-- **D1** — ~~Stop hook proposes next batch; user gates via `stop_hook_active`.~~ Removed V66 (subagent removal). Build procedure chains to after-build directly.
+- **D1** — ~~Stop hook proposes next batch; user gates via `stop_hook_active`.~~ Removed V66 (subagent removal). V76: build procedure nudges `/sovclose`; `/sovclose` nudges `/sovgit`. All transitions via `[PROMPT]`.
 - **D2** — Separate planning and before-build phases for file-list-lock isolation. V66: converted from subagents to procedure docs.
 - **D3** — SessionStart injects state; Claude classifies opener and reads the matching procedure doc.
 
@@ -114,7 +118,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 | `batch-executor` enforces paths | PreToolUse hook enforces | Tool-level enforcement, not instruction-level |
 | Free-form path block | Fenced JSON | Robust hook parsing |
 | Standalone slash commands | Skills with flags (`skills/*/SKILL.md`) | Claude Code merged commands into skills; commands-directory retired v71 |
-| Stop hook auto-chains | ~~Removed V66~~ — build procedure chains to after-build directly | Subagent layer removed; no inter-turn redirect needed |
+| Stop hook auto-chains | ~~Removed V66~~ — V76: build → `/sovclose` → `/sovgit` via `[PROMPT]` nudges | Subagent layer removed; skill-to-skill via user invocation |
 
 ## Risks (from Opus feasibility response)
 
@@ -128,4 +132,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 75.*
+*No-code method — Version 76.*

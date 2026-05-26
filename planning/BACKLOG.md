@@ -86,47 +86,18 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. **Shipped v87.** |
 | 0092 | BUILD-METHOD split and dev-side proxies | Split BUILD-METHOD into protocol + reference; adopt .proxies/. Depends on 0091. **Shipped v90.** |
 
+| 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. |
 | 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
 | 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. |
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. |
-| 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. |
+| 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0097 — /sovclose skill + /sovgit skill + after-build retirement
-
-**Goal.** Replace the after-build procedure with a `/sovclose` skill that works after any session type (not just builds), and split git operations into a dedicated `/sovgit` skill that hand-holds non-coders through commit/tag/push.
-
-**Outputs.**
-- `plugin/skills/sovclose/SKILL.md` — new skill.
-- `plugin/docs/procedures/close.md` — new procedure doc loaded by `/sovclose`.
-- `plugin/skills/sovgit/SKILL.md` — new skill.
-- `plugin/docs/procedures/git.md` — new procedure doc loaded by `/sovgit`.
-- `plugin/docs/procedures/after-build.md` — deleted (content absorbed into close.md).
-- `plugin/docs/procedures/build.md` — completion section updated: `[PROMPT]` nudge to `/sovclose` instead of auto-proceeding to after-build.
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skills registered, after-build skill removed if listed).
-- Updated `Reference manual.md`, `crash-course/` (new skills documented, after-build references replaced).
-- Updated `plugin/hooks/universal-behaviour.md` § Routing openers and § Procedure docs (close.md + git.md added, after-build.md removed).
-- Tests updated.
-
-**Design decisions (resolved v91).**
-1. `/sovclose` dual-path: detects `Status: active` batch with fully-ticked Files → post-build path (full after-build workflow: MANIFEST update, TEST-LOG rows, build recap, Status: shipped, etc.). No active-with-ticked-files → planning/general path (lighter: build-log entry, frame-correction sweep, idea sweep, proxy regeneration, closing prompts).
-2. `/sovclose` owns quality gates (parity audit, frame-correction sweep) and record-keeping (build-log entry, test-log linking, footer bumps, proxy regeneration). Git operations excluded.
-3. `/sovgit` owns all git operations: commit, tag, push. Plain-English narration for non-coders. Invoked via `[PROMPT]` nudge from `/sovclose`. Must handle team vs. solo git workflows — on first use, ask the user's setup and record in CLAUDE.md so the procedure adapts (e.g. solo: commit-tag-push; team: branch, commit, push, PR guidance).
-4. Build.md completion becomes `[PROMPT]` nudge to `/sovclose` — no auto-proceed.
-5. All skill-to-skill transitions use `[PROMPT]` nudges to the user, never automatic handoffs.
-6. `sov` prefix on all new skills to avoid confusion with native Claude Code features.
-
-**Success criteria.** After a build, user invokes `/sovclose` and gets the full after-build workflow without knowing it used to be a separate procedure. After a planning session, user invokes `/sovclose` and gets lighter housekeeping. `/sovgit` walks a non-coder through commit/tag/push in plain English. No automatic skill-to-skill handoffs remain.
-
-**Risks / dependencies.** Large surface area — after-build.md is 136 lines of procedure that all need a new home. Risk of regression in the after-build workflow during the move. `crash-course/` data-source attributes need updating. Depends on 0079 (shipped). No hard dependency on other queued batches.
 
 ---
 
@@ -207,6 +178,25 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 4. Should the planning procedure explicitly say "check manifest rationale before rewriting UX entries"?
 
 **Risks / dependencies.** Soft dep on 0097 (`after-build.md` replaced by `close.md`). Moderate surface area (DOC-STRUCTURE, template, close procedure, tests). Risk of format bloat — spec a hard cap (one clause, max 15 words + optional session tag).
+
+---
+
+### 0102 — Dev-side session-close convergence
+
+**Goal.** Bring two plugin-side patterns into the dev-side session-protocol: (1) proxy regeneration as an explicit close step, and (2) response-shape tags on all close steps.
+
+**Outputs.**
+- `planning/session-protocol.md` — New step between current steps 5 and 6: regenerate `planning/.proxies/` for any source doc edited this session. All close steps annotated with `[SILENT]`/`[BRIEF]`/`[PROMPT]` tags from plugin-side `universal-behaviour.md` § Response-shape tags.
+- `planning/session-reference.md` — Response-shape tag definitions added (or cross-referenced to plugin-side) if not already present.
+
+**Design decisions.**
+1. One batch — both changes are small, touch the same file, and have trivial verification burden.
+2. Proxy regeneration step placed before the pre-commit checkpoint so the checkpoint can verify it happened.
+3. Tags adopted from plugin-side `universal-behaviour.md` § Response-shape tags — same five tags, same meanings. Dev-side uses them as convention; no hook enforcement.
+
+**Success criteria.** Close procedure has response-shape tags on every numbered step. Proxy regeneration is an explicit step that won't be silently skipped. Step numbering consistent after insertion.
+
+**Risks / dependencies.** None. Dev-internal only, no method-version bump. Path references stable (0093 hasn't shipped yet).
 
 ---
 
@@ -352,6 +342,54 @@ New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### Pre-commit checkpoint as explicit checklist
+
+**Surfaced.** v93 (2026-05-26 ideation).
+
+**The question.** Should the dev-side pre-commit checkpoint (session-protocol.md step 6) name each artifact explicitly — like plugin-side close.md step 13 — instead of the current "verify steps 1–5 all done"?
+
+**Why it matters.** The vague step is the one most likely skipped under context pressure. Plugin-side names each artifact (MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, proxies regenerated, doc-parity done). Dev-side could name its equivalents (doc-parity done, frame-correction done, footers bumped if applicable, build-log entry written, idea sweep done, proxies regenerated).
+
+**Next step.** Could fold into 0102 if it hasn't shipped, or a follow-on dev-side protocol polish batch.
+
+---
+
+### Idea sweep with explicit routing destinations
+
+**Surfaced.** v93 (2026-05-26 ideation).
+
+**The question.** Should the dev-side idea sweep (session-protocol.md step 5) enforce the plugin's three-way triage — every idea routed to exactly one of: BACKLOG batch, build-log "not pursued, reason: ...", or open question — instead of the current loose "sweep ideas raised but not implemented"?
+
+**Why it matters.** Plugin-side close.md step 10 requires explicit routing so ideas don't slip through unrecorded. Dev-side step 5 has the same risk — ideas mentioned in chat but never routed to a durable location disappear at session end.
+
+**Next step.** Could fold into 0102 if it hasn't shipped, or a follow-on dev-side protocol polish batch.
+
+---
+
+### Opener routing table for dev sessions
+
+**Surfaced.** v93 (2026-05-26 ideation).
+
+**The question.** Should session-protocol.md include a routing table mapping dev-session openers (planning, build, doc-only, ideation, E2E test) to what to load and what to skip — similar to plugin-side universal-behaviour.md § Routing openers?
+
+**Why it matters.** Currently every dev session loads the same docs regardless of shape. An ideation session doesn't need full BACKLOG parsing; a doc-only session doesn't need test-log state. A routing table would reduce session-open token cost and give Claude clearer per-shape instructions.
+
+**Next step.** Park until session-protocol stabilises after 0102 and 0093 ship. Both will change what's in the protocol and where it lives.
+
+---
+
+### Performance section in dev build-log entries
+
+**Surfaced.** v93 (2026-05-26 ideation).
+
+**The question.** Should dev build-log entries adopt the Performance section from plugin-side close.md (batch completion status, file count, carve-outs, test counts) — or is it unnecessary overhead for the dev project?
+
+**Why it matters.** Consumer build-log entries track session efficiency. Dev sessions are less standardised but could still benefit from tracking token costs and session patterns over time, especially as the project approaches dogfooding.
+
+**Next step.** Low priority. Park until dogfooding is closer or token-cost visibility becomes a pain point.
 
 ---
 

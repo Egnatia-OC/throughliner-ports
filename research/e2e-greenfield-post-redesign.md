@@ -84,11 +84,11 @@ Same parent-directory issue as Finding 1's first attempt. Not a consumer-facing 
 
 ## What wasn't tested
 
-- Full build cycle (`/build` through after-build).
-- After-build recap, MANIFEST update, test-confirmation gate.
+- Full build cycle (`/build` through `/sovclose`).
+- Close recap, MANIFEST update, test-confirmation gate.
 - Session-open status summary (0074) on re-entry.
 - Token cost baseline for procedure-doc architecture.
-- Phase flip from planning to build to after-build permission behaviour.
+- Phase flip from planning to build to close permission behaviour.
 
 ## Candidate scope files / OQ entries
 

@@ -185,7 +185,7 @@ V39_DENY_MARKER = "BLOCKED [V39 read-before-edit]"
 # Spine docs exempt from the V39 gate even if they accidentally appear in
 # a MANIFEST entry. The gate is meant for codebase elements, not method-
 # spine docs. Without this exemption, a mis-placed entry could brick the
-# build cycle (after-build can't edit MANIFEST, batch-executor can't tick
+# build cycle (/sovclose can't edit MANIFEST, batch-executor can't tick
 # BACKLOG, etc.).
 V39_EXEMPT_LOGICAL_NAMES = {
     "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md", "BUILD-LOG.md", "CLAUDE.md"
@@ -884,7 +884,7 @@ def check_read_before_edit(project_root, target_path, hook_input):
     Spine-doc exemption: if the target path resolves to one of the
     writable spine docs declared in CLAUDE.md's path block, skip the gate
     even if MANIFEST happens to list it. This is a defensive guard — the
-    build cycle relies on after-build editing MANIFEST.md, batch-executor
+    build cycle relies on /sovclose editing MANIFEST.md, batch-executor
     ticking BACKLOG.md, etc., and a stray MANIFEST entry for one of those
     docs shouldn't deadlock the cycle."""
     # Spine-doc exemption.

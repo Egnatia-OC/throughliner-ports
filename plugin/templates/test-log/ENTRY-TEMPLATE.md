@@ -10,7 +10,7 @@ Confirmed: Yes (YYYY-MM-DD) — per-row confirmation done; No — transient pre-
 
 Types: Look and click, Run and read, Trigger and observe, Generate and inspect.
 
-Verifier: Claude (structural/factual, filled during after-build) or User (judgement/visual, confirmed in planning read-back).
+Verifier: Claude (structural/factual, filled during /sovclose) or User (judgement/visual, confirmed in planning read-back).
 -->
 
 | # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |

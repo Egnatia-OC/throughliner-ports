@@ -156,7 +156,7 @@ Folder mode: allocate number by Glob scan, create per-batch file, add reference 
 
 Surface scope-context in recap before writing to BACKLOG.
 
-**Change-list labels (V27).** Every change bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the after-build recap's source chain. Overlap: user confirmed your suggestion → `[Requested]`. Merge: combined item → `[Requested]`.
+**Change-list labels (V27).** Every change bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the close recap's source chain. Overlap: user confirmed your suggestion → `[Requested]`. Merge: combined item → `[Requested]`.
 
 **Source-of-truth docs (V67).** UX.md and additional source-of-truth docs are directly editable by Claude during planning phase — no `[PROPOSED EDIT PENDING]` ceremony needed. Edit them directly on user approval. PreToolUse allows these edits because no `Status: active` batch exists.
 
@@ -217,4 +217,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 75.*
+*No-code method — Version 76.*

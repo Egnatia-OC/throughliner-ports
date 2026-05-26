@@ -7,7 +7,7 @@
 ## Queued batches (L91–L207)
 
 - L97 **0096** — Manifest rationale field. One-line "why it exists" on MANIFEST entries.
-- L117 **0088** — Build E2E test. Build-phase E2E: /before-build through /build through after-build.
+- L117 **0088** — Build E2E test. Build-phase E2E: /before-build through /build through /sovclose.
 - L135 **0093** — Dev-side folder restructure. Move all dev-side content into `dev/`.
 - L171 **0094** — Guided testing and debugging procedure. New `/test` skill + procedure doc.
 - L194 **0095** — /test skill E2E validation. Depends on 0094.

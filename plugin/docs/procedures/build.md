@@ -73,14 +73,16 @@ If verification burden is much higher than pre-build estimate:
 
 ## Completion
 
-When all Files: are `- [x]`, the build is done. Proceed directly to the after-build procedure — read `${CLAUDE_PLUGIN_ROOT}/docs/procedures/after-build.md` and follow it.
+When all Files: are `- [x]`, the build is done.
+
+`[PROMPT]` "All files ticked — the build is complete. Invoke `/sovclose` to run the close procedure (MANIFEST update, test session, build recap, and the rest)."
 
 ## What you must not do
 
 - **Don't edit locked source-of-truth docs.** UX.md and additional docs are read-only (PreToolUse enforces). Flag UX.md changes in chat.
 - **Don't add files outside the prerequisite carve-out.**
 - **Don't modify batch heading, change_list, or Serves line.** Planning decisions. You only edit Files: tick state and prerequisite appends.
-- **Don't build multiple batches.** One batch, then after-build.
+- **Don't build multiple batches.** One batch, then `/sovclose`.
 
 ## Flags during the build
 
@@ -92,4 +94,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 75.*
+*No-code method — Version 76.*

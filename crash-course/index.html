@@ -678,7 +678,7 @@
         <span class="flow-arrow">&rarr;</span>
         <div class="flow-step active">Build</div>
         <span class="flow-arrow">&rarr;</span>
-        <div class="flow-step">After-build</div>
+        <div class="flow-step">Close + Git</div>
         <span class="flow-arrow">&rarr;</span>
         <div class="flow-step">Test &amp; review</div>
       </div>
@@ -708,8 +708,8 @@
       </div>
 
       <div class="card">
-        <h3>After-build (automatic)</h3>
-        <p>When the build finishes, the after-build procedure updates MANIFEST, checks docs for stale references, runs automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, verifies everything via a pre-commit checkpoint, and prompts you to commit and tag.</p>
+        <h3>Close (<code>/sovclose</code> + <code>/sovgit</code>)</h3>
+        <p>When the build finishes, invoke <code>/sovclose</code>. It updates MANIFEST, checks docs for stale references, runs automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, and verifies everything via a pre-commit checkpoint. Then <code>/sovgit</code> walks you through commit, tag, and push in plain English.</p>
       </div>
 
       <h2 id="between-sessions">Between sessions</h2>
@@ -1028,7 +1028,7 @@
       </div>
       <div class="rule" id="rule-regressions">
         <h3>State regressions plainly</h3>
-        <p>The after-build recap is your record of what happened. If Claude silently fixes a regression instead of reporting it, you lose visibility into what broke and whether the fix was actually right.</p>
+        <p>The close recap is your record of what happened. If Claude silently fixes a regression instead of reporting it, you lose visibility into what broke and whether the fix was actually right.</p>
       </div>
       <div class="rule" id="rule-lock-scope">
         <h3>Lock batch scope once agreed</h3>
@@ -1123,7 +1123,8 @@
             <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
             <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
-            <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
+            <tr><td>Close (<code>/sovclose</code>)</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
+            <tr><td>Git (<code>/sovgit</code>)</td><td>Auto</td><td>Commits and pushes.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1149,23 +1150,23 @@
         <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules.</li>
         <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard.</li>
         <li><strong>PostToolUse</strong> &mdash; validates BACKLOG format after edits.</li>
-        <li><strong>Stop</strong> &mdash; routes between batches or to after-build.</li>
         <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>
 
       <h3>Procedure docs</h3>
-      <p>Five procedure docs, each specifying what Claude loads and does for that phase:</p>
+      <p>Six procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
         <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
         <li><strong>Before-build</strong> &mdash; batch locking, file list population.</li>
         <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
-        <li><strong>After-build</strong> &mdash; MANIFEST update, tests, recap, build-log.</li>
+        <li><strong>Close</strong> &mdash; MANIFEST update, tests, recap, build-log, quality gates.</li>
+        <li><strong>Git</strong> &mdash; commit, tag, push walkthrough.</li>
         <li><strong>Setup</strong> &mdash; four-case folder detection and scaffolding.</li>
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
+      <p><code>/setup</code>, <code>/before-build</code>, <code>/build</code>, <code>/sovclose</code>, <code>/sovgit</code> &mdash; user-facing entry points that direct Claude to matching procedure docs.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

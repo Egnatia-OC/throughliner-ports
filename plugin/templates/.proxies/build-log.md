@@ -1,6 +1,6 @@
 # Build log — [Project Name]
 
-Decisions, changes, and reasoning for every build. One file per build, newest-first in this index. Maintained by Claude during builds (after-build writes one entry per batch and appends the index line). Search when you need the "why" behind a previous build.
+Decisions, changes, and reasoning for every build. One file per build, newest-first in this index. Maintained by Claude during builds (`/sovclose` writes one entry per batch and appends the index line). Search when you need the "why" behind a previous build.
 
 Full entry shape: `DOC-STRUCTURE.md` → *Build log structure*.
 
@@ -31,4 +31,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 75.*
+*No-code method — Version 76.*

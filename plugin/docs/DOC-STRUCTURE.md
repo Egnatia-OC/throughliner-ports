@@ -93,7 +93,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 **Index (proxies/test-log.md).** Header, HTML comment, newest-first bullet list:
 > `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``
 
-After-build prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
+`/sovclose` prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
 
 **Per-session files.** `NNN-batch-name.md`:
 
@@ -116,7 +116,7 @@ After-build prepends one line per build. Path block: `"TEST-LOG.md"` → `_metho
 | **Test Description** | One sentence, re-runnable. |
 | **Type** | `Look and click` / `Run and read` / `Trigger and observe` / `Generate and inspect`. |
 | **Verifier** | `Claude` or `User`. |
-| **Status** | `Pass` / `Fail` / `Skipped` / blank (open). Claude rows filled by after-build; user rows stay blank until planning read-back. |
+| **Status** | `Pass` / `Fail` / `Skipped` / blank (open). Claude rows filled by `/sovclose`; user rows stay blank until planning read-back. |
 | **Confirmed Explicitly** | `Yes (YYYY-MM-DD)` or `No`. Bulk confirmations don't count for specific rows. |
 | **Notes** | Observations, skip reason (required), regression context. Tight prose. |
 
@@ -140,7 +140,7 @@ After-build prepends one line per build. Path block: `"TEST-LOG.md"` → `_metho
 **Index (proxies/build-log.md).** Header, HTML comment, newest-first bullet list:
 > `- \`NNN-batch-name.md\` — YYYY-MM-DD — Summary`
 
-After-build prepends one line per build. Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
+`/sovclose` prepends one line per build. Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
 
 **Per-build files.** `NNN-batch-name.md`:
 
@@ -244,7 +244,7 @@ Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Desc
 
 ### TEST-LOG index proxy (test-log.md)
 
-Source: `_method/test-log/` directory. Like the BACKLOG and build-log proxies, this IS the operational index — carries the newest-first reference list to per-session test files. After-build prepends index lines here.
+Source: `_method/test-log/` directory. Like the BACKLOG and build-log proxies, this IS the operational index — carries the newest-first reference list to per-session test files. `/sovclose` prepends index lines here.
 
 Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`. Hooks resolve per-session files relative to `_method/test-log/`.
 
@@ -262,7 +262,7 @@ Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`. Parser resolves bat
 
 ### Build-log index proxy (build-log.md)
 
-Source: `_method/build-log/` directory. Like the BACKLOG proxy, this IS the operational index — carries the newest-first reference list to per-build files. After-build prepends index lines here.
+Source: `_method/build-log/` directory. Like the BACKLOG proxy, this IS the operational index — carries the newest-first reference list to per-build files. `/sovclose` prepends index lines here.
 
 Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`. Session-start resolves per-build files relative to `_method/build-log/`.
 
@@ -272,7 +272,7 @@ Proxies are regenerated, not hand-edited. To regenerate: read the source, write 
 
 - **`/setup`** generates initial proxies after scaffolding.
 - **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
-- **After-build** updates operational index proxies (test-log, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
+- **`/sovclose`** updates operational index proxies (test-log, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
 
 ## Proposed edits pending sections
 
@@ -340,15 +340,15 @@ Three formats, auto-detected:
   Serves UX.md: [entry name(s)].
   ```
 
-  **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by after-build when batch completes.
+  **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by `/sovclose` when batch completes.
 
-  **Status: line.** Tracks batch lifecycle. Four values: `queued` (default — no line needed), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by after-build). Position: first line of batch body, before Goal. The parser skips `shipped` and `parked` batches when finding the top build batch. Absent = queued.
+  **Status: line.** Tracks batch lifecycle. Four values: `queued` (default — no line needed), `active` (locked by before-build), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Position: first line of batch body, before Goal. The parser skips `shipped` and `parked` batches when finding the top build batch. Absent = queued.
 
   **Scope-context sections.** Goal/Outputs/Success criteria always present. Decisions/Dependencies omitted when empty. Red flags only when security-shaped scope detected.
 
   **Changes: delimiter.** Separates scope-context from change list. Required for new batches; parser falls back for legacy.
 
-  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, preserved by before-build, read by after-build for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) are recap-time only.
+  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, preserved by before-build, read by `/sovclose` for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) are recap-time only.
 
   **Inputs: line.** Non-standard resources between change list and Files:. Standard docs omitted.
 
@@ -361,4 +361,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 75.*
+*No-code method — Version 76.*
