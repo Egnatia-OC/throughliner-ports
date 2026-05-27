@@ -57,7 +57,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in BACKLOG. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 9. Scoped to blast radius of what changed, not a full doc audit.
+3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 11. Scoped to blast radius of what changed, not a full doc audit.
 
 4. **Open test session + run Claude tests.** Two sub-steps.
 
@@ -111,21 +111,28 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
-9. **End-of-recap flags:**
-   - Stale references found by doc-parity check (step 3).
+9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BACKLOG batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
+
+10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for items that silently fell off the roadmap:
+   - **Parked batches** whose parking rationale references a condition that was just met by this build (e.g. "parked until X ships" where X just shipped). Surface and ask the user if it should be unparked.
+   - **Carried-forward items** in recent build-log entries that were never picked up by subsequent builds or BACKLOG entries. Scan the last 3–5 build-log files for non-empty "Carried forward" sections, check whether each item appears in current BACKLOG or was addressed. Flag orphans.
+   - Skip if the batch didn't change anything that could satisfy a parking condition, and no recent carried-forward items exist.
+
+11. **End-of-recap flags:**
+   - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
    - Out-of-scope improvements.
    - UX.md changes implied (don't edit — flag only).
    - Red flag concerns (confirm BACKLOG entry written if deferred).
 
-10. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
+12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
 
-11. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
+13. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
-12. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+14. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
 
-13. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), proxies regenerated (step 11), doc-parity check done (step 3). If any missing, complete now.
+15. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), staleness sweep done (step 9), idea sweep done (step 12), proxies regenerated (step 13), doc-parity check done (step 3). If any missing, complete now.
 
-14. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
+16. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
 
 ---
 
@@ -160,4 +167,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 88.*
+*No-code method — Version 89.*

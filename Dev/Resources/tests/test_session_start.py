@@ -241,6 +241,77 @@ class TestUnclosedBuildDetection:
         assert "Unclosed build detected" not in ctx
 
 
+class TestMidBuildDetection:
+    """V89 — concurrent-build detection (active + unticked files)."""
+
+    def test_mid_build_detected_folder_mode(self, adopted_folder):
+        """Active batch with unticked files triggers mid-build warning."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        assert code == 0
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Active build in progress" in ctx
+        assert "Add settings screen" in ctx
+        assert "resuming" in ctx
+
+    def test_mid_build_in_status_summary(self, adopted_folder):
+        """Mid-build appears in user-facing status block."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Active build:" in ctx
+        assert "in progress" in ctx
+
+    def test_unclosed_build_not_mid_build(self, unclosed_build):
+        """All-ticked active batch triggers unclosed, NOT mid-build."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(unclosed_build)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Unclosed build detected" in ctx
+        assert "Active build in progress" not in ctx
+
+
+class TestStaleOQDetection:
+    """V89 — open-question staleness detection."""
+
+    def test_stale_oq_detected(self, stale_oqs):
+        """OQ surfaced 45 sessions ago flagged as stale."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(stale_oqs)}
+        )
+        assert code == 0
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Stale open questions" in ctx
+        assert "offline support" in ctx.lower()
+
+    def test_fresh_oq_not_flagged(self, stale_oqs):
+        """OQ surfaced 10 sessions ago is NOT flagged."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(stale_oqs)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "analytics" not in ctx.lower()
+
+    def test_stale_oq_in_status_summary(self, stale_oqs):
+        """Stale OQs appear in user-facing status block."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(stale_oqs)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Stale open questions:" in ctx
+
+    def test_no_oqs_no_warning(self, unclosed_build):
+        """No OQ section means no staleness warning."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(unclosed_build)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Stale open questions" not in ctx
+
+
 class TestMalformedInput:
     """Hook handles bad stdin gracefully."""
 

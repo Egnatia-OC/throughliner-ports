@@ -100,3 +100,8 @@ def planning_phase():
 @pytest.fixture
 def unclosed_build():
     return fixture_path("unclosed_build")
+
+
+@pytest.fixture
+def stale_oqs():
+    return fixture_path("stale_oqs")

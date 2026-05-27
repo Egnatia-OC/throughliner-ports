@@ -42,7 +42,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), unclosed-build detection (V86 — flags active batches with all files ticked but /sovclose never ran; directive prompts user to run /sovclose before new work), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), unclosed-build detection (V86 — flags active batches with all files ticked but /sovclose never ran; directive prompts user to run /sovclose before new work), concurrent-build detection (V89 — flags active batches with unticked files, meaning a build is mid-progress in another session; asks user whether resuming or working in parallel), OQ staleness detection (V89 — flags open questions whose Surfaced tag is 20+ sessions behind the latest build-log session; nudges toward deliberation), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; V89 — active build, stale OQ count; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
 
 - **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
@@ -74,7 +74,7 @@ Nine procedure docs at `plugin/docs/procedures/`, read into main context on dema
 
 - **build.md** — V25 origin, procedure doc V76. Runs one build batch. Receives JSON from `parse_backlog.py`. Edits per-file, ticks BACKLOG. PreToolUse (c) enforces boundary. Prerequisite and re-batching carve-outs. V54: reads DOC-STRUCTURE at runtime. V56: scope-of-exploration limits. On completion, `[PROMPT]` nudge to `/sovclose`.
 
-- **close.md** — V76 origin (absorbed after-build.md). Dual-path: post-build (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry with Performance section, frame-correction sweep, idea sweep, CLAUDE.md after-build steps, pre-commit checkpoint, `/sovgit` nudge) or planning/general (idea sweep, proxy regeneration, `/sovgit` nudge). Idempotent.
+- **close.md** — V76 origin (absorbed after-build.md). Dual-path: post-build (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry with Performance section, frame-correction sweep, queued-pipeline staleness sweep V89, lost-feature check V89, idea sweep, CLAUDE.md after-build steps, pre-commit checkpoint, `/sovgit` nudge) or planning/general (idea sweep, proxy regeneration, `/sovgit` nudge). Idempotent.
 
 - **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance.
 
@@ -143,4 +143,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 88.*
+*No-code method — Version 89.*

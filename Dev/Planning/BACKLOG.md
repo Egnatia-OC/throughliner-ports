@@ -104,6 +104,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0107 | Unclosed-build detection in SessionStart | Active batch + all files ticked + `/sovclose` never ran → flag on session open. **Shipped v107.** |
 | 0108 | Guided rollback procedure (`/sovrevert`) | New skill + procedure doc. Non-coder walkthrough for undoing failed builds. **Shipped v108.** |
 | 0109 | `/sovsetup` case 4 scaffold drift detection | Pytest registry + 4 missing case 4 migrations fixed. **Shipped v109.** |
+| 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -113,7 +114,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0088 — Build E2E test
+### 0088 — Build E2E test — **PARKED**
+
+**Parked.** v110. The subagent removal (0079) and dev-side convergence (0091–0093, 0111) are still settling. Dev-side work is functioning as a practical shake-out of the procedure-doc architecture — running formal E2E against a moving target produces noisy findings. Revisit after 0112 ships (skill split stabilises the planning/build surface area).
 
 **Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/sovsetup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
 
@@ -129,7 +132,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0095 — /sovtest skill E2E validation
+### 0095 — /sovtest skill E2E validation — **PARKED**
+
+**Parked.** v110. Same rationale as 0088. Additionally, hard dep on 0088 for app state — shelved together. Revisit alongside 0088 after 0112 ships.
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
@@ -142,24 +147,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0110 — Queued-pipeline staleness sweep at close
-
-**Goal.** Add a close-time step that scans all queued BACKLOG batches and open questions for staleness: references to files, skills, or docs that have been renamed or deleted; dependencies on cancelled or redesigned batches; OQs whose parking rationale references conditions that have since been met; contradictions with what just shipped.
-
-**Lost-feature sweep fold-in.** Expand scope beyond close-time queued-batch checks to also cover: cancelled batches whose intent was never re-scoped, parked batches whose parking rationale references conditions that have since been met, and build-log "carried forward" items that were never picked up. The pattern (from v82 manual sweep): cancellation and parking are one-way — nothing triggers re-evaluation when the reason for parking stops being true. This sweep catches items that silently fell off the map. Could live as a standalone `/sweep` skill invokable during `/sovplan` or `/sovdeliberate`, or as an expanded step in `/sovclose`. (From OQ "Lost-feature sweep as a planning skill," surfaced v82.)
-
-**Inputs.** v93 build-log (manual sweep that found four stale batches). v82 build-log (manual sweep that found six lost items across ~65 batches). Current BACKLOG structure.
-
-**Outputs.** New step in `/sovclose` (or `/sovplan`), or a standalone `/sweep` skill. Definition of what counts as "stale" — dead file paths, old skill names, references to cancelled batches, OQ surfaced dates beyond a threshold, carried-forward items with no destination, parked items whose conditions have been met.
-
-**Success criteria.** After a build that renames a skill or moves a file, the sweep flags any queued batch or OQ still referencing the old name. OQs parked longer than a configurable threshold flagged for re-evaluation. Cancelled batches whose intent wasn't re-scoped are surfaced. Carried-forward items with no pickup are surfaced. Sweep is grep-level fast, not deep semantic analysis.
-
-**Concurrent-build detection fold-in.** Extend 0107's unclosed-build detection. Currently SessionStart only warns when `Status: active` AND all files ticked (build finished, `/sovclose` skipped). It does not warn when `Status: active` with files still unticked — meaning a build is mid-progress in another session. Fix: SessionStart warns on any `Status: active`, period. All-ticked → "run `/sovclose`" (existing behaviour). Some-unticked → "a build of batch X is in progress — are you resuming this build, or working in parallel?" Parallel builds corrupt file state and git history; the warning should be prominent. Ideation in parallel is safe (writes only to the Ideas section); deliberation and planning carry git risks discussed in [[0112]].
-
-**Risks / dependencies.** Scope risk: "scan everything" could burn context. Needs tight scoping to pattern-match checks on names and paths, not full-doc comprehension. Should run on queued/parked entries only. The lost-feature component reads more broadly (cancelled batches, build-log) but still pattern-matches rather than comprehending.
 
 ---
 
@@ -209,7 +196,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Success criteria.** A batch with 8+ file touches and design questions triggers a pre-build warning. A session with 15+ exchanges past `/sovbuild` without reaching `/sovclose` triggers a compact nudge. Neither mechanism blocks — both are advisory.
 
-**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. Recommend shipping after E2E testing (0088, 0095) provides calibration data.
+**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. E2E testing (0088, 0095) would provide calibration data but is parked — calibrate from dev-side session history instead, and refine post-E2E if needed.
 
 ---
 
@@ -233,7 +220,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Success criteria.** A French-speaking tester runs `/sovsetup`, sets `Language: French`, and receives all Claude-generated output in French. Control tokens remain English. Non-ASCII filenames in batches don't break drift detection. No plugin doc translation needed.
 
-**Risks / dependencies.** Soft dep on E2E testing (0088) to validate the base flow before adding language variation. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
+**Risks / dependencies.** E2E testing (0088) would validate the base flow before adding language variation, but is parked — not blocking. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
 
 ---
 

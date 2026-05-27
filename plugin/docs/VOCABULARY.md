@@ -91,6 +91,14 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Draft.** `_method/planning/drafts/<topic>.md`. Pre-decision carryover content. Written at "good enough to walk away from"; deleted when consumed.
 
+- **Staleness sweep.** After-build check (close step 9): scan queued and parked BACKLOG batches and open questions for literal references to file paths and names that changed in the build. Pattern-match level — checks strings, not semantics. Complements the frame-correction sweep (which checks semantic frame) and doc-parity check (which checks spine docs).
+
+- **Lost-feature check.** After-build check (close step 10): scan for items that silently fell off the roadmap — parked batches whose parking conditions were just met, carried-forward items never picked up. Judgment-based, not mechanical.
+
+- **Concurrent-build detection.** SessionStart check: when a batch has `Status: active` with unticked files, a build is mid-progress in another session. Warning asks the user whether they're resuming or working in parallel. Parallel builds corrupt file state; only ideation is safe in parallel. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` skipped).
+
+- **OQ staleness detection.** SessionStart check: open questions with `Surfaced` session tags older than a configurable threshold (default: 20 sessions) are flagged in the status summary, nudging the user toward a deliberation session.
+
 - **Frame-correction sweep.** After-build check: scan BACKLOG and proposed-edit blocks for references to old behaviour when a build changes a feature's frame.
 
 - **Doc-parity check.** After-build step: for each renamed/deleted/moved file in the batch, grep spine docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) for stale references. Scoped to blast radius. Findings flagged in recap.
@@ -108,4 +116,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
 ---
-*No-code method — Version 88.*
+*No-code method — Version 89.*

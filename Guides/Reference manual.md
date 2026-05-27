@@ -124,7 +124,7 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 **Planning sessions** decide what gets built. Invoke `/sovplan` to start one. The planning procedure: closes the previous test session (per-row read-back), runs five drift checks, scans Open questions, sorts ideas into Suggestions (in scope) and Discoveries (out of scope), and edits BACKLOG directly. Source-of-truth docs (UX.md, additional docs) are directly editable by Claude during planning — no ceremony needed. The no-coder removes resolved batches and reorganises priorities. When batches are added or reordered, a batch-ordering audit checks dependency flow, stale references, and security prioritization.
 
-**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` locks the batch and runs the build against the file list. PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps from CLAUDE.md's `## After-build steps` section, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
+**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` locks the batch and runs the build against the file list. PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which updates MANIFEST, checks spine docs and queued batches for stale references, scans for lost-feature items (parked batches whose conditions were met, orphaned carried-forward items), opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps from CLAUDE.md's `## After-build steps` section, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
 
 The no-coder `/clear`s, refreshes, and tests. Two options: invoke `/sovtest` for a guided walkthrough of each pending User-verified row (step-by-step instructions, outcome recording, failure debugging), or test independently and bring per-row outcomes to the next planning session.
 
@@ -247,6 +247,14 @@ Claude Code inherits CLAUDE.md files from parent directories. If a project folde
 
 **Best practice:** keep project folders at independent locations (e.g. `Desktop/MyApp/`, not `Desktop/OtherProject/MyApp/`). If nesting is unavoidable, the warning tells the user to consider relocating.
 
+### Concurrent-build detection
+
+SessionStart detects when a batch has `Status: active` with files still unticked — meaning a build is in progress in another session. The warning asks whether the user is resuming the build or starting parallel work. Parallel builds corrupt file state and git history; only ideation (writing to the Ideas section of BACKLOG) is safe in parallel. Distinct from unclosed-build detection (all files ticked = build finished but `/sovclose` never ran).
+
+### Open-question staleness
+
+SessionStart flags open questions that have been sitting for 20+ sessions without resolution, surfacing them in the status summary. The nudge points toward a deliberation session to work through accumulated questions.
+
 ## Research search flow
 
 Claude watches for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints. When it spots one, it drafts a search query, proposes it to you, and waits for approval before executing.
@@ -270,7 +278,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 
 ## What's inside the plugin
 
-- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests, unclosed builds). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard). PostToolUse validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
+- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests, unclosed builds, concurrent-build detection, stale open questions). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard). PostToolUse validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, revert, testing (invoked via `/sovtest`), tersify (invoked via `/sovtersify`), setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
 - **Slash commands** (`/sovsetup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
@@ -382,4 +390,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 88.*
+*No-code method — Version 89.*

@@ -170,6 +170,23 @@ BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
 STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
 _SKIP_STATUSES = frozenset(("shipped", "parked"))
 
+# Open questions section heading in BACKLOG.
+OPEN_QUESTIONS_SECTION_PATTERN = re.compile(r"^## Open questions\s*$", re.MULTILINE)
+
+# OQ heading (### title) — same level as build-batch headings in single-file.
+OQ_HEADING_PATTERN = re.compile(r"^### (.+?)$", re.MULTILINE)
+
+# Surfaced line in an OQ body: `**Surfaced.** v71` or `**Surfaced.** v71 (0068)`.
+OQ_SURFACED_PATTERN = re.compile(
+    r"\*\*Surfaced\.\*\*\s*(.+?)$", re.MULTILINE
+)
+
+# Extract session number from a `vNN` tag.
+SESSION_TAG_NUMBER_PATTERN = re.compile(r"\bv(\d+)\b")
+
+# Sessions-since-surfaced threshold for OQ staleness warning.
+OQ_STALENESS_THRESHOLD = 20
+
 # --- V27 TEST-LOG tripwire patterns ---
 
 # TEST_LOG_DATA_ROW_PATTERN and parse_test_log_rows now imported from
@@ -647,6 +664,84 @@ def detect_unclosed_build(backlog_text, backlog_path=None):
     return None
 
 
+def detect_mid_build(backlog_text, backlog_path=None):
+    """Detect a batch with Status: active and some Files: still unticked.
+
+    This means a build is in progress in another session. Distinct from
+    detect_unclosed_build (all ticked = build finished, close skipped).
+    Returns the batch name if found, None otherwise."""
+    section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return None
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    def _has_unticked_files(body):
+        total = len(BATCH_FILES_ENTRY_PATTERN.findall(body))
+        if total == 0:
+            return False
+        unticked = len(BATCH_FILES_UNTICKED_PATTERN.findall(body))
+        return unticked > 0
+
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            if _batch_status(body) != "active":
+                continue
+            if _has_unticked_files(body):
+                return title
+        return None
+
+    if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
+            batch_file = backlog_dir / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if not batch_text:
+                continue
+            if _batch_status(batch_text) != "active":
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if not h1_match:
+                continue
+            title = h1_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            if _has_unticked_files(batch_text):
+                return title
+
+    return None
+
+
+def format_mid_build_block(batch_name):
+    """Compose the additionalContext block for mid-build detection."""
+    return (
+        "- **Active build in progress.** The batch \""
+        + batch_name
+        + "\" has `Status: active` with files still unticked — a build "
+        "is mid-progress (likely in another session).\n\n"
+        "  **Ask the user:** \"A build of *" + batch_name + "* is in "
+        "progress — are you resuming this build, or working in parallel?\" "
+        "Parallel builds corrupt file state and git history. If resuming, "
+        "confirm and continue the build. If working in parallel, only "
+        "ideation is safe (writes only to the Ideas section of BACKLOG). "
+        "Planning and deliberation carry git risks."
+    )
+
+
 def format_unclosed_build_block(batch_name):
     """Compose the additionalContext block for unclosed-build detection."""
     return (
@@ -660,6 +755,84 @@ def format_unclosed_build_block(batch_name):
         "starting any new work. Do not start a new planning session or "
         "build batch until the close completes."
     )
+
+
+# --- OQ staleness detection ---
+
+
+def _extract_latest_session_number(project_root, resolved):
+    """Extract the highest session number (from vNN tags) available.
+
+    Checks the build-log index for the most recent entry's session tag.
+    Returns the number as int, or None if unparseable."""
+    session_id, status = identify_previous_session_from_build_log(
+        project_root, resolved
+    )
+    if session_id is None:
+        return None
+    m = SESSION_TAG_NUMBER_PATTERN.search(session_id)
+    return int(m.group(1)) if m else None
+
+
+def detect_stale_open_questions(backlog_text, latest_session_number):
+    """Find OQs whose Surfaced session tag is older than the threshold.
+
+    Returns a list of dicts: [{title, surfaced_tag, sessions_ago}].
+    Skips OQs whose Surfaced line doesn't contain a parseable vNN tag."""
+    section_match = OPEN_QUESTIONS_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return []
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    stale = []
+    oq_matches = list(OQ_HEADING_PATTERN.finditer(section_text))
+    for i, oq_match in enumerate(oq_matches):
+        title = oq_match.group(1).strip()
+        body_start = oq_match.end()
+        body_end = (
+            oq_matches[i + 1].start()
+            if i + 1 < len(oq_matches)
+            else len(section_text)
+        )
+        body = section_text[body_start:body_end]
+
+        surfaced_match = OQ_SURFACED_PATTERN.search(body)
+        if not surfaced_match:
+            continue
+        surfaced_text = surfaced_match.group(1).strip()
+        tag_match = SESSION_TAG_NUMBER_PATTERN.search(surfaced_text)
+        if not tag_match:
+            continue
+        surfaced_number = int(tag_match.group(1))
+        sessions_ago = latest_session_number - surfaced_number
+        if sessions_ago >= OQ_STALENESS_THRESHOLD:
+            stale.append({
+                "title": title,
+                "surfaced_tag": f"v{surfaced_number}",
+                "sessions_ago": sessions_ago,
+            })
+
+    return stale
+
+
+def format_stale_oq_block(stale_oqs):
+    """Compose the additionalContext block for stale OQ detection."""
+    lines = [
+        "- **Stale open questions detected.** The following open questions "
+        "have been sitting for " + str(OQ_STALENESS_THRESHOLD) + "+ "
+        "sessions without resolution. Consider running a deliberation "
+        "session to work through them:"
+    ]
+    for oq in stale_oqs:
+        lines.append(
+            f"  - \"{oq['title']}\" — surfaced {oq['surfaced_tag']} "
+            f"({oq['sessions_ago']} sessions ago)"
+        )
+    return "\n".join(lines)
 
 
 # --- V27 TEST-LOG tripwire helpers ---
@@ -1091,6 +1264,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     batch_counts = None
     top_queued = []
     unclosed_batch = None
+    mid_build_batch = None
     if backlog_data:
         backlog_resolved_path, backlog_text = backlog_data
         top_batch = detect_top_build_batch(backlog_text, backlog_resolved_path)
@@ -1134,6 +1308,26 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         )
         if unclosed_batch:
             lines.append(format_unclosed_build_block(unclosed_batch))
+
+        mid_build_batch = detect_mid_build(
+            backlog_text, backlog_resolved_path
+        )
+        if mid_build_batch:
+            lines.append(format_mid_build_block(mid_build_batch))
+
+    # OQ staleness detection.
+    stale_oqs = []
+    if backlog_data:
+        _backlog_path, backlog_text = backlog_data
+        latest_session = _extract_latest_session_number(
+            project_root, resolved
+        )
+        if latest_session is not None:
+            stale_oqs = detect_stale_open_questions(
+                backlog_text, latest_session
+            )
+            if stale_oqs:
+                lines.append(format_stale_oq_block(stale_oqs))
 
     # V27 TEST-LOG tripwire.
     unconfirmed_rows, build_log_status, session_id = detect_unconfirmed_test_rows(
@@ -1210,6 +1404,18 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     if unclosed_batch:
         status_lines.append(
             f"Unclosed build: \"{unclosed_batch}\" — run /sovclose to complete."
+        )
+
+    if mid_build_batch:
+        status_lines.append(
+            f"Active build: \"{mid_build_batch}\" in progress — "
+            "resuming or working in parallel?"
+        )
+
+    if stale_oqs:
+        status_lines.append(
+            f"Stale open questions: {len(stale_oqs)} older than "
+            f"{OQ_STALENESS_THRESHOLD} sessions."
         )
 
     status_lines.append("Ready to proceed?")
