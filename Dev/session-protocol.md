@@ -53,27 +53,31 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 ---
 
-## Session close: 10 steps
+## Session close: 11 steps
 
-1. **Doc-code parity** (see `session-reference.md` → *Doc-code parity* for audit details). Fix docs before footers and BUILD-LOG.
+Response-shape tags mark verbosity per step — definitions in `session-reference.md` → *Response-shape tags*.
 
-2. **Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
+1. **[BRIEF] Doc-code parity** (see `session-reference.md` → *Doc-code parity* for audit details). Fix docs before footers and BUILD-LOG.
 
-3. **Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in `session-reference.md` → *Footer bumps*.
+2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
-4. **Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+3. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in `session-reference.md` → *Footer bumps*.
 
-5. **Sweep ideas raised but not implemented.** Each: add to BACKLOG.md → *Queued batches* as a new batch entry; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
+4. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-6. **Pre-commit checkpoint.** Verify steps 1–5 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
+5. **[BRIEF] Sweep ideas raised but not implemented.** Each: add to BACKLOG.md → *Queued batches* as a new batch entry; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
 
-7. **Commit** with `V<N>:` message.
+6. **[SILENT] Regenerate proxies.** If `Dev/Planning/.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per its format spec. Skip if no source docs were edited.
 
-8. **Tag** `git tag v<N>`.
+7. **[BRIEF] Pre-commit checkpoint.** Verify steps 1–6 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
-9. **Remove this batch from BACKLOG's Queued batches section** as part of the commit.
+8. **[PROMPT] Commit** with `V<N>:` message.
 
-10. **Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+9. **[SILENT] Tag** `git tag v<N>`.
+
+10. **[SILENT] Remove this batch from BACKLOG's Queued batches section** as part of the commit.
+
+11. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 ---
 

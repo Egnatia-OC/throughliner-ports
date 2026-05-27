@@ -95,31 +95,13 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. **Shipped v96.** |
 | 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
 | 0103 | /tersify skill for doc compression | Guided triage + audit for reducing token cost in SOT docs. Planning-phase only. **Shipped v98.** |
+| 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. **Shipped v99.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0102 — Dev-side session-close convergence
-
-**Goal.** Bring two plugin-side patterns into the dev-side session-protocol: (1) proxy regeneration as an explicit close step, and (2) response-shape tags on all close steps.
-
-**Outputs.**
-- `Dev/session-protocol.md` — New step between current steps 5 and 6: regenerate `Dev/Planning/.proxies/` for any source doc edited this session. All close steps annotated with `[SILENT]`/`[BRIEF]`/`[PROMPT]` tags from plugin-side `universal-behaviour.md` § Response-shape tags.
-- `Dev/session-reference.md` — Response-shape tag definitions added (or cross-referenced to plugin-side) if not already present.
-
-**Design decisions.**
-1. One batch — both changes are small, touch the same file, and have trivial verification burden.
-2. Proxy regeneration step placed before the pre-commit checkpoint so the checkpoint can verify it happened.
-3. Tags adopted from plugin-side `universal-behaviour.md` § Response-shape tags — same five tags, same meanings. Dev-side uses them as convention; no hook enforcement.
-
-**Success criteria.** Close procedure has response-shape tags on every numbered step. Proxy regeneration is an explicit step that won't be silently skipped. Step numbering consistent after insertion.
-
-**Risks / dependencies.** None. Dev-internal only, no method-version bump.
 
 ---
 

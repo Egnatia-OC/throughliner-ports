@@ -52,6 +52,20 @@ python -m pytest Dev/Resources/tests/ -v
 
 ---
 
+## Response-shape tags
+
+Five tags mark verbosity on close steps and procedures. Same definitions as plugin-side `universal-behaviour.md` § *Response-shape tags*.
+
+- **[SILENT]** — No narration. One sentence max if unavoidable.
+- **[BRIEF]** — 1–3 sentences or a tight list.
+- **[SEQUENCE]** — Series of prompts, one at a time. State count, ask first, wait.
+- **[DISCUSS]** — Full reasoning. Ask, weigh, push back.
+- **[PROMPT]** — End with a clear next-action for the user. Hard requirement.
+
+Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — flag it.
+
+---
+
 ## Footer bumps: the full list
 
 When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal-only sessions skip entirely.**
