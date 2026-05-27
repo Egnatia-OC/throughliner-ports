@@ -2,7 +2,7 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs seven checks on Edit / Write / MultiEdit calls, plus a Bash/PowerShell
+Runs six checks on Edit / Write / MultiEdit calls, plus a Bash/PowerShell
 write-guard (V83):
 
   (5) V29 adoption gate — fires first. Denies Edit/Write/MultiEdit on
@@ -10,9 +10,6 @@ write-guard (V83):
       CLAUDE.md AND has substantial work. Allows Edit/Write/MultiEdit on
       scaffold paths (UX.md, BUILD-PLAN.md, BUILD-LOG.md, MANIFEST.md,
       TEST-LOG.md, CLAUDE.md) so /sovsetup's scaffolding works.
-
-  (7) Project-boundary check (V56) — blocks writes targeting paths outside
-      the project root.
 
   (1) Locked source-of-truth doc enforcement (V19, V38+V45 carve-outs,
       V67 phase-aware) — during build phase, locked docs are UX.md plus
@@ -28,20 +25,28 @@ write-guard (V83):
       from the previous batch. Originally gated Task→batch-executor; V66
       moved it to the writing-tools path after subagent removal.
 
-  (3) Batch file-list boundary check (V25, V67 phase-aware) — during build
-      phase, blocks edits on files not on the active batch's Files: list.
-      During planning phase, blocks edits to source-code files (anything
-      not a path-block doc, CLAUDE.md, or research/ file).
+  (3) Batch file-list boundary check (V25, V67+V91 phase-aware) — during
+      build phase, blocks edits on files not on the active batch's Files:
+      list. During planning phase, blocks edits to source-code files
+      (anything not a path-block doc, CLAUDE.md, research/ file, or method
+      infrastructure dir — BUILD-PLAN/, proxies/, planning/).
 
   (6) Read-before-edit gate (V39) — blocks first edit on MANIFEST-pathed
       files until Claude has the MANIFEST entry and UX context in view.
       Block-once via transcript scan.
 
-  (8) Bash/PowerShell write-guard (V83) — scans Bash/PowerShell commands
-      for file-write patterns (sed -i, >, >>, tee, Set-Content, Out-File,
-      Add-Content, cp, mv). If the extracted target path would be denied by
-      existing rules (project boundary or phase-aware locks), denies with
-      skill escape guidance.
+  (8) Bash/PowerShell write-guard (V83, V91 heredoc fix) — scans
+      Bash/PowerShell commands for file-write patterns (sed -i, >, >>,
+      tee, Set-Content, Out-File, Add-Content, cp, mv). Strips
+      heredoc/here-string content before scanning to avoid false positives.
+      If the extracted target path would be denied by existing rules
+      (project boundary or phase-aware locks), denies with skill escape
+      guidance.
+
+  Note: the V56 project-boundary check for Edit/Write/MultiEdit was removed
+  in V91. Downstream checks (planning source lock, build batch boundary)
+  already prevent cross-project writes. The Bash write-guard retains its
+  own boundary check.
 
 Output protocol: stdout receives a JSON object with hookSpecificOutput
 containing hookEventName ("PreToolUse"), permissionDecision ("deny"), and
@@ -1139,6 +1144,30 @@ def is_research_file(target_path, project_root):
     return False
 
 
+# V91: method infrastructure directories writable during planning.
+_METHOD_INFRA_DIRS = frozenset({"BUILD-PLAN", "proxies", "planning"})
+
+
+def is_method_infra_file(target_path, project_root):
+    """V91: True if target_path is inside a _method/ subdirectory that should
+    be writable during planning: BUILD-PLAN/ (per-batch files), proxies/
+    (all proxy files), planning/ (drafts and scratch space).
+
+    Checks both _method/ (0087+ layout) and root-level (legacy layout)."""
+    for base in [
+        (project_root / "_method").resolve(),
+        project_root.resolve(),
+    ]:
+        try:
+            rel = target_path.relative_to(base)
+        except ValueError:
+            continue
+        parts = rel.parts
+        if parts and parts[0] in _METHOD_INFRA_DIRS:
+            return True
+    return False
+
+
 def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
     """Deny message when source code is edited during planning phase."""
     return (
@@ -1185,6 +1214,10 @@ def check_planning_phase_source_lock(project_root, target_path,
     if is_path_block_doc(target_path, project_root):
         return None
     if is_research_file(target_path, project_root):
+        return None
+    if is_method_infra_file(target_path, project_root):
+        return None
+    if is_backlog_file(target_path, project_root):
         return None
     claude_text = safe_read_text(project_root / "CLAUDE.md")
     if claude_text is None or not has_method_footer(claude_text):
@@ -1333,12 +1366,32 @@ _TEE_PATH = re.compile(
 _NULL_TARGETS = frozenset({"/dev/null", "$null", "NUL", "nul"})
 
 
+_HEREDOC_PATTERN = re.compile(
+    r"""<<-?\s*['"]?(\w+)['"]?.*?\n.*?\n\1\b"""
+    r"""|"""
+    r"""@['"][\s\S]*?['"]@""",
+    re.DOTALL,
+)
+
+
+def _strip_heredoc_content(command: str) -> str:
+    """Remove heredoc (bash <<EOF...EOF) and here-string (PowerShell
+    @'...'@ / @"..."@) bodies from a command string. This prevents the
+    write-guard from extracting false-positive filenames from content
+    inside these blocks (e.g. markdown headings, Python escape sequences)."""
+    return _HEREDOC_PATTERN.sub("", command)
+
+
 def _extract_write_targets(command: str) -> list:
     """Best-effort extraction of file paths being written to in a shell
     command. Returns a list of raw path strings (before resolution).
 
     Not hermetic — catches the normal drift patterns where Claude uses
-    Bash to bypass Edit/Write/MultiEdit locks."""
+    Bash to bypass Edit/Write/MultiEdit locks.
+
+    V91: strips heredoc/here-string content before scanning to avoid
+    false positives from content bodies."""
+    command = _strip_heredoc_content(command)
     targets = []
 
     for m in _REDIRECT_PATH.finditer(command):
@@ -1524,6 +1577,10 @@ def check_bash_write_guard(project_root, command, phase, permission_mode=""):
                 continue
             if is_research_file(target, project_root):
                 continue
+            if is_method_infra_file(target, project_root):
+                continue
+            if is_backlog_file(target, project_root):
+                continue
             if is_adopted is None:
                 claude_text = safe_read_text(project_root / "CLAUDE.md")
                 is_adopted = (
@@ -1602,17 +1659,12 @@ def main() -> int:
     except OSError:
         return emit_allow()
 
-    # V56 check (7): project-boundary. Block writes targeting paths outside
-    # the project root — a session in one project should not modify files in
-    # another folder.
-    try:
-        target_path.relative_to(project_root)
-    except ValueError:
-        return emit_deny(
-            make_project_boundary_deny_reason(
-                target_path, project_root, permission_mode
-            )
-        )
+    # V56 check (7): project-boundary — relaxed in V91.
+    # Originally blocked ALL writes outside project root. Relaxed because
+    # downstream checks (planning source lock, build batch boundary) already
+    # prevent cross-project damage, and the unconditional block prevented
+    # legitimate writes to temp dirs, Desktop, transcripts, etc.
+    # The Bash write-guard retains its own boundary check.
 
     # V67: detect project phase for permission flips.
     phase = detect_phase(project_root)

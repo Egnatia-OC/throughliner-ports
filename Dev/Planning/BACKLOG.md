@@ -106,6 +106,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0109 | `/sovsetup` case 4 scaffold drift detection | Pytest registry + 4 missing case 4 migrations fixed. **Shipped v109.** |
 | 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
+| 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -117,7 +118,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0088 — Build E2E test — **PARKED**
 
-**Parked.** v110. The subagent removal (0079) and dev-side convergence (0091–0093, 0111) are still settling. Dev-side work is functioning as a practical shake-out of the procedure-doc architecture — running formal E2E against a moving target produces noisy findings. Revisit after 0112 ships (skill split stabilises the planning/build surface area).
+**Parked.** v112. 0112 shipped but cowboy test showed `/sovsetup` couldn't complete case-1 cleanly. 0115 (shipped v113) fixed those issues. Ready to unpark.
 
 **Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/sovsetup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
 
@@ -135,7 +136,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0095 — /sovtest skill E2E validation — **PARKED**
 
-**Parked.** v110. Same rationale as 0088. Additionally, hard dep on 0088 for app state — shelved together. Revisit alongside 0088 after 0112 ships.
+**Parked.** v112. Hard dep on 0088 for app state — shelved together. 0115 shipped v113; revisit alongside 0088.
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
@@ -196,6 +197,26 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### Session-close cost: structured handoff and mechanical automation
+
+**Surfaced.** v112.
+
+**The question.** Should `/sovbuild` produce a structured handoff artifact during the build phase, and should the mechanical close steps (footer bumps, version trackers, proxy regeneration) be scripted rather than Claude-executed?
+
+**Why it matters.** The v112 session burned roughly half a usage window on the implementation close alone. The primary cost driver was rediscovery — the close session had to re-explore the codebase to find what the build session changed (grepping crash-course files for missing skill names, reading templates for wrong section counts, scanning BUILD-PLAN for stale frame references). A secondary cost was mechanical work (13 footer bumps) that failed via the Edit tool on unread files and had to be retried via a Python script. Both are avoidable with upfront structure.
+
+**Working notes.** Three candidate changes, independent of each other:
+
+1. **Build-phase handoff artifact.** As `/sovbuild` works, it appends to a running list: new consumer-facing names introduced, files touched, frame assumptions that shifted. The close session reads this instead of re-exploring. Could be a draft section of the build-log entry, written mid-build rather than composed at close.
+
+2. **Scripted mechanicals.** A Python script taking `(old_version, new_version)` that handles footer bumps, `plugin.json` version, `PLUGIN_METHOD_VERSION` in `session_start.py`, and proxy regeneration. Removes ~30% of close-session token cost. Already half-proven — the v112 session fell back to a Python script for footers after Edit failures.
+
+3. **Two-turn close.** Judgment work (parity check, frame corrections, build-log narrative) in one turn; mechanical finishing (script run, commit/tag/push) in a second turn or fresh session. The second turn needs almost no context.
+
+**Next step.** Fold into 0113 scope if session-length safeguards are the natural home, or promote to its own batch if the scope is too different. Decide during next `/sovdeliberate` or `/sovplan` session.
 
 ---
 

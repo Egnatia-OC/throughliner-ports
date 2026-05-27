@@ -144,7 +144,7 @@ Editing permissions flip based on the project's current phase. Phase detection: 
 
 Source-of-truth docs are directly editable by Claude. Source code is locked.
 
-**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BUILD-PLAN.md` (or `BUILD-PLAN/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`, `_method/research/` files.
+**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BUILD-PLAN.md` (or `BUILD-PLAN/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`, `_method/research/` files, `_method/proxies/` files, `_method/planning/` files.
 **Locked:** Source-code files (anything not listed above). PreToolUse denies with a planning-phase message pointing at the build-batch mechanism.
 
 No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits source-of-truth docs directly.
@@ -166,4 +166,4 @@ For `BUILD-PLAN.md`, the protective rule is the discussion contract in the build
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 90.*
+*No-code method — Version 91.*

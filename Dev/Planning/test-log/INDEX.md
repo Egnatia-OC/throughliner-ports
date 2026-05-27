@@ -4,6 +4,7 @@ One row per check per session. Status (`Pass`/`Fail`/`Skipped`) is never edited 
 
 ---
 
+- [cowboy-sovsetup-case1-2026-05-28.md](cowboy-sovsetup-case1-2026-05-28.md) — 2026-05-28 — Cowboy test: /sovsetup case 1 (empty folder)
 - [0068-e2e-round-2-taskflow-build-cycle.md](0068-e2e-round-2-taskflow-build-cycle.md) — 2026-05-24 — E2E round 2: Taskflow build cycle
 - [v42-drift-check-1-direct-edit-detection-smoke-test.md](v42-drift-check-1-direct-edit-detection-smoke-test.md) — 2026-05-21 — Drift check 1 (direct-edit detection) smoke test
 - [v39-manifest-paths-field-read-before-edit-gate.md](v39-manifest-paths-field-read-before-edit-gate.md) — 2026-05-21 — MANIFEST paths field + read-before-edit gate

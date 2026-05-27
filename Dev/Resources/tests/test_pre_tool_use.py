@@ -114,23 +114,31 @@ class TestV29AdoptionGate:
 # ---------------------------------------------------------------------------
 
 class TestProjectBoundary:
-    def test_edit_outside_project_denied(self, adopted_folder):
+    """V91: unconditional project-boundary block removed for Write/Edit/
+    MultiEdit. Writes outside project root now fall through to planning/
+    build phase checks. Bash write-guard retains its own boundary."""
+
+    def test_edit_outside_project_still_denied(self, adopted_folder):
+        """External files still denied by downstream checks, not boundary."""
         outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
         data = _edit_input(adopted_folder, outside_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_deny(parsed, "outside the project root")
+        _assert_deny(parsed)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "outside the project root" not in reason
 
-    def test_write_outside_project_denied(self, adopted_folder):
+    def test_write_outside_project_still_denied(self, adopted_folder):
         outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
         data = _write_input(adopted_folder, outside_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_deny(parsed, "outside the project root")
+        _assert_deny(parsed)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "outside the project root" not in reason
 
     def test_edit_inside_project_allowed(self, adopted_folder):
         inside_path = str((adopted_folder / "app" / "src" / "SettingsScreen.kt").resolve())
         data = _edit_input(adopted_folder, inside_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
-        # Should not be denied by boundary check (may hit other checks)
         if raw:
             reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
             assert "outside the project root" not in reason
@@ -140,14 +148,6 @@ class TestProjectBoundary:
         data = _edit_input(adopted_folder, root_file)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
-
-    def test_mode_aware_suffix(self, adopted_folder):
-        outside_path = str((adopted_folder.parent / "other-project" / "file.txt").resolve())
-        data = _edit_input(
-            adopted_folder, outside_path, permission_mode="Accept edits"
-        )
-        code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_deny(parsed, "permission mode")
 
 
 # ---------------------------------------------------------------------------
@@ -439,6 +439,164 @@ class TestPlanningPhasePermissions:
         data = _edit_input(root, target, permission_mode="Auto")
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_deny(parsed, "permission mode")
+
+
+# ---------------------------------------------------------------------------
+# V91 Method infrastructure whitelist expansion
+# ---------------------------------------------------------------------------
+
+class TestMethodInfraWhitelist:
+    """V91: BUILD-PLAN per-batch files, all proxies, and planning/drafts
+    are writable during planning phase."""
+
+    def test_build_plan_per_batch_file_allowed(self, planning_phase):
+        root = planning_phase
+        target = str((root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_proxy_ux_allowed(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
+            ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "proxies").mkdir()
+        target = str((root / "proxies" / "ux.md").resolve())
+        data = _write_input(root, target, content="<!-- proxy -->")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_proxy_manifest_allowed(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
+            ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "proxies").mkdir()
+        target = str((root / "proxies" / "manifest.md").resolve())
+        data = _write_input(root, target, content="<!-- proxy -->")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_planning_drafts_allowed(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "planning" / "drafts").mkdir(parents=True)
+        target = str((root / "planning" / "drafts" / "comparison-table.md").resolve())
+        data = _write_input(root, target, content="# Draft")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_method_dir_proxies_allowed(self, tmp_path):
+        """_method/ layout: proxies are writable during planning."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "proxies").mkdir(parents=True)
+        target = str((root / "_method" / "proxies" / "ux.md").resolve())
+        data = _write_input(root, target, content="<!-- proxy -->")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_method_dir_drafts_allowed(self, tmp_path):
+        """_method/ layout: planning/drafts writable during planning."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "planning" / "drafts").mkdir(parents=True)
+        target = str((root / "_method" / "planning" / "drafts" / "sketch.md").resolve())
+        data = _write_input(root, target, content="# Draft")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_method_dir_build_plan_per_batch_allowed(self, tmp_path):
+        """_method/ layout: BUILD-PLAN per-batch files writable during planning."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "BUILD-PLAN").mkdir(parents=True)
+        target = str((root / "_method" / "BUILD-PLAN" / "0001-new-batch.md").resolve())
+        data = _write_input(root, target, content="# New batch")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+
+# ---------------------------------------------------------------------------
+# V91 Heredoc/here-string stripping in Bash write-guard
+# ---------------------------------------------------------------------------
+
+class TestHeredocStripping:
+    """V91: Bash write-guard strips heredoc/here-string content before
+    scanning for file-write targets, preventing false positives."""
+
+    def test_powershell_herestring_no_false_positive(self, planning_phase):
+        root = planning_phase
+        cmd = (
+            "@'\n# UX.md — proxy\nSome content\n'@"
+            " | Out-File -Path proxies/ux.md"
+        )
+        data = _bash_input(root, cmd, tool_name="PowerShell")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        if raw:
+            reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+            assert "`#`" not in reason
+
+    def test_bash_heredoc_no_false_positive(self, planning_phase):
+        root = planning_phase
+        cmd = (
+            "cat <<'EOF' > proxies/ux.md\n"
+            "# UX.md — proxy\n"
+            "Some content\n"
+            "EOF"
+        )
+        data = _bash_input(root, cmd)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        if raw:
+            reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+            assert "`#`" not in reason
+
+    def test_python_newline_no_false_positive(self, planning_phase):
+        root = planning_phase
+        cmd = r'python -c "open(\"proxies/ux.md\",\"w\").write(\"# UX\n\nContent\")"'
+        data = _bash_input(root, cmd)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        if raw:
+            reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+            assert r"C:\n" not in reason
 
 
 # ---------------------------------------------------------------------------

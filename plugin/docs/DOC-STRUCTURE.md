@@ -40,7 +40,7 @@ Starter shape: `ADDITIONAL-DOC-TEMPLATE.md`. Includes a *Proposed edits pending*
 
 **Project context.** One paragraph: what the app is, what distinguishes it.
 
-**UX principles.** 3–6 project-specific principles. Each: one-line claim + reasoning. Act as guardrails.
+**UX principles.** Optional section. Project-specific principles, no fixed count. Each: one-line claim + reasoning. Act as guardrails. `/sovsetup` asks whether the user has any; if not, the section is omitted.
 
 **Functionalities.** One entry per functionality:
 
@@ -389,4 +389,4 @@ When `/sovbuild` is invoked, the active batch's full content is extracted from B
 **Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, and build operations — the same content that would appear in the per-batch file or inline BUILD-PLAN section, but extracted to its own file.
 
 ---
-*No-code method — Version 90.*
+*No-code method — Version 91.*

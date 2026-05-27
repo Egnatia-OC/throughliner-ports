@@ -284,7 +284,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 
 ## What's inside the plugin
 
-- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests, unclosed builds, concurrent-build detection, stale open questions). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard). PostToolUse validates structured doc format after edits (BUILD-PLAN parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
+- **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests, unclosed builds, concurrent-build detection, stale open questions). PreToolUse enforces edit boundaries (locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard with project-boundary check). PostToolUse validates structured doc format after edits (BUILD-PLAN parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, revert, testing (invoked via `/sovtest`), tersify (invoked via `/sovtersify`), setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
 - **Slash commands** (`/sovsetup`, `/sovplan`, `/sovdeliberate`, `/sovideate`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
@@ -396,4 +396,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 90.*
+*No-code method — Version 91.*

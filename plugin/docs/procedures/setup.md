@@ -33,7 +33,7 @@ No CLAUDE.md, no substantial work.
 **Four questions (one per message, wait for each):**
 
 1. **Product overview.** "Tell me about your product. What does it do, who is it for, and what makes it distinct — or what specific tension does it resolve? And are there milestones you're working toward?" → CLAUDE.md *Product overview* (all four fields) + UX.md *Project context* (synthesized from the product description). If the answer doesn't cover all four fields, follow up once before moving on.
-2. **UX principles.** "What 3–6 principles should guide every design decision?" → *UX principles*.
+2. **UX principles.** "Are there any guiding principles you want to lock in for design decisions?" If no → skip to Q3. If yes → "What are they?" No minimum count. → *UX principles*.
 3. **Core functionalities.** "What are the 3–5 must-have features? For each: one-paragraph experience description + one-line `user needs this because…` rationale." → *Functionalities*.
 4. **First batch sketch.** "Which is the smallest end-to-end thing we can build and test first?" → top BUILD-PLAN batch.
 
@@ -138,7 +138,11 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 ## Closing
 
-Final output = the Recap sentence(s). Don't append extra commentary.
+Final output = the Recap sentence(s), then the handoff.
+
+**Handoff.** After the recap, tell the user what to do next:
+- If Q4 produced a fully scoped batch (Goal, Outputs, Success criteria, Changes all filled): "Your first batch is ready. Run `/sovrecap` to review the file list and test plan, then `/sovbuild` to start building."
+- Otherwise: "Run `/sovplan` to finish scoping your first batch, then `/sovrecap` and `/sovbuild` when it's ready."
 
 ## Errors
 
@@ -152,4 +156,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 90.*
+*No-code method — Version 91.*
