@@ -41,4 +41,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 79.*
+*No-code method — Version 80.*

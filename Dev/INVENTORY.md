@@ -64,7 +64,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Procedure docs (phase orchestration)
 
-Five procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
+Six procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
 
 - **planning.md** — V22 origin, procedure doc V66. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1; cold-start skip V63), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V56: doc-first ordering, deferred-material aging. V63: classify-then-load, cold-start gate, reasoning constraint. V78: ordering principles (dependency flow, project-structure, security bias, stale-reference avoidance) and batch-ordering audit.
 
@@ -75,6 +75,8 @@ Five procedure docs at `plugin/docs/procedures/`, read into main context on dema
 - **close.md** — V76 origin (absorbed after-build.md). Dual-path: post-build (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry with Performance section, frame-correction sweep, idea sweep, CLAUDE.md after-build steps, pre-commit checkpoint, `/sovgit` nudge) or planning/general (idea sweep, proxy regeneration, `/sovgit` nudge). Idempotent.
 
 - **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance.
+
+- **tersify.md** — V80 origin. Guided doc compression: phase gate, triage pass (rank by size, flag wrong-home/structural/verbose), compact gate, per-doc audit with approval gates. Planning phase only.
 
 - **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75 migrations. PreToolUse exempts setup's tool calls.
 
@@ -90,6 +92,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `/sovbuild` — lock and build procedure. **Shipped V25** (as `/build`); renamed V77.
 - `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
 - `/sovgit` — git walkthrough (commit/tag/push, solo or team). **Shipped V76.**
+- `/tersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80.**
 
 ### Bundled artefacts
 
@@ -131,4 +134,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 79.*
+*No-code method — Version 80.*

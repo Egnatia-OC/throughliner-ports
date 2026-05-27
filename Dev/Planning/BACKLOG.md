@@ -94,39 +94,13 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0096 | Manifest rationale field | Inline italic rationale suffix on MANIFEST entries; close procedure writes it; planning checks it before UX edits. **Shipped v97.** |
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. **Shipped v96.** |
 | 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
+| 0103 | /tersify skill for doc compression | Guided triage + audit for reducing token cost in SOT docs. Planning-phase only. **Shipped v98.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0103 — /tersify skill for doc compression
-
-**Goal.** Give users a guided way to reduce token cost in their SOT docs. The skill runs a triage pass (rank by size, flag wrong-home content, structural issues, verbose sections), then an audit/edit phase on user-selected targets. Planning-phase only (docs unlocked).
-
-**Outputs.**
-- `plugin/skills/tersify/SKILL.md` — new skill. Loads `plugin/docs/procedures/tersify.md`.
-- `plugin/docs/procedures/tersify.md` — procedure: (1) triage pass over SOT doc list, rank by line count, flag issues per file; (2) present summary, user picks targets or selects full audit; (3) if full audit, instruct user to compact then continue; (4) work through selected docs one at a time — wrong-home content, logical structure, prose compression — user approves each change.
-- Updated `plugin/README.md`, `.claude-plugin/plugin.json` (new skill registered).
-- Updated `Guides/Reference manual.md`, `Guides/crash-course/` (new skill documented).
-- Updated `plugin/hooks/universal-behaviour.md` (adherence-drop diagnostic: recommend `/tersify` among other actions when user reports declining adherence).
-- Tests updated.
-
-**Design decisions.**
-1. Triage-first — don't jump into editing. Show the landscape, let user choose scope.
-2. Biggest files first within triage (biggest context-cost win).
-3. Three issue types per file: wrong-home content (belongs elsewhere), structural problems (redundancy, poor grouping), verbose prose (same meaning in fewer words).
-4. Full-audit path includes a compact instruction — triage analysis fills context that isn't needed for the editing phase.
-5. One file at a time in edit phase. User approves each change before moving on.
-6. Planning-phase only — docs must be unlocked. Skill checks phase and denies if in build.
-7. Adherence-drop nudge lives in universal-behaviour.md, not in the skill itself — Claude surfaces `/tersify` as one diagnostic option (alongside other causes like missing reads, compaction loss, etc.) when users complain about adherence.
-
-**Success criteria.** User invokes `/tersify`, sees a ranked triage summary, picks targets, and gets guided through compression with approval gates. Docs get shorter without losing rules or meaning. Wrong-home content gets relocated (or flagged for relocation in planning). Adherence-drop complaints trigger a nudge mentioning `/tersify`. Planning-phase gate works.
-
-**Risks / dependencies.** Soft dep on 0098 (`/sovplan` establishes planning entry point and unlocks docs). "Same meaning in fewer words" is a judgment call — risk of over-compressing and losing nuance. Mitigation: user approves each change, and the skill explains what was cut and why. No hard dependencies on other queued batches.
 
 ---
 

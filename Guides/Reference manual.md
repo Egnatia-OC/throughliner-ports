@@ -270,7 +270,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 
 - **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
-- **Slash commands** (`/setup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/research`): user-facing entry points that direct Claude to the matching procedure doc or flow.
+- **Slash commands** (`/setup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/research`, `/tersify`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
@@ -358,6 +358,8 @@ Permissions flip based on project phase:
 
 A new feature takes two sessions minimum — one planning, one build. Every shipped feature traces to a written rationale; nothing gets built that no one decided to build.
 
+As docs grow, they consume more of Claude's context window — leaving less room for actual work. `/tersify` runs a guided compression pass: triage docs by size, flag wrong-home content and verbose prose, then audit and compress user-selected targets one at a time. Planning phase only.
+
 ## Where the method sits
 
 Spec-driven development family. Closest neighbour: Cline's Memory Bank (same shape — markdown as project memory, read at session start; different file cut, different audience). In the broader spec-driven literature, this maps onto the **spec-anchored** rigour level.
@@ -377,4 +379,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 79.*
+*No-code method — Version 80.*

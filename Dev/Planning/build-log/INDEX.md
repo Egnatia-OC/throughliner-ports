@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v98-tersify-skill.md](v98-tersify-skill.md) — 2026-05-27 — /tersify skill for doc compression
 - [v97-manifest-rationale-field.md](v97-manifest-rationale-field.md) — 2026-05-27 — Manifest rationale field
 - [v96-sovplan-skill-ordering-security.md](v96-sovplan-skill-ordering-security.md) — 2026-05-27 — /sovplan skill + ordering principles + [SECURITY] marker
 - [v95-sovrecap-sovbuild-rename-lock-timing.md](v95-sovrecap-sovbuild-rename-lock-timing.md) — 2026-05-26 — /sovrecap + /sovbuild rename + lock-timing fix

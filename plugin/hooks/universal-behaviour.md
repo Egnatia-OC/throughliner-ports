@@ -27,6 +27,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Ask rather than guess on ambiguity.**
   *Load-bearing for: planning and pre-build discussions exist to resolve ambiguity; guessing bypasses them.*
 
+- **Adherence-drop diagnostic.** When the user reports that Claude is ignoring rules, not following procedures, or generally declining in quality mid-session: don't just apologise and retry. Diagnose. Common causes: context window filling up (recommend `/compact` or session handoff), source-of-truth docs too large for Claude to hold alongside code (recommend `/tersify` to compress them), missing foundational reads (re-read `CLAUDE.md` and path-block docs), or compaction dropped critical context (re-read the procedure doc for the active phase). Surface the likely cause and the matching action.
+  *Load-bearing for: session quality — "I'll try harder" doesn't fix structural causes.*
+
 - **Verify external facts, don't guess.** When uncertain about an external fact, research it directly. **Filing is mandatory**: save findings to `_method/research/<topic>.md` before moving on. If research tools aren't available, mark with `[UNVERIFIED: <what>]` inline — the marker stays until verified.
   *Load-bearing for: decision quality — silent guessing puts wrong facts into source-of-truth docs.*
 
@@ -115,7 +118,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Procedure docs — how to invoke:**
 
-For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Six procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`. Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
+For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Seven procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`, `tersify.md` (invoked via `/tersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
 
 ## Session handoff
 
@@ -160,4 +163,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 79.*
+*No-code method — Version 80.*

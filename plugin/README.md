@@ -19,3 +19,4 @@ Run `/plugins` to confirm `no-code-method` is in the *Installed* tab.
 - `/sovclose` — close a build (quality gates, record-keeping)
 - `/sovgit` — commit, tag, push walkthrough
 - `/research` — triggered research query flow
+- `/tersify` — guided doc compression (triage + audit)
