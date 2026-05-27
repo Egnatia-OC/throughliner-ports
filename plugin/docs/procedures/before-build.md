@@ -7,7 +7,7 @@ Follow this procedure during the *before-build* phase — never during planning 
 Read only what before-build uses:
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `BACKLOG.md`/`BACKLOG/INDEX.md` — find and validate the top build batch. In folder mode, read the per-batch file.
+2. `BUILD-PLAN.md`/`BUILD-PLAN/INDEX.md` — find and validate the top build batch. In folder mode, read the per-batch file.
 3. `UX.md` — validate `Serves UX.md:` line.
 4. `MANIFEST.md` — context on existing elements.
 5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, *Tests: sub-section*.
@@ -18,16 +18,16 @@ Read only what before-build uses:
 
 Before enumerating files:
 
-1. **Parses.** Resolve BACKLOG path from `CLAUDE.md`, then: `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG absolute path>"` (both paths quoted — Windows spaces break unquoted). A `{}` outcome means no real batch found — halt and route to planning.
+1. **Parses.** Resolve BUILD-PLAN path from `CLAUDE.md`, then: `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BUILD-PLAN absolute path>"` (both paths quoted — Windows spaces break unquoted). A `{}` outcome means no real batch found — halt and route to planning.
 2. **Serves line resolves.** Every entry on `Serves UX.md:` must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose adding to UX.md yourself.
 
-You don't reorganise the build queue. Planning owns BACKLOG structure. Reorganise authority here exists only for verification-burden splits (halt C).
+You don't reorganise the build queue. Planning owns BUILD-PLAN structure. Reorganise authority here exists only for verification-burden splits (halt C).
 
 ## Work loop
 
 1. **Enumerate Files:.** For each change-list bullet, identify files needing modification via Glob/Grep + MANIFEST. Write one-sentence summary per file.
-2. **Populate Inputs: (if needed).** Non-standard resources the batch needs — specs, research files, external references. Omit standard docs (UX, BACKLOG, MANIFEST, CLAUDE.md). Full rules: `DOC-STRUCTURE.md` → *Inputs: line*.
-3. **Write Files: sub-section** into the batch's BACKLOG file (per-batch file in folder mode) after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
+2. **Populate Inputs: (if needed).** Non-standard resources the batch needs — specs, research files, external references. Omit standard docs (UX, BUILD-PLAN, MANIFEST, CLAUDE.md). Full rules: `DOC-STRUCTURE.md` → *Inputs: line*.
+3. **Write Files: sub-section** into the batch's BUILD-PLAN file (per-batch file in folder mode) after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
 4. **Write Tests: sub-section.** One entry per distinct observable behaviour. Each entry: `- <description> [<Type>] [<Verifier>]`. Types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Verifier: `Claude` (structural/factual) or `User` (judgement/taste/visual). Full spec: `DOC-STRUCTURE.md` → *Tests: sub-section*. If no pre-specifiable tests (rare), omit entirely.
 5. **Apply batch-sizing principle.** Long test list relative to change scope → propose split (halt C).
 
@@ -43,7 +43,7 @@ The "small enough to build and test in one session" rule means **one session's w
 
 ## Halt-and-confirm
 
-**(A) No top batch.** BACKLOG empty or no Build batches content. Halt, route to planning.
+**(A) No top batch.** BUILD-PLAN empty or no Build batches content. Halt, route to planning.
 
 **(B) Change list too vague.** Can't enumerate Files: confidently (e.g. "Improve onboarding" with no specifics). Halt, surface the ambiguity, ask user.
 
@@ -53,19 +53,24 @@ The "small enough to build and test in one session" rule means **one session's w
 
 Change-list bullets may carry `[Requested]`/`[Suggested]` prefixes from planning. **Preserve every label exactly** when splitting (halt C). Labels are provenance of the *change*, not the batch boundary. Don't re-classify. Don't create new change-list items — new items belong in planning.
 
+## OQ accumulation nudge
+
+After populating Files:/Tests:, scan the Open Questions section. If 3+ OQs exist or any OQ's `Surfaced` tag is older than 5 build cycles, append to the recap: "You have N open questions (oldest: <tag>) — consider running `/sovdeliberate` before your next build." Informational, not blocking.
+
 ## Recap
 
 - Top batch heading and change list.
 - Files: list with per-file summaries.
 - Tests: list with type and verifier. Distinguish Claude-auto vs. user-check.
-- Any BACKLOG reorganisations.
+- Any BUILD-PLAN reorganisations.
 - Any conflicts or concerns.
+- OQ nudge (if triggered).
 - `[PROMPT]`: "Run `/sovbuild` to lock the batch and start building."
 
 ## What you must not do
 
 - **Don't run the build.** Before-build stops at file-list lock.
-- **Don't edit files other than BACKLOG files.** Source files, UX.md, MANIFEST.md — off-limits (PreToolUse enforces).
+- **Don't edit files other than BUILD-PLAN files.** Source files, UX.md, MANIFEST.md — off-limits (PreToolUse enforces).
 - **Don't reorder Red flags or Planning batches.** Only Build batches section, only the top batch.
 - **Don't add files outside change-list scope.** Prerequisite additions happen at build time.
 
@@ -75,4 +80,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 89.*
+*No-code method — Version 90.*

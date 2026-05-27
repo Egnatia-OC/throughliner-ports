@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v112-skill-split-and-build-plan-rename.md](v112-skill-split-and-build-plan-rename.md) — 2026-05-28 — Skill split + BACKLOG→BUILD-PLAN rename
 - [v111-queued-pipeline-staleness-sweep-at-close.md](v111-queued-pipeline-staleness-sweep-at-close.md) — 2026-05-28 — Queued-pipeline staleness sweep at close
 - [v110-oq-deliberation-and-ideation.md](v110-oq-deliberation-and-ideation.md) — 2026-05-27 — OQ deliberation and ideation
 - [v109-sovsetup-case4-scaffold-drift-detection.md](v109-sovsetup-case4-scaffold-drift-detection.md) — 2026-05-27 — /sovsetup case 4 scaffold drift detection

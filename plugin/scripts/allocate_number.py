@@ -9,7 +9,7 @@ number and adds 1.
 
 Two call sites:
   - The planning procedure invokes this when creating a new consumer-project
-    build batch file inside `BACKLOG/`.
+    build batch file inside `BUILD-PLAN/`.
   - Dev-session scope-file creation (manual or future slash command) uses the
     same logic for `planning/sessions/`.
 

@@ -21,7 +21,7 @@ Callable from PostToolUse (import) and as standalone CLI:
     python validate_docs.py <file> [--type test-log|build-log|scope|proxy]
 
 Spec: DOC-STRUCTURE.md (TEST-LOG structure, Build log structure,
-BACKLOG structure → Build batches, Proxy files).
+BUILD-PLAN structure → Build batches, Proxy files).
 """
 
 import re
@@ -142,13 +142,13 @@ _PROXY_HEADER = re.compile(
     re.MULTILINE,
 )
 
-_OPERATIONAL_PROXIES = frozenset({"backlog.md", "build-log.md", "test-log.md"})
+_OPERATIONAL_PROXIES = frozenset({"build-plan.md", "build-log.md", "test-log.md"})
 
 
 def validate_proxy(text, filename=None):
     """Check proxy file for HTML comment header.
 
-    Operational index proxies (backlog.md, build-log.md, test-log.md)
+    Operational index proxies (build-plan.md, build-log.md, test-log.md)
     are directly edited and follow a different format — skipped.
     Summary proxies (ux.md, manifest.md, research.md) must have the
     canonical header.
@@ -208,7 +208,7 @@ def main():
             warnings = validate_test_log(text)
         elif parent_name == "build-log" and name_lower != "index.md":
             warnings = validate_build_log_entry(text)
-        elif parent_name == "backlog":
+        elif parent_name == "build-plan":
             warnings = validate_scope_context(text)
         elif parent_name == "proxies":
             warnings = validate_proxy(text, path.name)

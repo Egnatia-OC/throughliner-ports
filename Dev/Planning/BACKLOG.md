@@ -105,6 +105,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0108 | Guided rollback procedure (`/sovrevert`) | New skill + procedure doc. Non-coder walkthrough for undoing failed builds. **Shipped v108.** |
 | 0109 | `/sovsetup` case 4 scaffold drift detection | Pytest registry + 4 missing case 4 migrations fixed. **Shipped v109.** |
 | 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
+| 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -126,7 +127,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
 
-**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` sets Status: active and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, test-log session file written. Phase-aware permissions work. Observations documented.
+**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` extracts batch to `_method/active-build.md` snapshot and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, test-log session file written, snapshot deleted. Phase-aware permissions work. Observations documented.
 
 **Risks / dependencies.** Burner app needs fresh `/sovsetup` (see pre-requisite). Risk: `/sovsetup` case 1 itself may surface issues — document those too.
 
@@ -142,43 +143,11 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Outputs.** Research file `Dev/Resources/research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. `/sovclose` handoff validation.
 
-**Test plan.** Happy path: invoke `/sovtest`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/sovtest` already confirmed.
+**Test plan.** Happy path: invoke `/sovtest`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BUILD-PLAN. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/sovtest` already confirmed.
 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0112 — Skill split: `/sovdeliberate`, `/sovideate`, and `/sovplan` narrowing
-
-**Goal.** Split non-build work into three named skills with distinct procedure docs, so users discover each mode through invocation rather than experience. `/sovplan` already exists — narrow it. `/sovdeliberate` and `/sovideate` are new.
-
-**The three modes.**
-
-`/sovplan` — **Structural planning.** The user wants to change the shape of the roadmap itself. Reorder batches, split or merge them, rescope batch content, revise dependency chains, add or remove batches. Input: the queued-batches section of BACKLOG. Output: a restructured queue. Includes cross-checking other queued batches — dependency validation, stale-reference scanning, ordering audit — as part of the procedure, not as an afterthought. The existing `planning.md` procedure doc does this today but also covers OQ work and idea generation — this batch narrows it to structural-only.
-
-`/sovdeliberate` — **OQ deliberation.** The user wants to work through accumulated open questions. For each OQ: weigh implications, decide disposition (promote to batch, drop with reason logged in build-log, or re-park with updated rationale). Input: the open-questions section of BACKLOG. Output: OQs moved — promoted to new or existing batches, dropped, or re-parked with fresher reasoning. This mode forces the periodic reckoning that BACKLOG consolidation (0091) made optional.
-
-`/sovideate` — **New idea generation.** The user arrives with a fresh concept not yet represented in BACKLOG. Explore the idea, assess fit, and route it: most become new OQs, some slot into existing queued batches, occasionally one becomes a fully scoped new batch. Input: the user's head. Output: new BACKLOG entries (OQs or batches). This mode is exploratory — no existing artifact is being worked through, so the procedure is lighter. Claude may also offer to suggest a new idea based on gaps, patterns, or unaddressed areas it notices in the current BACKLOG and project state.
-
-**Inputs.** Current `plugin/skills/sovplan.ts` and `plugin/docs/procedures/planning.md`. `user_prompt_submit.py` opener routing logic. SessionStart status summary code.
-
-**Ideas section in BACKLOG.** New section below Open Questions for raw, unprocessed ideas. Lighter than OQs — no required fields, just a one-liner and a date. The user can tell Claude an idea at any point in any session type, and Claude writes it here regardless of build phase. `/sovideate` promotes ideas to OQs or batches when the user is ready to flesh them out. `/sovdeliberate` can also draw from this pool. Hook carve-out needed: writing to the Ideas section must be allowed even during active builds (unlike OQ or batch edits). This prevents ideas from being lost to napkins and notepads.
-
-**Build-snapshot architecture.** When `/sovbuild` is invoked, it extracts the active batch's scope from BACKLOG.md into a working snapshot (`_method/active-build.md`), removes the batch from BACKLOG.md entirely, and tells the user: "I've snapshotted batch NNNN — I'm working from the snapshot now." The build reads only from the snapshot for its duration. BACKLOG.md is fully unlocked immediately — parallel sessions can run `/sovplan`, `/sovdeliberate`, or `/sovideate` against it freely. At `/sovclose`, the batch is written back to BACKLOG.md as shipped and the snapshot is deleted. The snapshot file's existence replaces `Status: active` as the build-in-progress signal: SessionStart checks for `_method/active-build.md` — if it exists, a build is running. No duplicate, no conflict, no possibility of editing a batch mid-build because it only exists in the snapshot. This obsoletes the Ideas-section hook carve-out (BACKLOG.md is unlocked) and simplifies phase detection (file existence vs status parsing).
-
-**Outputs.** Two new skills (`/sovdeliberate`, `/sovideate`) with procedure docs (`deliberate.md`, `ideate.md`). Narrowed `planning.md`. Updated opener routing in `user_prompt_submit.py` to classify the three modes. SessionStart and status summary updated if they reference planning generically. New Ideas section in BACKLOG template and consumer BACKLOG. Build-snapshot mechanism in `/sovbuild` and `/sovclose`.
-
-**Success criteria.** Each skill invocation loads only its procedure doc. Opener routing correctly classifies "let's work through the open questions" vs "I have a new idea" vs "reorder the batches." `/sovplan` no longer covers OQ work or idea generation. All three procedure docs are self-contained — no cross-loading required. `/sovbuild` extracts batch to snapshot and removes from BACKLOG; parallel sessions can edit BACKLOG freely; `/sovclose` writes batch back as shipped.
-
-**OQ accumulation nudge.** Fold-in from the OQ of the same name (surfaced v109). When open questions accumulate past a threshold (count, age, or both), SessionStart or `/sovrecap` nudges the user toward `/sovdeliberate` — "you have N open questions older than X — consider running `/sovdeliberate` before your next build." Design questions: what threshold triggers the nudge, whether it's informational or blocking, and whether it lives in SessionStart, `/sovrecap`, or both. The existing aging detection (0054) and session-open status summary (0074) already flag counts — this adds a concrete destination.
-
-**Git steps inline in each procedure doc.** Each planning mode's procedure doc ends with a commit step — Claude commits with a mode-prefixed message (`plan: <summary>`, `deliberate: <summary>`, `ideate: <summary>`) after user confirmation. No tag, no push. `/sovclose` keeps its existing commit + tag + push. This makes git handling mechanical per-mode, not a prose nudge to invoke a separate skill. `/sovgit` remains available for ad-hoc use outside procedures but is no longer the standard path.
-
-**BACKLOG rename to BUILD-PLAN.** Rename `BACKLOG.md` to `BUILD-PLAN.md` across plugin templates, consumer scaffolding, hooks, procedure docs, and all references. Motivation: "backlog" contains "log" as a substring, causing persistent confusion with "build log." "Build plan" is forward-looking (what will be built) vs "build log" (what was built) — same prefix, distinct suffixes. The rename also aligns the three planning artifacts with their skills: `/sovplan` → build plan (queued batches), `/sovdeliberate` → open questions, `/sovideate` → ideas. When the file splits into three (build-snapshot architecture above), each file gets a name that mirrors its skill.
-
-**Risks / dependencies.** Surface area: touches skills, procedure docs, opener routing, SessionStart, and the build/close flow. Recommend shipping as one batch since the routing table is incomplete if only some skills exist. Risk: procedure doc content needs careful drafting — too prescriptive kills the exploratory nature of ideation; too loose and the skill adds no value over a bare conversation. Build-snapshot mechanism changes how phase detection works — all existing `Status: active` checks need auditing. The BACKLOG→BUILD-PLAN rename has wide surface area (hooks, templates, procedure docs, tests, proxies, references) but is mechanically straightforward — grep-and-replace.
 
 ---
 

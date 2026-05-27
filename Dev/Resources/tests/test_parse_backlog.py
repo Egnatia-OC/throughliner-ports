@@ -149,7 +149,7 @@ class TestParseBatchBody:
 
 class TestFindTopUntickedBatch:
     def test_finds_unticked_batch_single_file(self):
-        text = (fixture_path("adopted_single_file") / "BACKLOG.md").read_text(
+        text = (fixture_path("adopted_single_file") / "BUILD-PLAN.md").read_text(
             encoding="utf-8"
         )
         result = pb.find_top_unticked_batch(text)
@@ -234,7 +234,7 @@ class TestFindTopUntickedBatch:
         assert result["status"] == "active"
 
     def test_status_in_output(self):
-        text = (fixture_path("adopted_single_file") / "BACKLOG.md").read_text(
+        text = (fixture_path("adopted_single_file") / "BUILD-PLAN.md").read_text(
             encoding="utf-8"
         )
         result = pb.find_top_unticked_batch(text)
@@ -248,7 +248,7 @@ class TestFindTopUntickedBatch:
 
 class TestFindTopUntickedBatchFromPath:
     def test_folder_mode(self):
-        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        index_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "INDEX.md"
         result = pb.find_top_unticked_batch_from_path(index_path)
         assert result != {}
         assert result["batch_heading"] == "Add settings screen"
@@ -256,7 +256,7 @@ class TestFindTopUntickedBatchFromPath:
         assert result["batch_file"] == "0001-add-settings-screen.md"
 
     def test_single_file_mode(self):
-        path = fixture_path("adopted_single_file") / "BACKLOG.md"
+        path = fixture_path("adopted_single_file") / "BUILD-PLAN.md"
         result = pb.find_top_unticked_batch_from_path(path)
         assert result != {}
         assert result["batch_heading"] == "Add dark mode"
@@ -265,25 +265,25 @@ class TestFindTopUntickedBatchFromPath:
         assert pb.find_top_unticked_batch_from_path(Path("/nonexistent.md")) == {}
 
     def test_folder_mode_skips_shipped_and_parked(self):
-        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        index_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "INDEX.md"
         result = pb.find_top_unticked_batch_from_path(index_path)
         assert result != {}
         assert result["batch_heading"] == "Add settings screen"
         assert result["status"] == "active"
 
     def test_folder_mode_status_in_output(self):
-        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        index_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "INDEX.md"
         result = pb.find_top_unticked_batch_from_path(index_path)
         assert "status" in result
 
     def test_folder_mode_shipped_batch_parsed(self):
-        batch_path = fixture_path("adopted_folder") / "BACKLOG" / "0000-shipped-batch.md"
+        batch_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "0000-shipped-batch.md"
         result = pb.parse_batch_file(batch_path)
         assert result is not None
         assert result["status"] == "shipped"
 
     def test_folder_mode_parked_batch_parsed(self):
-        batch_path = fixture_path("adopted_folder") / "BACKLOG" / "0002-parked-batch.md"
+        batch_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "0002-parked-batch.md"
         result = pb.parse_batch_file(batch_path)
         assert result is not None
         assert result["status"] == "parked"
@@ -295,11 +295,11 @@ class TestFindTopUntickedBatchFromPath:
 
 class TestIsFolderMode:
     def test_index_md_is_folder_mode(self):
-        index_path = fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+        index_path = fixture_path("adopted_folder") / "BUILD-PLAN" / "INDEX.md"
         assert pb.is_folder_mode(index_path) is True
 
     def test_single_file_is_not_folder_mode(self):
-        path = fixture_path("adopted_single_file") / "BACKLOG.md"
+        path = fixture_path("adopted_single_file") / "BUILD-PLAN.md"
         assert pb.is_folder_mode(path) is False
 
 
@@ -310,7 +310,7 @@ class TestIsFolderMode:
 class TestCLI:
     def test_folder_mode_cli(self):
         index_path = str(
-            fixture_path("adopted_folder") / "BACKLOG" / "INDEX.md"
+            fixture_path("adopted_folder") / "BUILD-PLAN" / "INDEX.md"
         )
         exit_code, stdout, stderr = run_script("parse_backlog.py", [index_path])
         assert exit_code == 0
@@ -318,7 +318,7 @@ class TestCLI:
         assert data.get("batch_heading") == "Add settings screen"
 
     def test_single_file_cli(self):
-        path = str(fixture_path("adopted_single_file") / "BACKLOG.md")
+        path = str(fixture_path("adopted_single_file") / "BUILD-PLAN.md")
         exit_code, stdout, stderr = run_script("parse_backlog.py", [path])
         assert exit_code == 0
         data = json.loads(stdout)
@@ -326,7 +326,7 @@ class TestCLI:
 
     def test_proxy_as_index_cli(self):
         proxy_path = str(
-            fixture_path("adopted_proxy") / "proxies" / "backlog.md"
+            fixture_path("adopted_proxy") / "proxies" / "build-plan.md"
         )
         exit_code, stdout, stderr = run_script("parse_backlog.py", [proxy_path])
         assert exit_code == 0
@@ -342,7 +342,7 @@ class TestCLI:
 
     def test_missing_file_returns_empty(self):
         exit_code, stdout, stderr = run_script(
-            "parse_backlog.py", ["/nonexistent/BACKLOG.md"]
+            "parse_backlog.py", ["/nonexistent/BUILD-PLAN.md"]
         )
         assert exit_code == 0
         assert json.loads(stdout) == {}

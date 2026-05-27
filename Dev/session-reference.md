@@ -79,13 +79,12 @@ Method-side = describes how the consumer method works. Dev-internal files (`Dev/
 - `plugin/hooks/universal-behaviour.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
-- `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file)
-- `plugin/templates/.proxies/backlog.md`
+- `plugin/templates/BUILD-PLAN-TEMPLATE.md` (legacy single-file)
+- `plugin/templates/.proxies/build-plan.md`
 - `plugin/templates/.proxies/build-log.md`
 - `plugin/templates/.proxies/test-log.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
-- Every footer-carrying subagent under `plugin/agents/`
 - `Guides/Reference manual.md` (plugin-side)
 
 ### Cross-cutting

@@ -40,7 +40,7 @@ def test_silent_when_malformed_input():
 
 
 def test_silent_for_single_file_backlog_with_active_build(adopted_single_file):
-    """PreCompact should also detect active builds in single-file BACKLOG."""
+    """PreCompact should also detect active builds in single-file BUILD-PLAN."""
     data = {"cwd": str(adopted_single_file), "hook_event_name": "PreCompact"}
     code, parsed, raw = run_hook("pre_compact.py", data)
     assert code == 0

@@ -4,9 +4,9 @@ Follow this procedure to execute exactly ONE build batch, then stop. Never plan,
 
 ## What you need
 
-Parse the top unticked batch from BACKLOG. Run:
+Parse the top unticked batch from BUILD-PLAN. Run:
 
-    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BACKLOG absolute path>"
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BUILD-PLAN absolute path>"
 
 Both paths quoted (Windows spaces). Parser emits JSON:
 
@@ -26,16 +26,24 @@ If the parser returns `{}`, there's nothing to build — tell the user to run `/
 
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
-**Two BACKLOG formats.** `batch_file` present → folder mode (tick edits go in per-batch file). Absent → single-file `BACKLOG.md`. Resolve path from `CLAUDE.md` path block.
+**Two BUILD-PLAN formats.** `batch_file` present → folder mode (tick edits go in per-batch file). Absent → single-file `BUILD-PLAN.md`. Resolve path from `CLAUDE.md` path block.
 
-## First action — lock the batch
+## First action — snapshot the batch
 
-**Set Status: active.** Write `Status: active` at the top of the batch body (after the heading, before Goal). If a `Status:` line already exists (e.g. from a previous build that was interrupted), replace it. This marks the batch as locked and in progress — phase-aware editing rules and PreToolUse enforcement engage from this point.
+**Extract batch to `_method/active-build.md`.** Copy the batch's full content (heading, scope context, and build operations) into `_method/active-build.md`. Then remove the batch from BUILD-PLAN entirely (delete the section in single-file mode, or delete the per-batch file and its INDEX.md reference in folder mode).
+
+Tell the user: "I've snapshotted batch NNNN — working from the snapshot now. BUILD-PLAN is unlocked for other sessions."
+
+The snapshot file's existence is the build-in-progress signal — SessionStart and PreToolUse check for `_method/active-build.md`. No `Status: active` line is written to BUILD-PLAN.
+
+**Tick edits go in the snapshot.** During the build, `- [ ]` → `- [x]` updates happen in `_method/active-build.md`, not in BUILD-PLAN.
+
+**Resuming an interrupted build.** If `_method/active-build.md` already exists when `/sovbuild` is invoked, a build was interrupted. Don't re-extract — read the existing snapshot and resume from the first unticked file.
 
 ## Load project state
 
 1. `CLAUDE.md` — path block and project notes.
-2. Batch's BACKLOG file — needed for tick edits.
+2. `_method/active-build.md` — the snapshot is your single source of truth for batch content and tick state.
 3. Any resources in the batch's `Inputs:` line.
 4. Each unticked file (if it exists).
 5. `MANIFEST.md` — context on named elements.
@@ -49,7 +57,7 @@ Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 For each unticked file, in Files: list order:
 
 1. Make the change described by the `summary` field. `change_list` bullets are narrative context; `summary` is the actionable instruction.
-2. Immediately tick `- [ ]` to `- [x]` in the batch's BACKLOG file. **Per-file, not at the end** — partial-complete state survives interruption only if BACKLOG records progress live.
+2. Immediately tick `- [ ]` to `- [x]` in `_method/active-build.md`. **Per-file, not at the end** — partial-complete state survives interruption only if the snapshot records progress live.
 3. Next unticked file.
 
 ## When a change causes a regression
@@ -62,8 +70,8 @@ If you need to edit a file NOT on the Files: list (a real prerequisite, not "whi
 
 1. **Halt.** Don't attempt the edit.
 2. **Surface in chat.** Which file, one-line justification, wait for okay.
-3. **On okay**, append to Files: with `[Prerequisite, not in plan]` label: `- [ ] \`<path>\` — <summary> [Prerequisite, not in plan]`
-4. **Proceed.** PreToolUse re-parses BACKLOG; new entry takes effect immediately.
+3. **On okay**, append to Files: in `_method/active-build.md` with `[Prerequisite, not in plan]` label: `- [ ] \`<path>\` — <summary> [Prerequisite, not in plan]`
+4. **Proceed.** PreToolUse re-reads the snapshot; new entry takes effect immediately.
 5. **Note in recap.**
 
 ## Halt: re-batching carve-out
@@ -85,17 +93,17 @@ When all Files: are `- [x]`, the build is done.
 
 - **Don't edit locked source-of-truth docs.** UX.md and additional docs are read-only (PreToolUse enforces). Flag UX.md changes in chat.
 - **Don't add files outside the prerequisite carve-out.**
-- **Don't modify batch heading, change_list, or Serves line.** Planning decisions. You only edit Files: tick state and prerequisite appends.
+- **Don't modify batch heading, change_list, or Serves line** in the snapshot. Planning decisions. You only edit Files: tick state and prerequisite appends.
 - **Don't build multiple batches.** One batch, then `/sovclose`.
 
 ## Flags during the build
 
 Surface inline as you notice them:
 
-- **Red flags** — surface in chat; if deferred, add `[RED FLAG]` entry to BACKLOG Red flags section.
+- **Red flags** — surface in chat; if deferred, add `[RED FLAG]` entry to BUILD-PLAN Red flags section.
 - **Out-of-scope improvements** — surface in chat. Become Discoveries next planning session.
 - **UX.md changes** the build implies — surface in chat. Don't edit UX.md.
 
 ---
 
-*No-code method — Version 89.*
+*No-code method — Version 90.*

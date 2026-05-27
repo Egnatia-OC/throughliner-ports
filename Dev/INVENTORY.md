@@ -4,7 +4,7 @@ Two-layer split and plugin component list. Living document — current state, no
 
 ## The two-layer split
 
-**Source-of-truth content (per-project):** UX.md, BACKLOG.md, MANIFEST.md, CLAUDE.md, additional SoT docs.
+**Source-of-truth content (per-project):** UX.md, BUILD-PLAN.md, MANIFEST.md, CLAUDE.md, additional SoT docs.
 
 **Mechanical process (plugin):** hooks, procedure docs, skills, slash commands, and bundled artefacts.
 
@@ -17,7 +17,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 | `Reference manual.md` | `Guides/` | Humans-only reference, linked from README |
 | `crash-course/` | `Guides/` | HTML guide for testers/early adopters; derived from Reference manual |
 | `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
-| `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
+| `BUILD-PLAN-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
 | `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
 | `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
 | `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc` |
@@ -29,7 +29,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 | Doc | Access |
 |---|---|
 | `UX.md` | Phase-aware (V67): editable during planning; locked during build (PreToolUse enforced, with footer + proposed-edits carve-outs) |
-| `BACKLOG/` | Read/write |
+| `BUILD-PLAN/` | Read/write |
 | `MANIFEST.md` | Read/write |
 | `test-log/` | Read/write (test-confirmation gate V27). Legacy: flat `TEST-LOG.md` |
 | `build-log/` | Read/write |
@@ -42,43 +42,47 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), unclosed-build detection (V86 — flags active batches with all files ticked but /sovclose never ran; directive prompts user to run /sovclose before new work), concurrent-build detection (V89 — flags active batches with unticked files, meaning a build is mid-progress in another session; asks user whether resuming or working in parallel), OQ staleness detection (V89 — flags open questions whose Surfaced tag is 20+ sessions behind the latest build-log session; nudges toward deliberation), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; V89 — active build, stale OQ count; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27), Red flags tripwire (V54), build-snapshot detection (V90 — checks `_method/active-build.md` for both unclosed and mid-build states; legacy fallback to `Status: active` in BUILD-PLAN), OQ staleness detection (V89), OQ accumulation nudge (V90 — when 3+ OQs exist or any are stale, nudges toward `/sovdeliberate`), user-facing session-open status (V74; V90 adds OQ nudge line), parent-directory CLAUDE.md detection (V71). V43 adds two-layer-permission preamble.
 
-- **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
+- **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` — V90: checks `_method/active-build.md` first, falls back to BUILD-PLAN batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
-  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/sovsetup`-pointing deny message instead of referencing BACKLOG/before-build.
-  - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. Parses BACKLOG via `parse_backlog.py`.
+  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/sovsetup`-pointing deny message instead of referencing BUILD-PLAN/before-build.
+  - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. V90: reads `_method/active-build.md` snapshot first, falls back to BUILD-PLAN via `parse_backlog.py`.
   - (d) MANIFEST read-before-edit gate. V39, V67 build-phase only. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
   - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
   - (f) Test-confirmation gate on build-phase file edits. V27, reframed V66. Denies when an active batch exists and previous-batch TEST-LOG rows are unconfirmed. Build-log session identification with fallback.
   - (g) Project-boundary enforcement. V56. Blocks writes outside project root.
-  - (h) Bash/PowerShell write-guard. V83. Scans Bash/PowerShell commands for file-write patterns (`sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`). Extracts target paths best-effort; applies existing rules (project boundary, locked docs, batch file list, planning source lock). BACKLOG/MANIFEST exempted as always-writable. Null targets (`/dev/null`, `$null`) skipped.
+  - (h) Bash/PowerShell write-guard. V83. Scans Bash/PowerShell commands for file-write patterns (`sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`). Extracts target paths best-effort; applies existing rules (project boundary, locked docs, batch file list, planning source lock). BUILD-PLAN/MANIFEST exempted as always-writable. Null targets (`/dev/null`, `$null`) skipped.
   - V43 mode-aware messaging across all checks: `[No-code method]` prefix, `What to do:` line, mode-aware suffix in permissive modes for (a), (c), (f), (g).
   - V83 skill escape guidance on all phase-lock denies: (a), (b), (c), (h) deny messages name the skill that unlocks the target (`/sovclose`, `/sovplan`, `/sovrecap`, `/sovbuild`).
 
 - **PreToolUse git safety guard.** V34. Separate hook (Bash matcher). Denies `git reset --hard` and `git push --force`/`-f`. Allows `--force-with-lease`. Mode-aware deny messages.
 
-- **PostToolUse hook.** V46, extended V82. Fires after Edit/Write/MultiEdit on structured method docs. Five validation paths: (1) BACKLOG parse validation (V46 — imports `find_top_unticked_batch`), (2) scope-context checks on BACKLOG batch files (Goal/Outputs/Success criteria), (3) TEST-LOG 10-column check, (4) build-log entry required sections, (5) proxy HTML comment header format. All lenient — warnings via `additionalContext`, not denies. Calls `validate_docs.py` for non-BACKLOG validators.
+- **PostToolUse hook.** V46, extended V82. Fires after Edit/Write/MultiEdit on structured method docs. Five validation paths: (1) BUILD-PLAN parse validation (V46 — imports `find_top_unticked_batch`), (2) scope-context checks on BUILD-PLAN batch files (Goal/Outputs/Success criteria), (3) TEST-LOG 10-column check, (4) build-log entry required sections, (5) proxy HTML comment header format. All lenient — warnings via `additionalContext`, not denies. Calls `validate_docs.py` for non-BUILD-PLAN validators.
 
 - **PreCompact hook.** V52. Blocks compaction during active builds (unticked files in top batch). Surfaces handoff prompt. Silent when no build active.
 
-- **UserPromptSubmit hook.** V52. Classifies first prompt (setup / test notes / resume) via keyword detection. Injects routing hint as `additionalContext`. Conservative: test notes need 2+ keyword hits. First-prompt detection via transcript marker.
+- **UserPromptSubmit hook.** V52, extended V90. Classifies first prompt (setup / test notes / resume / deliberate / ideate / plan structural) via keyword detection. Injects routing hint as `additionalContext`. Conservative: test notes need 2+ keyword hits. V90 adds three new classifications for the skill split. First-prompt detection via transcript marker.
 
 ### Procedure docs (phase orchestration)
 
-Nine procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
+Eleven procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
 
-- **planning.md** — V22 origin, procedure doc V66. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1; cold-start skip V63), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V56: doc-first ordering, deferred-material aging. V63: classify-then-load, cold-start gate, reasoning constraint. V78: ordering principles (dependency flow, project-structure, security bias, stale-reference avoidance) and batch-ordering audit.
+- **planning.md** — V22 origin, procedure doc V66. V90: narrowed to structural-only (reorder/split/merge/rescope batches). Test-note sort, drift checks (5, inlined), BUILD-PLAN edits, Discoveries promotion, TEST-LOG row pruning, per-row read-back, recap. OQ work-through and feature requests redirected to `/sovdeliberate` and `/sovideate` respectively. Inline git commit step with `plan:` prefix. V78: ordering principles and batch-ordering audit.
 
-- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BACKLOG, (c) vague changes, (d) split needed.
+- **deliberate.md** — V90 origin. OQ deliberation: per-OQ work-through (promote/drop/re-park), Ideas-section triage, build-log entry for dispositions, inline git commit step with `deliberate:` prefix.
 
-- **build.md** — V25 origin, procedure doc V76. Runs one build batch. Receives JSON from `parse_backlog.py`. Edits per-file, ticks BACKLOG. PreToolUse (c) enforces boundary. Prerequisite and re-batching carve-outs. V54: reads DOC-STRUCTURE at runtime. V56: scope-of-exploration limits. On completion, `[PROMPT]` nudge to `/sovclose`.
+- **ideate.md** — V90 origin. New idea exploration: open-ended discussion, overlap check, fit assessment, routing (OQ/batch/idea/drop). Claude-offered ideas optional. Inline git commit step with `ideate:` prefix.
 
-- **close.md** — V76 origin (absorbed after-build.md). Dual-path: post-build (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry with Performance section, frame-correction sweep, queued-pipeline staleness sweep V89, lost-feature check V89, idea sweep, CLAUDE.md after-build steps, pre-commit checkpoint, `/sovgit` nudge) or planning/general (idea sweep, proxy regeneration, `/sovgit` nudge). Idempotent.
+- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BUILD-PLAN, (c) vague changes, (d) split needed.
+
+- **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BUILD-PLAN, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BUILD-PLAN). Prerequisite and re-batching carve-outs. On completion, `[PROMPT]` nudge to `/sovclose`.
+
+- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). Post-build path writes batch back to BUILD-PLAN as shipped, deletes snapshot, then runs standard close (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, after-build steps, pre-commit checkpoint, `/sovgit` nudge). Planning/general path unchanged. Idempotent.
 
 - **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance.
 
-- **testing.md** — V81 origin. Guided testing walkthrough: load pending User-verified rows, walk one at a time (type-specific guidance), record outcomes directly to TEST-LOG, structured debugging on failures (diagnose + route to BACKLOG). Consent-gated for unrunnable Claude-verified rows.
+- **testing.md** — V81 origin. Guided testing walkthrough: load pending User-verified rows, walk one at a time (type-specific guidance), record outcomes directly to TEST-LOG, structured debugging on failures (diagnose + route to BUILD-PLAN). Consent-gated for unrunnable Claude-verified rows.
 
 - **tersify.md** — V80 origin. Guided doc compression: phase gate, triage pass (rank by size, flag wrong-home/structural/verbose), compact gate, per-doc audit with approval gates. Planning phase only.
 
@@ -90,10 +94,12 @@ Nine procedure docs at `plugin/docs/procedures/`, read into main context on dema
 
 All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
 
-- `/sovsetup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44; sov-prefixed V84).
+- `/sovsetup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BUILD-PLAN/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44; sov-prefixed V84).
 - `/sovresearch` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70** (sov-prefixed V84).
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
-- `/sovplan` — planning procedure (test read-back, drift checks, BACKLOG editing, ordering audit). **Shipped V78.**
+- `/sovplan` — structural planning (test read-back, drift checks, BUILD-PLAN editing, ordering audit). Narrowed V90 to structural-only. **Shipped V78.**
+- `/sovdeliberate` — OQ deliberation (per-OQ work-through, dispositions, build-log entry). **Shipped V90.**
+- `/sovideate` — new idea exploration (discuss, assess fit, route to OQ/batch/idea/drop). **Shipped V90.**
 - `/sovrecap` — pre-build planning recap (before-build procedure). **Shipped V25** (as `/before-build`); renamed V77.
 - `/sovbuild` — lock and build procedure. **Shipped V25** (as `/build`); renamed V77.
 - `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
@@ -104,10 +110,10 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ### Bundled artefacts
 
-- 14 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog, .proxies/build-log, and .proxies/test-log serve as operational indexes for their respective folder-mode docs (V75).
-- `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
+- 14 templates under `plugin/templates/`: CLAUDE, BUILD-PLAN (legacy single-file), BUILD-PLAN/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/build-plan, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/build-plan, .proxies/build-log, and .proxies/test-log serve as operational indexes for their respective folder-mode docs (V75).
+- `plugin/scripts/parse_backlog.py` — shared BUILD-PLAN parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
 - `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections, scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
-- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`).
+- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BUILD-PLAN helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`).
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
@@ -143,4 +149,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 89.*
+*No-code method — Version 90.*

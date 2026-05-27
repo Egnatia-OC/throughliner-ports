@@ -4,7 +4,7 @@ project_state.py — shared helpers for reading project state from disk.
 
 Used by the no-code-method plugin's hooks (pre_tool_use.py, session_start.py,
 and others) to read the project's state files in a consistent way: CLAUDE.md's
-path block, BACKLOG.md (via the parse_backlog.py subprocess), TEST-LOG.md,
+path block, BUILD-PLAN.md (via the parse_backlog.py subprocess), TEST-LOG.md,
 and build-log/.
 
 Centralised here so state-reading logic is defined once and shared across
@@ -49,7 +49,7 @@ from pathlib import Path
 # Match the contents between the opening ```json line and the closing ```.
 PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
 
-# Path to the shared BACKLOG.md parser, resolved relative to THIS module.
+# Path to the shared BUILD-PLAN.md parser, resolved relative to THIS module.
 # project_state.py lives in plugin/scripts/; parse_backlog.py is alongside.
 PARSER_PATH = Path(__file__).parent / "parse_backlog.py"
 
@@ -612,26 +612,26 @@ def get_unconfirmed_previous_session_rows(project_root):
 
 
 def resolve_backlog_dir(project_root):
-    """If the BACKLOG is in folder mode (path block points to
-    BACKLOG/INDEX.md or proxies/backlog.md), return the resolved
-    BACKLOG/ directory path.
+    """If the BUILD-PLAN is in folder mode (path block points to
+    BUILD-PLAN/INDEX.md or proxies/build-plan.md), return the resolved
+    BUILD-PLAN/ directory path.
     Returns None if single-file mode or path block can't be resolved."""
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
     if backlog_path is None:
         return None
     if backlog_path.name.upper() == "INDEX.MD":
         return backlog_path.parent
-    if (backlog_path.name.lower() == "backlog.md"
+    if (backlog_path.name.lower() == "build-plan.md"
             and backlog_path.parent.name == "proxies"):
-        return backlog_path.parent.parent / "BACKLOG"
+        return backlog_path.parent.parent / "BUILD-PLAN"
     return None
 
 
 def is_backlog_file(target_path, project_root):
-    """True if target_path is part of the BACKLOG — either it IS BACKLOG.md
-    (single-file mode) or it's a file inside the BACKLOG/ directory (folder
-    mode). Used by hooks that need to identify BACKLOG edits."""
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    """True if target_path is part of the BUILD-PLAN — either it IS BUILD-PLAN.md
+    (single-file mode) or it's a file inside the BUILD-PLAN/ directory (folder
+    mode). Used by hooks that need to identify BUILD-PLAN edits."""
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
     if backlog_path is None:
         return False
     target_str = str(target_path)
@@ -723,8 +723,8 @@ def is_proxy_file(target_path, project_root):
 
 
 def is_backlog_batch_file(target_path, project_root):
-    """True if target_path is a BACKLOG per-batch file (not INDEX.md).
-    Per-batch files are NNNN-name.md files inside BACKLOG/.
+    """True if target_path is a BUILD-PLAN per-batch file (not INDEX.md).
+    Per-batch files are NNNN-name.md files inside BUILD-PLAN/.
     Used by PostToolUse for scope-context validation."""
     backlog_dir = resolve_backlog_dir(project_root)
     if backlog_dir is None:

@@ -190,7 +190,7 @@ class TestV74SessionOpenStatus:
         assert "Ready to proceed?" in ctx
 
     def test_status_section_single_file_mode(self, adopted_single_file):
-        """Single-file BACKLOG also gets the status summary."""
+        """Single-file BUILD-PLAN also gets the status summary."""
         code, parsed, _ = run_hook(
             "session_start.py", {"cwd": str(adopted_single_file)}
         )

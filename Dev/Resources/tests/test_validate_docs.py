@@ -224,8 +224,8 @@ class TestValidateProxy:
         assert "proxy header" in warnings[0].lower()
 
     def test_operational_proxy_skipped(self):
-        text = "# BACKLOG — Test Project\n\nSome index content.\n"
-        assert validate_proxy(text, "backlog.md") == []
+        text = "# BUILD-PLAN — Test Project\n\nSome index content.\n"
+        assert validate_proxy(text, "build-plan.md") == []
         assert validate_proxy(text, "build-log.md") == []
         assert validate_proxy(text, "test-log.md") == []
 

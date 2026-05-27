@@ -6,32 +6,27 @@ Follow this procedure to close a session. Works after any session type — build
 
 Determine the path:
 
-1. Parse BACKLOG for the top batch with `Status: active` and all Files: ticked (`- [x]` only, no `- [ ]`).
-2. If found → **post-build path** (full close workflow).
-3. If not found → **planning/general path** (lighter close).
+1. Check whether `_method/active-build.md` exists.
+2. If it exists and all Files: are ticked (`- [x]` only, no `- [ ]`) → **post-build path** (full close workflow).
+3. If the snapshot exists but has unticked files → halt (build not finished).
+4. If no snapshot → **planning/general path** (lighter close).
 
 ---
 
 ## Post-build path
 
-Run when a build batch just completed (Status: active, all Files: ticked).
+Run when a build just completed (`_method/active-build.md` exists, all Files: ticked).
 
 ### First action — load project state (minimal)
 
 Load only what's needed for batch identification and idempotency. Defer heavier reads to work-loop steps.
 
 1. `CLAUDE.md` — path block and project notes.
-2. `BACKLOG.md`/`INDEX.md` — find the just-completed batch. In folder mode, read INDEX.md → top per-batch file.
+2. `_method/active-build.md` — the snapshot is the single source of truth for the just-completed batch.
 3. `TEST-LOG.md` — idempotency check. In folder mode (path block → `proxies/test-log.md`): read files in `test-log/`.
 4. `MANIFEST.md` — for the MANIFEST update.
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
-
-### Identify the just-completed batch
-
-Walk Build batches top-to-bottom. The just-completed batch is the topmost with entirely ticked Files: (`- [x]` only, no `- [ ]`).
-
-If topmost batch has unticked files → halt (build not finished). If no fully-ticked batch → halt with note and stop.
 
 ### Idempotency check
 
@@ -55,9 +50,9 @@ TEST-LOG's Session column needs a stable build-session identifier:
    - Modified → update description only if substantive change. **If entry has no `(path)` yet** (legacy), add it now. **If entry has no rationale yet** (legacy), add it now.
    Trivial helpers stay out of MANIFEST.
 
-2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in BACKLOG. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
+2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in `_method/active-build.md`. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 11. Scoped to blast radius of what changed, not a full doc audit.
+3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BUILD-PLAN, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 11. Scoped to blast radius of what changed, not a full doc audit.
 
 4. **Open test session + run Claude tests.** Two sub-steps.
 
@@ -107,24 +102,24 @@ TEST-LOG's Session column needs a stable build-session identifier:
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Set Status: shipped.** Replace the batch's `Status: active` line with `Status: shipped`. This marks the batch as complete for the parser.
+7. **[SILENT] Write batch back to BUILD-PLAN as shipped.** Read `_method/active-build.md`. Write the batch content back into BUILD-PLAN with `Status: shipped` at the top of its body (after heading, before Goal). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
 
-8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BUILD-PLAN batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
-9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BACKLOG batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
+9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BUILD-PLAN batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
 
 10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for items that silently fell off the roadmap:
    - **Parked batches** whose parking rationale references a condition that was just met by this build (e.g. "parked until X ships" where X just shipped). Surface and ask the user if it should be unparked.
-   - **Carried-forward items** in recent build-log entries that were never picked up by subsequent builds or BACKLOG entries. Scan the last 3–5 build-log files for non-empty "Carried forward" sections, check whether each item appears in current BACKLOG or was addressed. Flag orphans.
+   - **Carried-forward items** in recent build-log entries that were never picked up by subsequent builds or BUILD-PLAN entries. Scan the last 3–5 build-log files for non-empty "Carried forward" sections, check whether each item appears in current BUILD-PLAN or was addressed. Flag orphans.
    - Skip if the batch didn't change anything that could satisfy a parking condition, and no recent carried-forward items exist.
 
 11. **End-of-recap flags:**
    - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
    - Out-of-scope improvements.
    - UX.md changes implied (don't edit — flag only).
-   - Red flag concerns (confirm BACKLOG entry written if deferred).
+   - Red flag concerns (confirm BUILD-PLAN entry written if deferred).
 
-12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
+12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BUILD-PLAN (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
 
 13. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
@@ -142,7 +137,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ### Steps
 
-1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BACKLOG (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
+1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BUILD-PLAN (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
 
 2. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Skip if no source docs were edited or no proxies directory exists.
 
@@ -152,13 +147,13 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BUILD-PLAN status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
 - **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
-- **Don't remove completed batches from BACKLOG.** Planning does that next session.
+- **Don't remove completed batches from BUILD-PLAN.** Planning does that next session.
 - **Don't start a new build.**
 - **Don't infer test outcomes.** Write rows with blank Status and `Confirmed Explicitly: No`.
-- **Don't write carve-out labels into BACKLOG change list.** Those are recap-time labels only.
+- **Don't write carve-out labels into BUILD-PLAN change list.** Those are recap-time labels only.
 - **Don't perform git operations.** Commit, tag, and push belong to `/sovgit`.
 
 ## Behavioural rules
@@ -167,4 +162,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 89.*
+*No-code method — Version 90.*

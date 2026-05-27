@@ -1,7 +1,7 @@
 """Tests for plugin/hooks/post_tool_use.py (PostToolUse hook).
 
 The hook fires after Edit/Write/MultiEdit and validates structured
-method docs at write time: BACKLOG parse validation, scope-context
+method docs at write time: BUILD-PLAN parse validation, scope-context
 checks, TEST-LOG column counts, build-log entry structure, and proxy
 format.
 """
@@ -57,7 +57,7 @@ class TestValidBacklogEdit:
     def test_valid_folder_mode_edit_silent(self, adopted_folder):
         root = adopted_folder
         target = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         code, parsed, raw = run_hook(
             "post_tool_use.py", _edit_input(root, target)
@@ -66,7 +66,7 @@ class TestValidBacklogEdit:
 
     def test_valid_single_file_edit_silent(self, adopted_single_file):
         root = adopted_single_file
-        target = str((root / "BACKLOG.md").resolve())
+        target = str((root / "BUILD-PLAN.md").resolve())
         code, parsed, raw = run_hook(
             "post_tool_use.py", _edit_input(root, target)
         )
@@ -119,7 +119,7 @@ class TestProxyValidation:
     def test_operational_backlog_proxy_silent(self):
         root = fixture_path("adopted_test_log_folder")
         target = str(
-            (root / "proxies" / "backlog.md").resolve()
+            (root / "proxies" / "build-plan.md").resolve()
         )
         code, parsed, raw = run_hook(
             "post_tool_use.py", _edit_input(root, target)

@@ -598,7 +598,7 @@
           <li><a href="#rule-placeholders">No placeholders</a></li>
           <li><a href="#rule-ux-principles">Project-specific UX principles</a></li>
           <li><a href="#rule-manifest">MANIFEST starts flat</a></li>
-          <li><a href="#rule-backlog">BACKLOG is a folder</a></li>
+          <li><a href="#rule-build-plan">BUILD-PLAN is a folder</a></li>
           <li><a href="#rule-risk">Risk accepted as a line</a></li>
           <li><a href="#rule-readback">Per-row test read-back</a></li>
         </ul>
@@ -684,14 +684,12 @@
       </div>
 
       <h2 id="planning-sessions">Planning sessions</h2>
-      <p>Planning sessions decide <em>what</em> gets built. Invoke <code>/sovplan</code> to start one. The planning procedure does five things:</p>
-      <ol>
-        <li><strong>Closes the previous test session</strong> &mdash; goes through each test row one by one, confirms pass or fail.</li>
-        <li><strong>Runs five drift checks</strong> &mdash; compares your docs against your codebase to catch anything out of sync.</li>
-        <li><strong>Scans open questions</strong> &mdash; picks up unresolved design questions from previous sessions.</li>
-        <li><strong>Sorts new ideas</strong> &mdash; classifies them as <em>Suggestions</em> (in scope) or <em>Discoveries</em> (out of scope, queued for later).</li>
-        <li><strong>Edits BACKLOG directly</strong> &mdash; records everything in the right place.</li>
-      </ol>
+      <p>Planning sessions decide <em>what</em> gets built. Three skills cover different planning modes:</p>
+      <ul>
+        <li><code>/sovplan</code> &mdash; <strong>structural planning.</strong> Confirms test results, runs drift checks, reorders/splits/merges batches, edits BUILD-PLAN.</li>
+        <li><code>/sovdeliberate</code> &mdash; <strong>OQ deliberation.</strong> Works through accumulated open questions: promote, drop, or re-park each one.</li>
+        <li><code>/sovideate</code> &mdash; <strong>new ideas.</strong> Explores a fresh concept, assesses fit, routes it to an OQ, batch, or idea entry.</li>
+      </ul>
       <p>Source-of-truth docs (like UX.md) are directly editable by Claude during planning &mdash; no ceremony needed. You remove resolved batches and reorganise priorities.</p>
 
       <h2 id="build-sessions">Build sessions</h2>
@@ -699,7 +697,7 @@
 
       <div class="card">
         <h3><code>/sovrecap</code></h3>
-        <p>Pre-build planning recap. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large. BACKLOG stays editable during the recap so you can discuss and adjust.</p>
+        <p>Pre-build planning recap. Validates the <code>Serves UX.md:</code> line, populates inputs and file lists, proposes splits if the batch is too large. BUILD-PLAN stays editable during the recap so you can discuss and adjust.</p>
       </div>
 
       <div class="card">
@@ -720,7 +718,7 @@
       <h2 id="between-sessions">Between sessions</h2>
       <p>You <code>/clear</code>, refresh, and test. Use <code>/sovtest</code> for a guided walkthrough of each pending test, or test on your own and bring outcomes to the next planning session. The cycle repeats.</p>
       <div class="callout">
-        <p><strong>Sessions are stateless; the docs are the memory.</strong> BACKLOG, MANIFEST, TEST-LOG, and build-log tell each session where things stand. Nothing carries over from in-memory state.</p>
+        <p><strong>Sessions are stateless; the docs are the memory.</strong> BUILD-PLAN, MANIFEST, TEST-LOG, and build-log tell each session where things stand. Nothing carries over from in-memory state.</p>
       </div>
     </section>
 
@@ -746,8 +744,8 @@
         </div>
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/><rect x="14" y="15" width="20" height="3" rx="1.5" fill="#D97706"/><rect x="14" y="22" width="16" height="3" rx="1.5" fill="#D97706"/><rect x="14" y="29" width="18" height="3" rx="1.5" fill="#D97706"/></svg>
-          <h3>_method/BACKLOG/</h3>
-          <p>Deferred and queued work. The index (proxies/backlog.md) lists everything; each batch gets its own file with scope and build details.</p>
+          <h3>_method/BUILD-PLAN/</h3>
+          <p>Deferred and queued work. The index (proxies/build-plan.md) lists everything; each batch gets its own file with scope and build details.</p>
         </div>
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/><path d="M15 16h18M15 22h18M15 28h12M15 34h14" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/></svg>
@@ -952,7 +950,7 @@
         <h3>2. The flag taxonomy</h3>
         <p>Every concern Claude raises has exactly one home:</p>
         <ul>
-          <li><strong>Red flags</strong> &rarr; BACKLOG Red flags section. Persistent, visible.</li>
+          <li><strong>Red flags</strong> &rarr; BUILD-PLAN Red flags section. Persistent, visible.</li>
           <li><strong>Suggestions</strong> &rarr; chat. In-scope ideas for the current session.</li>
           <li><strong>Discoveries</strong> &rarr; planning batches. Out-of-scope ideas queued for later.</li>
         </ul>
@@ -1059,9 +1057,9 @@
         <h3>MANIFEST starts flat</h3>
         <p>Most projects never need sections in their MANIFEST. Pre-sectioning forces premature architecture decisions. Start flat; add structure only when navigability demands it.</p>
       </div>
-      <div class="rule" id="rule-backlog">
-        <h3>BACKLOG is a folder, not four files</h3>
-        <p>The proxy index (proxies/backlog.md) gives you one place to see what's outstanding. Per-batch files handle the content volume. The split is about content volume, not category.</p>
+      <div class="rule" id="rule-build-plan">
+        <h3>BUILD-PLAN is a folder, not four files</h3>
+        <p>The proxy index (proxies/build-plan.md) gives you one place to see what's outstanding. Per-batch files handle the content volume. The split is about content volume, not category.</p>
       </div>
       <div class="rule" id="rule-risk">
         <h3>"Risk accepted" as a labelled line</h3>
@@ -1104,7 +1102,7 @@
           <tbody>
             <tr><td>UX.md</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
             <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
-            <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>BUILD-PLAN/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>test-log/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
@@ -1125,8 +1123,8 @@
           <thead><tr><th>Phase</th><th>Recommended mode</th><th>Why</th></tr></thead>
           <tbody>
             <tr><td>Pre-method ideation</td><td>Plan mode</td><td>No edits needed yet.</td></tr>
-            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
-            <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
+            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BUILD-PLAN.</td></tr>
+            <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BUILD-PLAN.</td></tr>
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
             <tr><td>Close (<code>/sovclose</code>)</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
             <tr><td>Git (<code>/sovgit</code>)</td><td>Auto</td><td>Commits and pushes.</td></tr>
@@ -1142,7 +1140,7 @@
       <p>Three layers protect against working in the wrong state:</p>
       <ol>
         <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/sovsetup</code>. It also warns if a parent directory has its own CLAUDE.md, which could affect the session.</li>
-        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/sovsetup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/sovsetup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/sovsetup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/sovsetup</code> first&rdquo; &mdash; not jargon about BUILD-PLAN batches.</li>
         <li><strong>/sovsetup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
       </ol>
       <h3>Parent-directory placement</h3>
@@ -1155,7 +1153,7 @@
       <ul>
         <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules.</li>
         <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard.</li>
-        <li><strong>PostToolUse</strong> &mdash; validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers).</li>
+        <li><strong>PostToolUse</strong> &mdash; validates structured doc format after edits (BUILD-PLAN parse, scope-context, TEST-LOG columns, build-log sections, proxy headers).</li>
         <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>
@@ -1163,7 +1161,7 @@
       <h3>Procedure docs</h3>
       <p>Nine procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
-        <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
+        <li><strong>Planning</strong> &mdash; drift checks, idea routing, BUILD-PLAN edits.</li>
         <li><strong>Before-build</strong> &mdash; batch locking, file list population.</li>
         <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
         <li><strong>Close</strong> &mdash; MANIFEST update, tests, recap, build-log, quality gates.</li>
@@ -1175,7 +1173,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovideate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>
@@ -1195,7 +1193,7 @@
       <ul>
         <li>Iteratively developed. Not yet used to ship a complete app from start to finish.</li>
         <li>Claude follows CLAUDE.md-style instructions reliably about 70% of the time. The method designs around this with read-only docs and reviewable decisions, but the headwind is real.</li>
-        <li>Claude Code's plan panel doesn't show the method's build sequence &mdash; it's internal to Claude Code with no plugin write surface. The actual queue is in BACKLOG.</li>
+        <li>Claude Code's plan panel doesn't show the method's build sequence &mdash; it's internal to Claude Code with no plugin write surface. The actual queue is in BUILD-PLAN.</li>
       </ul>
 
       <h2 id="need-more">When you need more</h2>

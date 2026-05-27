@@ -1,6 +1,6 @@
 ﻿# UX.md — [Project Name] User Experience
 
-Every entry describes a functionality as the user experiences it, and why the user needs it. Entries must correspond to something in the current build — plans belong in `BACKLOG.md`. Only decided content lives here; open questions and placeholders belong in `BACKLOG.md` as planning batches.
+Every entry describes a functionality as the user experiences it, and why the user needs it. Entries must correspond to something in the current build — plans belong in `BUILD-PLAN.md`. Only decided content lives here; open questions and placeholders belong in `BUILD-PLAN.md` as planning batches.
 
 ## Project context
 
@@ -44,4 +44,4 @@ Claude-queued entries or updates. Each block describes the change, its origin, a
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 89.*
+*No-code method — Version 90.*

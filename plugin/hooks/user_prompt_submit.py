@@ -68,6 +68,38 @@ RESUME_PATTERNS = [
     re.compile(r"\bfinish (?:the |this )?(?:build|batch)\b", re.IGNORECASE),
 ]
 
+# V90: Deliberate signals — user wants to work through open questions.
+DELIBERATE_PATTERNS = [
+    re.compile(r"/sovdeliberate\b"),
+    re.compile(r"\bopen questions?\b", re.IGNORECASE),
+    re.compile(r"\bwork through .* (?:OQ|question)", re.IGNORECASE),
+    re.compile(r"\bdeliberate\b", re.IGNORECASE),
+    re.compile(r"\breckon with\b", re.IGNORECASE),
+]
+
+# V90: Ideate signals — user has a new idea or wants to brainstorm.
+IDEATE_PATTERNS = [
+    re.compile(r"/sovideate\b"),
+    re.compile(r"\bnew idea\b", re.IGNORECASE),
+    re.compile(r"\bbrainstorm\b", re.IGNORECASE),
+    re.compile(r"\bwhat if\b", re.IGNORECASE),
+    re.compile(r"\bI'?ve been thinking\b", re.IGNORECASE),
+    re.compile(r"\bfeature request\b", re.IGNORECASE),
+    re.compile(r"\blet'?s add\b", re.IGNORECASE),
+]
+
+# V90: Structural planning signals — user wants to reshape the roadmap.
+PLAN_STRUCTURAL_PATTERNS = [
+    re.compile(r"/sovplan\b"),
+    re.compile(r"\breorder\b", re.IGNORECASE),
+    re.compile(r"\bsplit (?:the |this )?batch", re.IGNORECASE),
+    re.compile(r"\bmerge (?:the |these )?batch", re.IGNORECASE),
+    re.compile(r"\brescope\b", re.IGNORECASE),
+    re.compile(r"\bplanning session\b", re.IGNORECASE),
+    re.compile(r"\breorganis[ez]\b", re.IGNORECASE),
+    re.compile(r"\bdependenc(?:y|ies)\b", re.IGNORECASE),
+]
+
 
 def parse_input():
     try:
@@ -106,6 +138,18 @@ def classify(prompt):
     if count_pattern_hits(prompt, RESUME_PATTERNS) >= 1:
         return ("resume", "Detected resume/continue request.")
 
+    # V90: Deliberate — OQ work-through.
+    if count_pattern_hits(prompt, DELIBERATE_PATTERNS) >= 1:
+        return ("deliberate", "Detected OQ deliberation request.")
+
+    # V90: Ideate — new idea or feature request.
+    if count_pattern_hits(prompt, IDEATE_PATTERNS) >= 1:
+        return ("ideate", "Detected new idea / brainstorm request.")
+
+    # V90: Structural planning — roadmap reshaping.
+    if count_pattern_hits(prompt, PLAN_STRUCTURAL_PATTERNS) >= 1:
+        return ("plan_structural", "Detected structural planning request.")
+
     # Not enough signal for confident classification.
     return None
 
@@ -123,8 +167,21 @@ def build_context(route, detail):
             "primary_intent: test notes."
         ),
         "resume": (
-            "Suggested route: check BACKLOG for an unfinished build batch. "
-            "If one exists, confirm with the user before continuing the build."
+            "Suggested route: check for _method/active-build.md (snapshot) "
+            "or BUILD-PLAN for an unfinished build batch. If one exists, "
+            "confirm with the user before continuing the build."
+        ),
+        "deliberate": (
+            "Suggested route: read and follow the deliberate procedure at "
+            "${CLAUDE_PLUGIN_ROOT}/docs/procedures/deliberate.md."
+        ),
+        "ideate": (
+            "Suggested route: read and follow the ideate procedure at "
+            "${CLAUDE_PLUGIN_ROOT}/docs/procedures/ideate.md."
+        ),
+        "plan_structural": (
+            "Suggested route: read and follow the planning procedure at "
+            "${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md."
         ),
     }
 

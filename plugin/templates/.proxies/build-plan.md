@@ -1,14 +1,14 @@
-﻿# BACKLOG — [Project Name] Deferred Work
+﻿# BUILD-PLAN — [Project Name] Deferred Work
 
-All deferred work in one place. Four sections, top-to-bottom priority. Build batches live in individual files — this index carries the order.
+All deferred work in one place. Five sections, top-to-bottom priority. Build batches live in individual files — this index carries the order.
 
-*Full spec: `DOC-STRUCTURE.md` → BACKLOG structure.*
+*Full spec: `DOC-STRUCTURE.md` → BUILD-PLAN structure.*
 
 ## Red flags
 
 Security, privacy, data integrity, or safety concerns surfaced by Claude and deferred by the user. Removed when addressed. Starts empty.
 
-Format: `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*.
+Format: `DOC-STRUCTURE.md` → *BUILD-PLAN structure → Red flags*.
 
 ## Planning batches
 
@@ -48,5 +48,13 @@ Questions worth tracking that don't block a specific build yet. Each has a quest
 **Next step.** [What resolves or promotes this.]
 -->
 
+## Ideas
+
+Raw, unprocessed ideas captured during any session type. Date + one-liner. Claude can write here regardless of build phase. `/sovideate` or `/sovdeliberate` promotes ideas to OQs or batches.
+
+<!--
+- YYYY-MM-DD — [One-line description of the idea]
+-->
+
 ---
-*No-code method — Version 89.*
+*No-code method — Version 90.*

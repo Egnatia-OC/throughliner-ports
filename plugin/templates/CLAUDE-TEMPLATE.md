@@ -18,7 +18,7 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
 ```json
 {
   "UX.md": "_method/UX.md",
-  "BACKLOG.md": "_method/proxies/backlog.md",
+  "BUILD-PLAN.md": "_method/proxies/build-plan.md",
   "BUILD-LOG.md": "_method/proxies/build-log.md",
   "MANIFEST.md": "_method/MANIFEST.md",
   "TEST-LOG.md": "_method/proxies/test-log.md"
@@ -33,7 +33,7 @@ The `_method/` folder holds the method's working docs. The underscore prefix kee
 
 - **UX.md** — your product described from the user's perspective. Features, rationale, design principles. Source of truth for what gets built.
 - **MANIFEST.md** — glossary of named components in your codebase. Maintained by Claude during builds.
-- **BACKLOG/** — queued work. One file per batch, with scope, file lists, and test plans.
+- **BUILD-PLAN/** — queued work. One file per batch, with scope, file lists, and test plans.
 - **build-log/** — record of each build session: what shipped, decisions made, surprises.
 - **test-log/** — record of tests run after each build and their outcomes.
 - **proxies/** — compact indexes Claude reads first so it doesn't have to load entire docs every session.
@@ -54,4 +54,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 89.*
+*No-code method — Version 90.*

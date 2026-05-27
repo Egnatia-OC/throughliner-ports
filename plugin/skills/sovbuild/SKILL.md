@@ -1,15 +1,15 @@
 ---
 name: sovbuild
-description: Lock and build the top unticked batch from BACKLOG. Argument-less — out-of-order batches are handled by reordering BACKLOG during planning.
+description: Lock and build the top unticked batch from BUILD-PLAN. Argument-less — out-of-order batches are handled by reordering BUILD-PLAN during planning.
 allowed-tools: Read, Edit, Write, MultiEdit, Glob, Grep, Bash
 user-invocable: true
 ---
 
-The user has invoked /sovbuild. Parse BACKLOG, then follow the build procedure.
+The user has invoked /sovbuild. Parse BUILD-PLAN, then follow the build procedure.
 
-**Step 1 — parse BACKLOG.** Resolve path from `CLAUDE.md` path block. Run:
+**Step 1 — parse BUILD-PLAN.** Resolve path from `CLAUDE.md` path block. Run:
 
-    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BACKLOG path>"
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BUILD-PLAN path>"
 
 Both paths quoted (Windows spaces). Parser emits JSON for the top unticked batch, or `{}` if none (structural failures also return `{}`).
 

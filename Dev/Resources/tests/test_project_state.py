@@ -64,7 +64,7 @@ class TestExtractPathBlock:
         block = ps.extract_path_block(claude_text)
         assert isinstance(block, dict)
         assert "UX.md" in block
-        assert block["BACKLOG.md"] == "BACKLOG/INDEX.md"
+        assert block["BUILD-PLAN.md"] == "BUILD-PLAN/INDEX.md"
 
     def test_returns_none_for_no_block(self):
         assert ps.extract_path_block("# Just a heading\nNo code block.") is None
@@ -91,7 +91,7 @@ class TestResolvePathBlockEntry:
 
     def test_resolves_backlog_index(self):
         root = fixture_path("adopted_folder")
-        result = ps.resolve_path_block_entry(root, "BACKLOG.md")
+        result = ps.resolve_path_block_entry(root, "BUILD-PLAN.md")
         assert result is not None
         assert result.name == "INDEX.md"
 
@@ -256,17 +256,17 @@ class TestGetUnconfirmedRows:
 class TestBacklogHelpers:
     def test_folder_mode_index_is_backlog(self):
         root = fixture_path("adopted_folder")
-        target = root / "BACKLOG" / "INDEX.md"
+        target = root / "BUILD-PLAN" / "INDEX.md"
         assert ps.is_backlog_file(target, root)
 
     def test_folder_mode_batch_file_is_backlog(self):
         root = fixture_path("adopted_folder")
-        target = root / "BACKLOG" / "0001-add-settings-screen.md"
+        target = root / "BUILD-PLAN" / "0001-add-settings-screen.md"
         assert ps.is_backlog_file(target, root)
 
     def test_single_file_is_backlog(self):
         root = fixture_path("adopted_single_file")
-        target = root / "BACKLOG.md"
+        target = root / "BUILD-PLAN.md"
         assert ps.is_backlog_file(target, root)
 
     def test_random_file_is_not_backlog(self):
@@ -278,7 +278,7 @@ class TestBacklogHelpers:
         root = fixture_path("adopted_folder")
         d = ps.resolve_backlog_dir(root)
         assert d is not None
-        assert d.name == "BACKLOG"
+        assert d.name == "BUILD-PLAN"
 
     def test_resolve_backlog_dir_single_file_returns_none(self):
         root = fixture_path("adopted_single_file")
@@ -286,16 +286,16 @@ class TestBacklogHelpers:
 
     def test_proxy_as_index_is_backlog(self):
         root = fixture_path("adopted_proxy")
-        target = root / "proxies" / "backlog.md"
+        target = root / "proxies" / "build-plan.md"
         assert ps.is_backlog_file(target, root)
 
     def test_proxy_as_index_batch_file_is_backlog(self):
         root = fixture_path("adopted_proxy")
-        target = root / "BACKLOG" / "0001-first-batch.md"
+        target = root / "BUILD-PLAN" / "0001-first-batch.md"
         assert ps.is_backlog_file(target, root)
 
     def test_resolve_backlog_dir_proxy_mode(self):
         root = fixture_path("adopted_proxy")
         d = ps.resolve_backlog_dir(root)
         assert d is not None
-        assert d.name == "BACKLOG"
+        assert d.name == "BUILD-PLAN"

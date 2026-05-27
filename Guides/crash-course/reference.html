@@ -78,7 +78,7 @@
           <tbody>
             <tr><td>UX.md</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
             <tr><td>Additional source-of-truth docs</td><td><strong>Read/write</strong></td><td><strong>Locked</strong></td></tr>
-            <tr><td>BACKLOG/</td><td>Read/write</td><td>Read/write</td></tr>
+            <tr><td>BUILD-PLAN/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>MANIFEST.md</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>test-log/</td><td>Read/write</td><td>Read/write</td></tr>
             <tr><td>CLAUDE.md</td><td>Read/write</td><td>Read/write</td></tr>
@@ -88,7 +88,7 @@
         </table>
       </div>
 
-      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by <code>/sovbuild</code>).</p>
+      <p><strong>Phase detection:</strong> Planning = no active batch in BUILD-PLAN. Build = <code>Status: active</code> batch present (written by <code>/sovbuild</code>).</p>
       <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony needed.</p>
       <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You review and apply them next planning session.</p>
       <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs regardless of phase.</p>
@@ -105,8 +105,8 @@
           </thead>
           <tbody>
             <tr><td>Pre-method ideation</td><td>Plan mode</td><td>No edits needed yet.</td></tr>
-            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BACKLOG.</td></tr>
-            <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BACKLOG.</td></tr>
+            <tr><td>Planning</td><td>Accept edits</td><td>Planning procedure edits BUILD-PLAN.</td></tr>
+            <tr><td>Before-build</td><td>Accept edits</td><td>Writes file lists into BUILD-PLAN.</td></tr>
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
             <tr><td>After-build</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
           </tbody>
@@ -124,7 +124,7 @@
 
       <ol>
         <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/sovsetup</code>. It also warns if a parent directory has its own CLAUDE.md, detects concurrent builds in progress, and flags open questions that have been sitting too long.</li>
-        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/sovsetup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/sovsetup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/sovsetup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/sovsetup</code> first&rdquo; &mdash; not jargon about BUILD-PLAN batches.</li>
         <li><strong>/sovsetup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
       </ol>
 
@@ -140,7 +140,7 @@
       <ul>
         <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules, flags concurrent builds and stale open questions.</li>
         <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard.</li>
-        <li><strong>PostToolUse</strong> &mdash; validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers).</li>
+        <li><strong>PostToolUse</strong> &mdash; validates structured doc format after edits (BUILD-PLAN parse, scope-context, TEST-LOG columns, build-log sections, proxy headers).</li>
         <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>
@@ -148,7 +148,7 @@
       <h3>Procedure docs</h3>
       <p>Nine procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
-        <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
+        <li><strong>Planning</strong> &mdash; drift checks, idea routing, BUILD-PLAN edits.</li>
         <li><strong>Before-build</strong> &mdash; batch review, file list population.</li>
         <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
         <li><strong>Close</strong> &mdash; MANIFEST update, tests, recap, build-log.</li>
@@ -160,7 +160,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovideate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>
@@ -186,7 +186,7 @@
       <ul>
         <li>Iteratively developed. Not yet used to ship a complete app from start to finish.</li>
         <li>Claude follows CLAUDE.md-style instructions reliably about 70% of the time. The method designs around this with read-only docs and reviewable decisions, but the headwind is real.</li>
-        <li>Claude Code's plan panel doesn't show the method's build sequence &mdash; it's internal to Claude Code with no plugin write surface. The actual queue is in BACKLOG.</li>
+        <li>Claude Code's plan panel doesn't show the method's build sequence &mdash; it's internal to Claude Code with no plugin write surface. The actual queue is in BUILD-PLAN.</li>
       </ul>
     </section>
 

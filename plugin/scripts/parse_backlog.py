@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-parse_backlog.py — shared BACKLOG parser for the no-code-method plugin.
+parse_backlog.py — shared BUILD-PLAN parser for the no-code-method plugin.
 
 Locates the top unticked build batch and emits its data as JSON on stdout.
 The "top unticked batch" is the first build batch (in priority order) whose
@@ -9,13 +9,13 @@ The "top unticked batch" is the first build batch (in priority order) whose
 placeholders (no `Files:` section or empty `Files:` list) and batches
 that are complete (all `- [x]`) are also skipped past.
 
-Supports two BACKLOG formats (auto-detected):
+Supports two BUILD-PLAN formats (auto-detected):
 
-  **Single-file (legacy):** A single `BACKLOG.md` with full batch content
+  **Single-file (legacy):** A single `BUILD-PLAN.md` with full batch content
   inline in the `## Build batches` section. Detected when the section
   contains `### Batch:` headings.
 
-  **Folder (V48+):** A `BACKLOG/` folder with `INDEX.md` (carrying the
+  **Folder (V48+):** A `BUILD-PLAN/` folder with `INDEX.md` (carrying the
   build-order list as backtick-wrapped filenames) and per-batch `.md`
   files. Detected when `## Build batches` contains reference lines
   (`` - `NNNN-name.md` ``) instead of `### Batch:` headings.
@@ -28,7 +28,7 @@ Three call sites consume this parser (V25, extended V46, V66):
     current batch's declared file list for the boundary check, and for
     the test-confirmation gate's active-batch detection.
   - The PostToolUse hook (V46) imports `find_top_unticked_batch` directly
-    (not subprocess) to validate BACKLOG format after each edit.
+    (not subprocess) to validate BUILD-PLAN format after each edit.
 
 The parser is deliberately lenient: any failure (missing file, unparseable
 section, malformed batch) results in `{}` on stdout and exit 0. Callers
@@ -37,8 +37,8 @@ nothing to build, and the PreToolUse hook falls through to allow.
 
 CLI:
 
-    python parse_backlog.py <path/to/BACKLOG.md>
-    python parse_backlog.py <path/to/BACKLOG/INDEX.md>
+    python parse_backlog.py <path/to/BUILD-PLAN.md>
+    python parse_backlog.py <path/to/BUILD-PLAN/INDEX.md>
 
 Output (stdout, JSON, compact):
 
@@ -67,7 +67,7 @@ Output (stdout, JSON, compact):
   Paths are returned relative as-written; callers resolve against the
   project root.
 
-Spec: DOC-STRUCTURE.md → BACKLOG structure → Build batches, the
+Spec: DOC-STRUCTURE.md → BUILD-PLAN structure → Build batches, the
 **`Changes:` delimiter** (V47), and the **`Files:` sub-section**.
 """
 
@@ -124,7 +124,7 @@ PREREQ_LABEL = "[Prerequisite, not in plan]"
 
 # Template placeholder detection: matches strings entirely wrapped in
 # square brackets, like `[path/to/file]` or `[short descriptive name]`
-# from BACKLOG-TEMPLATE.md. Real batch headings and real file paths
+# from BUILD-PLAN-TEMPLATE.md. Real batch headings and real file paths
 # never match. Legitimate bracket labels ([Requested], [Suggested],
 # [Prerequisite, not in plan]) live in build recaps or file summaries,
 # not in batch headings or file paths — outside this pattern's scope.
@@ -325,22 +325,22 @@ def find_top_unticked_batch(text):
 
 
 def resolve_backlog_dir_from_index(index_path: Path) -> Path:
-    """Resolve the BACKLOG/ directory that holds per-batch files.
+    """Resolve the BUILD-PLAN/ directory that holds per-batch files.
 
-    When the index is INDEX.md inside BACKLOG/, the dir is the parent.
-    When the index is a proxy at proxies/backlog.md, the BACKLOG/ dir
-    is a sibling of the proxies/ directory (i.e. _method/BACKLOG/).
+    When the index is INDEX.md inside BUILD-PLAN/, the dir is the parent.
+    When the index is a proxy at proxies/build-plan.md, the BUILD-PLAN/ dir
+    is a sibling of the proxies/ directory (i.e. _method/BUILD-PLAN/).
     Falls back to the index's parent if neither pattern matches."""
     if index_path.name.upper() == "INDEX.MD":
         return index_path.parent
-    if (index_path.name.lower() == "backlog.md"
+    if (index_path.name.lower() == "build-plan.md"
             and index_path.parent.name == "proxies"):
-        return index_path.parent.parent / "BACKLOG"
+        return index_path.parent.parent / "BUILD-PLAN"
     return index_path.parent
 
 
 def find_top_unticked_batch_folder(index_path: Path):
-    """Folder mode: read the index (INDEX.md or proxies/backlog.md),
+    """Folder mode: read the index (INDEX.md or proxies/build-plan.md),
     extract the ordered list of batch file references from
     `## Build batches`, read each batch file in order, and return the
     first with unticked files. Returns {} if none found."""
@@ -378,15 +378,15 @@ def find_top_unticked_batch_folder(index_path: Path):
 
 
 def is_folder_mode(index_path: Path) -> bool:
-    """Detect whether the BACKLOG is in folder mode. True if the file is
-    a proxy-as-index (backlog.md in a proxies/ dir) or named INDEX.md
+    """Detect whether the BUILD-PLAN is in folder mode. True if the file is
+    a proxy-as-index (build-plan.md in a proxies/ dir) or named INDEX.md
     inside a directory, AND the `## Build batches` section contains batch
     reference lines OR no `### Batch:` headings (empty or reference-only).
     Falls back to single-file mode on any ambiguity."""
     name_upper = index_path.name.upper()
-    if name_upper != "INDEX.MD" and name_upper != "BACKLOG.MD":
+    if name_upper != "INDEX.MD" and name_upper != "BUILD-PLAN.MD":
         return False
-    if name_upper == "BACKLOG.MD" and index_path.parent.name != "proxies":
+    if name_upper == "BUILD-PLAN.MD" and index_path.parent.name != "proxies":
         return False
     text = safe_read_text(index_path)
     if text is None:
@@ -403,8 +403,8 @@ def is_folder_mode(index_path: Path) -> bool:
 
 
 def find_top_unticked_batch_from_path(path: Path):
-    """Auto-detecting entry point. Accepts a path to either BACKLOG.md
-    (single-file) or BACKLOG/INDEX.md (folder mode). Returns the same
+    """Auto-detecting entry point. Accepts a path to either BUILD-PLAN.md
+    (single-file) or BUILD-PLAN/INDEX.md (folder mode). Returns the same
     dict shape as `find_top_unticked_batch`."""
     if is_folder_mode(path):
         return find_top_unticked_batch_folder(path)

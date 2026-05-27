@@ -164,7 +164,7 @@ class TestLockedDocEnforcement:
 
     def test_edit_backlog_allowed(self, adopted_folder):
         root = adopted_folder
-        bl_path = str((root / "BACKLOG" / "INDEX.md").resolve())
+        bl_path = str((root / "BUILD-PLAN" / "INDEX.md").resolve())
         data = _edit_input(root, bl_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -227,7 +227,7 @@ class TestServesLineCheck:
     def test_valid_serves_line_allowed(self, adopted_folder):
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -240,7 +240,7 @@ class TestServesLineCheck:
     def test_invalid_serves_line_denied(self, adopted_folder):
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -265,7 +265,7 @@ class TestServesLineCheck:
         """V54: Serves PATTERNS.md with a valid entry passes."""
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -279,7 +279,7 @@ class TestServesLineCheck:
         """V54: Serves PATTERNS.md with a nonexistent entry is denied."""
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -293,7 +293,7 @@ class TestServesLineCheck:
         """V54: Serves line matching is case-insensitive for additional docs."""
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -307,7 +307,7 @@ class TestServesLineCheck:
         """Serves MANIFEST.md or other writable docs are not validated."""
         root = adopted_folder
         bl_path = str(
-            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -400,7 +400,7 @@ class TestPlanningPhasePermissions:
 
     def test_backlog_editable_during_planning(self, planning_phase):
         root = planning_phase
-        bl_path = str((root / "BACKLOG" / "INDEX.md").resolve())
+        bl_path = str((root / "BUILD-PLAN" / "INDEX.md").resolve())
         data = _edit_input(root, bl_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -447,7 +447,7 @@ class TestPlanningPhasePermissions:
 
 class TestUnadoptedPlanningDeny:
     """V71: in an unadopted folder (no method footer), the planning-phase
-    source lock message says 'run /sovsetup' instead of referencing BACKLOG."""
+    source lock message says 'run /sovsetup' instead of referencing BUILD-PLAN."""
 
     def test_unadopted_empty_folder_deny_mentions_setup(self, tmp_path):
         target = tmp_path / "index.html"
@@ -462,7 +462,7 @@ class TestUnadoptedPlanningDeny:
         data = _edit_input(tmp_path, str(target))
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
-        assert "BACKLOG" not in reason
+        assert "BUILD-PLAN" not in reason
 
     def test_adopted_folder_deny_mentions_backlog(self, planning_phase):
         root = planning_phase
@@ -470,7 +470,7 @@ class TestUnadoptedPlanningDeny:
         data = _edit_input(root, target)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
-        assert "BACKLOG" in reason
+        assert "BUILD-PLAN" in reason
 
     def test_unadopted_mode_aware(self, tmp_path):
         target = tmp_path / "index.html"
@@ -602,9 +602,9 @@ class TestBashWriteGuard:
         _assert_deny(parsed, "source-code file locked during the planning")
 
     def test_redirect_to_method_doc_allowed_during_planning(self, planning_phase):
-        """Redirect to a method doc (BACKLOG) during planning is allowed."""
+        """Redirect to a method doc (BUILD-PLAN) during planning is allowed."""
         bl_path = str(
-            (planning_phase / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+            (planning_phase / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
         )
         data = _bash_input(planning_phase, f'echo "x" > "{bl_path}"')
         code, parsed, raw = run_hook("pre_tool_use.py", data)
@@ -641,9 +641,9 @@ class TestBashWriteGuard:
         _assert_allow(code, raw)
 
     def test_redirect_to_backlog_allowed(self, adopted_folder):
-        """Redirect to BACKLOG (always writable) during build is allowed."""
+        """Redirect to BUILD-PLAN (always writable) during build is allowed."""
         bl_path = str(
-            (adopted_folder / "BACKLOG" / "INDEX.md").resolve()
+            (adopted_folder / "BUILD-PLAN" / "INDEX.md").resolve()
         )
         data = _bash_input(adopted_folder, f'echo "x" > "{bl_path}"')
         code, parsed, raw = run_hook("pre_tool_use.py", data)

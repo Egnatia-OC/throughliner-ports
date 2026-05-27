@@ -12,7 +12,7 @@ Three modes, each writes a single JSON object to stdout:
 
   check  Recursively scan cwd for any file whose name matches one of the
          destination filenames (CLAUDE.md, UX.md, MANIFEST.md, TEST-LOG.md)
-         or directory names (BACKLOG, build-log). No writes. Output:
+         or directory names (BUILD-PLAN, build-log). No writes. Output:
          {target_path, conflicts, ready}.
 
   write  Copy the bundled templates from plugin/templates/ into cwd root,
@@ -67,7 +67,7 @@ METHOD_DIR_FILENAMES = (
 
 # Directory names that conflict if they already exist inside _method/.
 METHOD_DIR_DIRNAMES = (
-    "BACKLOG",
+    "BUILD-PLAN",
     "build-log",
     "test-log",
     "proxies",
@@ -78,7 +78,7 @@ METHOD_DIR = "_method"
 
 # Mapping: template filename (in plugin/templates/) -> destination filename.
 # CLAUDE.md goes at project root; others go inside _method/.
-# BACKLOG and build-log are handled separately (folder scaffolds).
+# BUILD-PLAN and build-log are handled separately (folder scaffolds).
 TEMPLATE_TO_ROOT = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
 )
@@ -88,9 +88,9 @@ TEMPLATE_TO_METHOD_DIR = (
 )
 
 # Proxy templates: .proxies/<name>.md → _method/proxies/<name>.md.
-# backlog.md and build-log.md serve as indexes for their respective folders.
+# build-plan.md and build-log.md serve as indexes for their respective folders.
 PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md",
-                   "backlog.md", "build-log.md")
+                   "build-plan.md", "build-log.md")
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */sovsetup five-case branching* wording for stability in the
@@ -135,8 +135,8 @@ def find_conflicts(target_dir: Path):
         for dirname in METHOD_DIR_DIRNAMES:
             if (method_dir / dirname).is_dir():
                 conflicts.append(f"{METHOD_DIR}/{dirname}")
-        if (method_dir / "BACKLOG.md").is_file():
-            conflicts.append(f"{METHOD_DIR}/BACKLOG.md")
+        if (method_dir / "BUILD-PLAN.md").is_file():
+            conflicts.append(f"{METHOD_DIR}/BUILD-PLAN.md")
         if (method_dir / "TEST-LOG.md").is_file():
             conflicts.append(f"{METHOD_DIR}/TEST-LOG.md")
 
@@ -146,14 +146,14 @@ def find_conflicts(target_dir: Path):
             conflicts.append(name)
     if (target_dir / "TEST-LOG.md").is_file():
         conflicts.append("TEST-LOG.md")
-    if (target_dir / "BACKLOG").is_dir():
-        conflicts.append("BACKLOG")
+    if (target_dir / "BUILD-PLAN").is_dir():
+        conflicts.append("BUILD-PLAN")
     if (target_dir / "build-log").is_dir():
         conflicts.append("build-log")
     if (target_dir / "test-log").is_dir():
         conflicts.append("test-log")
-    if (target_dir / "BACKLOG.md").is_file():
-        conflicts.append("BACKLOG.md")
+    if (target_dir / "BUILD-PLAN.md").is_file():
+        conflicts.append("BUILD-PLAN.md")
 
     return sorted(set(conflicts))
 
@@ -247,7 +247,7 @@ def cmd_write(target_dir: Path) -> int:
         (method_dir / dest_name).write_text(content, encoding="utf-8")
         written.append(f"{METHOD_DIR}/{dest_name}")
 
-    backlog_dir = method_dir / "BACKLOG"
+    backlog_dir = method_dir / "BUILD-PLAN"
     backlog_dir.mkdir(exist_ok=True)
 
     build_log_dir = method_dir / "build-log"
@@ -279,7 +279,7 @@ def cmd_write(target_dir: Path) -> int:
         "files": written,
         "directories_created": [
             f"{METHOD_DIR}/",
-            f"{METHOD_DIR}/BACKLOG/",
+            f"{METHOD_DIR}/BUILD-PLAN/",
             f"{METHOD_DIR}/build-log/",
             f"{METHOD_DIR}/test-log/",
             f"{METHOD_DIR}/planning/drafts/",

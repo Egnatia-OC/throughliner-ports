@@ -8,7 +8,7 @@ write-guard (V83):
   (5) V29 adoption gate — fires first. Denies Edit/Write/MultiEdit on
       non-scaffold-path files when the folder lacks a method footer in
       CLAUDE.md AND has substantial work. Allows Edit/Write/MultiEdit on
-      scaffold paths (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md,
+      scaffold paths (UX.md, BUILD-PLAN.md, BUILD-LOG.md, MANIFEST.md,
       TEST-LOG.md, CLAUDE.md) so /sovsetup's scaffolding works.
 
   (7) Project-boundary check (V56) — blocks writes targeting paths outside
@@ -21,7 +21,7 @@ write-guard (V83):
       planning phase, source-of-truth docs are directly editable.
 
   (2) Serves-line check (V22, V54) — validates `Serves <DOC>: <entry>.`
-      lines in BACKLOG edits against the named doc's entries.
+      lines in BUILD-PLAN edits against the named doc's entries.
 
   (4) Test-confirmation gate (V27, reframed V66) — blocks build-phase file
       edits when an active batch exists AND TEST-LOG.md has unconfirmed rows
@@ -91,12 +91,12 @@ SCAFFOLD_METHOD_DIR = "_method"
 
 SCAFFOLD_METHOD_NAMES = frozenset({
     "UX.md",
-    "BACKLOG.md",
+    "BUILD-PLAN.md",
     "MANIFEST.md",
 })
 
 SCAFFOLD_METHOD_DIRS = frozenset({
-    "BACKLOG",
+    "BUILD-PLAN",
     "build-log",
     "test-log",
     "proxies",
@@ -107,7 +107,7 @@ SCAFFOLD_METHOD_DIRS = frozenset({
 # Path-block keys treated as writable. Everything else in the path block —
 # UX.md, plus any additional source-of-truth docs declared by the project —
 # is locked.
-WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md"}
+WRITABLE_LOGICAL_NAMES = {"BUILD-PLAN.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG.md"}
 
 # --- V43 mode-aware deny messaging ---
 
@@ -147,7 +147,7 @@ NEXT_SECTION_PATTERN = re.compile(r"^## ", re.MULTILINE)
 ENTRY_HEADING_PATTERN = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 
 # `Serves UX.md: <name(s)>.` line in a build batch. Names may be comma-
-# separated (DOC-STRUCTURE.md → BACKLOG.md structure → Build batches: "listing
+# separated (DOC-STRUCTURE.md → BUILD-PLAN.md structure → Build batches: "listing
 # the entries it implements"). The trailing period is part of the canonical
 # format. The regex tolerates trailing whitespace.
 SERVES_UX_PATTERN = re.compile(r"^Serves UX\.md:\s*(.+?)\.\s*$", re.MULTILINE)
@@ -196,9 +196,9 @@ V39_DENY_MARKER = "BLOCKED [V39 read-before-edit]"
 # a MANIFEST entry. The gate is meant for codebase elements, not method-
 # spine docs. Without this exemption, a mis-placed entry could brick the
 # build cycle (/sovclose can't edit MANIFEST, batch-executor can't tick
-# BACKLOG, etc.).
+# BUILD-PLAN, etc.).
 V39_EXEMPT_LOGICAL_NAMES = {
-    "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md", "BUILD-LOG.md", "CLAUDE.md"
+    "BUILD-PLAN.md", "MANIFEST.md", "TEST-LOG.md", "BUILD-LOG.md", "CLAUDE.md"
 }
 
 # PARSER_PATH, PARSER_TIMEOUT_SECONDS, TEST_LOG_DATA_ROW_PATTERN, and
@@ -454,7 +454,7 @@ def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> 
         "What to do: if this is a typo, fix the name. If the entry "
         "genuinely doesn't exist yet, the feature has skipped the "
         "planning-batch → proposed-edit step — route through a planning "
-        "batch in BACKLOG.md, propose the edit into `UX.md` by hand during "
+        "batch in BUILD-PLAN.md, propose the edit into `UX.md` by hand during "
         "the next planning session, and propose the build batch after that."
         + known_block
     )
@@ -487,7 +487,7 @@ def make_serves_doc_deny_reason(
         "What to do: if this is a typo, fix the name. If the entry "
         "genuinely doesn't exist yet, the feature has skipped the "
         "planning-batch → proposed-edit step — route through a planning "
-        f"batch in BACKLOG.md, propose the edit into `{doc_name}` by hand "
+        f"batch in BUILD-PLAN.md, propose the edit into `{doc_name}` by hand "
         "during the next planning session, and propose the build batch "
         "after that."
         + known_block
@@ -500,8 +500,8 @@ def check_serves_lines(
     tool_name: str,
     tool_input: dict,
 ):
-    """If the edit targets a BACKLOG file (BACKLOG.md in single-file mode,
-    or any file inside BACKLOG/ in folder mode), validate every
+    """If the edit targets a BUILD-PLAN file (BUILD-PLAN.md in single-file mode,
+    or any file inside BUILD-PLAN/ in folder mode), validate every
     `Serves <DOC>: <entry>.` line in the proposed new content against the
     named doc's entries.
 
@@ -511,7 +511,7 @@ def check_serves_lines(
     excluding structural sections.
 
     Returns:
-      - None if the check doesn't apply (target isn't a BACKLOG file;
+      - None if the check doesn't apply (target isn't a BUILD-PLAN file;
         no Serves lines in the new content; every name matches; docs
         can't be resolved or read).
       - A deny-reason string if one or more names miss.
@@ -654,8 +654,8 @@ def make_boundary_deny_reason(target_path, batch, files_entries,
         "complete or be tested cleanly without it — halt and surface in "
         "chat with a one-line justification (prerequisite carve-out). On "
         "the user's okay, append the file to this batch's `Files:` list "
-        "in BACKLOG.md with a trailing `[Prerequisite, not in plan]` "
-        "label, then retry the edit. The hook re-parses BACKLOG.md at "
+        "in BUILD-PLAN.md with a trailing `[Prerequisite, not in plan]` "
+        "label, then retry the edit. The hook re-parses BUILD-PLAN.md at "
         "edit time, so the new entry takes effect immediately.\n\n"
         "If this file is NOT a prerequisite, stop. Finish the current "
         "batch with `/sovclose` and `/sovgit`, then invoke `/sovplan` to "
@@ -664,40 +664,82 @@ def make_boundary_deny_reason(target_path, batch, files_entries,
     )
 
 
-def check_batch_file_list(project_root, target_path, permission_mode=""):
-    """V25: enforce the batch file-list boundary on Edit/Write/MultiEdit.
+def _parse_snapshot_file_paths(project_root):
+    """V90: parse file paths from _method/active-build.md snapshot.
 
-    Returns a deny-reason string if target_path isn't on the current top
-    unticked batch's Files: list. Returns None to allow (or to fall
-    through silently in lenient cases).
+    Returns a set of resolved absolute path strings, or None if no
+    snapshot exists. The snapshot uses the same Files: format as BUILD-PLAN
+    batch entries: `- [ ] \`<path>\` — <summary>`."""
+    snapshot_path = project_root / "_method" / "active-build.md"
+    text = safe_read_text(snapshot_path)
+    if text is None:
+        return None
+    paths = set()
+    for m in re.finditer(r"^- \[[ x]\]\s+`([^`]+)`", text, re.MULTILINE):
+        rel = m.group(1).strip()
+        if not rel:
+            continue
+        try:
+            resolved = (project_root / rel).resolve()
+        except OSError:
+            continue
+        paths.add(str(resolved))
+    return paths if paths else None
+
+
+def check_batch_file_list(project_root, target_path, permission_mode=""):
+    """V25/V90: enforce the batch file-list boundary on Edit/Write/MultiEdit.
+
+    Returns a deny-reason string if target_path isn't on the current
+    batch's Files: list. Returns None to allow (or to fall through
+    silently in lenient cases).
+
+    V90: checks _method/active-build.md first (snapshot architecture),
+    falls back to BUILD-PLAN parser for pre-V90 projects.
 
     Behaviour:
-      - Exempt: BACKLOG.md and MANIFEST.md (always writable per editing-
-        surfaces).
-      - Open mode: no active batch (parser returns {}) → allow. The check
-        only enforces when there IS a batch to enforce against.
+      - Exempt: BUILD-PLAN.md, MANIFEST.md, and _method/active-build.md
+        (always writable per editing-surfaces).
+      - Open mode: no active batch (no snapshot + parser returns {}) →
+        allow. The check only enforces when there IS a batch to enforce
+        against.
       - Otherwise: target's resolved path must be in the batch's Files:
-        set (case-sensitive comparison, matching the locked-doc check)."""
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
-    if backlog_path is None or not backlog_path.exists():
-        return None  # lenient: no BACKLOG to enforce against
-
-    # Exempt BACKLOG files (Claude needs to tick files, append entries,
+        set (case-sensitive comparison)."""
+    # Exempt BUILD-PLAN files (Claude needs to tick files, append entries,
     # etc.) and MANIFEST.md (always writable). In folder mode, any file
-    # inside BACKLOG/ is exempt.
+    # inside BUILD-PLAN/ is exempt.
     if is_backlog_file(target_path, project_root):
         return None
     manifest_path = resolve_path_block_entry(project_root, "MANIFEST.md")
     if manifest_path is not None and str(target_path) == str(manifest_path):
         return None
 
+    # Exempt the snapshot file itself — build procedure ticks files in it.
+    snapshot_path = (project_root / "_method" / "active-build.md").resolve()
+    if str(target_path) == str(snapshot_path):
+        return None
+
+    # V90: try snapshot first.
+    snapshot_paths = _parse_snapshot_file_paths(project_root)
+    if snapshot_paths is not None:
+        if str(target_path) in snapshot_paths:
+            return None
+        return make_boundary_deny_reason(
+            target_path, {}, [], permission_mode
+        )
+
+    # Legacy: BUILD-PLAN-based detection.
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    if backlog_path is None or not backlog_path.exists():
+        return None
+
     batch = run_parser(backlog_path)
     if not isinstance(batch, dict) or not batch:
-        return None  # open mode: no active batch
+        return None
 
     files_entries = batch.get("files") or []
     if not isinstance(files_entries, list) or not files_entries:
-        return None  # lenient: malformed batch, nothing to enforce
+        return None
 
     allowed_paths = set()
     for entry in files_entries:
@@ -713,10 +755,10 @@ def check_batch_file_list(project_root, target_path, permission_mode=""):
         allowed_paths.add(str(resolved))
 
     if not allowed_paths:
-        return None  # lenient: every entry was malformed
+        return None
 
     if str(target_path) in allowed_paths:
-        return None  # on the list — allow
+        return None
 
     return make_boundary_deny_reason(target_path, batch, files_entries,
                                      permission_mode)
@@ -900,7 +942,7 @@ def check_read_before_edit(project_root, target_path, hook_input):
     writable spine docs declared in CLAUDE.md's path block, skip the gate
     even if MANIFEST happens to list it. This is a defensive guard — the
     build cycle relies on /sovclose editing MANIFEST.md, batch-executor
-    ticking BACKLOG.md, etc., and a stray MANIFEST entry for one of those
+    ticking BUILD-PLAN.md, etc., and a stray MANIFEST entry for one of those
     docs shouldn't deadlock the cycle."""
     # Spine-doc exemption.
     for logical_name in V39_EXEMPT_LOGICAL_NAMES:
@@ -930,7 +972,7 @@ def is_scaffold_path(target_path, project_root):
     """V29/V72: True if target_path is a scaffold path that /sovsetup writes.
 
     CLAUDE.md is at project root. Other spine docs are inside _method/.
-    Also allows writes inside _method/'s subdirectories (BACKLOG/,
+    Also allows writes inside _method/'s subdirectories (BUILD-PLAN/,
     build-log/, proxies/, planning/, research/).
 
     Legacy support: also allows root-level spine docs and dirs (pre-0087
@@ -953,7 +995,7 @@ def is_scaffold_path(target_path, project_root):
     # and dirs so /sovsetup case 4 can read/migrate them.
     if len(parts) == 1:
         return parts[0] in SCAFFOLD_METHOD_NAMES
-    if len(parts) >= 2 and parts[0] in {"BACKLOG", "build-log"}:
+    if len(parts) >= 2 and parts[0] in {"BUILD-PLAN", "build-log"}:
         return True
     return False
 
@@ -1018,10 +1060,13 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
 
 
 def detect_phase(project_root):
-    """Determine the project's current phase from the BACKLOG batch status.
+    """Determine the project's current phase.
 
-    Returns "build" if the top batch has Status: active. Returns "planning"
-    otherwise (no batch, queued batch, or BACKLOG unreadable).
+    V90: checks _method/active-build.md first (snapshot architecture).
+    Falls back to Status: active in BUILD-PLAN for pre-V90 projects.
+
+    Returns "build" if a build snapshot exists or the top batch has
+    Status: active. Returns "planning" otherwise.
 
     Phase drives two permission flips:
       - Planning: source-of-truth docs (UX.md, additional) are directly
@@ -1029,7 +1074,11 @@ def detect_phase(project_root):
       - Build: source-of-truth docs are locked (with carve-outs); batch
         file list is open.
     """
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    snapshot_path = project_root / "_method" / "active-build.md"
+    if snapshot_path.exists():
+        return "build"
+
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
     if backlog_path is None or not backlog_path.exists():
         return "planning"
     batch = run_parser(backlog_path)
@@ -1097,9 +1146,9 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
         "and cannot be edited during the planning phase. Source code is only "
         "editable during a build, via the batch's `Files:` list.\n\n"
         "What to do: if you're planning a change to this file, describe it "
-        "in a build batch in `BACKLOG.md`, then invoke `/sovrecap` to "
+        "in a build batch in `BUILD-PLAN.md`, then invoke `/sovrecap` to "
         "review the batch and `/sovbuild` to activate it. If you need to "
-        "edit project docs (UX.md, BACKLOG, MANIFEST, etc.), those are "
+        "edit project docs (UX.md, BUILD-PLAN, MANIFEST, etc.), those are "
         "open during planning."
         + _mode_suffix(permission_mode)
     )
@@ -1108,7 +1157,7 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
 def make_unadopted_planning_deny_reason(target_path, permission_mode=""):
     """Deny message when source code is edited in an unadopted folder
     (no method footer in CLAUDE.md). Points at /sovsetup instead of
-    BACKLOG/sovrecap, which don't exist yet."""
+    BUILD-PLAN/sovrecap, which don't exist yet."""
     return (
         f"[No-code method] BLOCKED: `{target_path}` cannot be edited — "
         "this folder hasn't been set up with the no-code method yet.\n\n"
@@ -1128,9 +1177,9 @@ def check_planning_phase_source_lock(project_root, target_path,
     blocked, None to allow.
 
     V71: when the folder is unadopted (no method footer in CLAUDE.md),
-    the deny message points at /sovsetup instead of BACKLOG/sovrecap.
+    the deny message points at /sovsetup instead of BUILD-PLAN/sovrecap.
 
-    Only called when phase == "planning". BACKLOG and MANIFEST exemptions
+    Only called when phase == "planning". BUILD-PLAN and MANIFEST exemptions
     are handled by the caller (check_batch_file_list) before reaching here,
     but is_path_block_doc covers them too as a safety net."""
     if is_path_block_doc(target_path, project_root):
@@ -1231,7 +1280,7 @@ def check_test_confirmation_gate(project_root):
     Reframed in V66: originally gated Task→batch-executor invocations.
     Now gates build-phase file edits directly, since subagents were
     removed and builds run in the main conversation."""
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
     if backlog_path is None or not backlog_path.exists():
         return None
 
@@ -1409,7 +1458,7 @@ def _make_bash_planning_source_deny(raw_path, is_adopted, permission_mode=""):
     return (
         f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}`, "
         "a source-code file locked during the planning phase.\n\n"
-        "What to do: describe the change in a build batch in `BACKLOG.md`, "
+        "What to do: describe the change in a build batch in `BUILD-PLAN.md`, "
         "then invoke `/sovrecap` to review the batch and `/sovbuild` to "
         "activate it."
         + _mode_suffix(permission_mode)
@@ -1583,7 +1632,7 @@ def main() -> int:
                     and not is_proposed_edits_section_edit(tool_name, tool_input, target_path)):
                 return emit_deny(make_reason(logical_name, permission_mode))
 
-    # V22: Serves-line check fires on BACKLOG.md edits whose new content
+    # V22: Serves-line check fires on BUILD-PLAN.md edits whose new content
     # contains one or more `Serves UX.md: <entry>.` lines. Anywhere the
     # check can't deterministically decide, it returns None and we allow.
     serves_deny_reason = check_serves_lines(
@@ -1604,7 +1653,7 @@ def main() -> int:
 
     # V25/V67: batch file-list boundary check — phase-aware.
     # Build phase: deny any edit whose target isn't on the batch's Files:
-    # list (with BACKLOG.md and MANIFEST.md exempt).
+    # list (with BUILD-PLAN.md and MANIFEST.md exempt).
     # Planning phase: deny edits to source-code files (anything not a
     # path-block doc, CLAUDE.md, or research/ file).
     if phase == "build":
