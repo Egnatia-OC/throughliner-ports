@@ -98,6 +98,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0103 | /tersify skill for doc compression | Guided triage + audit for reducing token cost in SOT docs. Planning-phase only. **Shipped v98.** |
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. **Shipped v99.** |
 | 0094 | Guided testing and debugging procedure | `/test` skill + `testing.md` procedure doc. User-verified walkthrough, direct TEST-LOG recording, structured debugging. **Shipped v100.** |
+| 0104 | Sov-prefix rename for remaining skills | `/setup` → `/sovsetup`, `/research` → `/sovresearch`, `/test` → `/sovtest`, `/tersify` → `/sovtersify`. All references updated across ~30 files. **Shipped v105.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -109,21 +110,21 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0088 — Build E2E test
 
-**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/setup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
+**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/sovsetup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
 
 **Inputs.** `Dev/Resources/research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section — note: written at v78, skill names `/build` etc. are pre-rename). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer`.
 
-**Pre-requisite.** The burner app was scaffolded at plugin v0.67.0 (root-level docs, flat TEST-LOG.md, no `_method/`, no proxies). 19 batches have shipped since. Delete the existing scaffolding and run `/setup` fresh before testing. This also resolves the stale `Status: active` on the old batch.
+**Pre-requisite.** The burner app was scaffolded at plugin v0.67.0 (root-level docs, flat TEST-LOG.md, no `_method/`, no proxies). 19 batches have shipped since. Delete the existing scaffolding and run `/sovsetup` fresh before testing. This also resolves the stale `Status: active` on the old batch.
 
 **Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
 
 **Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` sets Status: active and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, test-log session file written. Phase-aware permissions work. Observations documented.
 
-**Risks / dependencies.** Burner app needs fresh `/setup` (see pre-requisite). Risk: `/setup` case 1 itself may surface issues — document those too.
+**Risks / dependencies.** Burner app needs fresh `/sovsetup` (see pre-requisite). Risk: `/sovsetup` case 1 itself may surface issues — document those too.
 
 ---
 
-### 0095 — /test skill E2E validation
+### 0095 — /sovtest skill E2E validation
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
@@ -136,20 +137,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0104 — Sov-prefix rename for remaining skills
-
-**Goal.** Rename `/setup` → `/sovsetup`, `/research` → `/sovresearch`, `/test` → `/sovtest`, `/tersify` → `/sovtersify`. Completes the naming convention designed in v91 that only partially shipped.
-
-**Inputs.** v91 build-log (design decision). Current skill directories at `plugin/skills/setup/`, `plugin/skills/research/`, `plugin/skills/test/`, `plugin/skills/tersify/`.
-
-**Outputs.** Four renamed skill directories. All references updated: INVENTORY, README, Reference manual, crash-course HTML, universal-behaviour.md, procedure docs, CLAUDE-TEMPLATE.md, hooks (UserPromptSubmit keyword detection). Tests updated.
-
-**Success criteria.** All four skills respond under new names. No references to old names in plugin code or docs. UserPromptSubmit keyword detection updated. Tests pass.
-
-**Risks / dependencies.** None. Same pattern as 0099.
 
 ---
 
@@ -255,9 +242,9 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 **Design constraints surfaced (v97 ideation, 2026-05-27).** Robustness audit of the hook layer against non-English consumer projects. Two hard constraints identified:
 
-1. **Git `core.quotepath` for non-ASCII filenames.** Drift check 1 (`planning.md` § direct-edit detection) tells Claude to run `git diff` and match output paths against the batch file list. Git's default escapes non-ASCII characters with octal notation (`créer` → `cr\303\251er`). That match happens in Claude's context window, not in Python hooks — `Path.resolve()` can't normalise it. Fix: `/setup` or `SessionStart` sets `git config --local core.quotepath false`. Without it, Claude would hit mangled paths and fire unnecessary confirmation prompts. Hooks themselves are safe — they resolve paths through `pathlib`, not git output. Path slash normalisation (forward vs. backslash) is also already handled via `Path.resolve()` on both sides of every comparison.
+1. **Git `core.quotepath` for non-ASCII filenames.** Drift check 1 (`planning.md` § direct-edit detection) tells Claude to run `git diff` and match output paths against the batch file list. Git's default escapes non-ASCII characters with octal notation (`créer` → `cr\303\251er`). That match happens in Claude's context window, not in Python hooks — `Path.resolve()` can't normalise it. Fix: `/sovsetup` or `SessionStart` sets `git config --local core.quotepath false`. Without it, Claude would hit mangled paths and fire unnecessary confirmation prompts. Hooks themselves are safe — they resolve paths through `pathlib`, not git output. Path slash normalisation (forward vs. backslash) is also already handled via `Path.resolve()` on both sides of every comparison.
 
-2. **Control tokens are English-only.** `Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`, and every other metadata keyword the hooks regex-match must remain in English regardless of content language. A user translating `Status: active` to `Estado: activo` silently breaks phase enforcement — the parser returns empty, and the hook treats an active batch as nonexistent. The language setting (if built) must document this constraint explicitly, and `/setup` scaffolding should note it in the consumer CLAUDE.md.
+2. **Control tokens are English-only.** `Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`, and every other metadata keyword the hooks regex-match must remain in English regardless of content language. A user translating `Status: active` to `Estado: activo` silently breaks phase enforcement — the parser returns empty, and the hook treats an active batch as nonexistent. The language setting (if built) must document this constraint explicitly, and `/sovsetup` scaffolding should note it in the consumer CLAUDE.md.
 
 **Source.** `Dev/Resources/research/ResearchFindingsMult (1).md` (§§ 3.1–3.3, 4.2). Hook audit confirmed path normalisation and encoding are handled; quotepath and control-token immutability are the two real gaps for internationalisation.
 

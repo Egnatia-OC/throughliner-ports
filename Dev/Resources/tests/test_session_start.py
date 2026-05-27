@@ -40,7 +40,7 @@ class TestTier2GapFlag:
         assert parsed is not None
         ctx = parsed["hookSpecificOutput"]["additionalContext"]
         assert "Partial method shape" in ctx
-        assert "/setup" in ctx
+        assert "/sovsetup" in ctx
 
     def test_bad_path_block(self, tier2_bad_pathblock):
         code, parsed, raw = run_hook(
@@ -111,7 +111,7 @@ class TestV29UnadoptedAdvisory:
         assert code == 0
         assert parsed is not None
         assert "systemMessage" in parsed
-        assert "/setup" in parsed["systemMessage"]
+        assert "/sovsetup" in parsed["systemMessage"]
         ctx = parsed["hookSpecificOutput"]["additionalContext"]
         assert "unadopted" in ctx.lower()
 

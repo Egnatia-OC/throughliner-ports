@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v105-sov-prefix-rename.md](v105-sov-prefix-rename.md) — 2026-05-27 — Sov-prefix rename for remaining skills
 - [v104-session-protocol-convergence.md](v104-session-protocol-convergence.md) — 2026-05-27 — Dev-side session-protocol procedural convergence
 - [v103-ideation-new-batches-and-oqs.md](v103-ideation-new-batches-and-oqs.md) — 2026-05-27 — Ideation: eight new batches (0104–0111), PostToolUseFailure parked
 - [v102-bash-write-guard.md](v102-bash-write-guard.md) — 2026-05-27 — Bash write-guard + skill escape guidance

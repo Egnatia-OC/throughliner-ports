@@ -12,7 +12,7 @@ is installed. Two phases:
     foreign CLAUDE.md, or >5 non-infra files recursively) emits the V29
     advisory and short-circuits: `systemMessage` (user-visible warning)
     plus `additionalContext` (directive into Claude's context), both
-    pointing at `/setup`. Advisory only — SessionStart has no halt
+    pointing at `/sovsetup`. Advisory only — SessionStart has no halt
     mechanism (the `systemMessage` field is a warning, `continue: false`
     terminates the session entirely, and `UserPromptSubmit`-in-plugins is
     broken per GitHub anthropics/claude-code#10225 → #12151). Real
@@ -39,7 +39,7 @@ is installed. Two phases:
         or CLAUDE.md is present but its fenced JSON path block can't be
         parsed. The hook injects the universal-behaviour rules plus a
         single-paragraph gap flag naming the specific missing piece and
-        pointing at /setup.
+        pointing at /sovsetup.
 
       Tier 3 (complete method project)
         CLAUDE.md is present and its fenced JSON path block parses. The
@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 83
+PLUGIN_METHOD_VERSION = 84
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -777,7 +777,7 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
 def build_unadopted_advisory_context(project_root: Path) -> str:
     """Compose the additionalContext block for an unadopted-with-work
     folder. Strong directive: do nothing substantive, route the user to
-    /setup. Pairs with the systemMessage user-visible warning."""
+    /sovsetup. Pairs with the systemMessage user-visible warning."""
     parent_warning = ""
     parent_claude_dirs = detect_parent_claude_md(project_root)
     if parent_claude_dirs:
@@ -795,11 +795,11 @@ def build_unadopted_advisory_context(project_root: Path) -> str:
         "**This folder has not been adopted by the no-code-method plugin, "
         "and it contains existing work that the plugin would put at risk "
         "if you proceed normally.** No method-aware behaviour is active "
-        "until the user runs `/setup`.\n\n"
+        "until the user runs `/sovsetup`.\n\n"
         f"Project root: `{project_root}`"
         + parent_warning + "\n\n"
         "**Required behaviour for this session:**\n\n"
-        "- Direct the user to run `/setup` before doing anything else.\n"
+        "- Direct the user to run `/sovsetup` before doing anything else.\n"
         "- Do NOT attempt Edit, Write, or MultiEdit "
         "tool calls. The PreToolUse hook will deny them anyway, and "
         "attempting them creates confusing churn.\n"
@@ -807,9 +807,9 @@ def build_unadopted_advisory_context(project_root: Path) -> str:
         "disable the plugin for this project: type `/plugin`, go to the "
         "Installed tab, and toggle it off. This is a Claude Code built-in "
         "— it stops all plugin hooks from firing in this folder.\n\n"
-        "Until `/setup` runs (or the plugin is disabled for this project), "
+        "Until `/sovsetup` runs (or the plugin is disabled for this project), "
         "the only useful actions are conversational responses pointing the "
-        "user toward `/setup` or explaining how to disable the plugin."
+        "user toward `/sovsetup` or explaining how to disable the plugin."
     )
 
 
@@ -818,10 +818,10 @@ def build_unadopted_system_message() -> str:
     Kept short — system messages are noisier than additionalContext and
     we want this one to land."""
     return (
-        "[no-code-method] Folder has work but isn't set up — run /setup "
+        "[no-code-method] Folder has work but isn't set up — run /sovsetup "
         "to start, or disable the plugin for this project via /plugin → "
         "Installed → toggle off. Edit/Write/MultiEdit calls will be "
-        "denied until /setup completes."
+        "denied until /sovsetup completes."
     )
 
 
@@ -981,7 +981,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             "hasn't been kicked off yet — these docs still contain template "
             "placeholders. Per `universal-behaviour.md` → *Routing "
             "main-Claude's openers* (the *Template state* detect-first "
-            "rule): recommend `/setup` to seed `UX.md`, `BACKLOG.md`, "
+            "rule): recommend `/sovsetup` to seed `UX.md`, `BACKLOG.md`, "
             "and the first build batch. Wait for the user's okay before "
             "proceeding."
         )
@@ -996,7 +996,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             lines.append(f"  - `{logical_name}` is at Version {v}")
         lines.append(
             "  This is a tripwire, not an auto-fix. Suggest the user run "
-            "`/setup` if structural drift is suspected (case 3 — migrate "
+            "`/sovsetup` if structural drift is suspected (case 3 — migrate "
             "to current spec), or update the footers if the content is "
             "current."
         )
@@ -1157,7 +1157,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs, project_root=None) -> str:
         next_step = (
             "Set up `CLAUDE.md`'s path block as fenced JSON (see "
             "`templates/CLAUDE-TEMPLATE.md` in the plugin), or run "
-            "`/setup` to bring an existing project up to spec."
+            "`/sovsetup` to bring an existing project up to spec."
         )
     elif not has_claude and spine_docs:
         gap = (
@@ -1167,7 +1167,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs, project_root=None) -> str:
             "spine docs."
         )
         next_step = (
-            "Run `/setup` to bring this project up to spec — it will "
+            "Run `/sovsetup` to bring this project up to spec — it will "
             "scaffold the missing `CLAUDE.md` and align the existing docs "
             "with the current structural rules."
         )
@@ -1180,14 +1180,14 @@ def build_tier_2_gap_flag(claude_text, spine_docs, project_root=None) -> str:
         next_step = (
             "Either update `CLAUDE.md`'s path block to match the current "
             "fenced-JSON format (see `templates/CLAUDE-TEMPLATE.md`), or "
-            "run `/setup` to bring everything up to spec."
+            "run `/sovsetup` to bring everything up to spec."
         )
     else:
         gap = (
             "Some method-shaped files were found but the project structure "
             "is incomplete."
         )
-        next_step = "Run `/setup` — it routes to the right case across new-project, migration, and refresh."
+        next_step = "Run `/sovsetup` — it routes to the right case across new-project, migration, and refresh."
 
     parent_warning = ""
     if project_root is not None:

@@ -16,10 +16,10 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 |---|---|---|
 | `Reference manual.md` | `Guides/` | Humans-only reference, linked from README |
 | `crash-course/` | `Guides/` | HTML guide for testers/early adopters; derived from Reference manual |
-| `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
-| `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
-| `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
-| `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/setup` |
+| `CLAUDE-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
+| `BACKLOG-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
+| `MANIFEST-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
+| `UX-TEMPLATE.md` | Plugin | Template, scaffolded by `/sovsetup` |
 | `ADDITIONAL-DOC-TEMPLATE.md` | Plugin | Template, scaffolded by `/add-sot-doc` |
 | `DOC-STRUCTURE.md` | Plugin | Bundled at `plugin/docs/DOC-STRUCTURE.md` |
 | `VOCABULARY.md` | Plugin | Bundled at `plugin/docs/VOCABULARY.md` |
@@ -35,18 +35,18 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 | `build-log/` | Read/write |
 | `CLAUDE.md` | Read/write; path block in fenced JSON |
 | Additional SoT docs | Phase-aware (V67): editable during planning; locked during build |
-| `_method/proxies/` | Read/write; regenerated during planning and `/setup`. Legacy: `.proxies/` at root |
+| `_method/proxies/` | Read/write; regenerated during planning and `/sovsetup`. Legacy: `.proxies/` at root |
 | Source-code files | Phase-aware (V67): locked during planning; editable during build via batch Files: list |
 
 ## Plugin components — final list
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
 
 - **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
-  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/setup`-pointing deny message instead of referencing BACKLOG/before-build.
+  - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/sovsetup`-pointing deny message instead of referencing BACKLOG/before-build.
   - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. Parses BACKLOG via `parse_backlog.py`.
   - (d) MANIFEST read-before-edit gate. V39, V67 build-phase only. Three path shapes (single, multi, directory-prefix). Block-once via transcript scan.
   - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
@@ -88,16 +88,16 @@ Eight procedure docs at `plugin/docs/procedures/`, read into main context on dem
 
 All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
 
-- `/setup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44).
-- `/research` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70.**
+- `/sovsetup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44; sov-prefixed V84).
+- `/sovresearch` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70** (sov-prefixed V84).
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/sovplan` — planning procedure (test read-back, drift checks, BACKLOG editing, ordering audit). **Shipped V78.**
 - `/sovrecap` — pre-build planning recap (before-build procedure). **Shipped V25** (as `/before-build`); renamed V77.
 - `/sovbuild` — lock and build procedure. **Shipped V25** (as `/build`); renamed V77.
 - `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
 - `/sovgit` — git walkthrough (commit/tag/push, solo or team). **Shipped V76.**
-- `/test` — guided testing walkthrough (pending User-verified rows, debugging on failure). **Shipped V81.**
-- `/tersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80.**
+- `/sovtest` — guided testing walkthrough (pending User-verified rows, debugging on failure). **Shipped V81** (sov-prefixed V84).
+- `/sovtersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80** (sov-prefixed V84).
 
 ### Bundled artefacts
 
@@ -140,4 +140,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 83.*
+*No-code method — Version 84.*

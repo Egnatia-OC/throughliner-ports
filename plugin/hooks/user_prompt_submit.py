@@ -52,7 +52,7 @@ TEST_NOTE_THRESHOLD = 2
 
 # Setup signals: user wants to initialise or adopt.
 SETUP_PATTERNS = [
-    re.compile(r"/setup\b"),
+    re.compile(r"/sovsetup\b"),
     re.compile(r"\bnew project\b", re.IGNORECASE),
     re.compile(r"\bset (?:this |it )?up\b", re.IGNORECASE),
     re.compile(r"\binitiali[sz]e\b", re.IGNORECASE),
@@ -114,7 +114,7 @@ def build_context(route, detail):
     """Build the additionalContext string for the classification."""
     route_instructions = {
         "setup": (
-            "Suggested route: recommend /setup. Wait for the user's okay "
+            "Suggested route: recommend /sovsetup. Wait for the user's okay "
             "before proceeding."
         ),
         "test_notes": (

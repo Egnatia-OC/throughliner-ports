@@ -447,14 +447,14 @@ class TestPlanningPhasePermissions:
 
 class TestUnadoptedPlanningDeny:
     """V71: in an unadopted folder (no method footer), the planning-phase
-    source lock message says 'run /setup' instead of referencing BACKLOG."""
+    source lock message says 'run /sovsetup' instead of referencing BACKLOG."""
 
     def test_unadopted_empty_folder_deny_mentions_setup(self, tmp_path):
         target = tmp_path / "index.html"
         target.write_text("<html></html>")
         data = _edit_input(tmp_path, str(target))
         code, parsed, raw = run_hook("pre_tool_use.py", data)
-        _assert_deny(parsed, "/setup")
+        _assert_deny(parsed, "/sovsetup")
 
     def test_unadopted_empty_folder_deny_no_backlog_reference(self, tmp_path):
         target = tmp_path / "index.html"

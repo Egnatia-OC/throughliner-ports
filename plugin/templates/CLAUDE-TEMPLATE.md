@@ -4,7 +4,7 @@ Claude Code auto-loads this file on session start. The plugin's canonical docs l
 
 ## Product overview
 
-<!-- Populated during /setup. Update milestones during planning as the project evolves. -->
+<!-- Populated during /sovsetup. Update milestones during planning as the project evolves. -->
 
 **What it is.** 
 **Who it's for.** 
@@ -41,4 +41,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 83.*
+*No-code method — Version 84.*

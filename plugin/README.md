@@ -12,12 +12,12 @@ Run `/plugins` to confirm `no-code-method` is in the *Installed* tab.
 
 ## Slash commands
 
-- `/setup` — scaffold or refresh method docs
+- `/sovsetup` — scaffold or refresh method docs
 - `/sovplan` — planning session (test read-back, drift checks, BACKLOG editing)
 - `/sovrecap` — pre-build recap (file list, verification burden)
 - `/sovbuild` — lock and build the top batch
 - `/sovclose` — close a build (quality gates, record-keeping)
 - `/sovgit` — commit, tag, push walkthrough
-- `/test` — guided testing walkthrough (pending User-verified rows)
-- `/research` — triggered research query flow
-- `/tersify` — guided doc compression (triage + audit)
+- `/sovtest` — guided testing walkthrough (pending User-verified rows)
+- `/sovresearch` — triggered research query flow
+- `/sovtersify` — guided doc compression (triage + audit)

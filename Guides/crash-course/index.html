@@ -544,7 +544,7 @@
         </button>
         <ul class="outline-children">
           <li><a href="#spine-docs">The spine docs</a></li>
-          <li><a href="#also-created">Also created by /setup</a></li>
+          <li><a href="#also-created">Also created by /sovsetup</a></li>
           <li><a href="#additional-sot">Additional source-of-truth docs</a></li>
         </ul>
       </li>
@@ -656,10 +656,10 @@
 
       <h2 id="quick-start">Quick start</h2>
       <ol class="steps">
-        <li><a href="#install">Install the plugin</a> and run <code>/setup</code> in your project folder.</li>
+        <li><a href="#install">Install the plugin</a> and run <code>/sovsetup</code> in your project folder.</li>
         <li>Describe your app. The plugin walks you through four prompts.</li>
         <li>Run <code>/sovrecap</code> to review your first batch, then <code>/sovbuild</code> to lock and build it.</li>
-        <li>Test with <code>/test</code> for guided walkthroughs, or test on your own and bring results to your next planning session.</li>
+        <li>Test with <code>/sovtest</code> for guided walkthroughs, or test on your own and bring results to your next planning session.</li>
       </ol>
     </section>
 
@@ -713,7 +713,7 @@
       </div>
 
       <h2 id="between-sessions">Between sessions</h2>
-      <p>You <code>/clear</code>, refresh, and test. Use <code>/test</code> for a guided walkthrough of each pending test, or test on your own and bring outcomes to the next planning session. The cycle repeats.</p>
+      <p>You <code>/clear</code>, refresh, and test. Use <code>/sovtest</code> for a guided walkthrough of each pending test, or test on your own and bring outcomes to the next planning session. The cycle repeats.</p>
       <div class="callout">
         <p><strong>Sessions are stateless; the docs are the memory.</strong> BACKLOG, MANIFEST, TEST-LOG, and build-log tell each session where things stand. Nothing carries over from in-memory state.</p>
       </div>
@@ -725,7 +725,7 @@
     <hr class="section-divider">
     <section id="sec-docs">
       <h1>Your docs</h1>
-      <p>After <code>/setup</code>, your project has <code>CLAUDE.md</code> at root and a <code>_method/</code> folder containing your guardrail docs. Together they hold your design decisions, queued work, and test outcomes so Claude knows where things stand at the start of every session.</p>
+      <p>After <code>/sovsetup</code>, your project has <code>CLAUDE.md</code> at root and a <code>_method/</code> folder containing your guardrail docs. Together they hold your design decisions, queued work, and test outcomes so Claude knows where things stand at the start of every session.</p>
 
       <h2 id="spine-docs">The spine docs</h2>
       <div class="doc-grid">
@@ -761,7 +761,7 @@
         </div>
       </div>
 
-      <h2 id="also-created">Also created by /setup</h2>
+      <h2 id="also-created">Also created by /sovsetup</h2>
       <div class="doc-grid">
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#FCE7F3" stroke="#DB2777" stroke-width="2"/><path d="M24 14l-6 10h12l-6 10" stroke="#DB2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -823,7 +823,7 @@
       </ol>
 
       <h2 id="first-session">Your first session</h2>
-      <p>Open Claude Code in your project folder and run <code>/setup</code>. The plugin detects your situation and runs the matching dialogue:</p>
+      <p>Open Claude Code in your project folder and run <code>/sovsetup</code>. The plugin detects your situation and runs the matching dialogue:</p>
 
       <div class="table-wrap">
         <table>
@@ -879,7 +879,7 @@
       <p>A worked example showing how a real project goes from empty folder to first build and beyond.</p>
 
       <h2 id="starting-scratch">Starting from scratch</h2>
-      <p>Taskflow begins as an empty folder. Running <code>/setup</code> walks through four prompts:</p>
+      <p>Taskflow begins as an empty folder. Running <code>/sovsetup</code> walks through four prompts:</p>
 
       <div class="card">
         <h3>1. Product overview</h3>
@@ -1135,9 +1135,9 @@
       <h2 id="safety-net">The safety net</h2>
       <p>Three layers protect against working in the wrong state:</p>
       <ol>
-        <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/setup</code>. It also warns if a parent directory has its own CLAUDE.md, which could affect the session.</li>
-        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/setup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/setup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
-        <li><strong>/setup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
+        <li><strong>SessionStart</strong> checks whether the folder is adopted (has method docs) or unadopted. Unadopted folders with substantial work get an advisory pointing at <code>/sovsetup</code>. It also warns if a parent directory has its own CLAUDE.md, which could affect the session.</li>
+        <li><strong>PreToolUse</strong> blocks Edit/Write/MultiEdit until <code>/sovsetup</code> has run. In unadopted folders, the deny message says &ldquo;run <code>/sovsetup</code> first&rdquo; &mdash; not jargon about BACKLOG batches.</li>
+        <li><strong>/sovsetup</strong> detects the case (empty, existing code, foreign docs, already managed) and runs the right dialogue. Nothing destructive without confirmation; every destructive option backs up first.</li>
       </ol>
       <h3>Parent-directory placement</h3>
       <p>Claude Code inherits CLAUDE.md files from parent directories. If your project folder is inside another project&rsquo;s tree, the parent&rsquo;s instructions will bleed into your session. Keep project folders at independent locations.</p>
@@ -1166,7 +1166,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/setup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/research</code>, <code>/tersify</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovresearch</code>, <code>/sovtersify</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

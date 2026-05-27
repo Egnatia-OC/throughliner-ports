@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 Scaffold the no-code-method spine docs into the user's project (cwd), and
-classify the project root into one of /setup's four cases.
+classify the project root into one of /sovsetup's four cases.
 
 Three modes, each writes a single JSON object to stdout:
 
   detect-case  V29/V44: classify the current project root into one of
-               /setup's cases. Output: {case: 1-4, case_name, target_path,
-               details}. No writes. Used by the /setup procedure to dispatch
+               /sovsetup's cases. Output: {case: 1-4, case_name, target_path,
+               details}. No writes. Used by the /sovsetup procedure to dispatch
                to the right dialogue branch on entry.
 
   check  Recursively scan cwd for any file whose name matches one of the
@@ -21,7 +21,7 @@ Three modes, each writes a single JSON object to stdout:
          target_path} on success or {written: false, reason, ...} on
          failure.
 
-The /setup procedure coordinates: run detect-case on entry, branch to the
+The /sovsetup procedure coordinates: run detect-case on entry, branch to the
 right dialogue, then run check + write (cases 1 and 2) or perform
 case-specific work (cases 3, 4). This script never asks the user
 anything directly — it has no terminal access. Interaction is the
@@ -31,7 +31,7 @@ ADDITIONAL-DOC-TEMPLATE.md is intentionally not scaffolded here. It lands
 in projects via /add-sot-doc when the project decides it needs one.
 
 History: forked from plugin/skills/init-project/scripts/scaffold.py
-(V19) at V29, when /init-project was renamed and expanded into /setup.
+(V19) at V29, when /init-project was renamed and expanded into /sovsetup.
 """
 
 import argparse
@@ -42,7 +42,7 @@ from pathlib import Path
 
 # Make plugin/scripts/ importable so we can pull in the shared
 # project-state helpers (V29 extraction). This script lives at
-# plugin/skills/setup/scripts/scaffold.py, so plugin/scripts/ is three
+# plugin/skills/sovsetup/scripts/scaffold.py, so plugin/scripts/ is three
 # levels up from the script's parent directory.
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
 from project_state import (  # noqa: E402 — must follow sys.path insert
@@ -93,7 +93,7 @@ PROXY_TEMPLATES = ("ux.md", "manifest.md", "test-log.md", "research.md",
                    "backlog.md", "build-log.md")
 
 # Human-readable case name for each case number. Mirrors V29.md's
-# *Outputs* → */setup five-case branching* wording for stability in the
+# *Outputs* → */sovsetup five-case branching* wording for stability in the
 # setup procedure dialogue.
 CASE_NAMES = {
     ADOPT_CASE_EMPTY: "empty folder",
@@ -106,7 +106,7 @@ CASE_NAMES = {
 def templates_dir() -> Path:
     """Return the bundled templates directory.
 
-    This script lives at plugin/skills/setup/scripts/scaffold.py, so
+    This script lives at plugin/skills/sovsetup/scripts/scaffold.py, so
     plugin/templates/ is three levels up from the script's parent
     directory."""
     return Path(__file__).resolve().parents[3] / "templates"
@@ -166,7 +166,7 @@ def emit(payload, *, exit_code: int = 0) -> int:
 
 
 def cmd_detect_case(target_dir: Path) -> int:
-    """V29/V44: classify target_dir into one of /setup's four cases.
+    """V29/V44: classify target_dir into one of /sovsetup's four cases.
 
     Output includes the case number, the human-readable case name, the
     resolved target path, and a `details` dict with case-specific signal
@@ -294,13 +294,13 @@ def cmd_write(target_dir: Path) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Scaffold no-code-method templates into a project, "
-                    "and classify project state for /setup.",
+                    "and classify project state for /sovsetup.",
     )
     parser.add_argument(
         "mode",
         choices=("detect-case", "check", "write"),
         help=(
-            "detect-case: classify project into one of /setup's 4 cases; "
+            "detect-case: classify project into one of /sovsetup's 4 cases; "
             "check: scan for existing method files; "
             "write: copy templates in"
         ),

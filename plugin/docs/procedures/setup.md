@@ -1,6 +1,6 @@
-# /setup procedure — no-code method
+# /sovsetup procedure — no-code method
 
-Follow this procedure when the user runs `/setup`. Bring a folder under the method's discipline.
+Follow this procedure when the user runs `/sovsetup`. Bring a folder under the method's discipline.
 
 ## Framing: the method adopts the folder
 
@@ -15,7 +15,7 @@ Do NOT read any plugin docs until AFTER case dispatch. The `detect-case` script 
 ## First action — detect case
 
 ```
-python "${CLAUDE_PLUGIN_ROOT}/skills/setup/scripts/scaffold.py" detect-case
+python "${CLAUDE_PLUGIN_ROOT}/skills/sovsetup/scripts/scaffold.py" detect-case
 ```
 
 Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": {...}}`. Don't re-classify.
@@ -95,7 +95,7 @@ CLAUDE.md present but no method footer. Probably from Claude Code's `/init` — 
 
 ### Case 4 — already method-managed
 
-Footer present. User ran `/setup` anyway — refresh, habit, or version mismatch.
+Footer present. User ran `/sovsetup` anyway — refresh, habit, or version mismatch.
 
 **First — detect template state:**
 1. CLAUDE.md footer → `user_v`.
@@ -144,4 +144,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 83.*
+*No-code method — Version 84.*

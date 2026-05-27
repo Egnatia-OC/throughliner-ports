@@ -1,12 +1,12 @@
 # Testing procedure — no-code method
 
-Follow this procedure when the user invokes `/test`. Guides non-coders through pending User-verified TEST-LOG rows one at a time, turning each Test Description into actionable steps and routing failures through structured debugging.
+Follow this procedure when the user invokes `/sovtest`. Guides non-coders through pending User-verified TEST-LOG rows one at a time, turning each Test Description into actionable steps and routing failures through structured debugging.
 
 ## Scope
 
-`/test` handles **User-verified rows only** — rows with `Verifier: User` and `Status:` blank (open). Claude-verified rows are already run and confirmed by `/sovclose`.
+`/sovtest` handles **User-verified rows only** — rows with `Verifier: User` and `Status:` blank (open). Claude-verified rows are already run and confirmed by `/sovclose`.
 
-**Exception — unrunnable Claude-verified rows.** If a Claude-verified row wasn't completed by `/sovclose` (Status still blank), `/test` may encounter it. Before guiding the user through it manually, explain why Claude couldn't auto-run it and **ask whether the user wants to walk through it manually or skip it**. Never silently hand off Claude's testing work to the user.
+**Exception — unrunnable Claude-verified rows.** If a Claude-verified row wasn't completed by `/sovclose` (Status still blank), `/sovtest` may encounter it. Before guiding the user through it manually, explain why Claude couldn't auto-run it and **ask whether the user wants to walk through it manually or skip it**. Never silently hand off Claude's testing work to the user.
 
 ## First action — load state
 
@@ -93,7 +93,7 @@ Structured triage — not a full fix session.
 
 6. **[BRIEF] Confirm routing.** Tell the user: "Created BACKLOG batch [name] for the fix. Moving to the next test."
 
-**No fixing inside `/test`.** Debugging identifies and routes. Building fixes. Don't blur the boundary.
+**No fixing inside `/sovtest`.** Debugging identifies and routes. Building fixes. Don't blur the boundary.
 
 ## Completion
 
@@ -118,4 +118,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 83.*
+*No-code method — Version 84.*

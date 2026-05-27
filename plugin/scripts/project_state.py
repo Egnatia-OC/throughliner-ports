@@ -208,7 +208,7 @@ def has_substantial_work(project_root, claude_text):
           (recursively, skipping INFRA_NAMES at every depth)
 
     Conservative bias: false positives are minor friction (the user runs
-    /setup and can opt out via cancel/leave-alone); false negatives are
+    /sovsetup and can opt out via cancel/leave-alone); false negatives are
     catastrophic (plugin scaffolds over existing work)."""
 
     # (c) Foreign CLAUDE.md is a trigger on its own.
@@ -271,7 +271,7 @@ def is_unadopted_with_work(project_root):
     return has_substantial_work(root, claude_text)
 
 
-# V29 /setup case numbers — kept here as named constants so scaffold.py
+# V29 /sovsetup case numbers — kept here as named constants so scaffold.py
 # and the setup procedure don't have to reproduce the magic numbers.
 ADOPT_CASE_EMPTY = 1                  # genuinely empty folder
 ADOPT_CASE_CODE_NO_DOCS = 2           # existing code, no method docs
@@ -280,7 +280,7 @@ ADOPT_CASE_ALREADY_ADOPTED = 4        # method-footered CLAUDE.md
 
 
 def detect_adopt_case(project_root):
-    """V29/V44: classify the project root into one of /setup's four cases.
+    """V29/V44: classify the project root into one of /sovsetup's four cases.
 
     Returns an integer 1–4 corresponding to ADOPT_CASE_* constants:
 
@@ -293,7 +293,7 @@ def detect_adopt_case(project_root):
     disable (``/plugin`` → Installed → toggle off), which prevents the
     plugin's hooks from firing at all — no case needed here.
 
-    Used by the /setup procedure (case dispatch) and by the scaffold.py
+    Used by the /sovsetup procedure (case dispatch) and by the scaffold.py
     `detect-case` command. SessionStart and PreToolUse use the coarser
     `is_unadopted_with_work` since they only need yes/no, not the
     specific case."""

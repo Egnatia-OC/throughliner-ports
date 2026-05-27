@@ -1,14 +1,14 @@
 ---
-name: research
+name: sovresearch
 description: Nudge Claude to identify and execute a research search for the current work context. No arguments — Claude assesses what to search based on the active task.
 user-invocable: true
 ---
 
-# /research
+# /sovresearch
 
 The user wants you to think about what external information would help the current work. Assess the active task, identify a gap where research would improve a decision, and follow the search flow below.
 
-This same flow runs when you proactively suggest a search (per `universal-behaviour.md` → *Proactive research*). `/research` is the user's way of triggering it explicitly.
+This same flow runs when you proactively suggest a search (per `universal-behaviour.md` → *Proactive research*). `/sovresearch` is the user's way of triggering it explicitly.
 
 ## Search flow
 

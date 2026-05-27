@@ -9,7 +9,7 @@ write-guard (V83):
       non-scaffold-path files when the folder lacks a method footer in
       CLAUDE.md AND has substantial work. Allows Edit/Write/MultiEdit on
       scaffold paths (UX.md, BACKLOG.md, BUILD-LOG.md, MANIFEST.md,
-      TEST-LOG.md, CLAUDE.md) so /setup's scaffolding works.
+      TEST-LOG.md, CLAUDE.md) so /sovsetup's scaffolding works.
 
   (7) Project-boundary check (V56) — blocks writes targeting paths outside
       the project root.
@@ -79,9 +79,9 @@ WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
 # V83: Bash/PowerShell tools checked for file-write patterns.
 BASH_TOOLS = {"Bash", "PowerShell"}
 
-# V29/V72: file names /setup scaffolds. CLAUDE.md is at project root;
+# V29/V72: file names /sovsetup scaffolds. CLAUDE.md is at project root;
 # other spine docs are inside _method/. When folder is unadopted,
-# Edit/Write/MultiEdit on these passes the V29 gate so /setup's scaffold
+# Edit/Write/MultiEdit on these passes the V29 gate so /sovsetup's scaffold
 # writes work. (Other writes are blocked.)
 SCAFFOLD_ROOT_NAMES = frozenset({
     "CLAUDE.md",
@@ -927,14 +927,14 @@ def check_read_before_edit(project_root, target_path, hook_input):
 
 
 def is_scaffold_path(target_path, project_root):
-    """V29/V72: True if target_path is a scaffold path that /setup writes.
+    """V29/V72: True if target_path is a scaffold path that /sovsetup writes.
 
     CLAUDE.md is at project root. Other spine docs are inside _method/.
     Also allows writes inside _method/'s subdirectories (BACKLOG/,
     build-log/, proxies/, planning/, research/).
 
     Legacy support: also allows root-level spine docs and dirs (pre-0087
-    layout) so /setup case 4 can migrate existing projects."""
+    layout) so /sovsetup case 4 can migrate existing projects."""
     try:
         relative = Path(target_path).relative_to(project_root)
     except ValueError:
@@ -950,7 +950,7 @@ def is_scaffold_path(target_path, project_root):
         if len(parts) >= 2:
             return parts[1] in SCAFFOLD_METHOD_DIRS
     # Legacy root-level layout (pre-0087): allow root-level spine docs
-    # and dirs so /setup case 4 can read/migrate them.
+    # and dirs so /sovsetup case 4 can read/migrate them.
     if len(parts) == 1:
         return parts[0] in SCAFFOLD_METHOD_NAMES
     if len(parts) >= 2 and parts[0] in {"BACKLOG", "build-log"}:
@@ -960,7 +960,7 @@ def is_scaffold_path(target_path, project_root):
 
 def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
     """V29: deny-reason for Edit/Write/MultiEdit on a non-scaffold path
-    in an unadopted folder. Names the path, points at /setup, and
+    in an unadopted folder. Names the path, points at /sovsetup, and
     documents the opt-out path so the user has a clear exit."""
     return (
         "[No-code method] BLOCKED: this folder is unadopted (no `*No-code "
@@ -969,7 +969,7 @@ def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
         f"risk if you proceed. The Edit/Write/MultiEdit target "
         f"`{target_path}` is outside the scaffolding paths the plugin "
         "manages.\n\n"
-        "What to do: run `/setup` first. Or, if you don't want the "
+        "What to do: run `/sovsetup` first. Or, if you don't want the "
         "method in this folder, disable the plugin for this project: "
         "type `/plugin`, go to the Installed tab, and toggle it off."
         + _mode_suffix(permission_mode)
@@ -1107,12 +1107,12 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
 
 def make_unadopted_planning_deny_reason(target_path, permission_mode=""):
     """Deny message when source code is edited in an unadopted folder
-    (no method footer in CLAUDE.md). Points at /setup instead of
+    (no method footer in CLAUDE.md). Points at /sovsetup instead of
     BACKLOG/sovrecap, which don't exist yet."""
     return (
         f"[No-code method] BLOCKED: `{target_path}` cannot be edited — "
         "this folder hasn't been set up with the no-code method yet.\n\n"
-        "What to do: run `/setup` first to set up your project, then "
+        "What to do: run `/sovsetup` first to set up your project, then "
         "you can start building. Or, if you don't want the method in "
         "this folder, disable the plugin for this project."
         + _mode_suffix(permission_mode)
@@ -1128,7 +1128,7 @@ def check_planning_phase_source_lock(project_root, target_path,
     blocked, None to allow.
 
     V71: when the folder is unadopted (no method footer in CLAUDE.md),
-    the deny message points at /setup instead of BACKLOG/sovrecap.
+    the deny message points at /sovsetup instead of BACKLOG/sovrecap.
 
     Only called when phase == "planning". BACKLOG and MANIFEST exemptions
     are handled by the caller (check_batch_file_list) before reaching here,
@@ -1401,7 +1401,7 @@ def _make_bash_planning_source_deny(raw_path, is_adopted, permission_mode=""):
             f"[No-code method] BLOCKED: a Bash command writes to "
             f"`{raw_path}` — this folder hasn't been set up with the "
             "no-code method yet.\n\n"
-            "What to do: run `/setup` first to set up your project. Or, "
+            "What to do: run `/sovsetup` first to set up your project. Or, "
             "if you don't want the method in this folder, disable the "
             "plugin for this project."
             + _mode_suffix(permission_mode)

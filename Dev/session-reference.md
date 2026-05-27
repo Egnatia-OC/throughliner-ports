@@ -12,7 +12,7 @@ Companion to `session-protocol.md`. Dip into sections as needed — don't load t
 
 ## Testing
 
-Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; procedure docs load; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/setup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `Dev/Planning/test-log/`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; procedure docs load; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/sovsetup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `Dev/Planning/test-log/`.
 
 **Pre-install options:**
 

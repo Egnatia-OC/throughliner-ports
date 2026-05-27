@@ -15,11 +15,11 @@ Method terms defined in `VOCABULARY.md` (sibling). Each procedure doc's opening 
 - **What friction it solves.** The tension or problem the product addresses.
 - **Milestones.** What the user is working toward, with rough timeframes if known.
 
-**When written.** `/setup` populates the section through conversation — Claude asks, user answers, Claude writes. Not a form. The answer also seeds UX.md's *Project context*.
+**When written.** `/sovsetup` populates the section through conversation — Claude asks, user answers, Claude writes. Not a form. The answer also seeds UX.md's *Project context*.
 
 **When updated.** Planning sessions, when milestones shift or the product's framing evolves. Editable in both phases (CLAUDE.md is always read/write).
 
-**Existing projects.** Projects adopted before this section won't have it. `/setup` case 4 detects the missing section and asks the overview question as a backfill step.
+**Existing projects.** Projects adopted before this section won't have it. `/sovsetup` case 4 detects the missing section and asks the overview question as a backfill step.
 
 ## Additional source-of-truth docs
 
@@ -84,7 +84,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 - Directory: `(app/src/settings/)` — trailing slash = prefix match
 - No path: omit parens for non-file entries
 
-**Migration is incremental.** After-build populates paths on create/update. Legacy entries stay skipped until touched. `/setup` case 4 offers backfill.
+**Migration is incremental.** After-build populates paths on create/update. Legacy entries stay skipped until touched. `/sovsetup` case 4 offers backfill.
 
 **Proposed edits pending section.** At bottom. See below.
 
@@ -133,7 +133,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 **Template.** `plugin/templates/.proxies/test-log.md` (index). `plugin/templates/test-log/ENTRY-TEMPLATE.md` (per-session). Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
 
-**Backwards compatibility.** Flat `TEST-LOG.md` (single file) still supported. 8-column (pre-V48) migrated on `/setup` case 4: Type→`Look and click`, Verifier→`User`. `/setup` case 4 migrates flat file → folder.
+**Backwards compatibility.** Flat `TEST-LOG.md` (single file) still supported. 8-column (pre-V48) migrated on `/sovsetup` case 4: Type→`Look and click`, Verifier→`User`. `/sovsetup` case 4 migrates flat file → folder.
 
 ## Build log structure
 
@@ -177,15 +177,15 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 ## planning/drafts/ folder
 
-`_method/planning/drafts/<topic>.md`. Created by `/setup` inside `_method/`. Destination-agnostic carryover for substantive content not yet ready for a specific doc — comparison tables, structural sketches, option matrices. Written at "good enough to walk away from"; deleted when consumed; dead-ends pruned with build-log note. One file per topic, kebab-case. Read/write to Claude, no locking.
+`_method/planning/drafts/<topic>.md`. Created by `/sovsetup` inside `_method/`. Destination-agnostic carryover for substantive content not yet ready for a specific doc — comparison tables, structural sketches, option matrices. Written at "good enough to walk away from"; deleted when consumed; dead-ends pruned with build-log note. One file per topic, kebab-case. Read/write to Claude, no locking.
 
 ## research/ folder
 
-`_method/research/<topic>.md`. Created by `/setup` inside `_method/`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
+`_method/research/<topic>.md`. Created by `/sovsetup` inside `_method/`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
 
 ## Search query files (research/search-queries/)
 
-`_method/research/search-queries/YYYY-MM-DD-topic-slug.md`. Created by the `/research` flow (skill or proactive suggestion). Structured records of research queries and their results — distinct from general `_method/research/<topic>.md` files, which are free-form findings.
+`_method/research/search-queries/YYYY-MM-DD-topic-slug.md`. Created by the `/sovresearch` flow (skill or proactive suggestion). Structured records of research queries and their results — distinct from general `_method/research/<topic>.md` files, which are free-form findings.
 
 **Naming.** `YYYY-MM-DD-topic-slug.md`. Date is the query date; slug describes the topic. Same topic researched on different dates gets separate files.
 
@@ -202,11 +202,11 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 **Lifecycle.** Created at `pending`. Updated to `complete` when response is filed and outcome recorded. `discarded` if the query was sent but the result wasn't useful and no action was taken. Files persist indefinitely — same as `_method/research/` files.
 
-**Folder creation.** `/setup` scaffolds `_method/research/search-queries/` alongside `_method/research/`.
+**Folder creation.** `/sovsetup` scaffolds `_method/research/search-queries/` alongside `_method/research/`.
 
 ## Proxy files (_method/proxies/)
 
-Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `_method/proxies/` (inside the method subfolder). Created by `/setup`; regenerated during planning after editing source docs. Legacy projects may have `.proxies/` at project root — check both locations.
+Lightweight index files that summarize source-of-truth docs. Claude reads proxies first, dips into full docs via offset/limit when detail is needed. Location: `_method/proxies/` (inside the method subfolder). Created by `/sovsetup`; regenerated during planning after editing source docs. Legacy projects may have `.proxies/` at project root — check both locations.
 
 **Missing proxies.** If the proxies directory is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
 
@@ -272,7 +272,7 @@ Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`. Session-start r
 
 Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `backlog.md`, `build-log.md`, and `test-log.md` are directly edited (they ARE the operational indexes, not summaries).
 
-- **`/setup`** generates initial proxies after scaffolding.
+- **`/sovsetup`** generates initial proxies after scaffolding.
 - **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
 - **`/sovclose`** updates operational index proxies (test-log, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
 
@@ -285,9 +285,9 @@ Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Propos
 **Block format.** Blockquote:
 > `**[PROPOSED EDIT PENDING]**` `<DOC>.md` — [description]. [Proposed text]. **Action:** [replace | add] — [target heading details]. Surfaced [date]; origin: [source].
 
-**Origins.** Planning-batch resolution, `/setup`, or intercepted mid-build edit.
+**Origins.** Planning-batch resolution, `/sovsetup`, or intercepted mid-build edit.
 
-**Lifecycle.** Empty by default. Removed after user applies. During planning/`/setup`, preview-then-apply convention applies.
+**Lifecycle.** Empty by default. Removed after user applies. During planning/`/sovsetup`, preview-then-apply convention applies.
 
 **PreToolUse carve-out.** Edits within the proposed-edits section are allowed. Edits elsewhere in the locked doc are denied.
 
@@ -379,4 +379,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 83.*
+*No-code method — Version 84.*

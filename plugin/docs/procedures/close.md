@@ -125,7 +125,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 13. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), idea sweep done (step 10), proxies regenerated (step 11), doc-parity check done (step 3). If any missing, complete now.
 
-14. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/test` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
+14. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
 
 ---
 
@@ -160,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 83.*
+*No-code method — Version 84.*

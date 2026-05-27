@@ -54,7 +54,7 @@ def test_classifies_test_notes():
 
 def test_classifies_setup_request():
     """Should classify /setup requests."""
-    data, tf = _make_input("/setup")
+    data, tf = _make_input("/sovsetup")
     try:
         code, parsed, raw = run_hook("user_prompt_submit.py", data)
         assert code == 0
@@ -158,7 +158,7 @@ def test_silent_on_missing_prompt():
 def test_setup_priority_over_test_notes():
     """Setup should win when both signals are present (priority rule)."""
     data, tf = _make_input(
-        "/setup — also here are my test results: Pass Fail #001"
+        "/sovsetup — also here are my test results: Pass Fail #001"
     )
     try:
         code, parsed, raw = run_hook("user_prompt_submit.py", data)

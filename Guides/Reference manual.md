@@ -16,7 +16,7 @@ Install via marketplace (persists across sessions):
 
 1. Clone: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
 2. In Claude Code: `/plugin marketplace add <path-to-clone>` then `/plugin install no-code-method@sovereign-implementer`.
-3. Open a session in the project folder. Hooks fire at session start. In adopted projects, Claude presents a status summary (batch counts, next batch, pending tests) and asks if you'd like to proceed. Empty or undocumented folders get an advisory pointing at `/setup`.
+3. Open a session in the project folder. Hooks fire at session start. In adopted projects, Claude presents a status summary (batch counts, next batch, pending tests) and asks if you'd like to proceed. Empty or undocumented folders get an advisory pointing at `/sovsetup`.
 
 For one-off use: `claude --plugin-dir <path-to-clone>/plugin` loads without installing.
 
@@ -55,8 +55,8 @@ The `settings.json` edit is a last resort — only when CLI uninstall/reinstall 
 See *Managing the plugin* below for disable/re-enable/uninstall.
 
 **First session:**
-- Open Claude Code in the project folder. Run `/setup`.
-- `/setup` detects the case (empty, existing code, foreign docs, already managed) and runs the matching dialogue.
+- Open Claude Code in the project folder. Run `/sovsetup`.
+- `/sovsetup` detects the case (empty, existing code, foreign docs, already managed) and runs the matching dialogue.
 - For empty folders: scaffolds spine docs and walks four prompts (product overview, UX principles, core functionalities, first batch sketch).
 - Claude writes directly to UX.md during setup (planning phase — docs are open). The no-coder converts the first-batch sketch into a build batch with a `Serves UX.md:` line.
 - Run `/sovrecap` to review the batch's file list and test plan, then `/sovbuild` to lock and build. When done, `/sovclose` handles quality gates and record-keeping, then `/sovgit` walks you through commit/tag/push.
@@ -102,7 +102,7 @@ Only loaded for that session. Close and start without the flag.
 
 ## Guardrail docs
 
-After `/setup`, CLAUDE.md sits at the project root and everything else lives inside `_method/`:
+After `/sovsetup`, CLAUDE.md sits at the project root and everything else lives inside `_method/`:
 
 - **CLAUDE.md** (project root) — entry point. Product overview (what the product is, who it's for, what friction it solves, milestones) plus JSON path block telling Claude where docs live. Read every session.
 - **_method/UX.md** — user-facing app description. Every entry corresponds to something experienceable + a "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains by hand during planning.
@@ -111,7 +111,7 @@ After `/setup`, CLAUDE.md sits at the project root and everything else lives ins
 - **_method/test-log/** — per-session test files. Row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude writes a per-session file, runs automatable tests, leaves user-verified rows for planning read-back. Index lives at `_method/proxies/test-log.md`. Rows pruned when their component leaves MANIFEST.
 - **_method/build-log/** — per-build narrative files. What shipped / Decisions / Pivots / Carried forward / Performance. Index lives at `_method/proxies/build-log.md`. Queryable via grep across builds.
 
-`/setup` also creates inside `_method/`:
+`/sovsetup` also creates inside `_method/`:
 - **_method/planning/drafts/** — holding area for content not yet ready for a specific doc.
 - **_method/research/** — findings from Claude's research. Zero maintenance. Persists for future sessions.
 - **_method/proxies/** — index and summary files. `backlog.md`, `build-log.md`, and `test-log.md` are operational indexes (directly edited). `ux.md`, `manifest.md`, `research.md` are summaries regenerated for context efficiency.
@@ -126,7 +126,7 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 **Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` locks the batch and runs the build against the file list. PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps from CLAUDE.md's `## After-build steps` section, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
 
-The no-coder `/clear`s, refreshes, and tests. Two options: invoke `/test` for a guided walkthrough of each pending User-verified row (step-by-step instructions, outcome recording, failure debugging), or test independently and bring per-row outcomes to the next planning session.
+The no-coder `/clear`s, refreshes, and tests. Two options: invoke `/sovtest` for a guided walkthrough of each pending User-verified row (step-by-step instructions, outcome recording, failure debugging), or test independently and bring per-row outcomes to the next planning session.
 
 **Sessions are stateless; the docs are the memory.** BACKLOG, MANIFEST, TEST-LOG, build-log tell each session where things stand. Nothing carries from in-memory state.
 
@@ -163,7 +163,7 @@ The `Changes:` delimiter separates the two regions.
 
 ### Starting from scratch
 
-Empty folder → `/setup` → four prompts:
+Empty folder → `/sovsetup` → four prompts:
 1. **Product overview.** What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.
 2. **UX principles.** For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*.
 3. **Core functionalities.** Three to five features with "user needs this because…" lines.
@@ -229,11 +229,11 @@ Verifier is per-row, not per-type. Both Claude and user rows can exist across an
 
 ## The safety net
 
-When a session opens, **SessionStart** checks adopted vs. unadopted. Unadopted folders with substantial work trigger an advisory pointing at `/setup`.
+When a session opens, **SessionStart** checks adopted vs. unadopted. Unadopted folders with substantial work trigger an advisory pointing at `/sovsetup`.
 
-Until `/setup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls. In unadopted folders, the deny message says "run `/setup` first" — not "describe it in a BACKLOG batch," which would be meaningless before the project is set up.
+Until `/sovsetup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls. In unadopted folders, the deny message says "run `/sovsetup` first" — not "describe it in a BACKLOG batch," which would be meaningless before the project is set up.
 
-`/setup` branches: empty folder → scaffold + four prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
+`/sovsetup` branches: empty folder → scaffold + four prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
 
 Nothing destructive without confirmation; every destructive option backs up first.
 
@@ -249,7 +249,7 @@ Claude Code inherits CLAUDE.md files from parent directories. If a project folde
 
 Claude watches for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints. When it spots one, it drafts a search query, proposes it to you, and waits for approval before executing.
 
-**`/research`** triggers the flow explicitly. Claude also suggests searches proactively when it recognises an information gap.
+**`/sovresearch`** triggers the flow explicitly. Claude also suggests searches proactively when it recognises an information gap.
 
 **Three execution mechanisms**, in priority order:
 1. **MCP search tool** — if a Gemini search MCP server (e.g. `yukukotani/mcp-gemini-google-search`) is installed. Preferred.
@@ -270,7 +270,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 
 - **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard). PostToolUse validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
-- **Slash commands** (`/setup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/test`, `/research`, `/tersify`): user-facing entry points that direct Claude to the matching procedure doc or flow.
+- **Slash commands** (`/sovsetup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
@@ -358,7 +358,7 @@ Permissions flip based on project phase:
 
 A new feature takes two sessions minimum — one planning, one build. Every shipped feature traces to a written rationale; nothing gets built that no one decided to build.
 
-As docs grow, they consume more of Claude's context window — leaving less room for actual work. `/tersify` runs a guided compression pass: triage docs by size, flag wrong-home content and verbose prose, then audit and compress user-selected targets one at a time. Planning phase only.
+As docs grow, they consume more of Claude's context window — leaving less room for actual work. `/sovtersify` runs a guided compression pass: triage docs by size, flag wrong-home content and verbose prose, then audit and compress user-selected targets one at a time. Planning phase only.
 
 ## Where the method sits
 
@@ -379,4 +379,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 83.*
+*No-code method — Version 84.*

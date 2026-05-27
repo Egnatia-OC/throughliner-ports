@@ -27,13 +27,13 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Ask rather than guess on ambiguity.**
   *Load-bearing for: planning and pre-build discussions exist to resolve ambiguity; guessing bypasses them.*
 
-- **Adherence-drop diagnostic.** When the user reports that Claude is ignoring rules, not following procedures, or generally declining in quality mid-session: don't just apologise and retry. Diagnose. Common causes: context window filling up (recommend `/compact` or session handoff), source-of-truth docs too large for Claude to hold alongside code (recommend `/tersify` to compress them), missing foundational reads (re-read `CLAUDE.md` and path-block docs), or compaction dropped critical context (re-read the procedure doc for the active phase). Surface the likely cause and the matching action.
+- **Adherence-drop diagnostic.** When the user reports that Claude is ignoring rules, not following procedures, or generally declining in quality mid-session: don't just apologise and retry. Diagnose. Common causes: context window filling up (recommend `/compact` or session handoff), source-of-truth docs too large for Claude to hold alongside code (recommend `/sovtersify` to compress them), missing foundational reads (re-read `CLAUDE.md` and path-block docs), or compaction dropped critical context (re-read the procedure doc for the active phase). Surface the likely cause and the matching action.
   *Load-bearing for: session quality — "I'll try harder" doesn't fix structural causes.*
 
 - **Verify external facts, don't guess.** When uncertain about an external fact, research it directly. **Filing is mandatory**: save findings to `_method/research/<topic>.md` before moving on. If research tools aren't available, mark with `[UNVERIFIED: <what>]` inline — the marker stays until verified.
   *Load-bearing for: decision quality — silent guessing puts wrong facts into source-of-truth docs.*
 
-- **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/research` slash command triggers this flow explicitly; this rule is about doing it without being asked.
+- **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/sovresearch` slash command triggers this flow explicitly; this rule is about doing it without being asked.
   *Load-bearing for: decision quality — proactive research catches gaps before they become wrong assumptions baked into code or docs.*
 
 - **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `test-log/`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
@@ -99,26 +99,26 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Detect first (no opener needed):**
 
-- **Template state.** Spine docs present but still in template form (placeholders intact, no real entries). Recommend `/setup` — case 4 detects this. Wait for okay.
-- **Unadopted folder.** SessionStart injected an advisory. Surface and recommend `/setup`. If the user doesn't want the method, point to `/plugin` → Installed → toggle off. PreToolUse is already blocking destructive calls.
+- **Template state.** Spine docs present but still in template form (placeholders intact, no real entries). Recommend `/sovsetup` — case 4 detects this. Wait for okay.
+- **Unadopted folder.** SessionStart injected an advisory. Surface and recommend `/sovsetup`. If the user doesn't want the method, point to `/plugin` → Installed → toggle off. PreToolUse is already blocking destructive calls.
 
 **Then route on content:**
 
 | Opener | Route |
 |---|---|
 | Test notes from previous build | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: test notes`. |
-| "New project," "set this up" | Recommend `/setup`. Wait for okay. |
-| Non-conforming project docs | Recommend `/setup`. Wait for okay. |
+| "New project," "set this up" | Recommend `/sovsetup`. Wait for okay. |
+| Non-conforming project docs | Recommend `/sovsetup`. Wait for okay. |
 | "Planning session," `/sovplan`, or explicit planning request | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md`. |
 | Feature request, scope question, structural change | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: feature request` or `scope question`. |
 | Unfinished top batch, no other trigger | Resume. Confirm with user first. |
 | Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
 
-**Priority for mixed-input openers.** `/setup` > resume > planning seed. Lower-priority items incorporated as the route handles them.
+**Priority for mixed-input openers.** `/sovsetup` > resume > planning seed. Lower-priority items incorporated as the route handles them.
 
 **Procedure docs — how to invoke:**
 
-For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eight procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`, `testing.md` (invoked via `/test`), `tersify.md` (invoked via `/tersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
+For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eight procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`, `testing.md` (invoked via `/sovtest`), `tersify.md` (invoked via `/sovtersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
 
 ## Session handoff
 
@@ -163,4 +163,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 83.*
+*No-code method — Version 84.*
