@@ -2,7 +2,8 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs seven checks on Edit / Write / MultiEdit calls:
+Runs seven checks on Edit / Write / MultiEdit calls, plus a Bash/PowerShell
+write-guard (V83):
 
   (5) V29 adoption gate — fires first. Denies Edit/Write/MultiEdit on
       non-scaffold-path files when the folder lacks a method footer in
@@ -36,6 +37,12 @@ Runs seven checks on Edit / Write / MultiEdit calls:
       files until Claude has the MANIFEST entry and UX context in view.
       Block-once via transcript scan.
 
+  (8) Bash/PowerShell write-guard (V83) — scans Bash/PowerShell commands
+      for file-write patterns (sed -i, >, >>, tee, Set-Content, Out-File,
+      Add-Content, cp, mv). If the extracted target path would be denied by
+      existing rules (project boundary or phase-aware locks), denies with
+      skill escape guidance.
+
 Output protocol: stdout receives a JSON object with hookSpecificOutput
 containing hookEventName ("PreToolUse"), permissionDecision ("deny"), and
 permissionDecisionReason (the message Claude reads). For allow-cases, the
@@ -66,8 +73,11 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 )
 
 # Writing tools whose calls this hook inspects. Anything outside this set
-# is allowed without inspection.
+# is allowed without inspection (except Bash/PowerShell — see below).
 WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
+
+# V83: Bash/PowerShell tools checked for file-write patterns.
+BASH_TOOLS = {"Bash", "PowerShell"}
 
 # V29/V72: file names /setup scaffolds. CLAUDE.md is at project root;
 # other spine docs are inside _method/. When folder is unadopted,
@@ -274,7 +284,11 @@ def make_reason(logical_name: str, permission_mode: str = "") -> str:
         f"{logical_name}'s main body by hand during their next planning "
         "session, or drop it. Surface this addition plainly in your "
         "response to the user. Canonical block format: see "
-        "DOC-STRUCTURE.md → Proposed edits pending sections."
+        "DOC-STRUCTURE.md → Proposed edits pending sections.\n\n"
+        "To edit this file directly (without the proposed-edit workaround), "
+        "finish this build with `/sovclose` and `/sovgit`, then start a "
+        "planning session with `/sovplan` — source-of-truth docs are "
+        "unlocked during planning."
         + _mode_suffix(permission_mode)
     )
 
@@ -644,7 +658,8 @@ def make_boundary_deny_reason(target_path, batch, files_entries,
         "label, then retry the edit. The hook re-parses BACKLOG.md at "
         "edit time, so the new entry takes effect immediately.\n\n"
         "If this file is NOT a prerequisite, stop. Finish the current "
-        "batch, then route the change through planning."
+        "batch with `/sovclose` and `/sovgit`, then invoke `/sovplan` to "
+        "plan the change into a new batch."
         + _mode_suffix(permission_mode)
     )
 
@@ -1082,10 +1097,10 @@ def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
         "and cannot be edited during the planning phase. Source code is only "
         "editable during a build, via the batch's `Files:` list.\n\n"
         "What to do: if you're planning a change to this file, describe it "
-        "in a build batch in `BACKLOG.md` — it will become editable once "
-        "the batch is activated by `/sovbuild`. If you need to edit "
-        "project docs (UX.md, BACKLOG, MANIFEST, etc.), those are open "
-        "during planning."
+        "in a build batch in `BACKLOG.md`, then invoke `/sovrecap` to "
+        "review the batch and `/sovbuild` to activate it. If you need to "
+        "edit project docs (UX.md, BACKLOG, MANIFEST, etc.), those are "
+        "open during planning."
         + _mode_suffix(permission_mode)
     )
 
@@ -1235,6 +1250,243 @@ def check_test_confirmation_gate(project_root):
     )
 
 
+# --- V83 Bash write-guard ---
+
+_BASH_WRITE_KEYWORD = re.compile(
+    r"""\bsed\b[^\n]*\s-[^\s]*i\b"""    # sed -i (in-place edit)
+    r"""|(?:^|[^>])>{1,2}\s*[^\s>]"""   # > or >> redirect (not >>>)
+    r"""|\btee\s"""                       # tee (with arguments)
+    r"""|\bSet-Content\b"""              # PowerShell
+    r"""|\bOut-File\b"""                  # PowerShell
+    r"""|\bAdd-Content\b"""              # PowerShell
+    r"""|\bCopy-Item\b"""                # PowerShell
+    r"""|\bMove-Item\b"""                # PowerShell
+    r"""|\b(?:cp|copy)\s"""             # cp/copy
+    r"""|\b(?:mv|move)\s""",            # mv/move
+    re.IGNORECASE,
+)
+
+_REDIRECT_PATH = re.compile(
+    r""">{1,2}\s*(?:"([^"]+)"|'([^']+)'|([^\s;|&>\n]+))"""
+)
+
+_SED_INPLACE = re.compile(
+    r"""\bsed\s+"""
+    r"""(?:[^\n]*?)"""
+    r"""-[^\s]*i"""
+)
+
+_TEE_PATH = re.compile(
+    r"""\btee\s+(?:-[a-zA-Z]\s+)*(?:"([^"]+)"|'([^']+)'|([^\s;|&\n]+))""",
+    re.IGNORECASE,
+)
+
+_NULL_TARGETS = frozenset({"/dev/null", "$null", "NUL", "nul"})
+
+
+def _extract_write_targets(command: str) -> list:
+    """Best-effort extraction of file paths being written to in a shell
+    command. Returns a list of raw path strings (before resolution).
+
+    Not hermetic — catches the normal drift patterns where Claude uses
+    Bash to bypass Edit/Write/MultiEdit locks."""
+    targets = []
+
+    for m in _REDIRECT_PATH.finditer(command):
+        path = m.group(1) or m.group(2) or m.group(3)
+        if path and path not in _NULL_TARGETS:
+            targets.append(path)
+
+    if _SED_INPLACE.search(command):
+        sed_m = re.search(
+            r"""\bsed\s+[^\n]*?-[^\s]*i[^\s]*\s+"""
+            r"""(?:'[^']*'|"[^"]*"|/[^/]*/[^/]*/[dgiIpw]*)\s+"""
+            r"""(.+?)(?:\s*[;|&]|$)""",
+            command,
+        )
+        if sed_m:
+            for arg in sed_m.group(1).split():
+                cleaned = arg.strip("'\"")
+                if cleaned and not cleaned.startswith("-"):
+                    targets.append(cleaned)
+
+    for m in _TEE_PATH.finditer(command):
+        path = m.group(1) or m.group(2) or m.group(3)
+        if path and path not in _NULL_TARGETS:
+            targets.append(path)
+
+    for cmdlet in ["Set-Content", "Out-File", "Add-Content"]:
+        pat = re.compile(
+            rf"\b{cmdlet}\s+.*?-Path\s+"
+            r"""(?:"([^"]+)"|'([^']+)'|([^\s;|&\n]+))""",
+            re.IGNORECASE,
+        )
+        for m in pat.finditer(command):
+            path = m.group(1) or m.group(2) or m.group(3)
+            if path:
+                targets.append(path)
+                break
+        else:
+            pos = re.search(
+                rf"\b{cmdlet}\s+"
+                r"""(?:"([^"]+)"|'([^']+)'|([^\s;|&\n-][^\s;|&\n]*))""",
+                command,
+                re.IGNORECASE,
+            )
+            if pos:
+                path = pos.group(1) or pos.group(2) or pos.group(3)
+                if path and not path.startswith("-"):
+                    targets.append(path)
+
+    for cmd_word in [r"cp", r"copy", r"mv", r"move",
+                     r"Copy-Item", r"Move-Item"]:
+        for m in re.finditer(
+            rf"\b{cmd_word}\s+(.*?)(?:\s*[;|&]|$)",
+            command,
+            re.IGNORECASE,
+        ):
+            args = [
+                a.strip("'\"") for a in m.group(1).split()
+                if not a.startswith("-")
+            ]
+            if len(args) >= 2:
+                targets.append(args[-1])
+
+    return targets
+
+
+def _make_bash_boundary_deny(raw_path, resolved, project_root,
+                             permission_mode=""):
+    return (
+        f"[No-code method] BLOCKED: a Bash command writes to "
+        f"`{resolved}`, which is outside the project root "
+        f"(`{project_root}`).\n\n"
+        "What to do: the no-code method plugin blocks file writes outside "
+        "the project. If you need to modify files in another project, open "
+        "a separate Claude Code session in that project's folder."
+        + _mode_suffix(permission_mode)
+    )
+
+
+def _make_bash_locked_sot_deny(raw_path, logical_name, permission_mode=""):
+    return (
+        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}` "
+        f"({logical_name}), a locked source-of-truth doc. The main body is "
+        "read-only to Claude during the build phase.\n\n"
+        "What to do: use the `[PROPOSED EDIT PENDING]` mechanism — add a "
+        f"block to `{logical_name}`'s *Proposed edits pending* section. "
+        "To edit the file directly, finish this build with `/sovclose` and "
+        "`/sovgit`, then start a planning session with `/sovplan` where "
+        "source-of-truth docs are unlocked."
+        + _mode_suffix(permission_mode)
+    )
+
+
+def _make_bash_batch_boundary_deny(raw_path, permission_mode=""):
+    return (
+        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}`, "
+        "which is not on the current build batch's `Files:` list.\n\n"
+        "What to do: if this file is a genuine prerequisite, halt and "
+        "surface it in chat with a one-line justification (prerequisite "
+        "carve-out). Otherwise, finish this build with `/sovclose` and "
+        "`/sovgit`, then invoke `/sovplan` to plan the change into a new "
+        "batch."
+        + _mode_suffix(permission_mode)
+    )
+
+
+def _make_bash_planning_source_deny(raw_path, is_adopted, permission_mode=""):
+    if not is_adopted:
+        return (
+            f"[No-code method] BLOCKED: a Bash command writes to "
+            f"`{raw_path}` — this folder hasn't been set up with the "
+            "no-code method yet.\n\n"
+            "What to do: run `/setup` first to set up your project. Or, "
+            "if you don't want the method in this folder, disable the "
+            "plugin for this project."
+            + _mode_suffix(permission_mode)
+        )
+    return (
+        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}`, "
+        "a source-code file locked during the planning phase.\n\n"
+        "What to do: describe the change in a build batch in `BACKLOG.md`, "
+        "then invoke `/sovrecap` to review the batch and `/sovbuild` to "
+        "activate it."
+        + _mode_suffix(permission_mode)
+    )
+
+
+def check_bash_write_guard(project_root, command, phase, permission_mode=""):
+    """V83: scan a Bash/PowerShell command for file-write patterns. If any
+    extracted target path would be denied by existing rules, return a deny
+    reason string. Return None to allow.
+
+    Two threat surfaces: (a) cross-project writes targeting paths outside
+    project root, (b) phase-lock bypass (Bash editing locked files)."""
+    if not _BASH_WRITE_KEYWORD.search(command):
+        return None
+
+    targets = _extract_write_targets(command)
+    if not targets:
+        return None
+
+    locked_map = None
+    is_adopted = None
+
+    for raw_path in targets:
+        try:
+            target = Path(raw_path)
+            if target.is_absolute():
+                target = target.resolve()
+            else:
+                target = (project_root / target).resolve()
+        except OSError:
+            continue
+
+        try:
+            target.relative_to(project_root)
+        except ValueError:
+            return _make_bash_boundary_deny(
+                raw_path, target, project_root, permission_mode
+            )
+
+        if phase == "build":
+            if locked_map is None:
+                locked_map = build_locked_map(project_root)
+            logical_name = locked_map.get(str(target)) if locked_map else None
+            if logical_name:
+                return _make_bash_locked_sot_deny(
+                    raw_path, logical_name, permission_mode
+                )
+            if is_backlog_file(target, project_root):
+                continue
+            manifest_path = resolve_path_block_entry(project_root, "MANIFEST.md")
+            if manifest_path and str(target) == str(manifest_path):
+                continue
+            boundary = check_batch_file_list(
+                project_root, target, permission_mode
+            )
+            if boundary:
+                return _make_bash_batch_boundary_deny(
+                    raw_path, permission_mode
+                )
+        else:
+            if is_path_block_doc(target, project_root):
+                continue
+            if is_research_file(target, project_root):
+                continue
+            if is_adopted is None:
+                claude_text = safe_read_text(project_root / "CLAUDE.md")
+                is_adopted = (
+                    claude_text is not None and has_method_footer(claude_text)
+                )
+            return _make_bash_planning_source_deny(
+                raw_path, is_adopted, permission_mode
+            )
+
+    return None
+
+
 def main() -> int:
     data = parse_input()
     if not isinstance(data, dict):
@@ -1249,8 +1501,26 @@ def main() -> int:
     if not isinstance(permission_mode, str):
         permission_mode = ""
 
-    # Only writing tools are inspected. Cheap exit before project-root
-    # resolution.
+    # V83: Bash/PowerShell write-guard — separate flow from Edit/Write/MultiEdit.
+    if tool_name in BASH_TOOLS:
+        command = tool_input.get("command")
+        if not isinstance(command, str) or not command:
+            return emit_allow()
+        cwd_str = data.get("cwd")
+        if not isinstance(cwd_str, str) or not cwd_str:
+            return emit_allow()
+        try:
+            project_root = Path(cwd_str).resolve()
+        except OSError:
+            return emit_allow()
+        bash_deny = check_bash_write_guard(
+            project_root, command, detect_phase(project_root), permission_mode
+        )
+        if bash_deny:
+            return emit_deny(bash_deny)
+        return emit_allow()
+
+    # Only writing tools are inspected beyond this point.
     if tool_name not in WRITING_TOOLS:
         return emit_allow()
 

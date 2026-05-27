@@ -35,6 +35,17 @@ def _write_input(cwd, file_path, content="hello", **extra):
     return d
 
 
+def _bash_input(cwd, command, tool_name="Bash", **extra):
+    """Build a PreToolUse stdin dict for a Bash or PowerShell tool call."""
+    d = {
+        "cwd": str(cwd),
+        "tool_name": tool_name,
+        "tool_input": {"command": command},
+    }
+    d.update(extra)
+    return d
+
+
 def _assert_deny(parsed, fragment=None):
     """Assert that the hook denied and optionally check reason text."""
     assert parsed is not None, "Expected deny output, got nothing"
@@ -492,3 +503,219 @@ class TestMalformedInputs:
             }},
         )
         _assert_allow(code, raw)
+
+
+# ---------------------------------------------------------------------------
+# V83 Bash write-guard
+# ---------------------------------------------------------------------------
+
+class TestBashWriteGuard:
+    """V83: Bash/PowerShell commands with file-write patterns are checked
+    against existing rules (project boundary, phase-aware locks)."""
+
+    # --- Build-phase tests (adopted_folder has Status: active) ---
+
+    def test_redirect_to_locked_doc_denied(self, adopted_folder):
+        """Redirect to UX.md during build phase is denied."""
+        data = _bash_input(adopted_folder, 'echo "new content" > UX.md')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    def test_sed_i_on_locked_doc_denied(self, adopted_folder):
+        """sed -i on a locked source-of-truth doc is denied."""
+        ux_path = str((adopted_folder / "UX.md").resolve())
+        data = _bash_input(adopted_folder, f"sed -i 's/old/new/' {ux_path}")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    def test_redirect_outside_project_denied(self, adopted_folder):
+        """Redirect to a path outside the project root is denied."""
+        outside = str((adopted_folder.parent / "other" / "f.txt").resolve())
+        data = _bash_input(adopted_folder, f'echo "x" > "{outside}"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "outside the project root")
+
+    def test_redirect_to_batch_file_allowed(self, adopted_folder):
+        """Redirect to a file on the batch's Files: list passes."""
+        target = str((adopted_folder / "app" / "src" / "SettingsScreen.kt").resolve())
+        data = _bash_input(adopted_folder, f'echo "x" > "{target}"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_redirect_to_off_list_file_denied(self, adopted_folder):
+        """Redirect to a file not on the batch's Files: list is denied."""
+        data = _bash_input(
+            adopted_folder, 'echo "x" > app/src/SomeOtherFile.kt'
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "not on the current build batch")
+
+    def test_tee_to_locked_doc_denied(self, adopted_folder):
+        """tee to a locked doc is denied."""
+        data = _bash_input(adopted_folder, 'echo "x" | tee UX.md')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    def test_cp_to_locked_doc_denied(self, adopted_folder):
+        """cp with locked doc as destination is denied."""
+        data = _bash_input(adopted_folder, "cp other.md UX.md")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    def test_mv_to_locked_doc_denied(self, adopted_folder):
+        """mv with locked doc as destination is denied."""
+        data = _bash_input(adopted_folder, "mv other.md UX.md")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    # --- PowerShell-specific ---
+
+    def test_set_content_on_locked_doc_denied(self, adopted_folder):
+        """Set-Content targeting a locked doc is denied."""
+        data = _bash_input(
+            adopted_folder,
+            'Set-Content -Path UX.md -Value "new"',
+            tool_name="PowerShell",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    def test_out_file_on_locked_doc_denied(self, adopted_folder):
+        """Out-File targeting a locked doc is denied."""
+        data = _bash_input(
+            adopted_folder,
+            '"content" | Out-File UX.md',
+            tool_name="PowerShell",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "Bash command writes to")
+
+    # --- Planning-phase tests ---
+
+    def test_redirect_to_source_code_denied_during_planning(self, planning_phase):
+        """Redirect to a source file during planning is denied."""
+        data = _bash_input(
+            planning_phase,
+            'echo "x" > app/src/DashboardScreen.kt',
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "source-code file locked during the planning")
+
+    def test_redirect_to_method_doc_allowed_during_planning(self, planning_phase):
+        """Redirect to a method doc (BACKLOG) during planning is allowed."""
+        bl_path = str(
+            (planning_phase / "BACKLOG" / "0001-add-settings-screen.md").resolve()
+        )
+        data = _bash_input(planning_phase, f'echo "x" > "{bl_path}"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    # --- False-positive regression ---
+
+    def test_no_write_pattern_allowed(self, adopted_folder):
+        """Bash commands without write patterns pass through immediately."""
+        data = _bash_input(adopted_folder, "git status")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_npm_start_allowed(self, adopted_folder):
+        """dev server commands are not blocked."""
+        data = _bash_input(adopted_folder, "npm start")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_redirect_to_dev_null_allowed(self, adopted_folder):
+        """Redirect to /dev/null is not a write target."""
+        data = _bash_input(adopted_folder, "some_cmd > /dev/null 2>&1")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_redirect_to_ps_null_allowed(self, adopted_folder):
+        """Redirect to $null in PowerShell is not a write target."""
+        data = _bash_input(
+            adopted_folder,
+            "Get-Process > $null",
+            tool_name="PowerShell",
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_redirect_to_backlog_allowed(self, adopted_folder):
+        """Redirect to BACKLOG (always writable) during build is allowed."""
+        bl_path = str(
+            (adopted_folder / "BACKLOG" / "INDEX.md").resolve()
+        )
+        data = _bash_input(adopted_folder, f'echo "x" > "{bl_path}"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_redirect_to_manifest_allowed(self, adopted_folder):
+        """Redirect to MANIFEST.md (always writable) during build is allowed."""
+        path = str((adopted_folder / "MANIFEST.md").resolve())
+        data = _bash_input(adopted_folder, f'echo "x" > "{path}"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    # --- Skill escape guidance in deny messages ---
+
+    def test_bash_locked_sot_mentions_sovclose(self, adopted_folder):
+        """Bash locked-doc deny mentions /sovclose as escape route."""
+        data = _bash_input(adopted_folder, 'echo "x" > UX.md')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "/sovclose" in reason
+
+    def test_bash_planning_source_mentions_sovrecap(self, planning_phase):
+        """Bash planning-source deny mentions /sovrecap as escape route."""
+        data = _bash_input(
+            planning_phase, 'echo "x" > app/src/DashboardScreen.kt'
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "/sovrecap" in reason
+
+    def test_bash_mode_aware_suffix(self, adopted_folder):
+        """Bash deny messages include mode-aware suffix in permissive modes."""
+        data = _bash_input(
+            adopted_folder, 'echo "x" > UX.md', permission_mode="Auto"
+        )
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "permission mode")
+
+
+# ---------------------------------------------------------------------------
+# V83 Skill escape guidance on existing denies
+# ---------------------------------------------------------------------------
+
+class TestSkillEscapeGuidance:
+    """V83: existing phase-lock deny messages name the skill that unlocks."""
+
+    def test_locked_doc_mentions_sovclose(self, adopted_folder):
+        """Locked-doc deny now mentions /sovclose as escape."""
+        root = adopted_folder
+        ux_path = str((root / "UX.md").resolve())
+        data = _edit_input(root, ux_path, old_string="Dashboard", new_string="Home")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "/sovclose" in reason
+        assert "/sovplan" in reason
+
+    def test_planning_source_lock_mentions_sovrecap(self, planning_phase):
+        """Planning source-lock deny now mentions /sovrecap."""
+        root = planning_phase
+        target = str((root / "app" / "src" / "DashboardScreen.kt").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "/sovrecap" in reason
+        assert "/sovbuild" in reason
+
+    def test_batch_boundary_mentions_sovclose(self, adopted_folder):
+        """Batch-boundary deny now mentions /sovclose + /sovplan."""
+        root = adopted_folder
+        target = str((root / "app" / "src" / "SomeOtherFile.kt").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "/sovclose" in reason
+        assert "/sovplan" in reason

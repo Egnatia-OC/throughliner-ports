@@ -1,5 +1,5 @@
 {
-  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact), detects project phase, and directs Claude to read the correct procedure doc. PreToolUse runs five checks on Edit/Write/MultiEdit (locked-doc read-only, Serves-line resolution, batch file-list boundary, read-before-edit gate, test-confirmation gate during build phase) plus a git safety guard on Bash (blocks git reset --hard and git push --force — V34). PostToolUse validates BACKLOG.md format after every edit by running the parser and warning immediately if the structure is broken (V46). PreCompact blocks compaction when a build batch is in progress and recommends the user ask Claude to prepare a handoff before starting a fresh session (V52). UserPromptSubmit classifies the user's first prompt of a session into a routing category and injects the classification as context (V52).",
+  "description": "Hooks for the no-code-method plugin. SessionStart injects the universal behavioural rules at session start (and on resume/clear/compact), detects project phase, and directs Claude to read the correct procedure doc. PreToolUse runs seven checks on Edit/Write/MultiEdit (locked-doc read-only, Serves-line resolution, batch file-list boundary, read-before-edit gate, test-confirmation gate during build phase, project-boundary, adoption gate) plus a Bash/PowerShell write-guard (V83 — blocks file-write patterns targeting denied paths) and a git safety guard on Bash (blocks git reset --hard and git push --force — V34). PostToolUse validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers — V82). PreCompact blocks compaction when a build batch is in progress and recommends the user ask Claude to prepare a handoff before starting a fresh session (V52). UserPromptSubmit classifies the user's first prompt of a session into a routing category and injects the classification as context (V52).",
   "hooks": {
     "SessionStart": [
       {
@@ -14,6 +14,15 @@
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre_tool_use.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
         "hooks": [
           {
             "type": "command",

@@ -44,7 +44,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 - **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/setup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
 
-- **PreToolUse hook (consolidated).** Seven checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
+- **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
   - (b) Planning-phase source-code lock. V67. Blocks edits to non-doc files during planning (`is_path_block_doc()`, `is_research_file()` exemptions). V71: unadopted folders get a `/setup`-pointing deny message instead of referencing BACKLOG/before-build.
   - (c) Batch file-list boundary enforcement. V25, V67 phase-aware. Build phase only. Parses BACKLOG via `parse_backlog.py`.
@@ -52,7 +52,9 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
   - (e) Serves-line validation. V22. V54 extended to additional SoT docs.
   - (f) Test-confirmation gate on build-phase file edits. V27, reframed V66. Denies when an active batch exists and previous-batch TEST-LOG rows are unconfirmed. Build-log session identification with fallback.
   - (g) Project-boundary enforcement. V56. Blocks writes outside project root.
+  - (h) Bash/PowerShell write-guard. V83. Scans Bash/PowerShell commands for file-write patterns (`sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`). Extracts target paths best-effort; applies existing rules (project boundary, locked docs, batch file list, planning source lock). BACKLOG/MANIFEST exempted as always-writable. Null targets (`/dev/null`, `$null`) skipped.
   - V43 mode-aware messaging across all checks: `[No-code method]` prefix, `What to do:` line, mode-aware suffix in permissive modes for (a), (c), (f), (g).
+  - V83 skill escape guidance on all phase-lock denies: (a), (b), (c), (h) deny messages name the skill that unlocks the target (`/sovclose`, `/sovplan`, `/sovrecap`, `/sovbuild`).
 
 - **PreToolUse git safety guard.** V34. Separate hook (Bash matcher). Denies `git reset --hard` and `git push --force`/`-f`. Allows `--force-with-lease`. Mode-aware deny messages.
 
@@ -138,4 +140,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 82.*
+*No-code method — Version 83.*

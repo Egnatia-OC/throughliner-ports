@@ -89,7 +89,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. **Shipped v101.** |
-| 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
+| 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. **Shipped v102.** |
 | 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. **Shipped v95.** |
 | 0096 | Manifest rationale field | Inline italic rationale suffix on MANIFEST entries; close procedure writes it; planning checks it before UX edits. **Shipped v97.** |
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. **Shipped v96.** |
@@ -137,29 +137,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/test` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0100 — Bash write-guard + skill escape guidance
-
-**Goal.** Close the Bash bypass hole in PreToolUse enforcement. Currently `Edit`/`Write`/`MultiEdit` are gated by project-boundary and phase-aware locks, but Bash commands (`sed -i`, `> file`, `Set-Content`, etc.) bypass all of them. Add a Bash-matcher PreToolUse check that catches file-write patterns and applies the same rules. Separately, add escape guidance to every skill that induces write locks — so Claude tells users how to change phase via the correct skill instead of leaving them to reason around the lock.
-
-**Outputs.**
-- `plugin/hooks/pre_tool_use.py` — new Bash-matcher logic. On `Bash`/`PowerShell` tool calls, scan the command for file-write patterns. If the target path would be denied by existing rules (outside project root, or locked file in current phase), deny with the same `[No-code method]` message format and `What to do:` line.
-- Deny messages for Bash write-guard include skill escape guidance: "To edit this file, invoke `/sovplan` to switch to planning phase" (or whichever skill unlocks the target).
-- Skill escape guidance added to existing deny messages on `Edit`/`Write`/`MultiEdit` locks — not just Bash. Every deny that blocks a phase-aware edit names the skill that would unlock it.
-- Tests updated (Bash-matcher unit tests, false-positive regression tests for legitimate in-project Bash use).
-
-**Design decisions (v92).**
-1. Advisory deny, not silent block — same `[No-code method]` format as existing denies. Claude sees the deny and the escape route.
-2. Two threat surfaces: cross-project writes (Bash targeting paths outside project root) and phase-lock bypass (Bash editing locked files within project). Same matcher, same deny logic.
-3. Pattern matching targets common file-write commands: `sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`. Path extraction is best-effort — not hermetic, but catches the normal drift patterns.
-4. False-positive mitigation: only fire when the extracted path would actually be denied by existing rules. Legitimate in-project Bash (e.g. `sed` on a file in the batch's Files: list during build) passes through.
-5. Skill escape guidance on all write-lock denies (not just Bash): the deny message names which skill to invoke to change phase. This covers the case where Claude or the user tries to reason around a lock instead of using the method's own phase transitions.
-
-**Success criteria.** `sed -i` targeting a file outside the project root is denied. `Set-Content` targeting a locked UX.md during build is denied. Legitimate in-project Bash during build passes. Every phase-lock deny message names the skill that would unlock the target. No false positives on standard build-time Bash (running dev servers, test commands, git operations).
-
-**Risks / dependencies.** Bash command parsing is inherently fuzzy — complex piped commands, variable expansion, and heredocs may evade or false-positive the matcher. The git safety guard (0065) already demonstrates the pattern works for a constrained command set; file-write patterns are broader. Regression test suite essential. No hard dependencies on other queued batches, but benefits from 0097/0098/0099 shipping first (skill names in deny messages need to match).
 
 ---
 
