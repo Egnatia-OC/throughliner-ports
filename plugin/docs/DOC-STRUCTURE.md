@@ -70,7 +70,9 @@ Starts empty. Entry-format reminder in HTML comment.
 
 **Entries.** Flat, alphabetical. One line each:
 
-> - **[Name]** (`path/to/file.ext`) — [plain-English description]
+> - **[Name]** (`path/to/file.ext`) — [plain-English description]. *Rationale: [why it exists / vNN].*
+
+The rationale field records why the component was built — one clause, max 15 words, followed by the session tag when it was introduced. Italic suffix keeps it visually distinct from the description. Existing entries without rationale remain valid (graceful migration).
 
 Include things the user might ask about. Skip trivial helpers and boilerplate.
 
@@ -240,7 +242,7 @@ Entries: one line per UX principle, then one line per functionality. Format: `- 
 
 Source: `MANIFEST.md`. State summary: entry count.
 
-Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description omitted — dip for detail.
+Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description and rationale omitted — dip for detail.
 
 ### TEST-LOG index proxy (test-log.md)
 
@@ -377,4 +379,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 78.*
+*No-code method — Version 79.*

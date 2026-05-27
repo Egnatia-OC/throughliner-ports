@@ -4,7 +4,7 @@ Flat alphabetical glossary of named codebase elements. One line per entry. Maint
 
 <!--
 Entry format (one per line, alphabetical):
-- **[Name]** (`path/to/file.ext`) — [one-line description]
+- **[Name]** (`path/to/file.ext`) — [one-line description]. *Rationale: [why it exists / vNN].*
 
 The `(path)` field drives the PreToolUse read-before-edit gate. Without it,
 the entry is silently skipped. Multi-file: comma-separate paths or use a
@@ -21,4 +21,4 @@ Claude-queued entries or updates. Apply during planning, then delete. Starts emp
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 78.*
+*No-code method — Version 79.*

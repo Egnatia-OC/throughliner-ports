@@ -49,10 +49,10 @@ TEST-LOG's Session column needs a stable build-session identifier:
 ### Work loop
 
 1. **[SILENT] Update MANIFEST.md.** Use the batch's Files: as source. For each ticked file:
-   - Added file with trackable element → add MANIFEST entry with `(path)` field. Alphabetical order.
+   - Added file with trackable element → add MANIFEST entry with `(path)` field and rationale (`*Rationale: [why it exists / vNN].*` — one clause, max 15 words + session tag). Alphabetical order.
    - Renamed → update name + path.
    - Deleted → remove entry.
-   - Modified → update description only if substantive change. **If entry has no `(path)` yet** (legacy), add it now.
+   - Modified → update description only if substantive change. **If entry has no `(path)` yet** (legacy), add it now. **If entry has no rationale yet** (legacy), add it now.
    Trivial helpers stay out of MANIFEST.
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in BACKLOG. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
@@ -160,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 78.*
+*No-code method — Version 79.*

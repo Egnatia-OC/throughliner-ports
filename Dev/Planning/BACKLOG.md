@@ -91,6 +91,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. |
 | 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
 | 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. **Shipped v95.** |
+| 0096 | Manifest rationale field | Inline italic rationale suffix on MANIFEST entries; close procedure writes it; planning checks it before UX edits. **Shipped v97.** |
 | 0098 | /sovplan skill + ordering principles + [SECURITY] marker | Planning skill wrapping planning.md; ordering principles; SessionStart top-3 summary; universal `[SECURITY]` marker. **Shipped v96.** |
 | 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
 
@@ -99,26 +100,6 @@ Shipped/cancelled batches end here. Queued batches are below with full scope con
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0096 — Manifest rationale field
-
-**Goal.** Add a one-line rationale field to MANIFEST entries so Claude can find *why* a component exists without scanning the build log. Secondary benefit: Claude references the rationale when updating UX, reducing incorrect reasoning about why things exist.
-
-**Inputs.** `plugin/templates/MANIFEST-TEMPLATE.md`, `plugin/docs/DOC-STRUCTURE.md` § MANIFEST.md structure + MANIFEST proxy, `plugin/docs/procedures/close.md`, `plugin/docs/procedures/planning.md`.
-
-**Outputs.** MANIFEST entry format extended (`- **[Name]** (`path`) — [description]. *Rationale: [why it exists / vNN].*`). DOC-STRUCTURE.md updated. MANIFEST-TEMPLATE.md updated. MANIFEST proxy format updated (design question below). Close procedure updated (rationale written at session close). Tests updated.
-
-**Success criteria.** New MANIFEST entries carry a rationale field. Claude updating UX can reference manifest rationale without opening build-log files. Existing entries without rationale remain valid (graceful migration).
-
-**Open questions.**
-1. Should the manifest proxy carry rationale, or keep it dip-only? Proxy is lightweight — adding rationale makes it heavier but eliminates a dip.
-2. Inline italic suffix (`*Rationale: ...*`) vs. second line vs. parenthetical?
-3. Should the rationale include the session tag where the component was introduced?
-4. Should the planning procedure explicitly say "check manifest rationale before rewriting UX entries"?
-
-**Risks / dependencies.** Soft dep on 0097 (`after-build.md` replaced by `close.md`). Moderate surface area (DOC-STRUCTURE, template, close procedure, tests). Risk of format bloat — spec a hard cap (one clause, max 15 words + optional session tag).
 
 ---
 
@@ -286,6 +267,26 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 **Why it matters.** The plugin targets non-coders, many of whom may not read English fluently. Claude already speaks dozens of languages — a lightweight setting (e.g. `Language: French` in CLAUDE.md) could instruct all skill/hook output to use that language without translating any plugin docs. The alternative — full locale folders with parallel doc trees — gives a polished experience but doubles maintenance per language. The design space includes: which layer reads the setting (skills only, hooks too, procedure docs?), whether templates scaffold in the target language, and whether the setting affects doc content or only Claude's responses.
 
 **Next step.** Park until the plugin is stable enough for external testers. Likely surfaces naturally when a non-English-speaking tester tries the plugin.
+
+**Design constraints surfaced (v97 ideation, 2026-05-27).** Robustness audit of the hook layer against non-English consumer projects. Two hard constraints identified:
+
+1. **Git `core.quotepath` for non-ASCII filenames.** Drift check 1 (`planning.md` § direct-edit detection) tells Claude to run `git diff` and match output paths against the batch file list. Git's default escapes non-ASCII characters with octal notation (`créer` → `cr\303\251er`). That match happens in Claude's context window, not in Python hooks — `Path.resolve()` can't normalise it. Fix: `/setup` or `SessionStart` sets `git config --local core.quotepath false`. Without it, Claude would hit mangled paths and fire unnecessary confirmation prompts. Hooks themselves are safe — they resolve paths through `pathlib`, not git output. Path slash normalisation (forward vs. backslash) is also already handled via `Path.resolve()` on both sides of every comparison.
+
+2. **Control tokens are English-only.** `Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`, and every other metadata keyword the hooks regex-match must remain in English regardless of content language. A user translating `Status: active` to `Estado: activo` silently breaks phase enforcement — the parser returns empty, and the hook treats an active batch as nonexistent. The language setting (if built) must document this constraint explicitly, and `/setup` scaffolding should note it in the consumer CLAUDE.md.
+
+**Source.** `Dev/Resources/research/ResearchFindingsMult (1).md` (§§ 3.1–3.3, 4.2). Hook audit confirmed path normalisation and encoding are handled; quotepath and control-token immutability are the two real gaps for internationalisation.
+
+---
+
+### UTF-8 BOM hardening for hook file reads
+
+**Surfaced.** v97 (2026-05-27 ideation).
+
+**The question.** Should the four `open()` / `read_text()` call sites in hooks switch from `encoding="utf-8"` to `encoding="utf-8-sig"` to strip Windows BOM bytes?
+
+**Why it matters.** `safe_read_text()` in `project_state.py:323` and `session_start.py:216` uses `utf-8`. Two direct `open()` calls in `user_prompt_submit.py:82` and `pre_tool_use.py:820` also use `utf-8`. If a user hand-edits a spine file in a Windows editor that prepends a UTF-8 BOM (`\xef\xbb\xbf`), the BOM lands before the first character of line 1. Any regex matching `^Status:` or `^# ` on the first line fails silently — the hook sees `﻿Status:` instead. Claude Code itself writes BOM-free UTF-8, so the risk is only manual edits. Low probability but a one-line fix per site.
+
+**Next step.** Low priority. Could fold into any batch touching hook file I/O, or ship as a standalone micro-batch.
 
 ---
 

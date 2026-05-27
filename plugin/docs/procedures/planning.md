@@ -160,6 +160,8 @@ Surface scope-context in recap before writing to BACKLOG.
 
 **Source-of-truth docs (V67).** UX.md and additional source-of-truth docs are directly editable by Claude during planning phase — no `[PROPOSED EDIT PENDING]` ceremony needed. Edit them directly on user approval. PreToolUse allows these edits because no `Status: active` batch exists.
 
+**Check MANIFEST rationale before rewriting UX entries (V79).** Before editing or removing a UX.md Functionalities entry, read the MANIFEST entries whose rationale references the feature. The rationale records *why* the component was built — editing UX without it risks removing the design reason a component exists.
+
 ## How a new feature enters the project
 
 Fixed pipeline — no shortcuts:
@@ -239,4 +241,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 78.*
+*No-code method — Version 79.*
