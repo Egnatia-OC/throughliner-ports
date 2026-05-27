@@ -102,6 +102,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0105 | `_method/` orientation in CLAUDE.md template | `## What's inside _method/` section added to CLAUDE-TEMPLATE.md. **Shipped v106.** |
 | 0106 | ~~Post-build proxy regeneration in `/sovclose`~~ | **Cancelled.** Already implemented by close.md step 11. |
 | 0107 | Unclosed-build detection in SessionStart | Active batch + all files ticked + `/sovclose` never ran → flag on session open. **Shipped v107.** |
+| 0108 | Guided rollback procedure (`/sovrevert`) | New skill + procedure doc. Non-coder walkthrough for undoing failed builds. **Shipped v108.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -140,20 +141,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0108 — Guided rollback procedure (`/sovrevert`)
-
-**Goal.** New `/sovrevert` skill that walks non-coders through undoing a failed build. Identifies what changed since the last commit, confirms what to undo, runs the git commands, verifies the project works afterward.
-
-**Inputs.** git.md (current `/sovgit` procedure). E2E round 2 research (cascading failure scenario).
-
-**Outputs.** New skill directory + procedure doc. Updated INVENTORY, README, Reference manual, crash-course HTML, universal-behaviour.md routing table.
-
-**Success criteria.** A non-coder who says "that broke everything, put it back" gets walked through restoring the last committed state. No git knowledge required. Edge case handled: if no prior commit exists, explain that there's nothing to revert to and recommend committing before builds in the future.
-
-**Risks / dependencies.** Depends on 0104 (sov-prefix convention). Only works if the user committed before building — `/sovgit` encourages this but doesn't enforce it.
 
 ---
 

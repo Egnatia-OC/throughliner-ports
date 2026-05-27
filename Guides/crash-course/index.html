@@ -712,6 +712,11 @@
         <p>When the build finishes, invoke <code>/sovclose</code>. It updates MANIFEST, checks docs for stale references, runs automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, and verifies everything via a pre-commit checkpoint. Then <code>/sovgit</code> walks you through commit, tag, and push in plain English.</p>
       </div>
 
+      <div class="card">
+        <h3>If something breaks (<code>/sovrevert</code>)</h3>
+        <p>If a build goes wrong, <code>/sovrevert</code> walks you through undoing it &mdash; restoring the project to its last committed state. No git knowledge required.</p>
+      </div>
+
       <h2 id="between-sessions">Between sessions</h2>
       <p>You <code>/clear</code>, refresh, and test. Use <code>/sovtest</code> for a guided walkthrough of each pending test, or test on your own and bring outcomes to the next planning session. The cycle repeats.</p>
       <div class="callout">
@@ -1125,6 +1130,7 @@
             <tr><td>Build</td><td>Auto</td><td>Source-file edits. Hooks enforce boundaries.</td></tr>
             <tr><td>Close (<code>/sovclose</code>)</td><td>Auto</td><td>Writes MANIFEST, test-log, build-log.</td></tr>
             <tr><td>Git (<code>/sovgit</code>)</td><td>Auto</td><td>Commits and pushes.</td></tr>
+            <tr><td>Revert (<code>/sovrevert</code>)</td><td>Auto</td><td>Restores last committed state.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1155,18 +1161,21 @@
       </ul>
 
       <h3>Procedure docs</h3>
-      <p>Six procedure docs, each specifying what Claude loads and does for that phase:</p>
+      <p>Nine procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
         <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
         <li><strong>Before-build</strong> &mdash; batch locking, file list population.</li>
         <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
         <li><strong>Close</strong> &mdash; MANIFEST update, tests, recap, build-log, quality gates.</li>
         <li><strong>Git</strong> &mdash; commit, tag, push walkthrough.</li>
+        <li><strong>Revert</strong> &mdash; undo a failed build, restore last committed state.</li>
+        <li><strong>Testing</strong> &mdash; guided User-verified test walkthrough with debugging.</li>
+        <li><strong>Tersify</strong> &mdash; guided doc compression.</li>
         <li><strong>Setup</strong> &mdash; four-case folder detection and scaffolding.</li>
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovresearch</code>, <code>/sovtersify</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

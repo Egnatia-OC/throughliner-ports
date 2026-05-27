@@ -145,7 +145,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
 - **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
@@ -160,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 86.*
+*No-code method — Version 87.*

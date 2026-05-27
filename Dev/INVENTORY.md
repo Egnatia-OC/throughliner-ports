@@ -66,7 +66,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Procedure docs (phase orchestration)
 
-Eight procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
+Nine procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
 
 - **planning.md** — V22 origin, procedure doc V66. Test-note sort, drift checks (5, inlined — V42 added direct-edit detection as check 1; cold-start skip V63), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning (V53), per-row read-back (V27), recap. V56: doc-first ordering, deferred-material aging. V63: classify-then-load, cold-start gate, reasoning constraint. V78: ordering principles (dependency flow, project-structure, security bias, stale-reference avoidance) and batch-ordering audit.
 
@@ -84,6 +84,8 @@ Eight procedure docs at `plugin/docs/procedures/`, read into main context on dem
 
 - **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75 migrations. PreToolUse exempts setup's tool calls.
 
+- **revert.md** — V87 origin. Guided rollback: confirms commit exists, identifies changes since last commit, confirms revert, restores tracked files (`git checkout -- .`), optionally removes untracked files (`git clean -fd`), verifies clean state, advises committing before future builds. Edge case: no prior commit → explain and stop.
+
 ### Slash commands
 
 All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
@@ -98,6 +100,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `/sovgit` — git walkthrough (commit/tag/push, solo or team). **Shipped V76.**
 - `/sovtest` — guided testing walkthrough (pending User-verified rows, debugging on failure). **Shipped V81** (sov-prefixed V84).
 - `/sovtersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80** (sov-prefixed V84).
+- `/sovrevert` — guided rollback (restore last committed state after a failed build). **Shipped V87.**
 
 ### Bundled artefacts
 
@@ -140,4 +143,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 86.*
+*No-code method — Version 87.*

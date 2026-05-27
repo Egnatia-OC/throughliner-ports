@@ -111,6 +111,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 | Non-conforming project docs | Recommend `/sovsetup`. Wait for okay. |
 | "Planning session," `/sovplan`, or explicit planning request | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md`. |
 | Feature request, scope question, structural change | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: feature request` or `scope question`. |
+| "That broke everything," "put it back," "undo," `/sovrevert` | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/revert.md`. |
 | Unfinished top batch, no other trigger | Resume. Confirm with user first. |
 | Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
 
@@ -118,7 +119,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Procedure docs — how to invoke:**
 
-For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eight procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `setup.md`, `testing.md` (invoked via `/sovtest`), `tersify.md` (invoked via `/sovtersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
+For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Nine procedures exist: `planning.md`, `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `revert.md` (invoked via `/sovrevert`), `setup.md`, `testing.md` (invoked via `/sovtest`), `tersify.md` (invoked via `/sovtersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
 
 ## Session handoff
 
@@ -163,4 +164,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 86.*
+*No-code method — Version 87.*

@@ -21,3 +21,4 @@ Run `/plugins` to confirm `no-code-method` is in the *Installed* tab.
 - `/sovtest` — guided testing walkthrough (pending User-verified rows)
 - `/sovresearch` — triggered research query flow
 - `/sovtersify` — guided doc compression (triage + audit)
+- `/sovrevert` — undo a failed build (restore last committed state)

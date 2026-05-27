@@ -146,20 +146,21 @@
       </ul>
 
       <h3>Procedure docs</h3>
-      <p>Eight procedure docs, each specifying what Claude loads and does for that phase:</p>
+      <p>Nine procedure docs, each specifying what Claude loads and does for that phase:</p>
       <ul>
         <li><strong>Planning</strong> &mdash; drift checks, idea routing, BACKLOG edits.</li>
         <li><strong>Before-build</strong> &mdash; batch review, file list population.</li>
         <li><strong>Build</strong> &mdash; runs the build against the file list.</li>
         <li><strong>Close</strong> &mdash; MANIFEST update, tests, recap, build-log.</li>
         <li><strong>Git</strong> &mdash; commit, tag, push walkthrough.</li>
+        <li><strong>Revert</strong> &mdash; undo a failed build, restore last committed state.</li>
         <li><strong>Testing</strong> &mdash; guided User-verified test walkthrough with debugging.</li>
         <li><strong>Tersify</strong> &mdash; guided doc compression.</li>
         <li><strong>Setup</strong> &mdash; four-case folder detection and scaffolding.</li>
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Bundled docs</h3>
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>

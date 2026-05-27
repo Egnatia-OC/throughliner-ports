@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v108-guided-rollback-procedure.md](v108-guided-rollback-procedure.md) — 2026-05-27 — Guided rollback procedure (/sovrevert)
 - [v107-unclosed-build-detection.md](v107-unclosed-build-detection.md) — 2026-05-27 — Unclosed-build detection in SessionStart
 - [v106-method-orientation-in-claude-template.md](v106-method-orientation-in-claude-template.md) — 2026-05-27 — `_method/` orientation in CLAUDE.md template
 - [v105-sov-prefix-rename.md](v105-sov-prefix-rename.md) — 2026-05-27 — Sov-prefix rename for remaining skills
