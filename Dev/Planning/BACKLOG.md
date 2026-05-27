@@ -96,6 +96,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0097 | /sovclose + /sovgit + after-build retirement | Close skill (dual-path), git skill, after-build.md absorbed. **Shipped v94.** |
 | 0103 | /tersify skill for doc compression | Guided triage + audit for reducing token cost in SOT docs. Planning-phase only. **Shipped v98.** |
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. **Shipped v99.** |
+| 0094 | Guided testing and debugging procedure | `/test` skill + `testing.md` procedure doc. User-verified walkthrough, direct TEST-LOG recording, structured debugging. **Shipped v100.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -120,29 +121,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 2. If a fix session shipped between 0084 and this, re-test the fixed behaviour first.
 
 **Risks / dependencies.** Soft dep on 0099 (skill names). Burner app may have stale state from 0084 testing (Status: active on a batch). May need status reset or fresh start.
-
----
-
-### 0094 — Guided testing and debugging procedure
-
-**Goal.** Give non-coders a step-by-step hand-holding experience when they test their app after a build. Two halves: (1) Claude walks the user through each pending User-verified test row — turning a one-line Test Description into an actionable sequence of "do this, look for that"; (2) when something fails, Claude runs a structured debugging process until the issue is understood and routed.
-
-New procedure doc (`plugin/docs/procedures/testing.md`) and new skill (`/test`).
-
-**Inputs.** `plugin/docs/procedures/close.md` (handoff point from `/sovclose`). `plugin/docs/DOC-STRUCTURE.md` → TEST-LOG structure. `plugin/docs/VOCABULARY.md` → test type definitions. `plugin/templates/TEST-LOG-TEMPLATE.md`. `plugin/docs/procedures/planning.md` → step 1 (read-back).
-
-**Outputs.** `plugin/docs/procedures/testing.md` (new). `plugin/skills/test/SKILL.md` (new `/test` skill). Updated `close.md` (references `/test`). Updated `plugin/README.md` and `.claude-plugin/plugin.json`.
-
-**Design decisions.**
-1. Should `/test` also handle Claude-verified tests, or only User-verified?
-2. How detailed should type-specific templates be? Adapt per project type, or generic?
-3. Record outcomes directly to TEST-LOG, or defer to planning read-back?
-4. Debugging depth — shallow routing vs. deep diagnostic iteration?
-5. Handle "Run and read" / "Trigger and observe" tests that Claude can't auto-run?
-
-**Success criteria.** A non-coder can invoke `/test`, follow guidance through every pending row, and end with all rows having Status and Notes. Failures get structured debugging, not silence. Handles all four test types.
-
-**Risks / dependencies.** Depends on 0079 (shipped). Depends on 0097 (`after-build.md` replaced by `close.md`). Soft dep on 0090 (shipped). Risk: over-specifying guidance templates for diverse project types. Risk: permission model — testing is a third phase not yet modeled.
 
 ---
 

@@ -126,7 +126,7 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 **Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` locks the batch and runs the build against the file list. PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which updates MANIFEST, checks spine docs for stale references, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps from CLAUDE.md's `## After-build steps` section, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
 
-The no-coder `/clear`s, refreshes, runs user-verified tests, and brings outcomes to the next planning session.
+The no-coder `/clear`s, refreshes, and tests. Two options: invoke `/test` for a guided walkthrough of each pending User-verified row (step-by-step instructions, outcome recording, failure debugging), or test independently and bring per-row outcomes to the next planning session.
 
 **Sessions are stateless; the docs are the memory.** BACKLOG, MANIFEST, TEST-LOG, build-log tell each session where things stand. Nothing carries from in-memory state.
 
@@ -270,7 +270,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 
 - **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests). PreToolUse enforces edit boundaries (project-boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard). PostToolUse validates BACKLOG format after edits. PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
-- **Slash commands** (`/setup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/research`, `/tersify`): user-facing entry points that direct Claude to the matching procedure doc or flow.
+- **Slash commands** (`/setup`, `/sovplan`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/test`, `/research`, `/tersify`): user-facing entry points that direct Claude to the matching procedure doc or flow.
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
@@ -379,4 +379,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 80.*
+*No-code method — Version 81.*
