@@ -100,6 +100,8 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0094 | Guided testing and debugging procedure | `/test` skill + `testing.md` procedure doc. User-verified walkthrough, direct TEST-LOG recording, structured debugging. **Shipped v100.** |
 | 0104 | Sov-prefix rename for remaining skills | `/setup` → `/sovsetup`, `/research` → `/sovresearch`, `/test` → `/sovtest`, `/tersify` → `/sovtersify`. All references updated across ~30 files. **Shipped v105.** |
 | 0105 | `_method/` orientation in CLAUDE.md template | `## What's inside _method/` section added to CLAUDE-TEMPLATE.md. **Shipped v106.** |
+| 0106 | ~~Post-build proxy regeneration in `/sovclose`~~ | **Cancelled.** Already implemented by close.md step 11. |
+| 0107 | Unclosed-build detection in SessionStart | Active batch + all files ticked + `/sovclose` never ran → flag on session open. **Shipped v107.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -138,34 +140,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0106 — Post-build proxy regeneration in `/sovclose`
-
-**Goal.** Add proxy regeneration to the post-build close path in close.md. Currently only the planning/general path regenerates proxies, so proxies go stale after every build.
-
-**Inputs.** close.md (post-build vs. planning/general paths). Proxy format spec in DOC-STRUCTURE.md.
-
-**Outputs.** Updated close.md with proxy regeneration step in the post-build path.
-
-**Success criteria.** After a build that changes MANIFEST, TEST-LOG, or build-log content, proxies reflect the new state before the session ends.
-
-**Risks / dependencies.** None. Small scope — one new step in an existing procedure.
-
----
-
-### 0107 — Unclosed-build detection in SessionStart
-
-**Goal.** SessionStart detects when the previous session finished a build (all files ticked in the active batch) but never ran `/sovclose`. Flags the user to run `/sovclose` before starting new work.
-
-**Inputs.** session_start.py. parse_backlog.py (batch status). project_state.py (build-log session identification).
-
-**Outputs.** Updated session_start.py with unclosed-build detection logic: active batch + all files ticked + no build-log entry for that batch.
-
-**Success criteria.** Flags unclosed builds on session open. No false positives on mid-build sessions (some files still unticked) or planning sessions (no active batch).
-
-**Risks / dependencies.** Needs reliable "does a build-log entry exist for this batch" check. project_state.py already has build-log session identification — may need extension.
 
 ---
 
@@ -214,6 +188,18 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### /sovgit close prompt: /compact vs /clear guidance
+
+**Surfaced.** v97 (2026-05-27 ideation).
+
+**The question.** Should the `[PROMPT]` at the end of git.md standardize guidance on when to use /compact vs /clear after committing — rather than relying on Claude to mention both options unprompted?
+
+**Why it matters.** The session-end prompt in git.md currently says "/clear when you're ready for a fresh session." But /compact is the better choice when the next session continues in the same area — it carries forward understanding without carrying forward bulk. Claude sometimes mentions this, sometimes doesn't. A standardized prompt would make the guidance consistent: "/compact to carry forward context if your next session continues in this area. /clear for a fresh start."
+
+**Next step.** Small change — fold into the next batch that touches git.md or the close flow. No standalone batch needed.
 
 ---
 

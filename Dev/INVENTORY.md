@@ -42,7 +42,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 ### Hooks (deterministic enforcement)
 
-- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
+- **SessionStart hook.** Injects `additionalContext`: (a) universal behavioural rules from `universal-behaviour.md`; (b) foundational reads + state summary. Three tiers: tier 1 (non-method folder) → silent; tier 2 (partial) → rules + gap flag pointing at `/sovsetup`; tier 3 (complete) → rules + full state summary. State summary includes: template-state detection, resume detection, version-footer mismatch tripwire, TEST-LOG tripwire (V27 — routes to planning when unconfirmed rows exist), Red flags tripwire (V54 — surfaces deferred red flags), unclosed-build detection (V86 — flags active batches with all files ticked but /sovclose never ran; directive prompts user to run /sovclose before new work), user-facing session-open status (V74 — batch counts, next batch name/goal/file count, pending tests; V78 — top 3 queued batches with goal summaries; directive mandates Claude present it before routing), parent-directory CLAUDE.md detection (V71 — warns when parent directories contain CLAUDE.md files that could poison the session; fires in all tiers including tier 1). V43 adds two-layer-permission preamble.
 
 - **PreToolUse hook (consolidated).** Eight checks, V67 phase-aware (`detect_phase()` from BACKLOG batch status):
   - (a) Locked source-of-truth doc enforcement. V19, V67 phase-aware. Build phase: UX.md + additional docs locked (footer + proposed-edits carve-outs). Planning phase: directly editable.
@@ -140,4 +140,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 85.*
+*No-code method — Version 86.*

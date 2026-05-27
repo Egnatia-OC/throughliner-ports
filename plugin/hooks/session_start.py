@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 85
+PLUGIN_METHOD_VERSION = 86
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -147,6 +147,9 @@ BATCH_GOAL_PATTERN = re.compile(r"^\*\*Goal\.\*\*\s*(.+?)$", re.MULTILINE)
 
 # Files: section entries (ticked or unticked).
 BATCH_FILES_ENTRY_PATTERN = re.compile(r"^- \[[ x]\] ", re.MULTILINE)
+
+# Files: section unticked entries only (unclosed-build detection).
+BATCH_FILES_UNTICKED_PATTERN = re.compile(r"^- \[ \] ", re.MULTILINE)
 
 # Heading shape for a build batch in BACKLOG.md (single-file mode).
 BUILD_BATCH_HEADING_PATTERN = re.compile(r"^### Batch: (.+)$", re.MULTILINE)
@@ -578,6 +581,87 @@ def detect_red_flags(backlog_text: str) -> list:
     return flags
 
 
+def detect_unclosed_build(backlog_text, backlog_path=None):
+    """Detect a batch with Status: active and all Files: ticked.
+
+    This state means the build completed but /sovclose never ran —
+    /sovclose is what transitions Status: active → shipped. Returns
+    the batch name if found, None otherwise.
+
+    No false positives on mid-build sessions (some files unticked),
+    planning sessions (no active batch), or completed builds
+    (Status: shipped)."""
+    section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
+    if not section_match:
+        return None
+
+    section_text = backlog_text[section_match.end():]
+    next_section = NEXT_SECTION_PATTERN.search(section_text)
+    if next_section:
+        section_text = section_text[:next_section.start()]
+
+    def _has_all_files_ticked(body):
+        total = len(BATCH_FILES_ENTRY_PATTERN.findall(body))
+        if total == 0:
+            return False
+        unticked = len(BATCH_FILES_UNTICKED_PATTERN.findall(body))
+        return unticked == 0
+
+    batch_matches = list(BUILD_BATCH_HEADING_PATTERN.finditer(section_text))
+    if batch_matches:
+        for i, batch_match in enumerate(batch_matches):
+            title = batch_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            body_start = batch_match.end()
+            body_end = (
+                batch_matches[i + 1].start()
+                if i + 1 < len(batch_matches)
+                else len(section_text)
+            )
+            body = section_text[body_start:body_end]
+            if _batch_status(body) != "active":
+                continue
+            if _has_all_files_ticked(body):
+                return title
+        return None
+
+    if backlog_path is not None:
+        backlog_dir = _resolve_backlog_dir(backlog_path)
+        for ref_match in BATCH_REF_PATTERN.finditer(section_text):
+            batch_file = backlog_dir / ref_match.group(1)
+            batch_text = safe_read_text(batch_file)
+            if not batch_text:
+                continue
+            if _batch_status(batch_text) != "active":
+                continue
+            h1_match = BATCH_FILE_H1_PATTERN.search(batch_text)
+            if not h1_match:
+                continue
+            title = h1_match.group(1).strip()
+            if title.startswith("[") and title.endswith("]"):
+                continue
+            if _has_all_files_ticked(batch_text):
+                return title
+
+    return None
+
+
+def format_unclosed_build_block(batch_name):
+    """Compose the additionalContext block for unclosed-build detection."""
+    return (
+        "- **Unclosed build detected.** The batch \""
+        + batch_name
+        + "\" has `Status: active` with all files ticked — the build "
+        "finished but `/sovclose` was never run. `/sovclose` handles "
+        "MANIFEST updates, TEST-LOG rows, build-log entry, doc-parity "
+        "check, and status transition to shipped.\n\n"
+        "  **Required action.** Prompt the user to run `/sovclose` before "
+        "starting any new work. Do not start a new planning session or "
+        "build batch until the close completes."
+    )
+
+
 # --- V27 TEST-LOG tripwire helpers ---
 
 
@@ -1006,6 +1090,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     batch_details = None
     batch_counts = None
     top_queued = []
+    unclosed_batch = None
     if backlog_data:
         backlog_resolved_path, backlog_text = backlog_data
         top_batch = detect_top_build_batch(backlog_text, backlog_resolved_path)
@@ -1043,6 +1128,12 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
                 "to address one now, defer it consciously, or fold it into "
                 "the current planning session."
             )
+
+        unclosed_batch = detect_unclosed_build(
+            backlog_text, backlog_resolved_path
+        )
+        if unclosed_batch:
+            lines.append(format_unclosed_build_block(unclosed_batch))
 
     # V27 TEST-LOG tripwire.
     unconfirmed_rows, build_log_status, session_id = detect_unconfirmed_test_rows(
@@ -1114,6 +1205,11 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     if backlog_data and red_flags:
         status_lines.append(
             f"Red flags: {len(red_flags)} deferred concern(s) to acknowledge."
+        )
+
+    if unclosed_batch:
+        status_lines.append(
+            f"Unclosed build: \"{unclosed_batch}\" — run /sovclose to complete."
         )
 
     status_lines.append("Ready to proceed?")

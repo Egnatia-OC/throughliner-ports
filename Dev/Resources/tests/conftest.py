@@ -95,3 +95,8 @@ def tier2_bad_pathblock():
 @pytest.fixture
 def planning_phase():
     return fixture_path("planning_phase")
+
+
+@pytest.fixture
+def unclosed_build():
+    return fixture_path("unclosed_build")

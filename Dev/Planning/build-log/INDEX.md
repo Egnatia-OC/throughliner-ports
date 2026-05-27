@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v107-unclosed-build-detection.md](v107-unclosed-build-detection.md) — 2026-05-27 — Unclosed-build detection in SessionStart
 - [v106-method-orientation-in-claude-template.md](v106-method-orientation-in-claude-template.md) — 2026-05-27 — `_method/` orientation in CLAUDE.md template
 - [v105-sov-prefix-rename.md](v105-sov-prefix-rename.md) — 2026-05-27 — Sov-prefix rename for remaining skills
 - [v104-session-protocol-convergence.md](v104-session-protocol-convergence.md) — 2026-05-27 — Dev-side session-protocol procedural convergence

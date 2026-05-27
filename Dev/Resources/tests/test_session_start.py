@@ -201,6 +201,46 @@ class TestV74SessionOpenStatus:
         assert "(2 files)" in ctx
 
 
+class TestUnclosedBuildDetection:
+    """V86 — unclosed-build detection in SessionStart."""
+
+    def test_unclosed_build_detected_folder_mode(self, unclosed_build):
+        """Active batch with all files ticked triggers unclosed-build warning."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(unclosed_build)}
+        )
+        assert code == 0
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Unclosed build detected" in ctx
+        assert "Add settings screen" in ctx
+        assert "/sovclose" in ctx
+
+    def test_unclosed_build_in_status_summary(self, unclosed_build):
+        """Unclosed build appears in user-facing status block."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(unclosed_build)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Unclosed build:" in ctx
+        assert "run /sovclose to complete" in ctx
+
+    def test_mid_build_no_false_positive(self, adopted_folder):
+        """Active batch with unticked files does NOT trigger unclosed-build."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_folder)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Unclosed build detected" not in ctx
+
+    def test_queued_batch_no_false_positive(self, adopted_single_file):
+        """Queued batch (no Status: line) does NOT trigger unclosed-build."""
+        code, parsed, _ = run_hook(
+            "session_start.py", {"cwd": str(adopted_single_file)}
+        )
+        ctx = parsed["hookSpecificOutput"]["additionalContext"]
+        assert "Unclosed build detected" not in ctx
+
+
 class TestMalformedInput:
     """Hook handles bad stdin gracefully."""
 
