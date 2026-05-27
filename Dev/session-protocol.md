@@ -34,8 +34,26 @@ In order:
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Guides/Reference manual.md` at `HEAD`.
 3. Read `Dev/Planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
+5. **Carried-forward read-back.** Read the most recent build-log entry's *Carried forward* section. If non-empty, surface items before routing. Ask whether to address this session or defer.
 
-Then read Alex's opener and route. Openers naming a session shape ("planning session," "doc-only session," etc.) are clear — route to that shape directly. If the task isn't clear, report what was loaded and ask. Don't draft.
+Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
+
+---
+
+## Opener routing table
+
+Classify the session opener. Pick the highest-priority match. Openers naming a shape explicitly ("planning session," "doc-only session") are clear — route directly.
+
+| Session type | What to load | What to skip | Session-middle shape | Close path |
+|---|---|---|---|---|
+| **Implementation** | Full open (steps 1–5). Batch input files per `Inputs:`. | — | Ship plugin code or method-doc structural changes per batch scope. Ends with smoke test + doc-parity. | Full close |
+| **Doc-only** | Full open (steps 1–5). | Batch-input check (step 4) if no queued batch is being consumed. | Rewrites without testable code. Terminology, parity catch-up, OQ resolution as prose. | Lighter close |
+| **Planning** | Steps 1, 3, 5. Recent build-log entries for context. | Heavy plugin docs (step 2) unless needed for a specific question. | Rescope roadmap: split/merge batches, revise scope, add/resolve OQs. | Lighter close |
+| **Ideation** | Steps 1, 3. BACKLOG batches + OQs for gap detection. | Plugin docs (step 2), batch-input check (step 4). | Brainstorm new batches/OQs. Draft scope. No structural changes to existing batches. | Lighter close |
+| **E2E test** | Full open (steps 1–5). Consumer project state. Relevant research files. | — | Run plugin against consumer project. Document findings. File to research/. | Lighter close |
+| **Remote-control standby** | Step 1 only. | Steps 2–5 until directed. | Wait for instructions. Load on demand. | Depends on work done |
+
+**Skip doesn't mean refuse.** If mid-session the skipped content becomes relevant, load it then.
 
 ---
 
@@ -53,11 +71,17 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 ---
 
-## Session close: 11 steps
+## Session close
+
+Two paths based on session type.
+
+### Implementation close (full)
+
+Run when the session shipped plugin code or method-doc structural changes consuming a queued batch.
 
 Response-shape tags mark verbosity per step — definitions in `session-reference.md` → *Response-shape tags*.
 
-1. **[BRIEF] Doc-code parity** (see `session-reference.md` → *Doc-code parity* for audit details). Fix docs before footers and BUILD-LOG.
+1. **[BRIEF] Doc-code parity** (see *Doc-code parity* section below for audit details). Fix docs before footers and BUILD-LOG.
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
@@ -65,19 +89,75 @@ Response-shape tags mark verbosity per step — definitions in `session-referenc
 
 4. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-5. **[BRIEF] Sweep ideas raised but not implemented.** Each: add to BACKLOG.md → *Queued batches* as a new batch entry; note in build-log entry as "not pursued, reason: ..."; or add to BACKLOG.md → *Open questions*.
+5. **[BRIEF] Idea sweep with routing.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to exactly one destination:
+   - **BACKLOG batch** — add a new queued batch entry to BACKLOG.md → *Queued batches*.
+   - **Build-log "not pursued"** — note in the build-log entry as "not pursued, reason: ...".
+   - **BACKLOG open question** — add to BACKLOG.md → *Open questions* with `Surfaced` tag.
+   Nothing left unrouted. If no ideas surfaced, skip silently.
 
 6. **[SILENT] Regenerate proxies.** If `Dev/Planning/.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per its format spec. Skip if no source docs were edited.
 
-7. **[BRIEF] Pre-commit checkpoint.** Verify steps 1–6 all done. A missing build-log entry is the most common skip when context runs low — check explicitly.
+7. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
+   - [ ] Doc-code parity done (step 1)
+   - [ ] Frame-correction sweep done (step 2)
+   - [ ] Footers bumped if applicable (step 3)
+   - [ ] Build-log entry written + index line prepended (step 4)
+   - [ ] Idea sweep done — nothing unrouted (step 5)
+   - [ ] Proxies regenerated (step 6)
+   Complete any missing steps now. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
-8. **[PROMPT] Commit** with `V<N>:` message.
+8. **[PROMPT] Commit** with `v<N>:` message.
 
 9. **[SILENT] Tag** `git tag v<N>`.
 
 10. **[SILENT] Remove this batch from BACKLOG's Queued batches section** as part of the commit.
 
 11. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+
+### Lighter close (planning, doc-only, ideation, E2E test)
+
+Run when the session didn't ship code. Steps that produce no-ops on non-code sessions are skipped explicitly.
+
+1. **[BRIEF] Idea sweep with routing.** Same three-way triage as implementation close step 5: every idea routed to exactly one of BACKLOG batch, build-log "not pursued," or BACKLOG open question. Nothing left unrouted.
+
+2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+
+3. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. Full list in `session-reference.md` → *Footer bumps*.
+
+4. **[SILENT] Regenerate proxies.** Same rule as implementation close step 6. Skip if no source docs were edited.
+
+5. **[BRIEF] Pre-commit checkpoint.** Verify by name:
+   - [ ] Build-log entry written + index line prepended (step 2)
+   - [ ] Idea sweep done — nothing unrouted (step 1)
+   - [ ] Proxies regenerated if applicable (step 4)
+   - [ ] Footers bumped if applicable (step 3)
+   - [ ] Batch removed from BACKLOG if this session consumed one
+   Complete any missing steps now.
+
+6. **[PROMPT] Commit** with `v<N>:` message.
+
+7. **[SILENT] Tag** `git tag v<N>`.
+
+8. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+
+**Skipped explicitly (vs. implementation close):**
+- Doc-code parity — no code changes to audit.
+- Frame-correction sweep — no feature frame changed.
+
+**Conditional:** If this session consumed a queued batch (e.g. a doc-only batch), remove it from BACKLOG's Queued batches section as part of the commit (lighter close step 5, checkpoint).
+
+---
+
+## Batch-ordering audit
+
+Run as part of any session that adds, removes, or reorders BACKLOG queued batches. Four checks:
+
+1. **Forward-dependency scan.** For each batch, verify its Dependencies resolve to shipped batches or earlier queued batches. Flag violations.
+2. **Stale-reference scan.** For each batch that renames/deletes/moves a file or skill, grep later batches for references to the old name. Flag hits.
+3. **Reorder if needed.** Propose reordering with one-line justification per move. Apply ordering principles: dependency flow first, then project-structure reasoning, then security bias (`[SECURITY]`-marked batches earlier), then stale-reference avoidance.
+4. **Fix scope text.** Update stale references in affected batch scope in the same pass as the reorder.
+
+Skip if no structural changes to BACKLOG were made this session.
 
 ---
 

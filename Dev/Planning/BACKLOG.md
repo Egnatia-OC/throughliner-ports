@@ -86,6 +86,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0091 | Dev-side terminology and BACKLOG alignment | Rename PLAN.md→BACKLOG.md, planning/sessions/→planning/scopes/, merge OPEN-QUESTIONS into BACKLOG. Dev-internal only. **Shipped v87.** |
 | 0092 | BUILD-METHOD split and dev-side proxies | Split BUILD-METHOD into protocol + reference; adopt .proxies/. Depends on 0091. **Shipped v90.** |
 | 0093 | Dev-side folder restructure | All dev-side content into `Dev/`, product docs into `Guides/`. Manual execution with different design choices from spec. **Shipped v96.** |
+| 0111 | Dev-side session-protocol procedural convergence | Opener routing table, carried-forward read-back, explicit pre-commit checklist, idea-sweep 3-way triage, differentiated close paths, batch-ordering audit. Resolves 3 OQs. **Shipped v104.** |
 
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. **Shipped v101.** |
@@ -103,26 +104,6 @@ Shipped/cancelled batches end here. Queued batches are below with full scope con
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0111 — Dev-side session-protocol procedural convergence
-
-**Goal.** Bring six procedural structures from plugin-side procedure docs into dev-side session-protocol.md. Closes the gap between the structured discipline the plugin enforces on consumer projects and the ad-hoc prose conventions governing this project's own sessions.
-
-**Inputs.** Plugin-side procedures: `plugin/docs/procedures/planning.md` (opener classification, batch-ordering audit), `plugin/docs/procedures/close.md` (differentiated close paths, explicit pre-commit checklist, idea-sweep routing). Current `Dev/session-protocol.md`.
-
-**Outputs.** Rewritten `Dev/session-protocol.md` with six additions:
-1. **Opener routing table** — maps dev-session types (planning, implementation, doc-only, ideation, E2E test, remote-control standby) to what to load, what to skip, and session-middle shape. Resolves OQ "Opener routing table for dev sessions."
-2. **Carried-forward read-back** — at session open, read most recent build-log "Carried forward" section. If non-empty, surface items before routing. Ask whether to address this session or defer.
-3. **Explicit pre-commit checklist** — replace step 7's "verify steps 1–6 done" with named artifact list: doc-parity, frame-correction, footers, build-log entry + index line, idea sweep, proxies. Resolves OQ "Pre-commit checkpoint as explicit checklist."
-4. **Explicit idea-sweep routing** — replace step 5's loose guidance with three-way triage: every idea → new BACKLOG batch, build-log "not pursued, reason: ...", or BACKLOG open question. Nothing left unrouted. Resolves OQ "Idea sweep with explicit routing destinations."
-5. **Differentiated close paths** — implementation sessions run full close. Planning/ideation/doc-only sessions run lighter path (idea sweep, build-log, proxy regen, checkpoint, commit). Steps that produce no-ops on non-code sessions skipped explicitly.
-6. **Batch-ordering audit** — after any session that adds, removes, or reorders BACKLOG batches: forward-dependency scan, stale-reference scan, propose reordering with justification, fix scope text.
-
-**Success criteria.** Session-protocol.md covers all six additions as self-contained prose. The three named OQs are resolvable upon shipping. Next session's Claude follows the new opener routing without additional instruction.
-
-**Risks / dependencies.** None. Pure doc change — no plugin code, no test suite updates. Risk: the routing table may need iteration once tested over a few real sessions.
 
 ---
 
@@ -291,42 +272,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 **Why it matters.** `safe_read_text()` in `project_state.py:323` and `session_start.py:216` uses `utf-8`. Two direct `open()` calls in `user_prompt_submit.py:82` and `pre_tool_use.py:820` also use `utf-8`. If a user hand-edits a spine file in a Windows editor that prepends a UTF-8 BOM (`\xef\xbb\xbf`), the BOM lands before the first character of line 1. Any regex matching `^Status:` or `^# ` on the first line fails silently — the hook sees `﻿Status:` instead. Claude Code itself writes BOM-free UTF-8, so the risk is only manual edits. Low probability but a one-line fix per site.
 
 **Next step.** Low priority. Could fold into any batch touching hook file I/O, or ship as a standalone micro-batch.
-
----
-
-### Pre-commit checkpoint as explicit checklist
-
-**Surfaced.** v93 (2026-05-26 ideation).
-
-**The question.** Should the dev-side pre-commit checkpoint (session-protocol.md step 6) name each artifact explicitly — like plugin-side close.md step 13 — instead of the current "verify steps 1–5 all done"?
-
-**Why it matters.** The vague step is the one most likely skipped under context pressure. Plugin-side names each artifact (MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, proxies regenerated, doc-parity done). Dev-side could name its equivalents (doc-parity done, frame-correction done, footers bumped if applicable, build-log entry written, idea sweep done, proxies regenerated).
-
-**Next step.** Could fold into 0102 if it hasn't shipped, or a follow-on dev-side protocol polish batch.
-
----
-
-### Idea sweep with explicit routing destinations
-
-**Surfaced.** v93 (2026-05-26 ideation).
-
-**The question.** Should the dev-side idea sweep (session-protocol.md step 5) enforce the plugin's three-way triage — every idea routed to exactly one of: BACKLOG batch, build-log "not pursued, reason: ...", or open question — instead of the current loose "sweep ideas raised but not implemented"?
-
-**Why it matters.** Plugin-side close.md step 10 requires explicit routing so ideas don't slip through unrecorded. Dev-side step 5 has the same risk — ideas mentioned in chat but never routed to a durable location disappear at session end.
-
-**Next step.** Could fold into 0102 if it hasn't shipped, or a follow-on dev-side protocol polish batch.
-
----
-
-### Opener routing table for dev sessions
-
-**Surfaced.** v93 (2026-05-26 ideation).
-
-**The question.** Should session-protocol.md include a routing table mapping dev-session openers (planning, build, doc-only, ideation, E2E test) to what to load and what to skip — similar to plugin-side universal-behaviour.md § Routing openers?
-
-**Why it matters.** Currently every dev session loads the same docs regardless of shape. An ideation session doesn't need full BACKLOG parsing; a doc-only session doesn't need test-log state. A routing table would reduce session-open token cost and give Claude clearer per-shape instructions.
-
-**Next step.** Park until session-protocol stabilises after 0102 and 0093 ship. Both will change what's in the protocol and where it lives.
 
 ---
 
