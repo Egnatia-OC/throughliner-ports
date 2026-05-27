@@ -56,7 +56,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 - **PreToolUse git safety guard.** V34. Separate hook (Bash matcher). Denies `git reset --hard` and `git push --force`/`-f`. Allows `--force-with-lease`. Mode-aware deny messages.
 
-- **PostToolUse hook.** V46. Fires after BACKLOG.md edits. Imports `find_top_unticked_batch` directly; surfaces parse failures via `additionalContext`. Non-blocking (PostToolUse can't deny).
+- **PostToolUse hook.** V46, extended V82. Fires after Edit/Write/MultiEdit on structured method docs. Five validation paths: (1) BACKLOG parse validation (V46 — imports `find_top_unticked_batch`), (2) scope-context checks on BACKLOG batch files (Goal/Outputs/Success criteria), (3) TEST-LOG 10-column check, (4) build-log entry required sections, (5) proxy HTML comment header format. All lenient — warnings via `additionalContext`, not denies. Calls `validate_docs.py` for non-BACKLOG validators.
 
 - **PreCompact hook.** V52. Blocks compaction during active builds (unticked files in top batch). Surfaces handoff prompt. Silent when no build active.
 
@@ -101,7 +101,8 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 - 14 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog, .proxies/build-log, and .proxies/test-log serve as operational indexes for their respective folder-mode docs (V75).
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
-- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers.
+- `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections, scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
+- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`).
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
@@ -137,4 +138,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 81.*
+*No-code method — Version 82.*

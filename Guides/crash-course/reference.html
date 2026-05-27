@@ -140,7 +140,7 @@
       <ul>
         <li><strong>SessionStart</strong> &mdash; detects folder state, injects behavioural rules.</li>
         <li><strong>PreToolUse</strong> &mdash; enforces edit boundaries: project boundary, locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard.</li>
-        <li><strong>PostToolUse</strong> &mdash; validates BACKLOG format after edits.</li>
+        <li><strong>PostToolUse</strong> &mdash; validates structured doc format after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers).</li>
         <li><strong>PreCompact</strong> &mdash; blocks mid-build compaction (recommends handoff instead).</li>
         <li><strong>UserPromptSubmit</strong> &mdash; classifies first prompt, injects routing hint.</li>
       </ul>

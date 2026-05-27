@@ -88,7 +88,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0093 | Dev-side folder restructure | All dev-side content into `Dev/`, product docs into `Guides/`. Manual execution with different design choices from spec. **Shipped v96.** |
 
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
-| 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. |
+| 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. **Shipped v101.** |
 | 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. |
 | 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. **Shipped v95.** |
 | 0096 | Manifest rationale field | Inline italic rationale suffix on MANIFEST entries; close procedure writes it; planning checks it before UX edits. **Shipped v97.** |
@@ -137,29 +137,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/test` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0101 — Structured-markdown validator
-
-**Goal.** Extend PostToolUse validation beyond BACKLOG to cover all structured method docs — TEST-LOG, build-log, scope-context sections, and proxies. Malformed docs cause silent downstream failures (hooks gate on wrong data, proxies become stale, TEST-LOG rows lose columns). A general validator catches shape violations at write time.
-
-**Inputs.** `plugin/scripts/parse_backlog.py` (existing BACKLOG-specific parser — model for the pattern). `plugin/docs/DOC-STRUCTURE.md` (canonical shapes for all doc types). `plugin/hooks/post_tool_use.py` (current PostToolUse hook — BACKLOG validation only).
-
-**Outputs.**
-- `plugin/scripts/validate_docs.py` (or similar) — general-purpose validator covering: TEST-LOG column count (10 columns), build-log entry structure (required sections), scope-context section completeness (Goal/Outputs/Success criteria present), proxy format (HTML comment header, state summary, entries section). Callable from PostToolUse and as a standalone planning pre-flight.
-- `plugin/hooks/post_tool_use.py` — updated to call the new validator after edits to TEST-LOG files, build-log files, BACKLOG batch files, and proxy files.
-- Tests updated (validator unit tests, PostToolUse integration tests).
-
-**Design decisions (v92).**
-1. Separate script (`validate_docs.py`), not bolted onto `parse_backlog.py`. The BACKLOG parser is a data-extraction tool consumed by multiple hooks; the validator is a shape-checker. Different jobs.
-2. PostToolUse is the primary trigger — validate at write time, same pattern as BACKLOG validation. Also usable as a planning pre-flight (standalone invocation).
-3. Lenient on legacy formats — warn, don't block. Same philosophy as `parse_backlog.py`: malformed input produces a warning in `additionalContext`, not a hard deny. Claude sees the warning and can self-correct.
-4. Validation rules derived from DOC-STRUCTURE.md — the spec is the source of truth for what "well-formed" means.
-
-**Success criteria.** A TEST-LOG edit that drops a column triggers a PostToolUse warning. A build-log entry missing the Performance section triggers a warning. A proxy with a malformed HTML comment header triggers a warning. No false positives on well-formed docs. Existing `parse_backlog.py` validation unchanged.
-
-**Risks / dependencies.** Scope creep — "validate all docs" can expand indefinitely. Cap at the four doc types above (TEST-LOG, build-log, scope-context, proxies). BACKLOG validation stays in `parse_backlog.py`. No hard dependencies; benefits from proxy layer (shipped) and folder structures (shipped).
 
 ---
 

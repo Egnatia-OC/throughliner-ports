@@ -2,40 +2,35 @@
 """
 PostToolUse hook for the no-code-method plugin.
 
-Fires after Edit/Write/MultiEdit completes successfully. When the edit
-targeted a BACKLOG file, runs the parser to validate structural format.
-If the parser can't extract data from what should be a parseable file,
-surfaces an immediate warning so Claude can fix the formatting before
-continuing.
+Fires after Edit/Write/MultiEdit completes successfully. Validates
+structured method docs at write time — catching shape violations before
+they cause silent downstream failures.
 
-Supports two BACKLOG formats:
+Five validation paths (first match wins, except BACKLOG batch files
+which run both BACKLOG parse and scope-context checks):
 
-  **Single-file (legacy):** edit targets `BACKLOG.md` directly; the
-  hook reads the file and runs the text-only parser.
+  1. **BACKLOG file** — existing parse validation. If the file has
+     unticked file bullets but the parser can't extract a batch, the
+     format is likely broken.
 
-  **Folder (V48+):** edit targets any file inside `BACKLOG/` (INDEX.md
-  or a per-batch `NNNN-name.md` file); the hook reads the edited file
-  for the unticked-bullet heuristic and runs the path-aware parser
-  against INDEX.md for structural validation.
+  2. **BACKLOG per-batch file** — additionally checks scope-context
+     sections (Goal/Outputs/Success criteria).
 
-First line of defence against silent BACKLOG corruption. Without it,
-a formatting error introduced by an edit stays invisible until the Stop
-hook or `/sovbuild` tries to parse and gets empty data ({}), often
-several turns later.
+  3. **TEST-LOG content file** — checks 10-column table row format.
 
-Detection heuristic: the edited file contains at least one unticked
-file bullet (`- [ ]`) with a non-placeholder path, but the parser
-returns {} — meaning it couldn't match the surrounding structure well
-enough to extract a batch. The search is deliberately file-wide, not
-section-bounded — a corrupted section heading is itself a failure mode
-the hook should catch. When no unticked bullets exist, {} is the
-expected result (all batches done or none declared) and no warning
-fires.
+  4. **Build-log entry file** — checks required sections (What shipped,
+     Decisions, Pivots, Carried forward, Performance).
+
+  5. **Proxy file** — checks HTML comment header format (summary
+     proxies only; operational indexes skipped).
+
+All validations are lenient — warnings in additionalContext, not hard
+denies. Claude sees the warning and can self-correct.
 
 Output protocol: stdout receives a JSON object with hookSpecificOutput
 containing hookEventName ("PostToolUse") and additionalContext (the
-warning text Claude reads). For clean-parse cases, the hook writes
-nothing and exits 0.
+warning text Claude reads). For clean cases, the hook writes nothing
+and exits 0.
 """
 
 import json
@@ -48,12 +43,22 @@ from project_state import (  # noqa: E402
     safe_read_text,
     resolve_path_block_entry,
     is_backlog_file,
+    is_backlog_batch_file,
+    is_test_log_content_file,
+    is_build_log_entry_file,
+    is_proxy_file,
     resolve_backlog_dir,
 )
 from parse_backlog import (  # noqa: E402
     find_top_unticked_batch,
     find_top_unticked_batch_from_path,
     TEMPLATE_PLACEHOLDER_PATTERN,
+)
+from validate_docs import (  # noqa: E402
+    validate_test_log,
+    validate_build_log_entry,
+    validate_scope_context,
+    validate_proxy,
 )
 
 WRITING_TOOLS = {"Edit", "Write", "MultiEdit"}
@@ -88,6 +93,71 @@ def has_real_unticked_bullets(text):
         if not TEMPLATE_PLACEHOLDER_PATTERN.match(path):
             return True
     return False
+
+
+def check_backlog_parse(target_path, project_root, text):
+    """Run the existing BACKLOG parse validation. Returns a warning
+    string if the format is broken, None if clean."""
+    if not has_real_unticked_bullets(text):
+        return None
+
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
+    if backlog_path is None:
+        return None
+
+    folder_mode = resolve_backlog_dir(project_root) is not None
+
+    try:
+        if folder_mode:
+            result = find_top_unticked_batch_from_path(backlog_path)
+        else:
+            result = find_top_unticked_batch(text)
+    except Exception:
+        return (
+            "[No-code method] WARNING: BACKLOG parse error. The edit "
+            "you just made caused the parser to crash. The format is "
+            "likely broken — check the Build batches section immediately."
+            "\n\n"
+            "Expected format for single-file BACKLOG: `### Batch: "
+            "<name>` heading, change-list bullets, a `Files:` line, "
+            "then file bullets (`- [ ] `path` — summary`).\n"
+            "Expected format for folder BACKLOG: `# <name>` heading in "
+            "per-batch files, same body structure, INDEX.md with "
+            "`` - `NNNN-name.md` `` reference list."
+        )
+
+    if isinstance(result, dict) and result:
+        return None
+
+    return (
+        "[No-code method] WARNING: BACKLOG parse failed. The file "
+        "contains unticked file entries, but the parser could not "
+        "extract a valid batch. The edit you just made likely broke "
+        "the format."
+        "\n\n"
+        "Fix the formatting before continuing. Common causes:\n"
+        "  - Batch heading format wrong (`### Batch: <name>` in "
+        "single-file; `# <name>` in per-batch file)\n"
+        "  - `Changes:` or `Files:` anchor line is missing or "
+        "misspelled\n"
+        "  - File bullets don't match `- [ ] `path` — summary`\n"
+        "  - Template placeholder brackets around a real path or "
+        "heading\n"
+        "  - In folder mode: batch file not listed in INDEX.md's "
+        "Build batches section"
+        "\n\n"
+        "The `/sovbuild` command and PreToolUse hook both depend on this "
+        "parser. A format error here will silently prevent the build "
+        "from finding the batch."
+    )
+
+
+def format_doc_warnings(doc_type, warnings):
+    """Format a list of validation warnings into a single PostToolUse
+    warning message."""
+    header = f"[No-code method] WARNING: {doc_type} validation issue."
+    body = "\n".join(f"  - {w}" for w in warnings)
+    return f"{header}\n\n{body}"
 
 
 def parse_input():
@@ -129,65 +199,53 @@ def main():
     except OSError:
         return emit_silent()
 
-    if not is_backlog_file(target_path, project_root):
-        return emit_silent()
-
-    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
-    if backlog_path is None:
-        return emit_silent()
-
     text = safe_read_text(target_path)
     if text is None:
         return emit_silent()
 
-    if not has_real_unticked_bullets(text):
+    all_warnings = []
+
+    # --- BACKLOG validation (existing + scope-context) ---
+    if is_backlog_file(target_path, project_root):
+        backlog_warning = check_backlog_parse(target_path, project_root, text)
+        if backlog_warning:
+            all_warnings.append(backlog_warning)
+
+        if is_backlog_batch_file(target_path, project_root):
+            scope_warnings = validate_scope_context(text)
+            if scope_warnings:
+                all_warnings.append(
+                    format_doc_warnings("Scope-context", scope_warnings)
+                )
+
+    # --- TEST-LOG validation ---
+    elif is_test_log_content_file(target_path, project_root):
+        test_warnings = validate_test_log(text)
+        if test_warnings:
+            all_warnings.append(
+                format_doc_warnings("TEST-LOG", test_warnings)
+            )
+
+    # --- Build-log entry validation ---
+    elif is_build_log_entry_file(target_path, project_root):
+        bl_warnings = validate_build_log_entry(text)
+        if bl_warnings:
+            all_warnings.append(
+                format_doc_warnings("Build-log entry", bl_warnings)
+            )
+
+    # --- Proxy validation ---
+    elif is_proxy_file(target_path, project_root):
+        proxy_warnings = validate_proxy(text, target_path.name)
+        if proxy_warnings:
+            all_warnings.append(
+                format_doc_warnings("Proxy", proxy_warnings)
+            )
+
+    if not all_warnings:
         return emit_silent()
 
-    folder_mode = resolve_backlog_dir(project_root) is not None
-
-    try:
-        if folder_mode:
-            result = find_top_unticked_batch_from_path(backlog_path)
-        else:
-            result = find_top_unticked_batch(text)
-    except Exception:
-        return emit_warning(
-            "[No-code method] WARNING: BACKLOG parse error. The edit "
-            "you just made caused the parser to crash. The format is "
-            "likely broken — check the Build batches section immediately."
-            "\n\n"
-            "Expected format for single-file BACKLOG: `### Batch: "
-            "<name>` heading, change-list bullets, a `Files:` line, "
-            "then file bullets (`- [ ] `path` — summary`).\n"
-            "Expected format for folder BACKLOG: `# <name>` heading in "
-            "per-batch files, same body structure, INDEX.md with "
-            "`` - `NNNN-name.md` `` reference list."
-        )
-
-    if isinstance(result, dict) and result:
-        return emit_silent()
-
-    return emit_warning(
-        "[No-code method] WARNING: BACKLOG parse failed. The file "
-        "contains unticked file entries, but the parser could not "
-        "extract a valid batch. The edit you just made likely broke "
-        "the format."
-        "\n\n"
-        "Fix the formatting before continuing. Common causes:\n"
-        "  - Batch heading format wrong (`### Batch: <name>` in "
-        "single-file; `# <name>` in per-batch file)\n"
-        "  - `Changes:` or `Files:` anchor line is missing or "
-        "misspelled\n"
-        "  - File bullets don't match `- [ ] `path` — summary`\n"
-        "  - Template placeholder brackets around a real path or "
-        "heading\n"
-        "  - In folder mode: batch file not listed in INDEX.md's "
-        "Build batches section"
-        "\n\n"
-        "The `/sovbuild` command and PreToolUse hook both depend on this "
-        "parser. A format error here will silently prevent the build "
-        "from finding the batch."
-    )
+    return emit_warning("\n\n".join(all_warnings))
 
 
 if __name__ == "__main__":

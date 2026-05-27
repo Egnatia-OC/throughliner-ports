@@ -659,3 +659,80 @@ def is_test_session_open(project_root):
     """
     unconfirmed, _, _ = get_unconfirmed_previous_session_rows(project_root)
     return bool(unconfirmed)
+
+
+def is_test_log_content_file(target_path, project_root):
+    """True if target_path is a TEST-LOG content file — either a per-session
+    file inside test-log/ (folder mode) or the flat TEST-LOG.md (single-file
+    mode). Excludes the proxy/index at proxies/test-log.md.
+
+    Used by PostToolUse to decide whether to run TEST-LOG validation."""
+    test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
+    if test_log_path is not None and str(target_path) == str(test_log_path):
+        if (test_log_path.name.lower() == "test-log.md"
+                and test_log_path.parent.name == "proxies"):
+            return False
+        return True
+
+    test_log_dir = resolve_test_log_dir(project_root)
+    if test_log_dir is not None:
+        try:
+            target_path.relative_to(test_log_dir)
+            return True
+        except ValueError:
+            pass
+
+    return False
+
+
+def is_build_log_entry_file(target_path, project_root):
+    """True if target_path is a build-log per-entry file (not INDEX.md,
+    not a proxy). Used by PostToolUse to decide whether to run build-log
+    validation.
+
+    Skips single-file BUILD-LOG.md — multi-entry files need entry-level
+    parsing that this function doesn't attempt."""
+    build_log_path = resolve_path_block_entry(project_root, "BUILD-LOG.md")
+    if build_log_path is None:
+        return False
+
+    if target_path.name.upper() == "INDEX.MD":
+        return False
+    if target_path.parent.name == "proxies":
+        return False
+
+    if build_log_path.name.upper() == "INDEX.MD":
+        build_log_dir = build_log_path.parent
+    elif (build_log_path.name.lower() == "build-log.md"
+            and build_log_path.parent.name == "proxies"):
+        build_log_dir = build_log_path.parent.parent / "build-log"
+    else:
+        return False
+
+    try:
+        target_path.relative_to(build_log_dir)
+        return True
+    except ValueError:
+        return False
+
+
+def is_proxy_file(target_path, project_root):
+    """True if target_path is inside a proxies/ directory.
+    Used by PostToolUse to decide whether to run proxy validation."""
+    return target_path.parent.name == "proxies"
+
+
+def is_backlog_batch_file(target_path, project_root):
+    """True if target_path is a BACKLOG per-batch file (not INDEX.md).
+    Per-batch files are NNNN-name.md files inside BACKLOG/.
+    Used by PostToolUse for scope-context validation."""
+    backlog_dir = resolve_backlog_dir(project_root)
+    if backlog_dir is None:
+        return False
+    try:
+        target_path.relative_to(backlog_dir)
+    except ValueError:
+        return False
+    if target_path.name.upper() == "INDEX.MD":
+        return False
+    return True

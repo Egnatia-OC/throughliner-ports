@@ -1,8 +1,9 @@
 """Tests for plugin/hooks/post_tool_use.py (PostToolUse hook).
 
-The hook fires after Edit/Write/MultiEdit on BACKLOG files and warns
-when the parser can't extract a valid batch from content that has
-unticked file bullets.
+The hook fires after Edit/Write/MultiEdit and validates structured
+method docs at write time: BACKLOG parse validation, scope-context
+checks, TEST-LOG column counts, build-log entry structure, and proxy
+format.
 """
 
 import pytest
@@ -66,6 +67,60 @@ class TestValidBacklogEdit:
     def test_valid_single_file_edit_silent(self, adopted_single_file):
         root = adopted_single_file
         target = str((root / "BACKLOG.md").resolve())
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)
+
+
+class TestTestLogValidation:
+    def test_well_formed_test_log_silent(self):
+        root = fixture_path("adopted_test_log_folder")
+        target = str(
+            (root / "test-log" / "001-first-batch.md").resolve()
+        )
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)
+
+    def test_flat_test_log_silent(self, adopted_folder):
+        root = adopted_folder
+        target = str((root / "TEST-LOG.md").resolve())
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)
+
+
+class TestBuildLogValidation:
+    def test_incomplete_build_log_warns(self):
+        root = fixture_path("adopted_test_log_folder")
+        target = str(
+            (root / "build-log" / "001-first-batch.md").resolve()
+        )
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_warning(parsed, "Build-log entry")
+
+
+class TestProxyValidation:
+    def test_operational_proxy_silent(self):
+        root = fixture_path("adopted_test_log_folder")
+        target = str(
+            (root / "proxies" / "test-log.md").resolve()
+        )
+        code, parsed, raw = run_hook(
+            "post_tool_use.py", _edit_input(root, target)
+        )
+        _assert_silent(code, raw)
+
+    def test_operational_backlog_proxy_silent(self):
+        root = fixture_path("adopted_test_log_folder")
+        target = str(
+            (root / "proxies" / "backlog.md").resolve()
+        )
         code, parsed, raw = run_hook(
             "post_tool_use.py", _edit_input(root, target)
         )

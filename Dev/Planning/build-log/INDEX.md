@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v101-structured-markdown-validator.md](v101-structured-markdown-validator.md) — 2026-05-27 — Structured-markdown validator (PostToolUse + validate_docs.py)
 - [v100-test-skill.md](v100-test-skill.md) — 2026-05-27 — /test skill and testing procedure
 - [v99-dev-session-close-convergence.md](v99-dev-session-close-convergence.md) — 2026-05-27 — Dev-side session-close convergence
 - [v98-tersify-skill.md](v98-tersify-skill.md) — 2026-05-27 — /tersify skill for doc compression
