@@ -27,6 +27,19 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
 
 Fenced JSON so plugin hooks can parse it deterministically. Keys are logical names; values are relative paths. Additional source-of-truth docs: add `"<DOC>.md": "<path>"` entries. If a doc moves, update its entry.
 
+## What's inside `_method/`
+
+The `_method/` folder holds the method's working docs. The underscore prefix keeps it visually separate from your project files. Everything here is created by `/sovsetup` and maintained by Claude during sessions.
+
+- **UX.md** — your product described from the user's perspective. Features, rationale, design principles. Source of truth for what gets built.
+- **MANIFEST.md** — glossary of named components in your codebase. Maintained by Claude during builds.
+- **BACKLOG/** — queued work. One file per batch, with scope, file lists, and test plans.
+- **build-log/** — record of each build session: what shipped, decisions made, surprises.
+- **test-log/** — record of tests run after each build and their outcomes.
+- **proxies/** — compact indexes Claude reads first so it doesn't have to load entire docs every session.
+- **planning/drafts/** — scratch space for ideas not yet ready for a specific doc.
+- **research/** — findings from research on external questions. Persists across sessions.
+
 ## Plugin management
 
 When the user asks how to install, disable, enable, or uninstall the plugin, read the Reference manual's *Managing the plugin* section first — don't guess. Key fact: `/plugin` is CLI-only and doesn't work in the desktop app.
@@ -41,4 +54,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 84.*
+*No-code method — Version 85.*

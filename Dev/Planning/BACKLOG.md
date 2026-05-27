@@ -99,6 +99,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. **Shipped v99.** |
 | 0094 | Guided testing and debugging procedure | `/test` skill + `testing.md` procedure doc. User-verified walkthrough, direct TEST-LOG recording, structured debugging. **Shipped v100.** |
 | 0104 | Sov-prefix rename for remaining skills | `/setup` → `/sovsetup`, `/research` → `/sovresearch`, `/test` → `/sovtest`, `/tersify` → `/sovtersify`. All references updated across ~30 files. **Shipped v105.** |
+| 0105 | `_method/` orientation in CLAUDE.md template | `## What's inside _method/` section added to CLAUDE-TEMPLATE.md. **Shipped v106.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -137,20 +138,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0105 — `_method/` orientation in CLAUDE.md template
-
-**Goal.** Add a brief section to CLAUDE-TEMPLATE.md explaining what `_method/` is, why it exists, and what's inside it. `/sovsetup` populates it during scaffolding.
-
-**Inputs.** Current CLAUDE-TEMPLATE.md. Current scaffold output.
-
-**Outputs.** Updated CLAUDE-TEMPLATE.md with `_method/` orientation section. Updated setup.md if the scaffold logic needs to fill in project-specific details.
-
-**Success criteria.** A user reading their project's CLAUDE.md understands what `_method/` contains without needing the Reference manual.
-
-**Risks / dependencies.** Depends on 0104 (skill names should be final before documenting them).
 
 ---
 
@@ -227,6 +214,20 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### Session-length blowout from under-scoped builds
+
+**Surfaced.** v97 (2026-05-27 ideation).
+
+**The question.** Should the plugin guide Claude to pre-scope builds so they never exceed one session's context capacity — and if so, what heuristic should it use (file count, decision count, something else)?
+
+**Why it matters.** Dev-side experience shows ~20% of sessions blow out to unacceptable length. Mid-build `/compact` isn't viable (loses implementation thread). The old "one build per Claude session" rule was dropped in favour of user-driven `/clear` and `/compact`, but without expertise to judge session capacity, users accept whatever scope Claude proposes. The failure pattern correlates with high file-touch count and long explanation/decision exchanges. A pre-build sizing constraint would catch this mechanically.
+
+**Why it's parked.** The 20% failure rate is observed on the dev side, where no enforcement exists and the usage pattern (heavy back-and-forth explanation) differs from plugin-guided builds. The problem may not transfer to consumer projects where procedure docs structure the work differently. Building a heuristic now risks calibrating against the wrong signal.
+
+**Next step.** Park until plugin-side E2E testing surfaces session-length issues. If builds stay sane under procedure-doc guidance, this may never need solving.
 
 ---
 
