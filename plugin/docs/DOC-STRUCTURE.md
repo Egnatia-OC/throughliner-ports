@@ -1,4 +1,4 @@
-# Document structure specifications
+﻿# Document structure specifications
 
 *Mode: planning, migration.*
 
@@ -379,4 +379,4 @@ Three formats, auto-detected:
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
 ---
-*No-code method — Version 87.*
+*No-code method — Version 88.*

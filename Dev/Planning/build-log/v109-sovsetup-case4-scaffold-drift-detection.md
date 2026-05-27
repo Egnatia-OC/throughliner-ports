@@ -1,0 +1,9 @@
+# V109 — 2026-05-27 — /sovsetup case 4 scaffold drift detection
+
+**What shipped.** Pytest-based scaffold drift detection at `Dev/Resources/tests/test_scaffold_drift.py` (7 tests). Runs `scaffold.py write` in a temp dir and compares the resulting file/directory structure against a hardcoded registry. When scaffold.py gains a new file or directory, the test fails with instructions to update the registry AND add a case 4 migration to setup.md. Also fixed existing drift: added four missing case 4 migrations to `plugin/docs/procedures/setup.md` — folder restructure (0087), companion directories (0051/0083), summary proxies (0081), and `_method/` orientation section (0105). Method version bumped to V88 (plugin 0.88.0) across 22 files + 2 version trackers.
+
+**Decisions taken and why.** Registry-in-test-file approach over a separate version registry file. The test's failure message is the enforcement mechanism — it tells the developer exactly what to update. A separate registry file would have the same manual-maintenance risk the batch was trying to solve (someone adds to scaffold.py and forgets the registry). Putting the registry inside the test means the developer encounters it at the point of failure. JSON output consistency tests also included — verifying scaffold.py's reported output matches what it actually wrote to disk.
+
+**Pivots and surprises.** Gap analysis revealed more missing migrations than the scope's "V75–V83" range suggested. The _method/ folder restructure (0087), companion directories (0051), search-queries directory (0083), summary proxies (0081), and CLAUDE.md orientation section (0105) were all absent from case 4. The V70 migration partially handles _method/ creation (creates proxies/ dir there) but doesn't move spine docs from root.
+
+**Carried forward.** Nothing.

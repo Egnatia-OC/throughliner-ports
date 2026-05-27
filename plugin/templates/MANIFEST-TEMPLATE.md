@@ -1,4 +1,4 @@
-# MANIFEST.md — [Project Name]
+﻿# MANIFEST.md — [Project Name]
 
 Flat alphabetical glossary of named codebase elements. One line per entry. Maintained by Claude during builds. Use as a reference for unfamiliar names and as the basis for drift checks against `UX.md`. If scanning becomes hard, switch to alphabetical sections by area.
 
@@ -21,4 +21,4 @@ Claude-queued entries or updates. Apply during planning, then delete. Starts emp
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 87.*
+*No-code method — Version 88.*

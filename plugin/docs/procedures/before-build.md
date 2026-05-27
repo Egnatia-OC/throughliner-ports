@@ -1,4 +1,4 @@
-# Before-build procedure — no-code method
+﻿# Before-build procedure — no-code method
 
 Follow this procedure during the *before-build* phase — never during planning or building. Lock the file list and verification burden for the top build batch, then present the recap.
 
@@ -75,4 +75,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*

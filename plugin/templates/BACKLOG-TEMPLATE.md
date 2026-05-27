@@ -1,4 +1,4 @@
-# BACKLOG.md — [Project Name] Deferred Work
+﻿# BACKLOG.md — [Project Name] Deferred Work
 
 All deferred work in one place. Four sections, in this order; top section first, top item first.
 
@@ -99,4 +99,4 @@ Entry format:
 -->
 
 ---
-*No-code method — Version 87.*
+*No-code method — Version 88.*

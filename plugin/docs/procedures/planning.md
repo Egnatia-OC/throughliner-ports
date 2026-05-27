@@ -1,4 +1,4 @@
-# Planning procedure — no-code method
+﻿# Planning procedure — no-code method
 
 Follow this procedure during the *planning* phase — never during builds, setup, or migration.
 
@@ -241,4 +241,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*

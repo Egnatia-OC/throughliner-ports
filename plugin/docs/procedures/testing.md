@@ -1,4 +1,4 @@
-# Testing procedure — no-code method
+﻿# Testing procedure — no-code method
 
 Follow this procedure when the user invokes `/sovtest`. Guides non-coders through pending User-verified TEST-LOG rows one at a time, turning each Test Description into actionable steps and routing failures through structured debugging.
 
@@ -118,4 +118,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*

@@ -1,4 +1,4 @@
-# /sovsetup procedure — no-code method
+﻿# /sovsetup procedure — no-code method
 
 Follow this procedure when the user runs `/sovsetup`. Bring a folder under the method's discipline.
 
@@ -122,6 +122,14 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After TEST-LOG folder split — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
 
+**After product overview — Folder restructure (0087).** If spine docs (UX.md, MANIFEST.md) exist at project root instead of inside `_method/`: create `_method/` if absent, move UX.md and MANIFEST.md into it, move BACKLOG/, build-log/, test-log/ into `_method/` if at root, move proxies/ into `_method/` if at root. Update CLAUDE.md path block entries to use `_method/` prefixed paths. If everything is already inside `_method/`, skip.
+
+**After folder restructure — Companion directories (0051/0083).** Create if absent: `_method/planning/drafts/`, `_method/research/`, `_method/research/search-queries/`.
+
+**After companion directories — Summary proxies (0081).** If `_method/proxies/` is missing any of `ux.md`, `manifest.md`, or `research.md`: regenerate the missing files from their source docs per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+
+**After summary proxies — `_method/` orientation section (0105).** If CLAUDE.md has no `## What's inside _method/` section: add it between `## Where the docs live` and `## Plugin management`, using the content from CLAUDE-TEMPLATE.md.
+
 **Recap:** "Refreshed (case 4). Bumped footers on [list]. [Migrations performed.]"
 
 **Option 2:** "No changes. Wrong folder?"
@@ -144,4 +152,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*

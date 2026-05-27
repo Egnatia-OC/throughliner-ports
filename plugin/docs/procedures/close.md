@@ -1,4 +1,4 @@
-# Close procedure — no-code method
+﻿# Close procedure — no-code method
 
 Follow this procedure to close a session. Works after any session type — build, planning, or general.
 
@@ -160,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*

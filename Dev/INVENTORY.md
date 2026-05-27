@@ -1,4 +1,4 @@
-# Inventory — current architecture
+﻿# Inventory — current architecture
 
 Two-layer split and plugin component list. Living document — current state, not history.
 
@@ -143,4 +143,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 87.*
+*No-code method — Version 88.*

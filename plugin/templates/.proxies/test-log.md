@@ -1,4 +1,4 @@
-# TEST-LOG — [Project Name]
+﻿# TEST-LOG — [Project Name]
 
 One row per test for every shipped build batch. Per-session files in `test-log/`, newest-first in this index. Maintained by Claude during builds (`/sovclose` writes rows) and planning (per-row read-back confirms). The test-confirmation gate gates new builds against unconfirmed rows.
 
@@ -18,4 +18,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 87.*
+*No-code method — Version 88.*

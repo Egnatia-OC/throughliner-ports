@@ -103,6 +103,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0106 | ~~Post-build proxy regeneration in `/sovclose`~~ | **Cancelled.** Already implemented by close.md step 11. |
 | 0107 | Unclosed-build detection in SessionStart | Active batch + all files ticked + `/sovclose` never ran → flag on session open. **Shipped v107.** |
 | 0108 | Guided rollback procedure (`/sovrevert`) | New skill + procedure doc. Non-coder walkthrough for undoing failed builds. **Shipped v108.** |
+| 0109 | `/sovsetup` case 4 scaffold drift detection | Pytest registry + 4 missing case 4 migrations fixed. **Shipped v109.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -144,121 +145,101 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0109 — `/sovsetup` case 4 scaffold drift detection
-
-**Goal.** Detect when case 4 (refresh existing project) is missing migrations for scaffold changes that shipped since the project was last set up. Prevent silent divergence between fresh installs and refreshed installs.
-
-**Inputs.** setup.md (case 4 migration list). Current template set.
-
-**Outputs.** Automated detection — either a pytest that scaffolds case 1 and case 4 side by side and compares outputs, or a version registry that case 4 reads. Any existing drift between current case 1 and case 4 identified and fixed.
-
-**Success criteria.** When a future batch changes templates or scaffold structure, the system catches a missing case-4 migration before the batch ships. Backlog of missed migrations (V75–V83) addressed.
-
-**Risks / dependencies.** Design question: test-based comparison (more robust, needs a synthetic "old project" fixture) vs. version registry (simpler, but same manual-maintenance risk it's trying to solve). Recommend test-based — it catches what the developer forgets.
-
----
-
 ### 0110 — Queued-pipeline staleness sweep at close
 
 **Goal.** Add a close-time step that scans all queued BACKLOG batches and open questions for staleness: references to files, skills, or docs that have been renamed or deleted; dependencies on cancelled or redesigned batches; OQs whose parking rationale references conditions that have since been met; contradictions with what just shipped.
 
-**Inputs.** v93 build-log (manual sweep that found four stale batches). Current BACKLOG structure.
+**Lost-feature sweep fold-in.** Expand scope beyond close-time queued-batch checks to also cover: cancelled batches whose intent was never re-scoped, parked batches whose parking rationale references conditions that have since been met, and build-log "carried forward" items that were never picked up. The pattern (from v82 manual sweep): cancellation and parking are one-way — nothing triggers re-evaluation when the reason for parking stops being true. This sweep catches items that silently fell off the map. Could live as a standalone `/sweep` skill invokable during `/sovplan` or `/sovdeliberate`, or as an expanded step in `/sovclose`. (From OQ "Lost-feature sweep as a planning skill," surfaced v82.)
 
-**Outputs.** New step in `/sovclose` (or `/sovplan`). Definition of what counts as "stale" — dead file paths, old skill names, references to cancelled batches, OQ surfaced dates beyond a threshold.
+**Inputs.** v93 build-log (manual sweep that found four stale batches). v82 build-log (manual sweep that found six lost items across ~65 batches). Current BACKLOG structure.
 
-**Success criteria.** After a build that renames a skill or moves a file, the sweep flags any queued batch or OQ still referencing the old name. OQs parked longer than a configurable threshold flagged for re-evaluation. Sweep is grep-level fast, not deep semantic analysis.
+**Outputs.** New step in `/sovclose` (or `/sovplan`), or a standalone `/sweep` skill. Definition of what counts as "stale" — dead file paths, old skill names, references to cancelled batches, OQ surfaced dates beyond a threshold, carried-forward items with no destination, parked items whose conditions have been met.
 
-**Risks / dependencies.** Scope risk: "scan everything" could burn context. Needs tight scoping to pattern-match checks on names and paths, not full-doc comprehension. Should run on queued/parked entries only.
+**Success criteria.** After a build that renames a skill or moves a file, the sweep flags any queued batch or OQ still referencing the old name. OQs parked longer than a configurable threshold flagged for re-evaluation. Cancelled batches whose intent wasn't re-scoped are surfaced. Carried-forward items with no pickup are surfaced. Sweep is grep-level fast, not deep semantic analysis.
+
+**Concurrent-build detection fold-in.** Extend 0107's unclosed-build detection. Currently SessionStart only warns when `Status: active` AND all files ticked (build finished, `/sovclose` skipped). It does not warn when `Status: active` with files still unticked — meaning a build is mid-progress in another session. Fix: SessionStart warns on any `Status: active`, period. All-ticked → "run `/sovclose`" (existing behaviour). Some-unticked → "a build of batch X is in progress — are you resuming this build, or working in parallel?" Parallel builds corrupt file state and git history; the warning should be prominent. Ideation in parallel is safe (writes only to the Ideas section); deliberation and planning carry git risks discussed in [[0112]].
+
+**Risks / dependencies.** Scope risk: "scan everything" could burn context. Needs tight scoping to pattern-match checks on names and paths, not full-doc comprehension. Should run on queued/parked entries only. The lost-feature component reads more broadly (cancelled batches, build-log) but still pattern-matches rather than comprehending.
+
+---
+
+### 0112 — Skill split: `/sovdeliberate`, `/sovideate`, and `/sovplan` narrowing
+
+**Goal.** Split non-build work into three named skills with distinct procedure docs, so users discover each mode through invocation rather than experience. `/sovplan` already exists — narrow it. `/sovdeliberate` and `/sovideate` are new.
+
+**The three modes.**
+
+`/sovplan` — **Structural planning.** The user wants to change the shape of the roadmap itself. Reorder batches, split or merge them, rescope batch content, revise dependency chains, add or remove batches. Input: the queued-batches section of BACKLOG. Output: a restructured queue. Includes cross-checking other queued batches — dependency validation, stale-reference scanning, ordering audit — as part of the procedure, not as an afterthought. The existing `planning.md` procedure doc does this today but also covers OQ work and idea generation — this batch narrows it to structural-only.
+
+`/sovdeliberate` — **OQ deliberation.** The user wants to work through accumulated open questions. For each OQ: weigh implications, decide disposition (promote to batch, drop with reason logged in build-log, or re-park with updated rationale). Input: the open-questions section of BACKLOG. Output: OQs moved — promoted to new or existing batches, dropped, or re-parked with fresher reasoning. This mode forces the periodic reckoning that BACKLOG consolidation (0091) made optional.
+
+`/sovideate` — **New idea generation.** The user arrives with a fresh concept not yet represented in BACKLOG. Explore the idea, assess fit, and route it: most become new OQs, some slot into existing queued batches, occasionally one becomes a fully scoped new batch. Input: the user's head. Output: new BACKLOG entries (OQs or batches). This mode is exploratory — no existing artifact is being worked through, so the procedure is lighter. Claude may also offer to suggest a new idea based on gaps, patterns, or unaddressed areas it notices in the current BACKLOG and project state.
+
+**Inputs.** Current `plugin/skills/sovplan.ts` and `plugin/docs/procedures/planning.md`. `user_prompt_submit.py` opener routing logic. SessionStart status summary code.
+
+**Ideas section in BACKLOG.** New section below Open Questions for raw, unprocessed ideas. Lighter than OQs — no required fields, just a one-liner and a date. The user can tell Claude an idea at any point in any session type, and Claude writes it here regardless of build phase. `/sovideate` promotes ideas to OQs or batches when the user is ready to flesh them out. `/sovdeliberate` can also draw from this pool. Hook carve-out needed: writing to the Ideas section must be allowed even during active builds (unlike OQ or batch edits). This prevents ideas from being lost to napkins and notepads.
+
+**Build-snapshot architecture.** When `/sovbuild` is invoked, it extracts the active batch's scope from BACKLOG.md into a working snapshot (`_method/active-build.md`), removes the batch from BACKLOG.md entirely, and tells the user: "I've snapshotted batch NNNN — I'm working from the snapshot now." The build reads only from the snapshot for its duration. BACKLOG.md is fully unlocked immediately — parallel sessions can run `/sovplan`, `/sovdeliberate`, or `/sovideate` against it freely. At `/sovclose`, the batch is written back to BACKLOG.md as shipped and the snapshot is deleted. The snapshot file's existence replaces `Status: active` as the build-in-progress signal: SessionStart checks for `_method/active-build.md` — if it exists, a build is running. No duplicate, no conflict, no possibility of editing a batch mid-build because it only exists in the snapshot. This obsoletes the Ideas-section hook carve-out (BACKLOG.md is unlocked) and simplifies phase detection (file existence vs status parsing).
+
+**Outputs.** Two new skills (`/sovdeliberate`, `/sovideate`) with procedure docs (`deliberate.md`, `ideate.md`). Narrowed `planning.md`. Updated opener routing in `user_prompt_submit.py` to classify the three modes. SessionStart and status summary updated if they reference planning generically. New Ideas section in BACKLOG template and consumer BACKLOG. Build-snapshot mechanism in `/sovbuild` and `/sovclose`.
+
+**Success criteria.** Each skill invocation loads only its procedure doc. Opener routing correctly classifies "let's work through the open questions" vs "I have a new idea" vs "reorder the batches." `/sovplan` no longer covers OQ work or idea generation. All three procedure docs are self-contained — no cross-loading required. `/sovbuild` extracts batch to snapshot and removes from BACKLOG; parallel sessions can edit BACKLOG freely; `/sovclose` writes batch back as shipped.
+
+**OQ accumulation nudge.** Fold-in from the OQ of the same name (surfaced v109). When open questions accumulate past a threshold (count, age, or both), SessionStart or `/sovrecap` nudges the user toward `/sovdeliberate` — "you have N open questions older than X — consider running `/sovdeliberate` before your next build." Design questions: what threshold triggers the nudge, whether it's informational or blocking, and whether it lives in SessionStart, `/sovrecap`, or both. The existing aging detection (0054) and session-open status summary (0074) already flag counts — this adds a concrete destination.
+
+**Git steps inline in each procedure doc.** Each planning mode's procedure doc ends with a commit step — Claude commits with a mode-prefixed message (`plan: <summary>`, `deliberate: <summary>`, `ideate: <summary>`) after user confirmation. No tag, no push. `/sovclose` keeps its existing commit + tag + push. This makes git handling mechanical per-mode, not a prose nudge to invoke a separate skill. `/sovgit` remains available for ad-hoc use outside procedures but is no longer the standard path.
+
+**BACKLOG rename to BUILD-PLAN.** Rename `BACKLOG.md` to `BUILD-PLAN.md` across plugin templates, consumer scaffolding, hooks, procedure docs, and all references. Motivation: "backlog" contains "log" as a substring, causing persistent confusion with "build log." "Build plan" is forward-looking (what will be built) vs "build log" (what was built) — same prefix, distinct suffixes. The rename also aligns the three planning artifacts with their skills: `/sovplan` → build plan (queued batches), `/sovdeliberate` → open questions, `/sovideate` → ideas. When the file splits into three (build-snapshot architecture above), each file gets a name that mirrors its skill.
+
+**Risks / dependencies.** Surface area: touches skills, procedure docs, opener routing, SessionStart, and the build/close flow. Recommend shipping as one batch since the routing table is incomplete if only some skills exist. Risk: procedure doc content needs careful drafting — too prescriptive kills the exploratory nature of ideation; too loose and the skill adds no value over a bare conversation. Build-snapshot mechanism changes how phase detection works — all existing `Status: active` checks need auditing. The BACKLOG→BUILD-PLAN rename has wide surface area (hooks, templates, procedure docs, tests, proxies, references) but is mechanically straightforward — grep-and-replace.
+
+---
+
+### 0113 — Session-length safeguards
+
+**Goal.** Prevent builds from silently consuming the entire context window, and give users a recovery path when a session grows long. Two complementary mechanisms: pre-build sizing and mid-session compact nudge.
+
+**Pre-build sizing.** During `/sovrecap` or early in `/sovbuild`, Claude estimates whether the batch fits in one session based on proxy signals — file-touch count, number of procedure-doc steps, whether the batch scope flags deliberation-heavy design questions. If the estimate exceeds a threshold, Claude surfaces it: "this batch touches N files and has open design questions — consider splitting before starting." The heuristic is calibrated on conversation shape, not token count (Claude has no visibility into its own context usage).
+
+**Mid-session compact nudge.** When a build session grows long — high exchange count, extended deliberation mid-build, many files already edited — Claude nudges the user to `/compact` before context runs out unexpectedly. Proxy signals: exchange count since `/sovbuild` invocation, number of files edited, number of remaining procedure-doc steps. The nudge is informational, not blocking: "this session has grown long — consider `/compact` to preserve context for the close steps."
+
+**Inputs.** Dev-side observation: ~20% of sessions blow out. Failure pattern correlates with high file-touch count and extended explanation/decision exchanges. Claude cannot see token count or context fullness — all heuristics must use conversation-visible signals.
+
+**Outputs.** Sizing check in `/sovrecap` or `/sovbuild` procedure doc. Compact-nudge logic (likely in universal-behaviour.md or a procedure doc). Calibration guidance for thresholds. Fold-in: standardise the end-of-session prompt in `git.md` to recommend `/compact` when continuing in the same area, `/clear` for a fresh start (from OQ "/sovgit close prompt," surfaced v97).
+
+**Success criteria.** A batch with 8+ file touches and design questions triggers a pre-build warning. A session with 15+ exchanges past `/sovbuild` without reaching `/sovclose` triggers a compact nudge. Neither mechanism blocks — both are advisory.
+
+**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. Recommend shipping after E2E testing (0088, 0095) provides calibration data.
+
+---
+
+### 0114 — Language setting for multi-language plugin support
+
+**Goal.** Let non-English-speaking users work in their native language. A `Language:` setting in the consumer project's CLAUDE.md instructs all skill/hook output to use that language — without translating plugin docs, control tokens, or templates.
+
+**Approach.** Lightweight: Claude already speaks dozens of languages. The setting tells Claude what language to respond in; plugin docs stay English (Claude reads them either way). No locale folders, no parallel doc trees. Scope: skill output, hook deny messages, procedure-doc guidance that Claude paraphrases. Control tokens (`Status:`, `Changes:`, `[SECURITY]`, etc.) remain English-only — this is documented explicitly in CLAUDE.md and reinforced during `/sovsetup`.
+
+**Hard constraints (from v97 research).**
+
+1. **Git `core.quotepath` for non-ASCII filenames.** Git's default escapes non-ASCII characters with octal notation. Drift check 1 matches git-diff output paths against the batch file list in Claude's context window — `Path.resolve()` can't normalise octal escapes. Fix: `/sovsetup` sets `git config --local core.quotepath false`.
+
+2. **Control tokens are English-only.** Every metadata keyword the hooks regex-match (`Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`) must remain in English. A translated `Estado: activo` silently breaks phase enforcement. The language setting must document this, and `/sovsetup` scaffolding should note it in the consumer CLAUDE.md.
+
+**BOM hardening fold-in.** Switch the four `open()` / `read_text()` call sites in hooks from `encoding="utf-8"` to `encoding="utf-8-sig"` to strip Windows BOM bytes. Sites: `safe_read_text()` in `project_state.py`, `session_start.py`, and direct `open()` calls in `user_prompt_submit.py` and `pre_tool_use.py`. One-line fix per site. Without it, a user who hand-edits a spine file in a Windows editor that prepends a BOM silently breaks `^Status:` regex matching on line 1. (From OQ "UTF-8 BOM hardening," surfaced v97.)
+
+**Inputs.** `Dev/Resources/research/ResearchFindingsMult (1).md` (§§ 3.1–3.3, 4.2). Current hook file-read sites. CLAUDE-TEMPLATE.md. `/sovsetup` procedure.
+
+**Outputs.** `Language:` field in CLAUDE-TEMPLATE.md (optional, defaults to English). `/sovsetup` sets `core.quotepath false` when language is non-English. Hook deny messages and skill output respect the setting. Control-token immutability documented. Reference manual section.
+
+**Success criteria.** A French-speaking tester runs `/sovsetup`, sets `Language: French`, and receives all Claude-generated output in French. Control tokens remain English. Non-ASCII filenames in batches don't break drift detection. No plugin doc translation needed.
+
+**Risks / dependencies.** Soft dep on E2E testing (0088) to validate the base flow before adding language variation. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
 
 ---
 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
-
----
-
-### /sovgit close prompt: /compact vs /clear guidance
-
-**Surfaced.** v97 (2026-05-27 ideation).
-
-**The question.** Should the `[PROMPT]` at the end of git.md standardize guidance on when to use /compact vs /clear after committing — rather than relying on Claude to mention both options unprompted?
-
-**Why it matters.** The session-end prompt in git.md currently says "/clear when you're ready for a fresh session." But /compact is the better choice when the next session continues in the same area — it carries forward understanding without carrying forward bulk. Claude sometimes mentions this, sometimes doesn't. A standardized prompt would make the guidance consistent: "/compact to carry forward context if your next session continues in this area. /clear for a fresh start."
-
-**Next step.** Small change — fold into the next batch that touches git.md or the close flow. No standalone batch needed.
-
----
-
-### Session-length blowout from under-scoped builds
-
-**Surfaced.** v97 (2026-05-27 ideation).
-
-**The question.** Should the plugin guide Claude to pre-scope builds so they never exceed one session's context capacity — and if so, what heuristic should it use (file count, decision count, something else)?
-
-**Why it matters.** Dev-side experience shows ~20% of sessions blow out to unacceptable length. Mid-build `/compact` isn't viable (loses implementation thread). The old "one build per Claude session" rule was dropped in favour of user-driven `/clear` and `/compact`, but without expertise to judge session capacity, users accept whatever scope Claude proposes. The failure pattern correlates with high file-touch count and long explanation/decision exchanges. A pre-build sizing constraint would catch this mechanically.
-
-**Why it's parked.** The 20% failure rate is observed on the dev side, where no enforcement exists and the usage pattern (heavy back-and-forth explanation) differs from plugin-guided builds. The problem may not transfer to consumer projects where procedure docs structure the work differently. Building a heuristic now risks calibrating against the wrong signal.
-
-**Next step.** Park until plugin-side E2E testing surfaces session-length issues. If builds stay sane under procedure-doc guidance, this may never need solving.
-
----
-
-### Language setting for multi-language plugin support
-
-**Surfaced.** v97 (2026-05-27 ideation).
-
-**The question.** Should the plugin support a `language` setting in the consumer project's CLAUDE.md that tells skills, hooks, and procedure docs to work in the user's language instead of English?
-
-**Why it matters.** The plugin targets non-coders, many of whom may not read English fluently. Claude already speaks dozens of languages — a lightweight setting (e.g. `Language: French` in CLAUDE.md) could instruct all skill/hook output to use that language without translating any plugin docs. The alternative — full locale folders with parallel doc trees — gives a polished experience but doubles maintenance per language. The design space includes: which layer reads the setting (skills only, hooks too, procedure docs?), whether templates scaffold in the target language, and whether the setting affects doc content or only Claude's responses.
-
-**Next step.** Park until the plugin is stable enough for external testers. Likely surfaces naturally when a non-English-speaking tester tries the plugin.
-
-**Design constraints surfaced (v97 ideation, 2026-05-27).** Robustness audit of the hook layer against non-English consumer projects. Two hard constraints identified:
-
-1. **Git `core.quotepath` for non-ASCII filenames.** Drift check 1 (`planning.md` § direct-edit detection) tells Claude to run `git diff` and match output paths against the batch file list. Git's default escapes non-ASCII characters with octal notation (`créer` → `cr\303\251er`). That match happens in Claude's context window, not in Python hooks — `Path.resolve()` can't normalise it. Fix: `/sovsetup` or `SessionStart` sets `git config --local core.quotepath false`. Without it, Claude would hit mangled paths and fire unnecessary confirmation prompts. Hooks themselves are safe — they resolve paths through `pathlib`, not git output. Path slash normalisation (forward vs. backslash) is also already handled via `Path.resolve()` on both sides of every comparison.
-
-2. **Control tokens are English-only.** `Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`, and every other metadata keyword the hooks regex-match must remain in English regardless of content language. A user translating `Status: active` to `Estado: activo` silently breaks phase enforcement — the parser returns empty, and the hook treats an active batch as nonexistent. The language setting (if built) must document this constraint explicitly, and `/sovsetup` scaffolding should note it in the consumer CLAUDE.md.
-
-**Source.** `Dev/Resources/research/ResearchFindingsMult (1).md` (§§ 3.1–3.3, 4.2). Hook audit confirmed path normalisation and encoding are handled; quotepath and control-token immutability are the two real gaps for internationalisation.
-
----
-
-### UTF-8 BOM hardening for hook file reads
-
-**Surfaced.** v97 (2026-05-27 ideation).
-
-**The question.** Should the four `open()` / `read_text()` call sites in hooks switch from `encoding="utf-8"` to `encoding="utf-8-sig"` to strip Windows BOM bytes?
-
-**Why it matters.** `safe_read_text()` in `project_state.py:323` and `session_start.py:216` uses `utf-8`. Two direct `open()` calls in `user_prompt_submit.py:82` and `pre_tool_use.py:820` also use `utf-8`. If a user hand-edits a spine file in a Windows editor that prepends a UTF-8 BOM (`\xef\xbb\xbf`), the BOM lands before the first character of line 1. Any regex matching `^Status:` or `^# ` on the first line fails silently — the hook sees `﻿Status:` instead. Claude Code itself writes BOM-free UTF-8, so the risk is only manual edits. Low probability but a one-line fix per site.
-
-**Next step.** Low priority. Could fold into any batch touching hook file I/O, or ship as a standalone micro-batch.
-
----
-
-### Performance section in dev build-log entries
-
-**Surfaced.** v93 (2026-05-26 ideation).
-
-**The question.** Should dev build-log entries adopt the Performance section from plugin-side close.md (batch completion status, file count, carve-outs, test counts) — or is it unnecessary overhead for the dev project?
-
-**Why it matters.** Consumer build-log entries track session efficiency. Dev sessions are less standardised but could still benefit from tracking token costs and session patterns over time, especially as the project approaches dogfooding.
-
-**Next step.** Low priority. Park until dogfooding is closer or token-cost visibility becomes a pain point.
-
----
-
-### Lost-feature sweep as a planning skill
-
-**Surfaced.** v82 (2026-05-25 ideation).
-
-**The question.** Should the plugin include a `/sweep` (or similar) skill that systematically scans cancelled batches, parked batches, open question entries with stale rationale, and build-log "carried forward" items — surfacing features that were dropped, deferred under conditions nobody re-evaluated, or promised but never scoped?
-
-**Why it matters.** Surfaced 2026-05-25 during an ideation session that manually did exactly this. The process — read BACKLOG for cancelled/parked rows, read their scope files, cross-reference build-log "carried forward" sections, check OQ parking rationale against what's shipped since — is mechanical enough to be a repeatable procedure. Doing it by hand took significant context window and required knowing where to look. A planning-phase skill could run this as a pre-flight before roadmap rescoping, catching items that silently fell off the map.
-
-**Working notes.** The sweep found six items across ~65 batches: one genuinely lost output (after-build proxy regeneration), one partially shipped remainder with no home (UX threat-class marker), one undocumented constraint (parent-directory inheritance), and three items frozen under stale rationale. The pattern: cancellation and parking are one-way — nothing triggers a re-evaluation when the reason for parking stops being true.
-
-**Next step.** Park until the planning procedure stabilises. The sweep reads BACKLOG batches, build-log entries, and open questions. Promote once the doc structure is stable.
 
 ---
 

@@ -1,4 +1,4 @@
-# Build procedure — no-code method
+﻿# Build procedure — no-code method
 
 Follow this procedure to execute exactly ONE build batch, then stop. Never plan, never reorganise the queue beyond documented carve-outs.
 
@@ -98,4 +98,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 87.*
+*No-code method — Version 88.*
