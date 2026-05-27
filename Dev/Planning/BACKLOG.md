@@ -106,37 +106,153 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
+### 0111 — Dev-side session-protocol procedural convergence
+
+**Goal.** Bring six procedural structures from plugin-side procedure docs into dev-side session-protocol.md. Closes the gap between the structured discipline the plugin enforces on consumer projects and the ad-hoc prose conventions governing this project's own sessions.
+
+**Inputs.** Plugin-side procedures: `plugin/docs/procedures/planning.md` (opener classification, batch-ordering audit), `plugin/docs/procedures/close.md` (differentiated close paths, explicit pre-commit checklist, idea-sweep routing). Current `Dev/session-protocol.md`.
+
+**Outputs.** Rewritten `Dev/session-protocol.md` with six additions:
+1. **Opener routing table** — maps dev-session types (planning, implementation, doc-only, ideation, E2E test, remote-control standby) to what to load, what to skip, and session-middle shape. Resolves OQ "Opener routing table for dev sessions."
+2. **Carried-forward read-back** — at session open, read most recent build-log "Carried forward" section. If non-empty, surface items before routing. Ask whether to address this session or defer.
+3. **Explicit pre-commit checklist** — replace step 7's "verify steps 1–6 done" with named artifact list: doc-parity, frame-correction, footers, build-log entry + index line, idea sweep, proxies. Resolves OQ "Pre-commit checkpoint as explicit checklist."
+4. **Explicit idea-sweep routing** — replace step 5's loose guidance with three-way triage: every idea → new BACKLOG batch, build-log "not pursued, reason: ...", or BACKLOG open question. Nothing left unrouted. Resolves OQ "Idea sweep with explicit routing destinations."
+5. **Differentiated close paths** — implementation sessions run full close. Planning/ideation/doc-only sessions run lighter path (idea sweep, build-log, proxy regen, checkpoint, commit). Steps that produce no-ops on non-code sessions skipped explicitly.
+6. **Batch-ordering audit** — after any session that adds, removes, or reorders BACKLOG batches: forward-dependency scan, stale-reference scan, propose reordering with justification, fix scope text.
+
+**Success criteria.** Session-protocol.md covers all six additions as self-contained prose. The three named OQs are resolvable upon shipping. Next session's Claude follows the new opener routing without additional instruction.
+
+**Risks / dependencies.** None. Pure doc change — no plugin code, no test suite updates. Risk: the routing table may need iteration once tested over a few real sessions.
+
+---
+
 ### 0088 — Build E2E test
 
 **Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/setup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
 
-**Inputs.** `Dev/Resources/research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer` (scaffolded from 0084).
+**Inputs.** `Dev/Resources/research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section — note: written at v78, skill names `/build` etc. are pre-rename). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer`.
+
+**Pre-requisite.** The burner app was scaffolded at plugin v0.67.0 (root-level docs, flat TEST-LOG.md, no `_method/`, no proxies). 19 batches have shipped since. Delete the existing scaffolding and run `/setup` fresh before testing. This also resolves the stale `Status: active` on the old batch.
 
 **Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
 
-**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` sets Status: active and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, TEST-LOG rows written. Phase-aware permissions work. Observations documented.
+**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` sets Status: active and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, test-log session file written. Phase-aware permissions work. Observations documented.
 
-**Open questions.**
-1. Can the existing burner session be reused, or does it need a fresh session?
-2. If a fix session shipped between 0084 and this, re-test the fixed behaviour first.
-
-**Risks / dependencies.** Soft dep on 0099 (skill names). Burner app may have stale state from 0084 testing (Status: active on a batch). May need status reset or fresh start.
+**Risks / dependencies.** Burner app needs fresh `/setup` (see pre-requisite). Risk: `/setup` case 1 itself may surface issues — document those too.
 
 ---
 
 ### 0095 — /test skill E2E validation
 
-**Goal.** End-to-end test of `/test` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
+**Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
-**Inputs.** `/test` skill and `plugin/docs/procedures/testing.md` (from 0094). A burner app with pending TEST-LOG rows across multiple test types. `Dev/Resources/research/e2e-greenfield-post-redesign.md`.
+**Inputs.** `/sovtest` skill and `plugin/docs/procedures/testing.md` (from 0094). A burner app with pending TEST-LOG rows across multiple test types. `Dev/Resources/research/e2e-greenfield-post-redesign.md`.
 
 **Outputs.** Research file `Dev/Resources/research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. `/sovclose` handoff validation.
 
-**Test plan.** Happy path: invoke `/test`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/test` already confirmed.
+**Test plan.** Happy path: invoke `/sovtest`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/sovtest` already confirmed.
 
-**Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/test` is consistent with planning expectations. No silent failures.
+**Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
-**Risks / dependencies.** Hard dep on 0094. Soft dep on 0088 (reuse app state). Risk: insufficient test-type variety in burner app.
+**Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
+
+---
+
+### 0104 — Sov-prefix rename for remaining skills
+
+**Goal.** Rename `/setup` → `/sovsetup`, `/research` → `/sovresearch`, `/test` → `/sovtest`, `/tersify` → `/sovtersify`. Completes the naming convention designed in v91 that only partially shipped.
+
+**Inputs.** v91 build-log (design decision). Current skill directories at `plugin/skills/setup/`, `plugin/skills/research/`, `plugin/skills/test/`, `plugin/skills/tersify/`.
+
+**Outputs.** Four renamed skill directories. All references updated: INVENTORY, README, Reference manual, crash-course HTML, universal-behaviour.md, procedure docs, CLAUDE-TEMPLATE.md, hooks (UserPromptSubmit keyword detection). Tests updated.
+
+**Success criteria.** All four skills respond under new names. No references to old names in plugin code or docs. UserPromptSubmit keyword detection updated. Tests pass.
+
+**Risks / dependencies.** None. Same pattern as 0099.
+
+---
+
+### 0105 — `_method/` orientation in CLAUDE.md template
+
+**Goal.** Add a brief section to CLAUDE-TEMPLATE.md explaining what `_method/` is, why it exists, and what's inside it. `/sovsetup` populates it during scaffolding.
+
+**Inputs.** Current CLAUDE-TEMPLATE.md. Current scaffold output.
+
+**Outputs.** Updated CLAUDE-TEMPLATE.md with `_method/` orientation section. Updated setup.md if the scaffold logic needs to fill in project-specific details.
+
+**Success criteria.** A user reading their project's CLAUDE.md understands what `_method/` contains without needing the Reference manual.
+
+**Risks / dependencies.** Depends on 0104 (skill names should be final before documenting them).
+
+---
+
+### 0106 — Post-build proxy regeneration in `/sovclose`
+
+**Goal.** Add proxy regeneration to the post-build close path in close.md. Currently only the planning/general path regenerates proxies, so proxies go stale after every build.
+
+**Inputs.** close.md (post-build vs. planning/general paths). Proxy format spec in DOC-STRUCTURE.md.
+
+**Outputs.** Updated close.md with proxy regeneration step in the post-build path.
+
+**Success criteria.** After a build that changes MANIFEST, TEST-LOG, or build-log content, proxies reflect the new state before the session ends.
+
+**Risks / dependencies.** None. Small scope — one new step in an existing procedure.
+
+---
+
+### 0107 — Unclosed-build detection in SessionStart
+
+**Goal.** SessionStart detects when the previous session finished a build (all files ticked in the active batch) but never ran `/sovclose`. Flags the user to run `/sovclose` before starting new work.
+
+**Inputs.** session_start.py. parse_backlog.py (batch status). project_state.py (build-log session identification).
+
+**Outputs.** Updated session_start.py with unclosed-build detection logic: active batch + all files ticked + no build-log entry for that batch.
+
+**Success criteria.** Flags unclosed builds on session open. No false positives on mid-build sessions (some files still unticked) or planning sessions (no active batch).
+
+**Risks / dependencies.** Needs reliable "does a build-log entry exist for this batch" check. project_state.py already has build-log session identification — may need extension.
+
+---
+
+### 0108 — Guided rollback procedure (`/sovrevert`)
+
+**Goal.** New `/sovrevert` skill that walks non-coders through undoing a failed build. Identifies what changed since the last commit, confirms what to undo, runs the git commands, verifies the project works afterward.
+
+**Inputs.** git.md (current `/sovgit` procedure). E2E round 2 research (cascading failure scenario).
+
+**Outputs.** New skill directory + procedure doc. Updated INVENTORY, README, Reference manual, crash-course HTML, universal-behaviour.md routing table.
+
+**Success criteria.** A non-coder who says "that broke everything, put it back" gets walked through restoring the last committed state. No git knowledge required. Edge case handled: if no prior commit exists, explain that there's nothing to revert to and recommend committing before builds in the future.
+
+**Risks / dependencies.** Depends on 0104 (sov-prefix convention). Only works if the user committed before building — `/sovgit` encourages this but doesn't enforce it.
+
+---
+
+### 0109 — `/sovsetup` case 4 scaffold drift detection
+
+**Goal.** Detect when case 4 (refresh existing project) is missing migrations for scaffold changes that shipped since the project was last set up. Prevent silent divergence between fresh installs and refreshed installs.
+
+**Inputs.** setup.md (case 4 migration list). Current template set.
+
+**Outputs.** Automated detection — either a pytest that scaffolds case 1 and case 4 side by side and compares outputs, or a version registry that case 4 reads. Any existing drift between current case 1 and case 4 identified and fixed.
+
+**Success criteria.** When a future batch changes templates or scaffold structure, the system catches a missing case-4 migration before the batch ships. Backlog of missed migrations (V75–V83) addressed.
+
+**Risks / dependencies.** Design question: test-based comparison (more robust, needs a synthetic "old project" fixture) vs. version registry (simpler, but same manual-maintenance risk it's trying to solve). Recommend test-based — it catches what the developer forgets.
+
+---
+
+### 0110 — Queued-pipeline staleness sweep at close
+
+**Goal.** Add a close-time step that scans all queued BACKLOG batches and open questions for staleness: references to files, skills, or docs that have been renamed or deleted; dependencies on cancelled or redesigned batches; OQs whose parking rationale references conditions that have since been met; contradictions with what just shipped.
+
+**Inputs.** v93 build-log (manual sweep that found four stale batches). Current BACKLOG structure.
+
+**Outputs.** New step in `/sovclose` (or `/sovplan`). Definition of what counts as "stale" — dead file paths, old skill names, references to cancelled batches, OQ surfaced dates beyond a threshold.
+
+**Success criteria.** After a build that renames a skill or moves a file, the sweep flags any queued batch or OQ still referencing the old name. OQs parked longer than a configurable threshold flagged for re-evaluation. Sweep is grep-level fast, not deep semantic analysis.
+
+**Risks / dependencies.** Scope risk: "scan everything" could burn context. Needs tight scoping to pattern-match checks on names and paths, not full-doc comprehension. Should run on queued/parked entries only.
 
 ---
 
