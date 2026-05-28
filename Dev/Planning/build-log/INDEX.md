@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v130-test-queue-post-v114-plugin-changes.md](v130-test-queue-post-v114-plugin-changes.md) — 2026-05-28 — Planning: test queue for post-v114 plugin changes
 - [v129-backlog-convergence.md](v129-backlog-convergence.md) — 2026-05-28 — BACKLOG convergence: naming and test merge (0120)
 - [v128-plugin-side-close-mechanicals.md](v128-plugin-side-close-mechanicals.md) — 2026-05-28 — Plugin-side close mechanicals + two-turn procedure
 - [v127-batch-scope-shape-docs.md](v127-batch-scope-shape-docs.md) — 2026-05-28 — Batch scope shape documentation

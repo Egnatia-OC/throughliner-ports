@@ -147,7 +147,7 @@ One file per session in `Dev/Planning/build-log/`, named `vNN-slug.md`:
 After writing the file, prepend an index line to `Dev/Planning/build-log/INDEX.md`:
 `- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — One-line summary`
 
-**Note:** Consumer build-log entries carry an additional `## Performance` section — see `DOC-STRUCTURE.md`. This dev build-log doesn't use it.
+**Note:** Consumer build-log entries carry an additional `## Performance` section — see `plugin/docs/DOC-STRUCTURE.md`. This dev build-log doesn't use it.
 
 Don't pad. Half a page is good; shorter is better.
 
@@ -183,7 +183,7 @@ Each entry:
 
 **Sizing.** Each field: one paragraph or a tight list. The whole entry should fit on a screen. If it doesn't, the batch is probably too large or under-scoped.
 
-**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — documented in `DOC-STRUCTURE.md` → *BACKLOG structure*.
+**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — documented in `plugin/docs/DOC-STRUCTURE.md` → *BACKLOG structure*.
 
 ---
 

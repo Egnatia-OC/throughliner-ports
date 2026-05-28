@@ -37,7 +37,7 @@ In order:
    - `plugin/docs/VOCABULARY.md` — method term definitions, cross-referenced from other docs (~140 lines).
    - `Guides/Reference manual.md` — install/usage primer and method overview for orientation (~410 lines).
 3. Read `Dev/Planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
-4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
+4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These indicate uncommitted dependencies that will be missing at session start. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
 5. **State summary.** Produce a brief summary for the user: current version (session tag, method version, plugin version), queue depth (number of queued batches), next batch (number and title), OQ count, and any notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
 Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
 
@@ -118,12 +118,12 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
    ```
 
 8. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
-   - [ ] Doc-code parity done (step 1)
-   - [ ] Frame-correction sweep done (step 2)
-   - [ ] Build-log entry written + index line prepended (step 3)
-   - [ ] Idea sweep done — nothing unrouted (step 4)
-   - [ ] Footers bumped if applicable (step 6)
-   - [ ] Proxies regenerated (step 7)
+   - [ ] Doc-code parity done
+   - [ ] Frame-correction sweep done
+   - [ ] Build-log entry written + index line prepended
+   - [ ] Idea sweep done — nothing unrouted
+   - [ ] Footers bumped if applicable
+   - [ ] Proxies regenerated
    - [ ] Consumed batch removed from BACKLOG's Queued batches section
    Complete any missing steps now. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
@@ -159,10 +159,11 @@ Run for any session type other than implementation. Steps that produce no-ops on
    Skip if no source docs were edited and no version bump ran.
 
 6. **[BRIEF] Pre-commit checkpoint.** Verify by name:
-   - [ ] Idea sweep done — nothing unrouted (step 1)
-   - [ ] Build-log entry written + index line prepended (step 2)
-   - [ ] Footers bumped if applicable (step 4)
-   - [ ] Proxies regenerated if applicable (step 5)
+   - [ ] Idea sweep done — nothing unrouted
+   - [ ] Build-log entry written + index line prepended
+   - [ ] Frame-correction sweep done (if this session consumed a batch)
+   - [ ] Footers bumped if applicable
+   - [ ] Proxies regenerated if applicable
    - [ ] Batch removed from BACKLOG if this session consumed one
    Complete any missing steps now.
 
@@ -174,9 +175,10 @@ Run for any session type other than implementation. Steps that produce no-ops on
 
 **Skipped explicitly (vs. implementation close):**
 - Doc-code parity — no implementation changes to audit.
-- Frame-correction sweep — no feature frame changed.
 
-**Conditional:** If this session consumed a queued batch (e.g. a doc-only batch), remove it from BACKLOG's Queued batches section as part of the commit (lighter close step 6, checkpoint).
+**Conditional:**
+- Frame-correction sweep — skip unless this session consumed a queued batch. A doc-only or planning session that rewrites scope text could shift a frame other batches depend on.
+- If this session consumed a queued batch, remove it from BACKLOG's Queued batches section as part of the commit.
 
 ---
 

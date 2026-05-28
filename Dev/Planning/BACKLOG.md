@@ -36,69 +36,72 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
+### 0130 — /sovsetup case 1 retest (post-fix verification)
+
+**Goal.** Verify that v113, v115, v117, and v129 changes work end-to-end in a real `/sovsetup` case 1 run. The cowboy test (plugin v90) found 7 hook issues; v113 and v115 shipped fixes for most of them. v117 added setup Q5 (language setting). v129 renamed BUILD-PLAN → BACKLOG across the entire plugin. None of these fixes have been verified E2E.
+
+**Inputs.** Fresh empty folder. Plugin repackaged at current HEAD (v97 / 0.97.0).
+
+**Outputs.** Test-log entry. New BACKLOG entries for any issues found.
+
+**Test protocol.** This is a guided walkthrough — deliver one step at a time, wait for the user's result before issuing the next. Open by stating the total step count. Do not preview upcoming steps, list remaining steps, or bundle steps together. If a step produces a finding, handle it (file to BACKLOG or flag) before moving to the next step. This rule applies even if the step seems trivial.
+
+**Test plan.**
+
+1. Invoke `/sovsetup` on empty folder. Confirm case 1 detected.
+2. Walk through all five questions (Q1–Q4 as before, Q5 should be the new language setting from v117). Verify Q5 appears and the answer flows into `CLAUDE.md` and `core.quotepath` config.
+3. After scaffold: verify output uses `BACKLOG/` directory name (not `BUILD-PLAN/`). Verify BACKLOG proxy includes `## Test sessions` section. Verify no `test-log.md` proxy was created.
+4. After Q answers applied: attempt Edit on `_method/BACKLOG/<batch>.md` — should succeed (cowboy issue 1 fix). Attempt Edit on `_method/proxies/ux.md` — should succeed (cowboy issue 2 fix). Attempt Edit on `_method/planning/drafts/<file>.md` — should succeed (cowboy issue 6 fix).
+5. Write a heredoc/here-string containing markdown headings — verify no false-positive filename extraction (cowboy issue 3 fix).
+6. Attempt Write to a file outside the project root (e.g. Desktop) — verify not blocked by Edit/Write path (cowboy issues 4/7 fix). Note: Bash write-guard still enforces its own boundary, which is correct.
+7. Verify scaffolded files don't contain BOM bytes that break `safe_read_text()` (v117 BOM hardening).
+
+**Success criteria.** Clean case 1 setup with no hook blocks on method-file writes. All 7 cowboy-test issues resolved or clearly scoped. Language question appears and persists correctly. BACKLOG naming throughout.
+
+**Risks / dependencies.** Requires repackaging plugin at HEAD. If scaffold.py still outputs `BUILD-PLAN/` paths (missed in v129 rename), the test surfaces it immediately at step 3.
+
+---
+
+### 0131 — Build lifecycle retest (post v115–v129 changes)
+
+**Goal.** Verify the full build pipeline works end-to-end after six implementation sessions (v115, v116, v117, v118, v128, v129) that changed phase detection, close procedure, naming, and safeguards. The last lifecycle E2E (v114/batch 0088) predates all of these. The v129 BACKLOG rename alone touched ~30 plugin files — any missed reference breaks path resolution.
+
+**Inputs.** A project with a completed `/sovsetup` and at least one queued batch in BACKLOG. Can chain from 0130's output if that test passes clean. Plugin repackaged at current HEAD.
+
+**Outputs.** Test-log entry. New BACKLOG entries for any issues found.
+
+**Test protocol.** This is a guided walkthrough — deliver one step at a time, wait for the user's result before issuing the next. Open by stating the total step count. Do not preview upcoming steps, list remaining steps, or bundle steps together. If a step produces a finding, handle it (file to BACKLOG or flag) before moving to the next step. This rule applies even if the step seems trivial.
+
+**Test plan.**
+
+1. `/sovplan` — create or confirm a queued batch. Verify it lands in `_method/BACKLOG/` (not `BUILD-PLAN/`). Verify BACKLOG proxy updates.
+2. `/sovrecap` — verify it reads BACKLOG correctly and presents batch state.
+3. `/sovbuild` (before-build phase) — verify blocker gate runs all 5 checks (batch OQs, planning batches, BACKLOG OQs, test sessions, ideas/red flags) per v129 expansion. Verify pre-build sizing warning fires if batch has 8+ files AND open decisions (v116). Lock the batch.
+4. `/sovbuild` (build phase) — build at least a few files. Verify phase detection holds as "build" throughout (v115 fix). Verify close handoff one-liners accumulate in `active-build.md` → `## Close handoff` as files are ticked (v118).
+5. `/sovclose` (judgment turn) — verify two-turn procedure (v128): MANIFEST, doc-parity, frame-correction, idea sweep. Verify it stops at the turn boundary and recommends `/compact`.
+6. `/sovclose` (mechanical turn) — verify `bump_version.py` runs (v128). Verify proxy regeneration. Verify checkpoint list. Verify all references say BACKLOG not BUILD-PLAN (v129).
+7. `/sovgit` — verify commit prompt, tag, push prompts. Verify compact nudge at done prompt (v116).
+8. Throughout: verify compact nudges fire at skill-handoff `[PROMPT]` points between steps (v116).
+
+**Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Phase detection stable through build. Two-turn close works as designed. Consumer `bump_version.py` runs without errors.
+
+**Risks / dependencies.** Depends on a set-up project — chains from 0130, or use an existing one. Risk: if 0130 surfaces scaffold issues, this test's starting state may be compromised. Mitigant: can use Taskflow or another already-adopted project instead.
+
+---
+
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
 
 ---
 
-### Frame-correction sweep: categorical vs conditional skip in lighter close
+### Step-by-step test protocol — where should it live?
 
-**Surfaced.** v120 (0121 reader test, M2).
+Testing sessions that involve user-guided steps (E2E tests, Look-and-click, Run-and-read) consistently dump full step lists despite the user's one-at-a-time instruction. Cowboy tests are exempt — those are freeform user exploration with no guided walkthrough. The fix needs to go somewhere Claude reads during test sessions. Candidates: `plugin/docs/procedures/testing.md`, `universal-behaviour.md`, or both. Question: which location actually gets loaded in the test context, and is one enough or does it need reinforcement in both?
 
-**The question.** The lighter close skips the frame-correction sweep categorically ("no feature frame changed"). But a doc-only session consuming a queued batch could change a load-bearing frame (e.g. rewriting how a concept is described in BACKLOG scope text). Should the skip be conditional on whether a frame actually changed, rather than categorical by session type?
-
-**Why it matters.** A doc-only batch that rewrites scope text could leave queued batches referencing an old frame — exactly what the sweep catches. The categorical skip assumes lighter-close sessions never change frames, which isn't guaranteed.
-
-**Next step.** Park. Low frequency — doc-only sessions rarely change frames. Revisit if a frame-change slips through a lighter close.
+**Surfaced.** v130.
 
 ---
-
-### Remote-control standby close path unspecified
-
-**Surfaced.** v120 (0121 reader test, M4).
-
-**The question.** The routing table says remote-control standby sessions use the close path that matches "the work done," but gives no guidance on classifying what was done — or whether a commit/tag/push is expected if nothing was done.
-
-**Why it matters.** Standby sessions are rare in practice (most sessions have a clear type), but when they occur, the lack of close-path guidance means Claude has to improvise. A "no work done → no close needed" rule, or a "classify the work and follow the matching close" rule, would be sufficient.
-
-**Next step.** Park. Very low frequency. Revisit if standby sessions become more common or if a standby session produces an awkward close.
-
----
-
-### Sub-agent warning rule boundary for scoped work
-
-**Surfaced.** v120 (0121 reader test, M7).
-
-**The question.** CLAUDE.md says "warn before spawning a subagent for a single simple operation." When the batch scope explicitly designs for sub-agents (as 0121 did), does the warning rule still apply?
-
-**Why it matters.** The fresh-session agent flagged the warning as a courtesy even though the batch scope explicitly called for three sub-agents. The rule is written for spontaneous single-operation spawning — not intentionally scoped multi-agent work. Clarifying the boundary would prevent unnecessary warnings on designed sub-agent deployments while preserving the guard on ad hoc spawning.
-
-**Next step.** Park. Low friction — Claude flagging an unnecessary warning is a minor cost. Revisit if sub-agent-designed batches become more common.
-
----
-
-### Cross-reference precision across dev-side docs
-
-**Surfaced.** v120 (0121 reader test, B2/B3/B4/B5).
-
-**The question.** Four related precision issues in cross-references between dev-side docs: (a) session-protocol.md step 4 relies entirely on a forward pointer to session-reference.md with no inline explanation; (b) session-reference.md's build-log entry shape references DOC-STRUCTURE.md without a path; (c) CLAUDE.md says "read proxies first" while session-protocol.md step 3 says "read BACKLOG in full" without mentioning proxies; (d) the pre-commit checkpoint in each close path references its own step numbers, making cross-path comparison confusing.
-
-**Why it matters.** Individually minor. Collectively, they make the doc set harder for a fresh reader to navigate — each instance requires the reader to either flip to another doc or hold two numbering schemes in mind. The reader test found these because the agents were explicitly instructed to flag "the document does not say" moments.
-
-**Next step.** Park. Address opportunistically when the relevant sections are edited for other reasons. Not worth a dedicated batch.
-
----
-
-### Plugin testing framework beyond bespoke pytest
-
-**Surfaced.** v71 (0068 E2E round 2).
-
-**The question.** Should the project invest in a reusable plugin testing framework — run a hook against synthetic input and assert on output shape/content, without a full Claude Code session — or is the current bespoke pytest suite sufficient?
-
-**Why it matters.** Surfaced 2026-05-24 during E2E testing research. The pytest suite at `Dev/Resources/tests/` covers hook subprocess tests and unit tests, but it's custom-built for this project. A framework could make it easier to add tests for new hooks, validate prompts, and regression-test deny/allow paths. Counter-argument: the bespoke suite works, runs in under 5 seconds, and covers 184 tests — a framework might add abstraction without proportional value.
-
-**Next step.** Park. Revisit if test maintenance burden grows or if other plugin projects would benefit from the same patterns.
 
 ---
 
