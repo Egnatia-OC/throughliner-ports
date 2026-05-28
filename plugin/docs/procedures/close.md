@@ -22,7 +22,7 @@ Run when a build just completed (`_method/active-build.md` exists, all Files: ti
 Load only what's needed for batch identification and idempotency. Defer heavier reads to work-loop steps.
 
 1. `CLAUDE.md` — path block and project notes.
-2. `_method/active-build.md` — the snapshot is the single source of truth for the just-completed batch.
+2. `_method/active-build.md` — the snapshot is the single source of truth for the just-completed batch. Read `## Close handoff` — this is the primary source for what changed during the build (names introduced, concepts renamed, frames shifted, doc references invalidated).
 3. `TEST-LOG.md` — idempotency check. In folder mode (path block → `proxies/test-log.md`): read files in `test-log/`.
 4. `MANIFEST.md` — for the MANIFEST update.
 
@@ -52,7 +52,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in `_method/active-build.md`. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **[SILENT] Doc-parity check.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep UX.md, BUILD-PLAN, MANIFEST.md, and CLAUDE.md for references to the old name or path. Collect stale references — flag in step 11. Scoped to blast radius of what changed, not a full doc audit.
+3. **[SILENT] Doc-parity check.** Read `## Close handoff` in the snapshot for names introduced, renamed, or invalidated. For each: grep UX.md, BUILD-PLAN, MANIFEST.md, and CLAUDE.md for stale references. If Close handoff is empty or absent, fall back to scanning the batch's Files: list for renamed/deleted/moved files. Collect stale references — flag in step 11.
 
 4. **Open test session + run Claude tests.** Two sub-steps.
 
@@ -84,7 +84,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 6. **[SILENT] Write build-log entry.**
    - **6a.** Allocate filename: scan `build-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading.
-   - **6b.** Write per-build file:
+   - **6b.** Write per-build file. Draw the narrative from `## Close handoff` — it lists what changed per file during the build:
      ```markdown
      # <Session> — YYYY-MM-DD — Summary
 
@@ -101,9 +101,9 @@ TEST-LOG's Session column needs a stable build-session identifier:
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Write batch back to BUILD-PLAN as shipped.** Read `_method/active-build.md`. Write the batch content back into BUILD-PLAN with `Status: shipped` at the top of its body (after heading, before Goal). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
+7. **[SILENT] Write batch back to BUILD-PLAN as shipped.** Read `_method/active-build.md`. Write the batch content back into BUILD-PLAN with `Status: shipped` at the top of its body (after heading, before Goal) — **exclude `## Close handoff`** (build-time context, not permanent scope). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
 
-8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** If the build substantively changed how a feature works, scan BUILD-PLAN batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Flag candidates. UX.md drift is caught by planning's drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts noted during the build. For each, scan BUILD-PLAN batches and `[PROPOSED EDIT PENDING]` blocks for references to the old behaviour. If Close handoff is empty or absent, assess from the batch's Files: list whether the build substantively changed how a feature works. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
 9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BUILD-PLAN batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
 
@@ -160,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 94.*
+*No-code method — Version 95.*

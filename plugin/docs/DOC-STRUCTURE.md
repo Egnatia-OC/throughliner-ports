@@ -397,7 +397,13 @@ When `/sovbuild` is invoked, the active batch's full content is extracted from B
 
 **Phase detection.** The snapshot file's existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy fallback: `Status: active` in BUILD-PLAN still detected for pre-V90 projects.
 
-**Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, and build operations — the same content that would appear in the per-batch file or inline BUILD-PLAN section, but extracted to its own file.
+**Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, build operations, and a `## Close handoff` section at the bottom — the same content that would appear in the per-batch file or inline BUILD-PLAN section, but extracted to its own file, plus the handoff section appended at creation.
+
+**Close handoff section.** `## Close handoff` at the bottom of the snapshot. Created empty by `/sovbuild`; appended to incrementally during the per-file work loop. One bullet per file, recording what changed — new consumer-facing names introduced, concepts renamed, frames shifted, doc references invalidated. Mechanical changes with nothing for `/sovclose` to act on are skipped.
+
+`/sovclose` reads this section as its primary source for doc-parity checks, frame-correction sweeps, and build-log narrative — replacing codebase re-exploration. If the section is empty or absent (legacy snapshots), `/sovclose` falls back to scanning the batch's Files: list.
+
+The section is not written back to BUILD-PLAN when the batch is marked shipped — it's build-time context, not permanent scope.
 
 ---
-*No-code method — Version 94.*
+*No-code method — Version 95.*

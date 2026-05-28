@@ -38,6 +38,8 @@ The snapshot file's existence is the build-in-progress signal — SessionStart a
 
 **Tick edits go in the snapshot.** During the build, `- [ ]` → `- [x]` updates happen in `_method/active-build.md`, not in BUILD-PLAN.
 
+**Close handoff section.** When creating the snapshot, append `## Close handoff` (empty) at the bottom. Build steps append one-liners here as files are ticked — `/sovclose` reads this instead of re-exploring the codebase. Format spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
+
 **Resuming an interrupted build.** If `_method/active-build.md` already exists when `/sovbuild` is invoked, a build was interrupted. Don't re-extract — read the existing snapshot and resume from the first unticked file.
 
 ## Load project state
@@ -58,7 +60,8 @@ For each unticked file, in Files: list order:
 
 1. Make the change described by the `summary` field. `change_list` bullets are narrative context; `summary` is the actionable instruction.
 2. Immediately tick `- [ ]` to `- [x]` in `_method/active-build.md`. **Per-file, not at the end** — partial-complete state survives interruption only if the snapshot records progress live.
-3. Next unticked file.
+3. Append a one-liner to `## Close handoff` in the snapshot: what changed in this file — new consumer-facing names, renamed concepts, shifted frames, or doc references invalidated. Skip if the change was mechanical with nothing `/sovclose` needs to act on.
+4. Next unticked file.
 
 ## When a change causes a regression
 
@@ -106,4 +109,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 94.*
+*No-code method — Version 95.*

@@ -77,6 +77,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Handoff notes.** `Handoff notes:` block at batch bottom during handoff. Build-time context for resume. Stripped by `/sovclose` when batch completes.
 
+- **Close handoff.** `## Close handoff` section at the bottom of `_method/active-build.md`. One-liner per ticked file noting what changed — new consumer-facing names, renamed concepts, shifted frames, invalidated doc references. Appended incrementally by the build procedure; read by `/sovclose` for doc-parity, frame-correction, and build-log narrative. Distinct from session handoff (which is for interrupted builds resuming in a new session). Format spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
+
 - **Opener classification.** UserPromptSubmit hook's keyword detection on first prompt: sovsetup/test notes/resume/deliberate/ideate/plan structural. Injected as routing hint. Conservative. A hint, not a gate.
 
 - **Row pruning (TEST-LOG).** Auto-deletion of rows whose Component has no MANIFEST match, plus `Superseded` rows. Runs at planning step 2c. Cross-component rows exempt.
@@ -134,4 +136,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan the top batch for unresolved open questions or ideas that would force mid-build improvisation. If blockers found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (which checks session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 94.*
+*No-code method — Version 95.*

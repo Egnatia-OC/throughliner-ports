@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-28 | when: every session open -->
+<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-28 v118 | when: every session open -->
 
 # Session protocol
 
@@ -13,8 +13,8 @@ Always-read file. Session lifecycle: open → middle → close. Opener routing t
 - L41 **Opener routing table** — 6 session types: implementation, doc-only, planning, ideation, E2E test, remote-control standby → load/skip/middle/close
 - L58 **Session middle** — three shapes: implementation, doc-only, planning
 - L72 **Session close** — two paths based on session type
-- L76 **Implementation close (full)** — 11 steps: parity → frame sweep → footers → build-log → idea sweep (3-way triage) → proxies → pre-commit checkpoint (named artifacts) → commit → tag → remove batch → push
-- L115 **Lighter close** — 8 steps: idea sweep → build-log → footers → proxies → checkpoint → commit → tag → push. Skips doc-code parity and frame-correction. Conditional batch removal.
-- L149 **Batch-ordering audit** — 4 checks after BACKLOG structural changes: forward-dep scan, stale-ref scan, reorder, fix scope text
-- L162 **Doc-code parity** — during-session + close-time audit (6-item checklist)
-- L181 **Guide parity (crash-course/)** — data-source/data-transform attribute chain
+- L76 **Implementation close (full)** — 11 steps: parity → frame sweep → footers → build-log → idea sweep (3-way triage) → proxies → pre-commit checkpoint (named artifacts) → commit → tag → remove batch → push. Uses `git diff` as dev-side equivalent of plugin's `## Close handoff` section.
+- L117 **Lighter close** — 8 steps: idea sweep → build-log → footers → proxies → checkpoint → commit → tag → push. Skips doc-code parity and frame-correction. Conditional batch removal.
+- L151 **Batch-ordering audit** — 4 checks after BACKLOG structural changes: forward-dep scan, stale-ref scan, reorder, fix scope text
+- L164 **Doc-code parity** — during-session + close-time audit (6-item checklist)
+- L183 **Guide parity (crash-course/)** — data-source/data-transform attribute chain

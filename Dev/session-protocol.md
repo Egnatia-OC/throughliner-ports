@@ -79,6 +79,8 @@ Run when the session shipped plugin code or method-doc structural changes consum
 
 Response-shape tags mark verbosity per step — definitions in `session-reference.md` → *Response-shape tags*.
 
+Use `git diff` to identify what changed this session — the dev-side equivalent of the plugin's `## Close handoff` section in `active-build.md`. Steps 1 and 2 draw from this rather than re-exploring.
+
 1. **[BRIEF] Doc-code parity** (see *Doc-code parity* section below for audit details). Fix docs before footers and BUILD-LOG.
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
