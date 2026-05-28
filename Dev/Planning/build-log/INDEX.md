@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v123-scripted-close-mechanicals.md](v123-scripted-close-mechanicals.md) — 2026-05-28 — Scripted close mechanicals (dev-side) — bump_version.py + session-protocol.md script references
 - [v122-opener-routing-completeness.md](v122-opener-routing-completeness.md) — 2026-05-28 — Dev-side opener routing completeness + OQ fold-in
 - [v121-close-procedure-fixes.md](v121-close-procedure-fixes.md) — 2026-05-28 — Dev-side close procedure fixes + 3 OQs folded in
 - [v120-dev-side-reader-test.md](v120-dev-side-reader-test.md) — 2026-05-28 — Dev-side reader test: gap list and BACKLOG routing

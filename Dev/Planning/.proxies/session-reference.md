@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-28 v121 | when: dip on demand -->
+<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-28 v123 | when: dip on demand -->
 
 # Session reference
 
@@ -10,10 +10,10 @@ Companion to session-protocol.md. Entry shapes, footer bump lists, testing detai
 - L13 **Testing** — smoke-testing in Claude Code, pre-install options, what we don't do, where outcomes go
 - L33 **Automated test suite (V53 — pytest)** — `python -m pytest tests/ -v`, coverage, fixtures, relationship to smoke tests
 - L55 **Response-shape tags** — five tags ([SILENT], [BRIEF], [SEQUENCE], [DISCUSS], [PROMPT])
-- L67 **Footer bumps: the full list** — plugin-side leader list (12 entries), cross-cutting, version trackers
+- L69 **Footer bumps: the full list** — plugin-side leader list (12 entries), cross-cutting, version trackers
 - L109 **Planning artefacts** — lifecycle table (8 entries)
-- L121 **Drafts in flight** — convention + corollary (inputs must be in repo)
+- L122 **Drafts in flight** — convention + corollary (inputs must be in repo)
 - L130 **BUILD-LOG entry shape** — per-session file in build-log/, 4-section template, INDEX.md prepend
-- L155 **Open-questions entry shape** — 5-field template + 4 graduation paths
-- L195 **TEST-LOG entry shape** — 7-column table, status flips, component changes, BUILD-LOG linking
+- L156 **Open-questions entry shape** — 5-field template + 4 graduation paths
+- L194 **TEST-LOG entry shape** — 7-column table, status flips, component changes, BUILD-LOG linking
 - L218 **Plugin migration context** — V17 onwards, design docs pointer

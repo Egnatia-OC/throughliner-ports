@@ -87,7 +87,11 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
-3. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Full list in `session-reference.md` → *Footer bumps*.
+3. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Run from `sovereign-implementer/`:
+   ```
+   python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
+   ```
+   The script bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. It also regenerates proxy headers and line-number pointers (step 6). Full bump list in `session-reference.md` → *Footer bumps*.
 
 4. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
@@ -97,7 +101,10 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 
-6. **[SILENT] Regenerate proxies.** If `Dev/Planning/.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy matching the format of existing files in `Dev/Planning/.proxies/` (HTML comment header with `source`/`generated`/`when`, title, state summary, `## Sections` with `L<N>` line-number pointers). Skip if no source docs were edited.
+6. **[SILENT] Regenerate proxies.** The bump script (step 3) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited this session — update summaries, section descriptions, and add/remove entries for structural changes the script can't detect. If no source docs were edited and no version bump ran, skip. For sessions without a version bump, run proxies-only:
+   ```
+   python Dev/Resources/scripts/bump_version.py --session-tag v<N>
+   ```
 
 7. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
    - [ ] Doc-code parity done (step 1)
@@ -123,9 +130,16 @@ Run for any session type other than implementation. Steps that produce no-ops on
 
 2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-3. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. Full list in `session-reference.md` → *Footer bumps*.
+3. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. When bumping, run from `sovereign-implementer/`:
+   ```
+   python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
+   ```
 
-4. **[SILENT] Regenerate proxies.** Same rule as implementation close step 6. Skip if no source docs were edited.
+4. **[SILENT] Regenerate proxies.** Same rule as implementation close step 6. The bump script (step 3) handles headers and line-number pointers; review for content changes. For sessions without a version bump, run proxies-only:
+   ```
+   python Dev/Resources/scripts/bump_version.py --session-tag v<N>
+   ```
+   Skip if no source docs were edited and no version bump ran.
 
 5. **[BRIEF] Pre-commit checkpoint.** Verify by name:
    - [ ] Build-log entry written + index line prepended (step 2)

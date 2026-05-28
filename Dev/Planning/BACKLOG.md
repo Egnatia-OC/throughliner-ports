@@ -114,26 +114,13 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0114 | Language setting + BOM hardening + blocker gate + carried-forward removal | Language: field, utf-8-sig BOM strip, pre-build blocker gate, carried-forward removal. **Shipped v117.** |
 | 0117 | Build-phase close handoff artifact | `## Close handoff` in build snapshot; build appends per-file, close reads first. **Shipped v118.** |
 | 0125 | Dev-side opener routing completeness | Blended-opener priority rule, git-unavailable fallback, informal-modifier note. OQ fold-in. **Shipped v122.** |
+| 0118 | Scripted close mechanicals (dev-side) | `bump_version.py` for footer bumps, plugin.json, PLUGIN_METHOD_VERSION, proxy regen. Session-protocol.md close steps updated. **Shipped v123.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0118 — Scripted close mechanicals (dev-side)
-
-**Goal.** Replace Claude-executed footer bumps, version updates, and proxy regeneration with a Python script on the dev side. Removes the most error-prone and token-expensive mechanical close steps.
-
-**Approach.** A Python script at `Dev/Resources/scripts/bump_version.py` taking `(old_version, new_version)` that handles all footer bumps across the repo, `plugin.json` version field, `PLUGIN_METHOD_VERSION` in `session_start.py`, and summary-proxy regeneration. Output is a `git diff`-verifiable set of changes. Updated dev-side session-protocol.md close steps to reference the script.
-
-**Outputs.** Dev-side `bump_version.py`. Updated dev-side session-protocol.md close steps.
-
-**Success criteria.** Running the script produces correct footer bumps across all files, verified by `git diff`. No Edit-tool failures on unread files. Close-session token cost for mechanicals drops to near zero (one script invocation + diff review).
-
-**Risks / dependencies.** Half-proven — v112 already fell back to a script. Risk: footer discovery (script must find all files with the footer pattern). Mitigation: glob pattern + test coverage. Depends on accurate footer pattern (`*No-code method — Version N.*`).
 
 ---
 
