@@ -126,4 +126,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **OQ accumulation nudge.** SessionStart and `/sovrecap` check: when 3+ open questions exist or any are older than 5 build cycles, nudge toward `/sovdeliberate`. Informational, not blocking.
 
 ---
-*No-code method — Version 91.*
+*No-code method — Version 92.*

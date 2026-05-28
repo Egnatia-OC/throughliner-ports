@@ -692,6 +692,28 @@ def _parse_snapshot_file_paths(project_root):
     return paths if paths else None
 
 
+def _is_test_or_build_log_file(target_path, project_root):
+    """True if target_path is inside test-log/ or build-log/, or is the
+    path-block-resolved TEST-LOG.md or BUILD-LOG.md entry. Close procedure
+    writes to these during build phase."""
+    target_str = str(target_path)
+    for logical in ["TEST-LOG.md", "BUILD-LOG.md"]:
+        log_path = resolve_path_block_entry(project_root, logical)
+        if log_path is not None and target_str == str(log_path):
+            return True
+    for dir_name in ["test-log", "build-log"]:
+        for base_dir in [
+            (project_root / "_method" / dir_name).resolve(),
+            (project_root / dir_name).resolve(),
+        ]:
+            try:
+                target_path.relative_to(base_dir)
+                return True
+            except ValueError:
+                continue
+    return False
+
+
 def check_batch_file_list(project_root, target_path, permission_mode=""):
     """V25/V90: enforce the batch file-list boundary on Edit/Write/MultiEdit.
 
@@ -722,6 +744,10 @@ def check_batch_file_list(project_root, target_path, permission_mode=""):
     # Exempt the snapshot file itself — build procedure ticks files in it.
     snapshot_path = (project_root / "_method" / "active-build.md").resolve()
     if str(target_path) == str(snapshot_path):
+        return None
+
+    # Exempt test-log/ and build-log/ — close procedure writes here.
+    if _is_test_or_build_log_file(target_path, project_root):
         return None
 
     # V90: try snapshot first.
@@ -1064,6 +1090,35 @@ def check_v29_adoption_gate(project_root, tool_name, tool_input,
 # --- V67 phase-detection helpers ---
 
 
+def _backlog_has_active_status(project_root):
+    """Legacy fallback: check if any BUILD-PLAN batch has Status: active.
+
+    The parser skips all-ticked batches, but Status: active means close
+    hasn't run yet. This reads BUILD-PLAN directly to catch that case.
+    Handles both single-file and folder mode."""
+    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    if backlog_path is None or not backlog_path.exists():
+        return False
+    backlog_dir = resolve_backlog_dir(project_root)
+    if backlog_dir is not None and backlog_dir.is_dir():
+        try:
+            for entry in backlog_dir.iterdir():
+                if (entry.suffix.lower() == ".md"
+                        and entry.name.upper() != "INDEX.MD"):
+                    text = safe_read_text(entry)
+                    if text and re.search(
+                        r"^Status:\s*active\s*$", text, re.MULTILINE
+                    ):
+                        return True
+        except OSError:
+            pass
+        return False
+    text = safe_read_text(backlog_path)
+    if text is None:
+        return False
+    return bool(re.search(r"^Status:\s*active\s*$", text, re.MULTILINE))
+
+
 def detect_phase(project_root):
     """Determine the project's current phase.
 
@@ -1087,10 +1142,13 @@ def detect_phase(project_root):
     if backlog_path is None or not backlog_path.exists():
         return "planning"
     batch = run_parser(backlog_path)
-    if not isinstance(batch, dict) or not batch:
+    if isinstance(batch, dict) and batch:
+        status = batch.get("status", "queued")
+        if status == "active":
+            return "build"
         return "planning"
-    status = batch.get("status", "queued")
-    if status == "active":
+
+    if _backlog_has_active_status(project_root):
         return "build"
     return "planning"
 
@@ -1145,13 +1203,19 @@ def is_research_file(target_path, project_root):
 
 
 # V91: method infrastructure directories writable during planning.
-_METHOD_INFRA_DIRS = frozenset({"BUILD-PLAN", "proxies", "planning"})
+_METHOD_INFRA_DIRS = frozenset({
+    "BUILD-PLAN", "proxies", "planning", "test-log", "build-log",
+})
+
+_METHOD_INFRA_ROOT_FILES = frozenset({"active-build.md"})
 
 
 def is_method_infra_file(target_path, project_root):
-    """V91: True if target_path is inside a _method/ subdirectory that should
-    be writable during planning: BUILD-PLAN/ (per-batch files), proxies/
-    (all proxy files), planning/ (drafts and scratch space).
+    """V91/V92: True if target_path is inside a _method/ subdirectory that
+    should be writable during planning, OR is a known root-level _method/ file.
+
+    Subdirectories: BUILD-PLAN/, proxies/, planning/, test-log/, build-log/.
+    Root files: active-build.md (build snapshot).
 
     Checks both _method/ (0087+ layout) and root-level (legacy layout)."""
     for base in [
@@ -1163,7 +1227,11 @@ def is_method_infra_file(target_path, project_root):
         except ValueError:
             continue
         parts = rel.parts
-        if parts and parts[0] in _METHOD_INFRA_DIRS:
+        if not parts:
+            continue
+        if parts[0] in _METHOD_INFRA_DIRS:
+            return True
+        if len(parts) == 1 and parts[0] in _METHOD_INFRA_ROOT_FILES:
             return True
     return False
 

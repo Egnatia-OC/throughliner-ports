@@ -842,6 +842,222 @@ class TestBashWriteGuard:
 
 
 # ---------------------------------------------------------------------------
+# 0116 Bug 1: active-build.md creation allowed during planning
+# ---------------------------------------------------------------------------
+
+class TestActiveBuildCreation:
+    """0116 Bug 1: _method/active-build.md must be writable during planning
+    phase. is_method_infra_file must recognise root-level _method/ files."""
+
+    def test_active_build_writable_during_planning(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method").mkdir()
+        target = str((root / "_method" / "active-build.md").resolve())
+        data = _write_input(root, target, content="# Batch snapshot")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_active_build_writable_legacy_layout(self, tmp_path):
+        """Root-level active-build.md also handled (legacy layout)."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        target = str((root / "active-build.md").resolve())
+        data = _write_input(root, target, content="# Batch snapshot")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+
+# ---------------------------------------------------------------------------
+# 0116 Bug 2: test-log/ and build-log/ writable during close (build phase)
+# ---------------------------------------------------------------------------
+
+class TestClosePhaseLogWrites:
+    """0116 Bug 2: test-log/ and build-log/ must be writable during build
+    phase so /sovclose can write outputs."""
+
+    def test_test_log_writable_during_build(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "test-log").mkdir(parents=True)
+        (root / "_method" / "proxies").mkdir(parents=True)
+        # Create snapshot to put project in build phase
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
+        )
+        target = str((root / "_method" / "test-log" / "001-test-batch.md").resolve())
+        data = _write_input(root, target, content="# Test session")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_build_log_writable_during_build(self, tmp_path):
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "build-log").mkdir(parents=True)
+        (root / "_method" / "proxies").mkdir(parents=True)
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
+        )
+        target = str((root / "_method" / "build-log" / "001-test-batch.md").resolve())
+        data = _write_input(root, target, content="# Build log entry")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_test_log_writable_legacy_layout(self, tmp_path):
+        """Root-level test-log/ also handled (legacy layout)."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
+            ' "BUILD-LOG.md": "build-log/INDEX.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "test-log").mkdir()
+        (root / "BUILD-PLAN").mkdir()
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
+        )
+        target = str((root / "test-log" / "001-test-batch.md").resolve())
+        data = _write_input(root, target, content="# Test session")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_test_log_index_writable_during_build(self, tmp_path):
+        """Path-block-resolved TEST-LOG.md entry is also writable."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n'
+        )
+        (root / "_method" / "proxies").mkdir(parents=True)
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
+        )
+        target = str((root / "_method" / "proxies" / "test-log.md").resolve())
+        data = _write_input(root, target, content="<!-- proxy -->")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+
+# ---------------------------------------------------------------------------
+# 0116 Bug 3: phase detection with all-ticked batch and Status: active
+# ---------------------------------------------------------------------------
+
+class TestPhaseDetectionAllTicked:
+    """0116 Bug 3: Status: active must keep phase as 'build' even when all
+    files are ticked. The parser returns {} for all-ticked batches, but
+    detect_phase must fall back to checking Status: active directly."""
+
+    def test_all_ticked_status_active_stays_build(self, tmp_path):
+        """Folder mode: all files ticked + Status: active → build phase.
+        Source code edits should be allowed (not blocked by planning lock)."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n',
+            encoding="utf-8",
+        )
+        (root / "UX.md").write_text(
+            "## Functionalities\n\n### Settings\nUser settings.\n"
+        )
+        (root / "MANIFEST.md").write_text("")
+        (root / "TEST-LOG.md").write_text("")
+        bp_dir = root / "BUILD-PLAN"
+        bp_dir.mkdir()
+        (bp_dir / "INDEX.md").write_text(
+            "# BUILD-PLAN\n\n## Red flags\n\n## Planning batches\n\n"
+            "## Build batches\n\n- `0001-batch.md` — Test batch\n\n"
+            "## Open questions\n",
+            encoding="utf-8",
+        )
+        (bp_dir / "0001-batch.md").write_text(
+            "# Test batch\n\nStatus: active\n\n"
+            "**Goal.** Test.\n\nChanges:\n- [Requested] Change\n\n"
+            "Files:\n- [x] `app/main.py` — All done\n\n"
+            "Serves UX.md: Settings.\n",
+            encoding="utf-8",
+        )
+        # No active-build.md → legacy path used
+        target = str((root / "MANIFEST.md").resolve())
+        data = _edit_input(root, target, old_string="", new_string="entry")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_all_ticked_no_active_status_is_planning(self, tmp_path):
+        """Sanity check: all ticked + no Status: active → planning phase.
+        Source code edits should be blocked."""
+        root = tmp_path
+        claude_md = root / "CLAUDE.md"
+        claude_md.write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
+            '```\n\n*No-code method — Version 91.*\n',
+            encoding="utf-8",
+        )
+        (root / "UX.md").write_text("## Functionalities\n")
+        (root / "MANIFEST.md").write_text("")
+        (root / "TEST-LOG.md").write_text("")
+        bp_dir = root / "BUILD-PLAN"
+        bp_dir.mkdir()
+        (bp_dir / "INDEX.md").write_text(
+            "# BUILD-PLAN\n\n## Red flags\n\n## Planning batches\n\n"
+            "## Build batches\n\n- `0001-batch.md` — Test batch\n\n"
+            "## Open questions\n",
+            encoding="utf-8",
+        )
+        (bp_dir / "0001-batch.md").write_text(
+            "# Test batch\n\n"
+            "**Goal.** Test.\n\nChanges:\n- [Requested] Change\n\n"
+            "Files:\n- [x] `app/main.py` — All done\n\n"
+            "Serves UX.md: Settings.\n",
+            encoding="utf-8",
+        )
+        (root / "app").mkdir()
+        target = str((root / "app" / "main.py").resolve())
+        data = _edit_input(root, target)
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "source-code file")
+
+
+# ---------------------------------------------------------------------------
 # V83 Skill escape guidance on existing denies
 # ---------------------------------------------------------------------------
 

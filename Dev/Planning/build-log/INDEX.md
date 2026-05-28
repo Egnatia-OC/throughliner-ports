@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v115-method-infra-whitelist-phase-detection-fixes.md](v115-method-infra-whitelist-phase-detection-fixes.md) — 2026-05-28 — Method-infra whitelist + phase-detection fixes
 - [v114-build-e2e-test.md](v114-build-e2e-test.md) — 2026-05-28 — Build E2E test
 - [v113-sovsetup-e2e-fix-sweep.md](v113-sovsetup-e2e-fix-sweep.md) — 2026-05-28 — /sovsetup E2E fix sweep
 - [v112-skill-split-and-build-plan-rename.md](v112-skill-split-and-build-plan-rename.md) — 2026-05-28 — Skill split + BACKLOG→BUILD-PLAN rename

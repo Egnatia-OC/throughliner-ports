@@ -108,6 +108,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
+| 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -176,24 +177,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** A French-speaking tester runs `/sovsetup`, sets `Language: French`, and receives all Claude-generated output in French. Control tokens remain English. Non-ASCII filenames in batches don't break drift detection. No plugin doc translation needed.
 
 **Risks / dependencies.** 0088 shipped (v114) — base build flow validated. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
-
----
-
-### 0116 — Method-infra whitelist + phase-detection fixes
-
-**Goal.** Fix three `pre_tool_use.py` bugs surfaced during 0088 E2E testing that break the V90+ build-snapshot architecture and close-phase file writes.
-
-**Bug 1 — active-build.md creation blocked.** `is_method_infra_file()` only handles subdirectory-level entries in `_METHOD_INFRA_DIRS`. Root-level `_method/` files like `active-build.md` fail the check because `parts[0]` is the filename, not a directory name. Fix: add root-file handling — either special-case `active-build.md` or add a known-root-files set.
-
-**Bug 2 — test-log/ and build-log/ writes blocked during close.** `test-log` and `build-log` not in `_METHOD_INFRA_DIRS`. Close procedure can't write outputs to their correct locations. Fix: add both to the set.
-
-**Bug 3 — Phase detection falls through after batch completion.** When all files in a batch are ticked complete, the parser returns `{}` (no unticked batch), and phase detection drops to "planning" despite `Status: active`. Compounds Bug 2 — even with correct directory whitelist, close-phase writes fail because the phase is wrong. Fix: `Status: active` should keep phase as "build" regardless of file-tick state; the close procedure manages its own transition.
-
-**Files.** pre_tool_use.py, test_pre_tool_use.py.
-
-**Success criteria.** `/sovbuild` creates `_method/active-build.md` without hook denial. `/sovclose` writes to `_method/test-log/` and `_method/build-log/` without hook denial. Phase remains "build" while `Status: active` regardless of file-tick state. All existing tests pass; new tests cover the three fix paths.
-
-**Risks / dependencies.** None. Self-contained hook fixes.
 
 ---
 
