@@ -74,13 +74,13 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 - **ideate.md** — V90 origin. New idea exploration: open-ended discussion, overlap check, fit assessment, routing (OQ/batch/idea/drop). Claude-offered ideas optional. Inline git commit step with `ideate:` prefix.
 
-- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BUILD-PLAN, (c) vague changes, (d) split needed.
+- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BUILD-PLAN, (c) vague changes, (d) split needed. V93: pre-build sizing check (8+ files AND open decisions → advisory warning). Invocation-prompt compact nudge on recap closing.
 
-- **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BUILD-PLAN, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BUILD-PLAN). Prerequisite and re-batching carve-outs. On completion, `[PROMPT]` nudge to `/sovclose`.
+- **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BUILD-PLAN, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BUILD-PLAN). Prerequisite and re-batching carve-outs. V93: invocation-prompt compact nudge on completion prompt.
 
-- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). Post-build path writes batch back to BUILD-PLAN as shipped, deletes snapshot, then runs standard close (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, after-build steps, pre-commit checkpoint, `/sovgit` nudge). Planning/general path unchanged. Idempotent.
+- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). Post-build path writes batch back to BUILD-PLAN as shipped, deletes snapshot, then runs standard close (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, after-build steps, pre-commit checkpoint, `/sovgit` nudge). Planning/general path unchanged. Idempotent. V93: invocation-prompt compact nudge on both closing prompts.
 
-- **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance.
+- **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance. V93: end-of-session prompt standardised (`/compact` for continuing, `/clear` for fresh start).
 
 - **testing.md** — V81 origin. Guided testing walkthrough: load pending User-verified rows, walk one at a time (type-specific guidance), record outcomes directly to TEST-LOG, structured debugging on failures (diagnose + route to BUILD-PLAN). Consent-gated for unrunnable Claude-verified rows.
 
@@ -117,7 +117,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
-- `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart.
+- `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart. V93: session-length awareness (mid-session compact nudge + invocation-prompt compact nudge).
 - `.claude-plugin/marketplace.json` — marketplace registration. V37.
 
 ## Design decisions (V17)
@@ -149,4 +149,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 92.*
+*No-code method — Version 93.*

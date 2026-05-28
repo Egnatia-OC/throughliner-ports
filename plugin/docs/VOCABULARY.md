@@ -81,6 +81,10 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Row pruning (TEST-LOG).** Auto-deletion of rows whose Component has no MANIFEST match, plus `Superseded` rows. Runs at planning step 2c. Cross-component rows exempt.
 
+- **Pre-build sizing.** After Files:/Tests: are populated during `/sovrecap`, a heuristic check for whether the batch fits in one session. Triggers when Files: has 8+ entries AND the batch has unresolved Decisions. Advisory warning — not blocking. Full rule: `before-build.md` → *Pre-build sizing*.
+
+- **Compact nudge.** Advisory recommendation to run `/compact` before the next skill invocation. Two forms: mid-session (15+ exchanges past `/sovbuild` without `/sovclose`) and invocation-prompt (appended to every skill handoff message). Neither blocks — both give recovery points before context runs out. Full rule: `universal-behaviour.md` → *Session-length awareness*.
+
 - **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by `/sovrecap` and `/sovbuild`.
 
 - **Build log entry.** Per-build narrative in `build-log/NNN-name.md`. Shape: What shipped / Decisions / Pivots / Carried forward + Performance section.
@@ -126,4 +130,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **OQ accumulation nudge.** SessionStart and `/sovrecap` check: when 3+ open questions exist or any are older than 5 build cycles, nudge toward `/sovdeliberate`. Informational, not blocking.
 
 ---
-*No-code method — Version 92.*
+*No-code method — Version 93.*

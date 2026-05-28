@@ -45,6 +45,13 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Run system commands yourself.** When a task requires a shell command (setting environment variables, running build tools, killing processes, etc.), execute it directly — don't ask the user to open a terminal and type it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands that require credentials or elevated permissions the user must provide.
   *Load-bearing for: build sessions — Claude asking users to run commands breaks flow and shifts work onto the non-coder.*
 
+- **Session-length awareness.** Two safeguards against context-window blowout:
+
+  **Mid-session compact nudge.** During a build session, track proxy signals: exchange count since `/sovbuild` invocation, number of files already edited, number of remaining unticked Files: entries. When **15+ exchanges** have passed since `/sovbuild` without reaching `/sovclose`, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." The nudge is informational, not blocking. Don't repeat if the user acknowledges and continues. Claude has no visibility into token count — all heuristics use conversation-visible signals only.
+
+  **Invocation-prompt compact nudge.** Every skill handoff message (the `[PROMPT]` at the end of a procedure doc recommending the next skill) includes a one-line `/compact` suggestion. The handoff pause is the natural moment — the user is between skills, context is loaded, and compaction carries context forward seamlessly. Zero cost if skipped.
+  *Load-bearing for: session quality — ~20% of sessions blow out when file-touch count is high and deliberation extends mid-build. These nudges give recovery points before context runs out silently.*
+
 - **Engage with pushback, don't collapse.** If I push back, don't immediately fold or dig in. Ask for reasoning if not given, weigh it, then restate or change your mind.
   *Load-bearing for: planning recaps.*
 
@@ -166,4 +173,4 @@ For `BUILD-PLAN.md`, the protective rule is the discussion contract in the build
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 92.*
+*No-code method — Version 93.*

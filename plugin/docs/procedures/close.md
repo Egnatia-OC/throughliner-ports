@@ -127,7 +127,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 15. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), staleness sweep done (step 9), idea sweep done (step 12), proxies regenerated (step 13), doc-parity check done (step 3). If any missing, complete now.
 
-16. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
+16. **[PROMPT] Closing.** "Ready to commit. Consider `/compact` before proceeding if this session has been long — it preserves context for the git steps. Then invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
 
 ---
 
@@ -141,7 +141,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 2. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Skip if no source docs were edited or no proxies directory exists.
 
-3. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
+3. **[PROMPT] Closing.** "Ready to commit. Consider `/compact` before proceeding if this session has been long. Then invoke `/sovgit` to commit, tag, and push."
 
 ---
 
@@ -162,4 +162,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 92.*
+*No-code method — Version 93.*

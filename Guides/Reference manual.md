@@ -132,6 +132,8 @@ Source-of-truth docs (UX.md, additional docs) are directly editable by Claude du
 
 **Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BUILD-PLAN — this unlocks BUILD-PLAN so other sessions can plan, deliberate, or ideate in parallel. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which writes the batch back to BUILD-PLAN as shipped, deletes the snapshot, updates MANIFEST, checks spine docs and queued batches for stale references, scans for lost-feature items, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
 
+**Session-length safeguards.** Long sessions degrade Claude's adherence as context fills up. Three advisory mechanisms help: (1) pre-build sizing warns during `/sovrecap` when a batch has 8+ files and open design questions, (2) a mid-session compact nudge fires when 15+ exchanges pass since `/sovbuild` without reaching `/sovclose`, (3) every skill handoff prompt recommends `/compact` before the next skill. None block — all give the user a recovery point.
+
 The no-coder `/clear`s, refreshes, and tests. Two options: invoke `/sovtest` for a guided walkthrough of each pending User-verified row (step-by-step instructions, outcome recording, failure debugging), or test independently and bring per-row outcomes to the next planning session.
 
 **If a build goes wrong,** `/sovrevert` walks the user through undoing it — restoring the project to the last committed state. No git knowledge required.
@@ -396,4 +398,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 92.*
+*No-code method — Version 93.*

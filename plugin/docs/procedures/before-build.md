@@ -57,15 +57,28 @@ Change-list bullets may carry `[Requested]`/`[Suggested]` prefixes from planning
 
 After populating Files:/Tests:, scan the Open Questions section. If 3+ OQs exist or any OQ's `Surfaced` tag is older than 5 build cycles, append to the recap: "You have N open questions (oldest: <tag>) — consider running `/sovdeliberate` before your next build." Informational, not blocking.
 
+## Pre-build sizing
+
+After Files: and Tests: are populated, check whether the batch is likely to fit in one session. Claude has no visibility into token count or context fullness — use conversation-visible proxy signals only.
+
+**Trigger condition:** Files: has **8 or more entries** AND the batch's scope-context includes unresolved **Decisions to make this batch** entries. Either condition alone is manageable; together they predict extended deliberation mid-build plus high file-touch count — the combination that blows out sessions.
+
+**Action:** Surface a warning in the recap. Advisory, not blocking:
+
+> "This batch has N files and open design questions — sessions with this profile have a higher risk of running out of context. Consider splitting via halt C before starting, or plan to `/compact` between `/sovbuild` and `/sovclose`."
+
+If the user acknowledges and proceeds, don't repeat the warning.
+
 ## Recap
 
 - Top batch heading and change list.
 - Files: list with per-file summaries.
 - Tests: list with type and verifier. Distinguish Claude-auto vs. user-check.
+- Pre-build sizing warning (if triggered).
 - Any BUILD-PLAN reorganisations.
 - Any conflicts or concerns.
 - OQ nudge (if triggered).
-- `[PROMPT]`: "Run `/sovbuild` to lock the batch and start building."
+- `[PROMPT]`: "Run `/sovbuild` to lock the batch and start building. If this will be a long session, consider `/compact` before invoking `/sovbuild` to preserve context."
 
 ## What you must not do
 
@@ -80,4 +93,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 92.*
+*No-code method — Version 93.*

@@ -109,6 +109,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
 | 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
+| 0113 | Session-length safeguards | Pre-build sizing, mid-session compact nudge, invocation-prompt compact nudge, git.md close-prompt fold-in. **Shipped v116.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -133,26 +134,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0113 — Session-length safeguards
-
-**Goal.** Prevent builds from silently consuming the entire context window, and give users a recovery path when a session grows long. Two complementary mechanisms: pre-build sizing and mid-session compact nudge.
-
-**Pre-build sizing.** During `/sovrecap` or early in `/sovbuild`, Claude estimates whether the batch fits in one session based on proxy signals — file-touch count, number of procedure-doc steps, whether the batch scope flags deliberation-heavy design questions. If the estimate exceeds a threshold, Claude surfaces it: "this batch touches N files and has open design questions — consider splitting before starting." The heuristic is calibrated on conversation shape, not token count (Claude has no visibility into its own context usage).
-
-**Mid-session compact nudge.** When a build session grows long — high exchange count, extended deliberation mid-build, many files already edited — Claude nudges the user to `/compact` before context runs out unexpectedly. Proxy signals: exchange count since `/sovbuild` invocation, number of files edited, number of remaining procedure-doc steps. The nudge is informational, not blocking: "this session has grown long — consider `/compact` to preserve context for the close steps."
-
-**Invocation-prompt compact nudge (from 0088 E2E).** Every skill handoff message ("next, run `/sovrecap`", "next, run `/sovbuild`", etc.) should include a `/compact` nudge. 0088 E2E confirmed: a fresh session starts cold (no project context, Claude asks "what brings you to planning?"), while a compacted session carries context forward seamlessly. The invocation prompt is the natural pause point — user is between skills, context is loaded. Zero cost if skipped; substantial benefit when followed.
-
-**Inputs.** Dev-side observation: ~20% of sessions blow out. Failure pattern correlates with high file-touch count and extended explanation/decision exchanges. Claude cannot see token count or context fullness — all heuristics must use conversation-visible signals.
-
-**Outputs.** Sizing check in `/sovrecap` or `/sovbuild` procedure doc. Compact-nudge logic (likely in universal-behaviour.md or a procedure doc). Calibration guidance for thresholds. Fold-in: standardise the end-of-session prompt in `git.md` to recommend `/compact` when continuing in the same area, `/clear` for a fresh start (from OQ "/sovgit close prompt," surfaced v97).
-
-**Success criteria.** A batch with 8+ file touches and design questions triggers a pre-build warning. A session with 15+ exchanges past `/sovbuild` without reaching `/sovclose` triggers a compact nudge. Neither mechanism blocks — both are advisory.
-
-**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. 0088 shipped (v114) — provided some calibration data (single-session lifecycle, 6 skill invocations). Formal threshold calibration from dev-side session history still needed.
 
 ---
 
@@ -202,7 +183,7 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 3. **Two-turn close.** Judgment work (parity check, frame corrections, build-log narrative) in one turn; mechanical finishing (script run, commit/tag/push) in a second turn or fresh session. The second turn needs almost no context.
 
-**Next step.** Fold into 0113 scope if session-length safeguards are the natural home, or promote to its own batch if the scope is too different. Decide during next `/sovdeliberate` or `/sovplan` session.
+**Next step.** The compact-nudge fold-in was addressed by 0113 (shipped v116). The remaining three ideas (handoff artifact, scripted mechanicals, two-turn close) are independent — promote to a batch or park when next planning.
 
 ---
 

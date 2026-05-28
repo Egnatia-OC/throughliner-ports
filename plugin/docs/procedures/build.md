@@ -87,7 +87,7 @@ If verification burden is much higher than pre-build estimate:
 
 When all Files: are `- [x]`, the build is done.
 
-`[PROMPT]` "All files ticked — the build is complete. Invoke `/sovclose` to run the close procedure (MANIFEST update, test session, build recap, and the rest)."
+`[PROMPT]` "All files ticked — the build is complete. Consider `/compact` before proceeding — it preserves context and gives `/sovclose` a clean window for the close steps. Then invoke `/sovclose` to run the close procedure (MANIFEST update, test session, build recap, and the rest)."
 
 ## What you must not do
 
@@ -106,4 +106,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 92.*
+*No-code method — Version 93.*

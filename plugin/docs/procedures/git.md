@@ -52,7 +52,7 @@ On refusal: stop. Don't push. Session can still close cleanly without pushing.
 
 ### Step 5 — Done
 
-`[PROMPT]` "All committed. `/clear` when you're ready for a fresh session."
+`[PROMPT]` "All committed. If you're continuing work in the same area, `/compact` carries your context forward into a lighter window. For a fresh start, `/clear` resets completely."
 
 ## Team workflow
 
@@ -86,7 +86,7 @@ If `gh` CLI is available, offer: "I can open the PR for you with `gh pr create`.
 
 ### Step 6 — Done
 
-`[PROMPT]` "All committed and pushed. `/clear` when you're ready for a fresh session."
+`[PROMPT]` "All committed and pushed. If you're continuing work in the same area, `/compact` carries your context forward into a lighter window. For a fresh start, `/clear` resets completely."
 
 ## What you must not do
 
@@ -103,4 +103,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 92.*
+*No-code method — Version 93.*
