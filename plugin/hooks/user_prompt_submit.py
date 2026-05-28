@@ -168,7 +168,7 @@ def build_context(route, detail):
         ),
         "resume": (
             "Suggested route: check for _method/active-build.md (snapshot) "
-            "or BUILD-PLAN for an unfinished build batch. If one exists, "
+            "or BACKLOG for an unfinished build batch. If one exists, "
             "confirm with the user before continuing the build."
         ),
         "deliberate": (

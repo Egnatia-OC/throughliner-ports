@@ -4,9 +4,9 @@ Follow this procedure to execute exactly ONE build batch, then stop. Never plan,
 
 ## What you need
 
-Parse the top unticked batch from BUILD-PLAN. Run:
+Parse the top unticked batch from BACKLOG. Run:
 
-    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BUILD-PLAN absolute path>"
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/parse_backlog.py" "<BACKLOG absolute path>"
 
 Both paths quoted (Windows spaces). Parser emits JSON:
 
@@ -26,17 +26,17 @@ If the parser returns `{}`, there's nothing to build — tell the user to run `/
 
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
-**Two BUILD-PLAN formats.** `batch_file` present → folder mode (tick edits go in per-batch file). Absent → single-file `BUILD-PLAN.md`. Resolve path from `CLAUDE.md` path block.
+**Two BACKLOG formats.** `batch_file` present → folder mode (tick edits go in per-batch file). Absent → single-file `BACKLOG.md`. Resolve path from `CLAUDE.md` path block.
 
 ## First action — snapshot the batch
 
-**Extract batch to `_method/active-build.md`.** Copy the batch's full content (heading, scope context, and build operations) into `_method/active-build.md`. Then remove the batch from BUILD-PLAN entirely (delete the section in single-file mode, or delete the per-batch file and its INDEX.md reference in folder mode).
+**Extract batch to `_method/active-build.md`.** Copy the batch's full content (heading, scope context, and build operations) into `_method/active-build.md`. Then remove the batch from BACKLOG entirely (delete the section in single-file mode, or delete the per-batch file and its INDEX.md reference in folder mode).
 
-Tell the user: "I've snapshotted batch NNNN — working from the snapshot now. BUILD-PLAN is unlocked for other sessions."
+Tell the user: "I've snapshotted batch NNNN — working from the snapshot now. BACKLOG is unlocked for other sessions."
 
-The snapshot file's existence is the build-in-progress signal — SessionStart and PreToolUse check for `_method/active-build.md`. No `Status: active` line is written to BUILD-PLAN.
+The snapshot file's existence is the build-in-progress signal — SessionStart and PreToolUse check for `_method/active-build.md`. No `Status: active` line is written to BACKLOG.
 
-**Tick edits go in the snapshot.** During the build, `- [ ]` → `- [x]` updates happen in `_method/active-build.md`, not in BUILD-PLAN.
+**Tick edits go in the snapshot.** During the build, `- [ ]` → `- [x]` updates happen in `_method/active-build.md`, not in BACKLOG.
 
 **Close handoff section.** When creating the snapshot, append `## Close handoff` (empty) at the bottom. Build steps append one-liners here as files are ticked — `/sovclose` reads this instead of re-exploring the codebase. Format spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
 
@@ -103,10 +103,10 @@ When all Files: are `- [x]`, the build is done.
 
 Surface inline as you notice them:
 
-- **Red flags** — surface in chat; if deferred, add `[RED FLAG]` entry to BUILD-PLAN Red flags section.
+- **Red flags** — surface in chat; if deferred, add `[RED FLAG]` entry to BACKLOG Red flags section.
 - **Out-of-scope improvements** — surface in chat. Become Discoveries next planning session.
 - **UX.md changes** the build implies — surface in chat. Don't edit UX.md.
 
 ---
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

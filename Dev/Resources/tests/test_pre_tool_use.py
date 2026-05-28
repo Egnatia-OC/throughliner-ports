@@ -164,7 +164,7 @@ class TestLockedDocEnforcement:
 
     def test_edit_backlog_allowed(self, adopted_folder):
         root = adopted_folder
-        bl_path = str((root / "BUILD-PLAN" / "INDEX.md").resolve())
+        bl_path = str((root / "BACKLOG" / "INDEX.md").resolve())
         data = _edit_input(root, bl_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -227,7 +227,7 @@ class TestServesLineCheck:
     def test_valid_serves_line_allowed(self, adopted_folder):
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -240,7 +240,7 @@ class TestServesLineCheck:
     def test_invalid_serves_line_denied(self, adopted_folder):
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -265,7 +265,7 @@ class TestServesLineCheck:
         """V54: Serves PATTERNS.md with a valid entry passes."""
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -279,7 +279,7 @@ class TestServesLineCheck:
         """V54: Serves PATTERNS.md with a nonexistent entry is denied."""
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -293,7 +293,7 @@ class TestServesLineCheck:
         """V54: Serves line matching is case-insensitive for additional docs."""
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -307,7 +307,7 @@ class TestServesLineCheck:
         """Serves MANIFEST.md or other writable docs are not validated."""
         root = adopted_folder
         bl_path = str(
-            (root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (root / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _edit_input(
             root, bl_path,
@@ -400,7 +400,7 @@ class TestPlanningPhasePermissions:
 
     def test_backlog_editable_during_planning(self, planning_phase):
         root = planning_phase
-        bl_path = str((root / "BUILD-PLAN" / "INDEX.md").resolve())
+        bl_path = str((root / "BACKLOG" / "INDEX.md").resolve())
         data = _edit_input(root, bl_path)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -446,12 +446,12 @@ class TestPlanningPhasePermissions:
 # ---------------------------------------------------------------------------
 
 class TestMethodInfraWhitelist:
-    """V91: BUILD-PLAN per-batch files, all proxies, and planning/drafts
+    """V91: BACKLOG per-batch files, all proxies, and planning/drafts
     are writable during planning phase."""
 
     def test_build_plan_per_batch_file_allowed(self, planning_phase):
         root = planning_phase
-        target = str((root / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve())
+        target = str((root / "BACKLOG" / "0001-add-settings-screen.md").resolve())
         data = _edit_input(root, target)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -461,7 +461,7 @@ class TestMethodInfraWhitelist:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "proxies/build-plan.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "proxies/backlog.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
@@ -477,7 +477,7 @@ class TestMethodInfraWhitelist:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "proxies/build-plan.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "proxies/backlog.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
@@ -493,7 +493,7 @@ class TestMethodInfraWhitelist:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -509,8 +509,8 @@ class TestMethodInfraWhitelist:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -526,8 +526,8 @@ class TestMethodInfraWhitelist:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -538,18 +538,18 @@ class TestMethodInfraWhitelist:
         _assert_allow(code, raw)
 
     def test_method_dir_build_plan_per_batch_allowed(self, tmp_path):
-        """_method/ layout: BUILD-PLAN per-batch files writable during planning."""
+        """_method/ layout: BACKLOG per-batch files writable during planning."""
         root = tmp_path
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
-        (root / "_method" / "BUILD-PLAN").mkdir(parents=True)
-        target = str((root / "_method" / "BUILD-PLAN" / "0001-new-batch.md").resolve())
+        (root / "_method" / "BACKLOG").mkdir(parents=True)
+        target = str((root / "_method" / "BACKLOG" / "0001-new-batch.md").resolve())
         data = _write_input(root, target, content="# New batch")
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -605,7 +605,7 @@ class TestHeredocStripping:
 
 class TestUnadoptedPlanningDeny:
     """V71: in an unadopted folder (no method footer), the planning-phase
-    source lock message says 'run /sovsetup' instead of referencing BUILD-PLAN."""
+    source lock message says 'run /sovsetup' instead of referencing BACKLOG."""
 
     def test_unadopted_empty_folder_deny_mentions_setup(self, tmp_path):
         target = tmp_path / "index.html"
@@ -620,7 +620,7 @@ class TestUnadoptedPlanningDeny:
         data = _edit_input(tmp_path, str(target))
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
-        assert "BUILD-PLAN" not in reason
+        assert "BACKLOG" not in reason
 
     def test_adopted_folder_deny_mentions_backlog(self, planning_phase):
         root = planning_phase
@@ -628,7 +628,7 @@ class TestUnadoptedPlanningDeny:
         data = _edit_input(root, target)
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
-        assert "BUILD-PLAN" in reason
+        assert "BACKLOG" in reason
 
     def test_unadopted_mode_aware(self, tmp_path):
         target = tmp_path / "index.html"
@@ -760,9 +760,9 @@ class TestBashWriteGuard:
         _assert_deny(parsed, "source-code file locked during the planning")
 
     def test_redirect_to_method_doc_allowed_during_planning(self, planning_phase):
-        """Redirect to a method doc (BUILD-PLAN) during planning is allowed."""
+        """Redirect to a method doc (BACKLOG) during planning is allowed."""
         bl_path = str(
-            (planning_phase / "BUILD-PLAN" / "0001-add-settings-screen.md").resolve()
+            (planning_phase / "BACKLOG" / "0001-add-settings-screen.md").resolve()
         )
         data = _bash_input(planning_phase, f'echo "x" > "{bl_path}"')
         code, parsed, raw = run_hook("pre_tool_use.py", data)
@@ -799,9 +799,9 @@ class TestBashWriteGuard:
         _assert_allow(code, raw)
 
     def test_redirect_to_backlog_allowed(self, adopted_folder):
-        """Redirect to BUILD-PLAN (always writable) during build is allowed."""
+        """Redirect to BACKLOG (always writable) during build is allowed."""
         bl_path = str(
-            (adopted_folder / "BUILD-PLAN" / "INDEX.md").resolve()
+            (adopted_folder / "BACKLOG" / "INDEX.md").resolve()
         )
         data = _bash_input(adopted_folder, f'echo "x" > "{bl_path}"')
         code, parsed, raw = run_hook("pre_tool_use.py", data)
@@ -854,8 +854,8 @@ class TestActiveBuildCreation:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -871,7 +871,7 @@ class TestActiveBuildCreation:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -894,8 +894,8 @@ class TestClosePhaseLogWrites:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -915,8 +915,8 @@ class TestClosePhaseLogWrites:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -936,13 +936,13 @@ class TestClosePhaseLogWrites:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "build-log/INDEX.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
         (root / "test-log").mkdir()
-        (root / "BUILD-PLAN").mkdir()
+        (root / "BACKLOG").mkdir()
         (root / "_method").mkdir()
         (root / "_method" / "active-build.md").write_text(
             "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
@@ -953,13 +953,13 @@ class TestClosePhaseLogWrites:
         _assert_allow(code, raw)
 
     def test_test_log_index_writable_during_build(self, tmp_path):
-        """Path-block-resolved TEST-LOG.md entry is also writable."""
+        """Path-block-resolved TEST-LOG.md (backlog proxy) is writable."""
         root = tmp_path
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "_method/UX.md", "BUILD-PLAN.md": "_method/proxies/build-plan.md",\n'
-            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/test-log.md",\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
             '```\n\n*No-code method — Version 91.*\n'
         )
@@ -967,7 +967,7 @@ class TestClosePhaseLogWrites:
         (root / "_method" / "active-build.md").write_text(
             "# Test batch\n\nFiles:\n- [x] `app/main.py` — Main file\n"
         )
-        target = str((root / "_method" / "proxies" / "test-log.md").resolve())
+        target = str((root / "_method" / "proxies" / "backlog.md").resolve())
         data = _write_input(root, target, content="<!-- proxy -->")
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         _assert_allow(code, raw)
@@ -989,7 +989,7 @@ class TestPhaseDetectionAllTicked:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
             '```\n\n*No-code method — Version 91.*\n',
             encoding="utf-8",
@@ -999,10 +999,10 @@ class TestPhaseDetectionAllTicked:
         )
         (root / "MANIFEST.md").write_text("")
         (root / "TEST-LOG.md").write_text("")
-        bp_dir = root / "BUILD-PLAN"
+        bp_dir = root / "BACKLOG"
         bp_dir.mkdir()
         (bp_dir / "INDEX.md").write_text(
-            "# BUILD-PLAN\n\n## Red flags\n\n## Planning batches\n\n"
+            "# BACKLOG\n\n## Red flags\n\n## Planning batches\n\n"
             "## Build batches\n\n- `0001-batch.md` — Test batch\n\n"
             "## Open questions\n",
             encoding="utf-8",
@@ -1027,7 +1027,7 @@ class TestPhaseDetectionAllTicked:
         claude_md = root / "CLAUDE.md"
         claude_md.write_text(
             '## Where the docs live\n\n```json\n'
-            '{"UX.md": "UX.md", "BUILD-PLAN.md": "BUILD-PLAN/INDEX.md",\n'
+            '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
             '```\n\n*No-code method — Version 91.*\n',
             encoding="utf-8",
@@ -1035,10 +1035,10 @@ class TestPhaseDetectionAllTicked:
         (root / "UX.md").write_text("## Functionalities\n")
         (root / "MANIFEST.md").write_text("")
         (root / "TEST-LOG.md").write_text("")
-        bp_dir = root / "BUILD-PLAN"
+        bp_dir = root / "BACKLOG"
         bp_dir.mkdir()
         (bp_dir / "INDEX.md").write_text(
-            "# BUILD-PLAN\n\n## Red flags\n\n## Planning batches\n\n"
+            "# BACKLOG\n\n## Red flags\n\n## Planning batches\n\n"
             "## Build batches\n\n- `0001-batch.md` — Test batch\n\n"
             "## Open questions\n",
             encoding="utf-8",

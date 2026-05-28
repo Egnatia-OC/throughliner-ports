@@ -5,9 +5,9 @@
 ```json
 {
   "UX.md": "UX.md",
-  "BUILD-PLAN.md": "proxies/build-plan.md",
+  "BACKLOG.md": "proxies/backlog.md",
   "MANIFEST.md": "MANIFEST.md",
-  "TEST-LOG.md": "proxies/test-log.md",
+  "TEST-LOG.md": "proxies/backlog.md",
   "BUILD-LOG.md": "proxies/build-log.md"
 }
 ```

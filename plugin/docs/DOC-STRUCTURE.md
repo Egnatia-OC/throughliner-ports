@@ -39,7 +39,7 @@ Some projects need an extra source-of-truth doc the spine docs don't cover. Comm
 
 Same structural rules as `UX.md`:
 - **Phase-aware editing.** Directly editable during planning; locked during build (with `[PROPOSED EDIT PENDING]` carve-out). See `universal-behaviour.md` → *Editing surfaces — phase-aware*.
-- **No placeholders.** Source-of-truth docs describe decided behaviour. Open-question status lives in BUILD-PLAN only.
+- **No placeholders.** Source-of-truth docs describe decided behaviour. Open-question status lives in BACKLOG only.
 - **Intent level, not implementation.**
 - **Planning answers** for the additional doc go into *it*, not `UX.md`.
 - **Build batches** add `Serves <DOC>:` alongside/instead of `Serves UX.md:`.
@@ -68,7 +68,7 @@ Starter shape: `ADDITIONAL-DOC-TEMPLATE.md`. Includes a *Proposed edits pending*
 
 **Scope: intent-level only.** Features at user-intent level. Not every UI element, not implementation details. The "user needs this because..." line is the test.
 
-Undecided behaviour → BUILD-PLAN as a planning batch, not here.
+Undecided behaviour → BACKLOG as a planning batch, not here.
 
 **Non-GUI projects.** Works for CLI tools, backends, MCP servers, plugins. The "user" is whoever the audience is; the "experience" is what they observe.
 
@@ -102,12 +102,12 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 ## TEST-LOG structure
 
-**Location.** `test-log/` inside `_method/`. One file per build session. Index lives at `_method/proxies/test-log.md` (the proxy IS the index). Legacy: flat `TEST-LOG.md` at project root or inside `_method/`.
+**Location.** `test-log/` inside `_method/`. One file per build session. The test session index lives inside the BACKLOG proxy (`_method/proxies/backlog.md`) as the `## Test sessions` section. Legacy: flat `TEST-LOG.md` at project root or inside `_method/`.
 
-**Index (proxies/test-log.md).** Header, HTML comment, newest-first bullet list:
+**Index (BACKLOG proxy → Test sessions).** Newest-first bullet list inside the `## Test sessions` section of `_method/proxies/backlog.md`:
 > `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``
 
-`/sovclose` prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
+`/sovclose` prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/backlog.md` (same file as `"BACKLOG.md"`).
 
 **Per-session files.** `NNN-batch-name.md`:
 
@@ -143,7 +143,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 - **Component removed** → planning procedure deletes rows with no MANIFEST match (step 2c). `Superseded` rows also deleted. Cross-component rows exempt. Git preserves history.
 - **Empty files** → when pruning empties a per-session file, delete it and remove its index line.
 
-**Template.** `plugin/templates/.proxies/test-log.md` (index). `plugin/templates/test-log/ENTRY-TEMPLATE.md` (per-session). Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`.
+**Template.** Test session index section is part of `plugin/templates/.proxies/backlog.md`. Per-session file template: `plugin/templates/test-log/ENTRY-TEMPLATE.md`. Path block: `"TEST-LOG.md"` → `_method/proxies/backlog.md`.
 
 **Backwards compatibility.** Flat `TEST-LOG.md` (single file) still supported. 8-column (pre-V48) migrated on `/sovsetup` case 4: Type→`Look and click`, Verifier→`User`. `/sovsetup` case 4 migrates flat file → folder.
 
@@ -192,7 +192,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 ## research/ folder
 
-`_method/research/<topic>.md`. Created by `/sovsetup` inside `_method/`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BUILD-PLAN entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
+`_method/research/<topic>.md`. Created by `/sovsetup` inside `_method/`. Home for research findings. When Claude investigates an external fact, it saves here and mentions in chat. Kebab-case filenames, no date prefix. Persists indefinitely — not deleted when consumed. No MANIFEST tracking, no BACKLOG entries. Zero maintenance. Valid on `Inputs:` lines. Read/write, no locking.
 
 ## Search query files (research/search-queries/)
 
@@ -221,7 +221,7 @@ Lightweight index files that summarize source-of-truth docs. Claude reads proxie
 
 **Missing proxies.** If the proxies directory is absent or a proxy file is missing, fall back to reading the full doc. Proxies are an optimization, not a requirement.
 
-**File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `test-log.md`, `research.md`, `build-plan.md`, `build-log.md`.
+**File naming.** Lowercase, matching the source doc: `ux.md`, `manifest.md`, `research.md`, `backlog.md`, `build-log.md`.
 
 **Format — all proxies:**
 
@@ -255,37 +255,31 @@ Source: `MANIFEST.md`. State summary: entry count.
 
 Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description and rationale omitted — dip for detail.
 
-### TEST-LOG index proxy (test-log.md)
-
-Source: `_method/test-log/` directory. Like the BUILD-PLAN and build-log proxies, this IS the operational index — carries the newest-first reference list to per-session test files. `/sovclose` prepends index lines here.
-
-Path block: `"TEST-LOG.md"` → `_method/proxies/test-log.md`. Hooks resolve per-session files relative to `_method/test-log/`.
-
 ### Research index proxy (research.md)
 
 Source: `_method/research/` directory (not a single file). State summary: file count.
 
 Entries: one line per file. Format: `- <filename> — <first heading or one-phrase summary>`. No line numbers.
 
-### BUILD-PLAN index proxy (build-plan.md)
+### BACKLOG index proxy (backlog.md)
 
-Source: `_method/BUILD-PLAN/` directory. Unlike other proxies, this file IS the operational index — it carries the four BUILD-PLAN sections (Red flags, Planning batches, Build batches, Open questions) with batch reference lines pointing at per-batch files. Not a summary; the file is directly edited by Claude during planning.
+Source: `_method/BACKLOG/` directory and `_method/test-log/` directory. Unlike other proxies, this file IS the operational index — it carries six sections (Red flags, Planning batches, Build batches, Test sessions, Open questions, Ideas) with batch reference lines pointing at per-batch files and test session reference lines pointing at per-session test files. Not a summary; the file is directly edited by Claude during planning. The Test sessions section also serves as the TEST-LOG index.
 
-Path block: `"BUILD-PLAN.md"` → `_method/proxies/build-plan.md`. Parser resolves batch files relative to `_method/BUILD-PLAN/`.
+Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`. `"TEST-LOG.md"` also points here. Parser resolves batch files relative to `_method/BACKLOG/`; hooks resolve per-session test files relative to `_method/test-log/`.
 
 ### Build-log index proxy (build-log.md)
 
-Source: `_method/build-log/` directory. Like the BUILD-PLAN proxy, this IS the operational index — carries the newest-first reference list to per-build files. `/sovclose` prepends index lines here.
+Source: `_method/build-log/` directory. Like the BACKLOG proxy, this IS the operational index — carries the newest-first reference list to per-build files. `/sovclose` prepends index lines here.
 
 Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`. Session-start resolves per-build files relative to `_method/build-log/`.
 
 ### Regeneration rules
 
-Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `build-plan.md`, `build-log.md`, and `test-log.md` are directly edited (they ARE the operational indexes, not summaries).
+Proxies are regenerated, not hand-edited. To regenerate: read the source, write the proxy following the format above, set `generated` to today's date. Exception: `backlog.md` and `build-log.md` are directly edited (they ARE the operational indexes, not summaries).
 
 - **`/sovsetup`** generates initial proxies after scaffolding.
 - **Planning procedure** regenerates affected proxies after editing source-of-truth docs.
-- **`/sovclose`** updates operational index proxies (test-log, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
+- **`/sovclose`** updates operational index proxies (backlog test sessions section, build-log) and regenerates stale summary proxies (MANIFEST at minimum).
 
 ## Proposed edits pending sections
 
@@ -302,7 +296,7 @@ Every read-only doc (`UX.md`, `MANIFEST.md`, additional docs) carries `## Propos
 
 **PreToolUse carve-out.** Edits within the proposed-edits section are allowed. Edits elsewhere in the locked doc are denied.
 
-**Migration.** Pre-V43 centralised blocks in BUILD-PLAN → redistributed to destination docs by the planning procedure.
+**Migration.** Pre-V43 centralised blocks in BACKLOG → redistributed to destination docs by the planning procedure.
 
 ## `[SECURITY]` marker
 
@@ -312,24 +306,24 @@ Inline marker for entries that touch a sensitive surface — authentication, PII
 
 **Applies to:**
 - UX.md Functionalities entries: `**Feature name** [SECURITY]`
-- BUILD-PLAN build batch headings: `### Batch: Name [SECURITY]` (single-file) or `# Name [SECURITY]` (folder)
-- BUILD-PLAN planning batches: heading line carries `[SECURITY]`
-- BUILD-PLAN open questions: heading line carries `[SECURITY]`
+- BACKLOG build batch headings: `### Batch: Name [SECURITY]` (single-file) or `# Name [SECURITY]` (folder)
+- BACKLOG planning batches: heading line carries `[SECURITY]`
+- BACKLOG open questions: heading line carries `[SECURITY]`
 
 **Does not apply to:** MANIFEST.md, TEST-LOG (execution-level docs already covered by Red flags and the read-before-edit gate).
 
-**Informational, not enforced.** No hook gates on the marker. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BUILD-PLAN (security-marked items bias earlier in the queue).
+**Informational, not enforced.** No hook gates on the marker. Two audiences: the user sees it when reviewing their spec; Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier in the queue).
 
-## BUILD-PLAN structure
+## BACKLOG structure
 
 Three formats, auto-detected:
-- **Single-file (legacy):** `BUILD-PLAN.md` with everything inline. Path block → `BUILD-PLAN.md`.
-- **Folder with INDEX (V48–V72):** `BUILD-PLAN/` with `INDEX.md` + per-batch files. Path block → `BUILD-PLAN/INDEX.md`.
-- **Proxy-as-index (V73+, default):** `BUILD-PLAN/` with per-batch files only. Index lives at `_method/proxies/build-plan.md`. Path block → `_method/proxies/build-plan.md`.
+- **Single-file (legacy):** `BACKLOG.md` with everything inline. Path block → `BACKLOG.md`.
+- **Folder with INDEX (V48–V72):** `BACKLOG/` with `INDEX.md` + per-batch files. Path block → `BACKLOG/INDEX.md`.
+- **Proxy-as-index (V73+, default):** `BACKLOG/` with per-batch files only. Index lives at `_method/proxies/backlog.md`. Path block → `_method/proxies/backlog.md`.
 
 **Maintained by Claude during planning.** Claude edits directly; user reviews.
 
-**Five sections, in order** (INDEX.md or BUILD-PLAN.md):
+**Six sections, in order** (INDEX.md or BACKLOG.md):
 
 - **Red flags.** Deferred security/privacy/data-integrity concerns. Each: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [fix]. Concerns inside active batches stay there; concerns attached to planned features become batch questions. Red flags are specifically concerns deferred with no active plan.
 
@@ -387,23 +381,25 @@ Three formats, auto-detected:
 
   **Serves name matching.** Case-insensitive whitespace-trimmed match against doc headings. PreToolUse blocks mismatches on locked docs.
 
+- **Test sessions.** Index of per-session test files from `test-log/`. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. `/sovclose` prepends one line per build. The test-confirmation gate and TEST-LOG tripwire resolve test data from the per-session files in `test-log/`; this section is the index. See *TEST-LOG structure* above for column specs and per-session file format.
+
 - **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag or build-cycle identifier when created — so planning can detect neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
 
-- **Ideas.** Raw, unprocessed ideas captured during any session type. Lighter than open questions — just a date and a one-liner. Claude can write here regardless of build phase (BUILD-PLAN is unlocked under the build-snapshot architecture). `/sovideate` or `/sovdeliberate` promotes ideas to OQs or batches. Entry format: `- YYYY-MM-DD — [one-line description]`.
+- **Ideas.** Raw, unprocessed ideas captured during any session type. Lighter than open questions — just a date and a one-liner. Claude can write here regardless of build phase (BACKLOG is unlocked under the build-snapshot architecture). `/sovideate` or `/sovdeliberate` promotes ideas to OQs or batches. Entry format: `- YYYY-MM-DD — [one-line description]`.
 
 ### Build-snapshot architecture (V90)
 
-When `/sovbuild` is invoked, the active batch's full content is extracted from BUILD-PLAN into `_method/active-build.md` and removed from BUILD-PLAN entirely. The build reads and ticks files in the snapshot. BUILD-PLAN is fully unlocked — parallel sessions can run `/sovplan`, `/sovdeliberate`, or `/sovideate` freely. At `/sovclose`, the batch is written back to BUILD-PLAN as shipped and the snapshot is deleted.
+When `/sovbuild` is invoked, the active batch's full content is extracted from BACKLOG into `_method/active-build.md` and removed from BACKLOG entirely. The build reads and ticks files in the snapshot. BACKLOG is fully unlocked — parallel sessions can run `/sovplan`, `/sovdeliberate`, or `/sovideate` freely. At `/sovclose`, the batch is written back to BACKLOG as shipped and the snapshot is deleted.
 
-**Phase detection.** The snapshot file's existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy fallback: `Status: active` in BUILD-PLAN still detected for pre-V90 projects.
+**Phase detection.** The snapshot file's existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy fallback: `Status: active` in BACKLOG still detected for pre-V90 projects.
 
-**Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, build operations, and a `## Close handoff` section at the bottom — the same content that would appear in the per-batch file or inline BUILD-PLAN section, but extracted to its own file, plus the handoff section appended at creation.
+**Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, build operations, and a `## Close handoff` section at the bottom — the same content that would appear in the per-batch file or inline BACKLOG section, but extracted to its own file, plus the handoff section appended at creation.
 
 **Close handoff section.** `## Close handoff` at the bottom of the snapshot. Created empty by `/sovbuild`; appended to incrementally during the per-file work loop. One bullet per file, recording what changed — new consumer-facing names introduced, concepts renamed, frames shifted, doc references invalidated. Mechanical changes with nothing for `/sovclose` to act on are skipped.
 
 `/sovclose` reads this section as its primary source for doc-parity checks, frame-correction sweeps, and build-log narrative — replacing codebase re-exploration. If the section is empty or absent (legacy snapshots), `/sovclose` falls back to scanning the batch's Files: list.
 
-The section is not written back to BUILD-PLAN when the batch is marked shipped — it's build-time context, not permanent scope.
+The section is not written back to BACKLOG when the batch is marked shipped — it's build-time context, not permanent scope.
 
 ---
-*No-code method — Version 96.*
+*No-code method — Version 97.*

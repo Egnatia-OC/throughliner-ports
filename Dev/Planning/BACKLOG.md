@@ -10,25 +10,11 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-119 batches shipped or cancelled (V18–0128). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+120 batches shipped or cancelled (V18–0129). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0120 — BACKLOG convergence: naming and test merge (plugin-side)
-
-**Goal.** Fix plugin-side naming and eliminate the blind spot where tests and builds can't see each other during planning.
-
-**Approach.** Reverse the 0112 BUILD-PLAN rename back to BACKLOG. Merge TEST-LOG into BACKLOG so planning always sees tests and builds together. Expand the blocker gate in before-build.md to scan all sections (Planning batches, Ideas, OQs, and test entries) for anything blocking the upcoming build.
-
-**Outputs.** Plugin-side: BUILD-PLAN renamed to BACKLOG everywhere (DOC-STRUCTURE, templates, proxies, procedure docs, hooks, skills, crash course, pytest fixtures). TEST-LOG content merged into BACKLOG structure. Blocker gate expanded.
-
-**Success criteria.** Plugin side uses BACKLOG as the name. Plugin-side BACKLOG contains test tracking alongside build batches. Blocker gate scans all sections before a build starts. No orphaned BUILD-PLAN or TEST-LOG references remain.
-
-**Risks / dependencies.** Large surface area — the rename touches ~30+ files (same as 0112 did going the other direction). TEST-LOG merge changes the proxy structure and may require test-log proxy retirement or redesign. Risk: batch is too large for one session — likely needs splitting at before-build time (rename pass vs. structural changes vs. blocker gate).
 
 ---
 
@@ -42,7 +28,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Outputs.** Research file `Dev/Resources/research/e2e-test-skill-validation.md`. New BACKLOG entries for issues. `/sovclose` handoff validation.
 
-**Test plan.** Happy path: invoke `/sovtest`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BUILD-PLAN. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/sovtest` already confirmed.
+**Test plan.** Happy path: invoke `/sovtest`, walk through Look-and-click and Run-and-read tests, report Pass, verify row updates. Failure path: report Fail, verify debugging protocol, verify routing to BACKLOG. Edge cases: no pending tests (graceful exit), mid-build invocation (rejected), partial progress on early stop. Handoff: confirm planning read-back handles rows `/sovtest` already confirmed.
 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 

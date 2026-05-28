@@ -2,9 +2,9 @@
 
 Method-specific terms used across the plugin. Cross-references point here. Frozen prose snapshot at repo-root `VOCABULARY.md` (V39 freeze).
 
-- **Planning batch.** Open questions in BUILD-PLAN that must resolve before a build batch can run, or that decide whether one should exist. Resolved by folding answers into the relevant source-of-truth doc.
+- **Planning batch.** Open questions in BACKLOG that must resolve before a build batch can run, or that decide whether one should exist. Resolved by folding answers into the relevant source-of-truth doc.
 
-- **Build batch.** Engineering changes in BUILD-PLAN, small enough to build and test in one session. Ends with a `Serves` line naming the source-of-truth entries it implements. May include `Inputs:` line.
+- **Build batch.** Engineering changes in BACKLOG, small enough to build and test in one session. Ends with a `Serves` line naming the source-of-truth entries it implements. May include `Inputs:` line.
 
 - **Files: sub-section.** `- [ ]`→`- [x]` task list of files a build batch will modify, with path and one-sentence summary. Written by `/sovrecap`; ticked during the build. PreToolUse enforces batch boundaries. Full rules: `DOC-STRUCTURE.md` → *Files: sub-section*.
 
@@ -16,13 +16,13 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Discovery.** During planning: bug or improvement outside current scope. Cannot enter a build batch directly. Promoted to a planning batch asking "should this be added to UX.md?"
 
-- **Red flag.** Security/privacy/data-integrity/safety concern. Surface in chat; if deferred with no active plan, add to BUILD-PLAN Red flags: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [fix]. Only deferred items not needing a UX.md entry.
+- **Red flag.** Security/privacy/data-integrity/safety concern. Surface in chat; if deferred with no active plan, add to BACKLOG Red flags: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [fix]. Only deferred items not needing a UX.md entry.
 
 - **Source-of-truth doc.** Doc describing decided behaviour the build must conform to. `UX.md` is always one. Phase-aware editing: directly editable during planning; locked during build (with `[PROPOSED EDIT PENDING]` carve-out). Full rule: `universal-behaviour.md` → *Editing surfaces — phase-aware*.
 
 - **Additional source-of-truth doc.** Project-specific beyond UX.md — e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`. Same phase-aware rules. Full rules: `DOC-STRUCTURE.md` → *Additional source-of-truth docs*.
 
-- **`[SECURITY]` marker.** Inline tag on entries that touch a sensitive surface (auth, PII, payments, deletion, access control). Applies to UX.md entries, BUILD-PLAN build/planning batches, and BUILD-PLAN open questions. Not MANIFEST or TEST-LOG. Informational — no hook enforcement. Claude uses it as a prioritization input when ordering BUILD-PLAN (security-marked items bias earlier). Format spec: `DOC-STRUCTURE.md` → *`[SECURITY]` marker*.
+- **`[SECURITY]` marker.** Inline tag on entries that touch a sensitive surface (auth, PII, payments, deletion, access control). Applies to UX.md entries, BACKLOG build/planning batches, and BACKLOG open questions. Not MANIFEST or TEST-LOG. Informational — no hook enforcement. Claude uses it as a prioritization input when ordering BACKLOG (security-marked items bias earlier). Format spec: `DOC-STRUCTURE.md` → *`[SECURITY]` marker*.
 
 - **Adopted folder.** Project's CLAUDE.md carries the method footer. Safety net stays silent.
 
@@ -38,9 +38,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by `/sovrecap`; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
 
-- **Open question (BUILD-PLAN).** Non-blocking parking in BUILD-PLAN's Open questions section. Has question, *Why it matters*, *Next step* trigger. Distinct from planning batches (which name what they block). Promoted to planning batch when it blocks something specific.
+- **Open question (BACKLOG).** Non-blocking parking in BACKLOG's Open questions section. Has question, *Why it matters*, *Next step* trigger. Distinct from planning batches (which name what they block). Promoted to planning batch when it blocks something specific.
 
-- **Planning session (not plan mode).** The method's planning phase — confirming tests, drift checks, sorting ideas, editing BUILD-PLAN. Requires Accept edits mode (planning procedure writes to BUILD-PLAN). Distinct from Claude Code's plan mode (Shift+Tab), which blocks all edits.
+- **Planning session (not plan mode).** The method's planning phase — confirming tests, drift checks, sorting ideas, editing BACKLOG. Requires Accept edits mode (planning procedure writes to BACKLOG). Distinct from Claude Code's plan mode (Shift+Tab), which blocks all edits.
 
 - **Test type.** Four categories:
   - **Look and click** — UI interaction. Structural checks → Claude; judgement → user.
@@ -61,11 +61,11 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Dependencies (batch).** What the batch needs from outside itself. Peer to `Blocks:` — Dependencies points backward, Blocks points forward.
 
-- **Red flags sub-section (batch-level).** Conditional section for security-shaped scope. Distinct from top-level BUILD-PLAN Red flags.
+- **Red flags sub-section (batch-level).** Conditional section for security-shaped scope. Distinct from top-level BACKLOG Red flags.
 
 - **`_method/` folder.** Subfolder of the project root containing all method spine docs except CLAUDE.md. Keeps the project root clean — underscore prefix signals "method infrastructure, not user content." Created by `/sovsetup`; path block in CLAUDE.md maps logical doc names to `_method/` paths. Legacy projects may keep docs at root — hooks check both locations.
 
-- **Proxy file.** Lightweight index in `_method/proxies/` summarizing a source-of-truth doc. Six proxies: `ux.md`, `manifest.md`, `test-log.md`, `research.md` (summaries — regenerated, not edited), plus `build-plan.md` and `build-log.md` (operational indexes — directly edited, carrying the reference lists for their respective folders). Claude reads proxies first, dips into full docs via offset/limit for detail. Generated by `/sovsetup`; regenerated during planning and `/sovclose`. Missing proxies → fall back to full doc. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+- **Proxy file.** Lightweight index in `_method/proxies/` summarizing a source-of-truth doc. Five proxies: `ux.md`, `manifest.md`, `research.md` (summaries — regenerated, not edited), plus `backlog.md` and `build-log.md` (operational indexes — directly edited, carrying the reference lists for their respective folders). The test session index lives inside `backlog.md` as the `## Test sessions` section. Claude reads proxies first, dips into full docs via offset/limit for detail. Generated by `/sovsetup`; regenerated during planning and `/sovclose`. Missing proxies → fall back to full doc. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
 - **Research file.** `_method/research/<topic>.md`. Findings from Claude's research. Persists indefinitely, zero maintenance. Valid on `Inputs:` lines. Full rules: `DOC-STRUCTURE.md`.
 
@@ -97,19 +97,19 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Draft.** `_method/planning/drafts/<topic>.md`. Pre-decision carryover content. Written at "good enough to walk away from"; deleted when consumed.
 
-- **Staleness sweep.** After-build check (close step 9): scan queued and parked BUILD-PLAN batches and open questions for literal references to file paths and names that changed in the build. Pattern-match level — checks strings, not semantics. Complements the frame-correction sweep (which checks semantic frame) and doc-parity check (which checks spine docs).
+- **Staleness sweep.** After-build check (close step 9): scan queued and parked BACKLOG batches and open questions for literal references to file paths and names that changed in the build. Pattern-match level — checks strings, not semantics. Complements the frame-correction sweep (which checks semantic frame) and doc-parity check (which checks spine docs).
 
 - **Lost-feature check.** After-build check (close step 10): scan for items that silently fell off the roadmap — parked batches whose parking conditions were just met. Judgment-based, not mechanical.
 
-- **Concurrent-build detection.** SessionStart check: when `_method/active-build.md` exists with unticked files (or legacy: `Status: active` with unticked files), a build is mid-progress. Warning asks the user whether they're resuming or working in parallel. Under V90+ snapshot architecture, parallel work is safe — BUILD-PLAN is unlocked. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` skipped).
+- **Concurrent-build detection.** SessionStart check: when `_method/active-build.md` exists with unticked files (or legacy: `Status: active` with unticked files), a build is mid-progress. Warning asks the user whether they're resuming or working in parallel. Under V90+ snapshot architecture, parallel work is safe — BACKLOG is unlocked. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` skipped).
 
 - **OQ staleness detection.** SessionStart check: open questions with `Surfaced` session tags older than a configurable threshold (default: 20 sessions) are flagged in the status summary, nudging the user toward a deliberation session.
 
-- **Frame-correction sweep.** After-build check: scan BUILD-PLAN and proposed-edit blocks for references to old behaviour when a build changes a feature's frame.
+- **Frame-correction sweep.** After-build check: scan BACKLOG and proposed-edit blocks for references to old behaviour when a build changes a feature's frame.
 
-- **Doc-parity check.** After-build step: for each renamed/deleted/moved file in the batch, grep spine docs (UX.md, BUILD-PLAN, MANIFEST.md, CLAUDE.md) for stale references. Scoped to blast radius. Findings flagged in recap.
+- **Doc-parity check.** After-build step: for each renamed/deleted/moved file in the batch, grep spine docs (UX.md, BACKLOG, MANIFEST.md, CLAUDE.md) for stale references. Scoped to blast radius. Findings flagged in recap.
 
-- **Idea sweep.** After-build step: review the session for ideas, suggestions, or observations raised but not implemented. Each triaged to BUILD-PLAN (batch or open question) or recap flag for user to decide. Nothing left unrouted.
+- **Idea sweep.** After-build step: review the session for ideas, suggestions, or observations raised but not implemented. Each triaged to BACKLOG (batch or open question) or recap flag for user to decide. Nothing left unrouted.
 
 - **Pre-commit checkpoint.** After-build step: verify MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, doc-parity check done. Complete any missing steps before prompting commit.
 
@@ -121,9 +121,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Test-confirmation gate.** New batch blocked while any previous-batch TEST-LOG row has `Confirmed Explicitly: No`. Hook side: PreToolUse blocks build-phase file edits. Procedure side: planning's per-row read-back.
 
-- **Build snapshot.** `_method/active-build.md`. Extracted from BUILD-PLAN by `/sovbuild`, deleted by `/sovclose`. Contains the active batch's full content. Its existence is the build-in-progress signal. Replaces `Status: active` for phase detection. Full spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
+- **Build snapshot.** `_method/active-build.md`. Extracted from BACKLOG by `/sovbuild`, deleted by `/sovclose`. Contains the active batch's full content. Its existence is the build-in-progress signal. Replaces `Status: active` for phase detection. Full spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
 
-- **Ideas section (BUILD-PLAN).** Lightest-weight capture for raw ideas. Date + one-liner. Writable during any phase. Promoted to OQs or batches by `/sovideate` or `/sovdeliberate`.
+- **Ideas section (BACKLOG).** Lightest-weight capture for raw ideas. Date + one-liner. Writable during any phase. Promoted to OQs or batches by `/sovideate` or `/sovdeliberate`.
 
 - **Deliberation session.** Session type invoked via `/sovdeliberate`. Works through accumulated open questions: promote, drop, or re-park each one. Produces a build-log entry recording dispositions.
 
@@ -136,4 +136,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan the top batch for unresolved open questions or ideas that would force mid-build improvisation. If blockers found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (which checks session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 96.*
+*No-code method — Version 97.*

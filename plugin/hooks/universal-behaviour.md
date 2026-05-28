@@ -21,7 +21,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Flag out-of-scope improvements.** Don't silently fix things outside the current request's scope.
   *Load-bearing for: the flag taxonomy — relies on flagging, not fixing.*
 
-- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BUILD-PLAN.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BUILD-PLAN batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
+- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BACKLOG batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
   *Load-bearing for: Red flags section, flag taxonomy, and `[SECURITY]` marker propagation.*
 
 - **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file with a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. The PreToolUse hook backs this up: the first `Edit`/`Write`/`MultiEdit` on a MANIFEST-pathed file is denied with the entries inlined; a retry succeeds because the hook scans for the prior block-once deny. MANIFEST entries without a `(path)` field skip the gate.
@@ -39,7 +39,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/sovresearch` slash command triggers this flow explicitly; this rule is about doing it without being asked.
   *Load-bearing for: decision quality — proactive research catches gaps before they become wrong assumptions baked into code or docs.*
 
-- **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BUILD-PLAN.md`, `MANIFEST.md`, `test-log/`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
+- **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `test-log/`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
 - **Read proxies first, dip for detail.** If `_method/proxies/` exists (or legacy `.proxies/`), read the proxy file before reading the full source doc. Use the proxy's line numbers (`L<N>`) to read only the relevant section of the full doc via offset/limit. If neither proxies directory exists, fall back to reading the full doc directly. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
@@ -75,7 +75,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
   - **Prerequisite carve-out** — the batch cannot complete without an unplanned change. Halt, surface with one-line justification, wait for okay. Label `[Prerequisite, not in plan]`.
   - **Re-batching carve-out** — verification burden is much higher than estimated. Halt, propose a split, wait for okay. Label `[Re-batch, not in plan]`.
 
-- **Do not describe a `BUILD-PLAN.md` edit for me to apply.** Make the edit, then tell me what changed.
+- **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
 
 - **Do not start a new build batch** while any TEST-LOG row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
 
@@ -83,7 +83,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 
 | Concern | When | Destination |
 |---|---|---|
-| Security, privacy, data integrity, safety | Any time | `BUILD-PLAN.md` Red flags (if deferred). Surface in chat first. If attached to planned feature, becomes a question in that batch. |
+| Security, privacy, data integrity, safety | Any time | `BACKLOG.md` Red flags (if deferred). Surface in chat first. If attached to planned feature, becomes a question in that batch. |
 | Out-of-scope improvement | During build | End of response, in chat. Becomes a Discovery in next planning recap if actioned. |
 | UX-affecting behaviour change | During build | End of response, suggesting `UX.md` change. Don't edit `UX.md` mid-build. |
 
@@ -149,13 +149,13 @@ The `Handoff notes:` block is consumed by the next session — `/sovclose` strip
 
 ## Editing surfaces — phase-aware (V67)
 
-Editing permissions flip based on the project's current phase. Phase detection: if `_method/active-build.md` exists (build snapshot), the project is in **build phase**. Legacy fallback: if no snapshot but the top BUILD-PLAN build batch has `Status: active`, also build phase. Otherwise it's in **planning phase**.
+Editing permissions flip based on the project's current phase. Phase detection: if `_method/active-build.md` exists (build snapshot), the project is in **build phase**. Legacy fallback: if no snapshot but the top BACKLOG build batch has `Status: active`, also build phase. Otherwise it's in **planning phase**.
 
 ### Planning phase
 
 Source-of-truth docs are directly editable by Claude. Source code is locked.
 
-**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BUILD-PLAN.md` (or `BUILD-PLAN/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`, `_method/research/` files, `_method/proxies/` files, `_method/planning/` files.
+**Editable:** `UX.md`, additional source-of-truth docs in `CLAUDE.md`'s path block, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`, `_method/research/` files, `_method/proxies/` files, `_method/planning/` files.
 **Locked:** Source-code files (anything not listed above). PreToolUse denies with a planning-phase message pointing at the build-batch mechanism.
 
 No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits source-of-truth docs directly.
@@ -164,12 +164,12 @@ No `[PROPOSED EDIT PENDING]` ceremony needed during planning — Claude edits so
 
 Source-of-truth docs are locked. Source code on the batch file list is open.
 
-**Editable:** Files on the active batch's `Files:` list, `BUILD-PLAN.md` (or `BUILD-PLAN/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`.
+**Editable:** Files on the active batch's `Files:` list, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`.
 **Locked:** `UX.md`, additional source-of-truth docs. PreToolUse denies with a build-phase message pointing at the `[PROPOSED EDIT PENDING]` mechanism.
 
 **Footer exception.** The `*No-code method — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
 
-For `BUILD-PLAN.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
+For `BACKLOG.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
 
 **The `[PROPOSED EDIT PENDING]` mechanism (build phase only).** When Claude would write content into a locked source-of-truth doc during a build, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
@@ -177,4 +177,4 @@ For `BUILD-PLAN.md`, the protective rule is the discussion contract in the build
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

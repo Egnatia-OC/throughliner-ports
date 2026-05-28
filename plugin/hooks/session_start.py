@@ -103,22 +103,21 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 96
+PLUGIN_METHOD_VERSION = 97
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
 # layout) and inside _method/ (0087+ layout). Detection is tightened by
 # requiring the method footer to be present in the file (see has_method_footer).
-SPINE_FILENAMES = ("UX.md", "BUILD-PLAN.md", "MANIFEST.md", "TEST-LOG.md")
+SPINE_FILENAMES = ("UX.md", "BACKLOG.md", "MANIFEST.md", "TEST-LOG.md")
 
 # Folder-mode spine doc paths (relative to each scan root — project root
 # and _method/). Checked in addition to SPINE_FILENAMES for tier 2 detection.
 SPINE_FOLDER_PATHS = (
-    Path("BUILD-PLAN") / "INDEX.md",
+    Path("BACKLOG") / "INDEX.md",
     Path("build-log") / "INDEX.md",
-    Path("proxies") / "build-plan.md",
+    Path("proxies") / "backlog.md",
     Path("proxies") / "build-log.md",
-    Path("proxies") / "test-log.md",
 )
 
 METHOD_DIR = "_method"
@@ -139,7 +138,7 @@ RED_FLAG_ENTRY_PATTERN = re.compile(
     r"\*\*\[RED FLAG\]\*\*\s*(.+?)$", re.MULTILINE
 )
 
-# V54: Red flags section heading in BUILD-PLAN.
+# V54: Red flags section heading in BACKLOG.
 RED_FLAGS_SECTION_PATTERN = re.compile(r"^## Red flags\s*$", re.MULTILINE)
 
 # Batch Goal line: `**Goal.** <text>`.
@@ -151,10 +150,10 @@ BATCH_FILES_ENTRY_PATTERN = re.compile(r"^- \[[ x]\] ", re.MULTILINE)
 # Files: section unticked entries only (unclosed-build detection).
 BATCH_FILES_UNTICKED_PATTERN = re.compile(r"^- \[ \] ", re.MULTILINE)
 
-# Heading shape for a build batch in BUILD-PLAN.md (single-file mode).
+# Heading shape for a build batch in BACKLOG.md (single-file mode).
 BUILD_BATCH_HEADING_PATTERN = re.compile(r"^### Batch: (.+)$", re.MULTILINE)
 
-# Heading shape for the Build batches section in BUILD-PLAN.md / INDEX.md.
+# Heading shape for the Build batches section in BACKLOG.md / INDEX.md.
 BUILD_BATCHES_SECTION_PATTERN = re.compile(r"^## Build batches\s*$", re.MULTILINE)
 
 # Generic next-section pattern (used to bound the Build batches section).
@@ -170,7 +169,7 @@ BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
 STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
 _SKIP_STATUSES = frozenset(("shipped", "parked"))
 
-# Open questions section heading in BUILD-PLAN.
+# Open questions section heading in BACKLOG.
 OPEN_QUESTIONS_SECTION_PATTERN = re.compile(r"^## Open questions\s*$", re.MULTILINE)
 
 # OQ heading (### title) — same level as build-batch headings in single-file.
@@ -302,11 +301,11 @@ def is_template_state(text: str) -> bool:
 
 def find_method_spine_docs(project_root: Path):
     """Return a list of spine doc paths that carry the method footer.
-    Tightens tier 2 detection — an unrelated BUILD-PLAN.md from some other
+    Tightens tier 2 detection — an unrelated BACKLOG.md from some other
     context will not falsely trigger method-aware behaviour.
 
     Checks both the _method/ subdirectory (0087+ layout) and the project
-    root (legacy layout). Also checks folder-mode paths (BUILD-PLAN/INDEX.md)
+    root (legacy layout). Also checks folder-mode paths (BACKLOG/INDEX.md)
     at both locations."""
     found = []
     scan_roots = [project_root / METHOD_DIR, project_root]
@@ -332,17 +331,17 @@ def _batch_status(text: str) -> str:
 
 
 def _resolve_backlog_dir(backlog_path: Path) -> Path:
-    """Resolve the BUILD-PLAN/ directory for per-batch file lookups.
+    """Resolve the BACKLOG/ directory for per-batch file lookups.
 
-    When the index is INDEX.md inside BUILD-PLAN/, the dir is the parent.
-    When the index is a proxy at proxies/build-plan.md, the BUILD-PLAN/ dir
-    is a sibling of the proxies/ directory (i.e. _method/BUILD-PLAN/).
+    When the index is INDEX.md inside BACKLOG/, the dir is the parent.
+    When the index is a proxy at proxies/backlog.md, the BACKLOG/ dir
+    is a sibling of the proxies/ directory (i.e. _method/BACKLOG/).
     Falls back to the path's parent."""
     if backlog_path.name.upper() == "INDEX.MD":
         return backlog_path.parent
-    if (backlog_path.name.lower() == "build-plan.md"
+    if (backlog_path.name.lower() == "backlog.md"
             and backlog_path.parent.name == "proxies"):
-        return backlog_path.parent.parent / "BUILD-PLAN"
+        return backlog_path.parent.parent / "BACKLOG"
     return backlog_path.parent
 
 
@@ -515,7 +514,7 @@ def detect_top_queued_batches(backlog_text: str, backlog_path=None, limit=3):
 
     Skips shipped, parked, active, and template-placeholder batches.
     Used by the session-open status to give the user enough context to
-    pick a topic without reading the full BUILD-PLAN."""
+    pick a topic without reading the full BACKLOG."""
     results = []
     section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
     if not section_match:
@@ -575,11 +574,11 @@ def detect_top_queued_batches(backlog_text: str, backlog_path=None, limit=3):
 
 
 def detect_red_flags(backlog_text: str) -> list:
-    """Find non-empty Red flag entries in BUILD-PLAN's top-level Red flags section.
+    """Find non-empty Red flag entries in BACKLOG's top-level Red flags section.
 
     Returns a list of one-line descriptions (the text after **[RED FLAG]**),
     or empty list if the section is absent or empty. Works for both single-file
-    BUILD-PLAN.md and folder-mode INDEX.md (the Red flags section lives in
+    BACKLOG.md and folder-mode INDEX.md (the Red flags section lives in
     INDEX.md in folder mode)."""
     section_match = RED_FLAGS_SECTION_PATTERN.search(backlog_text)
     if not section_match:
@@ -737,7 +736,7 @@ def format_mid_build_block(batch_name):
         "progress — are you resuming this build, or working in parallel?\" "
         "Parallel builds corrupt file state and git history. If resuming, "
         "confirm and continue the build. If working in parallel, only "
-        "ideation is safe (writes only to the Ideas section of BUILD-PLAN). "
+        "ideation is safe (writes only to the Ideas section of BACKLOG). "
         "Planning and deliberation carry git risks."
     )
 
@@ -768,7 +767,7 @@ def detect_build_snapshot(project_root: Path, resolved: dict):
       "mid-build" — snapshot exists, some Files: unticked
       "unclosed"  — snapshot exists, all Files: ticked (build done, close skipped)
 
-    Falls back to the legacy Status: active detection in BUILD-PLAN when no
+    Falls back to the legacy Status: active detection in BACKLOG when no
     snapshot exists (for projects that haven't yet run /sovbuild under V90+)."""
     method_dir = project_root / METHOD_DIR
     snapshot_path = method_dir / "active-build.md"
@@ -799,7 +798,7 @@ def format_snapshot_mid_build_block(batch_name):
         "  **Ask the user:** \"A build of *" + batch_name + "* is in "
         "progress — are you resuming this build, or working in parallel?\" "
         "If resuming, invoke `/sovbuild` to continue. If working in parallel, "
-        "BUILD-PLAN is unlocked — `/sovplan`, `/sovdeliberate`, and `/sovideate` "
+        "BACKLOG is unlocked — `/sovplan`, `/sovdeliberate`, and `/sovideate` "
         "are safe."
     )
 
@@ -811,7 +810,7 @@ def format_snapshot_unclosed_block(batch_name):
         "`_method/active-build.md` exists with all files ticked — batch \""
         + batch_name
         + "\" finished but `/sovclose` was never run. `/sovclose` writes "
-        "the batch back to BUILD-PLAN as shipped, updates MANIFEST, writes "
+        "the batch back to BACKLOG as shipped, updates MANIFEST, writes "
         "TEST-LOG rows, and deletes the snapshot.\n\n"
         "  **Required action.** Prompt the user to run `/sovclose` before "
         "starting any new work."
@@ -838,7 +837,7 @@ def _extract_latest_session_number(project_root, resolved):
 def _count_open_questions(backlog_data):
     """Count the total number of OQ headings in the Open Questions section.
 
-    Returns 0 if no BUILD-PLAN data or no Open Questions section."""
+    Returns 0 if no BACKLOG data or no Open Questions section."""
     if not backlog_data:
         return 0
     _, backlog_text = backlog_data
@@ -990,7 +989,7 @@ def detect_unconfirmed_test_rows(project_root, resolved):
     `Confirmed Explicitly` column is not `Yes`.
 
     Supports two modes:
-      - Folder mode (V75+): path block points to proxies/test-log.md;
+      - Folder mode (V75+): path block points to a proxy in proxies/;
         per-session files in sibling test-log/ directory.
       - Single-file (legacy): path block points to TEST-LOG.md directly.
 
@@ -1010,8 +1009,7 @@ def detect_unconfirmed_test_rows(project_root, resolved):
         return [], "no_test_log", None
     test_log_path, text = test_log_data
 
-    if (Path(test_log_path).name.lower() == "test-log.md"
-            and Path(test_log_path).parent.name == "proxies"):
+    if Path(test_log_path).parent.name == "proxies":
         test_log_dir = Path(test_log_path).parent.parent / "test-log"
         rows = []
         if test_log_dir.is_dir():
@@ -1316,7 +1314,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             "hasn't been kicked off yet — these docs still contain template "
             "placeholders. Per `universal-behaviour.md` → *Routing "
             "main-Claude's openers* (the *Template state* detect-first "
-            "rule): recommend `/sovsetup` to seed `UX.md`, `BUILD-PLAN.md`, "
+            "rule): recommend `/sovsetup` to seed `UX.md`, `BACKLOG.md`, "
             "and the first build batch. Wait for the user's okay before "
             "proceeding."
         )
@@ -1336,7 +1334,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
             "current."
         )
 
-    backlog_data = resolved.get("BUILD-PLAN.md")
+    backlog_data = resolved.get("BACKLOG.md")
     top_batch = None
     batch_details = None
     batch_counts = None
@@ -1357,7 +1355,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         )
         if top_batch:
             lines.append(
-                f"- **Top build batch in BUILD-PLAN:** \"{top_batch}\". If "
+                f"- **Top build batch in BACKLOG:** \"{top_batch}\". If "
                 "the user's opener implies resume (test notes pointing at "
                 "this batch, a 'continue where we left off' phrasing, etc.) "
                 "default to resume per `universal-behaviour.md` → *Routing "
@@ -1368,7 +1366,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         red_flags = detect_red_flags(backlog_text)
         if red_flags:
             lines.append(
-                "- **Active Red flags in BUILD-PLAN.** The following security, "
+                "- **Active Red flags in BACKLOG.** The following security, "
                 "privacy, or data-integrity concerns are deferred with no "
                 "active plan:"
             )
@@ -1392,7 +1390,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
         lines.append(format_snapshot_mid_build_block(snapshot_batch))
         mid_build_batch = snapshot_batch
 
-    # Legacy fallback: Status: active in BUILD-PLAN (pre-V90 projects).
+    # Legacy fallback: Status: active in BACKLOG (pre-V90 projects).
     if backlog_data and snapshot_state is None:
         unclosed_batch = detect_unclosed_build(
             backlog_text, backlog_resolved_path
@@ -1463,7 +1461,7 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
     elif snapshot_state is not None:
         status_lines.append("Build batches: 1 active (in snapshot).")
     else:
-        status_lines.append("Build batches: BUILD-PLAN not found or empty.")
+        status_lines.append("Build batches: BACKLOG not found or empty.")
 
     if batch_details:
         goal_part = f" — {batch_details['goal']}" if batch_details["goal"] else ""

@@ -1,14 +1,14 @@
 ﻿# Deliberate procedure — no-code method
 
-Follow this procedure to work through accumulated open questions in BUILD-PLAN. Never during builds, setup, or migration.
+Follow this procedure to work through accumulated open questions in BACKLOG. Never during builds, setup, or migration.
 
 ## First action — load project state
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `BUILD-PLAN.md` — full read. Focus on Open Questions and Ideas sections, but scan queued batches for context (OQ dispositions often reference them).
+2. `BACKLOG.md` — full read. Focus on Open Questions and Ideas sections, but scan queued batches for context (OQ dispositions often reference them).
 3. `MANIFEST.md` — context on existing elements.
 4. `UX.md` — scope context for promotion decisions.
-5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-PLAN structure*, *Open questions*, *Ideas section*.
+5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Open questions*, *Ideas section*.
 
 ## Procedure order
 
@@ -20,8 +20,8 @@ Follow this procedure to work through accumulated open questions in BUILD-PLAN. 
    - Read the full entry aloud (question, why-it-matters, next-step if present).
    - Surface relevant context: what's changed since the OQ was surfaced, related batches or shipped work that bears on it.
    - Three dispositions — ask the user:
-     - **Promote** — becomes a new build or planning batch (scaffold per BUILD-PLAN editing rules below). Or fold into an existing queued batch if scope fits.
-     - **Drop** — remove from BUILD-PLAN. Reason is mandatory; logged in the session's build-log entry.
+     - **Promote** — becomes a new build or planning batch (scaffold per BACKLOG editing rules below). Or fold into an existing queued batch if scope fits.
+     - **Drop** — remove from BACKLOG. Reason is mandatory; logged in the session's build-log entry.
      - **Re-park** — keep as OQ with updated rationale. Rewrite the `Next step` line to reflect current reasoning.
    - Wait for this OQ's disposition before moving to the next.
 
@@ -30,7 +30,7 @@ Follow this procedure to work through accumulated open questions in BUILD-PLAN. 
    - Route: promote to OQ (write full OQ entry), fold into existing batch, scaffold new batch, or drop.
    - Remove the one-liner from Ideas section once routed.
 
-5. **[SILENT] Edit BUILD-PLAN directly.** Apply all dispositions. Remove dropped OQs and routed Ideas entries. Write new batch scaffolds per BUILD-PLAN editing rules. Update re-parked OQ text.
+5. **[SILENT] Edit BACKLOG directly.** Apply all dispositions. Remove dropped OQs and routed Ideas entries. Write new batch scaffolds per BACKLOG editing rules. Update re-parked OQ text.
 
 6. **[BRIEF] Recap.** What changed: OQs promoted (name batch destination), OQs dropped (one-line reason each), OQs re-parked (what changed in rationale), Ideas routed. Name any deferred decisions.
 
@@ -61,9 +61,9 @@ Follow this procedure to work through accumulated open questions in BUILD-PLAN. 
    - Commit: `deliberate: <one-line summary of dispositions>`.
    - No tag. No push. `/sovgit` available afterward for ad-hoc push.
 
-## BUILD-PLAN editing rules
+## BACKLOG editing rules
 
-Same rules as `/sovplan` — Claude holds structural authority over BUILD-PLAN. Every change is direct; the user reviews after.
+Same rules as `/sovplan` — Claude holds structural authority over BACKLOG. Every change is direct; the user reviews after.
 
 When scaffolding new build batches from promoted OQs, write the full two-region structure per `DOC-STRUCTURE.md` → *Build batches → Batch structure — full shape*. Include `Serves UX.md:` line only if the OQ resolution identified a matching UX entry. If the OQ needs UX.md grounding first, scaffold a planning batch instead.
 
@@ -84,4 +84,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

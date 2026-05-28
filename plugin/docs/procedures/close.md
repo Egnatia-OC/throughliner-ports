@@ -25,7 +25,7 @@ Load only what's needed for batch identification and idempotency. Defer heavier 
 
 1. `CLAUDE.md` — path block and project notes.
 2. `_method/active-build.md` — the snapshot is the single source of truth for the just-completed batch. Read `## Close handoff` — this is the primary source for what changed during the build (names introduced, concepts renamed, frames shifted, doc references invalidated).
-3. `TEST-LOG.md` — idempotency check. In folder mode (path block → `proxies/test-log.md`): read files in `test-log/`.
+3. `TEST-LOG.md` — idempotency check. In folder mode (path block → proxy in `proxies/`): read files in `test-log/`.
 4. `MANIFEST.md` — for the MANIFEST update.
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
@@ -56,7 +56,7 @@ Run while build context is fresh.
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in `_method/active-build.md`. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **[SILENT] Doc-parity check.** Read `## Close handoff` in the snapshot for names introduced, renamed, or invalidated. For each: grep UX.md, BUILD-PLAN, MANIFEST.md, and CLAUDE.md for stale references. If Close handoff is empty or absent, fall back to scanning the batch's Files: list for renamed/deleted/moved files. Collect stale references — flag in step 11.
+3. **[SILENT] Doc-parity check.** Read `## Close handoff` in the snapshot for names introduced, renamed, or invalidated. For each: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for stale references. If Close handoff is empty or absent, fall back to scanning the batch's Files: list for renamed/deleted/moved files. Collect stale references — flag in step 11.
 
 4. **Open test session + run Claude tests.** Two sub-steps.
 
@@ -72,9 +72,9 @@ Run while build context is fresh.
    - `Confirmed Explicitly` — `No`.
    - `Notes` — blank initially.
 
-   **Folder mode (path block → `proxies/test-log.md`):**
+   **Folder mode (path block → proxy in `proxies/`):**
    - **4a-i.** Allocate filename: scan `test-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading. Write per-session file with H1 `# Test session — <Session> — YYYY-MM-DD` followed by the table.
-   - **4a-ii.** Prepend index line to `_method/proxies/test-log.md`: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. Idempotency: skip if same-numbered line exists. Fallback: `TEST-LOG.md` (single-file legacy).
+   - **4a-ii.** Prepend index line to the BACKLOG proxy's `## Test sessions` section: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. Idempotency: skip if same-numbered line exists. Fallback: `TEST-LOG.md` (single-file legacy).
 
    **Single-file mode (path block → `TEST-LOG.md` directly):**
    - Position rows at top of table body (below header separator). Within batch: recap order (lowest # at top).
@@ -105,11 +105,11 @@ Run while build context is fresh.
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Write batch back to BUILD-PLAN as shipped.** Read `_method/active-build.md`. Write the batch content back into BUILD-PLAN with `Status: shipped` at the top of its body (after heading, before Goal) — **exclude `## Close handoff`** (build-time context, not permanent scope). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
+7. **[SILENT] Write batch back to BACKLOG as shipped.** Read `_method/active-build.md`. Write the batch content back into BACKLOG with `Status: shipped` at the top of its body (after heading, before Goal) — **exclude `## Close handoff`** (build-time context, not permanent scope). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
 
-8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts noted during the build. For each, scan BUILD-PLAN batches and `[PROPOSED EDIT PENDING]` blocks for references to the old behaviour. If Close handoff is empty or absent, assess from the batch's Files: list whether the build substantively changed how a feature works. Flag candidates. UX.md drift is caught by planning's drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts noted during the build. For each, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to the old behaviour. If Close handoff is empty or absent, assess from the batch's Files: list whether the build substantively changed how a feature works. Flag candidates. UX.md drift is caught by planning's drift check 2.
 
-9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BUILD-PLAN batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
+9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BACKLOG batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
 
 10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for items that silently fell off the roadmap:
    - **Parked batches** whose parking rationale references a condition that was just met by this build (e.g. "parked until X ships" where X just shipped). Surface and ask the user if it should be unparked.
@@ -119,9 +119,9 @@ Run while build context is fresh.
    - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
    - Out-of-scope improvements.
    - UX.md changes implied (don't edit — flag only).
-   - Red flag concerns (confirm BUILD-PLAN entry written if deferred).
+   - Red flag concerns (confirm BACKLOG entry written if deferred).
 
-12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BUILD-PLAN (new item or open question); or flag in recap for user to decide. Don't leave ideas unrouted.
+12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); or flag in recap for user to decide. Don't leave ideas unrouted.
 
 13. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` — the mechanical pass needs only these values, not build context. If context pressure is low, continuing directly is fine.
 
@@ -165,7 +165,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ### Turn 1 — judgment
 
-1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BUILD-PLAN (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
+1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BACKLOG (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
 
 2. **[PROMPT] Turn boundary.** Judgment work is done. State whether proxies need regeneration (any source doc edited this session). Recommend `/compact` if the session was long — the mechanical pass doesn't need session context. Short sessions can continue directly.
 
@@ -179,13 +179,13 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BUILD-PLAN status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
+- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
 - **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
-- **Don't remove completed batches from BUILD-PLAN.** Planning does that next session.
+- **Don't remove completed batches from BACKLOG.** Planning does that next session.
 - **Don't start a new build.**
 - **Don't infer test outcomes.** Write rows with blank Status and `Confirmed Explicitly: No`.
-- **Don't write carve-out labels into BUILD-PLAN change list.** Those are recap-time labels only.
+- **Don't write carve-out labels into BACKLOG change list.** Those are recap-time labels only.
 - **Don't perform git operations.** Commit, tag, and push belong to `/sovgit`.
 
 ## Behavioural rules
@@ -194,4 +194,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

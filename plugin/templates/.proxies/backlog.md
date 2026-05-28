@@ -1,14 +1,14 @@
-﻿# BUILD-PLAN — [Project Name] Deferred Work
+﻿# BACKLOG — [Project Name] Deferred Work
 
-All deferred work in one place. Five sections, top-to-bottom priority. Build batches live in individual files — this index carries the order.
+All deferred work and test tracking in one place. Six sections, top-to-bottom priority. Build batches live in individual files — this index carries the order. Test session files live in `test-log/`.
 
-*Full spec: `DOC-STRUCTURE.md` → BUILD-PLAN structure.*
+*Full spec: `DOC-STRUCTURE.md` → BACKLOG structure.*
 
 ## Red flags
 
 Security, privacy, data integrity, or safety concerns surfaced by Claude and deferred by the user. Removed when addressed. Starts empty.
 
-Format: `DOC-STRUCTURE.md` → *BUILD-PLAN structure → Red flags*.
+Format: `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*.
 
 ## Planning batches
 
@@ -34,6 +34,25 @@ Engineering work, top-to-bottom priority. Each batch lives in its own file — r
 NNNN is allocated at creation, never changes. Reorder by moving lines.
 -->
 
+## Test sessions
+
+One row per test for every shipped build batch. Per-session files in `test-log/`, newest-first in this index. Maintained by Claude during builds (`/sovclose` writes rows) and planning (per-row read-back confirms). The test-confirmation gate gates new builds against unconfirmed rows.
+
+Full spec: `DOC-STRUCTURE.md` → *TEST-LOG structure*.
+
+<!--
+Index format (newest first):
+- `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed)
+
+Entry file format:
+
+# Test session — <Session> — YYYY-MM-DD
+
+| # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| 001 | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+-->
+
 ## Open questions
 
 Questions worth tracking that don't block a specific build yet. Each has a question, context, and a next-step trigger. The planning procedure scans this section at every planning session start. When a question blocks something specific, promote to a planning batch.
@@ -57,4 +76,4 @@ Raw, unprocessed ideas captured during any session type. Date + one-liner. Claud
 -->
 
 ---
-*No-code method — Version 96.*
+*No-code method — Version 97.*

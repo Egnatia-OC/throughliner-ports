@@ -12,7 +12,7 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 1. `CLAUDE.md` — path block.
 2. `MANIFEST.md` — component names for cross-referencing.
-3. `TEST-LOG` — in folder mode (path block → `proxies/test-log.md`): read index, then the most recent per-session file. In single-file mode: read `TEST-LOG.md`.
+3. `TEST-LOG` — in folder mode (path block → proxy in `proxies/`): read the BACKLOG proxy's Test sessions section, then the most recent per-session file in `test-log/`. In single-file mode: read `TEST-LOG.md`.
 4. Identify pending rows: `Verifier: User` with blank `Status`, or unrunnable Claude-verified rows with blank `Status`.
 
 **No pending rows.** If every User-verified row already has a Status, say so and stop: "No pending tests — nothing to walk through."
@@ -67,7 +67,7 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
    **Fail:**
    - Enter the debugging flow (below).
-   - After debugging resolves, update the row: `Status: Fail`, `Confirmed Explicitly: Yes (YYYY-MM-DD)`, `Notes: [summary of what went wrong + BUILD-PLAN batch reference if created]`.
+   - After debugging resolves, update the row: `Status: Fail`, `Confirmed Explicitly: Yes (YYYY-MM-DD)`, `Notes: [summary of what went wrong + BACKLOG batch reference if created]`.
    - Move to next row.
 
 5. **Next row.** Repeat from step 1 for the next pending row.
@@ -84,14 +84,14 @@ Structured triage — not a full fix session.
 
 4. **[PROMPT] Confirm or correct.** Ask the user if the diagnosis matches what they observed.
 
-5. **Route to BUILD-PLAN.** Create a build batch in BUILD-PLAN with:
+5. **Route to BACKLOG.** Create a build batch in BACKLOG with:
    - Goal: fix the diagnosed issue (or investigate if unclear).
    - Context: what the user reported, what Claude found in code, the TEST-LOG row reference.
    - `Serves UX.md:` pointing at the relevant entry.
 
    If the cause is unclear despite investigation, the batch Goal should say "Investigate" and the context should include everything gathered so far plus a "needs investigation" note.
 
-6. **[BRIEF] Confirm routing.** Tell the user: "Created BUILD-PLAN batch [name] for the fix. Moving to the next test."
+6. **[BRIEF] Confirm routing.** Tell the user: "Created BACKLOG batch [name] for the fix. Moving to the next test."
 
 **No fixing inside `/sovtest`.** Debugging identifies and routes. Building fixes. Don't blur the boundary.
 
@@ -99,14 +99,14 @@ Structured triage — not a full fix session.
 
 After all rows are walked:
 
-1. **[BRIEF] Summary.** State counts: N passed, N failed, N skipped. Name any BUILD-PLAN batches created from failures.
+1. **[BRIEF] Summary.** State counts: N passed, N failed, N skipped. Name any BACKLOG batches created from failures.
 
-2. **[PROMPT] Next action.** If failures created BUILD-PLAN batches: "New fix batches are in BUILD-PLAN. Run `/sovplan` when you're ready to prioritize them." If all passed: "All tests passed. Ready for your next planning session."
+2. **[PROMPT] Next action.** If failures created BACKLOG batches: "New fix batches are in BACKLOG. Run `/sovplan` when you're ready to prioritize them." If all passed: "All tests passed. Ready for your next planning session."
 
 ## What you must not do
 
 - **Don't run tests yourself.** You're guiding, not executing. Exception: investigating code during debugging.
-- **Don't fix failures.** Route to BUILD-PLAN. Fixing is a build session.
+- **Don't fix failures.** Route to BACKLOG. Fixing is a build session.
 - **Don't infer outcomes.** Every row needs the user's explicit answer.
 - **Don't bulk-confirm.** If the user says "they all pass," push back: "I need each row confirmed individually. Next: row #NNN, [description] — Pass, Fail, or Skipped?"
 - **Don't edit source-of-truth docs.** UX.md stays locked. Flag implications in the summary.
@@ -118,4 +118,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

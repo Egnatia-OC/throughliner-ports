@@ -4,7 +4,7 @@ Follow this procedure during the *planning* phase — never during builds, setup
 
 For working through open questions, use `/sovdeliberate`. For exploring new ideas or feature requests, use `/sovideate`.
 
-You hold structural authority over BUILD-PLAN: every change (add, remove, reorder, split, reclassify) is yours to make directly; the user reviews after. **Two BUILD-PLAN formats:** single `BUILD-PLAN.md` (legacy) or `BUILD-PLAN/` folder with `INDEX.md` + per-batch files (V48+). In folder mode, planning batches/Red flags/Open questions live in `INDEX.md`; build batches in per-batch files. Resolve format from `CLAUDE.md` path block.
+You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) is yours to make directly; the user reviews after. **Two BACKLOG formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). In folder mode, planning batches/Red flags/Open questions live in `INDEX.md`; build batches in per-batch files. Resolve format from `CLAUDE.md` path block.
 
 ## Classifying the opener
 
@@ -23,7 +23,7 @@ Classify project state before loading the full doc set. Cold-start projects skip
 **Step 1 — always load:**
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows. In folder mode (path block → `proxies/test-log.md`): walk files in `test-log/`.
+2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows. In folder mode (path block → proxy in `proxies/`): walk files in `test-log/`.
 
 **Step 2 — cold-start check:**
 
@@ -31,7 +31,7 @@ If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log
 
 **Step 3 — load remaining docs:**
 
-- **Always:** `UX.md`, `BUILD-PLAN.md` (resolves to `_method/proxies/build-plan.md` or legacy `BUILD-PLAN/INDEX.md`; + per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BUILD-PLAN structure*, *Proposed edits pending sections*.
+- **Always:** `UX.md`, `BACKLOG.md` (resolves to `_method/proxies/backlog.md` or legacy `BACKLOG/INDEX.md`; + per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
 - **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md` or legacy `build-log/INDEX.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG structure*.
 
 ## Procedure order
@@ -45,15 +45,15 @@ After loading state, perform in order:
 2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
-4. **[BRIEF] Scan BUILD-PLAN Open questions.** One-line summary per entry with its `Surfaced` tag. Flag entries older than 5 build cycles as potentially neglected. If empty/absent, note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs exist or any are older than 5 build cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
+4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with its `Surfaced` tag. Flag entries older than 5 build cycles as potentially neglected. If empty/absent, note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs exist or any are older than 5 build cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
 5. **[BRIEF] Sort test notes** into Suggestions candidates (bugs against existing UX entries) and Discoveries candidates (new ideas). Skip if not `test notes`/`mixed`.
 5. **[DISCUSS] Discuss changes with user.** Propose better options; push back by default.
 6. **[SILENT] Dedupe and reclassify.** Every candidate: already covered (skip), fits UX.md (build batch), or out of scope (Discovery).
-7. **[BRIEF] Suggestions list.** Fixes fitting current scope. Label `[Requested]` or `[Suggested]`. Ask: next build or BUILD-PLAN for later?
+7. **[BRIEF] Suggestions list.** Fixes fitting current scope. Label `[Requested]` or `[Suggested]`. Ask: next build or BACKLOG for later?
 8. **[BRIEF] Discoveries list.** Outside current scope. Don't fix. Each needs a UX.md update via planning batch first.
-9. **[SILENT] Edit BUILD-PLAN directly.** Never describe edits for user to apply.
+9. **[SILENT] Edit BACKLOG directly.** Never describe edits for user to apply.
 10. **[SILENT] Promote Discoveries** the user hasn't dropped into planning batches.
-11. **[BRIEF] Recap.** What changed in BUILD-PLAN + Suggestions/Discoveries lists. Name deferred decisions explicitly.
+11. **[BRIEF] Recap.** What changed in BACKLOG + Suggestions/Discoveries lists. Name deferred decisions explicitly.
 12. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
 13. **[PROMPT] Commit.** "Ready to commit. I'll stage the changes and commit with a `plan:` prefix."
@@ -92,7 +92,7 @@ If the user came for a non-planning reason but read-back is pending, open with: 
 ## The two flows
 
 - **test notes** → sort into two piles: bugs against existing UX entries (Suggestions) vs. new ideas without UX backing (Discoveries).
-- **scope question** → planning batch in BUILD-PLAN with `Blocks: scope decision — no build batch yet.`
+- **scope question** → planning batch in BACKLOG with `Blocks: scope decision — no build batch yet.`
 
 **Feature requests** no longer route here — `/sovideate` handles new concepts and feature ideas. If the opener is a feature request, redirect: "That's a new idea — invoke `/sovideate` to explore it."
 
@@ -100,7 +100,7 @@ Both flows converge into discuss-with-user.
 
 ### Doc-first ordering
 
-Before exploring code via Glob/Grep/reads, check UX.md and BUILD-PLAN for scope existence. Only explore code when docs genuinely can't answer (e.g. "does a partial implementation exist?"). Hard rule, not preference — code tells you what *is*, not what was *decided*.
+Before exploring code via Glob/Grep/reads, check UX.md and BACKLOG for scope existence. Only explore code when docs genuinely can't answer (e.g. "does a partial implementation exist?"). Hard rule, not preference — code tells you what *is*, not what was *decided*.
 
 ## Mixed-input sort
 
@@ -130,7 +130,7 @@ Catches in-file changes the other checks miss — manual edits that leave no MAN
 
 **Expected (no confirmation needed):**
 - Files in most recent batch's `Files:` sub-section.
-- Method writable surface (planning phase): all path-block docs (`UX.md`, `MANIFEST.md`, additional source-of-truth docs), `build-log/`, `BUILD-LOG.md`, `TEST-LOG.md`, BUILD-PLAN files, `CLAUDE.md`, `_method/research/` files.
+- Method writable surface (planning phase): all path-block docs (`UX.md`, `MANIFEST.md`, additional source-of-truth docs), `build-log/`, `BUILD-LOG.md`, `test-log/` files, BACKLOG files, `CLAUDE.md`, `_method/research/` files.
 
 Everything else → confirmation protocol.
 
@@ -147,7 +147,7 @@ Everything else → confirmation protocol.
 
 Walk one file at a time. If the user signals fatigue, offer to defer remainder — don't bulk-confirm.
 
-## BUILD-PLAN editing — do, then describe
+## BACKLOG editing — do, then describe
 
 Make every change yourself. Never list pending edits for the user.
 
@@ -163,7 +163,7 @@ When adding a `Serves UX.md:` line, verify every named entry exists in UX.md Fun
 
 Folder mode: allocate number by Glob scan, create per-batch file, add reference to INDEX.md. Single-file mode: inline `### Batch:` heading.
 
-Surface scope-context in recap before writing to BUILD-PLAN.
+Surface scope-context in recap before writing to BACKLOG.
 
 **Change-list labels (V27).** Every change bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the close recap's source chain. Overlap: user confirmed your suggestion → `[Requested]`. Merge: combined item → `[Requested]`.
 
@@ -176,30 +176,30 @@ Surface scope-context in recap before writing to BUILD-PLAN.
 Fixed pipeline — no shortcuts. The entry point is `/sovideate`; the structural work happens here in `/sovplan`:
 
 1. **Idea raised** via `/sovideate`. If it conflicts with an existing UX principle, `/sovideate` surfaces the conflict first.
-2. **Enters BUILD-PLAN as planning batch** asking questions needed for UX.md entry.
+2. **Enters BACKLOG as planning batch** asking questions needed for UX.md entry.
 3. **Questions answered** in this or future planning session. Resolved → append to batch + edit UX.md directly (V67 — source-of-truth docs are open during planning).
 4. **Planning batch removed** once UX.md entry exists.
-5. **Only then** does a build batch enter BUILD-PLAN with `Serves UX.md:` pointing at the new entry.
+5. **Only then** does a build batch enter BACKLOG with `Serves UX.md:` pointing at the new entry.
 
 If you're proposing a build batch with no UX.md match, stop — you've skipped a step.
 
 ## Discoveries promotion
 
-Before finishing the planning phase, promote every undropped Discovery into a BUILD-PLAN planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
+Before finishing the planning phase, promote every undropped Discovery into a BACKLOG planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
 
 ## Recap
 
-Present what you changed in BUILD-PLAN + Suggestions/Discoveries lists. No pending edits for the user. Name deferred decisions explicitly.
+Present what you changed in BACKLOG + Suggestions/Discoveries lists. No pending edits for the user. Name deferred decisions explicitly.
 
 ## Migration: centralized → distributed proposed edits
 
-If BUILD-PLAN contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V43), redistribute each to the destination doc's `## Proposed edits pending` section (create if absent). Remove empty section from BUILD-PLAN. Surface in recap.
+If BACKLOG contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V43), redistribute each to the destination doc's `## Proposed edits pending` section (create if absent). Remove empty section from BACKLOG. Surface in recap.
 
 ## Deferred build-material aging
 
 Folder mode: completed batches leave gaps in `NNNN` numbering. Any batch with a number below the highest gap is aging.
 
-**Detection:** Scan `BUILD-PLAN/` for `NNNN-*.md`. Find missing numbers in `[1, max]`. Most recently completed = max(missing). Batches below that threshold are aging.
+**Detection:** Scan `BACKLOG/` for `NNNN-*.md`. Find missing numbers in `[1, max]`. Most recently completed = max(missing). Batches below that threshold are aging.
 
 **Surfacing:** One line per aging batch: "Batch NNNN (*<heading>*) predates completed batch MMMM. Consider pairing with current top batch or scheduling next."
 
@@ -217,14 +217,14 @@ Prune before drift checks. Bounds file growth and reduces check 5's workload.
    - Component matches MANIFEST entry (case-insensitive) → keep.
    - Cross-component descriptive phrase → keep (exempt).
    - Specific element not in MANIFEST → delete.
-3. In folder mode: if an entire per-session file is emptied by pruning, delete the file and remove its index line from `proxies/test-log.md`.
+3. In folder mode: if an entire per-session file is emptied by pruning, delete the file and remove its index line from the BACKLOG proxy's Test sessions section.
 4. Surface: "Pruned N rows — [row #s, components, reasons]." Nothing pruned: skip silently.
 
 Deleted rows recoverable via git. Rows for existing components stay regardless of age.
 
 ## Ordering principles
 
-When reordering BUILD-PLAN build batches, apply these principles — they override insertion order.
+When reordering BACKLOG build batches, apply these principles — they override insertion order.
 
 1. **Dependency flow.** Every batch's Dependencies must point at batches above it (already shipped or earlier in the queue). If batch B depends on batch A, A must come first. Check: for each batch, verify every named dependency resolves to a shipped batch or a batch earlier in the queue.
 2. **Project-structure reasoning.** Batches that create infrastructure other batches consume (folders, schemas, shared components) go before the batches that consume them.
@@ -242,7 +242,7 @@ Run as part of any planning session that adds, removes, or reorders batches. Fou
 3. **Reorder if needed.** Propose reordering to the user with one-line justification per move.
 4. **Fix scope text.** Update stale references in affected batch scope in the same pass as the reorder.
 
-Skip if no structural changes to BUILD-PLAN were made this session.
+Skip if no structural changes to BACKLOG were made this session.
 
 ## Behavioural rules
 
@@ -250,4 +250,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 96.*
+*No-code method — Version 97.*

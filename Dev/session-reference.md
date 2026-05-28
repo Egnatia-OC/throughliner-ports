@@ -79,10 +79,9 @@ Method-side = describes how the consumer method works. Dev-internal files (`Dev/
 - `plugin/hooks/universal-behaviour.md`
 - `plugin/templates/CLAUDE-TEMPLATE.md`
 - `plugin/templates/UX-TEMPLATE.md`
-- `plugin/templates/BUILD-PLAN-TEMPLATE.md` (legacy single-file)
-- `plugin/templates/.proxies/build-plan.md`
+- `plugin/templates/BACKLOG-TEMPLATE.md` (legacy single-file)
+- `plugin/templates/.proxies/backlog.md`
 - `plugin/templates/.proxies/build-log.md`
-- `plugin/templates/.proxies/test-log.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
 - `plugin/docs/procedures/*.md` (all 11 procedure docs)
@@ -184,7 +183,7 @@ Each entry:
 
 **Sizing.** Each field: one paragraph or a tight list. The whole entry should fit on a screen. If it doesn't, the batch is probably too large or under-scoped.
 
-**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BUILD-PLAN) have a different shape with two regions — scope-context and build-operations — documented in `DOC-STRUCTURE.md` → *BUILD-PLAN structure*.
+**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — documented in `DOC-STRUCTURE.md` → *BACKLOG structure*.
 
 ---
 

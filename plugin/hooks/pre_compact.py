@@ -4,7 +4,7 @@ PreCompact hook for the no-code-method plugin.
 
 Fires before Claude Code compresses the conversation context (manual or
 automatic compaction). When a build batch is in progress (unticked files
-in the top BUILD-PLAN batch), blocks compaction and shows the user a message
+in the top BACKLOG batch), blocks compaction and shows the user a message
 recommending they ask Claude to prepare a handoff before starting a fresh
 session. When no build is in progress, allows compaction silently.
 
@@ -18,7 +18,7 @@ Why block during builds:
   before the user leaves.
 
 Why allow when no build is active:
-  Planning and idle sessions keep their state on disk (BUILD-PLAN edits are
+  Planning and idle sessions keep their state on disk (BACKLOG edits are
   saved as they happen, source-of-truth docs are durable). Compaction is
   acceptable — the method docs survive in compacted form, and there's no
   build-batch handoff to produce.
@@ -63,7 +63,7 @@ def parse_input():
 
 def has_active_build(project_root):
     """Check whether a build batch with unticked files exists."""
-    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None:
         return False
 

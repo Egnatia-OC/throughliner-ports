@@ -4,7 +4,7 @@ project_state.py — shared helpers for reading project state from disk.
 
 Used by the no-code-method plugin's hooks (pre_tool_use.py, session_start.py,
 and others) to read the project's state files in a consistent way: CLAUDE.md's
-path block, BUILD-PLAN.md (via the parse_backlog.py subprocess), TEST-LOG.md,
+path block, BACKLOG.md (via the parse_backlog.py subprocess), TEST-LOG.md,
 and build-log/.
 
 Centralised here so state-reading logic is defined once and shared across
@@ -49,7 +49,7 @@ from pathlib import Path
 # Match the contents between the opening ```json line and the closing ```.
 PATH_BLOCK_PATTERN = re.compile(r"```json\s*\n(.*?)\n```", re.DOTALL)
 
-# Path to the shared BUILD-PLAN.md parser, resolved relative to THIS module.
+# Path to the shared BACKLOG.md parser, resolved relative to THIS module.
 # project_state.py lives in plugin/scripts/; parse_backlog.py is alongside.
 PARSER_PATH = Path(__file__).parent / "parse_backlog.py"
 
@@ -513,14 +513,13 @@ def identify_previous_session(project_root):
 
 
 def resolve_test_log_dir(project_root):
-    """If the TEST-LOG is in folder mode (path block points to
-    proxies/test-log.md), return the resolved test-log/ directory path.
+    """If the TEST-LOG is in folder mode (path block points to a proxy
+    file inside proxies/), return the resolved test-log/ directory path.
     Returns None if single-file mode or path block can't be resolved."""
     test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
     if test_log_path is None:
         return None
-    if (test_log_path.name.lower() == "test-log.md"
-            and test_log_path.parent.name == "proxies"):
+    if test_log_path.parent.name == "proxies":
         return test_log_path.parent.parent / "test-log"
     return None
 
@@ -528,9 +527,9 @@ def resolve_test_log_dir(project_root):
 def collect_all_test_log_rows(project_root):
     """Collect all TEST-LOG rows from either folder mode or single file.
 
-    Folder mode: path block points at proxies/test-log.md; per-session
-    files live in sibling test-log/ directory. Walks all .md files in
-    test-log/ and aggregates rows.
+    Folder mode: path block points at a proxy file inside proxies/;
+    per-session files live in sibling test-log/ directory. Walks all
+    .md files in test-log/ and aggregates rows.
 
     Single-file mode: path block points at TEST-LOG.md directly; parse
     that one file.
@@ -543,8 +542,7 @@ def collect_all_test_log_rows(project_root):
     if test_log_path is None or not test_log_path.exists():
         return [], False
 
-    if (test_log_path.name.lower() == "test-log.md"
-            and test_log_path.parent.name == "proxies"):
+    if test_log_path.parent.name == "proxies":
         test_log_dir = test_log_path.parent.parent / "test-log"
         if not test_log_dir.is_dir():
             return [], True
@@ -570,7 +568,7 @@ def get_unconfirmed_previous_session_rows(project_root):
     session that are not yet confirmed.
 
     Supports two modes:
-      - Folder mode (V75+): path block points to proxies/test-log.md;
+      - Folder mode (V75+): path block points to a proxy in proxies/;
         per-session files in sibling test-log/ directory.
       - Single-file (legacy): path block points to TEST-LOG.md directly.
 
@@ -612,26 +610,26 @@ def get_unconfirmed_previous_session_rows(project_root):
 
 
 def resolve_backlog_dir(project_root):
-    """If the BUILD-PLAN is in folder mode (path block points to
-    BUILD-PLAN/INDEX.md or proxies/build-plan.md), return the resolved
-    BUILD-PLAN/ directory path.
+    """If the BACKLOG is in folder mode (path block points to
+    BACKLOG/INDEX.md or proxies/backlog.md), return the resolved
+    BACKLOG/ directory path.
     Returns None if single-file mode or path block can't be resolved."""
-    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None:
         return None
     if backlog_path.name.upper() == "INDEX.MD":
         return backlog_path.parent
-    if (backlog_path.name.lower() == "build-plan.md"
+    if (backlog_path.name.lower() == "backlog.md"
             and backlog_path.parent.name == "proxies"):
-        return backlog_path.parent.parent / "BUILD-PLAN"
+        return backlog_path.parent.parent / "BACKLOG"
     return None
 
 
 def is_backlog_file(target_path, project_root):
-    """True if target_path is part of the BUILD-PLAN — either it IS BUILD-PLAN.md
-    (single-file mode) or it's a file inside the BUILD-PLAN/ directory (folder
-    mode). Used by hooks that need to identify BUILD-PLAN edits."""
-    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    """True if target_path is part of the BACKLOG — either it IS BACKLOG.md
+    (single-file mode) or it's a file inside the BACKLOG/ directory (folder
+    mode). Used by hooks that need to identify BACKLOG edits."""
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None:
         return False
     target_str = str(target_path)
@@ -664,13 +662,13 @@ def is_test_session_open(project_root):
 def is_test_log_content_file(target_path, project_root):
     """True if target_path is a TEST-LOG content file — either a per-session
     file inside test-log/ (folder mode) or the flat TEST-LOG.md (single-file
-    mode). Excludes the proxy/index at proxies/test-log.md.
+    mode). Excludes the proxy/index (backlog.md or legacy test-log.md in
+    proxies/).
 
     Used by PostToolUse to decide whether to run TEST-LOG validation."""
     test_log_path = resolve_path_block_entry(project_root, "TEST-LOG.md")
     if test_log_path is not None and str(target_path) == str(test_log_path):
-        if (test_log_path.name.lower() == "test-log.md"
-                and test_log_path.parent.name == "proxies"):
+        if test_log_path.parent.name == "proxies":
             return False
         return True
 
@@ -723,8 +721,8 @@ def is_proxy_file(target_path, project_root):
 
 
 def is_backlog_batch_file(target_path, project_root):
-    """True if target_path is a BUILD-PLAN per-batch file (not INDEX.md).
-    Per-batch files are NNNN-name.md files inside BUILD-PLAN/.
+    """True if target_path is a BACKLOG per-batch file (not INDEX.md).
+    Per-batch files are NNNN-name.md files inside BACKLOG/.
     Used by PostToolUse for scope-context validation."""
     backlog_dir = resolve_backlog_dir(project_root)
     if backlog_dir is None:

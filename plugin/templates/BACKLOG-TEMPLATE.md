@@ -1,14 +1,14 @@
-﻿# BUILD-PLAN.md — [Project Name] Deferred Work
+﻿# BACKLOG.md — [Project Name] Deferred Work
 
-All deferred work in one place. Five sections, in this order; top section first, top item first.
+All deferred work and test tracking in one place. Six sections, in this order; top section first, top item first.
 
-*Full spec for these sections: `DOC-STRUCTURE.md` → BUILD-PLAN structure.*
+*Full spec for these sections: `DOC-STRUCTURE.md` → BACKLOG structure.*
 
 ## Red flags
 
 Security, privacy, data integrity, or safety concerns Claude has surfaced and the user has chosen to defer. Items are removed when addressed. Section starts empty for new projects.
 
-For the canonical entry format, see `DOC-STRUCTURE.md` → *BUILD-PLAN structure → Red flags*.
+For the canonical entry format, see `DOC-STRUCTURE.md` → *BACKLOG structure → Red flags*.
 
 ## Planning batches
 
@@ -78,6 +78,17 @@ Notes:
 - For additional source-of-truth docs, add Serves <DOC>: ... line.
 -->
 
+## Test sessions
+
+One row per test for every shipped build batch. Per-session files in `test-log/`, newest-first in this index. Maintained by Claude during builds (`/sovclose` writes rows) and planning (per-row read-back confirms). The test-confirmation gate gates new builds against unconfirmed rows.
+
+Full spec: `DOC-STRUCTURE.md` → *TEST-LOG structure*.
+
+<!--
+Index format (newest first):
+- `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed)
+-->
+
 ## Open questions
 
 Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning procedure scans this section at the start of every planning session and lists all entries with their triggers.
@@ -109,4 +120,4 @@ Entry format: one line per idea.
 -->
 
 ---
-*No-code method — Version 96.*
+*No-code method — Version 97.*

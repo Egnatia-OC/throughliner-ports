@@ -1,22 +1,21 @@
-<!-- proxy | source: Dev/Planning/BACKLOG.md | generated: 2026-05-28 v128 | when: session open (full read recommended); planning sessions -->
+<!-- proxy | source: Dev/Planning/BACKLOG.md | generated: 2026-05-28 v129 | when: session open (full read recommended); planning sessions -->
 
 # BACKLOG — Dev-side
 
-Shipped history (118 batches, V18–0125) now in build-log/INDEX.md — no longer inline. 2 queued batches with full scope at L15–L52. 5 open questions at L53–L118. Ideas section at L119.
+Shipped history (120 batches, V18–0129) now in build-log/INDEX.md — no longer inline. 1 queued batch (parked) at L19–L31. 5 open questions at L33–L98. Ideas section at L99.
 
-## Queued batches (L15–L52)
+## Queued batches (L19–L31)
 
-- L21 **0120** — BACKLOG convergence: naming and test merge (plugin-side only). BUILD-PLAN→BACKLOG rename + TEST-LOG merge. Large surface area.
-- L35 **0095** — /sovtest skill E2E validation. **PARKED.** Needs test plan rewrite after 0120 ships.
+- L19 **0095** — /sovtest skill E2E validation. **PARKED.** Needs test plan rewrite after 0120 ships (0120 now shipped v129).
 
-## Open questions (5 entries, L53–L118)
+## Open questions (5 entries, L33–L98)
 
-- L59 **Frame-correction sweep: categorical vs conditional skip** — park, low frequency
-- L71 **Remote-control standby close path unspecified** — park, very low frequency
-- L83 **Sub-agent warning rule boundary for scoped work** — park, low friction
-- L95 **Cross-reference precision across dev-side docs** — park, fix opportunistically
-- L107 **Plugin testing framework beyond bespoke pytest** — park until burden grows
+- L39 **Frame-correction sweep: categorical vs conditional skip** — park, low frequency
+- L51 **Remote-control standby close path unspecified** — park, very low frequency
+- L63 **Sub-agent warning rule boundary for scoped work** — park, low friction
+- L75 **Cross-reference precision across dev-side docs** — park, fix opportunistically
+- L87 **Plugin testing framework beyond bespoke pytest** — park until burden grows
 
-## Ideas (L119)
+## Ideas (L99)
 
-Empty. New section added v125.
+Empty.

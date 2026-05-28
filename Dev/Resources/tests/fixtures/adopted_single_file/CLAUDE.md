@@ -5,7 +5,7 @@
 ```json
 {
   "UX.md": "UX.md",
-  "BUILD-PLAN.md": "BUILD-PLAN.md",
+  "BACKLOG.md": "BACKLOG.md",
   "MANIFEST.md": "MANIFEST.md",
   "TEST-LOG.md": "TEST-LOG.md",
   "BUILD-LOG.md": "BUILD-LOG.md"

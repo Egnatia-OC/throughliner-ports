@@ -6,14 +6,14 @@ Fires after Edit/Write/MultiEdit completes successfully. Validates
 structured method docs at write time — catching shape violations before
 they cause silent downstream failures.
 
-Five validation paths (first match wins, except BUILD-PLAN batch files
-which run both BUILD-PLAN parse and scope-context checks):
+Five validation paths (first match wins, except BACKLOG batch files
+which run both BACKLOG parse and scope-context checks):
 
-  1. **BUILD-PLAN file** — existing parse validation. If the file has
+  1. **BACKLOG file** — existing parse validation. If the file has
      unticked file bullets but the parser can't extract a batch, the
      format is likely broken.
 
-  2. **BUILD-PLAN per-batch file** — additionally checks scope-context
+  2. **BACKLOG per-batch file** — additionally checks scope-context
      sections (Goal/Outputs/Success criteria).
 
   3. **TEST-LOG content file** — checks 10-column table row format.
@@ -96,12 +96,12 @@ def has_real_unticked_bullets(text):
 
 
 def check_backlog_parse(target_path, project_root, text):
-    """Run the existing BUILD-PLAN parse validation. Returns a warning
+    """Run the existing BACKLOG parse validation. Returns a warning
     string if the format is broken, None if clean."""
     if not has_real_unticked_bullets(text):
         return None
 
-    backlog_path = resolve_path_block_entry(project_root, "BUILD-PLAN.md")
+    backlog_path = resolve_path_block_entry(project_root, "BACKLOG.md")
     if backlog_path is None:
         return None
 
@@ -114,14 +114,14 @@ def check_backlog_parse(target_path, project_root, text):
             result = find_top_unticked_batch(text)
     except Exception:
         return (
-            "[No-code method] WARNING: BUILD-PLAN parse error. The edit "
+            "[No-code method] WARNING: BACKLOG parse error. The edit "
             "you just made caused the parser to crash. The format is "
             "likely broken — check the Build batches section immediately."
             "\n\n"
-            "Expected format for single-file BUILD-PLAN: `### Batch: "
+            "Expected format for single-file BACKLOG: `### Batch: "
             "<name>` heading, change-list bullets, a `Files:` line, "
             "then file bullets (`- [ ] `path` — summary`).\n"
-            "Expected format for folder BUILD-PLAN: `# <name>` heading in "
+            "Expected format for folder BACKLOG: `# <name>` heading in "
             "per-batch files, same body structure, INDEX.md with "
             "`` - `NNNN-name.md` `` reference list."
         )
@@ -130,7 +130,7 @@ def check_backlog_parse(target_path, project_root, text):
         return None
 
     return (
-        "[No-code method] WARNING: BUILD-PLAN parse failed. The file "
+        "[No-code method] WARNING: BACKLOG parse failed. The file "
         "contains unticked file entries, but the parser could not "
         "extract a valid batch. The edit you just made likely broke "
         "the format."
@@ -205,7 +205,7 @@ def main():
 
     all_warnings = []
 
-    # --- BUILD-PLAN validation (existing + scope-context) ---
+    # --- BACKLOG validation (existing + scope-context) ---
     if is_backlog_file(target_path, project_root):
         backlog_warning = check_backlog_parse(target_path, project_root, text)
         if backlog_warning:
