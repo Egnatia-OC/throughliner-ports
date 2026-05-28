@@ -96,3 +96,59 @@ Same parent-directory issue as Finding 1's first attempt. Not a consumer-facing 
 2. **Build-transition UX** — plain-English narration when hooks block, before-build recap language, "plan mode" jargon removal.
 3. **Doc folder restructure** — move spine docs into a subfolder. Touches templates, path block defaults, hooks, procedure docs, Reference manual.
 4. **Scaffold quality fixes** — [Project Name] replacement, UX principle capture, Status: line, marketplace.json description.
+
+## V91 build-phase E2E — 2026-05-28
+
+Second E2E test, completing the build lifecycle coverage from "What wasn't tested" above. Plugin version 0.91.0 (method V91, session tag v114). Same burner app, fresh `/sovsetup` scaffold.
+
+### Test flow
+
+`/sovsetup` (case 1) → `/sovplan` → `/sovrecap` → `/sovbuild` → `/sovclose` → `/sovgit`. Full transcript at `Dev/Planning/test-log/session-transcript.md`.
+
+### Bug 1 — active-build.md creation blocked
+
+`_METHOD_INFRA_DIRS` in `pre_tool_use.py` covers subdirectory names (`BUILD-PLAN`, `proxies`, `planning`) but not root-level files in `_method/`. `is_method_infra_file()` checks `parts[0]` against the set — for `active-build.md`, `parts[0]` is the filename itself, not a directory, so it fails. `check_batch_file_list()` does exempt the snapshot path but only runs during build phase — which can't be entered without the snapshot. Chicken-and-egg.
+
+Workaround: fell back to pre-V90 `Status: active` directly in the per-batch BUILD-PLAN file. Fix: add root-file handling to `is_method_infra_file()`.
+
+### Bug 2 — test-log/ and build-log/ writes blocked during close
+
+Same root cause: `test-log` and `build-log` not in `_METHOD_INFRA_DIRS`. Compounded by Bug 3 — phase detection drops to "planning" after batch completion, so even if directories were exempt, the phase context is wrong.
+
+Workaround: stored files in `_method/planning/drafts/` (which IS exempt via "planning"). Fix: add `"test-log"` and `"build-log"` to `_METHOD_INFRA_DIRS`.
+
+### Bug 3 — Phase detection falls through after batch completion
+
+When all files in the batch are ticked complete, the parser returns `{}` (no unticked batch). Phase detection drops to "planning" even with `Status: active` in the batch file. Affects close steps that need to write to method infrastructure directories.
+
+Fix: `Status: active` should keep phase as "build" regardless of tick state. The close procedure manages its own transition.
+
+### Observation — /sovrecap is Claude-facing
+
+The recap content (batch scope summary, file list, test plan) is presented to the user but written for Claude's benefit — preparing Claude's context before building. Users see a wall of technical detail they didn't ask for. Options: (a) rewrite recap output to be user-facing ("here's what I'm about to build, does this look right?"), (b) fold recap silently into `/sovbuild` so the user never sees it, (c) keep it separate but add a brief user-facing summary.
+
+### Observation — /compact nudge at invocation prompts
+
+The most significant UX finding. A fresh session that invokes `/sovplan` starts cold — no project context, Claude asks "what brings you to planning?" even though the project is fully documented. A compacted session carries the full context forward seamlessly.
+
+Every skill handoff message ("next, run `/sovrecap`") should include a `/compact` nudge. The invocation prompt is a natural pause point — the user is between skills, context is loaded, and compacting here preserves it for the next skill. Cost of the nudge is zero if skipped; benefit when followed is substantial.
+
+### Observation — /sovsetup skill unavailability
+
+Plugin was enabled and showed v0.91.0 with all skills listed on the plugin summary page, but `/sovsetup` wasn't available in an existing session. Required closing and opening a new session. Likely a Claude Code platform behavior — skills loaded at session start, not dynamically when plugins toggle.
+
+### Observation — git commit message false positive
+
+Bash write-guard parsed `"` characters in a non-heredoc commit message as file path boundaries. Workaround: use heredoc format (`cat <<'EOF'`). The 0115 heredoc-stripping fix covers heredoc content but not non-heredoc `-m` arguments. Minor — Claude should use heredoc format for commit messages anyway.
+
+### Coverage update
+
+Items from "What wasn't tested" (v78):
+
+| Item | Status |
+|---|---|
+| Full build cycle (`/build` through `/sovclose`) | Tested. Three bugs found. |
+| Close recap, MANIFEST update, test-confirmation gate | Tested. MANIFEST updated. Test-log written (workaround location). |
+| Session-open status summary | Not tested (single-session lifecycle). |
+| Token cost baseline for procedure-doc architecture | Not formally measured. |
+| Phase flip from planning to build to close permission behaviour | Tested. Planning-to-build flip broken (Bug 1). Build-to-close flip broken (Bug 3). |

@@ -107,6 +107,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
+| 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -116,27 +117,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0088 — Build E2E test — **PARKED**
-
-**Parked.** v112. 0112 shipped but cowboy test showed `/sovsetup` couldn't complete case-1 cleanly. 0115 (shipped v113) fixed those issues. Ready to unpark.
-
-**Goal.** Test the build phase of the procedure-doc architecture. Picks up where 0084 left off — `/sovsetup` and planning are validated, now test `/sovrecap` through `/sovbuild` through `/sovclose` in the Polite Fart Announcer burner app.
-
-**Inputs.** `Dev/Resources/research/e2e-greenfield-post-redesign.md` ("What wasn't tested" section — note: written at v78, skill names `/build` etc. are pre-rename). Burner app at `C:\Users\Alex\Desktop\Polite Fart Announcer`.
-
-**Pre-requisite.** The burner app was scaffolded at plugin v0.67.0 (root-level docs, flat TEST-LOG.md, no `_method/`, no proxies). 19 batches have shipped since. Delete the existing scaffolding and run `/sovsetup` fresh before testing. This also resolves the stale `Status: active` on the old batch.
-
-**Outputs.** Updated research file with build-phase findings. New BACKLOG entries or open questions for any issues. Token cost baseline for procedure-doc architecture.
-
-**Success criteria.** `/sovrecap` populates correctly (Files: and Tests: populated). `/sovbuild` extracts batch to `_method/active-build.md` snapshot and creates `index.html` — file exists and works in browser. `/sovclose` fires: MANIFEST updated, build-log entry written, test-log session file written, snapshot deleted. Phase-aware permissions work. Observations documented.
-
-**Risks / dependencies.** Burner app needs fresh `/sovsetup` (see pre-requisite). Risk: `/sovsetup` case 1 itself may surface issues — document those too.
-
----
-
 ### 0095 — /sovtest skill E2E validation — **PARKED**
 
-**Parked.** v112. Hard dep on 0088 for app state — shelved together. 0115 shipped v113; revisit alongside 0088.
+**Parked.** v114. 0088 shipped — dep met. Shelved: user is cowboy-testing informally rather than running structured E2E batches. Revisit when there's a specific reason to formalize.
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
@@ -160,13 +143,15 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Mid-session compact nudge.** When a build session grows long — high exchange count, extended deliberation mid-build, many files already edited — Claude nudges the user to `/compact` before context runs out unexpectedly. Proxy signals: exchange count since `/sovbuild` invocation, number of files edited, number of remaining procedure-doc steps. The nudge is informational, not blocking: "this session has grown long — consider `/compact` to preserve context for the close steps."
 
+**Invocation-prompt compact nudge (from 0088 E2E).** Every skill handoff message ("next, run `/sovrecap`", "next, run `/sovbuild`", etc.) should include a `/compact` nudge. 0088 E2E confirmed: a fresh session starts cold (no project context, Claude asks "what brings you to planning?"), while a compacted session carries context forward seamlessly. The invocation prompt is the natural pause point — user is between skills, context is loaded. Zero cost if skipped; substantial benefit when followed.
+
 **Inputs.** Dev-side observation: ~20% of sessions blow out. Failure pattern correlates with high file-touch count and extended explanation/decision exchanges. Claude cannot see token count or context fullness — all heuristics must use conversation-visible signals.
 
 **Outputs.** Sizing check in `/sovrecap` or `/sovbuild` procedure doc. Compact-nudge logic (likely in universal-behaviour.md or a procedure doc). Calibration guidance for thresholds. Fold-in: standardise the end-of-session prompt in `git.md` to recommend `/compact` when continuing in the same area, `/clear` for a fresh start (from OQ "/sovgit close prompt," surfaced v97).
 
 **Success criteria.** A batch with 8+ file touches and design questions triggers a pre-build warning. A session with 15+ exchanges past `/sovbuild` without reaching `/sovclose` triggers a compact nudge. Neither mechanism blocks — both are advisory.
 
-**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. E2E testing (0088, 0095) would provide calibration data but is parked — calibrate from dev-side session history instead, and refine post-E2E if needed.
+**Risks / dependencies.** Thresholds are guesses until calibrated against real sessions. The parking rationale from the original OQ still partially applies: the 20% blowout rate is dev-side, and plugin-guided builds may behave differently. 0088 shipped (v114) — provided some calibration data (single-session lifecycle, 6 skill invocations). Formal threshold calibration from dev-side session history still needed.
 
 ---
 
@@ -190,7 +175,25 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Success criteria.** A French-speaking tester runs `/sovsetup`, sets `Language: French`, and receives all Claude-generated output in French. Control tokens remain English. Non-ASCII filenames in batches don't break drift detection. No plugin doc translation needed.
 
-**Risks / dependencies.** E2E testing (0088) would validate the base flow before adding language variation, but is parked — not blocking. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
+**Risks / dependencies.** 0088 shipped (v114) — base build flow validated. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
+
+---
+
+### 0116 — Method-infra whitelist + phase-detection fixes
+
+**Goal.** Fix three `pre_tool_use.py` bugs surfaced during 0088 E2E testing that break the V90+ build-snapshot architecture and close-phase file writes.
+
+**Bug 1 — active-build.md creation blocked.** `is_method_infra_file()` only handles subdirectory-level entries in `_METHOD_INFRA_DIRS`. Root-level `_method/` files like `active-build.md` fail the check because `parts[0]` is the filename, not a directory name. Fix: add root-file handling — either special-case `active-build.md` or add a known-root-files set.
+
+**Bug 2 — test-log/ and build-log/ writes blocked during close.** `test-log` and `build-log` not in `_METHOD_INFRA_DIRS`. Close procedure can't write outputs to their correct locations. Fix: add both to the set.
+
+**Bug 3 — Phase detection falls through after batch completion.** When all files in a batch are ticked complete, the parser returns `{}` (no unticked batch), and phase detection drops to "planning" despite `Status: active`. Compounds Bug 2 — even with correct directory whitelist, close-phase writes fail because the phase is wrong. Fix: `Status: active` should keep phase as "build" regardless of file-tick state; the close procedure manages its own transition.
+
+**Files.** pre_tool_use.py, test_pre_tool_use.py.
+
+**Success criteria.** `/sovbuild` creates `_method/active-build.md` without hook denial. `/sovclose` writes to `_method/test-log/` and `_method/build-log/` without hook denial. Phase remains "build" while `Status: active` regardless of file-tick state. All existing tests pass; new tests cover the three fix paths.
+
+**Risks / dependencies.** None. Self-contained hook fixes.
 
 ---
 
