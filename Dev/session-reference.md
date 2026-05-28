@@ -110,7 +110,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 | File | Lifecycle | Deleted when |
 |---|---|---|
-| `Dev/Planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope for each queued batch. Once shipped, entry removed (step 9) — commit + code + docs are source of truth. | Batch ships (step 9). |
+| `Dev/Planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope for each queued batch. Once shipped, entry removed at session close — commit + code + docs are source of truth. | Batch ships (session close). |
 | `Dev/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
 | `Dev/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
 | `Dev/Planning/BACKLOG.md` | **Living.** Rolling roadmap + open questions. | Never. |

@@ -45,7 +45,7 @@ Classify the session opener. Pick the highest-priority match. Openers naming a s
 | Session type | What to load | What to skip | Session-middle shape | Close path |
 |---|---|---|---|---|
 | **Implementation** | Full open (steps 1–4). Batch input files per `Inputs:`. | — | Ship plugin code or method-doc structural changes per batch scope. Ends with smoke test + doc-parity. | Full close |
-| **Doc-only** | Full open (steps 1–4). | Batch-input check (step 4) if no queued batch is being consumed. | Rewrites without testable code. Terminology, parity catch-up, OQ resolution as prose. | Lighter close |
+| **Doc-only** | Full open (steps 1–3). Step 4 if consuming a queued batch. | — | Rewrites without testable code. Terminology, parity catch-up, OQ resolution as prose. | Lighter close |
 | **Planning** | Steps 1, 3, 5. Recent build-log entries for context. | Heavy plugin docs (step 2) unless needed for a specific question. | Rescope roadmap: split/merge batches, revise scope, add/resolve OQs. | Lighter close |
 | **Ideation** | Steps 1, 3. BACKLOG batches + OQs for gap detection. | Plugin docs (step 2), batch-input check (step 4). | Brainstorm new batches/OQs. Draft scope. No structural changes to existing batches. | Lighter close |
 | **E2E test** | Full open (steps 1–4). Consumer project state. Relevant research files. | — | Run plugin against consumer project. Document findings. File to research/. | Lighter close |
@@ -95,7 +95,7 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 
-6. **[SILENT] Regenerate proxies.** If `Dev/Planning/.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per its format spec. Skip if no source docs were edited.
+6. **[SILENT] Regenerate proxies.** If `Dev/Planning/.proxies/` exists, regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy matching the format of existing files in `Dev/Planning/.proxies/` (HTML comment header with `source`/`generated`/`when`, title, state summary, `## Sections` with `L<N>` line-number pointers). Skip if no source docs were edited.
 
 7. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
    - [ ] Doc-code parity done (step 1)
@@ -104,21 +104,20 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
    - [ ] Build-log entry written + index line prepended (step 4)
    - [ ] Idea sweep done — nothing unrouted (step 5)
    - [ ] Proxies regenerated (step 6)
+   - [ ] Consumed batch removed from BACKLOG's Queued batches section
    Complete any missing steps now. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
 8. **[PROMPT] Commit** with `v<N>:` message.
 
 9. **[SILENT] Tag** `git tag v<N>`.
 
-10. **[SILENT] Remove this batch from BACKLOG's Queued batches section** as part of the commit.
-
-11. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+10. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 ### Lighter close (planning, doc-only, ideation, E2E test)
 
-Run when the session didn't ship code. Steps that produce no-ops on non-code sessions are skipped explicitly.
+Run for any session type other than implementation. Steps that produce no-ops on non-implementation sessions are skipped explicitly.
 
-1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 5: every idea routed to exactly one of BACKLOG batch, BACKLOG open question, or flagged in recap for user. Nothing left unrouted.
+1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 5: every idea routed to exactly one of BACKLOG batch, BACKLOG open question, or flagged in recap for user. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while session context is freshest.)
 
 2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
@@ -141,7 +140,7 @@ Run when the session didn't ship code. Steps that produce no-ops on non-code ses
 8. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 **Skipped explicitly (vs. implementation close):**
-- Doc-code parity — no code changes to audit.
+- Doc-code parity — no implementation changes to audit.
 - Frame-correction sweep — no feature frame changed.
 
 **Conditional:** If this session consumed a queued batch (e.g. a doc-only batch), remove it from BACKLOG's Queued batches section as part of the commit (lighter close step 5, checkpoint).

@@ -88,7 +88,6 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0093 | Dev-side folder restructure | All dev-side content into `Dev/`, product docs into `Guides/`. Manual execution with different design choices from spec. **Shipped v96.** |
 | 0111 | Dev-side session-protocol procedural convergence | Opener routing table, carried-forward read-back, explicit pre-commit checklist, idea-sweep 3-way triage, differentiated close paths, batch-ordering audit. Resolves 3 OQs. **Shipped v104.** |
 
-| 0102 | Dev-side session-close convergence | Proxy regen close step + response-shape tags on session-protocol.md close steps. Dev-internal only. |
 | 0101 | Structured-markdown validator | PostToolUse validation for TEST-LOG, build-log, scope-context, proxies. Warn on malformed shapes. **Shipped v101.** |
 | 0100 | Bash write-guard + skill escape guidance | Bash-matcher PreToolUse for file-write commands; escape guidance on all write-lock denies. **Shipped v102.** |
 | 0099 | /sovrecap + /sovbuild rename + lock-timing fix | Rename before-build→sovrecap, build→sovbuild; Status: active delayed to post-confirmation. **Shipped v95.** |
@@ -107,6 +106,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
+| 0124 | Dev-side close procedure fixes | Batch-removal timing, stale step-number xref, proxy format spec, 3 OQs folded in, duplicate-0102 cleanup. **Shipped v121.** |
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
 | 0121 | Dev-side reader test | Three-agent reader test against dev-side docs; gap list + 2 new batches + 11 OQs. **Shipped v120.** |
 | 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
@@ -119,23 +119,6 @@ Shipped/cancelled batches end here. Queued batches are below with full scope con
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0124 — Dev-side close procedure fixes
-
-**Goal.** Fix three procedural inconsistencies in session-protocol.md's close sections, surfaced by the 0121 reader test.
-
-**Approach.** Three targeted fixes, all in session-protocol.md and session-reference.md:
-- **Batch removal timing asymmetry (T2).** Implementation close removes the consumed batch at step 10 (after commit/tag); lighter close handles it inside the pre-commit checkpoint at step 5 (before commit). Decide which timing is correct and make both paths consistent.
-- **Stale step-number cross-reference (T3).** session-reference.md → Planning artefacts says "removed (step 9)" but session-protocol.md numbers this step 10. Update session-reference.md to match.
-- **Proxy format spec unlocated (T4).** Close step 6 says "write the proxy per its format spec" but doesn't say where that spec lives. Either point to the existing proxy files as format exemplars or describe the dev-side proxy format inline.
-
-**Outputs.** Updated session-protocol.md (both close paths) and session-reference.md. No code changes.
-
-**Success criteria.** Both close paths agree on batch removal timing. Step references are consistent across docs. Proxy regen step has an actionable format reference.
-
-**Risks / dependencies.** None. Small surface area — three doc edits.
 
 ---
 
@@ -255,18 +238,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
-### Lighter close step reordering rationale
-
-**Surfaced.** v120 (0121 reader test, M1).
-
-**The question.** The lighter close reorders steps compared to the implementation close (idea sweep first, then build-log, footers later) with no stated rationale. Is this intentional, and if so, what drives the difference?
-
-**Why it matters.** A reader trying to understand the lighter close by analogy to the full close will be confused by the different ordering. If the reordering is intentional (e.g. idea sweep first because there's no parity/frame work to inform it), documenting the reason prevents future sessions from "fixing" the order back. If accidental, aligning the paths reduces cognitive load.
-
-**Next step.** Decide during 0124 (close procedure fixes) — fold in if the answer is obvious, or defer if it needs deliberation.
-
----
-
 ### Frame-correction sweep: categorical vs conditional skip in lighter close
 
 **Surfaced.** v120 (0121 reader test, M2).
@@ -276,18 +247,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 **Why it matters.** A doc-only batch that rewrites scope text could leave queued batches referencing an old frame — exactly what the sweep catches. The categorical skip assumes lighter-close sessions never change frames, which isn't guaranteed.
 
 **Next step.** Park. Low frequency — doc-only sessions rarely change frames. Revisit if a frame-change slips through a lighter close.
-
----
-
-### Doc-only batch-input check: skip rule underspecified
-
-**Surfaced.** v120 (0121 reader test, M3).
-
-**The question.** The routing table says doc-only sessions skip "batch-input check (step 4) if no queued batch is being consumed." What happens when a doc-only session *does* consume a queued batch — does step 4 apply? The conditional phrasing is easy to misread as "always skip for doc-only."
-
-**Why it matters.** A doc-only batch with an Inputs line (e.g. referencing a research file or external artifact) needs the same out-of-repo check as any other batch. Misreading the skip rule could let a session start without its inputs.
-
-**Next step.** Fold into 0124 or 0125 as a one-line clarification when those batches touch the routing table or close paths.
 
 ---
 
@@ -351,18 +310,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
-### Duplicate batch 0102 in shipped batch table
-
-**Surfaced.** v120 (0121 reader test, B1).
-
-**The question.** BACKLOG.md's shipped batch table has two rows for batch number 0102. The first occurrence has no shipped annotation; the second says "Shipped v99." Is the first row a leftover from an earlier edit?
-
-**Why it matters.** Minor data integrity issue. Doesn't affect any process, but a reader scanning the table sees a duplicate that implies something was missed.
-
-**Next step.** Fix as a one-line cleanup in the next session that edits BACKLOG.md. No batch needed.
-
----
-
 ### Cross-reference precision across dev-side docs
 
 **Surfaced.** v120 (0121 reader test, B2/B3/B4/B5).
@@ -372,18 +319,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 **Why it matters.** Individually minor. Collectively, they make the doc set harder for a fresh reader to navigate — each instance requires the reader to either flip to another doc or hold two numbering schemes in mind. The reader test found these because the agents were explicitly instructed to flag "the document does not say" moments.
 
 **Next step.** Park. Address opportunistically when the relevant sections are edited for other reasons. Not worth a dedicated batch.
-
----
-
-### Lighter-close naming vs doc-only batches that consume queued batches
-
-**Surfaced.** v120 (0121 reader test, B6).
-
-**The question.** The lighter close is described as "run when the session didn't ship code." But a doc-only batch that consumes a queued batch may need more than "lighter" — the conditional note about batch removal reads as an afterthought. Should the distinction be "consumed a queued batch with code changes" vs. everything else, rather than "shipped code" vs. didn't?
-
-**Why it matters.** The wording creates an edge case where a doc-only session consuming a queued batch follows the lighter close path but then hits the conditional batch-removal step that feels bolted on. Reframing the distinction would make the conditional unnecessary.
-
-**Next step.** Consider during 0124 (close procedure fixes) since that batch already touches both close paths.
 
 ---
 
