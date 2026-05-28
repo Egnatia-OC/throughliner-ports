@@ -2,8 +2,8 @@
 """
 PreToolUse hook for the no-code-method plugin.
 
-Runs six checks on Edit / Write / MultiEdit calls, plus a Bash/PowerShell
-write-guard (V83):
+Runs six checks on Edit / Write / MultiEdit calls, plus two Bash/PowerShell
+guards:
 
   (5) V29 adoption gate — fires first. Denies Edit/Write/MultiEdit on
       non-scaffold-path files when the folder lacks a method footer in
@@ -34,6 +34,10 @@ write-guard (V83):
   (6) Read-before-edit gate (V39) — blocks first edit on MANIFEST-pathed
       files until Claude has the MANIFEST entry and UX context in view.
       Block-once via transcript scan.
+
+  (9) Unclosed-build commit guard (V132) — blocks `git commit` via
+      Bash/PowerShell when _method/active-build.md exists with all Files:
+      ticked. Prevents orphaned snapshots from skipping /sovclose.
 
   (8) Bash/PowerShell write-guard (V83, V91 heredoc fix) — scans
       Bash/PowerShell commands for file-write patterns (sed -i, >, >>,
@@ -1661,6 +1665,55 @@ def check_bash_write_guard(project_root, command, phase, permission_mode=""):
     return None
 
 
+# --- V132 Unclosed-build commit guard ---
+
+
+_GIT_COMMIT_PATTERN = re.compile(r"\bgit\s+(?:-\S+\s+)*commit\b")
+
+
+def _snapshot_all_files_ticked(project_root):
+    """True if _method/active-build.md exists and every Files: entry is
+    ticked. False if no snapshot, no Files: entries, or any unticked."""
+    snapshot_path = project_root / "_method" / "active-build.md"
+    text = safe_read_text(snapshot_path)
+    if text is None:
+        return False
+    ticked = 0
+    unticked = 0
+    for m in re.finditer(r"^- \[([ x])\]\s+`[^`]+`", text, re.MULTILINE):
+        if m.group(1) == "x":
+            ticked += 1
+        else:
+            unticked += 1
+    return ticked > 0 and unticked == 0
+
+
+def check_unclosed_build_commit(project_root, command, permission_mode=""):
+    """V132 check (9): block git commit when build is done but /sovclose
+    hasn't run.
+
+    Condition: _method/active-build.md exists with all Files: entries
+    ticked AND the command contains `git commit`. Mid-build commits
+    (some files unticked) are not blocked.
+
+    Returns deny-reason string or None."""
+    if not _GIT_COMMIT_PATTERN.search(command):
+        return None
+    if not _snapshot_all_files_ticked(project_root):
+        return None
+    return (
+        "[No-code method] BLOCKED: all files in the build snapshot are "
+        "ticked but `/sovclose` has not run yet. Committing now would "
+        "leave an orphaned `_method/active-build.md` that blocks all "
+        "future builds, and skip MANIFEST updates, test rows, build-log "
+        "entry, doc-parity check, and frame-correction sweep.\n\n"
+        "What to do: run `/sovclose` first — it handles quality gates "
+        "and record-keeping. Then `/sovgit` walks you through commit, "
+        "tag, and push."
+        + _mode_suffix(permission_mode)
+    )
+
+
 def main() -> int:
     data = parse_input()
     if not isinstance(data, dict):
@@ -1687,6 +1740,12 @@ def main() -> int:
             project_root = Path(cwd_str).resolve()
         except OSError:
             return emit_allow()
+        # V132 check (9): unclosed-build commit guard.
+        commit_deny = check_unclosed_build_commit(
+            project_root, command, permission_mode
+        )
+        if commit_deny:
+            return emit_deny(commit_deny)
         bash_deny = check_bash_write_guard(
             project_root, command, detect_phase(project_root), permission_mode
         )

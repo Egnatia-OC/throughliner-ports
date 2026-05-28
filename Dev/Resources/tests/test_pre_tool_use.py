@@ -1093,3 +1093,137 @@ class TestSkillEscapeGuidance:
         reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
         assert "/sovclose" in reason
         assert "/sovplan" in reason
+
+
+# ---------------------------------------------------------------------------
+# V132 Unclosed-build commit guard
+# ---------------------------------------------------------------------------
+
+class TestUnclosedBuildCommitGuard:
+    """V132: git commit blocked when _method/active-build.md exists
+    with all Files: ticked (build done, /sovclose not run)."""
+
+    def test_all_ticked_commit_blocked(self, tmp_path):
+        """All files ticked + git commit -> denied."""
+        root = tmp_path
+        (root / "CLAUDE.md").write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 98.*\n',
+            encoding="utf-8",
+        )
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n"
+            "- [x] `app/main.py` — Main file\n"
+            "- [x] `app/utils.py` — Utilities\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "ship it"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "/sovclose")
+
+    def test_some_unticked_commit_allowed(self, tmp_path):
+        """Some files unticked + git commit -> allowed (mid-build)."""
+        root = tmp_path
+        (root / "CLAUDE.md").write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
+            ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
+            ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
+            '```\n\n*No-code method — Version 98.*\n',
+            encoding="utf-8",
+        )
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n"
+            "- [x] `app/main.py` — Main file\n"
+            "- [ ] `app/utils.py` — Utilities\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "wip"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_no_snapshot_commit_allowed(self, tmp_path):
+        """No active-build.md + git commit -> allowed (planning phase)."""
+        root = tmp_path
+        (root / "CLAUDE.md").write_text(
+            '## Where the docs live\n\n```json\n'
+            '{"UX.md": "_method/UX.md"}\n'
+            '```\n\n*No-code method — Version 98.*\n',
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "planning changes"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_non_commit_command_allowed(self, tmp_path):
+        """Non-git-commit commands pass through even with ticked snapshot."""
+        root = tmp_path
+        (root / "CLAUDE.md").write_text(
+            '*No-code method — Version 98.*\n',
+            encoding="utf-8",
+        )
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Test batch\n\nFiles:\n- [x] `app/main.py` — Done\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, "git status")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_allow(code, raw)
+
+    def test_git_commit_with_options_blocked(self, tmp_path):
+        """git commit with flags (--amend, etc.) also blocked."""
+        root = tmp_path
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Batch\n\nFiles:\n- [x] `f.py` — Done\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, "git commit --amend --no-edit")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "orphaned")
+
+    def test_powershell_commit_blocked(self, tmp_path):
+        """PowerShell git commit also blocked."""
+        root = tmp_path
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Batch\n\nFiles:\n- [x] `f.py` — Done\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "msg"', tool_name="PowerShell")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "/sovclose")
+
+    def test_mode_aware_suffix(self, tmp_path):
+        """Auto mode includes mode-aware suffix in deny message."""
+        root = tmp_path
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Batch\n\nFiles:\n- [x] `f.py` — Done\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "msg"', permission_mode="Auto")
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        _assert_deny(parsed, "permission mode")
+
+    def test_deny_message_content(self, tmp_path):
+        """Deny message explains consequences and points at /sovclose."""
+        root = tmp_path
+        (root / "_method").mkdir()
+        (root / "_method" / "active-build.md").write_text(
+            "# Batch\n\nFiles:\n- [x] `f.py` — Done\n",
+            encoding="utf-8",
+        )
+        data = _bash_input(root, 'git commit -m "msg"')
+        code, parsed, raw = run_hook("pre_tool_use.py", data)
+        reason = parsed["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "orphaned" in reason
+        assert "/sovclose" in reason
+        assert "MANIFEST" in reason
+        assert "/sovgit" in reason

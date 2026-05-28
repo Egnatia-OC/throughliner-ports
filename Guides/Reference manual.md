@@ -300,7 +300,7 @@ The plugin doesn't ship or store API keys — user brings their own.
 
 ## What's inside the plugin
 
-- **Hooks** (Python, deterministic): SessionStart detects folder state, injects rules, mandates status summary (batch counts, next batch, pending tests, concurrent-build detection, stale OQs). PreToolUse enforces edit boundaries (locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, write-guard with project-boundary check). PostToolUse validates doc structure after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build. UserPromptSubmit classifies first prompt + injects routing hint.
+- **Hooks** (Python, deterministic): SessionStart detects folder state, injects rules, mandates status summary (batch counts, next batch, pending tests, concurrent-build detection, stale OQs). PreToolUse enforces edit boundaries (locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, unclosed-build commit guard, write-guard with project-boundary check). PostToolUse validates doc structure after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build. UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read on demand): planning, before-build (`/sovrecap`), build (`/sovbuild`), close, git, revert, testing (`/sovtest`), tersify (`/sovtersify`), setup. Each specifies what to load and do. Followed in main context — no agent spawning.
 - **Slash commands** (`/sovsetup`, `/sovplan`, `/sovdeliberate`, `/sovideate`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`): entry points directing Claude to matching procedure doc or flow.
 - **Scripts** (Python): `parse_backlog.py` (BACKLOG parser), `allocate_number.py` (number allocation), `bump_version.py` (footer bumps + proxy updates), `project_state.py` (shared hook helpers), `validate_docs.py` (PostToolUse validation).
@@ -413,4 +413,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 98.*
+*No-code method — Version 99.*

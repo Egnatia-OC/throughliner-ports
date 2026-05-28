@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-121 batches shipped or cancelled (V18–0132). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+122 batches shipped or cancelled (V18–0133). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -36,20 +36,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0133 — Close-procedure hook enforcement
-
-**Goal.** Add hook-level enforcement preventing builds from being committed without running `/sovclose`. The doc-side fix (prohibition in universal-behaviour.md and build.md) shipped in v131 (plugin reader test). This batch adds the mechanical backstop.
-
-**Inputs.** `plugin/hooks/pre_tool_use.py`, `plugin/hooks/universal-behaviour.md` (close prohibition, shipped v131).
-
-**Outputs.** A PreToolUse check that warns when `_method/active-build.md` exists with all files ticked and the user attempts to commit without running `/sovclose`. Deny message explains the consequence and points at `/sovclose`.
-
-**Success criteria.** A stranger-Claude attempting to commit post-build without close is blocked with a clear deny message. The orphaned-snapshot scenario from the plugin reader test (C-3, C-5, C-8) is mechanically prevented.
-
-**Risks / dependencies.** Hook must distinguish "all ticked, close not run" from "mid-build commit for other files." Condition: all Files: ticked in snapshot AND git commit attempted.
-
----
-
 ### 0134 — Session-start routing clarifications
 
 **Goal.** Resolve three routing-comprehension gaps from the plugin reader test: competing "first output" claims between status block and tripwire, missing routes for common openers (bug reports, doc audits, method questions), and unclear priority ordering in the routing table.
@@ -61,6 +47,20 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** A stranger-Claude receiving the state summary knows unambiguously which output comes first (status → tripwire → routing). Bug reports, doc audits, and "how does this work?" openers each have an explicit route.
 
 **Risks / dependencies.** Routing table expansion must not create overlapping routes. Session_start.py text changes affect all consumer sessions immediately.
+
+---
+
+### 0135 — Convergence reader test (stage 1 — initial reconciliation)
+
+**Goal.** Run the stage 1 convergence reader test to build the complete overlap map between the plugin-side method and the dev-side prose method. The two sides were built up independently with piecemeal patches; they have never been systematically compared. This batch produces the reconciliation map — not edits.
+
+**Inputs.** `Dev/Resources/Iteration playbook/Convergence reader test (stage 1).md` (prompt and procedure). Plugin-side: `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/docs/procedures/close.md`. Dev-side: `Dev/session-protocol.md`, `Dev/session-reference.md`, project `CLAUDE.md`.
+
+**Outputs.** Research file `Dev/Resources/research/convergence-reconciliation-v<N>.md` with the full classified inventory: aligned, contradicts, stale, plugin-only (expected), plugin-only (gap), dev-only (preserve), dev-only (stale). Category counts. Punch list for reconciliation work. New BACKLOG entries for reconciliation batches if the map is large enough to split.
+
+**Success criteria.** Every rule, entry shape, term, and workflow step that exists on either side is accounted for in the map. No unclassified items. The map is concrete enough to plan reconciliation batches from.
+
+**Risks / dependencies.** Depends on 0133 and 0134 shipping first — both change plugin instruction surfaces that stage 1 reads. Sub-agent C defaults to `close.md`; rotate in future runs per playbook refinements. Risk: map may be very large if drift is extensive — plan for the reconciliation to span multiple sessions.
 
 ---
 

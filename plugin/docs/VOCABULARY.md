@@ -103,6 +103,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Concurrent-build detection.** SessionStart check: `_method/active-build.md` exists with unticked files (or legacy `Status: active`) means a build is mid-progress. Warning asks whether resuming or parallel. Under V90+ snapshot, parallel work is safe — BACKLOG unlocked. Distinct from unclosed-build (all files ticked = build finished, `/sovclose` skipped).
 
+- **Unclosed-build commit guard.** PreToolUse check (V132): blocks `git commit` via Bash/PowerShell when `_method/active-build.md` exists with all Files: entries ticked. Prevents orphaned snapshots from skipping `/sovclose`. Mid-build commits (some files unticked) are not blocked. Mechanical backstop for the "Do not skip the close procedure" prohibition.
+
 - **OQ staleness detection.** SessionStart check: OQs with `Surfaced` tags older than 20 sessions are flagged in the status summary, nudging toward a deliberation session.
 
 - **Frame-correction sweep.** After-build check: scan BACKLOG and proposed-edit blocks for references to old behaviour when a build changes a feature's frame.
@@ -136,4 +138,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 98.*
+*No-code method — Version 99.*

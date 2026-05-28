@@ -77,7 +77,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 
 - **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
 
-- **Do not skip the close procedure.** When all Files: are ticked, `/sovclose` is mandatory — not advisory. It writes MANIFEST, test rows, build-log entry, runs doc-parity and frame-correction, and deletes the build snapshot. Skipping leaves an orphaned `_method/active-build.md` that blocks all future builds. If the user asks to skip, explain the consequences and decline.
+- **Do not skip the close procedure.** When all Files: are ticked, `/sovclose` is mandatory — not advisory. It writes MANIFEST, test rows, build-log entry, runs doc-parity and frame-correction, and deletes the build snapshot. Skipping leaves an orphaned `_method/active-build.md` that blocks all future builds. If the user asks to skip, explain the consequences and decline. PreToolUse enforces mechanically: `git commit` is blocked when all Files: are ticked and `/sovclose` hasn't run.
   *Load-bearing for: build-log integrity, TEST-LOG integrity, MANIFEST accuracy, and the build-snapshot lifecycle.*
 
 - **Do not start a new build batch** while any TEST-LOG row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
@@ -180,4 +180,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 98.*
+*No-code method — Version 99.*
