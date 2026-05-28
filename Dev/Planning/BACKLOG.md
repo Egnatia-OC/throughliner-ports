@@ -36,20 +36,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0134 — Session-start routing clarifications
-
-**Goal.** Resolve three routing-comprehension gaps from the plugin reader test: competing "first output" claims between status block and tripwire, missing routes for common openers (bug reports, doc audits, method questions), and unclear priority ordering in the routing table.
-
-**Inputs.** `plugin/hooks/session_start.py`, `plugin/hooks/universal-behaviour.md` (routing table). `Dev/Resources/research/plugin-reader-test-v97.md`.
-
-**Outputs.** Clarified layering in session_start.py's injected text (status block first, then tripwire). Routing table expanded with missing opener categories. Priority ordering explicitly stated as top-to-bottom.
-
-**Success criteria.** A stranger-Claude receiving the state summary knows unambiguously which output comes first (status → tripwire → routing). Bug reports, doc audits, and "how does this work?" openers each have an explicit route.
-
-**Risks / dependencies.** Routing table expansion must not create overlapping routes. Session_start.py text changes affect all consumer sessions immediately.
-
----
-
 ### 0135 — Convergence reader test (stage 1 — initial reconciliation)
 
 **Goal.** Run the stage 1 convergence reader test to build the complete overlap map between the plugin-side method and the dev-side prose method. The two sides were built up independently with piecemeal patches; they have never been systematically compared. This batch produces the reconciliation map — not edits.

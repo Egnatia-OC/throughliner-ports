@@ -1087,7 +1087,8 @@ def format_test_log_tripwire_block(unconfirmed_rows, build_log_status, session_i
         "  **Routing override.** Regardless of the user's opener "
         "classification (test notes / feature request / scope question / "
         "conversational), read and follow the planning procedure at "
-        "`${{CLAUDE_PLUGIN_ROOT}}/docs/procedures/planning.md`. Open "
+        "`${{CLAUDE_PLUGIN_ROOT}}/docs/procedures/planning.md`. After "
+        "presenting the session-open status summary, open the conversation "
         "with: *\"Before we get to your question — N "
         "pending tests from session X to confirm. First: <test description "
         "of row 1>?\"* The procedure's first step is the per-row "
@@ -1533,15 +1534,19 @@ def build_state_summary(project_root: Path, claude_text: str, path_block: dict) 
 
     lines.append("")
     lines.append(
-        "**Routing.** After presenting the status, read the user's opening "
-        "message and route per `universal-behaviour.md` → *Routing "
-        "openers*. This hook does not classify the user's "
-        "opener — that's your call based on the user's words and the "
-        "structural state listed above. For each phase, read and follow "
-        "the matching procedure doc at "
-        "`${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. "
-        "Exception: when the TEST-LOG "
-        "tripwire above fires, the routing override there takes precedence."
+        "**Output ordering.** Three layers, in this order:\n\n"
+        "1. **Status summary** (above). Present to the user — always "
+        "first, every session.\n"
+        "2. **Tripwire** (if fired). If the TEST-LOG tripwire appears in "
+        "the project state above, announce pending tests immediately after "
+        "the status. The tripwire's routing override takes precedence over "
+        "normal routing.\n"
+        "3. **Routing.** If no tripwire, read the user's opening message "
+        "and route per `universal-behaviour.md` → *Routing openers*. "
+        "For each phase, read and follow the matching procedure doc at "
+        "`${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`.\n\n"
+        "This hook does not classify the user's opener — that's your "
+        "call based on the user's words and the structural state above."
     )
 
     return "\n".join(lines)

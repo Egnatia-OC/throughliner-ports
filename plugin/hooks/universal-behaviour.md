@@ -106,7 +106,7 @@ Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — 
 
 ## Routing openers
 
-Classify and route the session opener. Routes are exclusive; pick highest-priority match.
+Classify and route the session opener. Routes are exclusive; pick highest-priority match. **The table is in priority order — first matching row wins.**
 
 **Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the first prompt, injecting a routing hint as `additionalContext`. A suggestion, not a gate — use judgement if it doesn't match intent. No-ops on subsequent prompts.
 
@@ -128,6 +128,9 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 | "New idea," `/sovideate`, feature request, brainstorm | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/ideate.md`. |
 | Scope question | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: scope question`. |
 | "That broke everything," "put it back," "undo," `/sovrevert` | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/revert.md`. |
+| Bug report ("X doesn't work," "found a bug," "Y is broken") | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: bug report`. |
+| Doc audit ("check the docs," "is X up to date," "review UX.md") | Load target docs, compare against current code state, `[DISCUSS]` — surface gaps and propose fixes. Route structural changes through planning. |
+| Method question ("how does X work," "what does Y mean") | `[DISCUSS]` — respond using loaded doc state. Reference `VOCABULARY.md` for definitions. |
 | Unfinished top batch, no other trigger | Resume. Confirm with user first. |
 | Question, status check, conversational | `[DISCUSS]` — respond using loaded doc state. |
 
