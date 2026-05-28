@@ -73,7 +73,7 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 ## Session close
 
-Two paths based on session type.
+Two paths based on session type. Both split into a **judgment pass** (while session context is fresh) and a **mechanical pass** (after `/compact`). The turn boundary between them is a `[PROMPT]` — recommended, not enforced. Short sessions can close in one turn.
 
 ### Implementation close (full)
 
@@ -83,83 +83,95 @@ Response-shape tags mark verbosity per step — definitions in `session-referenc
 
 Use `git diff` to identify what changed this session — the dev-side equivalent of the plugin's `## Close handoff` section in `active-build.md`. Steps 1 and 2 draw from this rather than re-exploring.
 
-1. **[BRIEF] Doc-code parity** (see *Doc-code parity* section below for audit details). Fix docs before footers and BUILD-LOG.
+**Turn 1 — judgment.** Run while build context is fresh.
+
+1. **[BRIEF] Doc-code parity** (see *Doc-code parity* section below for audit details). Fix docs before the build-log entry.
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
-3. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Run from `sovereign-implementer/`:
-   ```
-   python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
-   ```
-   The script bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. It also regenerates proxy headers and line-number pointers (step 6). Full bump list in `session-reference.md` → *Footer bumps*.
+3. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-4. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
-
-5. **[BRIEF] Idea sweep with routing.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to exactly one destination:
+4. **[BRIEF] Idea sweep with routing.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to exactly one destination:
    - **BACKLOG batch** — add a new queued batch entry to BACKLOG.md → *Queued batches*.
    - **BACKLOG open question** — add to BACKLOG.md → *Open questions* with `Surfaced` tag.
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 
-6. **[SILENT] Regenerate proxies.** The bump script (step 3) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited this session — update summaries, section descriptions, and add/remove entries for structural changes the script can't detect. If no source docs were edited and no version bump ran, skip. For sessions without a version bump, run proxies-only:
+5. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` — the mechanical pass needs only these values and the script, not build context. If context pressure is low, continuing directly is fine.
+
+**Turn 2 — mechanical.** Needs only the session tag, version numbers (if bumping), and the script.
+
+6. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Run from `sovereign-implementer/`:
+   ```
+   python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
+   ```
+   The script bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. It also regenerates proxy headers and line-number pointers (step 7). Full bump list in `session-reference.md` → *Footer bumps*.
+
+7. **[SILENT] Regenerate proxies.** The bump script (step 6) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited this session — update summaries, section descriptions, and add/remove entries for structural changes the script can't detect. If no source docs were edited and no version bump ran, skip. For sessions without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
 
-7. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
+8. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
    - [ ] Doc-code parity done (step 1)
    - [ ] Frame-correction sweep done (step 2)
-   - [ ] Footers bumped if applicable (step 3)
-   - [ ] Build-log entry written + index line prepended (step 4)
-   - [ ] Idea sweep done — nothing unrouted (step 5)
-   - [ ] Proxies regenerated (step 6)
+   - [ ] Build-log entry written + index line prepended (step 3)
+   - [ ] Idea sweep done — nothing unrouted (step 4)
+   - [ ] Footers bumped if applicable (step 6)
+   - [ ] Proxies regenerated (step 7)
    - [ ] Consumed batch removed from BACKLOG's Queued batches section
    Complete any missing steps now. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
-8. **[PROMPT] Commit** with `v<N>:` message.
+9. **[PROMPT] Commit** with `v<N>:` message.
 
-9. **[SILENT] Tag** `git tag v<N>`.
+10. **[SILENT] Tag** `git tag v<N>`.
 
-10. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+11. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 ### Lighter close (planning, doc-only, ideation, E2E test)
 
 Run for any session type other than implementation. Steps that produce no-ops on non-implementation sessions are skipped explicitly.
 
-1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 5: every idea routed to exactly one of BACKLOG batch, BACKLOG open question, or flagged in recap for user. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while session context is freshest.)
+**Turn 1 — judgment.** Run while session context is freshest.
+
+1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 4: every idea routed to exactly one of BACKLOG batch, BACKLOG open question, or flagged in recap for user. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while session context is freshest.)
 
 2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-3. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. When bumping, run from `sovereign-implementer/`:
+3. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` if the session was long. Lighter-close sessions are often short enough to continue directly.
+
+**Turn 2 — mechanical.** Needs only the session tag, version numbers (if bumping), and the script.
+
+4. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. When bumping, run from `sovereign-implementer/`:
    ```
    python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
    ```
 
-4. **[SILENT] Regenerate proxies.** Same rule as implementation close step 6. The bump script (step 3) handles headers and line-number pointers; review for content changes. For sessions without a version bump, run proxies-only:
+5. **[SILENT] Regenerate proxies.** Same rule as implementation close step 7. The bump script (step 4) handles headers and line-number pointers; review for content changes. For sessions without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
    Skip if no source docs were edited and no version bump ran.
 
-5. **[BRIEF] Pre-commit checkpoint.** Verify by name:
-   - [ ] Build-log entry written + index line prepended (step 2)
+6. **[BRIEF] Pre-commit checkpoint.** Verify by name:
    - [ ] Idea sweep done — nothing unrouted (step 1)
-   - [ ] Proxies regenerated if applicable (step 4)
-   - [ ] Footers bumped if applicable (step 3)
+   - [ ] Build-log entry written + index line prepended (step 2)
+   - [ ] Footers bumped if applicable (step 4)
+   - [ ] Proxies regenerated if applicable (step 5)
    - [ ] Batch removed from BACKLOG if this session consumed one
    Complete any missing steps now.
 
-6. **[PROMPT] Commit** with `v<N>:` message.
+7. **[PROMPT] Commit** with `v<N>:` message.
 
-7. **[SILENT] Tag** `git tag v<N>`.
+8. **[SILENT] Tag** `git tag v<N>`.
 
-8. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+9. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 **Skipped explicitly (vs. implementation close):**
 - Doc-code parity — no implementation changes to audit.
 - Frame-correction sweep — no feature frame changed.
 
-**Conditional:** If this session consumed a queued batch (e.g. a doc-only batch), remove it from BACKLOG's Queued batches section as part of the commit (lighter close step 5, checkpoint).
+**Conditional:** If this session consumed a queued batch (e.g. a doc-only batch), remove it from BACKLOG's Queued batches section as part of the commit (lighter close step 6, checkpoint).
 
 ---
 

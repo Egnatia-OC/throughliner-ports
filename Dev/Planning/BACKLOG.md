@@ -106,6 +106,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0110 | Queued-pipeline staleness sweep at close | Concurrent-build detection, OQ staleness detection (SessionStart hooks); staleness sweep + lost-feature check (close steps 9–10). **Shipped v111.** |
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
+| 0119 | Two-turn close procedure (dev-side) | Judgment/mechanical split with `/compact` turn boundary in both close paths. **Shipped v124.** |
 | 0124 | Dev-side close procedure fixes | Batch-removal timing, stale step-number xref, proxy format spec, 3 OQs folded in, duplicate-0102 cleanup. **Shipped v121.** |
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
 | 0121 | Dev-side reader test | Three-agent reader test against dev-side docs; gap list + 2 new batches + 11 OQs. **Shipped v120.** |
@@ -121,22 +122,6 @@ Shipped/cancelled batches end here. Queued batches are below with full scope con
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0119 — Two-turn close procedure (dev-side)
-
-**Goal.** Split the dev-side close into a judgment pass and a mechanical pass with a `/compact` point between them, so judgment work runs while build context is fresh and mechanicals run with minimal context.
-
-**Approach.** Update dev-side session-protocol.md to define an explicit turn boundary after the judgment steps (parity, frame corrections, build-log narrative, idea sweep) and before the mechanical steps (script run, proxy regen, commit/tag/push). The boundary is a `[PROMPT]` recommending `/compact`. The mechanical pass needs only the version numbers and the script.
-
-**Outputs.** Updated dev-side session-protocol.md with explicit two-turn structure. `/compact` recommendation at the turn boundary.
-
-**Success criteria.** Judgment pass completes without context pressure from upcoming mechanicals. Mechanical pass runs cleanly after `/compact`. Total close cost lower than single-turn close on high-file-count batches.
-
-**Dependencies.** 0118 (dev-side scripted mechanicals) — the script is what makes the second turn lightweight.
-
-**Risks.** Low. If the split doesn't help in practice, it's a soft recommendation, not enforced — sessions can still close in one turn.
 
 ---
 
