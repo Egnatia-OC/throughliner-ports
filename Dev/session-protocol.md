@@ -30,7 +30,7 @@ So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 t
 
 In order:
 
-1. `git describe --tags --abbrev=0` — confirm current version.
+1. `git describe --tags --abbrev=0` — confirm current version. If git is unavailable or the command fails, read the *Current state* section at the bottom of this project's `CLAUDE.md` and use its session tag. Flag the value if it looks stale (e.g. build-log entries are clearly newer).
 2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Guides/Reference manual.md` at `HEAD`.
 3. Read `Dev/Planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
@@ -52,6 +52,8 @@ Classify the session opener. Pick the highest-priority match. Openers naming a s
 | **Remote-control standby** | Step 1 only. | Steps 2–5 until directed. | Wait for instructions. Load on demand. | Depends on work done |
 
 **Skip doesn't mean refuse.** If mid-session the skipped content becomes relevant, load it then.
+
+**Blended openers.** When an opener matches multiple session types (e.g. "let's plan 0125 and then build it"), use this priority ordering to decide the primary type: E2E test > Implementation > Planning > Ideation > Doc-only > Remote-control standby. The primary type determines session-open loading and close path. Handle threads sequentially, highest-priority first. When the opener is ambiguous enough to need disambiguation (e.g. "let's do the next thing" when the next batch could be planning or implementation), resolve the routing-critical ambiguity first — ask one question, wait for the answer, then proceed. Defer non-routing clarifications to mid-session. Informal modifiers ("spare session," "quick one," "I have 10 minutes") are availability context, not session types — route on the substantive direction, not the modifier.
 
 ---
 

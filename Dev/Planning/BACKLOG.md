@@ -113,28 +113,13 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0113 | Session-length safeguards | Pre-build sizing, mid-session compact nudge, invocation-prompt compact nudge, git.md close-prompt fold-in. **Shipped v116.** |
 | 0114 | Language setting + BOM hardening + blocker gate + carried-forward removal | Language: field, utf-8-sig BOM strip, pre-build blocker gate, carried-forward removal. **Shipped v117.** |
 | 0117 | Build-phase close handoff artifact | `## Close handoff` in build snapshot; build appends per-file, close reads first. **Shipped v118.** |
+| 0125 | Dev-side opener routing completeness | Blended-opener priority rule, git-unavailable fallback, informal-modifier note. OQ fold-in. **Shipped v122.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0125 — Dev-side opener routing completeness
-
-**Goal.** Close three routing gaps in session-protocol.md's opener routing table: blended/multi-type openers, disambiguation sequencing within multi-thread openers, and git-unavailable fallback.
-
-**Approach.** Two additions to session-protocol.md:
-- **Blended-opener rule (T1 + M9).** Add a rule below the routing table for openers that match multiple session types. Define priority ordering across session types. State that threads are handled sequentially, highest-priority first. Specify how disambiguation requests are sequenced when the one-item-at-a-time rule applies (e.g. resolve the routing-critical ambiguity first, defer others to mid-session).
-- **Git-unavailable fallback (T5).** Add a fallback to step 1 for when `git describe` fails or is unavailable. Point to CLAUDE.md's *Current state* section as the recovery source, with a note to flag if the value looks stale.
-
-**Outputs.** Updated session-protocol.md routing table and session-open step 1.
-
-**Success criteria.** A stranger-Claude receiving a blended opener can route without improvising. Git-unavailable scenario has a documented fallback.
-
-**Risks / dependencies.** T1 requires a priority ordering decision — that's a design choice, not just a doc fix. Low risk: the ordering can be inferred from current practice (E2E > implementation > planning > ideation > doc-only > standby), but it needs to be stated explicitly.
 
 ---
 
@@ -259,18 +244,6 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 **Why it matters.** Standby sessions are rare in practice (most sessions have a clear type), but when they occur, the lack of close-path guidance means Claude has to improvise. A "no work done → no close needed" rule, or a "classify the work and follow the matching close" rule, would be sufficient.
 
 **Next step.** Park. Very low frequency. Revisit if standby sessions become more common or if a standby session produces an awkward close.
-
----
-
-### Informal opener modifiers unmapped
-
-**Surfaced.** v120 (0121 reader test, M5).
-
-**The question.** Terms like "spare session," "quick one," "I have 10 minutes" appear in real openers but have no routing-table mapping. Should they be addressed explicitly, or is the current "pick the highest-priority match on the substantive direction" approach sufficient?
-
-**Why it matters.** The fresh-session agent treated "spare" as availability context rather than a session type — a reasonable inference, but one the docs don't prepare a reader for. If informal modifiers affect session scope (e.g. "quick one" implying lighter work), that interaction isn't documented.
-
-**Next step.** Consider folding a one-line note into 0125 (opener routing completeness) when it ships. Low priority — current practice handles it fine.
 
 ---
 

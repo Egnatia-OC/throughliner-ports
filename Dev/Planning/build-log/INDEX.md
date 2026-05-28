@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v122-opener-routing-completeness.md](v122-opener-routing-completeness.md) — 2026-05-28 — Dev-side opener routing completeness + OQ fold-in
 - [v121-close-procedure-fixes.md](v121-close-procedure-fixes.md) — 2026-05-28 — Dev-side close procedure fixes + 3 OQs folded in
 - [v120-dev-side-reader-test.md](v120-dev-side-reader-test.md) — 2026-05-28 — Dev-side reader test: gap list and BACKLOG routing
 - [v119-planning-batch-splits-and-reader-test.md](v119-planning-batch-splits-and-reader-test.md) — 2026-05-28 — Planning: batch splits, reader test, mirroring audit
