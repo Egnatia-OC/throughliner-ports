@@ -154,6 +154,40 @@ Don't pad. Half a page is good; shorter is better.
 
 ---
 
+## Queued batch entry shape
+
+`Dev/Planning/BACKLOG.md` → *Queued batches* section. Full scope for each upcoming batch, inline. Read at session open so the working session has context; removed when the batch ships (session close).
+
+Each entry:
+
+```markdown
+### NNNN — Batch title
+
+**Goal.** Why this batch exists — the problem or gap it addresses.
+
+**Approach.** How the goal will be accomplished. Omit when the goal implies the method.
+
+**Inputs.** Non-standard resources the batch needs, with paths. Omit when everything needed is derivable from the committed repo. Every path must resolve from the repo — out-of-repo references are a bug (see *Drafts in flight* above).
+
+**Outputs.** What changes when the batch ships — files created or updated, docs touched.
+
+**Success criteria.** Observable conditions that confirm the batch delivered. Phrased as testable statements.
+
+**Risks / dependencies.** What could go wrong, and what must ship first. Omit when none.
+```
+
+**Heading number.** 4-digit, zero-padded (e.g. `0127`). Next unused number; never reused. Numbers track identity, not order — reorder by moving sections, not renumbering.
+
+**Field order.** Goal → Approach → Inputs → Outputs → Success criteria → Risks / dependencies. Goal, Outputs, and Success criteria always present. The rest are conditional — omit rather than leave empty.
+
+**Parked batches.** Add a `**Parked.**` line before Goal: session tag, reason, and conditions for revisiting. The batch stays in the queue as a placeholder.
+
+**Sizing.** Each field: one paragraph or a tight list. The whole entry should fit on a screen. If it doesn't, the batch is probably too large or under-scoped.
+
+**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BUILD-PLAN) have a different shape with two regions — scope-context and build-operations — documented in `DOC-STRUCTURE.md` → *BUILD-PLAN structure*.
+
+---
+
 ## Open-questions entry shape
 
 Open questions live in `Dev/Planning/BACKLOG.md` → *Open questions* section. Parking lot for method-level questions not yet batch-ready.

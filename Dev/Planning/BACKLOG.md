@@ -18,20 +18,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0127 — Batch scope shape documentation
-
-**Goal.** Document the expected shape of a BACKLOG queued batch entry in session-reference.md, so new sessions writing batches have a reference instead of inferring from examples.
-
-**Approach.** Add a "Queued batch entry shape" section to session-reference.md, parallel to the existing BUILD-LOG, OQ, and TEST-LOG entry shapes. Define the fields: Goal, Approach (optional), Inputs (optional), Outputs, Success criteria, Risks/dependencies (optional).
-
-**Outputs.** session-reference.md updated. Proxy updated.
-
-**Success criteria.** A fresh-session Claude writing a new queued batch produces the expected shape without reading other batches for format inference.
-
-**Risks / dependencies.** Depends on 0122 (Approach field established in BACKLOG restructure).
-
----
-
 ### 0123 — Plugin-side close mechanicals + two-turn procedure
 
 **Goal.** Port the dev-side close improvements (scripted mechanicals and two-turn structure) to the plugin side.
