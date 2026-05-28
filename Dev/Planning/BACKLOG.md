@@ -121,9 +121,101 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
+### 0121 — Dev-side reader test
+
+**Goal.** Run the iteration playbook's reader test against the dev-side doc set to surface gaps before committing to structural changes.
+
+**Approach.** Adapt the reader test prompt for dev-side docs. Three sub-agents read CLAUDE.md, session-protocol.md, session-reference.md, and BACKLOG.md as a stranger-Claude would — no prior context. Scenarios: (1) Comprehension Q&A covering session types/routing, close paths, batch structure/lifecycle, BACKLOG editing rules, proxy regeneration, dev-side/plugin-side disambiguation. (2) Fresh dev session role-play — a Claude opening its first build session. (3) Curveball — ambiguous opener that could be any session type, or work spanning dev and plugin sides.
+
+**Inputs.** `Dev/Resources/Iteration playbook/Reader test.md` (source prompt). Current dev-side docs at HEAD.
+
+**Outputs.** Ranked gap list (Top / Middle / Bottom) saved to `Dev/Resources/research/dev-side-reader-test-findings.md`. Adapted prompt saved alongside or in the research file for reuse.
+
+**Success criteria.** Gap list produced with at least the three-tier ranking. Top-tier gaps weighted toward "what would bite the next dev session." No edits — gap list only. Decision gate before any fixes.
+
+**Risks / dependencies.** Sub-agent token cost — three agents reading four docs each. Mitigation: keep scenarios focused, don't let agents over-explore. Risk: dev-side docs are meta-documentation (docs about how to write docs), so "stranger" framing may produce false positives from agents not understanding the meta layer. Mitigation: scenario prompts should clarify the reader is a Claude opening a dev session on this project, not a consumer-project Claude.
+
+---
+
+### 0118 — Scripted close mechanicals (dev-side)
+
+**Goal.** Replace Claude-executed footer bumps, version updates, and proxy regeneration with a Python script on the dev side. Removes the most error-prone and token-expensive mechanical close steps.
+
+**Approach.** A Python script at `Dev/Resources/scripts/bump_version.py` taking `(old_version, new_version)` that handles all footer bumps across the repo, `plugin.json` version field, `PLUGIN_METHOD_VERSION` in `session_start.py`, and summary-proxy regeneration. Output is a `git diff`-verifiable set of changes. Updated dev-side session-protocol.md close steps to reference the script.
+
+**Outputs.** Dev-side `bump_version.py`. Updated dev-side session-protocol.md close steps.
+
+**Success criteria.** Running the script produces correct footer bumps across all files, verified by `git diff`. No Edit-tool failures on unread files. Close-session token cost for mechanicals drops to near zero (one script invocation + diff review).
+
+**Risks / dependencies.** Half-proven — v112 already fell back to a script. Risk: footer discovery (script must find all files with the footer pattern). Mitigation: glob pattern + test coverage. Depends on accurate footer pattern (`*No-code method — Version N.*`).
+
+---
+
+### 0119 — Two-turn close procedure (dev-side)
+
+**Goal.** Split the dev-side close into a judgment pass and a mechanical pass with a `/compact` point between them, so judgment work runs while build context is fresh and mechanicals run with minimal context.
+
+**Approach.** Update dev-side session-protocol.md to define an explicit turn boundary after the judgment steps (parity, frame corrections, build-log narrative, idea sweep) and before the mechanical steps (script run, proxy regen, commit/tag/push). The boundary is a `[PROMPT]` recommending `/compact`. The mechanical pass needs only the version numbers and the script.
+
+**Outputs.** Updated dev-side session-protocol.md with explicit two-turn structure. `/compact` recommendation at the turn boundary.
+
+**Success criteria.** Judgment pass completes without context pressure from upcoming mechanicals. Mechanical pass runs cleanly after `/compact`. Total close cost lower than single-turn close on high-file-count batches.
+
+**Dependencies.** 0118 (dev-side scripted mechanicals) — the script is what makes the second turn lightweight.
+
+**Risks.** Low. If the split doesn't help in practice, it's a soft recommendation, not enforced — sessions can still close in one turn.
+
+---
+
+### 0122 — Dev-side structure mirroring audit
+
+**Goal.** Surface places where the dev-side prose-only structure (CLAUDE.md, session-protocol.md, session-reference.md, BACKLOG.md, .proxies/) could benefit from mirroring plugin-side patterns. Absorbs the dev-side structural changes originally in 0120 (history table removal, Planning batches/Ideas sections, Approach field).
+
+**Approach.** Using the 0121 gap list as input, systematically compare dev-side and plugin-side structures. For each plugin-side pattern (DOC-STRUCTURE schema definitions, VOCABULARY terms, procedure doc step format, batch scope structure, proxy format), assess whether the dev-side equivalent is weaker, missing, or intentionally different. Propose specific changes — not a wholesale adoption of plugin conventions, but targeted improvements where the prose-only structure has drifted from patterns the plugin has already proven.
+
+**Inputs.** `Dev/Resources/research/dev-side-reader-test-findings.md` (from 0121). Plugin-side docs at HEAD for structural comparison. Current dev-side docs at HEAD.
+
+**Outputs.** Research file `Dev/Resources/research/dev-side-mirroring-audit.md` with findings and proposals. New BACKLOG batches for any changes worth implementing. Dev-side BACKLOG.md restructured (history table removed, Planning batches + Ideas sections + Approach field added — originally from 0120).
+
+**Success criteria.** Every plugin-side pattern assessed with a clear keep/adopt/skip judgment. 0121 gap list items addressed or explicitly deferred. Dev-side BACKLOG restructure complete. New batches scoped for any structural changes worth making.
+
+**Risks / dependencies.** Hard dep on 0121 (gap list). Risk: scope creep — "mirror the plugin" can expand indefinitely. Mitigation: the gap list constrains the audit to proven pain points, not theoretical improvements. The dev-side convergence strategy (CLAUDE.md) says don't adopt the plugin here yet — this batch proposes, doesn't enforce.
+
+---
+
+### 0123 — Plugin-side close mechanicals + two-turn procedure
+
+**Goal.** Port the dev-side close improvements (scripted mechanicals and two-turn structure) to the plugin side.
+
+**Approach.** Consumer-side version bump script at `plugin/scripts/bump_version.py` (or folded into `/sovclose` procedure) handling the consumer project's footer bumps and proxy regeneration. Update `close.md` with two-turn structure: judgment pass (parity, frame corrections, build-log narrative, idea sweep) then `/compact` boundary then mechanical pass (script run, proxy regen, commit/tag/push). Reference manual note.
+
+**Outputs.** Consumer-side `bump_version.py` or `/sovclose` integration. Updated `close.md` with two-turn structure and script reference. Reference manual update.
+
+**Success criteria.** Consumer-side script produces correct footer bumps, verified by `git diff`. Two-turn close structure works in `/sovclose` flow. Reference manual documents both the script and the two-turn pattern.
+
+**Dependencies.** Dev-side 0118 and 0119 (pattern proven on dev side first).
+
+**Risks.** Consumer-side footer patterns differ from dev-side — script needs to handle both or be a separate implementation. Low risk given dev-side script proves the approach.
+
+---
+
+### 0120 — BACKLOG convergence: naming and test merge (plugin-side)
+
+**Goal.** Fix plugin-side naming and eliminate the blind spot where tests and builds can't see each other during planning.
+
+**Approach.** Reverse the 0112 BUILD-PLAN rename back to BACKLOG. Merge TEST-LOG into BACKLOG so planning always sees tests and builds together. Expand the blocker gate in before-build.md to scan all sections (Planning batches, Ideas, OQs, and test entries) for anything blocking the upcoming build.
+
+**Outputs.** Plugin-side: BUILD-PLAN renamed to BACKLOG everywhere (DOC-STRUCTURE, templates, proxies, procedure docs, hooks, skills, crash course, pytest fixtures). TEST-LOG content merged into BACKLOG structure. Blocker gate expanded.
+
+**Success criteria.** Plugin side uses BACKLOG as the name. Plugin-side BACKLOG contains test tracking alongside build batches. Blocker gate scans all sections before a build starts. No orphaned BUILD-PLAN or TEST-LOG references remain.
+
+**Risks / dependencies.** Large surface area — the rename touches ~30+ files (same as 0112 did going the other direction). TEST-LOG merge changes the proxy structure and may require test-log proxy retirement or redesign. Risk: batch is too large for one session — likely needs splitting at before-build time (rename pass vs. structural changes vs. blocker gate).
+
+---
+
 ### 0095 — /sovtest skill E2E validation — **PARKED**
 
-**Parked.** v114. 0088 shipped — dep met. Shelved: user is cowboy-testing informally rather than running structured E2E batches. Revisit when there's a specific reason to formalize.
+**Parked.** v114. 0088 shipped — dep met. Shelved: user is cowboy-testing informally rather than running structured E2E batches. Revisit when there's a specific reason to formalize. Note: 0120 merges TEST-LOG into BACKLOG — when this batch unparks after 0120 ships, the test plan needs a full rewrite against the merged BACKLOG structure.
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
@@ -135,51 +227,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
-**Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0118 — Scripted close mechanicals
-
-**Goal.** Replace Claude-executed footer bumps, version updates, and proxy regeneration with a Python script. Removes the most error-prone and token-expensive mechanical close steps.
-
-**Approach.** Dev-side: a Python script at `Dev/Resources/scripts/bump_version.py` taking `(old_version, new_version)` that handles all footer bumps across the repo, `plugin.json` version field, `PLUGIN_METHOD_VERSION` in `session_start.py`, and summary-proxy regeneration. Output is a `git diff`-verifiable set of changes. Consumer-side: a parallel script at `plugin/scripts/bump_version.py` (or folded into `/sovclose` procedure) handling the consumer project's footer bumps and proxy regeneration. Both scoped for dev and consumer projects.
-
-**Outputs.** Dev-side `bump_version.py`. Consumer-side version bump script or `/sovclose` integration. Updated `close.md` procedure referencing the script. Updated dev-side session-protocol.md close steps. Reference manual note.
-
-**Success criteria.** Running the script produces correct footer bumps across all files, verified by `git diff`. No Edit-tool failures on unread files. Close-session token cost for mechanicals drops to near zero (one script invocation + diff review).
-
-**Risks / dependencies.** Half-proven — v112 already fell back to a script. Risk: footer discovery (script must find all files with the footer pattern). Mitigation: glob pattern + test coverage. Depends on accurate footer pattern (`*No-code method — Version N.*`).
-
----
-
-### 0119 — Two-turn close procedure
-
-**Goal.** Split the close into a judgment pass and a mechanical pass with a `/compact` point between them, so judgment work runs while build context is fresh and mechanicals run with minimal context.
-
-**Approach.** Update `close.md` (and dev-side session-protocol.md) to define an explicit turn boundary after the judgment steps (parity, frame corrections, build-log narrative, idea sweep) and before the mechanical steps (script run, proxy regen, commit/tag/push). The boundary is a `[PROMPT]` recommending `/compact`. The mechanical pass needs only the version numbers and the script.
-
-**Outputs.** Updated `close.md` with explicit two-turn structure. Updated dev-side session-protocol.md. `/compact` recommendation at the turn boundary.
-
-**Success criteria.** Judgment pass completes without context pressure from upcoming mechanicals. Mechanical pass runs cleanly after `/compact`. Total close cost lower than single-turn close on high-file-count batches.
-
-**Dependencies.** 0118 (scripted mechanicals) — the script is what makes the second turn lightweight. Without it, the mechanical pass is still heavy enough to not justify the split.
-
-**Risks.** Low. If the split doesn't help in practice, it's a soft recommendation, not enforced — sessions can still close in one turn.
-
----
-
-### 0120 — BACKLOG convergence: structure, naming, and test merge
-
-**Goal.** Align the dev-side and plugin-side deferred-work docs on a shared structure, fix naming, and eliminate the blind spot where tests and builds can't see each other during planning.
-
-**Approach.** Dev-side: remove the shipped-batch history table (build-log/ has the real history), add Planning batches and Ideas sections, add an Approach field to batch structure. Plugin-side: reverse the 0112 BUILD-PLAN rename back to BACKLOG, merge TEST-LOG into BACKLOG so planning always sees tests and builds together, add Approach field to batch structure. Both sides: expand the blocker gate in before-build.md to scan all sections (Planning batches, Ideas, OQs, and test entries) for anything blocking the upcoming build.
-
-**Outputs.** Dev-side BACKLOG.md restructured (no history table, three new sections). Plugin-side: BUILD-PLAN renamed to BACKLOG everywhere (DOC-STRUCTURE, templates, proxies, procedure docs, hooks, skills, crash course, pytest fixtures). TEST-LOG content merged into BACKLOG structure. Blocker gate expanded. Approach field in batch structure spec (DOC-STRUCTURE.md) and templates.
-
-**Success criteria.** Both sides use BACKLOG as the name. Dev-side BACKLOG has Planning batches, Ideas, and Approach field. Plugin-side BACKLOG contains test tracking alongside build batches. Blocker gate scans all sections before a build starts. No orphaned BUILD-PLAN or TEST-LOG references remain.
-
-**Risks / dependencies.** Large surface area on the plugin side — the rename touches ~30+ files (same as 0112 did going the other direction). TEST-LOG merge changes the proxy structure and may require test-log proxy retirement or redesign. Risk: batch is too large for one session — likely needs splitting at before-build time (rename pass vs. structural changes vs. blocker gate).
+**Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app. Hard dep on pre-0120 TEST-LOG structure — if 0120 ships first (expected), rewrite test plan against merged BACKLOG.
 
 ---
 

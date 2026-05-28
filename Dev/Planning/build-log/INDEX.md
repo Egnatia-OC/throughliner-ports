@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v119-planning-batch-splits-and-reader-test.md](v119-planning-batch-splits-and-reader-test.md) — 2026-05-28 — Planning: batch splits, reader test, mirroring audit
 - [v118-close-handoff-artifact.md](v118-close-handoff-artifact.md) — 2026-05-28 — Build-phase close handoff artifact
 - [v117-language-setting-bom-blocker-gate-carried-forward.md](v117-language-setting-bom-blocker-gate-carried-forward.md) — 2026-05-28 — Language setting, BOM hardening, pre-build blocker gate, carried-forward removal
 - [v116-session-length-safeguards.md](v116-session-length-safeguards.md) — 2026-05-28 — Session-length safeguards
