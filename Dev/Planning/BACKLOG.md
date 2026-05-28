@@ -111,6 +111,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
 | 0113 | Session-length safeguards | Pre-build sizing, mid-session compact nudge, invocation-prompt compact nudge, git.md close-prompt fold-in. **Shipped v116.** |
 | 0114 | Language setting + BOM hardening + blocker gate + carried-forward removal | Language: field, utf-8-sig BOM strip, pre-build blocker gate, carried-forward removal. **Shipped v117.** |
+| 0117 | Build-phase close handoff artifact | `## Close handoff` in build snapshot; build appends per-file, close reads first. **Shipped v118.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -135,20 +136,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app.
-
----
-
-### 0117 — Build-phase close handoff artifact
-
-**Goal.** Eliminate close-session rediscovery cost. During `/sovbuild`, Claude incrementally appends to a structured handoff section in `_method/active-build.md` — new consumer-facing names introduced, files touched, frame assumptions that shifted. `/sovclose` reads this instead of re-exploring the codebase.
-
-**Approach.** Add a `## Close handoff` section to the build snapshot. `build.md` procedure gets a rule: after each file is ticked, append a one-liner noting what changed (new name, renamed concept, shifted frame). `/sovclose` parity and frame-correction steps read this section first, dipping into code only for verification. Dev-side: session-protocol.md close steps reference the same pattern for this project's close workflow.
-
-**Outputs.** Updated `build.md` procedure with handoff-append rule. Updated `close.md` to read handoff section. Updated build-snapshot format in `DOC-STRUCTURE.md`. Dev-side session-protocol.md aligned.
-
-**Success criteria.** Close session's parity check and frame-correction sweep complete without grepping the codebase for what changed — handoff section provides the list. Build-log narrative draws from handoff section rather than rediscovery.
-
-**Risks / dependencies.** Low risk — additive. Risk: Claude forgets to append mid-build when context is full. Mitigation: the rule is in the procedure doc, not memory.
 
 ---
 
@@ -179,6 +166,20 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Dependencies.** 0118 (scripted mechanicals) — the script is what makes the second turn lightweight. Without it, the mechanical pass is still heavy enough to not justify the split.
 
 **Risks.** Low. If the split doesn't help in practice, it's a soft recommendation, not enforced — sessions can still close in one turn.
+
+---
+
+### 0120 — BACKLOG convergence: structure, naming, and test merge
+
+**Goal.** Align the dev-side and plugin-side deferred-work docs on a shared structure, fix naming, and eliminate the blind spot where tests and builds can't see each other during planning.
+
+**Approach.** Dev-side: remove the shipped-batch history table (build-log/ has the real history), add Planning batches and Ideas sections, add an Approach field to batch structure. Plugin-side: reverse the 0112 BUILD-PLAN rename back to BACKLOG, merge TEST-LOG into BACKLOG so planning always sees tests and builds together, add Approach field to batch structure. Both sides: expand the blocker gate in before-build.md to scan all sections (Planning batches, Ideas, OQs, and test entries) for anything blocking the upcoming build.
+
+**Outputs.** Dev-side BACKLOG.md restructured (no history table, three new sections). Plugin-side: BUILD-PLAN renamed to BACKLOG everywhere (DOC-STRUCTURE, templates, proxies, procedure docs, hooks, skills, crash course, pytest fixtures). TEST-LOG content merged into BACKLOG structure. Blocker gate expanded. Approach field in batch structure spec (DOC-STRUCTURE.md) and templates.
+
+**Success criteria.** Both sides use BACKLOG as the name. Dev-side BACKLOG has Planning batches, Ideas, and Approach field. Plugin-side BACKLOG contains test tracking alongside build batches. Blocker gate scans all sections before a build starts. No orphaned BUILD-PLAN or TEST-LOG references remain.
+
+**Risks / dependencies.** Large surface area on the plugin side — the rename touches ~30+ files (same as 0112 did going the other direction). TEST-LOG merge changes the proxy structure and may require test-log proxy retirement or redesign. Risk: batch is too large for one session — likely needs splitting at before-build time (rename pass vs. structural changes vs. blocker gate).
 
 ---
 
