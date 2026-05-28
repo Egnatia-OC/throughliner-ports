@@ -23,6 +23,17 @@ Before enumerating files:
 
 You don't reorganise the build queue. Planning owns BUILD-PLAN structure. Reorganise authority here exists only for verification-burden splits (halt C).
 
+## Blocker gate
+
+After validation, scan for unresolved items that would force mid-build improvisation:
+
+1. **Batch open questions.** Read the batch body for open questions, `[?]` markers, or unresolved design decisions. An item is blocking if implementing the batch without resolving it would force Claude to guess or make a design call mid-build.
+2. **BUILD-PLAN open questions section.** Check for OQs tagged to this batch or whose resolution affects its scope.
+
+**If blockers found:** Halt. Surface each blocking item. Nudge: "This batch has unresolved questions that should be settled before building. Run `/sovdeliberate` to work through them, or `/sovplan` to rescope." Don't proceed to the work loop.
+
+**If no blockers:** Continue silently.
+
 ## Work loop
 
 1. **Enumerate Files:.** For each change-list bullet, identify files needing modification via Glob/Grep + MANIFEST. Write one-sentence summary per file.
@@ -93,4 +104,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

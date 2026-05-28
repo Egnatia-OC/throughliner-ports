@@ -18,8 +18,6 @@ Entry file format:
 
 **Pivots and surprises.** What turned out differently than planned.
 
-**Carried forward.** Items raised but not done, with destination.
-
 ## Performance
 
 - **Batch completion:** Complete / Partial (handoff)
@@ -31,4 +29,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*

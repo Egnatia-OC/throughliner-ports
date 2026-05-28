@@ -28,23 +28,26 @@ Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": 
 
 No CLAUDE.md, no substantial work.
 
-**Open:** "Fresh folder. I'll ask four questions, then create starter docs inside `_method/` (UX.md, BUILD-PLAN/, build-log/, test-log/, MANIFEST.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
+**Open:** "Fresh folder. I'll ask five questions, then create starter docs inside `_method/` (UX.md, BUILD-PLAN/, build-log/, test-log/, MANIFEST.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
 
-**Four questions (one per message, wait for each):**
+**Five questions (one per message, wait for each):**
 
 1. **Product overview.** "Tell me about your product. What does it do, who is it for, and what makes it distinct — or what specific tension does it resolve? And are there milestones you're working toward?" → CLAUDE.md *Product overview* (all four fields) + UX.md *Project context* (synthesized from the product description). If the answer doesn't cover all four fields, follow up once before moving on.
 2. **UX principles.** "Are there any guiding principles you want to lock in for design decisions?" If no → skip to Q3. If yes → "What are they?" No minimum count. → *UX principles*.
 3. **Core functionalities.** "What are the 3–5 must-have features? For each: one-paragraph experience description + one-line `user needs this because…` rationale." → *Functionalities*.
 4. **First batch sketch.** "Which is the smallest end-to-end thing we can build and test first?" → top BUILD-PLAN batch.
+5. **Language.** "What language should I use for responses and documentation? English is the default." → CLAUDE.md *Language:* field. If the user answered Q1–Q4 in a non-English language and doesn't specify otherwise, default to the language they used.
 
 After answers:
 1. Run `check`. If `ready: false`, surface conflicts and stop.
 2. Run `write`. Surface files list.
-3. Apply answers:
+3. If `.git/` exists in the project root, run `git config --local core.quotepath false` (prevents octal escaping of non-ASCII filenames in git output, which would break path matching in hooks).
+4. Apply answers:
    - **Q1 →** CLAUDE.md Product overview (all four fields) + UX.md Project context (synthesized from the product description).
    - **Q2 →** UX.md UX principles section. Write every principle the user agreed to — replace the template placeholders with the full set.
    - **Q3 →** UX.md Functionalities section. Write every functionality with its experience description and rationale.
    - **Q4 →** Seed BUILD-PLAN batch (folder mode: create per-batch file with `Status: queued` line + INDEX.md reference).
+   - **Q5 →** CLAUDE.md Language: field. Replace the default `English` with the user's answer.
 
 After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
@@ -61,7 +64,7 @@ Substantial work but no CLAUDE.md.
 **Option 1:**
 1. Glob check for spine-doc filenames in subdirs.
 2. Run `check` (expect `ready: true`), then `write`.
-3. Walk four new-project questions (same as Case 1). User more likely to skip — anything unanswered stays as a planning batch in BUILD-PLAN for next session. Apply answered questions using the same Q1–Q4 mapping as Case 1 step 3.
+3. Walk five new-project questions (same as Case 1). User more likely to skip — anything unanswered stays as a planning batch in BUILD-PLAN for next session. Apply answered questions using the same Q1–Q5 mapping as Case 1 step 4.
 
 After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
@@ -87,7 +90,7 @@ CLAUDE.md present but no method footer. Probably from Claude Code's `/init` — 
 **Option 2 (overwrite):**
 1. Backup: `cp CLAUDE.md CLAUDE.md.foreign-backup-<date>`.
 2. Remove original (try bash `rm`; if ACL fails, ask user to delete manually).
-3. Run `write`. Walk four questions. Apply answered questions using the same Q1–Q4 mapping as Case 1 step 3.
+3. Run `write`. Walk five questions. Apply answered questions using the same Q1–Q5 mapping as Case 1 step 4.
 
 **Option 3:** "No changes made."
 
@@ -130,6 +133,10 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After summary proxies — `_method/` orientation section (0105).** If CLAUDE.md has no `## What's inside _method/` section: add it between `## Where the docs live` and `## Plugin management`, using the content from CLAUDE-TEMPLATE.md.
 
+**After orientation section — Language setting (0114).** If CLAUDE.md has no `## Language` section: add it between `## Product overview` and `## Where the docs live`, using the content from CLAUDE-TEMPLATE.md (defaults to English). Ask the user if they'd like a different language.
+
+**After language setting — Git quotepath (0114).** Run `git config --local core.quotepath false` (prevents octal escaping of non-ASCII filenames). Idempotent — safe to run even if already set.
+
 **Recap:** "Refreshed (case 4). Bumped footers on [list]. [Migrations performed.]"
 
 **Option 2:** "No changes. Wrong folder?"
@@ -156,4 +163,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

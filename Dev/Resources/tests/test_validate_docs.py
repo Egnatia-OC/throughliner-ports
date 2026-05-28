@@ -84,7 +84,6 @@ class TestValidateBuildLogEntry:
         "**What shipped.** Dashboard screen.\n\n"
         "**Decisions taken and why.** Simple layout.\n\n"
         "**Pivots and surprises.** None.\n\n"
-        "**Carried forward.** Settings deferred.\n\n"
         "## Performance\n"
         "- **Batch completion:** Complete\n"
         "- **Files in batch:** 2\n"
@@ -98,8 +97,7 @@ class TestValidateBuildLogEntry:
             "# B001 — 2026-05-20\n\n"
             "**What shipped.** Something.\n\n"
             "**Decisions taken and why.** Some.\n\n"
-            "**Pivots and surprises.** None.\n\n"
-            "**Carried forward.** None.\n"
+            "**Pivots and surprises.** None.\n"
         )
         warnings = validate_build_log_entry(no_perf)
         assert len(warnings) == 1
@@ -110,7 +108,6 @@ class TestValidateBuildLogEntry:
             "# B001\n\n"
             "**Decisions taken and why.** Some.\n\n"
             "**Pivots and surprises.** None.\n\n"
-            "**Carried forward.** None.\n\n"
             "## Performance\n"
         )
         warnings = validate_build_log_entry(text)
@@ -120,7 +117,7 @@ class TestValidateBuildLogEntry:
     def test_missing_multiple_sections(self):
         text = "# B001\n\nSome text.\n"
         warnings = validate_build_log_entry(text)
-        assert len(warnings) == 5
+        assert len(warnings) == 4
 
     def test_empty_string(self):
         assert validate_build_log_entry("") == []
@@ -134,7 +131,6 @@ class TestValidateBuildLogEntry:
             "**what shipped.** Something.\n\n"
             "**decisions taken and why.** Some.\n\n"
             "**pivots and surprises.** None.\n\n"
-            "**carried forward.** None.\n\n"
             "## Performance\n"
         )
         assert validate_build_log_entry(text) == []

@@ -1,4 +1,4 @@
-# Deliberate procedure — no-code method
+﻿# Deliberate procedure — no-code method
 
 Follow this procedure to work through accumulated open questions in BUILD-PLAN. Never during builds, setup, or migration.
 
@@ -84,4 +84,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

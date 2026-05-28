@@ -657,7 +657,7 @@
       <h2 id="quick-start">Quick start</h2>
       <ol class="steps">
         <li><a href="#install">Install the plugin</a> and run <code>/sovsetup</code> in your project folder.</li>
-        <li>Describe your app. The plugin walks you through four prompts.</li>
+        <li>Describe your app. The plugin walks you through five prompts.</li>
         <li>Run <code>/sovrecap</code> to review your first batch, then <code>/sovbuild</code> to lock and build it.</li>
         <li>Test with <code>/sovtest</code> for guided walkthroughs, or test on your own and bring results to your next planning session.</li>
       </ol>
@@ -760,7 +760,7 @@
         <div class="doc-card">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" fill="#F1F5F9" stroke="#475569" stroke-width="2"/><path d="M15 16h18M15 22h14M15 28h16M15 34h10" stroke="#475569" stroke-width="2" stroke-linecap="round"/></svg>
           <h3>_method/build-log/</h3>
-          <p>Per-build narrative files: what shipped, decisions made, surprises, carried-forward items, and performance notes.</p>
+          <p>Per-build narrative files: what shipped, decisions made, surprises, and performance notes.</p>
         </div>
       </div>
 
@@ -832,7 +832,7 @@
         <table>
           <thead><tr><th>Situation</th><th>What happens</th></tr></thead>
           <tbody>
-            <tr><td>Empty folder</td><td>Scaffolds all spine docs, walks you through four prompts.</td></tr>
+            <tr><td>Empty folder</td><td>Scaffolds all spine docs, walks you through five prompts.</td></tr>
             <tr><td>Existing code, no docs</td><td>Scaffolds docs alongside your code.</td></tr>
             <tr><td>Foreign docs present</td><td>Offers to migrate, overwrite, or leave them.</td></tr>
             <tr><td>Already managed</td><td>Refreshes footers and runs any migrations.</td></tr>
@@ -840,12 +840,13 @@
         </table>
       </div>
 
-      <h3>The four prompts (empty folder)</h3>
+      <h3>The five prompts (empty folder)</h3>
       <ol class="steps">
         <li><strong>Product overview.</strong> What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.</li>
         <li><strong>UX principles.</strong> High-level rules for how the app should feel.</li>
         <li><strong>Core functionalities.</strong> Three to five features with rationale lines.</li>
         <li><strong>First batch sketch.</strong> The smallest end-to-end buildable thing.</li>
+        <li><strong>Language.</strong> What language Claude should use for responses and documentation. Defaults to English.</li>
       </ol>
       <p>Claude writes the overview to CLAUDE.md and the project context to UX.md (docs are open during setup). Then you seed the first build batch.</p>
 
@@ -882,7 +883,7 @@
       <p>A worked example showing how a real project goes from empty folder to first build and beyond.</p>
 
       <h2 id="starting-scratch">Starting from scratch</h2>
-      <p>Taskflow begins as an empty folder. Running <code>/sovsetup</code> walks through four prompts:</p>
+      <p>Taskflow begins as an empty folder. Running <code>/sovsetup</code> walks through five prompts:</p>
 
       <div class="card">
         <h3>1. Product overview</h3>
@@ -899,6 +900,10 @@
       <div class="card">
         <h3>4. First batch sketch</h3>
         <p>The smallest end-to-end buildable thing. For Taskflow: the one-day-at-a-time view.</p>
+      </div>
+      <div class="card">
+        <h3>5. Language</h3>
+        <p>What language Claude should use for responses and documentation. Defaults to English.</p>
       </div>
       <p>Claude writes answers directly to UX.md (docs are open during setup). You seed the first build batch, and you're ready.</p>
 

@@ -9,8 +9,11 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Push back rather than agreeing.** Check assumptions before building on them. Flag concerns plainly.
   *Load-bearing for: drift checks and red-flag surfacing.*
 
-- **Plain English over jargon.** Explain what you're doing so a non-coder can understand.
-  *Load-bearing for: the build recap — assumes plain-English output.*
+- **Plain language over jargon.** Explain what you're doing so a non-coder can understand.
+  *Load-bearing for: the build recap — assumes plain-language output.*
+
+- **Respect the Language: field.** CLAUDE.md may contain a `Language:` line. If present and non-English, respond, write recaps, and compose doc content in that language. Plugin procedure docs stay English — Claude reads them internally and paraphrases output in the target language. Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed Explicitly:`) remain English regardless — hooks regex-match them.
+  *Load-bearing for: multi-language support — non-English users must receive output in their language without breaking hook regex matching.*
 
 - **No stealth fixes.** If a change causes a regression, state plainly: "The previous change broke [X], I am now reverting/fixing it."
   *Load-bearing for: the build recap — assumes regressions are stated, not silently fixed.*
@@ -108,6 +111,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 - **Template state.** Spine docs present but still in template form (placeholders intact, no real entries). Recommend `/sovsetup` — case 4 detects this. Wait for okay.
 - **Unadopted folder.** SessionStart injected an advisory. Surface and recommend `/sovsetup`. If the user doesn't want the method, point to `/plugin` → Installed → toggle off. PreToolUse is already blocking destructive calls.
+- **Pre-build blockers.** The before-build procedure (`/sovrecap`) gates on unresolved open questions and ideas that block the top batch. If the gate fires, it nudges `/sovdeliberate` or `/sovplan` before allowing the build to proceed. This is enforced inside `before-build.md`, not at session-start routing.
 
 **Then route on content:**
 
@@ -173,4 +177,4 @@ For `BUILD-PLAN.md`, the protective rule is the discussion contract in the build
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

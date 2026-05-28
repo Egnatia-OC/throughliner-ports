@@ -110,6 +110,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
 | 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
 | 0113 | Session-length safeguards | Pre-build sizing, mid-session compact nudge, invocation-prompt compact nudge, git.md close-prompt fold-in. **Shipped v116.** |
+| 0114 | Language setting + BOM hardening + blocker gate + carried-forward removal | Language: field, utf-8-sig BOM strip, pre-build blocker gate, carried-forward removal. **Shipped v117.** |
 
 Shipped/cancelled batches end here. Queued batches are below with full scope content — no separate scope files.
 
@@ -137,53 +138,53 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0114 — Language setting for multi-language plugin support
+### 0117 — Build-phase close handoff artifact
 
-**Goal.** Let non-English-speaking users work in their native language. A `Language:` setting in the consumer project's CLAUDE.md instructs all skill/hook output to use that language — without translating plugin docs, control tokens, or templates.
+**Goal.** Eliminate close-session rediscovery cost. During `/sovbuild`, Claude incrementally appends to a structured handoff section in `_method/active-build.md` — new consumer-facing names introduced, files touched, frame assumptions that shifted. `/sovclose` reads this instead of re-exploring the codebase.
 
-**Approach.** Lightweight: Claude already speaks dozens of languages. The setting tells Claude what language to respond in; plugin docs stay English (Claude reads them either way). No locale folders, no parallel doc trees. Scope: skill output, hook deny messages, procedure-doc guidance that Claude paraphrases. Control tokens (`Status:`, `Changes:`, `[SECURITY]`, etc.) remain English-only — this is documented explicitly in CLAUDE.md and reinforced during `/sovsetup`.
+**Approach.** Add a `## Close handoff` section to the build snapshot. `build.md` procedure gets a rule: after each file is ticked, append a one-liner noting what changed (new name, renamed concept, shifted frame). `/sovclose` parity and frame-correction steps read this section first, dipping into code only for verification. Dev-side: session-protocol.md close steps reference the same pattern for this project's close workflow.
 
-**Hard constraints (from v97 research).**
+**Outputs.** Updated `build.md` procedure with handoff-append rule. Updated `close.md` to read handoff section. Updated build-snapshot format in `DOC-STRUCTURE.md`. Dev-side session-protocol.md aligned.
 
-1. **Git `core.quotepath` for non-ASCII filenames.** Git's default escapes non-ASCII characters with octal notation. Drift check 1 matches git-diff output paths against the batch file list in Claude's context window — `Path.resolve()` can't normalise octal escapes. Fix: `/sovsetup` sets `git config --local core.quotepath false`.
+**Success criteria.** Close session's parity check and frame-correction sweep complete without grepping the codebase for what changed — handoff section provides the list. Build-log narrative draws from handoff section rather than rediscovery.
 
-2. **Control tokens are English-only.** Every metadata keyword the hooks regex-match (`Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`) must remain in English. A translated `Estado: activo` silently breaks phase enforcement. The language setting must document this, and `/sovsetup` scaffolding should note it in the consumer CLAUDE.md.
+**Risks / dependencies.** Low risk — additive. Risk: Claude forgets to append mid-build when context is full. Mitigation: the rule is in the procedure doc, not memory.
 
-**BOM hardening fold-in.** Switch the four `open()` / `read_text()` call sites in hooks from `encoding="utf-8"` to `encoding="utf-8-sig"` to strip Windows BOM bytes. Sites: `safe_read_text()` in `project_state.py`, `session_start.py`, and direct `open()` calls in `user_prompt_submit.py` and `pre_tool_use.py`. One-line fix per site. Without it, a user who hand-edits a spine file in a Windows editor that prepends a BOM silently breaks `^Status:` regex matching on line 1. (From OQ "UTF-8 BOM hardening," surfaced v97.)
+---
 
-**Inputs.** `Dev/Resources/research/ResearchFindingsMult (1).md` (§§ 3.1–3.3, 4.2). Current hook file-read sites. CLAUDE-TEMPLATE.md. `/sovsetup` procedure.
+### 0118 — Scripted close mechanicals
 
-**Outputs.** `Language:` field in CLAUDE-TEMPLATE.md (optional, defaults to English). `/sovsetup` sets `core.quotepath false` when language is non-English. Hook deny messages and skill output respect the setting. Control-token immutability documented. Reference manual section.
+**Goal.** Replace Claude-executed footer bumps, version updates, and proxy regeneration with a Python script. Removes the most error-prone and token-expensive mechanical close steps.
 
-**Success criteria.** A French-speaking tester runs `/sovsetup`, sets `Language: French`, and receives all Claude-generated output in French. Control tokens remain English. Non-ASCII filenames in batches don't break drift detection. No plugin doc translation needed.
+**Approach.** Dev-side: a Python script at `Dev/Resources/scripts/bump_version.py` taking `(old_version, new_version)` that handles all footer bumps across the repo, `plugin.json` version field, `PLUGIN_METHOD_VERSION` in `session_start.py`, and summary-proxy regeneration. Output is a `git diff`-verifiable set of changes. Consumer-side: a parallel script at `plugin/scripts/bump_version.py` (or folded into `/sovclose` procedure) handling the consumer project's footer bumps and proxy regeneration. Both scoped for dev and consumer projects.
 
-**Risks / dependencies.** 0088 shipped (v114) — base build flow validated. Risk: edge cases in hook deny messages that interpolate English fragments — need an audit pass. Low overall risk given the lightweight approach.
+**Outputs.** Dev-side `bump_version.py`. Consumer-side version bump script or `/sovclose` integration. Updated `close.md` procedure referencing the script. Updated dev-side session-protocol.md close steps. Reference manual note.
+
+**Success criteria.** Running the script produces correct footer bumps across all files, verified by `git diff`. No Edit-tool failures on unread files. Close-session token cost for mechanicals drops to near zero (one script invocation + diff review).
+
+**Risks / dependencies.** Half-proven — v112 already fell back to a script. Risk: footer discovery (script must find all files with the footer pattern). Mitigation: glob pattern + test coverage. Depends on accurate footer pattern (`*No-code method — Version N.*`).
+
+---
+
+### 0119 — Two-turn close procedure
+
+**Goal.** Split the close into a judgment pass and a mechanical pass with a `/compact` point between them, so judgment work runs while build context is fresh and mechanicals run with minimal context.
+
+**Approach.** Update `close.md` (and dev-side session-protocol.md) to define an explicit turn boundary after the judgment steps (parity, frame corrections, build-log narrative, idea sweep) and before the mechanical steps (script run, proxy regen, commit/tag/push). The boundary is a `[PROMPT]` recommending `/compact`. The mechanical pass needs only the version numbers and the script.
+
+**Outputs.** Updated `close.md` with explicit two-turn structure. Updated dev-side session-protocol.md. `/compact` recommendation at the turn boundary.
+
+**Success criteria.** Judgment pass completes without context pressure from upcoming mechanicals. Mechanical pass runs cleanly after `/compact`. Total close cost lower than single-turn close on high-file-count batches.
+
+**Dependencies.** 0118 (scripted mechanicals) — the script is what makes the second turn lightweight. Without it, the mechanical pass is still heavy enough to not justify the split.
+
+**Risks.** Low. If the split doesn't help in practice, it's a soft recommendation, not enforced — sessions can still close in one turn.
 
 ---
 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
-
----
-
-### Session-close cost: structured handoff and mechanical automation
-
-**Surfaced.** v112.
-
-**The question.** Should `/sovbuild` produce a structured handoff artifact during the build phase, and should the mechanical close steps (footer bumps, version trackers, proxy regeneration) be scripted rather than Claude-executed?
-
-**Why it matters.** The v112 session burned roughly half a usage window on the implementation close alone. The primary cost driver was rediscovery — the close session had to re-explore the codebase to find what the build session changed (grepping crash-course files for missing skill names, reading templates for wrong section counts, scanning BUILD-PLAN for stale frame references). A secondary cost was mechanical work (13 footer bumps) that failed via the Edit tool on unread files and had to be retried via a Python script. Both are avoidable with upfront structure.
-
-**Working notes.** Three candidate changes, independent of each other:
-
-1. **Build-phase handoff artifact.** As `/sovbuild` works, it appends to a running list: new consumer-facing names introduced, files touched, frame assumptions that shifted. The close session reads this instead of re-exploring. Could be a draft section of the build-log entry, written mid-build rather than composed at close.
-
-2. **Scripted mechanicals.** A Python script taking `(old_version, new_version)` that handles footer bumps, `plugin.json` version, `PLUGIN_METHOD_VERSION` in `session_start.py`, and proxy regeneration. Removes ~30% of close-session token cost. Already half-proven — the v112 session fell back to a Python script for footers after Edit failures.
-
-3. **Two-turn close.** Judgment work (parity check, frame corrections, build-log narrative) in one turn; mechanical finishing (script run, commit/tag/push) in a second turn or fresh session. The second turn needs almost no context.
-
-**Next step.** The compact-nudge fold-in was addressed by 0113 (shipped v116). The remaining three ideas (handoff artifact, scripted mechanicals, two-turn close) are independent — promote to a batch or park when next planning.
 
 ---
 

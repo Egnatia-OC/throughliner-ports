@@ -5,5 +5,3 @@
 **Decisions taken and why.** Kept the layout simple.
 
 **Pivots and surprises.** None.
-
-**Carried forward.** Nothing.

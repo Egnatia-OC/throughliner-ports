@@ -142,7 +142,6 @@ One file per session in `Dev/Planning/build-log/`, named `vNN-slug.md`:
 
 **Pivots and surprises.** What differed from scope expectations.
 
-**Carried forward.** Items raised but not done, with destination.
 ```
 
 After writing the file, prepend an index line to `Dev/Planning/build-log/INDEX.md`:

@@ -74,7 +74,7 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 - **ideate.md** — V90 origin. New idea exploration: open-ended discussion, overlap check, fit assessment, routing (OQ/batch/idea/drop). Claude-offered ideas optional. Inline git commit step with `ideate:` prefix.
 
-- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BUILD-PLAN, (c) vague changes, (d) split needed. V93: pre-build sizing check (8+ files AND open decisions → advisory warning). Invocation-prompt compact nudge on recap closing.
+- **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BUILD-PLAN, (c) vague changes, (d) split needed. V93: pre-build sizing check (8+ files AND open decisions → advisory warning). Invocation-prompt compact nudge on recap closing. V94: pre-build blocker gate — scans batch body and BUILD-PLAN OQs for unresolved items before proceeding; halts with `/sovdeliberate` or `/sovplan` nudge if blockers found.
 
 - **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BUILD-PLAN, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BUILD-PLAN). Prerequisite and re-batching carve-outs. V93: invocation-prompt compact nudge on completion prompt.
 
@@ -86,7 +86,7 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 - **tersify.md** — V80 origin. Guided doc compression: phase gate, triage pass (rank by size, flag wrong-home/structural/verbose), compact gate, per-doc audit with approval gates. Planning phase only.
 
-- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 4 questions (product overview + 3 UX) + scaffold, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75 migrations. PreToolUse exempts setup's tool calls.
+- **setup.md** — V29 origin, procedure doc V66. Four cases: (1) empty → 5 questions (product overview + 3 UX + language) + scaffold + `git config --local core.quotepath false`, (2) existing code → scaffold alongside, (3) foreign CLAUDE.md → migrate/overwrite/leave, (4) already adopted → refresh with V47/V48/V46/V57/V69/V70/V75/V94 migrations (V94: Language section + quotepath). PreToolUse exempts setup's tool calls.
 
 - **revert.md** — V87 origin. Guided rollback: confirms commit exists, identifies changes since last commit, confirms revert, restores tracked files (`git checkout -- .`), optionally removes untracked files (`git clean -fd`), verifies clean state, advises committing before future builds. Edge case: no prior commit → explain and stop.
 
@@ -112,8 +112,8 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 - 14 templates under `plugin/templates/`: CLAUDE, BUILD-PLAN (legacy single-file), BUILD-PLAN/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/test-log, .proxies/research, .proxies/build-plan, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/build-plan, .proxies/build-log, and .proxies/test-log serve as operational indexes for their respective folder-mode docs (V75).
 - `plugin/scripts/parse_backlog.py` — shared BUILD-PLAN parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
-- `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections, scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
-- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BUILD-PLAN helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`).
+- `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections (three required: What shipped, Decisions taken and why, Pivots and surprises), scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
+- `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BUILD-PLAN helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`). V94: `safe_read_text()` uses `utf-8-sig` encoding to strip Windows BOM bytes.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
@@ -149,4 +149,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*

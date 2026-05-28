@@ -57,7 +57,7 @@ See *Managing the plugin* below for disable/re-enable/uninstall.
 **First session:**
 - Open Claude Code in the project folder. Run `/sovsetup`.
 - `/sovsetup` detects the case (empty, existing code, foreign docs, already managed) and runs the matching dialogue.
-- For empty folders: scaffolds spine docs and walks four prompts (product overview, UX principles, core functionalities, first batch sketch).
+- For empty folders: scaffolds spine docs and walks five prompts (product overview, UX principles, core functionalities, first batch sketch, language).
 - Claude writes directly to UX.md during setup (planning phase — docs are open). The no-coder converts the first-batch sketch into a build batch with a `Serves UX.md:` line.
 - Run `/sovrecap` to review the batch's file list and test plan, then `/sovbuild` to lock and build. When done, `/sovclose` handles quality gates and record-keeping, then `/sovgit` walks you through commit/tag/push.
 
@@ -109,7 +109,7 @@ After `/sovsetup`, CLAUDE.md sits at the project root and everything else lives 
 - **_method/BUILD-PLAN/** — deferred work. Per-batch files only (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. The four index sections (Red flags, Planning batches, Build batches reference list, Open questions) live in `_method/proxies/build-plan.md`. Reordering = moving lines in the proxy, not renaming files.
 - **_method/MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each entry: name + file path + description + one-line rationale (why it exists). Maintained by Claude during builds. Serves two audiences: the user (lookup reference) and Claude itself (recalls why a component was built so it can explain decisions and update UX accurately without scanning the build log). The path field anchors a read-before-edit gate.
 - **_method/test-log/** — per-session test files. Row-per-test record with 10 columns (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After a build, Claude writes a per-session file, runs automatable tests, leaves user-verified rows for planning read-back. Index lives at `_method/proxies/test-log.md`. Rows pruned when their component leaves MANIFEST.
-- **_method/build-log/** — per-build narrative files. What shipped / Decisions / Pivots / Carried forward / Performance. Index lives at `_method/proxies/build-log.md`. Queryable via grep across builds.
+- **_method/build-log/** — per-build narrative files. What shipped / Decisions / Pivots / Performance. Index lives at `_method/proxies/build-log.md`. Queryable via grep across builds.
 
 `/sovsetup` also creates inside `_method/`:
 - **_method/planning/drafts/** — holding area for content not yet ready for a specific doc.
@@ -173,11 +173,12 @@ The `Changes:` delimiter separates the two regions.
 
 ### Starting from scratch
 
-Empty folder → `/sovsetup` → four prompts:
+Empty folder → `/sovsetup` → five prompts:
 1. **Product overview.** What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.
 2. **UX principles.** For Taskflow: *Reduce planning pressure*, *Drag is the primary verb*, *No date pickers, no shame*.
 3. **Core functionalities.** Three to five features with "user needs this because…" lines.
 4. **First batch sketch.** Smallest end-to-end buildable thing.
+5. **Language.** What language Claude should use for responses and documentation. Defaults to English.
 
 Claude writes the overview to CLAUDE.md and the project context to UX.md (planning phase — docs are open). No-coder seeds the first build batch.
 
@@ -243,7 +244,7 @@ When a session opens, **SessionStart** checks adopted vs. unadopted. Unadopted f
 
 Until `/sovsetup` runs, **PreToolUse** blocks Edit/Write/MultiEdit calls. In unadopted folders, the deny message says "run `/sovsetup` first" — not "describe it in a BUILD-PLAN batch," which would be meaningless before the project is set up.
 
-`/sovsetup` branches: empty folder → scaffold + four prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
+`/sovsetup` branches: empty folder → scaffold + five prompts; existing code, no docs → scaffold alongside; foreign docs → migrate/overwrite/leave; already managed → refresh footers + migrations.
 
 Nothing destructive without confirmation; every destructive option backs up first.
 
@@ -262,6 +263,14 @@ SessionStart detects when a batch has `Status: active` with files still unticked
 ### Open-question staleness
 
 SessionStart flags open questions that have been sitting for 20+ sessions without resolution, surfacing them in the status summary. The nudge points toward a deliberation session to work through accumulated questions.
+
+## Language setting
+
+CLAUDE.md carries a `Language:` field (set during `/sovsetup`, defaults to English). Claude responds and writes doc content in this language. Plugin docs stay English — Claude reads them internally and paraphrases output.
+
+Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed Explicitly:`) remain English regardless. Plugin hooks regex-match these strings — translating them silently breaks phase enforcement. The template documents this constraint inline.
+
+`/sovsetup` also sets `git config --local core.quotepath false` to prevent Git from escaping non-ASCII characters in filenames — without it, accented or CJK filenames in batch file lists would fail path matching.
 
 ## Research search flow
 
@@ -398,4 +407,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*

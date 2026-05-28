@@ -87,7 +87,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Halt-and-confirm.** Pattern for conditions the user must decide on: surface, propose, wait. Used by `/sovrecap` and `/sovbuild`.
 
-- **Build log entry.** Per-build narrative in `build-log/NNN-name.md`. Shape: What shipped / Decisions / Pivots / Carried forward + Performance section.
+- **Build log entry.** Per-build narrative in `build-log/NNN-name.md`. Shape: What shipped / Decisions / Pivots + Performance section.
 
 - **Build recap.** Ephemeral chat summary from `/sovclose`. Persistent counterpart is the build log entry.
 
@@ -97,7 +97,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Staleness sweep.** After-build check (close step 9): scan queued and parked BUILD-PLAN batches and open questions for literal references to file paths and names that changed in the build. Pattern-match level — checks strings, not semantics. Complements the frame-correction sweep (which checks semantic frame) and doc-parity check (which checks spine docs).
 
-- **Lost-feature check.** After-build check (close step 10): scan for items that silently fell off the roadmap — parked batches whose parking conditions were just met, carried-forward items never picked up. Judgment-based, not mechanical.
+- **Lost-feature check.** After-build check (close step 10): scan for items that silently fell off the roadmap — parked batches whose parking conditions were just met. Judgment-based, not mechanical.
 
 - **Concurrent-build detection.** SessionStart check: when `_method/active-build.md` exists with unticked files (or legacy: `Status: active` with unticked files), a build is mid-progress. Warning asks the user whether they're resuming or working in parallel. Under V90+ snapshot architecture, parallel work is safe — BUILD-PLAN is unlocked. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` skipped).
 
@@ -107,7 +107,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Doc-parity check.** After-build step: for each renamed/deleted/moved file in the batch, grep spine docs (UX.md, BUILD-PLAN, MANIFEST.md, CLAUDE.md) for stale references. Scoped to blast radius. Findings flagged in recap.
 
-- **Idea sweep.** After-build step: review the session for ideas, suggestions, or observations raised but not implemented. Each triaged to BUILD-PLAN, build-log *Carried forward*, or recap flag. Nothing left unrouted.
+- **Idea sweep.** After-build step: review the session for ideas, suggestions, or observations raised but not implemented. Each triaged to BUILD-PLAN (batch or open question) or recap flag for user to decide. Nothing left unrouted.
 
 - **Pre-commit checkpoint.** After-build step: verify MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, doc-parity check done. Complete any missing steps before prompting commit.
 
@@ -129,5 +129,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **OQ accumulation nudge.** SessionStart and `/sovrecap` check: when 3+ open questions exist or any are older than 5 build cycles, nudge toward `/sovdeliberate`. Informational, not blocking.
 
+- **Language setting.** `Language:` field in CLAUDE.md. Tells Claude what language to use for responses and doc content. Defaults to English. Control tokens (`Status:`, `Changes:`, etc.) stay English regardless — hooks regex-match them. Set during `/sovsetup`; migrated by case 4 refresh. Full rule: `universal-behaviour.md` → *Respect the Language: field*.
+
+- **Pre-build blocker gate.** Check during `/sovrecap`: scan the top batch for unresolved open questions or ideas that would force mid-build improvisation. If blockers found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (which checks session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
+
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*

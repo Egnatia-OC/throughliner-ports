@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 93
+PLUGIN_METHOD_VERSION = 94
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -212,7 +212,7 @@ def read_universal_rules() -> str:
     than silently emitting nothing if the file can't be read."""
     rules_path = Path(__file__).parent / "universal-behaviour.md"
     try:
-        return rules_path.read_text(encoding="utf-8")
+        return rules_path.read_text(encoding="utf-8-sig")
     except FileNotFoundError:
         return (
             "[no-code-method plugin warning] "
@@ -233,7 +233,7 @@ def safe_read_text(path: Path):
     encoding). Used everywhere the hook needs to peek at a file without
     risking an unhandled exception in the subprocess."""
     try:
-        return path.read_text(encoding="utf-8")
+        return path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeDecodeError):
         return None
 

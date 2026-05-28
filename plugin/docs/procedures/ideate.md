@@ -1,4 +1,4 @@
-# Ideate procedure — no-code method
+﻿# Ideate procedure — no-code method
 
 Follow this procedure when the user arrives with a fresh concept, or wants to explore new ideas. Exploratory by design — lighter than planning or deliberation.
 
@@ -62,4 +62,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

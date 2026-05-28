@@ -80,7 +80,7 @@
             <tr><th>Situation</th><th>What happens</th></tr>
           </thead>
           <tbody>
-            <tr><td>Empty folder</td><td>Scaffolds all spine docs, walks you through four prompts.</td></tr>
+            <tr><td>Empty folder</td><td>Scaffolds all spine docs, walks you through five prompts.</td></tr>
             <tr><td>Existing code, no docs</td><td>Scaffolds docs alongside your code.</td></tr>
             <tr><td>Foreign docs present</td><td>Offers to migrate, overwrite, or leave them.</td></tr>
             <tr><td>Already managed</td><td>Refreshes footers and runs any migrations.</td></tr>
@@ -88,12 +88,13 @@
         </table>
       </div>
 
-      <h3>The four prompts (empty folder)</h3>
+      <h3>The five prompts (empty folder)</h3>
       <ol class="steps">
         <li><strong>Product overview.</strong> What the product does, who it's for, what makes it distinct or what tension it solves, and milestones.</li>
         <li><strong>UX principles.</strong> High-level rules for how the app should feel.</li>
         <li><strong>Core functionalities.</strong> Three to five features with "user needs this because&hellip;" lines.</li>
         <li><strong>First batch sketch.</strong> The smallest end-to-end buildable thing.</li>
+        <li><strong>Language.</strong> What language Claude should use for responses and documentation. Defaults to English.</li>
       </ol>
 
       <p>Claude writes the overview to CLAUDE.md and the project context to UX.md (docs are open during setup). Then you seed the first build batch.</p>

@@ -91,7 +91,6 @@ TEST-LOG's Session column needs a stable build-session identifier:
      **What shipped.** <plain-English deliverables; reference TEST-LOG rows>
      **Decisions taken and why.** <load-bearing decisions>
      **Pivots and surprises.** <if any>
-     **Carried forward.** <if any>
 
      ## Performance
      - **Batch completion:** <Complete | Partial (handoff)>
@@ -110,8 +109,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for items that silently fell off the roadmap:
    - **Parked batches** whose parking rationale references a condition that was just met by this build (e.g. "parked until X ships" where X just shipped). Surface and ask the user if it should be unparked.
-   - **Carried-forward items** in recent build-log entries that were never picked up by subsequent builds or BUILD-PLAN entries. Scan the last 3–5 build-log files for non-empty "Carried forward" sections, check whether each item appears in current BUILD-PLAN or was addressed. Flag orphans.
-   - Skip if the batch didn't change anything that could satisfy a parking condition, and no recent carried-forward items exist.
+   - Skip if the batch didn't change anything that could satisfy a parking condition.
 
 11. **End-of-recap flags:**
    - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
@@ -119,7 +117,7 @@ TEST-LOG's Session column needs a stable build-session identifier:
    - UX.md changes implied (don't edit — flag only).
    - Red flag concerns (confirm BUILD-PLAN entry written if deferred).
 
-12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BUILD-PLAN (new item or open question); note in build-log entry's *Carried forward* as "not pursued, reason: ..."; or flag in recap for user to decide. Don't leave ideas unrouted.
+12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BUILD-PLAN (new item or open question); or flag in recap for user to decide. Don't leave ideas unrouted.
 
 13. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
 
@@ -162,4 +160,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 93.*
+*No-code method — Version 94.*

@@ -19,7 +19,7 @@ which run both BUILD-PLAN parse and scope-context checks):
   3. **TEST-LOG content file** — checks 10-column table row format.
 
   4. **Build-log entry file** — checks required sections (What shipped,
-     Decisions, Pivots, Carried forward, Performance).
+     Decisions, Pivots, Performance).
 
   5. **Proxy file** — checks HTML comment header format (summary
      proxies only; operational indexes skipped).

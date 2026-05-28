@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v117-language-setting-bom-blocker-gate-carried-forward.md](v117-language-setting-bom-blocker-gate-carried-forward.md) — 2026-05-28 — Language setting, BOM hardening, pre-build blocker gate, carried-forward removal
 - [v116-session-length-safeguards.md](v116-session-length-safeguards.md) — 2026-05-28 — Session-length safeguards
 - [v115-method-infra-whitelist-phase-detection-fixes.md](v115-method-infra-whitelist-phase-detection-fixes.md) — 2026-05-28 — Method-infra whitelist + phase-detection fixes
 - [v114-build-e2e-test.md](v114-build-e2e-test.md) — 2026-05-28 — Build E2E test

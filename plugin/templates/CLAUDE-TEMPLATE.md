@@ -11,6 +11,12 @@ Claude Code auto-loads this file on session start. The plugin's canonical docs l
 **What friction it solves.** 
 **Milestones.** 
 
+## Language
+
+Language: English
+
+Claude responds and writes doc content in this language. Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed Explicitly:`) stay English — plugin hooks regex-match them.
+
 ## Where the docs live
 
 Paths for each project doc, relative to the project root. Bare filenames elsewhere resolve against this list. Edit to match your project layout.
@@ -54,4 +60,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*

@@ -320,7 +320,7 @@ def detect_adopt_case(project_root):
 def safe_read_text(path):
     """Read text from path; return None on any IO/decoding failure."""
     try:
-        return Path(path).read_text(encoding="utf-8")
+        return Path(path).read_text(encoding="utf-8-sig")
     except (OSError, UnicodeDecodeError):
         return None
 

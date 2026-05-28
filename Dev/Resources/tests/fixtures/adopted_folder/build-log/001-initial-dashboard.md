@@ -5,5 +5,3 @@
 **Decisions taken and why.** Kept the layout simple for the first build.
 
 **Pivots and surprises.** None.
-
-**Carried forward.** Settings screen deferred to next batch.

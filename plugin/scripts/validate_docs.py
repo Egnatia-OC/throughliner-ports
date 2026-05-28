@@ -7,7 +7,7 @@ and as a standalone planning pre-flight. Four doc types:
 
   - TEST-LOG: 10-column table row check
   - Build-log entry: required sections (What shipped, Decisions taken
-    and why, Pivots and surprises, Carried forward) + Performance section
+    and why, Pivots and surprises) + Performance section
   - Scope-context: Goal/Outputs/Success criteria in batch files
   - Proxy: HTML comment header format (summary proxies only)
 
@@ -75,14 +75,13 @@ _REQUIRED_BOLD_SECTIONS = (
     "What shipped",
     "Decisions taken and why",
     "Pivots and surprises",
-    "Carried forward",
 )
 
 
 def validate_build_log_entry(text):
     """Check a build-log per-entry file for required sections.
 
-    Four bold-label sections (**What shipped.**, etc.) and one heading
+    Three bold-label sections (**What shipped.**, etc.) and one heading
     (## Performance). Only fires when the file has a heading and
     substantial content. Returns list of warning strings."""
     if not isinstance(text, str) or not text.strip():

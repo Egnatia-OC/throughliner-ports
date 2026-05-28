@@ -21,6 +21,18 @@ Method terms defined in `VOCABULARY.md` (sibling). Each procedure doc's opening 
 
 **Existing projects.** Projects adopted before this section won't have it. `/sovsetup` case 4 detects the missing section and asks the overview question as a backfill step.
 
+## Language (CLAUDE.md)
+
+`## Language` in CLAUDE.md, between Product overview and the path block. Single field:
+
+- **Language: \<language\>.** The language Claude uses for responses, recaps, and doc content. Defaults to English. Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `Confirmed Explicitly:`, `[SECURITY]`) stay English regardless — hooks regex-match them.
+
+**When written.** `/sovsetup` asks a 5th question; default is the language the user used for Q1–Q4.
+
+**When updated.** Anytime. CLAUDE.md is always read/write.
+
+**Existing projects.** `/sovsetup` case 4 adds the section if missing.
+
 ## Additional source-of-truth docs
 
 Some projects need an extra source-of-truth doc the spine docs don't cover. Common examples: `SYSTEM-PROMPT.md` (Claude/MCP projects), `COPY.md` (user-facing text is the deliverable), `PATTERNS.md` (coding conventions), `API.md` (endpoint/payload specs). Not a required set — create as needed.
@@ -152,7 +164,6 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 **What shipped.** <deliverables; reference TEST-LOG rows>
 **Decisions taken and why.** <load-bearing decisions>
 **Pivots and surprises.** <if any>
-**Carried forward.** <if any>
 
 ## Performance
 - **Batch completion:** Complete / Partial (handoff)
@@ -389,4 +400,4 @@ When `/sovbuild` is invoked, the active batch's full content is extracted from B
 **Snapshot format.** The snapshot is a standalone markdown file containing the batch's heading (H1), scope context, and build operations — the same content that would appear in the per-batch file or inline BUILD-PLAN section, but extracted to its own file.
 
 ---
-*No-code method — Version 93.*
+*No-code method — Version 94.*
