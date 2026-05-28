@@ -31,9 +31,14 @@ So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 t
 In order:
 
 1. `git describe --tags --abbrev=0` — confirm current version. If git is unavailable or the command fails, read the *Current state* section at the bottom of this project's `CLAUDE.md` and use its session tag. Flag the value if it looks stale (e.g. build-log entries are clearly newer).
-2. Read `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `Guides/Reference manual.md` at `HEAD`.
+2. Read the following plugin docs at `HEAD`:
+   - `plugin/hooks/universal-behaviour.md` — behavioural rules, prohibited behaviours, response-shape tags, routing table (~180 lines).
+   - `plugin/docs/DOC-STRUCTURE.md` — structural specs for project docs: entry shapes, section ordering, proxy format (~410 lines).
+   - `plugin/docs/VOCABULARY.md` — method term definitions, cross-referenced from other docs (~140 lines).
+   - `Guides/Reference manual.md` — install/usage primer and method overview for orientation (~410 lines).
 3. Read `Dev/Planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
+5. **State summary.** Produce a brief summary for the user: current version (session tag, method version, plugin version), queue depth (number of queued batches), next batch (number and title), OQ count, and any notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
 Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
 
 ---
@@ -44,11 +49,11 @@ Classify the session opener. Pick the highest-priority match. Openers naming a s
 
 | Session type | What to load | What to skip | Session-middle shape | Close path |
 |---|---|---|---|---|
-| **Implementation** | Full open (steps 1–4). Batch input files per `Inputs:`. | — | Ship plugin code or method-doc structural changes per batch scope. Ends with smoke test + doc-parity. | Full close |
-| **Doc-only** | Full open (steps 1–3). Step 4 if consuming a queued batch. | — | Rewrites without testable code. Terminology, parity catch-up, OQ resolution as prose. | Lighter close |
+| **Implementation** | Full open (steps 1–5). Batch input files per `Inputs:`. | — | Ship plugin code or method-doc structural changes per batch scope. Ends with smoke test + doc-parity. | Full close |
+| **Doc-only** | Full open (steps 1–3, 5). Step 4 if consuming a queued batch. | — | Rewrites without testable code. Terminology, parity catch-up, OQ resolution as prose. | Lighter close |
 | **Planning** | Steps 1, 3, 5. Recent build-log entries for context. | Heavy plugin docs (step 2) unless needed for a specific question. | Rescope roadmap: split/merge batches, revise scope, add/resolve OQs. | Lighter close |
-| **Ideation** | Steps 1, 3. BACKLOG batches + OQs for gap detection. | Plugin docs (step 2), batch-input check (step 4). | Brainstorm new batches/OQs. Draft scope. No structural changes to existing batches. | Lighter close |
-| **E2E test** | Full open (steps 1–4). Consumer project state. Relevant research files. | — | Run plugin against consumer project. Document findings. File to research/. | Lighter close |
+| **Ideation** | Steps 1, 3, 5. BACKLOG batches + OQs for gap detection. | Plugin docs (step 2), batch-input check (step 4). | Brainstorm new batches/OQs. Draft scope. No structural changes to existing batches. | Lighter close |
+| **E2E test** | Full open (steps 1–5). Consumer project state. Relevant research files. | — | Run plugin against consumer project. Document findings. File to research/. | Lighter close |
 | **Remote-control standby** | Step 1 only. | Steps 2–5 until directed. | Wait for instructions. Load on demand. | Depends on work done |
 
 **Skip doesn't mean refuse.** If mid-session the skipped content becomes relevant, load it then.

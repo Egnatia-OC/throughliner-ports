@@ -18,20 +18,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0126 — Session-open state summary + step 2 annotations
-
-**Goal.** Add a lightweight session-open state summary template and per-doc purpose annotations to session-protocol.md. Resolves OQs M6 and M8 from the 0121 reader test.
-
-**Approach.** Add a "State summary" paragraph after step 4 in session-protocol.md defining the expected shape (queue depth, next batch, OQ count). Add one-line purpose + size annotations to step 2's doc list. Both are small prose additions.
-
-**Outputs.** session-protocol.md updated. Two OQs removed from BACKLOG.
-
-**Success criteria.** A fresh-session Claude reading session-protocol.md produces a consistent state summary without improvising. Step 2 doc reads are targeted by purpose.
-
-**Risks / dependencies.** None. Trivially small.
-
----
-
 ### 0127 — Batch scope shape documentation
 
 **Goal.** Document the expected shape of a BACKLOG queued batch entry in session-reference.md, so new sessions writing batches have a reference instead of inferring from examples.
