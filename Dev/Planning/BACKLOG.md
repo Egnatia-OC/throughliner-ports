@@ -10,25 +10,11 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-118 batches shipped or cancelled (V18–0125). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+119 batches shipped or cancelled (V18–0128). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
 Full scope for each queued batch lives inline here — no separate scope files. Read the whole section at session open; the batch you're working on has the context you need, and the other batches prevent you from duplicating or contradicting queued work.
-
----
-
-### 0123 — Plugin-side close mechanicals + two-turn procedure
-
-**Goal.** Port the dev-side close improvements (scripted mechanicals and two-turn structure) to the plugin side.
-
-**Approach.** Consumer-side version bump script at `plugin/scripts/bump_version.py` (or folded into `/sovclose` procedure) handling the consumer project's footer bumps and proxy regeneration. Update `close.md` with two-turn structure: judgment pass (parity, frame corrections, build-log narrative, idea sweep) then `/compact` boundary then mechanical pass (script run, proxy regen, commit/tag/push). Reference manual note.
-
-**Outputs.** Consumer-side `bump_version.py` or `/sovclose` integration. Updated `close.md` with two-turn structure and script reference. Reference manual update.
-
-**Success criteria.** Consumer-side script produces correct footer bumps, verified by `git diff`. Two-turn close structure works in `/sovclose` flow. Reference manual documents both the script and the two-turn pattern.
-
-**Risks / dependencies.** Dev-side 0118 and 0119 (pattern proven on dev side first). Consumer-side footer patterns differ from dev-side — script needs to handle both or be a separate implementation. Low risk given dev-side script proves the approach.
 
 ---
 

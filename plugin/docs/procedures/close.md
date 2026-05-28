@@ -1,6 +1,8 @@
-﻿# Close procedure — no-code method
+# Close procedure — no-code method
 
 Follow this procedure to close a session. Works after any session type — build, planning, or general.
+
+Two turns: **judgment** (while build context is fresh) then **mechanical** (after `/compact`). The `[PROMPT]` at the turn boundary is recommended, not enforced — short sessions can close in one turn.
 
 ## Phase detection
 
@@ -41,7 +43,9 @@ TEST-LOG's Session column needs a stable build-session identifier:
 - **Single-file:** `BUILD-LOG.md` → first `## <token>` heading.
 - **Last resort:** today's YYYY-MM-DD.
 
-### Work loop
+### Turn 1 — judgment
+
+Run while build context is fresh.
 
 1. **[SILENT] Update MANIFEST.md.** Use the batch's Files: as source. For each ticked file:
    - Added file with trackable element → add MANIFEST entry with `(path)` field and rationale (`*Rationale: [why it exists / vNN].*` — one clause, max 15 words + session tag). Alphabetical order.
@@ -119,13 +123,39 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BUILD-PLAN (new item or open question); or flag in recap for user to decide. Don't leave ideas unrouted.
 
-13. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session (MANIFEST, TEST-LOG, build-log at minimum — `/sovclose` always touches these). Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
+13. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` — the mechanical pass needs only these values, not build context. If context pressure is low, continuing directly is fine.
 
-14. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+### Turn 2 — mechanical
 
-15. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit: MANIFEST updated (step 1), TEST-LOG rows written (step 4a), build-log entry written (step 6), staleness sweep done (step 9), idea sweep done (step 12), proxies regenerated (step 13), doc-parity check done (step 3). If any missing, complete now.
+Needs only the values from the turn boundary.
 
-16. **[PROMPT] Closing.** "Ready to commit. Consider `/compact` before proceeding if this session has been long — it preserves context for the git steps. Then invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
+14. **[SILENT] Bump method-version footers.** Only if session-start reported a version mismatch between the plugin and the project's doc footers. Run from project root:
+    ```
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/bump_version.py" <old> <new>
+    ```
+    Skip if footers already match the plugin version.
+
+15. **[SILENT] Regenerate proxies.** Two parts. First, run the script for mechanical updates (headers + line-number pointers):
+    ```
+    python "${CLAUDE_PLUGIN_ROOT}/scripts/bump_version.py"
+    ```
+    Then review each proxy whose source doc was edited this session — update state summaries, entry descriptions, and add/remove entries for structural changes the script can't detect. MANIFEST, TEST-LOG, and build-log proxies at minimum (always touched by `/sovclose`). Skip if neither `_method/proxies/` nor `.proxies/` exists.
+
+16. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+
+17. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit:
+    - [ ] MANIFEST updated (step 1)
+    - [ ] TEST-LOG rows written (step 4a)
+    - [ ] Build-log entry written (step 6)
+    - [ ] Batch written back + snapshot deleted (step 7)
+    - [ ] Staleness sweep done (step 9)
+    - [ ] Idea sweep done (step 12)
+    - [ ] Footers bumped if applicable (step 14)
+    - [ ] Proxies regenerated (step 15)
+    - [ ] Doc-parity check done (step 3)
+    Complete any missing steps now.
+
+18. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push. After that, refresh and test — invoke `/sovtest` for a guided walkthrough of your pending tests, or bring per-row outcomes to your next planning session."
 
 ---
 
@@ -133,13 +163,17 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 Run when no active-with-ticked-files batch exists. Lighter close for planning, ideation, or general sessions.
 
-### Steps
+### Turn 1 — judgment
 
 1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BUILD-PLAN (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
 
-2. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Skip if no source docs were edited or no proxies directory exists.
+2. **[PROMPT] Turn boundary.** Judgment work is done. State whether proxies need regeneration (any source doc edited this session). Recommend `/compact` if the session was long — the mechanical pass doesn't need session context. Short sessions can continue directly.
 
-3. **[PROMPT] Closing.** "Ready to commit. Consider `/compact` before proceeding if this session has been long. Then invoke `/sovgit` to commit, tag, and push."
+### Turn 2 — mechanical
+
+3. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Run the script for mechanical updates, then review state summaries. Skip if no source docs were edited or no proxies directory exists.
+
+4. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
 
 ---
 
@@ -160,4 +194,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 95.*
+*No-code method — Version 96.*

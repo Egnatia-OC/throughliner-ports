@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v128-plugin-side-close-mechanicals.md](v128-plugin-side-close-mechanicals.md) — 2026-05-28 — Plugin-side close mechanicals + two-turn procedure
 - [v127-batch-scope-shape-docs.md](v127-batch-scope-shape-docs.md) — 2026-05-28 — Batch scope shape documentation
 - [v126-session-open-state-summary.md](v126-session-open-state-summary.md) — 2026-05-28 — Session-open state summary + step 2 annotations
 - [v125-dev-side-mirroring-audit.md](v125-dev-side-mirroring-audit.md) — 2026-05-28 — Dev-side structure mirroring audit

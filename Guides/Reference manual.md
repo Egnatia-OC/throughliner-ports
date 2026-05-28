@@ -130,7 +130,12 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 Source-of-truth docs (UX.md, additional docs) are directly editable by Claude during planning — no ceremony needed.
 
-**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BUILD-PLAN — this unlocks BUILD-PLAN so other sessions can plan, deliberate, or ideate in parallel. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose` — which writes the batch back to BUILD-PLAN as shipped, deletes the snapshot, updates MANIFEST, checks spine docs and queued batches for stale references, scans for lost-feature items, opens the test session, runs Claude-automatable tests, generates a recap, writes the build-log entry, sweeps for unrouted ideas, runs any project-specific close steps, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`. `/sovgit` walks the user through commit, tag, and push in plain English.
+**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BUILD-PLAN — this unlocks BUILD-PLAN so other sessions can plan, deliberate, or ideate in parallel. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. When done, the user invokes `/sovclose`, which runs in two turns:
+
+- **Turn 1 (judgment)** — while build context is fresh: updates MANIFEST, checks doc parity, opens the test session and runs Claude-automatable tests, generates the build recap, writes the build-log entry, writes the batch back as shipped, runs frame-correction and staleness sweeps, checks for lost-feature items, sweeps for unrouted ideas, then pauses with a `/compact` recommendation.
+- **Turn 2 (mechanical)** — after compaction: bumps method-version footers if the plugin version has changed (via `bump_version.py`), regenerates proxies, runs any project-specific after-build steps, verifies all steps via a pre-commit checkpoint, and nudges `/sovgit`.
+
+Short sessions can run both turns without compacting. `/sovgit` walks you through commit, tag, and push in plain English.
 
 **Session-length safeguards.** Long sessions degrade Claude's adherence as context fills up. Three advisory mechanisms help: (1) pre-build sizing warns during `/sovrecap` when a batch has 8+ files and open design questions, (2) a mid-session compact nudge fires when 15+ exchanges pass since `/sovbuild` without reaching `/sovclose`, (3) every skill handoff prompt recommends `/compact` before the next skill. None block — all give the user a recovery point.
 
@@ -298,6 +303,7 @@ The plugin doesn't ship or store API keys — the user brings their own.
 - **Hooks** (Python, deterministic enforcement): SessionStart detects folder state, injects behavioural rules, and mandates a user-facing status summary (batch counts, next batch, top 3 queued batches, pending tests, unclosed builds, concurrent-build detection, stale open questions). PreToolUse enforces edit boundaries (locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, Bash/PowerShell write-guard with project-boundary check). PostToolUse validates structured doc format after edits (BUILD-PLAN parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build (recommends handoff). UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read into main context on demand): planning, before-build (invoked via `/sovrecap`), build (invoked via `/sovbuild`), close, git, revert, testing (invoked via `/sovtest`), tersify (invoked via `/sovtersify`), setup. Each specifies what to load and what to do. Claude follows them in the main conversation — no separate agent contexts.
 - **Slash commands** (`/sovsetup`, `/sovplan`, `/sovdeliberate`, `/sovideate`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`): user-facing entry points that direct Claude to the matching procedure doc or flow.
+- **Scripts** (Python, invoked by procedure docs): `parse_backlog.py` (BUILD-PLAN parser for `/sovrecap` and `/sovbuild`), `allocate_number.py` (batch/file number allocation), `bump_version.py` (footer bumps + proxy line-number updates for `/sovclose` mechanical pass), `project_state.py` (shared helpers for hooks), `validate_docs.py` (structural doc validation for PostToolUse).
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read by procedure docs via `${CLAUDE_PLUGIN_ROOT}/docs/`.
 
@@ -407,4 +413,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 95.*
+*No-code method — Version 96.*

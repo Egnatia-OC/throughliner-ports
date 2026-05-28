@@ -78,7 +78,7 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 - **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BUILD-PLAN, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BUILD-PLAN). Prerequisite and re-batching carve-outs. V93: invocation-prompt compact nudge on completion prompt.
 
-- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). Post-build path writes batch back to BUILD-PLAN as shipped, deletes snapshot, then runs standard close (MANIFEST update, doc-parity check, recap, TEST-LOG rows, build-log entry, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, after-build steps, pre-commit checkpoint, `/sovgit` nudge). Planning/general path unchanged. Idempotent. V93: invocation-prompt compact nudge on both closing prompts.
+- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). V96: two-turn structure — Turn 1 (judgment, while build context is fresh): MANIFEST update, doc-parity check, test session + Claude tests, recap, build-log entry, write-back + snapshot deletion, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, then `[PROMPT]` turn boundary recommending `/compact`. Turn 2 (mechanical): footer bumps via `bump_version.py` (if version mismatch), proxy regeneration (script for headers/line numbers, then Claude reviews summaries), after-build steps, pre-commit checkpoint, `/sovgit` nudge. Planning/general path also two-turn (idea sweep → boundary → proxy regen → closing). Idempotent.
 
 - **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance. V93: end-of-session prompt standardised (`/compact` for continuing, `/clear` for fresh start).
 
@@ -115,6 +115,7 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections (three required: What shipped, Decisions taken and why, Pivots and surprises), scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BUILD-PLAN helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`). V94: `safe_read_text()` uses `utf-8-sig` encoding to strip Windows BOM bytes.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
+- `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*No-code method — Version N.*` footers across project `.md` files and regenerates proxy line-number pointers in `_method/proxies/` (or legacy `.proxies/`). Invoked by `/sovclose` Turn 2 (mechanical pass). Two modes: `<old> <new>` for footer bump + proxy regen, no args for proxy regen only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
 - `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart. V93: session-length awareness (mid-session compact nudge + invocation-prompt compact nudge).
@@ -149,4 +150,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 95.*
+*No-code method — Version 96.*

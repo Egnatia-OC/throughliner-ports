@@ -109,4 +109,4 @@ Entry format: one line per idea.
 -->
 
 ---
-*No-code method — Version 95.*
+*No-code method — Version 96.*

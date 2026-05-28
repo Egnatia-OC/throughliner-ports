@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-28 v127 | when: dip on demand -->
+<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-28 v128 | when: dip on demand -->
 
 # Session reference
 
@@ -11,8 +11,8 @@ Companion to session-protocol.md. Entry shapes, footer bump lists, testing detai
 - L33 **Automated test suite (V53 — pytest)** — `python -m pytest tests/ -v`, coverage, fixtures, relationship to smoke tests
 - L55 **Response-shape tags** — five tags ([SILENT], [BRIEF], [SEQUENCE], [DISCUSS], [PROMPT])
 - L69 **Footer bumps: the full list** — plugin-side leader list (12 entries), cross-cutting, version trackers
-- L109 **Planning artefacts** — lifecycle table (8 entries)
-- L122 **Drafts in flight** — convention + corollary (inputs must be in repo)
+- L110 **Planning artefacts** — lifecycle table (8 entries)
+- L123 **Drafts in flight** — convention + corollary (inputs must be in repo)
 - L131 **BUILD-LOG entry shape** — per-session file in build-log/, 4-section template, INDEX.md prepend
 - L157 **Queued batch entry shape** — 6-field template (Goal, Approach, Inputs, Outputs, Success criteria, Risks/dependencies), heading number, field order, parked batches, sizing, plugin-side disambiguation
 - L191 **Open-questions entry shape** — 5-field template + 4 graduation paths

@@ -406,4 +406,4 @@ When `/sovbuild` is invoked, the active batch's full content is extracted from B
 The section is not written back to BUILD-PLAN when the batch is marked shipped — it's build-time context, not permanent scope.
 
 ---
-*No-code method — Version 95.*
+*No-code method — Version 96.*

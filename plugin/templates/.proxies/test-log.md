@@ -18,4 +18,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 95.*
+*No-code method — Version 96.*
