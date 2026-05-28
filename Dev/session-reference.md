@@ -85,6 +85,7 @@ Method-side = describes how the consumer method works. Dev-internal files (`Dev/
 - `plugin/templates/.proxies/test-log.md`
 - `plugin/templates/MANIFEST-TEMPLATE.md`
 - `plugin/templates/ADDITIONAL-DOC-TEMPLATE.md`
+- `plugin/docs/procedures/*.md` (all 11 procedure docs)
 - `Guides/Reference manual.md` (plugin-side)
 
 ### Cross-cutting
