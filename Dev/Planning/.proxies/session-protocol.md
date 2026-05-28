@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-28 v128 | when: every session open -->
+<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-29 v131 | when: every session open -->
 
 # Session protocol
 
@@ -15,6 +15,6 @@ Always-read file. Session lifecycle: open → middle → close. Opener routing t
 - L79 **Session close** — two paths, both split into judgment pass + `/compact` boundary + mechanical pass
 - L83 **Implementation close (full)** — 11 steps in two turns. Turn 1 (judgment): parity → frame sweep → build-log → idea sweep (3-way triage) → turn boundary (`/compact`). Turn 2 (mechanical): footers (bump_version.py) → proxies (bump_version.py + review) → pre-commit checkpoint → commit → tag → push. Uses `git diff` as dev-side equivalent of plugin's `## Close handoff` section.
 - L136 **Lighter close** — 9 steps in two turns. Turn 1 (judgment): idea sweep → build-log → turn boundary (`/compact`). Turn 2 (mechanical): footers (bump_version.py) → proxies (bump_version.py + review) → checkpoint → commit → tag → push. Skips doc-code parity and frame-correction. Conditional batch removal in checkpoint.
-- L183 **Batch-ordering audit** — 4 checks after BACKLOG structural changes: forward-dep scan, stale-ref scan, reorder, fix scope text
-- L196 **Doc-code parity** — during-session + close-time audit (6-item checklist)
-- L215 **Guide parity (Guides/crash-course/)** — data-source/data-transform attribute chain
+- L185 **Batch-ordering audit** — 4 checks after BACKLOG structural changes: forward-dep scan, stale-ref scan, reorder, fix scope text
+- L198 **Doc-code parity** — during-session + close-time audit (6-item checklist)
+- L217 **Guide parity (Guides/crash-course/)** — data-source/data-transform attribute chain

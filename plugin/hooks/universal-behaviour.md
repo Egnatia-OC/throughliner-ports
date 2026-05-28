@@ -12,7 +12,7 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Plain language over jargon.** Explain what you're doing so a non-coder can understand.
   *Load-bearing for: the build recap — assumes plain-language output.*
 
-- **Respect the Language: field.** CLAUDE.md may contain a `Language:` line. If present and non-English, respond, write recaps, and compose doc content in that language. Plugin procedure docs stay English — Claude reads them internally and paraphrases output in the target language. Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed Explicitly:`) remain English regardless — hooks regex-match them.
+- **Respect the Language: field.** CLAUDE.md may contain a `Language:` line. If present and non-English, respond, write recaps, and compose doc content in that language. Procedure docs stay English — Claude reads internally, paraphrases in the target language. Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed Explicitly:`) remain English regardless — hooks regex-match them.
   *Load-bearing for: multi-language support — non-English users must receive output in their language without breaking hook regex matching.*
 
 - **No stealth fixes.** If a change causes a regression, state plainly: "The previous change broke [X], I am now reverting/fixing it."
@@ -21,38 +21,38 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Flag out-of-scope improvements.** Don't silently fix things outside the current request's scope.
   *Load-bearing for: the flag taxonomy — relies on flagging, not fixing.*
 
-- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns explicitly. Three outcomes: address now (slot into build batch); attach to feature being planned (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BACKLOG batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
+- **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns. Three outcomes: address now (slot into build batch); attach to planned feature (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BACKLOG batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
   *Load-bearing for: Red flags section, flag taxonomy, and `[SECURITY]` marker propagation.*
 
-- **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file with a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. The PreToolUse hook backs this up: the first `Edit`/`Write`/`MultiEdit` on a MANIFEST-pathed file is denied with the entries inlined; a retry succeeds because the hook scans for the prior block-once deny. MANIFEST entries without a `(path)` field skip the gate.
+- **Check MANIFEST.md and UX.md before working on a feature.** Before editing a file with a MANIFEST entry, have that entry and the relevant `UX.md` Functionalities entry in view. PreToolUse backs this up: the first `Edit`/`Write`/`MultiEdit` on a MANIFEST-pathed file is denied with the entries inlined; retry succeeds because the hook scans for the prior block-once deny. MANIFEST entries without a `(path)` field skip the gate.
   *Load-bearing for: the feature pipeline and every change touching an existing feature.*
 
 - **Ask rather than guess on ambiguity.**
   *Load-bearing for: planning and pre-build discussions exist to resolve ambiguity; guessing bypasses them.*
 
-- **Adherence-drop diagnostic.** When the user reports that Claude is ignoring rules, not following procedures, or generally declining in quality mid-session: don't just apologise and retry. Diagnose. Common causes: context window filling up (recommend `/compact` or session handoff), source-of-truth docs too large for Claude to hold alongside code (recommend `/sovtersify` to compress them), missing foundational reads (re-read `CLAUDE.md` and path-block docs), or compaction dropped critical context (re-read the procedure doc for the active phase). Surface the likely cause and the matching action.
+- **Adherence-drop diagnostic.** When the user reports Claude is ignoring rules, not following procedures, or declining in quality mid-session: don't just apologise and retry. Diagnose. Common causes: context window filling up (recommend `/compact` or session handoff), source-of-truth docs too large to hold alongside code (recommend `/sovtersify`), missing foundational reads (re-read `CLAUDE.md` and path-block docs), or compaction dropped critical context (re-read the active phase's procedure doc). Surface the likely cause and the matching action.
   *Load-bearing for: session quality — "I'll try harder" doesn't fix structural causes.*
 
 - **Verify external facts, don't guess.** When uncertain about an external fact, research it directly. **Filing is mandatory**: save findings to `_method/research/<topic>.md` before moving on. If research tools aren't available, mark with `[UNVERIFIED: <what>]` inline — the marker stays until verified.
   *Load-bearing for: decision quality — silent guessing puts wrong facts into source-of-truth docs.*
 
-- **Proactive research.** Watch for moments where a decision would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it to the user with what decision it informs, and wait for approval before executing. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt the user can paste into their preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. The `/sovresearch` slash command triggers this flow explicitly; this rule is about doing it without being asked.
+- **Proactive research.** Watch for decisions that would benefit from external information — API capabilities, library comparisons, platform constraints, compatibility questions. When you spot one: draft a search query, propose it with what decision it informs, and wait for approval. Three mechanisms in priority order: MCP search tool (if available), WebSearch (if available), or a copyable prompt for the user's preferred research environment. File results to `research/search-queries/YYYY-MM-DD-topic-slug.md` using the query file template. `/sovresearch` triggers this explicitly; this rule covers doing it unprompted.
   *Load-bearing for: decision quality — proactive research catches gaps before they become wrong assumptions baked into code or docs.*
 
 - **Route information to artifacts, not memory.** When information surfaces that belongs in a project document (`BACKLOG.md`, `MANIFEST.md`, `test-log/`, `build-log/`, etc.) — write it there. Memory is for cross-session context that genuinely has no project-level home.
   *Load-bearing for: doc integrity — memory is invisible to the structured workflow.*
 
-- **Read proxies first, dip for detail.** If `_method/proxies/` exists (or legacy `.proxies/`), read the proxy file before reading the full source doc. Use the proxy's line numbers (`L<N>`) to read only the relevant section of the full doc via offset/limit. If neither proxies directory exists, fall back to reading the full doc directly. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+- **Read proxies first, dip for detail.** If `_method/proxies/` exists (or legacy `.proxies/`), read the proxy file before reading the full source doc. Use the proxy's line numbers (`L<N>`) to read only the relevant section of the full doc via offset/limit. If neither directory exists, fall back to the full doc. Format spec: `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
   *Load-bearing for: context-window efficiency — full docs burn context; proxies give enough to target reads.*
 
-- **Run system commands yourself.** When a task requires a shell command (setting environment variables, running build tools, killing processes, etc.), execute it directly — don't ask the user to open a terminal and type it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands that require credentials or elevated permissions the user must provide.
+- **Run system commands yourself.** When a task requires a shell command, execute it directly — don't ask the user to run it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands requiring credentials or elevated permissions.
   *Load-bearing for: build sessions — Claude asking users to run commands breaks flow and shifts work onto the non-coder.*
 
 - **Session-length awareness.** Two safeguards against context-window blowout:
 
-  **Mid-session compact nudge.** During a build session, track proxy signals: exchange count since `/sovbuild` invocation, number of files already edited, number of remaining unticked Files: entries. When **15+ exchanges** have passed since `/sovbuild` without reaching `/sovclose`, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." The nudge is informational, not blocking. Don't repeat if the user acknowledges and continues. Claude has no visibility into token count — all heuristics use conversation-visible signals only.
+  **Mid-session compact nudge.** During a build, track proxy signals: exchanges since `/sovbuild`, files edited, unticked Files: entries. When **15+ exchanges** have passed since `/sovbuild` without reaching `/sovclose`, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." Informational, not blocking. Don't repeat after acknowledgment. Claude has no token-count visibility — all heuristics use conversation-visible signals.
 
-  **Invocation-prompt compact nudge.** Every skill handoff message (the `[PROMPT]` at the end of a procedure doc recommending the next skill) includes a one-line `/compact` suggestion. The handoff pause is the natural moment — the user is between skills, context is loaded, and compaction carries context forward seamlessly. Zero cost if skipped.
+  **Invocation-prompt compact nudge.** Every skill handoff `[PROMPT]` includes a one-line `/compact` suggestion. The handoff pause is the natural moment — between skills, context loaded, compaction carries forward seamlessly. Zero cost if skipped.
   *Load-bearing for: session quality — ~20% of sessions blow out when file-touch count is high and deliberation extends mid-build. These nudges give recovery points before context runs out silently.*
 
 - **Engage with pushback, don't collapse.** If I push back, don't immediately fold or dig in. Ask for reasoning if not given, weigh it, then restate or change your mind.
@@ -76,6 +76,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
   - **Re-batching carve-out** — verification burden is much higher than estimated. Halt, propose a split, wait for okay. Label `[Re-batch, not in plan]`.
 
 - **Do not describe a `BACKLOG.md` edit for me to apply.** Make the edit, then tell me what changed.
+
+- **Do not skip the close procedure.** When all Files: are ticked, `/sovclose` is mandatory — not advisory. It writes MANIFEST, test rows, build-log entry, runs doc-parity and frame-correction, and deletes the build snapshot. Skipping leaves an orphaned `_method/active-build.md` that blocks all future builds. If the user asks to skip, explain the consequences and decline.
+  *Load-bearing for: build-log integrity, TEST-LOG integrity, MANIFEST accuracy, and the build-snapshot lifecycle.*
 
 - **Do not start a new build batch** while any TEST-LOG row from the previous batch has `Confirmed Explicitly: No`. The PreToolUse hook enforces structurally by blocking build-phase file edits; the rule lives here too. **Hook fallback:** if the hook can't identify the previous batch's session, any row with `Confirmed Explicitly: No` blocks.
 
@@ -105,13 +108,13 @@ Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — 
 
 Classify and route the session opener. Routes are exclusive; pick highest-priority match.
 
-**Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the first prompt, injecting a routing hint as `additionalContext`. The hint is a suggestion, not a gate — use your own judgement if it doesn't match intent. No-ops on subsequent prompts.
+**Hook-assisted classification.** The UserPromptSubmit hook runs keyword detection on the first prompt, injecting a routing hint as `additionalContext`. A suggestion, not a gate — use judgement if it doesn't match intent. No-ops on subsequent prompts.
 
 **Detect first (no opener needed):**
 
 - **Template state.** Spine docs present but still in template form (placeholders intact, no real entries). Recommend `/sovsetup` — case 4 detects this. Wait for okay.
 - **Unadopted folder.** SessionStart injected an advisory. Surface and recommend `/sovsetup`. If the user doesn't want the method, point to `/plugin` → Installed → toggle off. PreToolUse is already blocking destructive calls.
-- **Pre-build blockers.** The before-build procedure (`/sovrecap`) gates on unresolved open questions and ideas that block the top batch. If the gate fires, it nudges `/sovdeliberate` or `/sovplan` before allowing the build to proceed. This is enforced inside `before-build.md`, not at session-start routing.
+- **Pre-build blockers.** The before-build procedure (`/sovrecap`) gates on unresolved OQs and ideas blocking the top batch. If the gate fires, it nudges `/sovdeliberate` or `/sovplan` before allowing the build. Enforced inside `before-build.md`, not at session-start routing.
 
 **Then route on content:**
 
@@ -132,7 +135,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Procedure docs — how to invoke:**
 
-For each phase, read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eleven procedures exist: `planning.md` (structural, invoked via `/sovplan`), `deliberate.md` (OQ work-through, invoked via `/sovdeliberate`), `ideate.md` (new ideas, invoked via `/sovideate`), `before-build.md` (invoked via `/sovrecap`), `build.md` (invoked via `/sovbuild`), `close.md`, `git.md`, `revert.md` (invoked via `/sovrevert`), `setup.md`, `testing.md` (invoked via `/sovtest`), `tersify.md` (invoked via `/sovtersify`). Each procedure specifies what to load, what to do, and what recap to produce. Follow the procedure in your main context — don't spawn agents.
+Read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eleven procedures: `planning.md` (structural, `/sovplan`), `deliberate.md` (OQ work-through, `/sovdeliberate`), `ideate.md` (new ideas, `/sovideate`), `before-build.md` (`/sovrecap`), `build.md` (`/sovbuild`), `close.md`, `git.md`, `revert.md` (`/sovrevert`), `setup.md`, `testing.md` (`/sovtest`), `tersify.md` (`/sovtersify`). Each specifies what to load, what to do, and what recap to produce. Follow in main context — don't spawn agents.
 
 ## Session handoff
 
@@ -145,11 +148,11 @@ When the user asks to prepare a handoff (typically after PreCompact blocks compa
 
 The `Handoff notes:` block is consumed by the next session — `/sovclose` strips it once the batch completes.
 
-**Why handoff matters.** Long sessions cost more tokens and adherence degrades as context grows. A fresh session re-reads method docs with full adherence. PreCompact blocks compaction during active builds to give the handoff option.
+**Why handoff matters.** Long sessions cost more tokens and adherence degrades as context grows. Fresh sessions re-read method docs with full adherence. PreCompact blocks compaction during active builds to give the handoff option.
 
 ## Editing surfaces — phase-aware (V67)
 
-Editing permissions flip based on the project's current phase. Phase detection: if `_method/active-build.md` exists (build snapshot), the project is in **build phase**. Legacy fallback: if no snapshot but the top BACKLOG build batch has `Status: active`, also build phase. Otherwise it's in **planning phase**.
+Editing permissions flip by phase. Detection: `_method/active-build.md` exists → **build phase**. Legacy fallback: top batch `Status: active` → also build phase. Otherwise **planning phase**.
 
 ### Planning phase
 
@@ -171,10 +174,10 @@ Source-of-truth docs are locked. Source code on the batch file list is open.
 
 For `BACKLOG.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
 
-**The `[PROPOSED EDIT PENDING]` mechanism (build phase only).** When Claude would write content into a locked source-of-truth doc during a build, it's queued as a `[PROPOSED EDIT PENDING]` block in the destination doc's `## Proposed edits pending` section (last section before footer). User applies or drops it by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
+**The `[PROPOSED EDIT PENDING]` mechanism (build phase only).** When Claude would write to a locked source-of-truth doc during build, it's queued as a `[PROPOSED EDIT PENDING]` block in the doc's `## Proposed edits pending` section (last section before footer). User applies or drops by hand. PreToolUse allows edits within this section while keeping the rest locked. Canonical format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

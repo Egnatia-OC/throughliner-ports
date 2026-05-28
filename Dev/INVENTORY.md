@@ -92,7 +92,7 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 ### Slash commands
 
-All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). The legacy **commands-directory** pattern (`plugin/commands/<name>.md`) was retired in v71 — all commands migrated to skills/*/SKILL.md.
+All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with `user-invocable: true`). Legacy **commands-directory** pattern retired v71.
 
 - `/sovsetup` — four-case adoption. Scaffolds CLAUDE.md at root + spine docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) + `_method/planning/drafts/` + `_method/research/` + `_method/proxies/`. **Shipped V29** (as `/adopt`; renamed V44; sov-prefixed V84).
 - `/sovresearch` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70** (sov-prefixed V84).
@@ -110,12 +110,12 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 
 ### Bundled artefacts
 
-- 13 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/research, .proxies/backlog, .proxies/build-log. Templates at `.proxies/` are scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog and .proxies/build-log serve as operational indexes for their respective folder-mode docs. The test session index lives inside .proxies/backlog as the `## Test sessions` section (V120 merge).
+- 13 templates under `plugin/templates/`: CLAUDE, BACKLOG (legacy single-file), BACKLOG/BATCH, MANIFEST, UX, ADDITIONAL-DOC, test-log/ENTRY-TEMPLATE, research/search-queries/QUERY-TEMPLATE, .proxies/ux, .proxies/manifest, .proxies/research, .proxies/backlog, .proxies/build-log. .proxies/ templates scaffolded into `_method/proxies/` in consumer projects; .proxies/backlog and .proxies/build-log serve as operational indexes. Test session index lives inside .proxies/backlog as `## Test sessions` (V120 merge).
 - `plugin/scripts/parse_backlog.py` — shared BACKLOG parser. Auto-detects folder vs single-file mode. Exposes `status` field per batch (queued/active/parked/shipped); skips shipped/parked when finding top batch.
-- `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections (three required: What shipped, Decisions taken and why, Pivots and surprises), scope-context completeness, proxy header format. Called by PostToolUse and usable as standalone CLI pre-flight.
+- `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections, scope-context completeness, proxy header format. Called by PostToolUse; usable standalone as CLI pre-flight.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`). V94: `safe_read_text()` uses `utf-8-sig` encoding to strip Windows BOM bytes.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
-- `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*No-code method — Version N.*` footers across project `.md` files and regenerates proxy line-number pointers in `_method/proxies/` (or legacy `.proxies/`). Invoked by `/sovclose` Turn 2 (mechanical pass). Two modes: `<old> <new>` for footer bump + proxy regen, no args for proxy regen only.
+- `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*No-code method — Version N.*` footers and regenerates proxy line-number pointers. Invoked by `/sovclose` Turn 2. Two modes: `<old> <new>` for bump + regen, no args for regen only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
 - `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart. V93: session-length awareness (mid-session compact nudge + invocation-prompt compact nudge).
@@ -150,4 +150,4 @@ All shipped commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 97.*
+*No-code method — Version 98.*

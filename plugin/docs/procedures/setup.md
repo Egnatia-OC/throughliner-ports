@@ -41,7 +41,7 @@ No CLAUDE.md, no substantial work.
 After answers:
 1. Run `check`. If `ready: false`, surface conflicts and stop.
 2. Run `write`. Surface files list.
-3. If `.git/` exists in the project root, run `git config --local core.quotepath false` (prevents octal escaping of non-ASCII filenames in git output, which would break path matching in hooks).
+3. If `.git/` exists in the project root, run `git config --local core.quotepath false` (prevents octal escaping of non-ASCII filenames, which breaks path matching in hooks).
 4. Apply answers:
    - **Q1 →** CLAUDE.md Product overview (all four fields) + UX.md Project context (synthesized from the product description).
    - **Q2 →** UX.md UX principles section. Write every principle the user agreed to — replace the template placeholders with the full set.
@@ -49,7 +49,7 @@ After answers:
    - **Q4 →** Seed BACKLOG batch (folder mode: create per-batch file with `Status: queued` line + INDEX.md reference).
    - **Q5 →** CLAUDE.md Language: field. Replace the default `English` with the user's answer.
 
-After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+After applying answers, regenerate proxies per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
 **Recap:** "Adopted (case 1). Created [docs list]. User's answers folded into UX.md and BACKLOG."
 
@@ -64,9 +64,9 @@ Substantial work but no CLAUDE.md.
 **Option 1:**
 1. Glob check for spine-doc filenames in subdirs.
 2. Run `check` (expect `ready: true`), then `write`.
-3. Walk five new-project questions (same as Case 1). User more likely to skip — anything unanswered stays as a planning batch in BACKLOG for next session. Apply answered questions using the same Q1–Q5 mapping as Case 1 step 4.
+3. Walk five questions (same as Case 1). User more likely to skip — unanswered items stay as planning batches in BACKLOG. Apply answers per Case 1 step 4.
 
-After applying answers, regenerate proxies: read each source doc, write the matching `_method/proxies/` file per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+After applying answers, regenerate proxies per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
 **Recap:** "Adopted (case 2). Created [docs] alongside existing code. [Which questions answered/pending.]"
 
@@ -90,7 +90,7 @@ CLAUDE.md present but no method footer. Probably from Claude Code's `/init` — 
 **Option 2 (overwrite):**
 1. Backup: `cp CLAUDE.md CLAUDE.md.foreign-backup-<date>`.
 2. Remove original (try bash `rm`; if ACL fails, ask user to delete manually).
-3. Run `write`. Walk five questions. Apply answered questions using the same Q1–Q5 mapping as Case 1 step 4.
+3. Run `write`. Walk five questions. Apply answers per Case 1 step 4.
 
 **Option 3:** "No changes made."
 
@@ -123,17 +123,17 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After INDEX relocation — TEST-LOG folder split (V75).** If path block points at `TEST-LOG.md` (flat file, not a proxy in `proxies/`): create `_method/test-log/`, split rows by Session into per-session files (`NNN-batch-name.md`), add `## Test sessions` section to the BACKLOG proxy with the folder index, update path block `"TEST-LOG.md"` to `_method/proxies/backlog.md`, delete old `TEST-LOG.md`. If `_method/test-log/` already exists, skip.
 
-**After TEST-LOG folder split — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (same as Case 1, Q1) and write the section into CLAUDE.md above the path block.
+**After TEST-LOG folder split — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (Case 1, Q1) and write the section above the path block.
 
 **After product overview — Folder restructure (0087).** If spine docs (UX.md, MANIFEST.md) exist at project root instead of inside `_method/`: create `_method/` if absent, move UX.md and MANIFEST.md into it, move BACKLOG/, build-log/, test-log/ into `_method/` if at root, move proxies/ into `_method/` if at root. Update CLAUDE.md path block entries to use `_method/` prefixed paths. If everything is already inside `_method/`, skip.
 
 **After folder restructure — Companion directories (0051/0083).** Create if absent: `_method/planning/drafts/`, `_method/research/`, `_method/research/search-queries/`.
 
-**After companion directories — Summary proxies (0081).** If `_method/proxies/` is missing any of `ux.md`, `manifest.md`, or `research.md`: regenerate the missing files from their source docs per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
+**After companion directories — Summary proxies (0081).** If `_method/proxies/` is missing any of `ux.md`, `manifest.md`, or `research.md`: regenerate from source docs per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
 
-**After summary proxies — `_method/` orientation section (0105).** If CLAUDE.md has no `## What's inside _method/` section: add it between `## Where the docs live` and `## Plugin management`, using the content from CLAUDE-TEMPLATE.md.
+**After summary proxies — `_method/` orientation section (0105).** If CLAUDE.md has no `## What's inside _method/` section: add it between `## Where the docs live` and `## Plugin management`, using CLAUDE-TEMPLATE.md content.
 
-**After orientation section — Language setting (0114).** If CLAUDE.md has no `## Language` section: add it between `## Product overview` and `## Where the docs live`, using the content from CLAUDE-TEMPLATE.md (defaults to English). Ask the user if they'd like a different language.
+**After orientation section — Language setting (0114).** If CLAUDE.md has no `## Language` section: add it between `## Product overview` and `## Where the docs live`, using CLAUDE-TEMPLATE.md content (defaults to English). Ask if the user wants a different language.
 
 **After language setting — Git quotepath (0114).** Run `git config --local core.quotepath false` (prevents octal escaping of non-ASCII filenames). Idempotent — safe to run even if already set.
 
@@ -163,4 +163,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

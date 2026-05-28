@@ -4,9 +4,9 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 ## Scope
 
-`/sovtest` handles **User-verified rows only** — rows with `Verifier: User` and `Status:` blank (open). Claude-verified rows are already run and confirmed by `/sovclose`.
+`/sovtest` handles **User-verified rows only** — rows with `Verifier: User` and blank `Status`. Claude-verified rows are run and confirmed by `/sovclose`.
 
-**Exception — unrunnable Claude-verified rows.** If a Claude-verified row wasn't completed by `/sovclose` (Status still blank), `/sovtest` may encounter it. Before guiding the user through it manually, explain why Claude couldn't auto-run it and **ask whether the user wants to walk through it manually or skip it**. Never silently hand off Claude's testing work to the user.
+**Exception — unrunnable Claude-verified rows.** If a Claude-verified row wasn't completed by `/sovclose` (Status still blank), `/sovtest` may encounter it. Explain why Claude couldn't auto-run it and **ask whether to walk through manually or skip**. Never silently hand off Claude's work to the user.
 
 ## First action — load state
 
@@ -17,7 +17,7 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 **No pending rows.** If every User-verified row already has a Status, say so and stop: "No pending tests — nothing to walk through."
 
-**No test session.** If TEST-LOG has no rows at all, say so and stop: "No test session open. Run `/sovclose` after a build to create test rows."
+**No test session.** If TEST-LOG has no rows, say so and stop: "No test session open. Run `/sovclose` after a build to create test rows."
 
 ## Walkthrough — one row at a time
 
@@ -49,7 +49,7 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
    - "Open [the output file or artifact]."
    - "Check that [the expected content is present]."
 
-   These are generic shapes. The specifics come from the Test Description and Component — adapt the steps to what the row actually says. If the Test Description is too vague to expand into steps, ask the user what the test means before guiding them.
+   Generic shapes. Adapt to what the row actually says. If the Test Description is too vague to expand, ask the user what the test means before guiding.
 
 3. **[PROMPT] Ask for outcome.** "Pass, Fail, or Skipped?"
    - Wait for this row's answer before moving on.
@@ -78,18 +78,18 @@ Structured triage — not a full fix session.
 
 1. **[PROMPT] Gather symptoms.** Ask: "What did you expect to see, and what did you see instead?"
 
-2. **[BRIEF] Investigate.** Read relevant source code (from MANIFEST paths and the batch's Files: list). Form a hypothesis about the cause.
+2. **[BRIEF] Investigate.** Read relevant source code (MANIFEST paths + batch Files: list). Form a hypothesis.
 
-3. **[BRIEF] Propose diagnosis.** State the likely cause in plain English. If multiple possibilities, list them ranked by likelihood.
+3. **[BRIEF] Propose diagnosis.** State the likely cause in plain English. Multiple possibilities → rank by likelihood.
 
-4. **[PROMPT] Confirm or correct.** Ask the user if the diagnosis matches what they observed.
+4. **[PROMPT] Confirm or correct.** Ask if the diagnosis matches what the user observed.
 
 5. **Route to BACKLOG.** Create a build batch in BACKLOG with:
    - Goal: fix the diagnosed issue (or investigate if unclear).
    - Context: what the user reported, what Claude found in code, the TEST-LOG row reference.
    - `Serves UX.md:` pointing at the relevant entry.
 
-   If the cause is unclear despite investigation, the batch Goal should say "Investigate" and the context should include everything gathered so far plus a "needs investigation" note.
+   Cause unclear despite investigation → batch Goal says "Investigate" with everything gathered so far plus a "needs investigation" note.
 
 6. **[BRIEF] Confirm routing.** Tell the user: "Created BACKLOG batch [name] for the fix. Moving to the next test."
 
@@ -118,4 +118,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

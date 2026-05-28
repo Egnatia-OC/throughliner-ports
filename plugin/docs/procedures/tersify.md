@@ -14,17 +14,17 @@ Before anything else, check BACKLOG for an active batch:
 
 ## Phase 1 — Triage
 
-**Goal.** Show the user which docs cost the most context and what kinds of savings exist, so they can choose where to spend effort.
+**Goal.** Show the user which docs cost the most context and what savings exist, so they can choose where to spend effort.
 
-**Step 1 — Collect the doc list.** Read `CLAUDE.md` path block. Collect all source-of-truth doc paths: `UX.md`, `MANIFEST.md`, additional docs declared in the path block, `CLAUDE.md` itself. Exclude method-internal docs (BACKLOG, TEST-LOG, build-log, proxies, research) — those have their own maintenance cycles.
+**Step 1 — Collect the doc list.** Read `CLAUDE.md` path block. Collect source-of-truth doc paths: `UX.md`, `MANIFEST.md`, additional docs declared in the path block, `CLAUDE.md` itself. Exclude method-internal docs (BACKLOG, TEST-LOG, build-log, proxies, research) — their own maintenance cycles.
 
 **Step 2 — Measure.** For each doc, count lines. Sort descending by line count.
 
-**Step 3 — Flag issues.** Read each doc and flag issues in three categories:
+**Step 3 — Flag issues.** Read each doc and flag in three categories:
 
-- **Wrong-home content.** Content that belongs in a different doc — implementation details in UX.md, UX rationale buried in MANIFEST.md, scope discussion in a source-of-truth doc instead of BACKLOG. Name the content and where it should go.
+- **Wrong-home content.** Content belonging in a different doc — implementation details in UX.md, UX rationale buried in MANIFEST.md, scope discussion in a source-of-truth doc instead of BACKLOG. Name content and destination.
 - **Structural problems.** Redundancy (same point made twice), poor grouping (related content scattered), unnecessary nesting, sections that could merge.
-- **Verbose prose.** Passages where the same meaning could be said in fewer words without losing rules or nuance. Flag specific passages, not vague "this section is wordy."
+- **Verbose prose.** Passages expressible in fewer words without losing rules or nuance. Flag specific passages, not vague "this section is wordy."
 
 **Step 4 — Present triage summary.** `[PROMPT]` One table, ranked by line count:
 
@@ -50,25 +50,25 @@ Work through selected docs **one at a time**. `[SEQUENCE]` — state how many do
 
 1. **[BRIEF] State the doc name and its line count.**
 
-2. **Wrong-home content.** For each flagged item: show the content, name the destination, and propose the move. `[PROMPT]` — wait for approval before editing. If approved, edit both source and destination in this step. If the destination is a locked doc (e.g. moving something into BACKLOG during build), flag it for later instead of editing.
+2. **Wrong-home content.** For each: show content, name destination, propose move. `[PROMPT]` — wait for approval. If approved, edit both source and destination. Destination locked (e.g. BACKLOG during build) → flag for later instead of editing.
 
 3. **Structural problems.** For each: describe the problem, show the proposed restructure. `[PROMPT]` — wait for approval. Edit on approval.
 
-4. **Verbose prose.** For each passage: show the original, show the compressed version, explain what was cut and why it's safe to cut. `[PROMPT]` — wait for approval. Edit on approval.
+4. **Verbose prose.** For each: show original, show compressed version, explain what was cut and why it's safe. `[PROMPT]` — wait for approval. Edit on approval.
 
 5. **[BRIEF] Per-doc summary.** Lines before → lines after. What changed.
 
 After all selected docs are done:
 
-6. **[BRIEF] Final summary.** Total lines saved across all docs. List of docs edited and their before/after line counts.
+6. **[BRIEF] Final summary.** Total lines saved. Docs edited with before/after line counts.
 
 ## Rules
 
-- **Never cut rules or constraints.** Compression means fewer words for the same meaning, not fewer rules. If a sentence carries a constraint Claude needs, it stays — even if it's verbose.
-- **Never merge distinct concepts.** Two rules that look similar may have different enforcement points. Keep them separate unless they genuinely say the same thing.
-- **User approves every change.** No silent edits. The user sees what's being cut and why before it happens.
+- **Never cut rules or constraints.** Compression means fewer words for the same meaning, not fewer rules. If a sentence carries a constraint, it stays — even if verbose.
+- **Never merge distinct concepts.** Two rules that look similar may have different enforcement points. Keep separate unless they genuinely say the same thing.
+- **User approves every change.** No silent edits. User sees what's being cut and why before it happens.
 - **One doc at a time.** Don't batch changes across docs. Finish one, move to the next.
-- **Explain what was cut.** For every compression, state what words were removed and why the meaning survives without them. The user can't judge safety without this.
+- **Explain what was cut.** For every compression, state what was removed and why meaning survives. The user can't judge safety without this.
 
 ## Behavioural rules
 
@@ -76,4 +76,4 @@ Universal-behaviour rules apply. Keep triage output tight — the point is savin
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

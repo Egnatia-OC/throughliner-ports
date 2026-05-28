@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-120 batches shipped or cancelled (V18–0129). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+121 batches shipped or cancelled (V18–0132). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -33,6 +33,34 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app. Hard dep on pre-0120 TEST-LOG structure — if 0120 ships first (expected), rewrite test plan against merged BACKLOG.
+
+---
+
+### 0133 — Close-procedure hook enforcement
+
+**Goal.** Add hook-level enforcement preventing builds from being committed without running `/sovclose`. The doc-side fix (prohibition in universal-behaviour.md and build.md) shipped in v131 (plugin reader test). This batch adds the mechanical backstop.
+
+**Inputs.** `plugin/hooks/pre_tool_use.py`, `plugin/hooks/universal-behaviour.md` (close prohibition, shipped v131).
+
+**Outputs.** A PreToolUse check that warns when `_method/active-build.md` exists with all files ticked and the user attempts to commit without running `/sovclose`. Deny message explains the consequence and points at `/sovclose`.
+
+**Success criteria.** A stranger-Claude attempting to commit post-build without close is blocked with a clear deny message. The orphaned-snapshot scenario from the plugin reader test (C-3, C-5, C-8) is mechanically prevented.
+
+**Risks / dependencies.** Hook must distinguish "all ticked, close not run" from "mid-build commit for other files." Condition: all Files: ticked in snapshot AND git commit attempted.
+
+---
+
+### 0134 — Session-start routing clarifications
+
+**Goal.** Resolve three routing-comprehension gaps from the plugin reader test: competing "first output" claims between status block and tripwire, missing routes for common openers (bug reports, doc audits, method questions), and unclear priority ordering in the routing table.
+
+**Inputs.** `plugin/hooks/session_start.py`, `plugin/hooks/universal-behaviour.md` (routing table). `Dev/Resources/research/plugin-reader-test-v97.md`.
+
+**Outputs.** Clarified layering in session_start.py's injected text (status block first, then tripwire). Routing table expanded with missing opener categories. Priority ordering explicitly stated as top-to-bottom.
+
+**Success criteria.** A stranger-Claude receiving the state summary knows unambiguously which output comes first (status → tripwire → routing). Bug reports, doc audits, and "how does this work?" openers each have an explicit route.
+
+**Risks / dependencies.** Routing table expansion must not create overlapping routes. Session_start.py text changes affect all consumer sessions immediately.
 
 ---
 
@@ -92,6 +120,22 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### Volunteered test results vs. mechanical read-back
+
+When a user's opener already contains test results ("settings toggle passed, export button misaligned"), should the method accept those as partial confirmation or insist on the per-row mechanical read-back? The read-back is the only defined confirmation mechanism, but forcing users to re-state results they already gave is bad UX. Related: the confirmation format itself is undefined — instructions say what NOT to accept (bulk confirmations, inference from absence) but never what TO accept as valid per-row confirmation.
+
+**Surfaced.** v131.
+
+---
+
+### Re-batching snapshot state after split
+
+After a re-batching carve-out splits unticked files into new batches, what happens to the build snapshot (`_method/active-build.md`)? Does it shrink to only the ticked files? Does `/sovclose` still run on the reduced snapshot? The build procedure says "Ticked files stay; unticked move to new batch(es)" but doesn't specify the snapshot's resulting state or confirm `/sovclose` handles a partial snapshot correctly.
+
+**Surfaced.** v131.
 
 ---
 

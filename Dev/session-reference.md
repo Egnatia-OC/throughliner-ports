@@ -46,7 +46,7 @@ python -m pytest Dev/Resources/tests/ -v
 
 **Shared helpers** in `Dev/Resources/tests/conftest.py`: `run_hook()`, `run_script()`, `fixture_path()`, plus pytest fixtures for each test directory.
 
-**Relationship to smoke tests.** Pytest validates parsing, deny/allow logic, stdout shape — everything without a running Claude Code session. Smoke tests remain authority for "does Claude Code actually fire the hook." Complementary: suite catches regressions fast; smoke tests catch wiring.
+**Relationship to smoke tests.** Pytest validates parsing, deny/allow logic, stdout shape — everything without a running session. Smoke tests remain authority for "does Claude Code actually fire the hook." Complementary: suite catches regressions fast; smoke tests catch wiring.
 
 **When to run.** Before committing any hook script or shared helper change. Runs in under 5 seconds.
 
@@ -68,7 +68,7 @@ Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — 
 
 ## Footer bumps: the full list
 
-When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal-only sessions skip entirely.**
+When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal sessions skip.**
 
 Method-side = describes how the consumer method works. Dev-internal files (`Dev/Planning/build-log/`, `Dev/Planning/test-log/`, `BACKLOG.md`, these session files) don't carry the footer.
 
@@ -93,7 +93,7 @@ Method-side = describes how the consumer method works. Dev-internal files (`Dev/
 
 ### New files added this session
 
-Add new method-describing files to the right column above as part of the session creating them.
+Add new method-describing files to the list above when creating them.
 
 ### Version trackers
 
@@ -110,7 +110,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 | File | Lifecycle | Deleted when |
 |---|---|---|
-| `Dev/Planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope for each queued batch. Once shipped, entry removed at session close — commit + code + docs are source of truth. | Batch ships (session close). |
+| `Dev/Planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope per batch. Removed at close when shipped — commit + code + docs are source of truth. | Batch ships (session close). |
 | `Dev/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
 | `Dev/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
 | `Dev/Planning/BACKLOG.md` | **Living.** Rolling roadmap + open questions. | Never. |
@@ -123,13 +123,13 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 `Dev/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. Committed in the drafting session's commit; "good enough to walk away from" is the bar. Deleted when consumed. Dead-end drafts: prune with BUILD-LOG note.
 
-**Corollary.** If a queued batch's *Inputs* names content not reachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get the content into `Dev/drafts/` retroactively or restate as something the next session can rebuild from repo contents. The session-open scan in `CLAUDE.md` catches the reading side; this catches the writing side.
+**Corollary.** If a batch's *Inputs* names content unreachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get it into `Dev/drafts/` retroactively or restate as something rebuildable from repo contents. Session-open scan catches the reading side; this catches the writing side.
 
 ---
 
 ## BUILD-LOG entry shape
 
-`Dev/Planning/build-log/` is the running record of decisions, changes, and reasoning. `INDEX.md` lists entries newest-first. It exists so Alex can talk progress without making people read commits, and so future sessions can reconstruct *why*.
+Running record of decisions, changes, and reasoning. `INDEX.md` lists entries newest-first. Exists so Alex can talk progress without reading commits, and so future sessions can reconstruct *why*.
 
 One file per session in `Dev/Planning/build-log/`, named `vNN-slug.md`:
 
@@ -155,7 +155,7 @@ Don't pad. Half a page is good; shorter is better.
 
 ## Queued batch entry shape
 
-`Dev/Planning/BACKLOG.md` → *Queued batches* section. Full scope for each upcoming batch, inline. Read at session open so the working session has context; removed when the batch ships (session close).
+`Dev/Planning/BACKLOG.md` → *Queued batches* section. Full scope per upcoming batch. Read at session open for context; removed when batch ships (session close).
 
 Each entry:
 
@@ -166,7 +166,7 @@ Each entry:
 
 **Approach.** How the goal will be accomplished. Omit when the goal implies the method.
 
-**Inputs.** Non-standard resources the batch needs, with paths. Omit when everything needed is derivable from the committed repo. Every path must resolve from the repo — out-of-repo references are a bug (see *Drafts in flight* above).
+**Inputs.** Non-standard resources with paths. Omit when everything is derivable from committed repo. Every path must resolve — out-of-repo references are a bug (see *Drafts in flight*).
 
 **Outputs.** What changes when the batch ships — files created or updated, docs touched.
 
@@ -183,7 +183,7 @@ Each entry:
 
 **Sizing.** Each field: one paragraph or a tight list. The whole entry should fit on a screen. If it doesn't, the batch is probably too large or under-scoped.
 
-**Not plugin-side build batches.** These are dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — documented in `plugin/docs/DOC-STRUCTURE.md` → *BACKLOG structure*.
+**Not plugin-side build batches.** Dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — per `plugin/docs/DOC-STRUCTURE.md` → *BACKLOG structure*.
 
 ---
 

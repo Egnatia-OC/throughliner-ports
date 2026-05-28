@@ -22,7 +22,7 @@ The passes fall into a few roles. A pass can play more than one role in the same
 
 **Reconciling.** Between a queued prompt and its execution: [[Premise check]] makes sure the prompt's assumed state still matches reality before you run it.
 
-**Validating.** Stress-test a version after a cut. [[Reader test]] is the only one.
+**Validating.** Stress-test a version after a cut. [[Reader test]] validates the method docs; [[Plugin reader test]] validates the plugin's instruction surfaces.
 
 **Reflecting.** Harvest from any of the above. [[Rule and procedure extraction]] — the pass that built this playbook.
 
@@ -59,6 +59,7 @@ Every entry is independently runnable. Sequence is a tendency, not a rule.
 
 **Experimental** — first attempt, unclear yet whether the shape is right.
 
+- [[Plugin reader test]] — stranger-perspective stress test for the plugin's shipped instruction surfaces (universal-behaviour.md, procedure docs, skill handoffs, hook deny messages). Adaptation of [[Reader test]] for the plugin layer.
 - [[Replant (method terms)]] — wholesale rewrite when a new source doc contradicts the method's foundation. (Method-level adaptation of a project-level pass; not yet observed at method level.)
 
 **Sub-pass shapes** — nest inside an executing pass; tier-tagged individually.

@@ -12,23 +12,23 @@ Follow this procedure to work through accumulated open questions in BACKLOG. Nev
 
 ## Procedure order
 
-1. **[BRIEF] Present OQ inventory.** List every open question with its `Surfaced` tag and a one-line summary. State the count. Flag entries older than 5 build cycles as potentially neglected.
+1. **[BRIEF] Present OQ inventory.** List every OQ with its `Surfaced` tag and one-line summary. State the count. Flag entries older than 5 build cycles as neglected.
 
-2. **[BRIEF] Present Ideas inventory.** If the Ideas section has entries, list them with dates. These are candidates for promotion to OQs or direct routing to batches.
+2. **[BRIEF] Present Ideas inventory.** If Ideas has entries, list with dates. Candidates for promotion to OQs or direct routing to batches.
 
 3. **[DISCUSS, SEQUENCE] Work through OQs.** The user picks the order, or work top-to-bottom. For each OQ:
    - Read the full entry aloud (question, why-it-matters, next-step if present).
-   - Surface relevant context: what's changed since the OQ was surfaced, related batches or shipped work that bears on it.
+   - Surface relevant context: what's changed since surfacing, related batches or shipped work.
    - Three dispositions — ask the user:
-     - **Promote** — becomes a new build or planning batch (scaffold per BACKLOG editing rules below). Or fold into an existing queued batch if scope fits.
-     - **Drop** — remove from BACKLOG. Reason is mandatory; logged in the session's build-log entry.
-     - **Re-park** — keep as OQ with updated rationale. Rewrite the `Next step` line to reflect current reasoning.
+     - **Promote** — new build or planning batch (scaffold per BACKLOG editing rules below), or fold into existing queued batch if scope fits.
+     - **Drop** — remove from BACKLOG. Reason mandatory; logged in build-log entry.
+     - **Re-park** — keep as OQ with updated rationale. Rewrite `Next step` to reflect current reasoning.
    - Wait for this OQ's disposition before moving to the next.
 
 4. **[BRIEF] Work through Ideas.** For each Ideas-section entry the user wants to address:
    - Discuss fit: does it overlap existing OQs or batches? Does it need UX.md grounding first?
    - Route: promote to OQ (write full OQ entry), fold into existing batch, scaffold new batch, or drop.
-   - Remove the one-liner from Ideas section once routed.
+   - Remove from Ideas once routed.
 
 5. **[SILENT] Edit BACKLOG directly.** Apply all dispositions. Remove dropped OQs and routed Ideas entries. Write new batch scaffolds per BACKLOG editing rules. Update re-parked OQ text.
 
@@ -52,7 +52,7 @@ Follow this procedure to work through accumulated open questions in BACKLOG. Nev
 
    Prepend index line to `_method/proxies/build-log.md` (or fallbacks per close.md conventions). Idempotency: skip if same-numbered line exists.
 
-8. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Skip if neither proxies directory exists.
+8. **[SILENT] Regenerate proxies.** If `_method/proxies/` (or legacy `.proxies/`) exists, regenerate any proxy whose source was edited this session. Skip if no proxies directory.
 
 9. **[PROMPT] Commit.** "Ready to commit. I'll stage the changes and commit with a `deliberate:` prefix."
 
@@ -63,11 +63,11 @@ Follow this procedure to work through accumulated open questions in BACKLOG. Nev
 
 ## BACKLOG editing rules
 
-Same rules as `/sovplan` — Claude holds structural authority over BACKLOG. Every change is direct; the user reviews after.
+Same rules as `/sovplan` — Claude holds structural authority over BACKLOG. Direct edits; user reviews after.
 
-When scaffolding new build batches from promoted OQs, write the full two-region structure per `DOC-STRUCTURE.md` → *Build batches → Batch structure — full shape*. Include `Serves UX.md:` line only if the OQ resolution identified a matching UX entry. If the OQ needs UX.md grounding first, scaffold a planning batch instead.
+When scaffolding build batches from promoted OQs, write full two-region structure per `DOC-STRUCTURE.md` → *Batch structure — full shape*. Include `Serves UX.md:` only if the resolution identified a matching UX entry. UX grounding needed first → scaffold a planning batch instead.
 
-New-feature pipeline applies: ideas that need UX.md backing enter as planning batches first, not build batches.
+New-feature pipeline applies: ideas needing UX.md backing enter as planning batches, not build batches.
 
 ## What you must not do
 
@@ -84,4 +84,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

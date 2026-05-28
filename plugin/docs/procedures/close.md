@@ -2,7 +2,7 @@
 
 Follow this procedure to close a session. Works after any session type — build, planning, or general.
 
-Two turns: **judgment** (while build context is fresh) then **mechanical** (after `/compact`). The `[PROMPT]` at the turn boundary is recommended, not enforced — short sessions can close in one turn.
+Two turns: **judgment** (while context fresh) then **mechanical** (after `/compact`). Turn boundary `[PROMPT]` is recommended, not enforced — short sessions can close in one turn.
 
 ## Phase detection
 
@@ -21,18 +21,18 @@ Run when a build just completed (`_method/active-build.md` exists, all Files: ti
 
 ### First action — load project state (minimal)
 
-Load only what's needed for batch identification and idempotency. Defer heavier reads to work-loop steps.
+Load only what's needed for batch ID and idempotency. Defer heavier reads to work-loop steps.
 
 1. `CLAUDE.md` — path block and project notes.
-2. `_method/active-build.md` — the snapshot is the single source of truth for the just-completed batch. Read `## Close handoff` — this is the primary source for what changed during the build (names introduced, concepts renamed, frames shifted, doc references invalidated).
-3. `TEST-LOG.md` — idempotency check. In folder mode (path block → proxy in `proxies/`): read files in `test-log/`.
+2. `_method/active-build.md` — single source of truth for the completed batch. Read `## Close handoff` — primary source for what changed (names introduced, concepts renamed, frames shifted, doc references invalidated).
+3. `TEST-LOG.md` — idempotency check. Folder mode: read `test-log/` files.
 4. `MANIFEST.md` — for the MANIFEST update.
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
 
 ### Idempotency check
 
-If TEST-LOG already has rows matching this session whose scope covers the batch's Files: → the close steps are already done. State it and stop. Don't duplicate rows or re-run.
+If TEST-LOG already has rows matching this session covering the batch's Files: → close already done. State it and stop.
 
 ### Session identification
 
@@ -47,20 +47,20 @@ TEST-LOG's Session column needs a stable build-session identifier:
 
 Run while build context is fresh.
 
-1. **[SILENT] Update MANIFEST.md.** Use the batch's Files: as source. For each ticked file:
-   - Added file with trackable element → add MANIFEST entry with `(path)` field and rationale (`*Rationale: [why it exists / vNN].*` — one clause, max 15 words + session tag). Alphabetical order.
+1. **[SILENT] Update MANIFEST.md.** Batch Files: as source. Per ticked file:
+   - Added with trackable element → add entry with `(path)` and rationale (`*Rationale: [why / vNN].*` — one clause, max 15 words + tag). Alphabetical.
    - Renamed → update name + path.
    - Deleted → remove entry.
-   - Modified → update description only if substantive change. **If entry has no `(path)` yet** (legacy), add it now. **If entry has no rationale yet** (legacy), add it now.
-   Trivial helpers stay out of MANIFEST.
+   - Modified → update description if substantive. **No `(path)` yet** (legacy) → add. **No rationale yet** → add.
+   Trivial helpers stay out.
 
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in `_method/active-build.md`. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
-3. **[SILENT] Doc-parity check.** Read `## Close handoff` in the snapshot for names introduced, renamed, or invalidated. For each: grep UX.md, BACKLOG, MANIFEST.md, and CLAUDE.md for stale references. If Close handoff is empty or absent, fall back to scanning the batch's Files: list for renamed/deleted/moved files. Collect stale references — flag in step 11.
+3. **[SILENT] Doc-parity check.** Read `## Close handoff` for names introduced, renamed, or invalidated. Grep UX.md, BACKLOG, MANIFEST.md, CLAUDE.md for stale references. If Close handoff empty/absent, fall back to scanning Files: for renames/deletes/moves. Flag in step 11.
 
-4. **Open test session + run Claude tests.** Two sub-steps.
+4. **Open test session + run Claude tests.**
 
-   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` sub-section if present, else derive from recap (default: `Look and click` / `User`). 10-column format:
+   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` if present, else derive from recap (default: `Look and click` / `User`). 10-column format:
    - `#` — next three-digit ID (global across all per-session files).
    - `Date` — YYYY-MM-DD.
    - `Session` — per identification above.
@@ -79,7 +79,7 @@ Run while build context is fresh.
    **Single-file mode (path block → `TEST-LOG.md` directly):**
    - Position rows at top of table body (below header separator). Within batch: recap order (lowest # at top).
 
-   **4b. Run Claude-automatable tests.** For each `Verifier: Claude` row, execute the test. Pass → set Status/Confirmed/Notes. Fail → same, and flag prominently in recap. User-verified rows stay blank — they define the test session for next planning's read-back.
+   **4b. Run Claude-automatable tests.** For each `Verifier: Claude` row, execute the test. Pass → set Status/Confirmed/Notes. Fail → same, flag in recap. User-verified rows stay blank — they define the test session for planning read-back.
 
 5. **[BRIEF] Build recap.** Three parts:
    - **Changes shipped.** One bullet per change, labeled `[Requested]`/`[Suggested]`. Carve-outs get their labels.
@@ -105,15 +105,13 @@ Run while build context is fresh.
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Write batch back to BACKLOG as shipped.** Read `_method/active-build.md`. Write the batch content back into BACKLOG with `Status: shipped` at the top of its body (after heading, before Goal) — **exclude `## Close handoff`** (build-time context, not permanent scope). In folder mode: create the per-batch file and add an INDEX.md reference. In single-file mode: insert the section. Then delete `_method/active-build.md`. The snapshot's deletion signals build completion to SessionStart and PreToolUse.
+7. **[SILENT] Write batch back to BACKLOG as shipped.** Write batch content with `Status: shipped` at body top — **exclude `## Close handoff`** (build-time context, not permanent scope). Folder mode: create per-batch file + INDEX.md reference. Single-file: insert section. Then delete `_method/active-build.md` — deletion signals build completion.
 
-8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts noted during the build. For each, scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to the old behaviour. If Close handoff is empty or absent, assess from the batch's Files: list whether the build substantively changed how a feature works. Flag candidates. UX.md drift is caught by planning's drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts. Scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for old-behaviour references. If Close handoff empty/absent, assess from Files: whether the build changed how a feature works. Flag candidates. UX.md drift caught by planning drift check 2.
 
-9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each file in the batch's Files: list that was renamed, deleted, or moved: grep all queued and parked BACKLOG batches and open questions for references to the old name or path. Same grep pattern as step 3, but targeted at queued pipeline instead of spine docs. Flag stale references in recap. This is pattern-match only — check literal path strings and names, not semantic meaning.
+9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each renamed/deleted/moved file in Files:: grep queued and parked BACKLOG batches and OQs for old name/path references. Same pattern as step 3 but targeting queued pipeline, not spine docs. Pattern-match only — literal strings, not semantics.
 
-10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for items that silently fell off the roadmap:
-   - **Parked batches** whose parking rationale references a condition that was just met by this build (e.g. "parked until X ships" where X just shipped). Surface and ask the user if it should be unparked.
-   - Skip if the batch didn't change anything that could satisfy a parking condition.
+10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for parked batches whose parking condition was just met (e.g. "parked until X ships" where X just shipped). Surface and ask about unparking. Skip if nothing could satisfy a parking condition.
 
 11. **End-of-recap flags:**
    - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
@@ -121,9 +119,9 @@ Run while build context is fresh.
    - UX.md changes implied (don't edit — flag only).
    - Red flag concerns (confirm BACKLOG entry written if deferred).
 
-12. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to one destination: add to BACKLOG (new item or open question); or flag in recap for user to decide. Don't leave ideas unrouted.
+12. **[BRIEF] Idea sweep.** Review session for unimplemented ideas, suggestions, or observations. Triage each: BACKLOG (batch or OQ) or flag for user. Nothing unrouted.
 
-13. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` — the mechanical pass needs only these values, not build context. If context pressure is low, continuing directly is fine.
+13. **[PROMPT] Turn boundary.** Judgment done. State: whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` — mechanical pass needs only these values. Low context pressure → continue directly.
 
 ### Turn 2 — mechanical
 
@@ -135,13 +133,13 @@ Needs only the values from the turn boundary.
     ```
     Skip if footers already match the plugin version.
 
-15. **[SILENT] Regenerate proxies.** Two parts. First, run the script for mechanical updates (headers + line-number pointers):
+15. **[SILENT] Regenerate proxies.** First, mechanical updates (headers + line-number pointers):
     ```
     python "${CLAUDE_PLUGIN_ROOT}/scripts/bump_version.py"
     ```
-    Then review each proxy whose source doc was edited this session — update state summaries, entry descriptions, and add/remove entries for structural changes the script can't detect. MANIFEST, TEST-LOG, and build-log proxies at minimum (always touched by `/sovclose`). Skip if neither `_method/proxies/` nor `.proxies/` exists.
+    Then review proxies whose source was edited — update summaries, entries for structural changes the script can't detect. MANIFEST, TEST-LOG, and build-log proxies at minimum. Skip if no proxies directory.
 
-16. **[SILENT] After-build steps from CLAUDE.md.** If CLAUDE.md has a `## After-build steps` section, read and execute each step. These are project-specific — the section defines what they are. Skip silently if absent.
+16. **[SILENT] After-build steps from CLAUDE.md.** If `## After-build steps` exists, execute each. Project-specific — the section defines them. Skip if absent.
 
 17. **[SILENT] Pre-commit checkpoint.** Verify before prompting commit:
     - [ ] MANIFEST updated (step 1)
@@ -165,13 +163,13 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ### Turn 1 — judgment
 
-1. **[BRIEF] Idea sweep.** Review the session for ideas, suggestions, or observations raised but not acted on. Triage each: add to BACKLOG (new batch or open question), or flag in chat for user to decide. Don't leave ideas unrouted.
+1. **[BRIEF] Idea sweep.** Review session for unacted-on ideas, suggestions, or observations. Triage: BACKLOG (batch or OQ) or flag for user. Nothing unrouted.
 
-2. **[PROMPT] Turn boundary.** Judgment work is done. State whether proxies need regeneration (any source doc edited this session). Recommend `/compact` if the session was long — the mechanical pass doesn't need session context. Short sessions can continue directly.
+2. **[PROMPT] Turn boundary.** Judgment done. State whether proxies need regeneration. Recommend `/compact` if session was long. Short sessions can continue directly.
 
 ### Turn 2 — mechanical
 
-3. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Run the script for mechanical updates, then review state summaries. Skip if no source docs were edited or no proxies directory exists.
+3. **[SILENT] Regenerate proxies.** If proxies directory exists, regenerate any proxy whose source was edited. Run script for mechanical updates, then review summaries. Skip if no edits or no proxies directory.
 
 4. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
 
@@ -179,8 +177,8 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ## What you must not do
 
-- **Don't edit source files, build files, or any non-method file.** Your scope is method docs only: MANIFEST.md, test-log/, build-log/, BACKLOG status lines, proxies. Never edit application source code, build scripts, configuration files, or any file that isn't part of the method's doc set. If a build failed or produced errors, surface it in the recap and TEST-LOG notes — don't attempt to fix it. Mention `/sovrevert` if the user needs to undo the build.
-- **Don't create conditions that override a user refusal.** If the user declines an action, that decision stands.
+- **Don't edit source files, build files, or any non-method file.** Scope: method docs only (MANIFEST.md, test-log/, build-log/, BACKLOG status, proxies). If a build failed, surface in recap and TEST-LOG notes — don't fix. Mention `/sovrevert` if the user needs to undo.
+- **Don't override user refusals.** Declined = final.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
 - **Don't remove completed batches from BACKLOG.** Planning does that next session.
 - **Don't start a new build.**
@@ -194,4 +192,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

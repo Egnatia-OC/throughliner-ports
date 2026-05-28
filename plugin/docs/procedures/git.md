@@ -22,7 +22,7 @@ If the section exists, read it and follow the matching workflow.
 
 > "Staging N files: [short list]. These are the changes from this session."
 
-Run `git add` with the specific file paths. Never use `git add -A` or `git add .` — list files explicitly.
+Run `git add` with specific file paths. Never `git add -A` or `git add .` — list files explicitly.
 
 ### Step 2 — Commit
 
@@ -46,9 +46,9 @@ Run `git tag v<N>`.
 
 `[PROMPT]` "Ready to push to remote. This sends your commit and tag to GitHub. Go ahead?"
 
-On okay: `git push origin main && git push origin v<N>` (or just `git push origin main` if no tag).
+On okay: `git push origin main && git push origin v<N>` (or `git push origin main` if no tag).
 
-On refusal: stop. Don't push. Session can still close cleanly without pushing.
+On refusal: stop. Session closes cleanly without pushing.
 
 ### Step 5 — Done
 
@@ -103,4 +103,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

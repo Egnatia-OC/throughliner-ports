@@ -1,10 +1,10 @@
 ﻿# Planning procedure — no-code method
 
-Follow this procedure during the *planning* phase — never during builds, setup, or migration. This procedure covers **structural planning**: reordering batches, splitting or merging them, rescoping batch content, revising dependency chains, adding or removing batches, and housekeeping (test read-back, drift checks, batch pruning).
+Follow this procedure during the *planning* phase — never during builds, setup, or migration. Covers **structural planning**: reordering, splitting, merging, rescoping batches, revising dependencies, adding/removing batches, and housekeeping (test read-back, drift checks, batch pruning).
 
 For working through open questions, use `/sovdeliberate`. For exploring new ideas or feature requests, use `/sovideate`.
 
-You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) is yours to make directly; the user reviews after. **Two BACKLOG formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). In folder mode, planning batches/Red flags/Open questions live in `INDEX.md`; build batches in per-batch files. Resolve format from `CLAUDE.md` path block.
+You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) yours to make; user reviews after. **Two formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). Folder mode: planning batches/Red flags/OQs in `INDEX.md`; build batches in per-batch files. Resolve from `CLAUDE.md` path block.
 
 ## Classifying the opener
 
@@ -14,11 +14,11 @@ Classify the user's opener into one of:
 - **scope question** — whether something should exist.
 - **mixed** — primary named, e.g. `mixed (primary: test notes)`.
 
-Feature requests and new ideas route to `/sovideate`, not here. If the opener is a feature request, redirect. The UserPromptSubmit hook may have injected a routing hint — trust it unless it clearly doesn't match intent. See *Mixed-input sort* for secondary items in the opener.
+Feature requests and new ideas route to `/sovideate`, not here. If the opener is a feature request, redirect. The UserPromptSubmit hook may have injected a routing hint — trust unless it clearly doesn't match intent. See *Mixed-input sort* for secondary items.
 
 ## First action — classify, then load
 
-Classify project state before loading the full doc set. Cold-start projects skip history-dependent steps entirely.
+Classify project state before loading full doc set. Cold-start projects skip history-dependent steps.
 
 **Step 1 — always load:**
 
@@ -27,7 +27,7 @@ Classify project state before loading the full doc set. Cold-start projects skip
 
 **Step 2 — cold-start check:**
 
-If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log: "Cold start — no prior builds. Skipping history-dependent steps." Steps 1–3 of the procedure are skipped.
+If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log: "Cold start — no prior builds. Skipping history-dependent steps." Steps 1–3 skipped.
 
 **Step 3 — load remaining docs:**
 
@@ -45,7 +45,7 @@ After loading state, perform in order:
 2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
-4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with its `Surfaced` tag. Flag entries older than 5 build cycles as potentially neglected. If empty/absent, note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs exist or any are older than 5 build cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
+4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with `Surfaced` tag. Flag entries older than 5 build cycles as neglected. Empty/absent → note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs or any older than 5 cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
 5. **[BRIEF] Sort test notes** into Suggestions candidates (bugs against existing UX entries) and Discoveries candidates (new ideas). Skip if not `test notes`/`mixed`.
 5. **[DISCUSS] Discuss changes with user.** Propose better options; push back by default.
 6. **[SILENT] Dedupe and reclassify.** Every candidate: already covered (skip), fits UX.md (build batch), or out of scope (Discovery).
@@ -54,7 +54,7 @@ After loading state, perform in order:
 9. **[SILENT] Edit BACKLOG directly.** Never describe edits for user to apply.
 10. **[SILENT] Promote Discoveries** the user hasn't dropped into planning batches.
 11. **[BRIEF] Recap.** What changed in BACKLOG + Suggestions/Discoveries lists. Name deferred decisions explicitly.
-12. **[SILENT] Regenerate proxies.** If `_method/proxies/` exists (or legacy `.proxies/`), regenerate any proxy whose source doc was edited this session. Read the source doc, write the proxy per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*. Skip if neither proxies directory exists.
+12. **[SILENT] Regenerate proxies.** If `_method/proxies/` (or legacy `.proxies/`) exists, regenerate any proxy whose source was edited this session per `DOC-STRUCTURE.md` → *Proxy files*. Skip if no proxies directory.
 
 13. **[PROMPT] Commit.** "Ready to commit. I'll stage the changes and commit with a `plan:` prefix."
 
@@ -65,7 +65,7 @@ After loading state, perform in order:
 
 ## Close previous build's test session (V27)
 
-Implements *Never infer completion* and unblocks the test-confirmation gate. If TEST-LOG has rows from the previous batch with `Confirmed Explicitly: No`, walk them **one at a time** before any other planning work. Rows already `Yes` are skipped.
+Implements *Never infer completion* and unblocks the test-confirmation gate. If TEST-LOG has rows from the previous batch with `Confirmed Explicitly: No`, walk them **one at a time** before other planning work. Already `Yes` rows skipped.
 
 **Per row:**
 
@@ -83,7 +83,7 @@ Implements *Never infer completion* and unblocks the test-confirmation gate. If 
 
 **Skipped requires a reason.** Skipped satisfies the gate only as "accounted for," not as passing.
 
-**Identifying previous batch rows:** if `proxies/build-log.md` (or legacy `build-log/INDEX.md`) exists, read it → first reference → per-build file → H1 first token = session ID. Legacy `BUILD-LOG.md`: first `## <token>` heading. Filter TEST-LOG rows (across all per-session files in folder mode) by matching Session. Fallback: every row with `Confirmed Explicitly: No` counts.
+**Identifying previous batch rows:** `proxies/build-log.md` (or legacy `build-log/INDEX.md`) → first reference → per-build file → H1 first token = session ID. Legacy `BUILD-LOG.md`: first `## <token>` heading. Filter TEST-LOG rows by matching Session. Fallback: every row with `Confirmed Explicitly: No` counts.
 
 **Already done:** if all previous-batch rows are `Yes` or TEST-LOG is empty, log one line and proceed.
 
@@ -94,21 +94,21 @@ If the user came for a non-planning reason but read-back is pending, open with: 
 - **test notes** → sort into two piles: bugs against existing UX entries (Suggestions) vs. new ideas without UX backing (Discoveries).
 - **scope question** → planning batch in BACKLOG with `Blocks: scope decision — no build batch yet.`
 
-**Feature requests** no longer route here — `/sovideate` handles new concepts and feature ideas. If the opener is a feature request, redirect: "That's a new idea — invoke `/sovideate` to explore it."
+**Feature requests** route to `/sovideate`. Redirect: "That's a new idea — invoke `/sovideate` to explore it."
 
 Both flows converge into discuss-with-user.
 
 ### Doc-first ordering
 
-Before exploring code via Glob/Grep/reads, check UX.md and BACKLOG for scope existence. Only explore code when docs genuinely can't answer (e.g. "does a partial implementation exist?"). Hard rule, not preference — code tells you what *is*, not what was *decided*.
+Before exploring code via Glob/Grep/reads, check UX.md and BACKLOG for scope existence. Only explore code when docs can't answer (e.g. "does a partial implementation exist?"). Hard rule — code tells you what *is*, not what was *decided*.
 
 ## Mixed-input sort
 
-Even when the opener's primary intent is e.g. `test notes`, it may carry secondary items. Per routing priority, those don't redirect the flow — they get caught during sort, slotted into Suggestions/Discoveries based on UX.md coverage. Catch them.
+Even when primary intent is e.g. `test notes`, the opener may carry secondary items. Per routing priority, those don't redirect — they get caught during sort, slotted into Suggestions/Discoveries based on UX.md coverage.
 
 ## Drift checks
 
-Five checks, five separate passes. **Skipped entirely on cold start** — the cold-start gate handles this. Don't skip on "nothing since last planning" — no reliable signal, and would miss manual edits.
+Five checks, five separate passes. **Skipped on cold start** — cold-start gate handles this. Don't skip on "nothing since last planning" — no reliable signal, would miss manual edits.
 
 1. **Direct-edit detection (V42).** Git-diff against last build's state. Per-file confirmation protocol.
 2. **UX.md ↔ what's built.** Every UX entry → something experienceable; every observable behaviour → a UX entry.
@@ -153,39 +153,39 @@ Make every change yourself. Never list pending edits for the user.
 
 When adding a `Serves UX.md:` line, verify every named entry exists in UX.md Functionalities (case-insensitive). PreToolUse blocks mismatches.
 
-**Parking and unparking batches.** When the user wants to pause a batch: write `Status: parked` at the top of the batch body (after heading, before Goal). When unparking: remove the `Status:` line entirely (absent = queued). The parser skips parked batches — they won't appear as the top batch for builds.
+**Parking and unparking.** Pause: write `Status: parked` at batch body top (after heading, before Goal). Unpark: remove the `Status:` line (absent = queued). Parser skips parked batches.
 
-**Scaffolding new build batches (V47):** write the full two-region structure per `DOC-STRUCTURE.md` → *Build batches → Batch structure — full shape*:
+**Scaffolding new build batches (V47):** full two-region structure per `DOC-STRUCTURE.md` → *Batch structure — full shape*:
 
-1. **Scope context** — always Goal, Outputs, Success criteria. Omit Decisions/Dependencies if resolved/none.
-2. **Red flags sub-section** — only if batch touches security-shaped surfaces. Don't write an empty one.
-3. **Build operations** — `Changes:` delimiter + change-list bullets with `[Requested]`/`[Suggested]` labels. Leave `Inputs:`/`Files:`/`Tests:` for `/sovrecap`.
+1. **Scope context** — Goal, Outputs, Success criteria always. Omit Decisions/Dependencies if resolved/none.
+2. **Red flags** — only if security-shaped scope. No empty section.
+3. **Build operations** — `Changes:` delimiter + bullets with `[Requested]`/`[Suggested]` labels. Leave `Inputs:`/`Files:`/`Tests:` for `/sovrecap`.
 
 Folder mode: allocate number by Glob scan, create per-batch file, add reference to INDEX.md. Single-file mode: inline `### Batch:` heading.
 
 Surface scope-context in recap before writing to BACKLOG.
 
-**Change-list labels (V27).** Every change bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the close recap's source chain. Overlap: user confirmed your suggestion → `[Requested]`. Merge: combined item → `[Requested]`.
+**Change-list labels (V27).** Every bullet: `[Requested]` (user asked) or `[Suggested]` (Claude proposed). Labels attach to the *change*, not files. Missing labels break the close recap. Overlap: user confirmed your suggestion → `[Requested]`. Merged item → `[Requested]`.
 
-**Source-of-truth docs (V67).** UX.md and additional source-of-truth docs are directly editable by Claude during planning phase — no `[PROPOSED EDIT PENDING]` ceremony needed. Edit them directly on user approval. PreToolUse allows these edits because no `Status: active` batch exists.
+**Source-of-truth docs (V67).** UX.md and additional docs directly editable during planning — no `[PROPOSED EDIT PENDING]` needed. Edit on user approval. PreToolUse allows because no active batch exists.
 
-**Check MANIFEST rationale before rewriting UX entries (V79).** Before editing or removing a UX.md Functionalities entry, read the MANIFEST entries whose rationale references the feature. The rationale records *why* the component was built — editing UX without it risks removing the design reason a component exists.
+**Check MANIFEST rationale before rewriting UX entries (V79).** Before editing or removing a UX.md entry, read MANIFEST entries whose rationale references the feature. The rationale records *why* the component was built — editing UX without it risks removing the design reason.
 
 ## How a new feature enters the project
 
-Fixed pipeline — no shortcuts. The entry point is `/sovideate`; the structural work happens here in `/sovplan`:
+Fixed pipeline — no shortcuts. Entry point is `/sovideate`; structural work happens here:
 
-1. **Idea raised** via `/sovideate`. If it conflicts with an existing UX principle, `/sovideate` surfaces the conflict first.
-2. **Enters BACKLOG as planning batch** asking questions needed for UX.md entry.
-3. **Questions answered** in this or future planning session. Resolved → append to batch + edit UX.md directly (V67 — source-of-truth docs are open during planning).
+1. **Idea raised** via `/sovideate`. Conflicts with UX principles surfaced first.
+2. **Planning batch** in BACKLOG asking questions needed for UX.md entry.
+3. **Questions answered** this or future session. Resolved → edit UX.md directly (V67 — open during planning).
 4. **Planning batch removed** once UX.md entry exists.
-5. **Only then** does a build batch enter BACKLOG with `Serves UX.md:` pointing at the new entry.
+5. **Build batch** enters BACKLOG with `Serves UX.md:` pointing at the new entry.
 
-If you're proposing a build batch with no UX.md match, stop — you've skipped a step.
+Proposing a build batch with no UX.md match? Stop — you've skipped a step.
 
 ## Discoveries promotion
 
-Before finishing the planning phase, promote every undropped Discovery into a BACKLOG planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
+Before finishing, promote every undropped Discovery into a BACKLOG planning batch asking "should this be added to UX.md?" No Discovery survives `/clear` unrecorded.
 
 ## Recap
 
@@ -193,7 +193,7 @@ Present what you changed in BACKLOG + Suggestions/Discoveries lists. No pending 
 
 ## Migration: centralized → distributed proposed edits
 
-If BACKLOG contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V43), redistribute each to the destination doc's `## Proposed edits pending` section (create if absent). Remove empty section from BACKLOG. Surface in recap.
+If BACKLOG contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V43), redistribute to destination docs' `## Proposed edits pending` sections (create if absent). Remove from BACKLOG. Surface in recap.
 
 ## Deferred build-material aging
 
@@ -224,14 +224,14 @@ Deleted rows recoverable via git. Rows for existing components stay regardless o
 
 ## Ordering principles
 
-When reordering BACKLOG build batches, apply these principles — they override insertion order.
+When reordering BACKLOG build batches, apply these principles (override insertion order):
 
-1. **Dependency flow.** Every batch's Dependencies must point at batches above it (already shipped or earlier in the queue). If batch B depends on batch A, A must come first. Check: for each batch, verify every named dependency resolves to a shipped batch or a batch earlier in the queue.
-2. **Project-structure reasoning.** Batches that create infrastructure other batches consume (folders, schemas, shared components) go before the batches that consume them.
-3. **Security bias.** Batches carrying a `[SECURITY]` marker — or whose scope touches auth, PII, payments, deletion, or access control — bias earlier. Security gaps compound; shipping them later means building on an insecure foundation.
-4. **Stale-reference avoidance.** If an earlier batch renames, deletes, or moves a file/skill/doc, later batches that reference the old name need their scope text updated in the same reordering pass.
+1. **Dependency flow.** Every batch's Dependencies must point at shipped or earlier-queued batches. If B depends on A, A comes first.
+2. **Project-structure reasoning.** Infrastructure batches (folders, schemas, shared components) before consumers.
+3. **Security bias.** `[SECURITY]`-marked batches or auth/PII/payments/deletion/access-control scope bias earlier. Security gaps compound.
+4. **Stale-reference avoidance.** If a batch renames/deletes/moves a file, update later batches' scope text in the same pass.
 
-Claude already understands dependency ordering and project structure. These principles make the application explicit and auditable.
+These principles make ordering explicit and auditable.
 
 ## Batch-ordering audit
 
@@ -246,8 +246,8 @@ Skip if no structural changes to BACKLOG were made this session.
 
 ## Behavioural rules
 
-Universal-behaviour rules apply — push back, plain English, ask on ambiguity, engage with pushback. Keep internal reasoning concise — shorthand bullets, not full paragraphs. Reserve detailed thinking for judgment calls.
+Universal-behaviour rules apply — push back, plain English, ask on ambiguity. Internal reasoning concise — shorthand bullets, not paragraphs. Reserve detail for judgment calls.
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

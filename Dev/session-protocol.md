@@ -18,7 +18,7 @@ Three version-ish numbers move independently:
 
 - **Session tag** (lowercase `v`, e.g. `v52`) — one per session regardless of type. Always increments.
 - **Method version** (uppercase `V`, e.g. `V48`) — consumer-facing footer. Only bumps on substantive method/plugin change; planning-only sessions skip.
-- **Batch number** (4-digit, e.g. `0050`) — leading number in BACKLOG.md queued batch headings (e.g. `### 0096 — Manifest rationale field`). Allocated at creation, never reused. Used for cross-referencing only.
+- **Batch number** (4-digit, e.g. `0050`) — leading number in BACKLOG.md queued batch headings (e.g. `### 0096 — Manifest rationale field`). Allocated at creation, never reused. Cross-referencing only.
 
 So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked until a method-changing session bumps them together.
 
@@ -30,22 +30,22 @@ So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 t
 
 In order:
 
-1. `git describe --tags --abbrev=0` — confirm current version. If git is unavailable or the command fails, read the *Current state* section at the bottom of this project's `CLAUDE.md` and use its session tag. Flag the value if it looks stale (e.g. build-log entries are clearly newer).
+1. `git describe --tags --abbrev=0` — confirm current version. If git unavailable or fails, use session tag from *Current state* in this project's `CLAUDE.md`. Flag if stale (e.g. build-log entries clearly newer).
 2. Read the following plugin docs at `HEAD`:
    - `plugin/hooks/universal-behaviour.md` — behavioural rules, prohibited behaviours, response-shape tags, routing table (~180 lines).
    - `plugin/docs/DOC-STRUCTURE.md` — structural specs for project docs: entry shapes, section ordering, proxy format (~410 lines).
    - `plugin/docs/VOCABULARY.md` — method term definitions, cross-referenced from other docs (~140 lines).
    - `Guides/Reference manual.md` — install/usage primer and method overview for orientation (~410 lines).
-3. Read `Dev/Planning/BACKLOG.md` in full — the *Queued batches* section contains full scope for each upcoming batch, and the *Open questions* section has method-level questions. Both inform session routing.
-4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These indicate uncommitted dependencies that will be missing at session start. If found, **halt immediately** — surface the offending line and fix at the source (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
-5. **State summary.** Produce a brief summary for the user: current version (session tag, method version, plugin version), queue depth (number of queued batches), next batch (number and title), OQ count, and any notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
+3. Read `Dev/Planning/BACKLOG.md` in full — *Queued batches* has full scope for each upcoming batch, *Open questions* has method-level questions. Both inform session routing.
+4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These are uncommitted dependencies missing at session start. If found, **halt** — surface the offending line and fix (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
+5. **State summary.** Brief summary: current version (session tag, method version, plugin version), queue depth, next batch (number and title), OQ count, notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
 Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
 
 ---
 
 ## Opener routing table
 
-Classify the session opener. Pick the highest-priority match. Openers naming a shape explicitly ("planning session," "doc-only session") are clear — route directly.
+Classify the session opener. Pick the highest-priority match. Explicit type names ("planning session," "doc-only session") route directly.
 
 | Session type | What to load | What to skip | Session-middle shape | Close path |
 |---|---|---|---|---|
@@ -58,7 +58,7 @@ Classify the session opener. Pick the highest-priority match. Openers naming a s
 
 **Skip doesn't mean refuse.** If mid-session the skipped content becomes relevant, load it then.
 
-**Blended openers.** When an opener matches multiple session types (e.g. "let's plan 0125 and then build it"), use this priority ordering to decide the primary type: E2E test > Implementation > Planning > Ideation > Doc-only > Remote-control standby. The primary type determines session-open loading and close path. Handle threads sequentially, highest-priority first. When the opener is ambiguous enough to need disambiguation (e.g. "let's do the next thing" when the next batch could be planning or implementation), resolve the routing-critical ambiguity first — ask one question, wait for the answer, then proceed. Defer non-routing clarifications to mid-session. Informal modifiers ("spare session," "quick one," "I have 10 minutes") are availability context, not session types — route on the substantive direction, not the modifier.
+**Blended openers.** When an opener matches multiple types (e.g. "let's plan 0125 and then build it"), primary type by priority: E2E test > Implementation > Planning > Ideation > Doc-only > Remote-control standby. Handle threads sequentially, highest-priority first. If the opener needs disambiguation (e.g. "let's do the next thing"), resolve the routing-critical ambiguity first — ask one question, wait, proceed. Defer non-routing clarifications to mid-session. Informal modifiers ("spare session," "quick one," "I have 10 minutes") are availability context, not session types — route on the substantive direction.
 
 ---
 
@@ -84,35 +84,35 @@ Two paths based on session type. Both split into a **judgment pass** (while sess
 
 Run when the session shipped plugin code or method-doc structural changes consuming a queued batch.
 
-Response-shape tags mark verbosity per step — definitions in `session-reference.md` → *Response-shape tags*.
+Response-shape tags: definitions in `session-reference.md` → *Response-shape tags*.
 
-Use `git diff` to identify what changed this session — the dev-side equivalent of the plugin's `## Close handoff` section in `active-build.md`. Steps 1 and 2 draw from this rather than re-exploring.
+Use `git diff` to identify what changed — the dev-side equivalent of the plugin's `## Close handoff`. Steps 1 and 2 draw from this rather than re-exploring.
 
 **Turn 1 — judgment.** Run while build context is fresh.
 
-1. **[BRIEF] Doc-code parity** (see *Doc-code parity* section below for audit details). Fix docs before the build-log entry.
+1. **[BRIEF] Doc-code parity** (see *Doc-code parity* below). Fix docs before the build-log entry.
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
 3. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-4. **[BRIEF] Idea sweep with routing.** Review the session for ideas, suggestions, or observations raised but not implemented. Triage each to exactly one destination:
-   - **BACKLOG batch** — add a new queued batch entry to BACKLOG.md → *Queued batches*.
+4. **[BRIEF] Idea sweep with routing.** Review session for ideas, suggestions, or observations not implemented. Triage each to one destination:
+   - **BACKLOG batch** — add to BACKLOG.md → *Queued batches*.
    - **BACKLOG open question** — add to BACKLOG.md → *Open questions* with `Surfaced` tag.
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 
-5. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` — the mechanical pass needs only these values and the script, not build context. If context pressure is low, continuing directly is fine.
+5. **[PROMPT] Turn boundary.** Judgment done. State values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` — mechanical pass needs only these values and the script, not build context. Low context pressure → continue directly.
 
 **Turn 2 — mechanical.** Needs only the session tag, version numbers (if bumping), and the script.
 
-6. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal-only sessions skip entirely. Run from `sovereign-implementer/`:
+6. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal sessions skip. Run from `sovereign-implementer/`:
    ```
    python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
    ```
-   The script bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. It also regenerates proxy headers and line-number pointers (step 7). Full bump list in `session-reference.md` → *Footer bumps*.
+   Bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. Also regenerates proxy headers and line-number pointers (step 7). Full list: `session-reference.md` → *Footer bumps*.
 
-7. **[SILENT] Regenerate proxies.** The bump script (step 6) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited this session — update summaries, section descriptions, and add/remove entries for structural changes the script can't detect. If no source docs were edited and no version bump ran, skip. For sessions without a version bump, run proxies-only:
+7. **[SILENT] Regenerate proxies.** Bump script (step 6) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited — update summaries, section descriptions, and entries for structural changes the script can't detect. No source docs edited and no version bump → skip. Without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
@@ -135,28 +135,28 @@ Use `git diff` to identify what changed this session — the dev-side equivalent
 
 ### Lighter close (planning, doc-only, ideation, E2E test)
 
-Run for any session type other than implementation. Steps that produce no-ops on non-implementation sessions are skipped explicitly.
+Run for non-implementation sessions. Steps producing no-ops are skipped explicitly.
 
 **Turn 1 — judgment.** Run while session context is freshest.
 
-1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 4: every idea routed to exactly one of BACKLOG batch, BACKLOG open question, or flagged in recap for user. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while session context is freshest.)
+1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 4. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while context is freshest.)
 
 2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
-3. **[PROMPT] Turn boundary.** Judgment work is done. State the values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (and old → new version if so), whether proxies need regeneration. Recommend `/compact` if the session was long. Lighter-close sessions are often short enough to continue directly.
+3. **[PROMPT] Turn boundary.** Judgment done. State values: session tag (`v<N>`), whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` if session was long. Often short enough to continue directly.
 
 **Turn 2 — mechanical.** Needs only the session tag, version numbers (if bumping), and the script.
 
-4. **[SILENT] Bump method-version footers** — only if this session made substantive method/plugin changes. Most lighter-close sessions skip. When bumping, run from `sovereign-implementer/`:
+4. **[SILENT] Bump method-version footers** — only if substantive method/plugin changes. Most lighter-close sessions skip. When bumping:
    ```
    python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
    ```
 
-5. **[SILENT] Regenerate proxies.** Same rule as implementation close step 7. The bump script (step 4) handles headers and line-number pointers; review for content changes. For sessions without a version bump, run proxies-only:
+5. **[SILENT] Regenerate proxies.** Same as implementation close step 7. Bump script (step 4) handles headers and line-number pointers; review for content changes. Without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
-   Skip if no source docs were edited and no version bump ran.
+   No edits and no bump → skip.
 
 6. **[BRIEF] Pre-commit checkpoint.** Verify by name:
    - [ ] Idea sweep done — nothing unrouted
@@ -216,7 +216,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 
 ### Guide parity (Guides/crash-course/)
 
-The HTML crash course at `Guides/crash-course/` derives from `Guides/Reference manual.md`. Three-layer chain: **plugin spec docs → Reference manual → crash-course guide.** Each HTML section carries `data-source` and `data-transform` attributes:
+The crash course at `Guides/crash-course/` derives from `Guides/Reference manual.md`. Three-layer chain: **plugin spec docs → Reference manual → crash-course guide.** Each HTML section carries `data-source` and `data-transform` attributes:
 
 - `data-source="manual:<section-id>"` — source section in the Reference manual.
 - `data-transform="verbatim"` — word-for-word; auto-update on manual change.

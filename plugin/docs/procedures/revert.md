@@ -4,7 +4,7 @@ Follow this procedure to undo a failed build. Plain-English narration throughout
 
 ## When to use
 
-The user says something like "that broke everything," "put it back," "undo the last build," or invokes `/sovrevert`. This procedure restores the project to the last committed state.
+The user says something like "that broke everything," "undo the last build," or invokes `/sovrevert`. Restores the project to the last committed state.
 
 ## Pre-flight check
 
@@ -19,9 +19,9 @@ The user says something like "that broke everything," "put it back," "undo the l
 > "Since your last commit, N files have been modified and N files are new. Here's the list:"
 
 Show the file list grouped by type:
-- **Modified** — files that existed before and were changed
-- **New** — files that didn't exist before
-- **Deleted** — files that were removed
+- **Modified** — changed since last commit
+- **New** — created by this build
+- **Deleted** — removed since last commit
 
 ### Step 3 — Confirm the revert
 
@@ -35,7 +35,7 @@ Wait for explicit confirmation. If refused, stop — don't revert.
 
 ### Step 4 — Restore tracked files
 
-`[SILENT]` Run `git checkout -- .` to restore all tracked files to the last committed state.
+`[SILENT]` Run `git checkout -- .` to restore all tracked files.
 
 ### Step 5 — Remove untracked files
 
@@ -52,7 +52,7 @@ Wait for explicit confirmation. If refused, stop — don't revert.
 
 > "Everything is back to where it was at your last commit. Your project matches [commit message / short hash]."
 
-If the project has a dev server or build command visible in CLAUDE.md or MANIFEST.md, offer to run it:
+If CLAUDE.md or MANIFEST.md shows a dev server or build command, offer:
 
 > "Want me to start the app to confirm it's working?"
 
@@ -77,9 +77,9 @@ Stop here. Don't attempt to reconstruct prior state.
 Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, engage with pushback.
 
 - **Never force-revert.** Always confirm before `checkout` and `clean`.
-- **Never revert selectively without asking.** If the user wants to keep some changes, walk through file-by-file confirmation instead of bulk revert.
-- **State what's happening.** Every git command gets a plain-English explanation before or after it runs.
+- **Never revert selectively without asking.** If the user wants to keep some changes, walk file-by-file instead of bulk revert.
+- **State what's happening.** Every git command gets a plain-English explanation.
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*

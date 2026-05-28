@@ -1,6 +1,6 @@
 ﻿# Before-build procedure — no-code method
 
-Follow this procedure during the *before-build* phase — never during planning or building. Lock the file list and verification burden for the top build batch, then present the recap.
+Follow this procedure during the *before-build* phase — never during planning or building. Lock the file list and verification burden for the top batch, then present the recap.
 
 ## First action — load project state
 
@@ -18,20 +18,20 @@ Read only what before-build uses:
 
 Before enumerating files:
 
-1. **Parses.** Resolve BACKLOG path from `CLAUDE.md`, then: `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG absolute path>"` (both paths quoted — Windows spaces break unquoted). A `{}` outcome means no real batch found — halt and route to planning.
-2. **Serves line resolves.** Every entry on `Serves UX.md:` must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose adding to UX.md yourself.
+1. **Parses.** Resolve BACKLOG path from `CLAUDE.md`, then: `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG absolute path>"` (both paths quoted — Windows spaces break unquoted). A `{}` result means no batch found — halt and route to planning.
+2. **Serves line resolves.** Every `Serves UX.md:` entry must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose UX.md additions.
 
-You don't reorganise the build queue. Planning owns BACKLOG structure. Reorganise authority here exists only for verification-burden splits (halt C).
+You don't reorganise the queue. Planning owns BACKLOG structure. Reorganise authority here: verification-burden splits only (halt C).
 
 ## Blocker gate
 
-After validation, scan all BACKLOG sections for unresolved items that would force mid-build improvisation:
+After validation, scan BACKLOG for unresolved items that would force mid-build improvisation:
 
-1. **Batch open questions.** Read the batch body for open questions, `[?]` markers, or unresolved design decisions. An item is blocking if implementing the batch without resolving it would force Claude to guess or make a design call mid-build.
-2. **Planning batches.** Check for planning batches whose `Blocks:` line names this build batch. A planning batch blocking this build means an unresolved question must be settled first.
+1. **Batch open questions.** Read the batch body for open questions, `[?]` markers, or unresolved design decisions. Blocking if implementing without resolving would force Claude to guess mid-build.
+2. **Planning batches.** Check for planning batches whose `Blocks:` line names this batch. A blocking planning batch means an unresolved question must be settled first.
 3. **BACKLOG open questions section.** Check for OQs tagged to this batch or whose resolution affects its scope.
-4. **Test sessions.** Check for unconfirmed test rows from the previous batch (the test-confirmation gate enforces this structurally via PreToolUse, but surfacing it here gives the user a clear path to resolve it before hitting the hook deny).
-5. **Ideas and red flags.** Scan for ideas or red flags that directly contradict or invalidate this batch's scope. Only blocking if acting on the batch without addressing them would produce wrong output — not merely related.
+4. **Test sessions.** Check for unconfirmed test rows from the previous batch (PreToolUse enforces this structurally, but surfacing here gives the user a path to resolve before hitting the deny).
+5. **Ideas and red flags.** Scan for ideas or red flags that contradict or invalidate this batch's scope. Blocking only if proceeding without addressing them would produce wrong output — not merely related.
 
 **If blockers found:** Halt. Surface each blocking item. Nudge: "This batch has unresolved items that should be settled before building. Run `/sovdeliberate` to work through them, or `/sovplan` to rescope." Don't proceed to the work loop.
 
@@ -39,10 +39,10 @@ After validation, scan all BACKLOG sections for unresolved items that would forc
 
 ## Work loop
 
-1. **Enumerate Files:.** For each change-list bullet, identify files needing modification via Glob/Grep + MANIFEST. Write one-sentence summary per file.
-2. **Populate Inputs: (if needed).** Non-standard resources the batch needs — specs, research files, external references. Omit standard docs (UX, BACKLOG, MANIFEST, CLAUDE.md). Full rules: `DOC-STRUCTURE.md` → *Inputs: line*.
+1. **Enumerate Files:.** For each change-list bullet, identify files needing modification via Glob/Grep + MANIFEST. One-sentence summary per file.
+2. **Populate Inputs: (if needed).** Non-standard resources the batch needs — specs, research files, external references. Omit standard docs (UX, BACKLOG, MANIFEST, CLAUDE.md). Spec: `DOC-STRUCTURE.md` → *Inputs: line*.
 3. **Write Files: sub-section** into the batch's BACKLOG file (per-batch file in folder mode) after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
-4. **Write Tests: sub-section.** One entry per distinct observable behaviour. Each entry: `- <description> [<Type>] [<Verifier>]`. Types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Verifier: `Claude` (structural/factual) or `User` (judgement/taste/visual). Full spec: `DOC-STRUCTURE.md` → *Tests: sub-section*. If no pre-specifiable tests (rare), omit entirely.
+4. **Write Tests: sub-section.** One entry per distinct observable behaviour. Each entry: `- <description> [<Type>] [<Verifier>]`. Types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Verifier: `Claude` (structural/factual) or `User` (judgement/taste/visual). Spec: `DOC-STRUCTURE.md` → *Tests: sub-section*. If no pre-specifiable tests (rare), omit.
 5. **Apply batch-sizing principle.** Long test list relative to change scope → propose split (halt C).
 
 ## Batch-sizing principle
@@ -65,7 +65,7 @@ The "small enough to build and test in one session" rule means **one session's w
 
 ## Change-list label preservation (V27)
 
-Change-list bullets may carry `[Requested]`/`[Suggested]` prefixes from planning. **Preserve every label exactly** when splitting (halt C). Labels are provenance of the *change*, not the batch boundary. Don't re-classify. Don't create new change-list items — new items belong in planning.
+Change-list bullets may carry `[Requested]`/`[Suggested]` labels from planning. **Preserve every label exactly** when splitting (halt C). Labels track the *change*'s provenance, not the batch boundary. Don't re-classify or create new items — new items belong in planning.
 
 ## OQ accumulation nudge
 
@@ -73,13 +73,13 @@ After populating Files:/Tests:, scan the Open Questions section. If 3+ OQs exist
 
 ## Pre-build sizing
 
-After Files: and Tests: are populated, check whether the batch is likely to fit in one session. Claude has no visibility into token count or context fullness — use conversation-visible proxy signals only.
+After Files: and Tests: are populated, check whether the batch fits in one session. Claude can't see token count or context fullness — use conversation-visible proxy signals only.
 
-**Trigger condition:** Files: has **8 or more entries** AND the batch's scope-context includes unresolved **Decisions to make this batch** entries. Either condition alone is manageable; together they predict extended deliberation mid-build plus high file-touch count — the combination that blows out sessions.
+**Trigger condition:** Files: has **8+ entries** AND scope-context includes unresolved **Decisions to make this batch** entries. Either alone is manageable; together they predict extended deliberation plus high file-touch count — the combination that blows out sessions.
 
 **Action:** Surface a warning in the recap. Advisory, not blocking:
 
-> "This batch has N files and open design questions — sessions with this profile have a higher risk of running out of context. Consider splitting via halt C before starting, or plan to `/compact` between `/sovbuild` and `/sovclose`."
+> "This batch has N files and open design questions — sessions with this profile risk running out of context. Consider splitting via halt C before starting, or plan to `/compact` between `/sovbuild` and `/sovclose`."
 
 If the user acknowledges and proceeds, don't repeat the warning.
 
@@ -92,7 +92,7 @@ If the user acknowledges and proceeds, don't repeat the warning.
 - Any BACKLOG reorganisations.
 - Any conflicts or concerns.
 - OQ nudge (if triggered).
-- `[PROMPT]`: "Run `/sovbuild` to lock the batch and start building. If this will be a long session, consider `/compact` before invoking `/sovbuild` to preserve context."
+- `[PROMPT]`: "Run `/sovbuild` to lock the batch and start building. Long session ahead → consider `/compact` before `/sovbuild` to preserve context."
 
 ## What you must not do
 
@@ -107,4 +107,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 97.*
+*No-code method — Version 98.*
