@@ -108,6 +108,7 @@ Queued batches live inline in the *Queued batches* section below the shipped-bat
 | 0112 | Skill split + BUILD-PLAN rename | `/sovdeliberate`, `/sovideate`, `/sovplan` narrowing, build-snapshot architecture, BACKLOG→BUILD-PLAN consumer rename. **Shipped v112.** |
 | 0115 | /sovsetup E2E fix sweep | Five fixes for case-1 setup: handoff step, principles yes/no gate, method-infra whitelist, heredoc stripping, boundary removal. **Shipped v113.** |
 | 0088 | Build E2E test | Build lifecycle validated end-to-end; 3 pre_tool_use.py bugs filed as 0116; compact-nudge idea folded into 0113. **Shipped v114.** |
+| 0121 | Dev-side reader test | Three-agent reader test against dev-side docs; gap list + 2 new batches + 11 OQs. **Shipped v120.** |
 | 0116 | Method-infra whitelist + phase-detection fixes | Three pre_tool_use.py bug fixes: root-level _method/ file whitelist, test-log/build-log close exemption, all-ticked phase-detection fallback. 8 new tests. **Shipped v115.** |
 | 0113 | Session-length safeguards | Pre-build sizing, mid-session compact nudge, invocation-prompt compact nudge, git.md close-prompt fold-in. **Shipped v116.** |
 | 0114 | Language setting + BOM hardening + blocker gate + carried-forward removal | Language: field, utf-8-sig BOM strip, pre-build blocker gate, carried-forward removal. **Shipped v117.** |
@@ -121,19 +122,36 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0121 — Dev-side reader test
+### 0124 — Dev-side close procedure fixes
 
-**Goal.** Run the iteration playbook's reader test against the dev-side doc set to surface gaps before committing to structural changes.
+**Goal.** Fix three procedural inconsistencies in session-protocol.md's close sections, surfaced by the 0121 reader test.
 
-**Approach.** Adapt the reader test prompt for dev-side docs. Three sub-agents read CLAUDE.md, session-protocol.md, session-reference.md, and BACKLOG.md as a stranger-Claude would — no prior context. Scenarios: (1) Comprehension Q&A covering session types/routing, close paths, batch structure/lifecycle, BACKLOG editing rules, proxy regeneration, dev-side/plugin-side disambiguation. (2) Fresh dev session role-play — a Claude opening its first build session. (3) Curveball — ambiguous opener that could be any session type, or work spanning dev and plugin sides.
+**Approach.** Three targeted fixes, all in session-protocol.md and session-reference.md:
+- **Batch removal timing asymmetry (T2).** Implementation close removes the consumed batch at step 10 (after commit/tag); lighter close handles it inside the pre-commit checkpoint at step 5 (before commit). Decide which timing is correct and make both paths consistent.
+- **Stale step-number cross-reference (T3).** session-reference.md → Planning artefacts says "removed (step 9)" but session-protocol.md numbers this step 10. Update session-reference.md to match.
+- **Proxy format spec unlocated (T4).** Close step 6 says "write the proxy per its format spec" but doesn't say where that spec lives. Either point to the existing proxy files as format exemplars or describe the dev-side proxy format inline.
 
-**Inputs.** `Dev/Resources/Iteration playbook/Reader test.md` (source prompt). Current dev-side docs at HEAD.
+**Outputs.** Updated session-protocol.md (both close paths) and session-reference.md. No code changes.
 
-**Outputs.** Ranked gap list (Top / Middle / Bottom) saved to `Dev/Resources/research/dev-side-reader-test-findings.md`. Adapted prompt saved alongside or in the research file for reuse.
+**Success criteria.** Both close paths agree on batch removal timing. Step references are consistent across docs. Proxy regen step has an actionable format reference.
 
-**Success criteria.** Gap list produced with at least the three-tier ranking. Top-tier gaps weighted toward "what would bite the next dev session." No edits — gap list only. Decision gate before any fixes.
+**Risks / dependencies.** None. Small surface area — three doc edits.
 
-**Risks / dependencies.** Sub-agent token cost — three agents reading four docs each. Mitigation: keep scenarios focused, don't let agents over-explore. Risk: dev-side docs are meta-documentation (docs about how to write docs), so "stranger" framing may produce false positives from agents not understanding the meta layer. Mitigation: scenario prompts should clarify the reader is a Claude opening a dev session on this project, not a consumer-project Claude.
+---
+
+### 0125 — Dev-side opener routing completeness
+
+**Goal.** Close three routing gaps in session-protocol.md's opener routing table: blended/multi-type openers, disambiguation sequencing within multi-thread openers, and git-unavailable fallback.
+
+**Approach.** Two additions to session-protocol.md:
+- **Blended-opener rule (T1 + M9).** Add a rule below the routing table for openers that match multiple session types. Define priority ordering across session types. State that threads are handled sequentially, highest-priority first. Specify how disambiguation requests are sequenced when the one-item-at-a-time rule applies (e.g. resolve the routing-critical ambiguity first, defer others to mid-session).
+- **Git-unavailable fallback (T5).** Add a fallback to step 1 for when `git describe` fails or is unavailable. Point to CLAUDE.md's *Current state* section as the recovery source, with a note to flag if the value looks stale.
+
+**Outputs.** Updated session-protocol.md routing table and session-open step 1.
+
+**Success criteria.** A stranger-Claude receiving a blended opener can route without improvising. Git-unavailable scenario has a documented fallback.
+
+**Risks / dependencies.** T1 requires a priority ordering decision — that's a design choice, not just a doc fix. Low risk: the ordering can be inferred from current practice (E2E > implementation > planning > ideation > doc-only > standby), but it needs to be stated explicitly.
 
 ---
 
@@ -234,6 +252,138 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### Lighter close step reordering rationale
+
+**Surfaced.** v120 (0121 reader test, M1).
+
+**The question.** The lighter close reorders steps compared to the implementation close (idea sweep first, then build-log, footers later) with no stated rationale. Is this intentional, and if so, what drives the difference?
+
+**Why it matters.** A reader trying to understand the lighter close by analogy to the full close will be confused by the different ordering. If the reordering is intentional (e.g. idea sweep first because there's no parity/frame work to inform it), documenting the reason prevents future sessions from "fixing" the order back. If accidental, aligning the paths reduces cognitive load.
+
+**Next step.** Decide during 0124 (close procedure fixes) — fold in if the answer is obvious, or defer if it needs deliberation.
+
+---
+
+### Frame-correction sweep: categorical vs conditional skip in lighter close
+
+**Surfaced.** v120 (0121 reader test, M2).
+
+**The question.** The lighter close skips the frame-correction sweep categorically ("no feature frame changed"). But a doc-only session consuming a queued batch could change a load-bearing frame (e.g. rewriting how a concept is described in BACKLOG scope text). Should the skip be conditional on whether a frame actually changed, rather than categorical by session type?
+
+**Why it matters.** A doc-only batch that rewrites scope text could leave queued batches referencing an old frame — exactly what the sweep catches. The categorical skip assumes lighter-close sessions never change frames, which isn't guaranteed.
+
+**Next step.** Park. Low frequency — doc-only sessions rarely change frames. Revisit if a frame-change slips through a lighter close.
+
+---
+
+### Doc-only batch-input check: skip rule underspecified
+
+**Surfaced.** v120 (0121 reader test, M3).
+
+**The question.** The routing table says doc-only sessions skip "batch-input check (step 4) if no queued batch is being consumed." What happens when a doc-only session *does* consume a queued batch — does step 4 apply? The conditional phrasing is easy to misread as "always skip for doc-only."
+
+**Why it matters.** A doc-only batch with an Inputs line (e.g. referencing a research file or external artifact) needs the same out-of-repo check as any other batch. Misreading the skip rule could let a session start without its inputs.
+
+**Next step.** Fold into 0124 or 0125 as a one-line clarification when those batches touch the routing table or close paths.
+
+---
+
+### Remote-control standby close path unspecified
+
+**Surfaced.** v120 (0121 reader test, M4).
+
+**The question.** The routing table says remote-control standby sessions use the close path that matches "the work done," but gives no guidance on classifying what was done — or whether a commit/tag/push is expected if nothing was done.
+
+**Why it matters.** Standby sessions are rare in practice (most sessions have a clear type), but when they occur, the lack of close-path guidance means Claude has to improvise. A "no work done → no close needed" rule, or a "classify the work and follow the matching close" rule, would be sufficient.
+
+**Next step.** Park. Very low frequency. Revisit if standby sessions become more common or if a standby session produces an awkward close.
+
+---
+
+### Informal opener modifiers unmapped
+
+**Surfaced.** v120 (0121 reader test, M5).
+
+**The question.** Terms like "spare session," "quick one," "I have 10 minutes" appear in real openers but have no routing-table mapping. Should they be addressed explicitly, or is the current "pick the highest-priority match on the substantive direction" approach sufficient?
+
+**Why it matters.** The fresh-session agent treated "spare" as availability context rather than a session type — a reasonable inference, but one the docs don't prepare a reader for. If informal modifiers affect session scope (e.g. "quick one" implying lighter work), that interaction isn't documented.
+
+**Next step.** Consider folding a one-line note into 0125 (opener routing completeness) when it ships. Low priority — current practice handles it fine.
+
+---
+
+### Dev-side session-open state summary has no template
+
+**Surfaced.** v120 (0121 reader test, M6).
+
+**The question.** Plugin-side has the SessionStart hook mandating a specific status summary format (batch counts, next batch, pending tests). Dev-side has no equivalent — session-protocol.md says "report what was loaded and ask" but gives no format for the state summary when the task is clear.
+
+**Why it matters.** Each dev session currently improvises its opening summary. A lightweight template (version, next batch, queue depth, OQ count) would make sessions consistent without adding enforcement overhead. Counter-argument: dev sessions have fewer moving parts than consumer sessions, so a template may be over-engineering.
+
+**Next step.** Consider during 0122 (dev-side structure mirroring audit) — this is exactly the kind of plugin-side pattern worth evaluating for dev-side adoption.
+
+---
+
+### Sub-agent warning rule boundary for scoped work
+
+**Surfaced.** v120 (0121 reader test, M7).
+
+**The question.** CLAUDE.md says "warn before spawning a subagent for a single simple operation." When the batch scope explicitly designs for sub-agents (as 0121 did), does the warning rule still apply?
+
+**Why it matters.** The fresh-session agent flagged the warning as a courtesy even though the batch scope explicitly called for three sub-agents. The rule is written for spontaneous single-operation spawning — not intentionally scoped multi-agent work. Clarifying the boundary would prevent unnecessary warnings on designed sub-agent deployments while preserving the guard on ad hoc spawning.
+
+**Next step.** Park. Low friction — Claude flagging an unnecessary warning is a minor cost. Revisit if sub-agent-designed batches become more common.
+
+---
+
+### Session-open step 2 load-purpose unstated
+
+**Surfaced.** v120 (0121 reader test, M8).
+
+**The question.** Step 2 says "read universal-behaviour.md, DOC-STRUCTURE.md, VOCABULARY.md, Reference manual.md at HEAD" but doesn't say what to look for in each, how large they are, or what context they provide to the session. Should step 2 include a one-line purpose note per doc?
+
+**Why it matters.** A fresh reader doesn't know whether "read at HEAD" means a 10-line file or a 200-line file. The batching cost of step 2 is invisible. One-line annotations (e.g. "universal-behaviour.md — behavioural rules and routing table") would help a new Claude prioritize and extract the right context.
+
+**Next step.** Consider during 0122 (dev-side structure mirroring audit) — this is a doc-usability question the audit should assess.
+
+---
+
+### Duplicate batch 0102 in shipped batch table
+
+**Surfaced.** v120 (0121 reader test, B1).
+
+**The question.** BACKLOG.md's shipped batch table has two rows for batch number 0102. The first occurrence has no shipped annotation; the second says "Shipped v99." Is the first row a leftover from an earlier edit?
+
+**Why it matters.** Minor data integrity issue. Doesn't affect any process, but a reader scanning the table sees a duplicate that implies something was missed.
+
+**Next step.** Fix as a one-line cleanup in the next session that edits BACKLOG.md. No batch needed.
+
+---
+
+### Cross-reference precision across dev-side docs
+
+**Surfaced.** v120 (0121 reader test, B2/B3/B4/B5).
+
+**The question.** Four related precision issues in cross-references between dev-side docs: (a) session-protocol.md step 4 relies entirely on a forward pointer to session-reference.md with no inline explanation; (b) session-reference.md's build-log entry shape references DOC-STRUCTURE.md without a path; (c) CLAUDE.md says "read proxies first" while session-protocol.md step 3 says "read BACKLOG in full" without mentioning proxies; (d) the pre-commit checkpoint in each close path references its own step numbers, making cross-path comparison confusing.
+
+**Why it matters.** Individually minor. Collectively, they make the doc set harder for a fresh reader to navigate — each instance requires the reader to either flip to another doc or hold two numbering schemes in mind. The reader test found these because the agents were explicitly instructed to flag "the document does not say" moments.
+
+**Next step.** Park. Address opportunistically when the relevant sections are edited for other reasons. Not worth a dedicated batch.
+
+---
+
+### Lighter-close naming vs doc-only batches that consume queued batches
+
+**Surfaced.** v120 (0121 reader test, B6).
+
+**The question.** The lighter close is described as "run when the session didn't ship code." But a doc-only batch that consumes a queued batch may need more than "lighter" — the conditional note about batch removal reads as an afterthought. Should the distinction be "consumed a queued batch with code changes" vs. everything else, rather than "shipped code" vs. didn't?
+
+**Why it matters.** The wording creates an edge case where a doc-only session consuming a queued batch follows the lighter close path but then hits the conditional batch-removal step that feels bolted on. Reframing the distinction would make the conditional unnecessary.
+
+**Next step.** Consider during 0124 (close procedure fixes) since that batch already touches both close paths.
 
 ---
 
