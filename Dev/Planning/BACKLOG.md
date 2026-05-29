@@ -93,6 +93,41 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
+### 0141 — Fold playbook discipline rules into session-protocol and plugin docs
+
+**Goal.** Four Iteration Playbook entries (Catch consolidation, Coherence sweep, Mid-pass method amendment, Rule-application sweep) contain discipline rules valuable beyond method development. Extract those rules and place them into the docs where they'll actually be read — session-protocol.md on the dev side, relevant plugin procedure docs on the plugin side. Editorial pass, not a version bump.
+
+**Inputs.** The four playbook entries at `Dev/Resources/Iteration playbook/`. Current session-protocol.md. Plugin docs: universal-behaviour.md, build.md, planning.md. Assessment notes at `Dev/Resources/Iteration playbook/generalisable/generalisation-plan.md`.
+
+**What to extract.**
+
+From Catch consolidation — discipline rules: smallest accommodation first; one catch at a time with approval; verify after every edit (Edit tool truncates); scope-cap mid-pass discoveries upfront.
+
+From Coherence sweep — named pattern: "each fix exposes the next inconsistency" as a recognisable condition; scope-cap reflex; thread-signposting in long cascades.
+
+From Mid-pass method amendment — discipline rules: state gaps in two layers (human-facing + Claude-facing); grep for obsolete terminology after any rename; re-read superseded queued/parked items after absorbing a mid-flight change.
+
+From Rule-application sweep — standing rule: when a targeted cleanup finds something the brief didn't name, propose the wider sweep before applying the first edit.
+
+**Procedure.**
+
+1. Read session-protocol.md in full. Note where each rule lands — section name, position. If a section doesn't exist, note what it would be called.
+2. Read plugin homes: universal-behaviour.md, build.md, planning.md. For each rule, check whether the plugin already states it. Note which are genuinely new vs already covered.
+3. Report to Alex: these N rules are new placements, these M are already covered, here's where each goes. Get confirmation before editing.
+4. Dev-side placements in session-protocol.md. One rule at a time, with approval.
+5. Plugin-side placements (if any are genuinely new). One rule at a time, with approval.
+6. Verify: re-read each edited section in context. Check new rules don't contradict existing content.
+
+**Outputs.** Updated session-protocol.md. Possibly updated universal-behaviour.md, build.md, or planning.md (only for genuinely new rules). No new files.
+
+**Success criteria.** Each extracted rule has a home in an existing doc. No contradictions introduced. No plugin version bump needed (unless plugin docs are edited, in which case a minor bump).
+
+**Risks.** Low. The rules are established patterns, not new design. Main risk: discovering that some rules are already stated differently in the target docs, requiring reconciliation rather than simple placement.
+
+**Surfaced.** v140.
+
+---
+
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
@@ -106,5 +141,8 @@ None.
 ## Ideas
 
 Raw ideas captured during sessions. Date + one-liner. Promoted to OQs or batches during planning sessions.
+
+- 2026-05-29 — Skill invocation flowchart: map all valid skill invocation orders and prerequisite handling. User wants to "sort that issue out once and for all." Separate from individual skill work.
+- 2026-05-29 — E2E test for /sovexplain: validate the new explain skill against a real consumer project. Could fold into 0130/0131 when they unpark.
 
 ---

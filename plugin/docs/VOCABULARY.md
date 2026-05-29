@@ -140,4 +140,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 101.*
+*No-code method — Version 102.*

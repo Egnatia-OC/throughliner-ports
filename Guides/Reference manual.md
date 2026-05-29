@@ -107,20 +107,22 @@ After `/sovsetup`, CLAUDE.md sits at the project root and everything else lives 
 - **CLAUDE.md** (project root) — entry point. Product overview (what, who, friction, milestones) plus JSON path block telling Claude where docs live. Read every session.
 - **_method/UX.md** — user-facing app description. Every entry corresponds to something experienceable + "the user needs this because…" rationale. Source of truth — Claude cannot edit; no-coder maintains during planning.
 - **_method/BACKLOG/** — deferred work. Per-batch files (e.g. `0001-add-today-screen.md`) with scope-context and build-operations regions. Index sections (Red flags, Planning batches, Build batches, Open questions) live in `_method/proxies/backlog.md`. Reordering = moving proxy lines, not renaming files.
-- **_method/MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each: name + path + description + rationale. Maintained by Claude during builds. Two audiences: user (lookup reference) and Claude (recalls why a component was built). The path field anchors a read-before-edit gate.
+- **_method/MANIFEST.md** — flat alphabetical glossary of named codebase elements. Each: name + path + description + rationale. Maintained by Claude during builds. Two audiences: user (lookup reference) and Claude (recalls why a component was built). The path field anchors a read-before-edit gate — the first time Claude tries to edit a MANIFEST-covered file in a session, PreToolUse denies the edit and shows the MANIFEST entry inline. This ensures Claude has context about what a feature is and why it exists before changing it. The retry succeeds because the gate sees the entry was already shown.
 - **_method/test-log/** — per-session test files. 10-column rows (# / Date / Session / Component / Test Description / Type / Verifier / Status / Confirmed Explicitly / Notes). After build, Claude writes a file, runs automatable tests, leaves user-verified rows for planning read-back. Index in BACKLOG proxy. Rows pruned when their component leaves MANIFEST.
 - **_method/build-log/** — per-build narrative files. What shipped / Decisions / Pivots / Performance. Index at `_method/proxies/build-log.md`. Queryable via grep.
 
 `/sovsetup` also creates inside `_method/`:
 - **_method/planning/drafts/** — holding area for content not yet ready for a specific doc.
 - **_method/research/** — findings from Claude's research. Zero maintenance. Persists for future sessions.
-- **_method/proxies/** — index and summary files. `backlog.md` and `build-log.md` are operational indexes (directly edited); `backlog.md` also contains the test session index. `ux.md`, `manifest.md`, `research.md` are summaries regenerated for context efficiency.
+- **_method/proxies/** — index and summary files. Large spine docs burn context window when Claude reads them whole, leaving less room for actual work. Proxies give Claude a lightweight index with line-number references so it can target-read specific sections instead. `backlog.md` and `build-log.md` are operational indexes (directly edited); `backlog.md` also contains the test session index. `ux.md`, `manifest.md`, `research.md` are summaries regenerated for context efficiency.
 
 Projects can declare additional source-of-truth docs (e.g. `SYSTEM-PROMPT.md`, `COPY.md`, `PATTERNS.md`) — same locking rules as UX.md.
 
 ## The session shape
 
-Two phases loop: **planning** and **build**. `/clear` or new session separates them.
+Two phases loop: **planning** and **build**. `/clear` or new session separates them. Each skill can be invoked independently — you don't have to follow the cycle in strict order. Skills that need prior state (e.g. `/sovclose` without a build) will tell you what to run first.
+
+**Why the routing matters.** When a session opens, the plugin classifies your first message and loads the matching procedure doc. Without routing, every session would open with generic preamble and you'd have to manually direct Claude to the right workflow. The routing table is priority-ordered — first match wins — so test notes, setup requests, and bug reports each get their own path without you needing to know the internal procedure names.
 
 **Planning sessions** decide what gets built. Three modes, each a separate skill:
 
@@ -130,14 +132,18 @@ Two phases loop: **planning** and **build**. `/clear` or new session separates t
 
 Source-of-truth docs (UX.md, additional docs) are directly editable by Claude during planning — no ceremony needed.
 
-**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BACKLOG — unlocking BACKLOG for parallel planning, deliberation, or ideation. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. `/sovclose` runs in two turns:
+**Why two phases?** Planning and build need different editing permissions. During planning, you're shaping what gets built — source-of-truth docs like UX.md need to be open. During build, the spec is settled and code is being written — locking source-of-truth docs prevents spec drift mid-implementation, while locking source code during planning prevents premature implementation before the spec is ready. Phase detection is based on whether `_method/active-build.md` exists: present = build phase, absent = planning phase.
+
+**Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BACKLOG. The snapshot serves two purposes: it gives phase detection an unambiguous signal (file exists = build in progress), and it unlocks BACKLOG for parallel planning, deliberation, or ideation in other sessions. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. `/sovclose` runs in two turns:
 
 - **Turn 1 (judgment)** — while context is fresh: MANIFEST, doc parity, test session + Claude-automatable tests, build recap, build-log entry, snapshot deleted (build-log is the shipped record), frame-correction and staleness sweeps, lost-feature check, idea sweep, then `/compact` recommendation.
 - **Turn 2 (mechanical)** — after compaction: footer bumps if plugin version changed (`bump_version.py`), proxy regeneration, project-specific after-build steps, pre-commit checkpoint, `/sovgit` nudge.
 
 Short sessions can run both turns without compacting. `/sovgit` walks you through commit, tag, and push in plain English.
 
-**Session-length safeguards.** Long sessions degrade adherence as context fills. Three advisory mechanisms: (1) pre-build sizing warns during `/sovrecap` for 8+ files with open design questions, (2) mid-session compact nudge at 15+ exchanges past `/sovbuild` without `/sovclose`, (3) every skill handoff recommends `/compact`. None block — all give recovery points.
+**Why close is mandatory.** Skipping `/sovclose` leaves an orphaned `_method/active-build.md` snapshot that blocks all future builds — the plugin sees a build in progress that never finished. Close also writes the build-log entry (the shipped record), MANIFEST updates, test rows, and runs parity checks that catch drift before it compounds. A PreToolUse guard blocks `git commit` when all files are ticked but close hasn't run, so you can't accidentally commit without the close outputs.
+
+**Session-length safeguards.** Long sessions degrade adherence as context fills — Claude has no visibility into its own context-window usage, so it can't self-regulate. Three advisory mechanisms give recovery points: (1) pre-build sizing warns during `/sovrecap` for 8+ files with open design questions (high file count alone is fine — it's the combination with unresolved deliberation that blows out sessions), (2) mid-session compact nudge at 15+ exchanges past `/sovbuild` without `/sovclose`, (3) every skill handoff recommends `/compact`. None block. PreCompact blocks mid-build compaction and surfaces a handoff prompt instead — compaction during a build can silently drop critical context, so a fresh session with full method-doc reads is safer.
 
 The no-coder `/clear`s, refreshes, and tests. Two options: `/sovtest` for a guided walkthrough of each pending User-verified row, or test independently and bring per-row outcomes to the next planning session.
 
@@ -263,7 +269,16 @@ Claude Code inherits CLAUDE.md files from parent directories. If a project sits 
 
 ### Concurrent-build detection
 
-SessionStart detects `Status: active` with unticked files — a build is in progress elsewhere. Warning asks whether resuming or starting parallel work. Parallel builds corrupt file state and git history; only ideation is safe in parallel. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` never ran).
+SessionStart detects an existing `_method/active-build.md` with unticked files — a build is in progress elsewhere. Warning asks whether resuming or starting parallel work. Parallel builds corrupt file state and git history; only ideation is safe in parallel. Distinct from unclosed-build detection (all files ticked = build finished, `/sovclose` never ran).
+
+### Destructive-command guards
+
+Two PreToolUse guards prevent work loss from shell commands:
+
+- **Git safety guard** — blocks `git reset --hard` and `git push --force`. These are the two commands most likely to destroy uncommitted work or overwrite remote history. `--force-with-lease` is explicitly allowed (it's the safe alternative). The guard is mechanical — Claude can't override a hook, even if asked.
+- **Bash write guard** — scans shell commands for file-write patterns and applies the same phase-aware rules as the edit hooks. Without it, a `cat > file.txt` or `echo > file.txt` in Bash would bypass all the Edit/Write/MultiEdit protections.
+
+A separate **unclosed-build commit guard** blocks `git commit` when all batch files are ticked but `/sovclose` hasn't run. Committing in that state would create a snapshot that looks finished but lacks the close outputs (build-log entry, MANIFEST updates, test rows) — and the orphaned snapshot would block all future builds.
 
 ### Open-question staleness
 
@@ -279,7 +294,7 @@ Control tokens (`Status:`, `Changes:`, `Serves UX.md:`, `[SECURITY]`, `Confirmed
 
 ## Research search flow
 
-Claude watches for decisions that would benefit from external information — API capabilities, library comparisons, platform constraints. It drafts a search query, proposes it, and waits for approval.
+Claude watches for decisions that would benefit from external information — API capabilities, library comparisons, platform constraints. It drafts a search query, proposes it, and waits for approval. The plugin's value here isn't the search itself — it's the discipline wrapper: filing results to `_method/research/`, structuring queries with what decision they inform, and prompting proactive research before wrong assumptions get baked into code or docs.
 
 **`/sovresearch`** triggers explicitly. Claude also suggests searches proactively when it spots an information gap.
 
@@ -302,7 +317,7 @@ The plugin doesn't ship or store API keys — user brings their own.
 
 - **Hooks** (Python, deterministic): SessionStart detects folder state, injects rules, mandates status summary (batch counts, next batch, pending tests, concurrent-build detection, stale OQs). PreToolUse enforces edit boundaries (locked docs, batch file list, test gate, adoption gate, read-before-edit, Serves-line check, destructive git guard, unclosed-build commit guard, write-guard with project-boundary check). PostToolUse validates doc structure after edits (BACKLOG parse, scope-context, TEST-LOG columns, build-log sections, proxy headers). PreCompact blocks compaction mid-build. UserPromptSubmit classifies first prompt + injects routing hint.
 - **Procedure docs** (read on demand): planning, before-build (`/sovrecap`), build (`/sovbuild`), close, git, revert, testing (`/sovtest`), tersify (`/sovtersify`), setup. Each specifies what to load and do. Followed in main context — no agent spawning.
-- **Slash commands** (`/sovsetup`, `/sovplan`, `/sovdeliberate`, `/sovideate`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`): entry points directing Claude to matching procedure doc or flow.
+- **Slash commands** (`/sovsetup`, `/sovplan`, `/sovdeliberate`, `/sovideate`, `/sovrecap`, `/sovbuild`, `/sovclose`, `/sovgit`, `/sovtest`, `/sovresearch`, `/sovtersify`, `/sovrevert`, `/sovexplain`): entry points directing Claude to matching procedure doc or flow.
 - **Scripts** (Python): `parse_backlog.py` (BACKLOG parser), `allocate_number.py` (number allocation), `bump_version.py` (footer bumps + proxy updates), `project_state.py` (shared hook helpers), `validate_docs.py` (PostToolUse validation).
 - **Templates**: starter shapes for spine docs.
 - **Bundled docs** (`DOC-STRUCTURE.md`, `VOCABULARY.md`): read via `${CLAUDE_PLUGIN_ROOT}/docs/`.
@@ -356,11 +371,11 @@ Permissions flip based on project phase:
 | Source code files | **locked** | batch file list only |
 | `research/` files | read/write | read/write |
 
-**Phase detection.** Planning = no `Status: active` batch in BACKLOG. Build = active batch present (written by `/sovbuild`).
+**Phase detection.** Planning = no `_method/active-build.md` file. Build = file present (created by `/sovbuild`).
 
 **During planning,** Claude edits source-of-truth docs directly — no ceremony.
 
-**During build,** `[PROPOSED EDIT PENDING]` applies: Claude queues content in the doc's `## Proposed edits pending` section. No-coder applies next planning session.
+**During build,** source-of-truth docs are locked, but Claude sometimes spots a needed change while implementing. Rather than blocking entirely, the `[PROPOSED EDIT PENDING]` mechanism lets Claude queue the change in the doc's `## Proposed edits pending` section. You review and apply (or drop) it next planning session. This way, observations aren't lost but design changes still get proper deliberation.
 
 **Footer exception.** Footer stamps are metadata — PreToolUse allows footer-only edits on locked docs regardless of phase.
 
@@ -388,11 +403,19 @@ Permissions flip based on project phase:
 
 **Per-row read-back.** Bulk confirmations silently flip rows the user didn't actually verify.
 
+**Open questions are separate from batches.** OQs have a different lifecycle — they're non-blocking parking for things that need deliberation but shouldn't stall the build pipeline. A batch is a commitment to build; an OQ is a question that needs answering before it can become a batch (or get dropped). `/sovdeliberate` walks through them one at a time: promote, drop, or re-park.
+
+**Before-build recap before building.** `/sovrecap` validates the batch — checking the Serves line, populating file lists, proposing splits if the batch is too large. BACKLOG stays editable during the recap so you can discuss and adjust the plan. Without this step, you'd be committing to a batch that might have missing files, no test plan, or scope that should have been split.
+
+**PostToolUse validates doc structure.** After Claude edits a method doc, PostToolUse checks the result for structural correctness — BACKLOG parse errors, wrong TEST-LOG column counts, missing build-log sections, malformed proxy headers. Catching these at write time prevents structural mistakes from propagating into docs that other hooks and procedures depend on. Warnings are advisory (Claude sees and self-corrects), not blocking.
+
+**Response-shape tags control verbosity.** Tags like `[SILENT]`, `[BRIEF]`, `[SEQUENCE]`, `[DISCUSS]`, and `[PROMPT]` appear throughout procedure docs. They solve a specific problem: procedure docs need to specify not just *what* Claude does but *how much it says*. `[SEQUENCE]` means one step at a time (wait for your response before continuing). `[PROMPT]` means end with a clear next-action for you. They compose freely — genuine tension between tags is a doc bug.
+
 ## What this costs
 
 A new feature takes two sessions minimum — one planning, one build. Every shipped feature traces to a written rationale; nothing gets built that no one decided to build.
 
-As docs grow, they consume more context — leaving less room for work. `/sovtersify` runs a guided compression pass: triage by size, flag wrong-home content and verbose prose, audit and compress user-selected targets one at a time. Planning phase only.
+As docs grow, they consume more context — leaving less room for work. `/sovtersify` runs a guided compression pass: triage by size, flag wrong-home content and verbose prose, audit and compress user-selected targets one at a time. Planning phase only — source-of-truth docs are already locked during builds, and the triage analysis itself fills context that isn't needed during the editing pass (so `/sovtersify` recommends `/compact` between triage and audit).
 
 ## Where the method sits
 
@@ -413,4 +436,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 101.*
+*No-code method — Version 102.*

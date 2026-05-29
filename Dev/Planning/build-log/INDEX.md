@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v141-explain-skill-and-doc-enrichments.md](v141-explain-skill-and-doc-enrichments.md) — 2026-05-29 — /sovexplain skill + consumer-doc rationale enrichments
 - [v140-plugin-oq-resolutions.md](v140-plugin-oq-resolutions.md) — 2026-05-29 — Plugin OQ resolutions: volunteered test results, carve-out snapshot, walkthrough pacing
 - [v139-plugin-lighter-close-hardening.md](v139-plugin-lighter-close-hardening.md) — 2026-05-29 — Plugin lighter-close hardening + batch lifecycle change
 - [v138-dev-side-structure-reconciliation.md](v138-dev-side-structure-reconciliation.md) — 2026-05-29 — Dev-side structure reconciliation: 7 items documented

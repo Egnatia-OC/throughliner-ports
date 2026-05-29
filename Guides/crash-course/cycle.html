@@ -29,7 +29,7 @@
     <h1>The cycle</h1>
 
     <section data-source="manual:session-shape" data-transform="adapted">
-      <p>Every feature goes through two phases: <strong>planning</strong> and <strong>building</strong>. They alternate. A fresh Claude Code session (or <code>/clear</code>) separates them.</p>
+      <p>Every feature goes through two phases: <strong>planning</strong> and <strong>building</strong>. They alternate. A fresh Claude Code session (or <code>/clear</code>) separates them. Each skill can be invoked independently &mdash; you don&rsquo;t have to follow the cycle in strict order. Skills that need prior state will tell you what to run first.</p>
 
       <div class="flow">
         <div class="flow-step">Planning</div>
@@ -53,6 +53,7 @@
         <li><code>/sovideate</code> &mdash; <strong>new ideas.</strong> Explores a fresh concept, assesses fit, routes it to an OQ, batch, or idea entry.</li>
       </ul>
       <p>Source-of-truth docs (like UX.md) are directly editable by Claude during planning &mdash; no ceremony needed. You remove resolved batches and reorganise priorities.</p>
+      <p><strong>Why two phases?</strong> Planning and build need different editing permissions. During planning, source-of-truth docs are open so you can shape what gets built. During build, they&rsquo;re locked so the spec doesn&rsquo;t drift mid-implementation &mdash; and source code is locked during planning so nothing gets built before the spec is ready. Phase detection is based on whether <code>_method/active-build.md</code> exists.</p>
     </section>
 
     <section data-source="manual:session-shape" data-transform="adapted">
@@ -66,12 +67,13 @@
 
       <div class="card">
         <h3><code>/sovbuild</code></h3>
-        <p>Locks the batch and runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch.</p>
+        <p>Locks the batch and runs the build against the file list. A PreToolUse hook enforces file boundaries &mdash; Claude can only edit files listed in the batch. The batch is extracted into a snapshot file (<code>_method/active-build.md</code>), which serves two purposes: it gives phase detection an unambiguous signal (file exists = build in progress), and it unlocks BACKLOG for parallel planning or ideation in other sessions.</p>
       </div>
 
       <div class="card">
         <h3>Close (<code>/sovclose</code> + <code>/sovgit</code>)</h3>
         <p>When the build finishes, invoke <code>/sovclose</code>. It runs in two turns: a <em>judgment pass</em> (updates MANIFEST, checks doc parity, runs tests, writes the recap and build-log entry, sweeps for stale references and unrouted ideas) then a <em>mechanical pass</em> (bumps version footers if needed, regenerates proxies, runs after-build steps, verifies everything via a pre-commit checkpoint). You can <code>/compact</code> between the turns. Then <code>/sovgit</code> walks you through commit, tag, and push in plain English.</p>
+        <p><strong>Why close is mandatory.</strong> Skipping it leaves an orphaned snapshot that blocks all future builds. Close also writes the build-log entry (the shipped record), MANIFEST updates, and test rows. A PreToolUse guard blocks <code>git commit</code> when all files are ticked but close hasn&rsquo;t run.</p>
       </div>
 
       <div class="card">
@@ -80,7 +82,7 @@
       </div>
 
       <div class="callout">
-        <p><strong>Long sessions degrade quality.</strong> Claude will nudge you to <code>/compact</code> between skill invocations and when a build runs long. These are advisory &mdash; skip if you prefer, but compacting preserves context for the close steps.</p>
+        <p><strong>Long sessions degrade quality.</strong> Claude has no visibility into its own context-window usage, so it can&rsquo;t self-regulate. It will nudge you to <code>/compact</code> between skill invocations and when a build runs long. These are advisory &mdash; skip if you prefer, but compacting preserves context for the close steps. Mid-build compaction is blocked entirely (with a handoff prompt instead) because compaction during a build can silently drop critical context.</p>
       </div>
     </section>
 

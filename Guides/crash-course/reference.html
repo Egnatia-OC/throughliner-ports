@@ -88,9 +88,9 @@
         </table>
       </div>
 
-      <p><strong>Phase detection:</strong> Planning = no active batch in BACKLOG. Build = <code>Status: active</code> batch present (written by <code>/sovbuild</code>).</p>
+      <p><strong>Phase detection:</strong> Planning = no <code>_method/active-build.md</code> file. Build = file present (created by <code>/sovbuild</code>).</p>
       <p><strong>During planning,</strong> Claude edits source-of-truth docs directly &mdash; no ceremony needed.</p>
-      <p><strong>During build,</strong> Claude queues changes as <code>[PROPOSED EDIT PENDING]</code> blocks. You review and apply them next planning session.</p>
+      <p><strong>During build,</strong> source-of-truth docs are locked, but Claude sometimes spots a needed change while implementing. Rather than blocking entirely, the <code>[PROPOSED EDIT PENDING]</code> mechanism lets Claude queue the change in a dedicated section of the doc. You review and apply (or drop) it next planning session &mdash; observations aren&rsquo;t lost, but design changes still get proper deliberation.</p>
       <p><strong>Footer exception:</strong> Footer stamps are metadata &mdash; Claude can make footer-only edits even on locked docs regardless of phase.</p>
     </section>
 
@@ -130,6 +130,14 @@
 
       <h3>Parent-directory placement</h3>
       <p>Claude Code inherits CLAUDE.md files from parent directories. If your project folder is inside another project&rsquo;s tree, the parent&rsquo;s instructions will bleed into your session. Keep project folders at independent locations.</p>
+
+      <h3>Destructive-command guards</h3>
+      <p>Two PreToolUse guards prevent work loss from shell commands:</p>
+      <ul>
+        <li><strong>Git safety guard</strong> &mdash; blocks <code>git reset --hard</code> and <code>git push --force</code> (the two commands most likely to destroy uncommitted work or overwrite remote history). <code>--force-with-lease</code> is allowed as the safe alternative. The guard is mechanical &mdash; Claude can&rsquo;t override a hook.</li>
+        <li><strong>Bash write guard</strong> &mdash; scans shell commands for file-write patterns and applies the same phase-aware rules as the edit hooks. Without it, a shell redirect would bypass all the Edit/Write protections.</li>
+      </ul>
+      <p>A separate <strong>unclosed-build commit guard</strong> blocks <code>git commit</code> when all batch files are ticked but <code>/sovclose</code> hasn&rsquo;t run &mdash; preventing orphaned snapshots that block all future builds.</p>
     </section>
 
     <section data-source="manual:plugin-internals" data-transform="adapted">
@@ -160,7 +168,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovideate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovideate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code>, <code>/sovexplain</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Scripts</h3>
       <p>Python helpers invoked by procedure docs: BACKLOG parser, batch-number allocator, version bumper (footer updates + proxy line-number fixes for the close mechanical pass), shared project-state helpers, and doc validators.</p>

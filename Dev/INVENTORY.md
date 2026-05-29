@@ -108,6 +108,7 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `/sovtest` — guided testing walkthrough (pending User-verified rows, debugging on failure). **Shipped V81** (sov-prefixed V84).
 - `/sovtersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80** (sov-prefixed V84).
 - `/sovrevert` — guided rollback (restore last committed state after a failed build). **Shipped V87.**
+- `/sovexplain` — answers "why" questions about method features. Self-contained (no procedure doc). Reads `explain-proxy.md` for topic lookup, then targeted reads into `explain-reference.md`. Handles both topic mode (user asks a question) and reactive mode (infers from last hook denial or skill interaction). **Shipped V102.**
 
 ### Bundled artefacts
 
@@ -119,6 +120,8 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*No-code method — Version N.*` footers and regenerates proxy line-number pointers. Invoked by `/sovclose` Turn 2. Two modes: `<old> <new>` for bump + regen, no args for regen only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
+- `plugin/docs/explain-reference.md` — curated design rationale for all 42 method features. Read by `/sovexplain` via targeted offset/limit reads.
+- `plugin/docs/explain-proxy.md` — topic index into explain-reference.md. Maps user questions to line ranges for targeted reads.
 - `plugin/hooks/universal-behaviour.md` — behavioural rules injected via SessionStart. V93: session-length awareness (mid-session compact nudge + invocation-prompt compact nudge).
 - `.claude-plugin/marketplace.json` — marketplace registration. V37.
 
@@ -151,4 +154,4 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 101.*
+*No-code method — Version 102.*

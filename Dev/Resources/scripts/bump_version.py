@@ -194,7 +194,7 @@ def main():
             )
             sys.exit(1)
 
-        print(f"Bumping method version {args.old} → {args.new}\n")
+        print(f"Bumping method version {args.old} -> {args.new}\n")
 
         changed = bump_footers(args.old, args.new)
         print(f"Footers bumped ({len(changed)} files):")

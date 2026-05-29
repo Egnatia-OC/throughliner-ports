@@ -84,6 +84,26 @@
         <h3>Per-row test read-back</h3>
         <p>Bulk confirmations ("all tests passed") silently flip rows the user didn't actually verify. Row-by-row read-back means every confirmation is deliberate.</p>
       </div>
+
+      <div class="rule">
+        <h3>Open questions are separate from batches</h3>
+        <p>OQs have a different lifecycle &mdash; they&rsquo;re non-blocking parking for things that need deliberation but shouldn&rsquo;t stall the build pipeline. A batch is a commitment to build; an OQ is a question that needs answering before it can become a batch (or get dropped).</p>
+      </div>
+
+      <div class="rule">
+        <h3>Before-build recap before building</h3>
+        <p><code>/sovrecap</code> validates the batch &mdash; checking the Serves line, populating file lists, proposing splits if too large. BACKLOG stays editable during the recap so you can discuss and adjust. Without this step, you&rsquo;d commit to a batch with missing files, no test plan, or scope that should have been split.</p>
+      </div>
+
+      <div class="rule">
+        <h3>PostToolUse validates doc structure</h3>
+        <p>After Claude edits a method doc, a hook checks the result for structural correctness &mdash; parse errors, wrong column counts, missing sections. Catching these at write time prevents mistakes from propagating into docs that other hooks depend on. Warnings are advisory, not blocking.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Response-shape tags control verbosity</h3>
+        <p>Tags like <code>[SILENT]</code>, <code>[BRIEF]</code>, <code>[SEQUENCE]</code>, <code>[DISCUSS]</code>, and <code>[PROMPT]</code> solve a specific problem: procedure docs need to specify not just <em>what</em> Claude does but <em>how much it says</em>. <code>[SEQUENCE]</code> means one step at a time. <code>[PROMPT]</code> means end with a clear next-action for you.</p>
+      </div>
     </section>
 
     <nav class="page-nav">

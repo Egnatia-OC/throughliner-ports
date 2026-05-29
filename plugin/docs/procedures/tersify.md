@@ -76,4 +76,4 @@ Universal-behaviour rules apply. Keep triage output tight — the point is savin
 
 ---
 
-*No-code method — Version 101.*
+*No-code method — Version 102.*

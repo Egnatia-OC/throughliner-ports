@@ -120,4 +120,4 @@ Entry format: one line per idea.
 -->
 
 ---
-*No-code method — Version 101.*
+*No-code method — Version 102.*
