@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-122 batches shipped or cancelled (V18–0133). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+124 batches shipped or cancelled (V18–0135). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -36,21 +36,65 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0135 — Convergence reader test (stage 1 — initial reconciliation)
+### 0136 — Dev-side rules reconciliation
 
-**Goal.** Run the stage 1 convergence reader test to build the complete overlap map between the plugin-side method and the dev-side prose method. The two sides were built up independently with piecemeal patches; they have never been systematically compared. This batch produces the reconciliation map — not edits.
+**Goal.** Add prose equivalents of 10 plugin behavioural rules to the dev-side method. These rules exist in `universal-behaviour.md` but have no dev-side counterparts in `session-protocol.md` or `CLAUDE.md`. Also resolve contradictions C03 (flag taxonomy — add red-flag routing) and C04 (command execution — clarify context).
 
-**Inputs.** `Dev/Resources/Iteration playbook/Convergence reader test (stage 1).md` (prompt and procedure). Plugin-side: `plugin/hooks/universal-behaviour.md`, `plugin/docs/DOC-STRUCTURE.md`, `plugin/docs/VOCABULARY.md`, `plugin/docs/procedures/close.md`. Dev-side: `Dev/session-protocol.md`, `Dev/session-reference.md`, project `CLAUDE.md`.
+**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G01–G10, contradictions C03, C04. Plugin-side source: `plugin/hooks/universal-behaviour.md`.
 
-**Outputs.** Research file `Dev/Resources/research/convergence-reconciliation-v<N>.md` with the full classified inventory: aligned, contradicts, stale, plugin-only (expected), plugin-only (gap), dev-only (preserve), dev-only (stale). Category counts. Punch list for reconciliation work. New BACKLOG entries for reconciliation batches if the map is large enough to split.
+**Outputs.** Updated `Dev/session-protocol.md` (new rules in session-middle, session-open, session-close sections). Updated project `CLAUDE.md` (collaboration rules). Reconciliation map checkboxes ticked for resolved items.
 
-**Success criteria.** Every rule, entry shape, term, and workflow step that exists on either side is accounted for in the map. No unclassified items. The map is concrete enough to plan reconciliation batches from.
+**Success criteria.** All 12 items (G01–G10, C03, C04) have prose equivalents. Each rule adapted for dev context — not copy-pasted from plugin. No redundancy with existing dev-side rules. Reconciliation map updated.
 
-**Risks / dependencies.** Depends on 0133 and 0134 shipping first — both change plugin instruction surfaces that stage 1 reads. Sub-agent C defaults to `close.md`; rotate in future runs per playbook refinements. Risk: map may be very large if drift is extensive — plan for the reconciliation to span multiple sessions.
+**Risks / dependencies.** Hard dep on 0135 (shipped v134). Risk: some rules may not translate cleanly to prose-only enforcement — flag and resolve during session.
 
 ---
 
-### 0130 — /sovsetup case 1 retest (post-fix verification)
+### 0137 — Dev-side workflow reconciliation
+
+**Goal.** Add five workflow steps to the dev-side close and open procedures: build recap (G11), consolidated end-of-recap flags (G12), staleness sweep as literal path check (G22), lost-feature check for parked batches (G23), and OQ staleness detection at session open (G24).
+
+**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G11–G12, G22–G24. Plugin-side source: `plugin/docs/procedures/close.md`, `plugin/docs/VOCABULARY.md`.
+
+**Outputs.** Updated `Dev/session-protocol.md` (new steps in implementation close, lighter close conditional, session-open state summary). Reconciliation map checkboxes ticked.
+
+**Success criteria.** All 5 items have dev-side procedure steps at the correct points in the close/open flow. Step numbering and cross-references updated. Reconciliation map updated.
+
+**Risks / dependencies.** Soft dep on 0136 — workflow steps reference rules 0136 establishes (e.g. red-flag routing from G02/C03 feeds into G12's consolidated flags). Can ship independently but better after 0136.
+
+---
+
+### 0138 — Dev-side structure reconciliation
+
+**Goal.** Define entry shapes and structural specs for five dev-side artifacts that exist but lack documentation in `session-reference.md`: INVENTORY.md entries (G17), research folder files (G18), proxy files (G19), test sessions index (G20), Ideas section entries (G21). Also add cross-reference for "queued batch" = "build batch" (C10) and flow OQ graduation paths to plugin consideration (C16).
+
+**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G17–G21, contradictions C10, C16. Existing dev artifacts for shape extraction: `Dev/INVENTORY.md`, `Dev/Resources/research/`, `Dev/Planning/.proxies/`, `Dev/Planning/test-log/`, `Dev/Planning/BACKLOG.md` Ideas section.
+
+**Outputs.** Updated `Dev/session-reference.md` (new entry-shape sections). Reconciliation map checkboxes ticked.
+
+**Success criteria.** All 7 items documented. Entry shapes derived from actual current practice — not invented. Reconciliation map updated.
+
+**Risks / dependencies.** No hard deps — can ship in any order relative to 0136/0137. Logically last among doc-only batches because it documents artifacts the other batches reference.
+
+---
+
+### 0139 — Plugin lighter-close hardening
+
+**Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these.
+
+**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G13–G16. Dev-side source: `Dev/session-protocol.md` → lighter close (L136–181). Plugin-side target: `plugin/docs/procedures/close.md`.
+
+**Outputs.** Updated `plugin/docs/procedures/close.md` (lighter close path expanded). Reconciliation map checkboxes ticked. Doc-parity updates if close.md changes affect other plugin docs.
+
+**Success criteria.** Plugin lighter close includes all four steps, adapted for plugin context (consumer projects, hook enforcement, skill invocations). Step ordering consistent with dev-side lighter close. Reconciliation map updated.
+
+**Risks / dependencies.** Hard dep on 0137 — workflow reconciliation may refine the dev-side lighter close steps that 0139 ports to the plugin. Should ship after dev-side prose is stable.
+
+---
+
+### 0130 — /sovsetup case 1 retest (post-fix verification) — **PARKED**
+
+**Parked.** v134. Reconciliation batches (0136–0139) change instruction surfaces this test validates. Retest after reconciliation completes. When unparking: repackage plugin at HEAD (post-0139), verify test plan still covers current state.
 
 **Goal.** Verify that v113, v115, v117, and v129 changes work end-to-end in a real `/sovsetup` case 1 run. The cowboy test (plugin v90) found 7 hook issues; v113 and v115 shipped fixes for most of them. v117 added setup Q5 (language setting). v129 renamed BUILD-PLAN → BACKLOG across the entire plugin. None of these fixes have been verified E2E.
 
@@ -76,7 +120,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0131 — Build lifecycle retest (post v115–v129 changes)
+### 0131 — Build lifecycle retest (post v115–v129 changes) — **PARKED**
+
+**Parked.** v134. Reconciliation batches (0136–0139) change close procedure and instruction surfaces this test validates. Retest after reconciliation completes. When unparking: repackage plugin at HEAD (post-0139), verify test plan covers reconciled close procedure. Note: if 0139 changes plugin close.md, steps 5–6 of the test plan need review.
 
 **Goal.** Verify the full build pipeline works end-to-end after six implementation sessions (v115, v116, v117, v118, v128, v129) that changed phase detection, close procedure, naming, and safeguards. The last lifecycle E2E (v114/batch 0088) predates all of these. The v129 BACKLOG rename alone touched ~30 plugin files — any missed reference breaks path resolution.
 
@@ -106,6 +152,22 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 ## Open questions
 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
+
+---
+
+### TEST-LOG columns — 10 vs 7
+
+Dev-side TEST-LOG uses 7 columns (#, Date, Session, Test, Component, Status, Notes). Plugin-side defines 10 (#, Date, Session, Component, Test Description, Type, Verifier, Status, Confirmed Explicitly, Notes). Three columns absent from dev side: Type, Verifier, Confirmed Explicitly. Column ordering also differs (Component before Test Description in plugin; Test before Component in dev). The 7-column shape was a deliberate simplification — dev tests have no hook-enforced confirmation gate and Alex runs all tests herself. Question: keep the divergence (different contexts, different needs) or migrate to 10 columns for convergence?
+
+**Surfaced.** v134.
+
+---
+
+### Batch lifecycle on completion — remove vs preserve
+
+Dev side removes completed batches from BACKLOG (relies on build-log for history). Plugin side writes them back with `Status: shipped` (preserves history in BACKLOG). Different models for the same lifecycle event. Dev model keeps BACKLOG lean; plugin model keeps it as a single queryable history. Question: which model should the converged method use? Or is the divergence intentional (dev BACKLOG has build-log as companion; consumer BACKLOG may not)?
+
+**Surfaced.** v134.
 
 ---
 

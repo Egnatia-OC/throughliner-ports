@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v134-convergence-reader-test-and-reconciliation-planning.md](v134-convergence-reader-test-and-reconciliation-planning.md) — 2026-05-29 — Convergence reader test + reconciliation planning: full overlap map, four reconciliation batches, E2E testing parked
 - [v133-session-start-routing-clarifications.md](v133-session-start-routing-clarifications.md) — 2026-05-29 — Session-start routing clarifications: output ordering, missing routes, priority statement
 - [v132-close-procedure-hook-enforcement.md](v132-close-procedure-hook-enforcement.md) — 2026-05-29 — Close-procedure hook enforcement: unclosed-build commit guard
 - [v131-plugin-reader-test.md](v131-plugin-reader-test.md) — 2026-05-29 — Plugin reader test: 6 top-tier gaps found, 4 fixed in-session
