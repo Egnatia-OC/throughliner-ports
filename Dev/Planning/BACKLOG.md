@@ -36,20 +36,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0137 — Dev-side workflow reconciliation
-
-**Goal.** Add five workflow steps to the dev-side close and open procedures: build recap (G11), consolidated end-of-recap flags (G12), staleness sweep as literal path check (G22), lost-feature check for parked batches (G23), and OQ staleness detection at session open (G24).
-
-**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G11–G12, G22–G24. Plugin-side source: `plugin/docs/procedures/close.md`, `plugin/docs/VOCABULARY.md`.
-
-**Outputs.** Updated `Dev/session-protocol.md` (new steps in implementation close, lighter close conditional, session-open state summary). Reconciliation map checkboxes ticked.
-
-**Success criteria.** All 5 items have dev-side procedure steps at the correct points in the close/open flow. Step numbering and cross-references updated. Reconciliation map updated.
-
-**Risks / dependencies.** Soft dep on 0136 — workflow steps reference rules 0136 establishes (e.g. red-flag routing from G02/C03 feeds into G12's consolidated flags). Can ship independently but better after 0136.
-
----
-
 ### 0138 — Dev-side structure reconciliation
 
 **Goal.** Define entry shapes and structural specs for five dev-side artifacts that exist but lack documentation in `session-reference.md`: INVENTORY.md entries (G17), research folder files (G18), proxy files (G19), test sessions index (G20), Ideas section entries (G21). Also add cross-reference for "queued batch" = "build batch" (C10), flow OQ graduation paths to plugin consideration (C16), and align dev-side TEST-LOG column ordering with the plugin's sequence (Component before Test).
@@ -68,7 +54,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these. Also change close step 7 to delete the completed batch from BACKLOG (instead of writing it back with `Status: shipped`) — the build-log entry is the shipped signal, matching dev-side practice. Remove `Status: shipped` from the batch lifecycle state machine and update docs/hooks that reference it.
 
-**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G13–G16. Dev-side source: `Dev/session-protocol.md` → lighter close (L136–181). Plugin-side target: `plugin/docs/procedures/close.md`.
+**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G13–G16. Dev-side source: `Dev/session-protocol.md` → lighter close (L179–231). Plugin-side target: `plugin/docs/procedures/close.md`.
 
 **Outputs.** Updated `plugin/docs/procedures/close.md` (lighter close path expanded). Reconciliation map checkboxes ticked. Doc-parity updates if close.md changes affect other plugin docs.
 

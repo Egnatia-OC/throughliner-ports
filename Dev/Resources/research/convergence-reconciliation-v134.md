@@ -96,9 +96,9 @@ Plugin has it, dev doesn't, and the dev side should have a prose equivalent. Eac
 
 ### Workflow gaps (from Sub-agent C)
 
-- [ ] **G11. Build recap step.** Plugin (close.md P5): [BRIEF] recap summarizing changes shipped, Claude-verified results, manual-check requests. Dev close has no recap step — the build-log entry captures the narrative but there's no user-facing recap in chat. **Add to:** session-protocol.md implementation close, before the build-log entry step.
+- [x] **G11. Build recap step.** Plugin (close.md P5): [BRIEF] recap summarizing changes shipped, Claude-verified results, manual-check requests. Dev close has no recap step — the build-log entry captures the narrative but there's no user-facing recap in chat. **Add to:** session-protocol.md implementation close, before the build-log entry step. **Resolved v137:** added as implementation close step 5 (two parts: what shipped, sweep findings). Lighter close skips (no build to recap).
 
-- [ ] **G12. End-of-recap flags.** Plugin (close.md P11): consolidated step for stale refs, out-of-scope improvements, UX.md implications, red flags — after frame-correction and staleness sweeps. Dev side partially covers these (stale refs in frame-correction, ideas in idea sweep) but has no consolidated flags step. **Add to:** session-protocol.md implementation close — fold into existing steps or add explicitly.
+- [x] **G12. End-of-recap flags.** Plugin (close.md P11): consolidated step for stale refs, out-of-scope improvements, UX.md implications, red flags — after frame-correction and staleness sweeps. Dev side partially covers these (stale refs in frame-correction, ideas in idea sweep) but has no consolidated flags step. **Add to:** session-protocol.md implementation close — fold into existing steps or add explicitly. **Resolved v137:** added as implementation close step 8 (stale refs not fixable, out-of-scope improvements, red flags). Lighter close skips (surface findings in idea sweep if conditional sweeps ran).
 
 - [ ] **G13. Lighter close — build-log entry.** Plugin lighter close has NO build-log entry step. Dev lighter close (DL2) always writes one. **Note:** this is a gap on the *plugin* side — dev is more complete here. Flag for plugin close.md update.
 
@@ -120,11 +120,11 @@ Plugin has it, dev doesn't, and the dev side should have a prose equivalent. Eac
 
 - [ ] **G21. Ideas section shape.** Dev BACKLOG has an Ideas section but session-reference.md defines no entry format. **Add to:** session-reference.md.
 
-- [ ] **G22. Staleness sweep (literal path check).** Plugin (VOCABULARY): after-build check scanning BACKLOG for literal references to changed file paths/names. Dev has frame-correction (semantic) but not literal-string path scanning. **Add to:** session-protocol.md implementation close.
+- [x] **G22. Staleness sweep (literal path check).** Plugin (VOCABULARY): after-build check scanning BACKLOG for literal references to changed file paths/names. Dev has frame-correction (semantic) but not literal-string path scanning. **Add to:** session-protocol.md implementation close. **Resolved v137:** added as implementation close step 3 (grep BACKLOG queued/parked batches for old names/paths, fix in commit). Lighter close: conditional — runs when a batch was consumed.
 
-- [ ] **G23. Lost-feature check.** Plugin (VOCABULARY): after-build check for parked batches whose parking conditions were just met. Dev has parked batches but no check. **Add to:** session-protocol.md implementation close.
+- [x] **G23. Lost-feature check.** Plugin (VOCABULARY): after-build check for parked batches whose parking conditions were just met. Dev has parked batches but no check. **Add to:** session-protocol.md implementation close. **Resolved v137:** added as implementation close step 4 (scan parked batches, surface candidates, ask about unparking). Lighter close: conditional — runs when a batch was consumed.
 
-- [ ] **G24. OQ staleness detection.** Plugin (VOCABULARY): flag OQs with Surfaced tags older than 20 sessions. Dev tracks Surfaced tags but doesn't check for staleness. **Add to:** session-protocol.md session-open state summary.
+- [x] **G24. OQ staleness detection.** Plugin (VOCABULARY): flag OQs with Surfaced tags older than 20 sessions. Dev tracks Surfaced tags but doesn't check for staleness. **Add to:** session-protocol.md session-open state summary. **Resolved v137:** added OQ staleness detection rule to session-open step 5 (flag OQs with Surfaced tag 20+ sessions old, nudge toward deliberation).
 
 ---
 

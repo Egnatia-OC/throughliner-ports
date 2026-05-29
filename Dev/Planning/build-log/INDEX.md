@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v137-dev-side-workflow-reconciliation.md](v137-dev-side-workflow-reconciliation.md) — 2026-05-29 — Dev-side workflow reconciliation: 5 gaps (G11–G12, G22–G24) resolved
 - [v136-dev-side-rules-reconciliation.md](v136-dev-side-rules-reconciliation.md) — 2026-05-29 — Dev-side rules reconciliation: 12 items (G01–G10, C03, C04) resolved
 - [v135-oq-deliberation.md](v135-oq-deliberation.md) — 2026-05-29 — OQ deliberation: all five resolved, new batch 0140
 - [v134-convergence-reader-test-and-reconciliation-planning.md](v134-convergence-reader-test-and-reconciliation-planning.md) — 2026-05-29 — Convergence reader test + reconciliation planning: full overlap map, four reconciliation batches, E2E testing parked

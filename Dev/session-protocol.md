@@ -39,7 +39,7 @@ In order:
 3. Read `Dev/Planning/BACKLOG.md` in full — *Queued batches* has full scope for each upcoming batch, *Open questions* has method-level questions. Both inform session routing.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These are uncommitted dependencies missing at session start. If found, **halt** — surface the offending line and fix (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
 4b. **OQ blocker check.** Scan the top queued batch's scope for references to unresolved open questions or parked ideas that would force mid-session improvisation. If the batch depends on an answer that doesn't exist yet, **halt** — resolve via planning or deliberation before starting the batch.
-5. **State summary.** Brief summary: current version (session tag, method version, plugin version), queue depth, next batch (number and title), OQ count, notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
+5. **State summary.** Brief summary: current version (session tag, method version, plugin version), queue depth, next batch (number and title), OQ count, notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard. **OQ staleness detection:** flag any OQ whose `Surfaced` tag is 20+ session-tags old — nudge toward a deliberation session to resolve or re-park.
 Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
 
 ---
@@ -110,7 +110,7 @@ Run when the session shipped plugin code or method-doc structural changes consum
 
 Response-shape tags: definitions in `session-reference.md` → *Response-shape tags*.
 
-Use `git diff` to identify what changed — the dev-side equivalent of the plugin's `## Close handoff`. Steps 1 and 2 draw from this rather than re-exploring.
+Use `git diff` to identify what changed — the dev-side equivalent of the plugin's `## Close handoff`. Steps 1–3 draw from this rather than re-exploring.
 
 **Turn 1 — judgment.** Run while build context is fresh.
 
@@ -118,45 +118,63 @@ Use `git diff` to identify what changed — the dev-side equivalent of the plugi
 
 2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
-3. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+3. **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed, deleted, or moved file this session: grep `Dev/Planning/BACKLOG.md` → *Queued batches* and any parked batches for literal old-name/old-path references. Fix in this commit. Pattern-match level — literal strings, not semantics. Complements step 2 (semantic frame check).
 
-4. **[BRIEF] Idea sweep with routing.** Review session for ideas, suggestions, or observations not implemented. Triage each to one destination:
+4. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan parked batches for parking conditions just met by this session's work (e.g. "parked until X ships" where X just shipped). Surface candidates and ask about unparking. Skip if no parked batches exist or nothing in this session could satisfy a parking condition.
+
+5. **[BRIEF] Build recap.** Summarize in chat — the ephemeral counterpart of the build-log entry. Two parts:
+   - **What shipped.** One bullet per notable change.
+   - **Sweep findings.** Anything surfaced by steps 1–4: doc-parity gaps fixed, frame corrections made, staleness fixes, lost-feature candidates.
+
+6. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+
+7. **[BRIEF] Idea sweep with routing.** Review session for ideas, suggestions, or observations not implemented. Triage each to one destination:
    - **BACKLOG batch** — add to BACKLOG.md → *Queued batches*.
    - **BACKLOG open question** — add to BACKLOG.md → *Open questions* with `Surfaced` tag.
    - **Security/privacy/data-integrity concern** — surface in chat immediately. Route: fold into the current batch if it fits; otherwise add as a `[SECURITY]`-marked batch or OQ. Never silently defer a red flag.
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 
-5. **[PROMPT] Turn boundary.** Judgment done. State values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` — mechanical pass needs only these values and the script, not build context. Low context pressure → continue directly.
+8. **End-of-recap flags.** Consolidate items needing user attention. Surface each before the turn boundary:
+   - Stale references not fixable in this commit (from steps 1–3).
+   - Out-of-scope improvements noticed during the session.
+   - Red-flag concerns (confirm BACKLOG entry written if deferred).
+   Nothing left unmentioned. If no flags, skip silently.
+
+9. **[PROMPT] Turn boundary.** Judgment done. State values the mechanical pass needs: session tag (`v<N>`), whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` — mechanical pass needs only these values and the script, not build context. Low context pressure → continue directly.
 
 **Turn 2 — mechanical.** Needs only the session tag, version numbers (if bumping), and the script.
 
-6. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal sessions skip. Run from `sovereign-implementer/`:
+10. **[SILENT] Bump method-version footers** — only for substantive method/plugin changes. Dev-internal sessions skip. Run from `sovereign-implementer/`:
    ```
    python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
    ```
-   Bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. Also regenerates proxy headers and line-number pointers (step 7). Full list: `session-reference.md` → *Footer bumps*.
+   Bumps all `*No-code method — Version N.*` footers, `plugin.json` version, and `PLUGIN_METHOD_VERSION` in `session_start.py`. Also regenerates proxy headers and line-number pointers (step 11). Full list: `session-reference.md` → *Footer bumps*.
 
-7. **[SILENT] Regenerate proxies.** Bump script (step 6) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited — update summaries, section descriptions, and entries for structural changes the script can't detect. No source docs edited and no version bump → skip. Without a version bump, run proxies-only:
+11. **[SILENT] Regenerate proxies.** Bump script (step 10) handles proxy headers and line-number pointers mechanically. After it runs, review each proxy whose source was edited — update summaries, section descriptions, and entries for structural changes the script can't detect. No source docs edited and no version bump → skip. Without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
 
-8. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
+12. **[BRIEF] Pre-commit checkpoint.** Verify each artifact by name:
    - [ ] Doc-code parity done
    - [ ] Frame-correction sweep done
+   - [ ] Staleness sweep done
+   - [ ] Lost-feature check done
+   - [ ] Build recap delivered
    - [ ] Build-log entry written + index line prepended
    - [ ] Idea sweep done — nothing unrouted
+   - [ ] End-of-recap flags delivered
    - [ ] Footers bumped if applicable
    - [ ] Proxies regenerated
    - [ ] Consumed batch removed from BACKLOG's Queued batches section
    Complete any missing steps now. A missing build-log entry is the most common skip when context runs low — check explicitly.
 
-9. **[PROMPT] Commit** with `v<N>:` message.
+13. **[PROMPT] Commit** with `v<N>:` message.
 
-10. **[SILENT] Tag** `git tag v<N>`.
+14. **[SILENT] Tag** `git tag v<N>`.
 
-11. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
+15. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
 ### Lighter close (planning, doc-only, ideation, E2E test)
 
@@ -164,7 +182,7 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
 
 **Turn 1 — judgment.** Run while session context is freshest.
 
-1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 4. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while context is freshest.)
+1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 7. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while context is freshest.)
 
 2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
 
@@ -177,7 +195,7 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
    python Dev/Resources/scripts/bump_version.py <old> <new> --session-tag v<N>
    ```
 
-5. **[SILENT] Regenerate proxies.** Same as implementation close step 7. Bump script (step 4) handles headers and line-number pointers; review for content changes. Without a version bump, run proxies-only:
+5. **[SILENT] Regenerate proxies.** Same as implementation close step 11. Bump script (step 4) handles headers and line-number pointers; review for content changes. Without a version bump, run proxies-only:
    ```
    python Dev/Resources/scripts/bump_version.py --session-tag v<N>
    ```
@@ -187,6 +205,8 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
    - [ ] Idea sweep done — nothing unrouted
    - [ ] Build-log entry written + index line prepended
    - [ ] Frame-correction sweep done (if this session consumed a batch)
+   - [ ] Staleness sweep done (if this session consumed a batch)
+   - [ ] Lost-feature check done (if this session consumed a batch)
    - [ ] Footers bumped if applicable
    - [ ] Proxies regenerated if applicable
    - [ ] Batch removed from BACKLOG if this session consumed one
@@ -200,9 +220,13 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
 
 **Skipped explicitly (vs. implementation close):**
 - Doc-code parity — no implementation changes to audit.
+- Build recap — no build to recap.
+- End-of-recap flags — no implementation sweeps to consolidate. If conditional sweeps produce findings, surface them in the idea sweep.
 
 **Conditional:**
 - Frame-correction sweep — skip unless this session consumed a queued batch. A doc-only or planning session that rewrites scope text could shift a frame other batches depend on.
+- Staleness sweep — skip unless this session consumed a queued batch. Same trigger as frame-correction: batch consumption may rename or move files that other batches reference.
+- Lost-feature check — skip unless this session consumed a queued batch. Shipping a batch may satisfy a parked batch's parking condition.
 - If this session consumed a queued batch, remove it from BACKLOG's Queued batches section as part of the commit.
 
 ---
