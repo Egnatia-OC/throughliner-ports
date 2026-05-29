@@ -60,4 +60,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*No-code method — Version 102.*
+*No-code method — Version 103.*

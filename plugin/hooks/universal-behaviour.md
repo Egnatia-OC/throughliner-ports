@@ -21,6 +21,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Flag out-of-scope improvements.** Don't silently fix things outside the current request's scope.
   *Load-bearing for: the flag taxonomy — relies on flagging, not fixing.*
 
+- **Propose the wider sweep.** When a targeted cleanup reveals a broader pattern the brief didn't name, propose extending the sweep across the full doc (or all relevant docs) before applying the first fix. Don't wait for the user to notice the pattern exists.
+  *Load-bearing for: consistency — one-off fixes that leave the same issue elsewhere create false confidence that the pattern is handled.*
+
 - **Red flags — screen and surface.** Surface security, privacy, data-integrity, or safety concerns. Three outcomes: address now (slot into build batch); attach to planned feature (fold into planning batch as question); defer with no active plan (add to `BACKLOG.md` Red flags section: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [shortest fix].). Remove when addressed. When a red flag relates to a UX entry or BACKLOG batch, add the `[SECURITY]` marker to that entry (see `DOC-STRUCTURE.md` → *`[SECURITY]` marker*).
   *Load-bearing for: Red flags section, flag taxonomy, and `[SECURITY]` marker propagation.*
 
@@ -48,6 +51,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Run system commands yourself.** When a task requires a shell command, execute it directly — don't ask the user to run it. The user is a non-coder; "run this in PowerShell" is jargon they shouldn't need to parse. Exception: commands requiring credentials or elevated permissions.
   *Load-bearing for: build sessions — Claude asking users to run commands breaks flow and shifts work onto the non-coder.*
 
+- **Verify edits to long files.** The Edit tool can silently truncate long replacements — the success message doesn't catch it. After editing a file longer than ~200 lines, read it back to confirm it's whole.
+  *Load-bearing for: build integrity — a truncated edit to a source file is a shipped bug.*
+
 - **Session-length awareness.** Two safeguards against context-window blowout:
 
   **Mid-session compact nudge.** During a build, track proxy signals: exchanges since `/sovbuild`, files edited, unticked Files: entries. When **15+ exchanges** have passed since `/sovbuild` without reaching `/sovclose`, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." Informational, not blocking. Don't repeat after acknowledgment. Claude has no token-count visibility — all heuristics use conversation-visible signals.
@@ -60,6 +66,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 
 - **Walkthroughs one step at a time; alternatives all at once.** Multi-step procedures where my next action depends on finishing the previous one: one step per message. Open by stating the count. Alternatives: everything visible at once — recommend one with an escape line, or comparison table.
   *Load-bearing for: `[SEQUENCE]`-tagged routes, ad-hoc walkthroughs for non-coders, and planning option trees.*
+
+- **Signpost threads in long work.** During extended multi-fix or multi-topic work, periodically restate which thread you're on: "We're still following the [X] thread; the new finding is [Y]." Drift between threads without signposting is disorienting.
+  *Load-bearing for: session clarity — long cascades and planning discussions lose orientation without explicit thread markers.*
 
 - **Guided test walkthrough pacing.** When walking a user through TEST-LOG rows via `/sovtest`, present one row per message: test description, guided steps, outcome prompt. Don't preview upcoming rows or bundle multiple rows. **Cowboy tests exempt** — when a user tests informally and volunteers results, accept per `testing.md` → *Volunteered results*.
   *Load-bearing for: test-confirmation integrity — bundled walkthroughs risk users confirming rows they didn't actually verify.*
@@ -186,4 +195,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 102.*
+*No-code method — Version 103.*

@@ -93,38 +93,26 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0141 — Fold playbook discipline rules into session-protocol and plugin docs
+### 0142 — Skill invocation flowchart and prerequisite audit
 
-**Goal.** Four Iteration Playbook entries (Catch consolidation, Coherence sweep, Mid-pass method amendment, Rule-application sweep) contain discipline rules valuable beyond method development. Extract those rules and place them into the docs where they'll actually be read — session-protocol.md on the dev side, relevant plugin procedure docs on the plugin side. Editorial pass, not a version bump.
+**Goal.** Map all reasonable skill invocation orders, identify prerequisite handling gaps, and produce a visual flowchart usable for coaching users. Two deliverables: (1) a flowchart showing valid paths through the skills, and (2) an audit of whether each skill reacts correctly when invoked in non-standard order.
 
-**Inputs.** The four playbook entries at `Dev/Resources/Iteration playbook/`. Current session-protocol.md. Plugin docs: universal-behaviour.md, build.md, planning.md. Assessment notes at `Dev/Resources/Iteration playbook/generalisable/generalisation-plan.md`.
-
-**What to extract.**
-
-From Catch consolidation — discipline rules: smallest accommodation first; one catch at a time with approval; verify after every edit (Edit tool truncates); scope-cap mid-pass discoveries upfront.
-
-From Coherence sweep — named pattern: "each fix exposes the next inconsistency" as a recognisable condition; scope-cap reflex; thread-signposting in long cascades.
-
-From Mid-pass method amendment — discipline rules: state gaps in two layers (human-facing + Claude-facing); grep for obsolete terminology after any rename; re-read superseded queued/parked items after absorbing a mid-flight change.
-
-From Rule-application sweep — standing rule: when a targeted cleanup finds something the brief didn't name, propose the wider sweep before applying the first edit.
+**Inputs.** All SKILL.md files. Procedure docs that skills delegate to. Hook scripts that enforce phase/state gates (PreToolUse, SessionStart). explain-reference.md § session routing and phase detection.
 
 **Procedure.**
 
-1. Read session-protocol.md in full. Note where each rule lands — section name, position. If a section doesn't exist, note what it would be called.
-2. Read plugin homes: universal-behaviour.md, build.md, planning.md. For each rule, check whether the plugin already states it. Note which are genuinely new vs already covered.
-3. Report to Alex: these N rules are new placements, these M are already covered, here's where each goes. Get confirmation before editing.
-4. Dev-side placements in session-protocol.md. One rule at a time, with approval.
-5. Plugin-side placements (if any are genuinely new). One rule at a time, with approval.
-6. Verify: re-read each edited section in context. Check new rules don't contradict existing content.
+1. Inventory every skill's actual prerequisites — what state it checks, what it requires, what it does when requirements aren't met.
+2. Map the "rigid" cycle (plan → recap → build → test → close → git) as baseline.
+3. Identify all reasonable deviations: anytime skills (ideate, research, explain), mid-build interruptions (ideate, revert), skipped steps (recap skip, deliberate skip), out-of-order invocations (plan before close, test without build).
+4. For each deviation, check: does the skill push back clearly, silently break, or handle it gracefully?
+5. Produce the flowchart. Format TBD — could be a Mermaid diagram, a plain-text map, or an HTML page for the crash course.
+6. File gaps as BACKLOG entries or fix inline if trivial.
 
-**Outputs.** Updated session-protocol.md. Possibly updated universal-behaviour.md, build.md, or planning.md (only for genuinely new rules). No new files.
+**Outputs.** Flowchart artifact (format TBD). Audit notes. New BACKLOG entries for any gaps found.
 
-**Success criteria.** Each extracted rule has a home in an existing doc. No contradictions introduced. No plugin version bump needed (unless plugin docs are edited, in which case a minor bump).
+**Success criteria.** Every skill appears on the map with its valid entry points. Every reasonable non-standard invocation has a documented outcome (clean rejection, graceful handling, or identified gap). The flowchart is legible to a non-coder.
 
-**Risks.** Low. The rules are established patterns, not new design. Main risk: discovering that some rules are already stated differently in the target docs, requiring reconciliation rather than simple placement.
-
-**Surfaced.** v140.
+**Surfaced.** v141.
 
 ---
 
@@ -142,7 +130,6 @@ None.
 
 Raw ideas captured during sessions. Date + one-liner. Promoted to OQs or batches during planning sessions.
 
-- 2026-05-29 — Skill invocation flowchart: map all valid skill invocation orders and prerequisite handling. User wants to "sort that issue out once and for all." Separate from individual skill work.
 - 2026-05-29 — E2E test for /sovexplain: validate the new explain skill against a real consumer project. Could fold into 0130/0131 when they unpark.
 
 ---

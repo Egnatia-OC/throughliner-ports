@@ -21,4 +21,4 @@ Claude-queued entries or updates. Apply during planning, then delete. Starts emp
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 102.*
+*No-code method — Version 103.*

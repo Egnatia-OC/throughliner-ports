@@ -81,6 +81,20 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 - **No unplanned refactoring.** Don't refactor, rename, or restructure anything outside the agreed batch scope. Two exceptions: (1) **prerequisite carve-out** — the batch can't complete without an unplanned change; halt, surface with one-line justification, wait for okay; (2) **re-batching carve-out** — verification burden much higher than estimated; halt, propose a split, wait for okay.
 
+- **Default to the smallest accommodation.** When fixing a gap or inconsistency, propose the minimum-touch version first. Generalise only when a second project or use case would also benefit. Avoids the "full restructuring" trap where a one-line fix becomes a doc rewrite.
+
+- **Verify after every edit to long files.** The Edit tool can silently truncate long replacements — the success message doesn't catch it. After editing a file longer than ~200 lines, read it back to confirm it's whole. A `diff` against the previous state or a tail check catches truncation that the tool's own output misses.
+
+- **Recognise cascading fixes.** When each fix exposes the next inconsistency, you're in a cascade — not a list of independent items. Name the condition explicitly ("this is cascading"), cap how many fixes deep you'll go before pausing for scope review, and track depth as you proceed.
+
+- **Signpost threads in long work.** During extended multi-fix or multi-topic work, periodically restate which thread you're on: "We're still following the [X] thread; the new finding is [Y]." Drift between threads without signposting is disorienting — especially after a cascade or a long planning discussion.
+
+- **Grep after renames immediately.** When a change renames a concept, file, or term mid-session, grep for the old name across dev-side docs before moving on — don't wait for the close staleness sweep. Residue from a mid-session rename compounds through subsequent edits that build on the stale term.
+
+- **Re-read affected queued work after mid-session changes.** When a change shifts a frame or absorbs scope that a queued or parked batch depends on, re-read that batch immediately — don't wait for the close frame-correction sweep. Mark it as partially superseded with a note on what's still left for it.
+
+- **Propose the wider sweep before applying the first edit.** When a targeted cleanup reveals a broader pattern the brief didn't name, stop and propose extending the sweep across the full doc (or all relevant docs) before applying the first fix. Don't wait for the user to notice the pattern exists.
+
 - **Mid-session compact nudge.** During implementation sessions, track session length by exchange count. When ~15 exchanges have passed since work started without reaching close, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." Informational, not blocking. Don't repeat after acknowledgment.
 
 ---
