@@ -183,4 +183,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 99.*
+*No-code method — Version 100.*

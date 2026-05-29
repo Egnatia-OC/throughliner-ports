@@ -41,7 +41,7 @@ After loading state, perform in order:
 **Cold-start gate.** If cold start (empty MANIFEST + empty TEST-LOG): skip steps 1–3 entirely. Jump to step 4.
 
 1. **[BRIEF, SEQUENCE] Close previous build's test session.** Per-row read-back of pending TEST-LOG rows.
-2. **[SILENT] Remove completed build batches.** Any batch with `Status: shipped` (or, for legacy batches without Status, every `Files:` entry ticked). In folder mode: delete per-batch file + remove INDEX.md reference.
+2. **[SILENT] Remove legacy completed batches.** Under V99+, `/sovclose` deletes the build snapshot without writing back — completed batches are already absent from BACKLOG. This step handles pre-V99 legacy: any batch with `Status: shipped` (or batches without Status where every `Files:` entry is ticked). In folder mode: delete per-batch file + remove INDEX.md reference. Skip if no legacy shipped batches found.
 2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
@@ -250,4 +250,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity. 
 
 ---
 
-*No-code method — Version 99.*
+*No-code method — Version 100.*

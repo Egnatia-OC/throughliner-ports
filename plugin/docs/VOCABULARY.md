@@ -51,7 +51,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Verifier.** TEST-LOG column: `Claude` or `User`. Claude rows filled by `/sovclose`; user rows confirmed during planning read-back.
 
-- **Batch status.** Three values under V90+: `queued` (default — absent = queued), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Legacy `active` still recognized — replaced by snapshot architecture where `_method/active-build.md` existence signals active build. Parser and session-start skip `shipped` and `parked`. State machine: `queued → [snapshotted] → shipped`, `parked ↔ queued` via planning. Spec: `DOC-STRUCTURE.md` → *Status: line*.
+- **Batch status.** Two active values under V99+: `queued` (default — absent = queued) and `parked` (paused by planning). Legacy `active` and `shipped` still recognized by the parser but no longer written. Build-snapshot architecture uses `_method/active-build.md` existence instead of `active`; the build-log entry replaces `shipped` as the completion record — `/sovclose` deletes the snapshot without writing the batch back. State machine: `queued → [snapshotted] → deleted (build-log is the record)`, `parked ↔ queued` via planning. Parser and session-start skip `shipped` (legacy) and `parked`. Spec: `DOC-STRUCTURE.md` → *Status: line*.
 
 - **Scope-context sections.** Five (optionally six) sections framing a build batch: Goal, Outputs, Success criteria, Decisions, Dependencies, Red flags. First three always present. Full spec: `DOC-STRUCTURE.md`.
 
@@ -138,4 +138,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 99.*
+*No-code method — Version 100.*

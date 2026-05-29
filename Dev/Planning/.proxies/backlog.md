@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/Planning/BACKLOG.md | generated: 2026-05-29 v138 | when: session open (full read recommended); planning sessions -->
+<!-- proxy | source: Dev/Planning/BACKLOG.md | generated: 2026-05-29 v139 | when: session open (full read recommended); planning sessions -->
 
 # BACKLOG — Dev-side
 

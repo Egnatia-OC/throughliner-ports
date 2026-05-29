@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-29 v138 | when: dip on demand -->
+<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-29 v139 | when: dip on demand -->
 
 # Session reference
 

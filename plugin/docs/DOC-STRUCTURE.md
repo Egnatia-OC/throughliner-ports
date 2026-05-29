@@ -154,7 +154,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 **Index (proxies/build-log.md).** Header, HTML comment, newest-first bullet list:
 > `- \`NNN-batch-name.md\` — YYYY-MM-DD — Summary`
 
-`/sovclose` prepends one line per build. Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
+`/sovclose` prepends one line per session (both build and lighter close). Path block: `"BUILD-LOG.md"` → `_method/proxies/build-log.md`.
 
 **Per-build files.** `NNN-batch-name.md`:
 
@@ -178,7 +178,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 **Ordering.** INDEX.md newest-first.
 
-**Performance section.** Mechanical measures, queryable via grep. Optional `Session notes:` for user observations.
+**Performance section.** Mechanical measures, queryable via grep. Optional `Session notes:` for user observations. Included for post-build entries only — lighter-close entries (planning, ideation, deliberation) omit it.
 
 **Maintenance.** Entries permanent. Later builds reference earlier ones in their own Pivots section.
 
@@ -338,7 +338,7 @@ Three formats, auto-detected:
   # [name]                                          ← folder (H1)
   ### Batch: [name]                                  ← single-file
 
-  Status: [queued|active|parked|shipped]             ← optional; absent = queued
+  Status: [queued|active|parked]                      ← optional; absent = queued
 
   **Goal.** [Why this batch exists.]
   **Outputs.** [What changes the user experiences.]
@@ -365,7 +365,7 @@ Three formats, auto-detected:
 
   **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by `/sovclose` when batch completes.
 
-  **Status: line.** Three values under V90+: `queued` (default — absent means queued), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Legacy `active` still recognized but no longer written — build-snapshot architecture uses `_method/active-build.md` existence instead. Position: first line of batch body, before Goal. Parser skips `shipped` and `parked` when finding top build batch.
+  **Status: line.** Two active values under V99+: `queued` (default — absent means queued) and `parked` (paused by planning). Legacy `active` and `shipped` still recognized by the parser but no longer written. Build-snapshot architecture uses `_method/active-build.md` existence instead of `active`; the build-log entry replaces `shipped` as the completion record — `/sovclose` deletes the snapshot without writing the batch back. Position: first line of batch body, before Goal. Parser skips `shipped` (legacy) and `parked` when finding top build batch.
 
   **Scope-context sections.** Goal/Outputs/Success criteria always present. Decisions/Dependencies omitted when empty. Red flags only when security-shaped scope.
 
@@ -389,7 +389,7 @@ Three formats, auto-detected:
 
 ### Build-snapshot architecture (V90)
 
-When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_method/active-build.md` and removed from BACKLOG. The build reads and ticks files in the snapshot. BACKLOG is fully unlocked — parallel sessions can plan, deliberate, or ideate freely. At `/sovclose`, the batch is written back as shipped and the snapshot deleted.
+When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_method/active-build.md` and removed from BACKLOG. The build reads and ticks files in the snapshot. BACKLOG is fully unlocked — parallel sessions can plan, deliberate, or ideate freely. At `/sovclose`, the snapshot is deleted — the build-log entry serves as the permanent shipped record; the batch is not written back to BACKLOG.
 
 **Phase detection.** Snapshot existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy: `Status: active` in BACKLOG still detected for pre-V90 projects.
 
@@ -399,7 +399,7 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 
 `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative — replacing codebase re-exploration. If empty or absent (legacy snapshots), falls back to scanning the batch's Files: list.
 
-The section is not written back to BACKLOG when the batch is marked shipped — it's build-time context, not permanent scope.
+The section is build-time context, not permanent scope — it is consumed by `/sovclose` and deleted with the snapshot.
 
 ---
-*No-code method — Version 99.*
+*No-code method — Version 100.*

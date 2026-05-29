@@ -92,7 +92,7 @@ class TestValidateBuildLogEntry:
     def test_well_formed_no_warnings(self):
         assert validate_build_log_entry(self.WELL_FORMED) == []
 
-    def test_missing_performance_warns(self):
+    def test_no_performance_accepted(self):
         no_perf = (
             "# B001 — 2026-05-20\n\n"
             "**What shipped.** Something.\n\n"
@@ -100,8 +100,7 @@ class TestValidateBuildLogEntry:
             "**Pivots and surprises.** None.\n"
         )
         warnings = validate_build_log_entry(no_perf)
-        assert len(warnings) == 1
-        assert "Performance" in warnings[0]
+        assert len(warnings) == 0
 
     def test_missing_what_shipped_warns(self):
         text = (
@@ -117,7 +116,7 @@ class TestValidateBuildLogEntry:
     def test_missing_multiple_sections(self):
         text = "# B001\n\nSome text.\n"
         warnings = validate_build_log_entry(text)
-        assert len(warnings) == 4
+        assert len(warnings) == 3
 
     def test_empty_string(self):
         assert validate_build_log_entry("") == []

@@ -81,9 +81,11 @@ _REQUIRED_BOLD_SECTIONS = (
 def validate_build_log_entry(text):
     """Check a build-log per-entry file for required sections.
 
-    Three bold-label sections (**What shipped.**, etc.) and one heading
-    (## Performance). Only fires when the file has a heading and
-    substantial content. Returns list of warning strings."""
+    Three bold-label sections (**What shipped.**, etc.) are always
+    required. ## Performance is expected for post-build entries but
+    optional for lighter-close entries (planning/ideation sessions).
+    Only fires when the file has a heading and substantial content.
+    Returns list of warning strings."""
     if not isinstance(text, str) or not text.strip():
         return []
     if not re.search(r"^# .+", text, re.MULTILINE):
@@ -93,8 +95,6 @@ def validate_build_log_entry(text):
         pattern = re.compile(rf"\*\*{re.escape(section)}\.\*\*", re.IGNORECASE)
         if not pattern.search(text):
             warnings.append(f"Missing required section: **{section}.**")
-    if not re.search(r"^## Performance", text, re.MULTILINE):
-        warnings.append("Missing required ## Performance section.")
     return warnings
 
 

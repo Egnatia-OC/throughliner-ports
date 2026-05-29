@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-124 batches shipped or cancelled (V18–0135). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+125 batches shipped or cancelled (V18–0139). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -33,20 +33,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app. Hard dep on pre-0120 TEST-LOG structure — if 0120 ships first (expected), rewrite test plan against merged BACKLOG.
-
----
-
-### 0139 — Plugin lighter-close hardening
-
-**Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these. Also change close step 7 to delete the completed batch from BACKLOG (instead of writing it back with `Status: shipped`) — the build-log entry is the shipped signal, matching dev-side practice. Remove `Status: shipped` from the batch lifecycle state machine and update docs/hooks that reference it.
-
-**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G13–G16. Dev-side source: `Dev/session-protocol.md` → lighter close (L179–231). Plugin-side target: `plugin/docs/procedures/close.md`.
-
-**Outputs.** Updated `plugin/docs/procedures/close.md` (lighter close path expanded). Reconciliation map checkboxes ticked. Doc-parity updates if close.md changes affect other plugin docs.
-
-**Success criteria.** Plugin lighter close includes all four steps, adapted for plugin context (consumer projects, hook enforcement, skill invocations). Step ordering consistent with dev-side lighter close. Reconciliation map updated.
-
-**Risks / dependencies.** Hard dep on 0137 — workflow reconciliation may refine the dev-side lighter close steps that 0139 ports to the plugin. Should ship after dev-side prose is stable. Batch lifecycle change touches `close.md`, `VOCABULARY.md`, `DOC-STRUCTURE.md`, `parse_backlog.py`, `session_start.py`, and `planning.md` step 2.
 
 ---
 

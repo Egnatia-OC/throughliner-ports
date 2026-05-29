@@ -105,7 +105,7 @@ Run while build context is fresh.
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Write batch back to BACKLOG as shipped.** Write batch content with `Status: shipped` at body top — **exclude `## Close handoff`** (build-time context, not permanent scope). Folder mode: create per-batch file + INDEX.md reference. Single-file: insert section. Then delete `_method/active-build.md` — deletion signals build completion.
+7. **[SILENT] Delete build snapshot.** Delete `_method/active-build.md` — deletion signals build completion. The build-log entry (step 6) is the permanent record of what shipped; the completed batch is not written back to BACKLOG.
 
 8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts. Scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for old-behaviour references. If Close handoff empty/absent, assess from Files: whether the build changed how a feature works. Flag candidates. UX.md drift caught by planning drift check 2.
 
@@ -145,7 +145,7 @@ Needs only the values from the turn boundary.
     - [ ] MANIFEST updated (step 1)
     - [ ] TEST-LOG rows written (step 4a)
     - [ ] Build-log entry written (step 6)
-    - [ ] Batch written back + snapshot deleted (step 7)
+    - [ ] Build snapshot deleted (step 7)
     - [ ] Staleness sweep done (step 9)
     - [ ] Idea sweep done (step 12)
     - [ ] Footers bumped if applicable (step 14)
@@ -165,13 +165,52 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 1. **[BRIEF] Idea sweep.** Review session for unacted-on ideas, suggestions, or observations. Triage: BACKLOG (batch or OQ) or flag for user. Nothing unrouted.
 
-2. **[PROMPT] Turn boundary.** Judgment done. State whether proxies need regeneration. Recommend `/compact` if session was long. Short sessions can continue directly.
+2. **[SILENT] Write build-log entry.** Record what the session accomplished — planning changes, OQ resolutions, deliberation outcomes, ideation results.
+   - **2a.** Allocate filename: scan `build-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from the session's primary activity.
+   - **2b.** Write per-build file. Narrative sections only — `## Performance` omitted for non-build sessions:
+     ```markdown
+     # <Session> — YYYY-MM-DD — Summary
+
+     **What shipped.** <planning changes, OQ resolutions, BACKLOG edits>
+     **Decisions taken and why.** <load-bearing decisions, if any>
+     **Pivots and surprises.** <if any>
+     ```
+   - **2c.** Prepend index line to `_method/proxies/build-log.md`. Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
+
+3. **[PROMPT] Turn boundary.** Judgment done. State whether footers need bumping (old → new if so) and whether proxies need regeneration. Recommend `/compact` if session was long. Short sessions can continue directly.
 
 ### Turn 2 — mechanical
 
-3. **[SILENT] Regenerate proxies.** If proxies directory exists, regenerate any proxy whose source was edited. Run script for mechanical updates, then review summaries. Skip if no edits or no proxies directory.
+4. **[SILENT] Bump method-version footers.** Only if the session made substantive method or plugin changes — most planning/ideation sessions skip. Run from project root:
+   ```
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/bump_version.py" <old> <new>
+   ```
+   Skip if footers already match or no version change.
 
-4. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
+5. **[SILENT] Regenerate proxies.** If proxies directory exists, regenerate any proxy whose source was edited. Run script for mechanical updates, then review summaries. Skip if no edits or no proxies directory.
+
+6. **[BRIEF] Pre-commit checkpoint.** Verify before prompting commit:
+   - [ ] Idea sweep done — nothing unrouted (step 1)
+   - [ ] Build-log entry written + index line prepended (step 2)
+   - [ ] Frame-correction sweep done (if this session consumed a batch)
+   - [ ] Staleness sweep done (if this session consumed a batch)
+   - [ ] Lost-feature check done (if this session consumed a batch)
+   - [ ] Footers bumped if applicable (step 4)
+   - [ ] Proxies regenerated if applicable (step 5)
+   - [ ] Batch removed from BACKLOG if this session consumed one
+   Complete any missing steps now.
+
+7. **[PROMPT] Closing.** "Ready to commit. Invoke `/sovgit` to commit, tag, and push."
+
+### Conditional steps (when this session consumed a batch)
+
+Skip all three unless the session removed, merged, or restructured a BACKLOG batch. A planning session that rescoped or dropped a batch counts.
+
+- **[BRIEF if found, SILENT if not] Frame-correction sweep.** Scan remaining BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Relevant when the consumed batch changed how a feature works or when restructuring shifted a frame other batches depend on.
+
+- **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed, deleted, or moved file this session: grep remaining BACKLOG batches for old name/path references. Pattern-match only — literal strings, not semantics.
+
+- **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for parked batches whose parking condition was just met. Surface candidates and ask about unparking.
 
 ---
 
@@ -180,7 +219,6 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 - **Don't edit source files, build files, or any non-method file.** Scope: method docs only (MANIFEST.md, test-log/, build-log/, BACKLOG status, proxies). If a build failed, surface in recap and TEST-LOG notes — don't fix. Mention `/sovrevert` if the user needs to undo.
 - **Don't override user refusals.** Declined = final.
 - **Don't edit source-of-truth docs.** UX.md locked. Flag changes in recap.
-- **Don't remove completed batches from BACKLOG.** Planning does that next session.
 - **Don't start a new build.**
 - **Don't infer test outcomes.** Write rows with blank Status and `Confirmed Explicitly: No`.
 - **Don't write carve-out labels into BACKLOG change list.** Those are recap-time labels only.
@@ -192,4 +230,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 99.*
+*No-code method — Version 100.*

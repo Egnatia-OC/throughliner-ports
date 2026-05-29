@@ -132,7 +132,7 @@ Source-of-truth docs (UX.md, additional docs) are directly editable by Claude du
 
 **Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BACKLOG — unlocking BACKLOG for parallel planning, deliberation, or ideation. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. `/sovclose` runs in two turns:
 
-- **Turn 1 (judgment)** — while context is fresh: MANIFEST, doc parity, test session + Claude-automatable tests, build recap, build-log entry, batch marked shipped, frame-correction and staleness sweeps, lost-feature check, idea sweep, then `/compact` recommendation.
+- **Turn 1 (judgment)** — while context is fresh: MANIFEST, doc parity, test session + Claude-automatable tests, build recap, build-log entry, snapshot deleted (build-log is the shipped record), frame-correction and staleness sweeps, lost-feature check, idea sweep, then `/compact` recommendation.
 - **Turn 2 (mechanical)** — after compaction: footer bumps if plugin version changed (`bump_version.py`), proxy regeneration, project-specific after-build steps, pre-commit checkpoint, `/sovgit` nudge.
 
 Short sessions can run both turns without compacting. `/sovgit` walks you through commit, tag, and push in plain English.
@@ -155,7 +155,7 @@ Every batch gets the same structure: Goal (why), Outputs (what changes), Success
 
 Two regions: **scope context** (strategic) and **build operations** (tactical).
 
-**Status tracking.** Under V90+, active builds use a snapshot (`_method/active-build.md`) rather than a status line. Remaining values: `queued` (default — absent = queued), `parked` (paused by planning), `shipped` (completed by `/sovclose`). Parser skips shipped and parked.
+**Status tracking.** Under V99+, active builds use a snapshot (`_method/active-build.md`) rather than a status line. Two active values: `queued` (default — absent = queued) and `parked` (paused by planning). Completed batches are removed from BACKLOG entirely — the build-log entry is the shipped record. Legacy `active` and `shipped` values still recognized by the parser.
 
 **Scope context** (written during planning):
 - **Goal.** Why this batch exists.
@@ -413,4 +413,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 99.*
+*No-code method — Version 100.*

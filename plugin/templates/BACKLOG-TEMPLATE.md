@@ -39,7 +39,7 @@ and build operations (Changes through Serves). Full spec: DOC-STRUCTURE.md → B
 
 ### Batch: [short descriptive name]
 
-Status: [queued|active|parked|shipped]  ← written by Claude during builds; absent = queued
+Status: [queued|parked]  ← written by Claude; absent = queued. Legacy active/shipped still recognized
 
 **Goal.** [One paragraph — why this batch exists, what will be different when it ships.]
 
@@ -120,4 +120,4 @@ Entry format: one line per idea.
 -->
 
 ---
-*No-code method — Version 99.*
+*No-code method — Version 100.*

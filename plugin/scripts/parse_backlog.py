@@ -5,7 +5,7 @@ parse_backlog.py — shared BACKLOG parser for the no-code-method plugin.
 Locates the top unticked build batch and emits its data as JSON on stdout.
 The "top unticked batch" is the first build batch (in priority order) whose
 `Files:` sub-section contains at least one `- [ ]` bullet. Batches with
-`Status: shipped` or `Status: parked` are skipped. Batches that are
+`Status: shipped` (legacy) or `Status: parked` are skipped. Batches that are
 placeholders (no `Files:` section or empty `Files:` list) and batches
 that are complete (all `- [x]`) are also skipped past.
 
@@ -49,7 +49,7 @@ Output (stdout, JSON, compact):
     {
       "batch_heading": "<batch name>",
       "batch_file":    "<filename — only present in folder mode>",
-      "status":        "<queued|active|parked|shipped — default: queued>",
+      "status":        "<queued|active|parked|shipped (legacy) — default: queued>",
       "change_list":   ["<bullet text>", ...],
       "files": [
         {
@@ -130,11 +130,12 @@ PREREQ_LABEL = "[Prerequisite, not in plan]"
 # not in batch headings or file paths — outside this pattern's scope.
 TEMPLATE_PLACEHOLDER_PATTERN = re.compile(r"^\[[^\]]+\]$")
 
-# `Status:` line — batch lifecycle state. Four values: queued, active,
-# parked, shipped. Absent = queued (default).
+# `Status:` line — batch lifecycle state. Two active values: queued, parked.
+# Legacy values (active, shipped) still recognized for backwards compat.
+# Absent = queued (default).
 STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
 
-SKIP_STATUSES = frozenset(("shipped", "parked"))
+SKIP_STATUSES = frozenset(("shipped", "parked"))  # shipped kept for legacy
 
 
 # --- Helpers ---

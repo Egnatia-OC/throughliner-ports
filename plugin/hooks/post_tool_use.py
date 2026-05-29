@@ -19,7 +19,8 @@ which run both BACKLOG parse and scope-context checks):
   3. **TEST-LOG content file** — checks 10-column table row format.
 
   4. **Build-log entry file** — checks required sections (What shipped,
-     Decisions, Pivots, Performance).
+     Decisions, Pivots). Performance section optional (omitted for
+     lighter-close entries).
 
   5. **Proxy file** — checks HTML comment header format (summary
      proxies only; operational indexes skipped).

@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 99
+PLUGIN_METHOD_VERSION = 100
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -165,9 +165,10 @@ BATCH_REF_PATTERN = re.compile(r"^-\s+`(\d{4}-.+?\.md)`", re.MULTILINE)
 # H1 heading in a per-batch file (folder mode): `# <batch name>`.
 BATCH_FILE_H1_PATTERN = re.compile(r"^# (.+?)\s*$", re.MULTILINE)
 
-# Status: line — batch lifecycle state. Shipped/parked batches are skipped.
+# Status: line — batch lifecycle state. Two active values: queued, parked.
+# Legacy shipped/active still recognized for backwards compat.
 STATUS_LINE_PATTERN = re.compile(r"^Status:\s*(\w+)\s*$", re.MULTILINE)
-_SKIP_STATUSES = frozenset(("shipped", "parked"))
+_SKIP_STATUSES = frozenset(("shipped", "parked"))  # shipped kept for legacy
 
 # Open questions section heading in BACKLOG.
 OPEN_QUESTIONS_SECTION_PATTERN = re.compile(r"^## Open questions\s*$", re.MULTILINE)
@@ -348,10 +349,10 @@ def _resolve_backlog_dir(backlog_path: Path) -> Path:
 def detect_top_build_batch(backlog_text: str, backlog_path=None):
     """Find the first actionable batch name in the `## Build batches` section.
 
-    Skips batches with Status: shipped or Status: parked. In single-file
-    mode, searches for `### Batch:` headings inline. In folder mode (when
-    `backlog_path` is provided and the section contains batch reference
-    lines instead of headings), reads each referenced batch file.
+    Skips batches with Status: parked (or legacy Status: shipped). In
+    single-file mode, searches for `### Batch:` headings inline. In folder
+    mode (when `backlog_path` is provided and the section contains batch
+    reference lines instead of headings), reads each referenced batch file.
 
     Returns the batch title, or None if no real batch is present. Template
     placeholder titles like `[short descriptive name]` are filtered out."""
@@ -512,7 +513,7 @@ def detect_top_batch_details(backlog_text: str, backlog_path=None):
 def detect_top_queued_batches(backlog_text: str, backlog_path=None, limit=3):
     """Return up to `limit` queued batch summaries: [{name, goal}].
 
-    Skips shipped, parked, active, and template-placeholder batches.
+    Skips parked, legacy shipped/active, and template-placeholder batches.
     Used by the session-open status to give the user enough context to
     pick a topic without reading the full BACKLOG."""
     results = []
@@ -598,15 +599,15 @@ def detect_red_flags(backlog_text: str) -> list:
 
 
 def detect_unclosed_build(backlog_text, backlog_path=None):
-    """Detect a batch with Status: active and all Files: ticked.
+    """Detect a batch with Status: active and all Files: ticked (legacy).
 
-    This state means the build completed but /sovclose never ran —
-    /sovclose is what transitions Status: active → shipped. Returns
-    the batch name if found, None otherwise.
+    This state means the build completed but /sovclose never ran.
+    Under V99+ snapshot architecture, /sovclose deletes the snapshot
+    (build-log is the shipped record). This function handles pre-snapshot
+    legacy projects where Status: active was used.
 
-    No false positives on mid-build sessions (some files unticked),
-    planning sessions (no active batch), or completed builds
-    (Status: shipped)."""
+    No false positives on mid-build sessions (some files unticked)
+    or planning sessions (no active batch)."""
     section_match = BUILD_BATCHES_SECTION_PATTERN.search(backlog_text)
     if not section_match:
         return None
@@ -749,7 +750,7 @@ def format_unclosed_build_block(batch_name):
         + "\" has `Status: active` with all files ticked — the build "
         "finished but `/sovclose` was never run. `/sovclose` handles "
         "MANIFEST updates, TEST-LOG rows, build-log entry, doc-parity "
-        "check, and status transition to shipped.\n\n"
+        "check, and snapshot cleanup.\n\n"
         "  **Required action.** Prompt the user to run `/sovclose` before "
         "starting any new work. Do not start a new planning session or "
         "build batch until the close completes."
@@ -809,9 +810,9 @@ def format_snapshot_unclosed_block(batch_name):
         "- **Unclosed build detected (snapshot).** The file "
         "`_method/active-build.md` exists with all files ticked — batch \""
         + batch_name
-        + "\" finished but `/sovclose` was never run. `/sovclose` writes "
-        "the batch back to BACKLOG as shipped, updates MANIFEST, writes "
-        "TEST-LOG rows, and deletes the snapshot.\n\n"
+        + "\" finished but `/sovclose` was never run. `/sovclose` updates "
+        "MANIFEST, writes TEST-LOG rows, writes the build-log entry, "
+        "and deletes the snapshot.\n\n"
         "  **Required action.** Prompt the user to run `/sovclose` before "
         "starting any new work."
     )

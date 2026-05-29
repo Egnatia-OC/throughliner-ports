@@ -48,13 +48,13 @@ Both sides address the concept but disagree. Each needs a deliberate choice abou
 
 - [x] **C10. Build batch vs queued batch naming.** Plugin uses "build batch" for engineering work units. Dev uses "queued batch" for the analogous concept. **Resolution:** clarify that dev "queued batch" = plugin "build batch" as a cross-reference in session-reference.md, or adopt one term. **Resolved v138:** cross-reference added to session-reference.md → *Queued batch entry shape*.
 
-- [ ] **C11. Batch status mechanism.** Plugin: explicit `Status:` line with three values (queued/parked/shipped). Dev: presence/absence in queue + optional `**Parked.**` annotation; shipped = removed from BACKLOG. **Resolution:** closely tied to C14 (batch lifecycle). Decide together.
+- [x] **C11. Batch status mechanism.** Plugin: explicit `Status:` line with three values (queued/parked/shipped). Dev: presence/absence in queue + optional `**Parked.**` annotation; shipped = removed from BACKLOG. **Resolution:** closely tied to C14 (batch lifecycle). Decide together. **Resolved v139:** shipped removed from plugin status values (now queued/parked only). Completed batches removed from BACKLOG at close, matching dev-side model. `Status: parked` vs `**Parked.**` annotation remains a deliberate format difference.
 
 - [ ] **C12. Dependencies standalone vs merged.** Plugin separates Dependencies from Red flags as distinct scope-context sections. Dev merges dependencies with risks into one field (Risks / dependencies). **Resolution:** part of C08.
 
 - [ ] **C13. Doc-parity scope.** Plugin (close.md): narrow — grep consumer spine docs for stale name/reference from Close handoff. Dev (SP L198-215): broad — six categories (Vocabulary, Mechanism descriptions, Templates, Inventory, Reference manual, Ghost references). Plugin says [SILENT]; dev says [BRIEF]. **Resolution:** dev version is correct for this context — plugin development touches docs that consumer builds don't. Keep the broader dev-side audit. Note that the plugin's narrower scope is appropriate for consumer projects.
 
-- [ ] **C14. Batch lifecycle on completion.** Plugin (close.md): writes batch back to BACKLOG with `Status: shipped` (preserves history). Dev (SP L127, L167): removes batch from BACKLOG entirely. **Resolution:** real design divergence. Plugin preserves shipped batches for historical reference; dev side relies on build-log for history. Decide which model.
+- [x] **C14. Batch lifecycle on completion.** Plugin (close.md): writes batch back to BACKLOG with `Status: shipped` (preserves history). Dev (SP L127, L167): removes batch from BACKLOG entirely. **Resolution:** real design divergence. Plugin preserves shipped batches for historical reference; dev side relies on build-log for history. Decide which model. **Resolved v139:** adopted dev-side model — `/sovclose` deletes the snapshot without writing back. Build-log entry is the shipped record. `Status: shipped` removed as active value; kept in parser for legacy tolerance.
 
 - [ ] **C15. Footer bump trigger.** Plugin (close.md): triggers on detected mismatch between plugin version and doc footers (mechanical check at session start). Dev (SP L109): triggers on judgment call about whether changes are "substantive." **Resolution:** different mechanisms suit different contexts. Dev side can't detect mismatches mechanically (no hook). The judgment-based trigger is correct for dev sessions but should be stated more explicitly.
 
@@ -100,13 +100,13 @@ Plugin has it, dev doesn't, and the dev side should have a prose equivalent. Eac
 
 - [x] **G12. End-of-recap flags.** Plugin (close.md P11): consolidated step for stale refs, out-of-scope improvements, UX.md implications, red flags — after frame-correction and staleness sweeps. Dev side partially covers these (stale refs in frame-correction, ideas in idea sweep) but has no consolidated flags step. **Add to:** session-protocol.md implementation close — fold into existing steps or add explicitly. **Resolved v137:** added as implementation close step 8 (stale refs not fixable, out-of-scope improvements, red flags). Lighter close skips (surface findings in idea sweep if conditional sweeps ran).
 
-- [ ] **G13. Lighter close — build-log entry.** Plugin lighter close has NO build-log entry step. Dev lighter close (DL2) always writes one. **Note:** this is a gap on the *plugin* side — dev is more complete here. Flag for plugin close.md update.
+- [x] **G13. Lighter close — build-log entry.** Plugin lighter close has NO build-log entry step. Dev lighter close (DL2) always writes one. **Note:** this is a gap on the *plugin* side — dev is more complete here. Flag for plugin close.md update. **Resolved v139:** added as lighter close step 2 — narrative sections only (no Performance section for non-build sessions).
 
-- [ ] **G14. Lighter close — footer bump.** Plugin lighter close has no footer-bump step. Dev lighter close (DL4) includes it conditionally. **Note:** another plugin-side gap. Flag for plugin close.md update.
+- [x] **G14. Lighter close — footer bump.** Plugin lighter close has no footer-bump step. Dev lighter close (DL4) includes it conditionally. **Note:** another plugin-side gap. Flag for plugin close.md update. **Resolved v139:** added as lighter close step 4 — conditional on substantive method/plugin changes.
 
-- [ ] **G15. Lighter close — pre-commit checkpoint.** Plugin lighter close has no checkpoint. Dev lighter close (DL6) has a 6-item checkpoint. **Note:** plugin-side gap. Flag for plugin close.md update.
+- [x] **G15. Lighter close — pre-commit checkpoint.** Plugin lighter close has no checkpoint. Dev lighter close (DL6) has a 6-item checkpoint. **Note:** plugin-side gap. Flag for plugin close.md update. **Resolved v139:** added as lighter close step 6 — 8-item checkpoint covering idea sweep, build-log, conditional sweeps, footers, proxies, batch removal.
 
-- [ ] **G16. Lighter close — conditional frame-correction sweep.** Plugin lighter close has no frame-correction. Dev lighter close (DL-conditional) includes it when a batch was consumed. **Note:** plugin-side gap. Flag for plugin close.md update.
+- [x] **G16. Lighter close — conditional frame-correction sweep.** Plugin lighter close has no frame-correction. Dev lighter close (DL-conditional) includes it when a batch was consumed. **Note:** plugin-side gap. Flag for plugin close.md update. **Resolved v139:** added as conditional step — fires when session consumed a batch. Also added staleness sweep and lost-feature check as companion conditionals, matching dev-side lighter close.
 
 ### Structure/terminology gaps (from Sub-agent B)
 
