@@ -185,6 +185,8 @@ Each entry:
 
 **Not plugin-side build batches.** Dev-side roadmap entries. Plugin-side build batches (in consumer projects' BACKLOG) have a different shape with two regions — scope-context and build-operations — per `plugin/docs/DOC-STRUCTURE.md` → *BACKLOG structure*.
 
+**Cross-reference.** Dev "queued batch" = plugin "build batch." Both are engineering work units priority-ordered in BACKLOG. The names differ because dev-side entries are roadmap-shaped (no Files:/Tests:/Serves:) while plugin-side entries carry build-operations for hook enforcement.
+
 ---
 
 ## Open-questions entry shape
@@ -223,6 +225,28 @@ Four ways an entry leaves:
 
 The session-open scan is what makes graduation triggers fire.
 
+**Plugin consideration.** Plugin-side `DOC-STRUCTURE.md` → *BACKLOG structure* → *Open questions* defines the OQ concept but doesn't specify graduation paths or Working notes. These dev-side additions are useful patterns that could flow to the plugin in a future batch.
+
+---
+
+## Ideas section entry shape
+
+Ideas live in `Dev/Planning/BACKLOG.md` → *Ideas* section. Lightest-weight capture — raw one-liners from any session type.
+
+Each entry:
+
+```
+- YYYY-MM-DD — One-line description of the idea.
+```
+
+**Ordering.** Newest first.
+
+**Lifecycle.** Written during any session (idea sweep, mid-session observation, or dedicated ideation). Promoted to an OQ or queued batch during planning or deliberation sessions. Dropped with a one-line reason in the build-log if no longer relevant. Removed from Ideas when promoted or dropped.
+
+**Bar.** Lower than OQs — no framing paragraph, no "why it matters," no graduation trigger. Just enough to not lose the thought. If the idea already has enough shape for a *Next step*, it's an OQ, not an idea.
+
+**Plugin equivalent.** Plugin-side `DOC-STRUCTURE.md` → *BACKLOG structure* → *Ideas* specifies the same `YYYY-MM-DD — [one-line description]` format. Aligned.
+
 ---
 
 ## TEST-LOG entry shape
@@ -234,8 +258,8 @@ The session-open scan is what makes graduation triggers fire.
 | **#** | Stable three-digit ID. Never reused. |
 | **Date** | YYYY-MM-DD. |
 | **Session** | Session tag. |
-| **Test** | What was checked, one sentence. Specific enough to re-run. |
 | **Component** | Plugin component(s) exercised. |
+| **Test** | What was checked, one sentence. Specific enough to re-run. |
 | **Status** | `Pass`, `Fail`, or `Skipped` (reason in Notes). |
 | **Notes** | Observations, surprises, skip reason. Keep tight. |
 
@@ -246,6 +270,99 @@ The session-open scan is what makes graduation triggers fire.
 **Component changes.** Old row → `Superseded` with note pointing at the changing session. New rows record the retest. Only when the test description itself no longer makes sense.
 
 **BUILD-LOG linking.** Each build-log entry names the TEST-LOG row range in *What shipped*. Prose in build-log; per-check in test-log. Don't duplicate.
+
+---
+
+## Test sessions index shape
+
+`Dev/Planning/test-log/INDEX.md` is the index of all per-session test files. Same role as the plugin-side test sessions section in `_method/proxies/backlog.md`, but as a standalone file.
+
+**Header.** H1 title, brief explanation of rules (status never edited, regressions append new rows, Superseded for invalidated tests). Points to session-reference.md for the entry-shape spec.
+
+**Index entries.** Newest-first bullet list:
+
+```
+- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — One-line summary
+```
+
+**Naming convention.** Per-session files: `vNN-slug.md` where `NN` is the session tag and `slug` is a kebab-case description. Exception: non-session tests (e.g. cowboy tests) use `<type>-YYYY-MM-DD.md`.
+
+**Maintenance.** New line prepended at session close. Lines never removed — test files are permanent.
+
+---
+
+## INVENTORY entry shape
+
+`Dev/INVENTORY.md` is the plugin architecture reference. Living document — current state, not history.
+
+**Structure.** Five top-level sections:
+
+1. **The two-layer split.** Content vs mechanics distinction.
+2. **Method-side doc fates.** Table: doc → home → plugin component.
+3. **Project-side doc fates.** Table: doc → access rules.
+4. **Plugin components — final list.** Four subsections (Hooks, Procedure docs, Slash commands, Bundled artefacts) with per-component entries.
+5. **Design decisions / Architecture revisions / Risks.** Historical context.
+
+**Component entries** (under *Plugin components*):
+
+- **Hooks:** `- **<Name> hook.** <Description>. <Version tags for origin and major changes>.` Internal structure (lettered sub-checks for PreToolUse, tiered behavior for SessionStart) documented inline.
+- **Procedure docs:** `- **<name>.md** — V<N> origin, procedure doc V<N>. <Description>. <Version tags for changes>.`
+- **Slash commands:** `- **/<name>** — <description>. <Origin version>. **Shipped V<N>** (rename history if any).`
+- **Bundled artefacts:** Bullet list: `- <count> <type> under <path>: <list>.` or `- <path> — <description>. <Version tag>.`
+
+**When updated.** Any session that adds, removes, or changes a plugin component. The close procedure's doc-code parity audit (step 4 in implementation close) catches misses.
+
+---
+
+## Research folder file shape
+
+`Dev/Resources/research/<topic>.md` holds findings from research done during dev sessions. Distinct from plugin-side `_method/research/` (consumer projects).
+
+**Naming.** Kebab-case topic slug, no date prefix. Example: `convergence-reconciliation-v134.md`, `desktop-app-plugin-upload.md`. Appending a session tag to the filename is optional — useful when the same topic gets revisited in a later session.
+
+**Structure.** No fixed template. Common patterns:
+
+- **Question/Answer format:** H1 title, `## Question`, `## Answer`, `## Details`. Used for factual lookups.
+- **Audit/analysis format:** H1 title with session tag, summary table, findings by category. Used for structured investigations.
+- **Free-form findings:** H1 title, prose sections. Used for exploratory research.
+
+**Persistence.** Indefinite — not deleted when consumed. Updated rather than duplicated when the same topic is revisited.
+
+**Maintenance.** Zero — no MANIFEST tracking, no BACKLOG entries, no pruning. Valid on queued-batch `Inputs:` lines.
+
+**When written.** During any session where Claude investigates an external fact or does a structured analysis. Filing is mandatory per CLAUDE.md → *File research before moving on*. Unfiled research is lost at session end.
+
+---
+
+## Dev-side proxy file spec
+
+`Dev/Planning/.proxies/` holds lightweight index files summarizing dev-side source-of-truth docs. Same concept as plugin-side `_method/proxies/`, adapted for dev-side sources.
+
+**Location.** `Dev/Planning/.proxies/`. Three files: `session-protocol.md`, `session-reference.md`, `backlog.md`.
+
+**HTML comment header.** Every proxy starts with:
+
+```
+<!-- proxy | source: <path> | generated: YYYY-MM-DD v<N> | when: <load timing> -->
+```
+
+- `source` — path relative to `sovereign-implementer/`.
+- `generated` — date and session tag when last regenerated.
+- `when` — load timing hint (e.g. "every session open", "dip on demand").
+
+**Body format.** H1 title, state summary (2–4 lines of key metrics), then `## Sections` with one line per source-doc section:
+
+```
+- L<N> **<Section title>** — <one-phrase summary>
+```
+
+`L<N>` = starting line number in the source doc, for targeted offset/limit reads.
+
+**The BACKLOG proxy is different.** `backlog.md` is an operational index — not just a summary. It carries full section-by-section breakdowns (queue counts, per-batch summaries, OQ status). Directly edited at session close. Same role as the plugin-side `_method/proxies/backlog.md`.
+
+**Regeneration.** Run `bump_version.py --session-tag v<N>` (proxies-only mode) or as part of a version bump. The script updates HTML comment headers and `L<N>` line-number pointers mechanically. Section descriptions and state summaries require manual review after source edits the script can't detect.
+
+**When regenerated.** At session close (mechanical pass), after any session that edited the source docs. Skipped when neither the source docs nor the version changed.
 
 ---
 

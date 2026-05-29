@@ -36,20 +36,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0138 — Dev-side structure reconciliation
-
-**Goal.** Define entry shapes and structural specs for five dev-side artifacts that exist but lack documentation in `session-reference.md`: INVENTORY.md entries (G17), research folder files (G18), proxy files (G19), test sessions index (G20), Ideas section entries (G21). Also add cross-reference for "queued batch" = "build batch" (C10), flow OQ graduation paths to plugin consideration (C16), and align dev-side TEST-LOG column ordering with the plugin's sequence (Component before Test).
-
-**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G17–G21, contradictions C10, C16. Existing dev artifacts for shape extraction: `Dev/INVENTORY.md`, `Dev/Resources/research/`, `Dev/Planning/.proxies/`, `Dev/Planning/test-log/`, `Dev/Planning/BACKLOG.md` Ideas section.
-
-**Outputs.** Updated `Dev/session-reference.md` (new entry-shape sections). Reconciliation map checkboxes ticked.
-
-**Success criteria.** All 7 items documented. Entry shapes derived from actual current practice — not invented. Reconciliation map updated.
-
-**Risks / dependencies.** No hard deps — can ship in any order relative to 0136/0137. Logically last among doc-only batches because it documents artifacts the other batches reference.
-
----
-
 ### 0139 — Plugin lighter-close hardening
 
 **Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these. Also change close step 7 to delete the completed batch from BACKLOG (instead of writing it back with `Status: shipped`) — the build-log entry is the shipped signal, matching dev-side practice. Remove `Status: shipped` from the batch lifecycle state machine and update docs/hooks that reference it.

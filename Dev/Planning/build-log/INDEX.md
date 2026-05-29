@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v138-dev-side-structure-reconciliation.md](v138-dev-side-structure-reconciliation.md) — 2026-05-29 — Dev-side structure reconciliation: 7 items documented
 - [v137-dev-side-workflow-reconciliation.md](v137-dev-side-workflow-reconciliation.md) — 2026-05-29 — Dev-side workflow reconciliation: 5 gaps (G11–G12, G22–G24) resolved
 - [v136-dev-side-rules-reconciliation.md](v136-dev-side-rules-reconciliation.md) — 2026-05-29 — Dev-side rules reconciliation: 12 items (G01–G10, C03, C04) resolved
 - [v135-oq-deliberation.md](v135-oq-deliberation.md) — 2026-05-29 — OQ deliberation: all five resolved, new batch 0140

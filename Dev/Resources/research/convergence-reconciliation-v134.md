@@ -36,7 +36,7 @@ Both sides address the concept but disagree. Each needs a deliberate choice abou
 
 - [x] **C04. Run commands yourself vs guide me through.** Plugin (UB R14): "Execute directly — don't ask the user to run it." Dev (CM L129-130): "Guide me through smoke tests step by step." Tension is real but likely context-dependent: Claude runs commands in dev implementation sessions; Alex runs commands manually in E2E test sessions. **Resolution:** add explicit prose to CM — "Claude runs shell commands directly during dev sessions. Exception: E2E test commands that must execute in a separate consumer-project session." **Resolved v136:** added "Command execution" section to CLAUDE.md with dev-session default and E2E exception.
 
-- [ ] **C05. TEST-LOG columns (10 vs 7).** Plugin (DOC-STRUCTURE L103-148): 10 columns (#, Date, Session, Component, Test Description, Type, Verifier, Status, Confirmed Explicitly, Notes). Dev (session-reference L228-249): 7 columns (#, Date, Session, Test, Component, Status, Notes). Missing dev-side: Type, Verifier, Confirmed Explicitly. Column ordering also differs (Component before Test Description in plugin; Test before Component in dev). **Resolution:** the dev side's 7-column shape was a deliberate simplification — dev tests don't need the confirmation gate (no hook enforcement) or verifier tracking (Alex runs tests herself). Confirm this is still intentional or migrate to 10 columns for convergence.
+- [ ] **C05. TEST-LOG columns (10 vs 7).** Plugin (DOC-STRUCTURE L103-148): 10 columns (#, Date, Session, Component, Test Description, Type, Verifier, Status, Confirmed Explicitly, Notes). Dev (session-reference L228-249): 7 columns (#, Date, Session, Test, Component, Status, Notes). Missing dev-side: Type, Verifier, Confirmed Explicitly. Column ordering also differs (Component before Test Description in plugin; Test before Component in dev). **Resolution:** the dev side's 7-column shape was a deliberate simplification — dev tests don't need the confirmation gate (no hook enforcement) or verifier tracking (Alex runs tests herself). Confirm this is still intentional or migrate to 10 columns for convergence. **Partial v138:** column ordering aligned — dev side now uses Component before Test, matching plugin sequence. Column count (7 vs 10) remains a deliberate simplification.
 
 - [ ] **C06. Build-log Performance section.** Plugin (DOC-STRUCTURE L152-187): includes `## Performance` section with 6 structured measures. Dev (session-reference L151): explicitly excluded — "Consumer build-log entries carry an additional `## Performance` section... This dev build-log doesn't use it." **Resolution:** documented as deliberate. Confirm still intentional.
 
@@ -46,7 +46,7 @@ Both sides address the concept but disagree. Each needs a deliberate choice abou
 
 - [ ] **C09. Batch-sizing principle.** Plugin (VOCABULARY): right size = verification burden (distinct testable behaviours). Dev (session-reference L183-184): right size = entry readability (fits on a screen). Different metrics. **Resolution:** both are valid for their contexts — plugin sizes for test coverage, dev sizes for session-open readability. Make the divergence explicit rather than silently different.
 
-- [ ] **C10. Build batch vs queued batch naming.** Plugin uses "build batch" for engineering work units. Dev uses "queued batch" for the analogous concept. **Resolution:** clarify that dev "queued batch" = plugin "build batch" as a cross-reference in session-reference.md, or adopt one term.
+- [x] **C10. Build batch vs queued batch naming.** Plugin uses "build batch" for engineering work units. Dev uses "queued batch" for the analogous concept. **Resolution:** clarify that dev "queued batch" = plugin "build batch" as a cross-reference in session-reference.md, or adopt one term. **Resolved v138:** cross-reference added to session-reference.md → *Queued batch entry shape*.
 
 - [ ] **C11. Batch status mechanism.** Plugin: explicit `Status:` line with three values (queued/parked/shipped). Dev: presence/absence in queue + optional `**Parked.**` annotation; shipped = removed from BACKLOG. **Resolution:** closely tied to C14 (batch lifecycle). Decide together.
 
@@ -58,7 +58,7 @@ Both sides address the concept but disagree. Each needs a deliberate choice abou
 
 - [ ] **C15. Footer bump trigger.** Plugin (close.md): triggers on detected mismatch between plugin version and doc footers (mechanical check at session start). Dev (SP L109): triggers on judgment call about whether changes are "substantive." **Resolution:** different mechanisms suit different contexts. Dev side can't detect mismatches mechanically (no hook). The judgment-based trigger is correct for dev sessions but should be stated more explicitly.
 
-- [ ] **C16. Open questions — Working notes and graduation paths.** Dev (session-reference L190-224) adds a Working notes field (optional) and four explicit graduation paths that plugin-side DOC-STRUCTURE doesn't specify. **Resolution:** minor. Dev additions are useful — consider flowing graduation paths to plugin DOC-STRUCTURE.
+- [x] **C16. Open questions — Working notes and graduation paths.** Dev (session-reference L190-224) adds a Working notes field (optional) and four explicit graduation paths that plugin-side DOC-STRUCTURE doesn't specify. **Resolution:** minor. Dev additions are useful — consider flowing graduation paths to plugin DOC-STRUCTURE. **Resolved v138:** plugin-consideration note added to session-reference.md → *Open-questions entry shape*. Future plugin batch can adopt graduation paths into DOC-STRUCTURE.
 
 - [ ] **C17. Commit/tag/push flow.** Plugin: delegates to `/sovgit` skill (single invocation). Dev (SP D9-D11): three explicit steps with two prompt points (commit, then push). **Resolution:** structurally different — dev side has no `/sovgit` skill. Dev three-step version is the correct prose equivalent. Not a convergence action.
 
@@ -110,15 +110,15 @@ Plugin has it, dev doesn't, and the dev side should have a prose equivalent. Eac
 
 ### Structure/terminology gaps (from Sub-agent B)
 
-- [ ] **G17. INVENTORY.md entry shape.** Dev has `Dev/INVENTORY.md` as its MANIFEST-equivalent but session-reference.md defines no entry shape for it. **Add to:** session-reference.md.
+- [x] **G17. INVENTORY.md entry shape.** Dev has `Dev/INVENTORY.md` as its MANIFEST-equivalent but session-reference.md defines no entry shape for it. **Add to:** session-reference.md. **Resolved v138:** INVENTORY entry shape added to session-reference.md.
 
-- [ ] **G18. Research folder shape.** Dev uses `Dev/Resources/research/` but session-reference.md has no structural spec (naming, persistence, maintenance rules). **Add to:** session-reference.md.
+- [x] **G18. Research folder shape.** Dev uses `Dev/Resources/research/` but session-reference.md has no structural spec (naming, persistence, maintenance rules). **Add to:** session-reference.md. **Resolved v138:** Research folder file shape added to session-reference.md.
 
-- [ ] **G19. Proxy file spec.** Dev uses `Dev/Planning/.proxies/` (per CLAUDE.md) but session-reference.md defines no format, structure, or regeneration rules. **Add to:** session-reference.md.
+- [x] **G19. Proxy file spec.** Dev uses `Dev/Planning/.proxies/` (per CLAUDE.md) but session-reference.md defines no format, structure, or regeneration rules. **Add to:** session-reference.md. **Resolved v138:** Dev-side proxy file spec added to session-reference.md.
 
-- [ ] **G20. Test sessions index.** Dev has test-log files but no defined index format linking them from BACKLOG or elsewhere. **Add to:** session-reference.md.
+- [x] **G20. Test sessions index.** Dev has test-log files but no defined index format linking them from BACKLOG or elsewhere. **Add to:** session-reference.md. **Resolved v138:** Test sessions index shape added to session-reference.md.
 
-- [ ] **G21. Ideas section shape.** Dev BACKLOG has an Ideas section but session-reference.md defines no entry format. **Add to:** session-reference.md.
+- [x] **G21. Ideas section shape.** Dev BACKLOG has an Ideas section but session-reference.md defines no entry format. **Add to:** session-reference.md. **Resolved v138:** Ideas section entry shape added to session-reference.md.
 
 - [x] **G22. Staleness sweep (literal path check).** Plugin (VOCABULARY): after-build check scanning BACKLOG for literal references to changed file paths/names. Dev has frame-correction (semantic) but not literal-string path scanning. **Add to:** session-protocol.md implementation close. **Resolved v137:** added as implementation close step 3 (grep BACKLOG queued/parked batches for old names/paths, fix in commit). Lighter close: conditional — runs when a batch was consumed.
 
