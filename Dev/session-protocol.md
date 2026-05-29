@@ -38,6 +38,7 @@ In order:
    - `Guides/Reference manual.md` — install/usage primer and method overview for orientation (~410 lines).
 3. Read `Dev/Planning/BACKLOG.md` in full — *Queued batches* has full scope for each upcoming batch, *Open questions* has method-level questions. Both inform session routing.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These are uncommitted dependencies missing at session start. If found, **halt** — surface the offending line and fix (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
+4b. **OQ blocker check.** Scan the top queued batch's scope for references to unresolved open questions or parked ideas that would force mid-session improvisation. If the batch depends on an answer that doesn't exist yet, **halt** — resolve via planning or deliberation before starting the batch.
 5. **State summary.** Brief summary: current version (session tag, method version, plugin version), queue depth, next batch (number and title), OQ count, notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard.
 Then classify the opener and route per the **Opener routing table** below. If the task isn't clear, report what was loaded and ask. Don't draft.
 
@@ -74,9 +75,32 @@ Three shapes, often blended:
 
 Claude's job mid-session: do the work, surface concerns, propose. Close/parity/testing rules apply regardless.
 
+### Mid-session rules
+
+- **No stealth fixes.** If a change causes a regression, state plainly: "The previous change broke [X], I am now reverting/fixing it." Silent fixes corrupt the build-log narrative.
+
+- **No unplanned refactoring.** Don't refactor, rename, or restructure anything outside the agreed batch scope. Two exceptions: (1) **prerequisite carve-out** — the batch can't complete without an unplanned change; halt, surface with one-line justification, wait for okay; (2) **re-batching carve-out** — verification burden much higher than estimated; halt, propose a split, wait for okay.
+
+- **Mid-session compact nudge.** During implementation sessions, track session length by exchange count. When ~15 exchanges have passed since work started without reaching close, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." Informational, not blocking. Don't repeat after acknowledgment.
+
+---
+
+## Session handoff
+
+When context runs low mid-session and the batch can't complete in this session:
+
+1. **Tick completed work.** Every fully-written file or doc section → mark done.
+2. **Annotate in-progress items.** Brief note on what's done and what remains.
+3. **Record decisions.** Anything decided this session but not yet captured in BACKLOG or build-log → add a `Handoff notes:` block at the bottom of the batch scope in BACKLOG.md.
+4. **Tell Alex it's ready.** Name what's done, what's remaining. Next session reads the batch and `Handoff notes:` to resume.
+
+The `Handoff notes:` block is consumed by the next session — remove it once the batch completes.
+
 ---
 
 ## Session close
+
+Close is mandatory, not advisory. Skipping leaves orphaned state that blocks future sessions. If Alex asks to skip, explain the consequences and decline.
 
 Two paths based on session type. Both split into a **judgment pass** (while session context is fresh) and a **mechanical pass** (after `/compact`). The turn boundary between them is a `[PROMPT]` — recommended, not enforced. Short sessions can close in one turn.
 
@@ -99,6 +123,7 @@ Use `git diff` to identify what changed — the dev-side equivalent of the plugi
 4. **[BRIEF] Idea sweep with routing.** Review session for ideas, suggestions, or observations not implemented. Triage each to one destination:
    - **BACKLOG batch** — add to BACKLOG.md → *Queued batches*.
    - **BACKLOG open question** — add to BACKLOG.md → *Open questions* with `Surfaced` tag.
+   - **Security/privacy/data-integrity concern** — surface in chat immediately. Route: fold into the current batch if it fits; otherwise add as a `[SECURITY]`-marked batch or OQ. Never silently defer a red flag.
    - **Flag in recap** — for user to decide.
    Nothing left unrouted. If no ideas surfaced, skip silently.
 

@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v136-dev-side-rules-reconciliation.md](v136-dev-side-rules-reconciliation.md) — 2026-05-29 — Dev-side rules reconciliation: 12 items (G01–G10, C03, C04) resolved
 - [v135-oq-deliberation.md](v135-oq-deliberation.md) — 2026-05-29 — OQ deliberation: all five resolved, new batch 0140
 - [v134-convergence-reader-test-and-reconciliation-planning.md](v134-convergence-reader-test-and-reconciliation-planning.md) — 2026-05-29 — Convergence reader test + reconciliation planning: full overlap map, four reconciliation batches, E2E testing parked
 - [v133-session-start-routing-clarifications.md](v133-session-start-routing-clarifications.md) — 2026-05-29 — Session-start routing clarifications: output ordering, missing routes, priority statement

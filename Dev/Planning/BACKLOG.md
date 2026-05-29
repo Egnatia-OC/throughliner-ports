@@ -36,20 +36,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0136 — Dev-side rules reconciliation
-
-**Goal.** Add prose equivalents of 10 plugin behavioural rules to the dev-side method. These rules exist in `universal-behaviour.md` but have no dev-side counterparts in `session-protocol.md` or `CLAUDE.md`. Also resolve contradictions C03 (flag taxonomy — add red-flag routing) and C04 (command execution — clarify context).
-
-**Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G01–G10, contradictions C03, C04. Plugin-side source: `plugin/hooks/universal-behaviour.md`.
-
-**Outputs.** Updated `Dev/session-protocol.md` (new rules in session-middle, session-open, session-close sections). Updated project `CLAUDE.md` (collaboration rules). Reconciliation map checkboxes ticked for resolved items.
-
-**Success criteria.** All 12 items (G01–G10, C03, C04) have prose equivalents. Each rule adapted for dev context — not copy-pasted from plugin. No redundancy with existing dev-side rules. Reconciliation map updated.
-
-**Risks / dependencies.** Hard dep on 0135 (shipped v134). Risk: some rules may not translate cleanly to prose-only enforcement — flag and resolve during session.
-
----
-
 ### 0137 — Dev-side workflow reconciliation
 
 **Goal.** Add five workflow steps to the dev-side close and open procedures: build recap (G11), consolidated end-of-recap flags (G12), staleness sweep as literal path check (G22), lost-feature check for parked batches (G23), and OQ staleness detection at session open (G24).
