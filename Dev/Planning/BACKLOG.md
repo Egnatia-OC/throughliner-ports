@@ -36,13 +36,33 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0130 — /sovsetup case 1 retest (post-fix verification) — **PARKED**
+### 0143 — Prerequisite-audit procedure fixes
 
-**Parked.** v134. Reconciliation batches (0136–0139) change instruction surfaces this test validates. Retest after reconciliation completes. When unparking: repackage plugin at HEAD (post-0139), verify test plan still covers current state.
+**Goal.** Fix the five gaps found by the 0142 skill invocation audit. All are procedure-doc text changes — no hook or script changes.
+
+**Changes.**
+
+1. `tersify.md` — replace dead `Status: active` phase gate with `_method/active-build.md` existence check. [Suggested]
+2. `build.md` — after parse, halt if `files` array is empty (recap skipped). [Suggested]
+3. `planning.md`, `deliberate.md`, `ideate.md` — soften "never during builds" to "not in the same session as a build" with a note that parallel-session planning is permitted under V90 snapshot architecture. [Suggested]
+4. `before-build.md` — add active-build-snapshot check at top; halt if build in progress. [Suggested]
+5. `testing.md` — add note: if `_method/active-build.md` exists, explain test rows for current build don't exist yet. [Suggested]
+
+**Inputs.** `Dev/Resources/research/skill-invocation-flowchart.md` (audit findings).
+
+**Serves.** Internal consistency — all procedure docs aligned with V90 build-snapshot architecture.
+
+**Surfaced.** v142.
+
+---
+
+### 0130 — /sovsetup case 1 retest (post-fix verification)
+
+**Unparked.** v142. Reconciliation (0136–0139) complete. Test plan needs review before running — reconciliation changed instruction surfaces, and batches 0140–0142 added /sovexplain, resolved plugin OQs, and fixed procedure-doc gaps. Repackage plugin at HEAD before E2E run.
 
 **Goal.** Verify that v113, v115, v117, and v129 changes work end-to-end in a real `/sovsetup` case 1 run. The cowboy test (plugin v90) found 7 hook issues; v113 and v115 shipped fixes for most of them. v117 added setup Q5 (language setting). v129 renamed BUILD-PLAN → BACKLOG across the entire plugin. None of these fixes have been verified E2E.
 
-**Inputs.** Fresh empty folder. Plugin repackaged at current HEAD (v97 / 0.97.0).
+**Inputs.** Fresh empty folder. Plugin repackaged at current HEAD.
 
 **Outputs.** Test-log entry. New BACKLOG entries for any issues found.
 
@@ -64,9 +84,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0131 — Build lifecycle retest (post v115–v129 changes) — **PARKED**
+### 0131 — Build lifecycle retest (post v115–v129 changes)
 
-**Parked.** v134. Reconciliation batches (0136–0139) change close procedure and instruction surfaces this test validates. Retest after reconciliation completes. When unparking: repackage plugin at HEAD (post-0139), verify test plan covers reconciled close procedure. Note: if 0139 changes plugin close.md, steps 5–6 of the test plan need review.
+**Unparked.** v142. Reconciliation (0136–0139) complete. Test plan needs review before running — reconciliation changed close procedure and instruction surfaces. Steps 5–6 (close procedure) likely need updating for reconciled close.md. Repackage plugin at HEAD before E2E run.
 
 **Goal.** Verify the full build pipeline works end-to-end after six implementation sessions (v115, v116, v117, v118, v128, v129) that changed phase detection, close procedure, naming, and safeguards. The last lifecycle E2E (v114/batch 0088) predates all of these. The v129 BACKLOG rename alone touched ~30 plugin files — any missed reference breaks path resolution.
 
@@ -90,29 +110,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Phase detection stable through build. Two-turn close works as designed. Consumer `bump_version.py` runs without errors.
 
 **Risks / dependencies.** Depends on a set-up project — chains from 0130, or use an existing one. Risk: if 0130 surfaces scaffold issues, this test's starting state may be compromised. Mitigant: can use Taskflow or another already-adopted project instead.
-
----
-
-### 0142 — Skill invocation flowchart and prerequisite audit
-
-**Goal.** Map all reasonable skill invocation orders, identify prerequisite handling gaps, and produce a visual flowchart usable for coaching users. Two deliverables: (1) a flowchart showing valid paths through the skills, and (2) an audit of whether each skill reacts correctly when invoked in non-standard order.
-
-**Inputs.** All SKILL.md files. Procedure docs that skills delegate to. Hook scripts that enforce phase/state gates (PreToolUse, SessionStart). explain-reference.md § session routing and phase detection.
-
-**Procedure.**
-
-1. Inventory every skill's actual prerequisites — what state it checks, what it requires, what it does when requirements aren't met.
-2. Map the "rigid" cycle (plan → recap → build → test → close → git) as baseline.
-3. Identify all reasonable deviations: anytime skills (ideate, research, explain), mid-build interruptions (ideate, revert), skipped steps (recap skip, deliberate skip), out-of-order invocations (plan before close, test without build).
-4. For each deviation, check: does the skill push back clearly, silently break, or handle it gracefully?
-5. Produce the flowchart. Format TBD — could be a Mermaid diagram, a plain-text map, or an HTML page for the crash course.
-6. File gaps as BACKLOG entries or fix inline if trivial.
-
-**Outputs.** Flowchart artifact (format TBD). Audit notes. New BACKLOG entries for any gaps found.
-
-**Success criteria.** Every skill appears on the map with its valid entry points. Every reasonable non-standard invocation has a documented outcome (clean rejection, graceful handling, or identified gap). The flowchart is legible to a non-coder.
-
-**Surfaced.** v141.
 
 ---
 

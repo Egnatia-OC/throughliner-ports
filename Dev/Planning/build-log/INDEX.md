@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v142b-skill-invocation-flowchart-audit.md](v142b-skill-invocation-flowchart-audit.md) — 2026-05-29 — Skill invocation flowchart and prerequisite audit (batch 0142)
 - [v142-playbook-discipline-rules.md](v142-playbook-discipline-rules.md) — 2026-05-29 — Playbook discipline rules folded into session-protocol and plugin docs
 - [v141-explain-skill-and-doc-enrichments.md](v141-explain-skill-and-doc-enrichments.md) — 2026-05-29 — /sovexplain skill + consumer-doc rationale enrichments
 - [v140-plugin-oq-resolutions.md](v140-plugin-oq-resolutions.md) — 2026-05-29 — Plugin OQ resolutions: volunteered test results, carve-out snapshot, walkthrough pacing
