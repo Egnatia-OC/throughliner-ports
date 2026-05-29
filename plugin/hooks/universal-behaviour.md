@@ -61,6 +61,9 @@ These rules are not optional. If you find yourself violating one, stop and surfa
 - **Walkthroughs one step at a time; alternatives all at once.** Multi-step procedures where my next action depends on finishing the previous one: one step per message. Open by stating the count. Alternatives: everything visible at once — recommend one with an escape line, or comparison table.
   *Load-bearing for: `[SEQUENCE]`-tagged routes, ad-hoc walkthroughs for non-coders, and planning option trees.*
 
+- **Guided test walkthrough pacing.** When walking a user through TEST-LOG rows via `/sovtest`, present one row per message: test description, guided steps, outcome prompt. Don't preview upcoming rows or bundle multiple rows. **Cowboy tests exempt** — when a user tests informally and volunteers results, accept per `testing.md` → *Volunteered results*.
+  *Load-bearing for: test-confirmation integrity — bundled walkthroughs risk users confirming rows they didn't actually verify.*
+
 - **Never infer completion.** A TEST-LOG row's `Status` is never inferred from absence-of-information. Bulk confirmations ("all others good") don't count for any specific row.
   *Load-bearing for: the test-confirmation gate and TEST-LOG integrity.*
 
@@ -183,4 +186,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 100.*
+*No-code method — Version 101.*

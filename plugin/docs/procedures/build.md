@@ -88,6 +88,8 @@ If verification burden is much higher than pre-build estimate:
 3. **On okay**, reorganise. Ticked files stay; unticked move to new batch(es) below. New batches inherit scope-context and Serves line(s). In folder mode: create new per-batch file + reference line in the project's BACKLOG index (INDEX.md or `_method/proxies/backlog.md`, whichever the project uses).
 4. **Label `[Re-batch, not in plan]`** in recap.
 
+**Snapshot reflects the split.** After the re-batch, `_method/active-build.md` contains only the retained files (already ticked plus any that remain in the reduced batch). `/sovclose` runs on this reduced snapshot normally — its scope is whatever remains at completion.
+
 ## Completion
 
 When all Files: are `- [x]`, the build is done.
@@ -112,4 +114,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 100.*
+*No-code method — Version 101.*

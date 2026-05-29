@@ -127,6 +127,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Ideas section (BACKLOG).** Lightest-weight capture. Date + one-liner. Writable during any phase. Promoted to OQs or batches by `/sovideate` or `/sovdeliberate`.
 
+- **Cowboy test.** Informal testing where the user tests independently and reports results, as opposed to a guided `/sovtest` walkthrough. Cowboy tests are exempt from one-at-a-time walkthrough pacing. Volunteered results accepted per `testing.md` → *Volunteered results*.
+
 - **Deliberation session.** Via `/sovdeliberate`. Works through accumulated OQs: promote, drop, or re-park each. Produces build-log entry recording dispositions.
 
 - **Ideation session.** Via `/sovideate`. Explores a fresh concept: discuss, assess fit, route to OQ/batch/idea/drop. Lighter than planning — no drift checks, no test read-back.
@@ -138,4 +140,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 100.*
+*No-code method — Version 101.*

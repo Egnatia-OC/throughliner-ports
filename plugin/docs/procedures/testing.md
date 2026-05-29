@@ -23,6 +23,14 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 **[SEQUENCE]** Walk pending rows in `#` order (lowest first). State the count at the start: "N tests to walk through. First:"
 
+### Volunteered results
+
+If the user reports a test outcome before being walked through that row, accept it when specific enough to match a TEST-LOG row. Skip the guided walkthrough for that row and update it immediately. Remaining rows still get the full walkthrough.
+
+**Valid per-row confirmation format:** component name (matching the row's Component column) or row number, plus an explicit status — Pass, Fail, or Skipped. Examples: "TaskCard passes," "#003 fail — button doesn't respond," "row 5 skipped, can't test without dark mode." Missing status or ambiguous component → ask for clarification before accepting.
+
+Vague reports ("they all pass," "everything looks fine") don't count — push back per the bulk-confirmation prohibition below.
+
 ### Per row
 
 1. **[BRIEF] Present the test.** State the row number, Component, Test Description, and Type. Plain English — no table formatting.
@@ -118,4 +126,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 100.*
+*No-code method — Version 101.*

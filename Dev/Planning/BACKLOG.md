@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-125 batches shipped or cancelled (V18–0139). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+126 batches shipped or cancelled (V18–0140). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -33,20 +33,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app. Hard dep on pre-0120 TEST-LOG structure — if 0120 ships first (expected), rewrite test plan against merged BACKLOG.
-
----
-
-### 0140 — Plugin OQ resolutions (test confirmation, carve-out snapshot, walkthrough pacing)
-
-**Goal.** Implement three OQ resolutions into plugin docs. (1) Accept volunteered test results that are specific enough to match a TEST-LOG row; remaining rows still get mechanical read-back. Define valid per-row confirmation format: component name plus clear status. (2) Document that re-batching carve-out shrinks `active-build.md` to match retained files; `/sovclose` runs on the reduced snapshot normally. (3) Add one-at-a-time delivery rule for guided test walkthroughs to `universal-behaviour.md`. Cowboy tests exempt.
-
-**Inputs.** OQ resolutions from v135 deliberation. Plugin-side targets: `plugin/hooks/universal-behaviour.md`, `plugin/docs/procedures/testing.md`, `plugin/docs/procedures/build.md`.
-
-**Outputs.** Updated `universal-behaviour.md` (walkthrough pacing rule). Updated `testing.md` (volunteered results acceptance, confirmation format definition). Updated `build.md` (carve-out snapshot behavior). Reconciliation map updated if applicable.
-
-**Success criteria.** All three resolutions documented in the correct plugin docs. No contradictions with existing rules. Walkthrough pacing rule scoped to guided tests only (cowboy exempt).
-
-**Risks / dependencies.** No hard deps. Can ship in any order relative to 0136–0139. If 0139 changes `close.md` carve-out adjacently, review for consistency.
 
 ---
 

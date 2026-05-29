@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-29 v139 | when: every session open -->
+<!-- proxy | source: Dev/session-protocol.md | generated: 2026-05-29 v140 | when: every session open -->
 
 # Session protocol
 
