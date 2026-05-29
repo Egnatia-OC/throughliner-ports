@@ -1,6 +1,6 @@
 ﻿# Planning procedure — no-code method
 
-Follow this procedure during the *planning* phase — never during builds, setup, or migration. Covers **structural planning**: reordering, splitting, merging, rescoping batches, revising dependencies, adding/removing batches, and housekeeping (test read-back, drift checks, batch pruning).
+Follow this procedure during the *planning* phase — not in the same session as a build, and not during setup or migration. Under V90 snapshot architecture, BACKLOG is unlocked during builds — planning in a parallel session is safe. Covers **structural planning**: reordering, splitting, merging, rescoping batches, revising dependencies, adding/removing batches, and housekeeping (test read-back, drift checks, batch pruning).
 
 For working through open questions, use `/sovdeliberate`. For exploring new ideas or feature requests, use `/sovideate`.
 
@@ -250,4 +250,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity. 
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*

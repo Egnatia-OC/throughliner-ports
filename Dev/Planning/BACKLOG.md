@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-126 batches shipped or cancelled (V18–0140). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+127 batches shipped or cancelled (V18–0143). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -33,26 +33,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Non-coder completes full flow without independent knowledge. Debugging produces useful output on deliberate failure. TEST-LOG state after `/sovtest` is consistent with planning expectations. No silent failures.
 
 **Risks / dependencies.** Hard dep on 0094 (shipped v100). Soft dep on 0088 (reuse app state — note: 0088 now starts fresh, so test-type variety depends entirely on what that build produces). Risk: insufficient test-type variety in burner app. Hard dep on pre-0120 TEST-LOG structure — if 0120 ships first (expected), rewrite test plan against merged BACKLOG.
-
----
-
-### 0143 — Prerequisite-audit procedure fixes
-
-**Goal.** Fix the five gaps found by the 0142 skill invocation audit. All are procedure-doc text changes — no hook or script changes.
-
-**Changes.**
-
-1. `tersify.md` — replace dead `Status: active` phase gate with `_method/active-build.md` existence check. [Suggested]
-2. `build.md` — after parse, halt if `files` array is empty (recap skipped). [Suggested]
-3. `planning.md`, `deliberate.md`, `ideate.md` — soften "never during builds" to "not in the same session as a build" with a note that parallel-session planning is permitted under V90 snapshot architecture. [Suggested]
-4. `before-build.md` — add active-build-snapshot check at top; halt if build in progress. [Suggested]
-5. `testing.md` — add note: if `_method/active-build.md` exists, explain test rows for current build don't exist yet. [Suggested]
-
-**Inputs.** `Dev/Resources/research/skill-invocation-flowchart.md` (audit findings).
-
-**Serves.** Internal consistency — all procedure docs aligned with V90 build-snapshot architecture.
-
-**Surfaced.** v142.
 
 ---
 

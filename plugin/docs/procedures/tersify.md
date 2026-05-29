@@ -2,14 +2,14 @@
 
 Guided compression of source-of-truth docs to reduce token cost. Two phases: **triage** (rank and flag) then **audit** (compress user-selected targets one at a time).
 
-**Planning phase only.** Source-of-truth docs must be unlocked. If a `Status: active` batch exists in BACKLOG, deny with: "Source-of-truth docs are locked during build. Run `/sovtersify` in a planning session."
+**Planning phase only.** Source-of-truth docs must be unlocked. If a build is in progress (`_method/active-build.md` exists), deny with: "Source-of-truth docs are locked during build. Run `/sovtersify` in a planning session."
 
 ## Phase gate
 
-Before anything else, check BACKLOG for an active batch:
+Before anything else, check for an active build:
 
-1. Read BACKLOG (resolve path from `CLAUDE.md` path block — `_method/proxies/backlog.md`, `BACKLOG/INDEX.md`, or `BACKLOG.md`).
-2. If any batch has `Status: active` → stop. Tell the user: "Source-of-truth docs are locked during build. Run `/sovtersify` in a planning session."
+1. Check whether `_method/active-build.md` exists (resolve `_method/` from `CLAUDE.md` path block).
+2. If it exists → stop. Tell the user: "Source-of-truth docs are locked during build. Run `/sovtersify` in a planning session."
 3. Otherwise proceed.
 
 ## Phase 1 — Triage
@@ -76,4 +76,4 @@ Universal-behaviour rules apply. Keep triage output tight — the point is savin
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*

@@ -14,6 +14,10 @@ Read only what before-build uses:
 
 **Do not read** BUILD-LOG or additional source-of-truth docs — before-build doesn't use them. (The BACKLOG proxy already contains the Test sessions index.)
 
+## Active-build check
+
+Before anything else, check whether `_method/active-build.md` exists (resolve `_method/` from `CLAUDE.md` path block). If it exists, a build is already in progress. Halt: "A build is already in progress (`_method/active-build.md` exists). Finish it with `/sovclose`, or undo it with `/sovrevert`."
+
 ## Validate pass
 
 Before enumerating files:
@@ -107,4 +111,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*

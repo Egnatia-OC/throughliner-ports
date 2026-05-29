@@ -26,6 +26,8 @@ Both paths quoted (Windows spaces). Parser emits JSON:
 
 If the parser returns `{}`, there's nothing to build — tell the user to run `/sovrecap` or start a planning session.
 
+If the parser returns a batch but `files` is empty, the batch has no Files: sub-section — `/sovrecap` was likely skipped. Halt: "This batch has no Files: list. Run `/sovrecap` first to populate the file list and test plan."
+
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
 **Two formats.** `batch_file` present → folder mode (ticks in per-batch file). Absent → single-file `BACKLOG.md`. Resolve from path block.
@@ -114,4 +116,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*

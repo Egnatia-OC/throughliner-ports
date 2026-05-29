@@ -1,6 +1,6 @@
 ﻿# Deliberate procedure — no-code method
 
-Follow this procedure to work through accumulated open questions in BACKLOG. Never during builds, setup, or migration.
+Follow this procedure to work through accumulated open questions in BACKLOG. Not in the same session as a build, and not during setup or migration. Under V90 snapshot architecture, BACKLOG is unlocked during builds — deliberation in a parallel session is safe.
 
 ## First action — load project state
 
@@ -84,4 +84,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*

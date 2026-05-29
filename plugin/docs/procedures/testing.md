@@ -19,6 +19,8 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 **No test session.** If TEST-LOG has no rows, say so and stop: "No test session open. Run `/sovclose` after a build to create test rows."
 
+**Mid-build invocation.** If `_method/active-build.md` exists, a build is in progress. Test rows for the current build don't exist yet — they're written by `/sovclose` after the build completes. Tell the user: "A build is in progress. Test rows for this build will be created when you run `/sovclose`. Previous-batch tests (if any) are shown above." Then proceed normally with any pre-existing pending rows.
+
 ## Walkthrough — one row at a time
 
 **[SEQUENCE]** Walk pending rows in `#` order (lowest first). State the count at the start: "N tests to walk through. First:"
@@ -126,4 +128,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 103.*
+*No-code method — Version 104.*
