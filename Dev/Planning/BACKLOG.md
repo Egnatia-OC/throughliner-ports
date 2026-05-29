@@ -66,7 +66,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0138 — Dev-side structure reconciliation
 
-**Goal.** Define entry shapes and structural specs for five dev-side artifacts that exist but lack documentation in `session-reference.md`: INVENTORY.md entries (G17), research folder files (G18), proxy files (G19), test sessions index (G20), Ideas section entries (G21). Also add cross-reference for "queued batch" = "build batch" (C10) and flow OQ graduation paths to plugin consideration (C16).
+**Goal.** Define entry shapes and structural specs for five dev-side artifacts that exist but lack documentation in `session-reference.md`: INVENTORY.md entries (G17), research folder files (G18), proxy files (G19), test sessions index (G20), Ideas section entries (G21). Also add cross-reference for "queued batch" = "build batch" (C10), flow OQ graduation paths to plugin consideration (C16), and align dev-side TEST-LOG column ordering with the plugin's sequence (Component before Test).
 
 **Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G17–G21, contradictions C10, C16. Existing dev artifacts for shape extraction: `Dev/INVENTORY.md`, `Dev/Resources/research/`, `Dev/Planning/.proxies/`, `Dev/Planning/test-log/`, `Dev/Planning/BACKLOG.md` Ideas section.
 
@@ -80,7 +80,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0139 — Plugin lighter-close hardening
 
-**Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these.
+**Goal.** Add four missing steps to the plugin's lighter close path in `close.md`. The convergence reader test found the dev-side lighter close is more complete: it includes a build-log entry (G13), conditional footer bump (G14), pre-commit checkpoint (G15), and conditional frame-correction sweep (G16). The plugin lighter close has none of these. Also change close step 7 to delete the completed batch from BACKLOG (instead of writing it back with `Status: shipped`) — the build-log entry is the shipped signal, matching dev-side practice. Remove `Status: shipped` from the batch lifecycle state machine and update docs/hooks that reference it.
 
 **Inputs.** `Dev/Resources/research/convergence-reconciliation-v134.md` → gaps G13–G16. Dev-side source: `Dev/session-protocol.md` → lighter close (L136–181). Plugin-side target: `plugin/docs/procedures/close.md`.
 
@@ -88,7 +88,21 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Success criteria.** Plugin lighter close includes all four steps, adapted for plugin context (consumer projects, hook enforcement, skill invocations). Step ordering consistent with dev-side lighter close. Reconciliation map updated.
 
-**Risks / dependencies.** Hard dep on 0137 — workflow reconciliation may refine the dev-side lighter close steps that 0139 ports to the plugin. Should ship after dev-side prose is stable.
+**Risks / dependencies.** Hard dep on 0137 — workflow reconciliation may refine the dev-side lighter close steps that 0139 ports to the plugin. Should ship after dev-side prose is stable. Batch lifecycle change touches `close.md`, `VOCABULARY.md`, `DOC-STRUCTURE.md`, `parse_backlog.py`, `session_start.py`, and `planning.md` step 2.
+
+---
+
+### 0140 — Plugin OQ resolutions (test confirmation, carve-out snapshot, walkthrough pacing)
+
+**Goal.** Implement three OQ resolutions into plugin docs. (1) Accept volunteered test results that are specific enough to match a TEST-LOG row; remaining rows still get mechanical read-back. Define valid per-row confirmation format: component name plus clear status. (2) Document that re-batching carve-out shrinks `active-build.md` to match retained files; `/sovclose` runs on the reduced snapshot normally. (3) Add one-at-a-time delivery rule for guided test walkthroughs to `universal-behaviour.md`. Cowboy tests exempt.
+
+**Inputs.** OQ resolutions from v135 deliberation. Plugin-side targets: `plugin/hooks/universal-behaviour.md`, `plugin/docs/procedures/testing.md`, `plugin/docs/procedures/build.md`.
+
+**Outputs.** Updated `universal-behaviour.md` (walkthrough pacing rule). Updated `testing.md` (volunteered results acceptance, confirmation format definition). Updated `build.md` (carve-out snapshot behavior). Reconciliation map updated if applicable.
+
+**Success criteria.** All three resolutions documented in the correct plugin docs. No contradictions with existing rules. Walkthrough pacing rule scoped to guided tests only (cowboy exempt).
+
+**Risks / dependencies.** No hard deps. Can ship in any order relative to 0136–0139. If 0139 changes `close.md` carve-out adjacently, review for consistency.
 
 ---
 
@@ -155,45 +169,7 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
-### TEST-LOG columns — 10 vs 7
-
-Dev-side TEST-LOG uses 7 columns (#, Date, Session, Test, Component, Status, Notes). Plugin-side defines 10 (#, Date, Session, Component, Test Description, Type, Verifier, Status, Confirmed Explicitly, Notes). Three columns absent from dev side: Type, Verifier, Confirmed Explicitly. Column ordering also differs (Component before Test Description in plugin; Test before Component in dev). The 7-column shape was a deliberate simplification — dev tests have no hook-enforced confirmation gate and Alex runs all tests herself. Question: keep the divergence (different contexts, different needs) or migrate to 10 columns for convergence?
-
-**Surfaced.** v134.
-
----
-
-### Batch lifecycle on completion — remove vs preserve
-
-Dev side removes completed batches from BACKLOG (relies on build-log for history). Plugin side writes them back with `Status: shipped` (preserves history in BACKLOG). Different models for the same lifecycle event. Dev model keeps BACKLOG lean; plugin model keeps it as a single queryable history. Question: which model should the converged method use? Or is the divergence intentional (dev BACKLOG has build-log as companion; consumer BACKLOG may not)?
-
-**Surfaced.** v134.
-
----
-
-### Volunteered test results vs. mechanical read-back
-
-When a user's opener already contains test results ("settings toggle passed, export button misaligned"), should the method accept those as partial confirmation or insist on the per-row mechanical read-back? The read-back is the only defined confirmation mechanism, but forcing users to re-state results they already gave is bad UX. Related: the confirmation format itself is undefined — instructions say what NOT to accept (bulk confirmations, inference from absence) but never what TO accept as valid per-row confirmation.
-
-**Surfaced.** v131.
-
----
-
-### Re-batching snapshot state after split
-
-After a re-batching carve-out splits unticked files into new batches, what happens to the build snapshot (`_method/active-build.md`)? Does it shrink to only the ticked files? Does `/sovclose` still run on the reduced snapshot? The build procedure says "Ticked files stay; unticked move to new batch(es)" but doesn't specify the snapshot's resulting state or confirm `/sovclose` handles a partial snapshot correctly.
-
-**Surfaced.** v131.
-
----
-
-### Step-by-step test protocol — where should it live?
-
-Testing sessions that involve user-guided steps (E2E tests, Look-and-click, Run-and-read) consistently dump full step lists despite the user's one-at-a-time instruction. Cowboy tests are exempt — those are freeform user exploration with no guided walkthrough. The fix needs to go somewhere Claude reads during test sessions. Candidates: `plugin/docs/procedures/testing.md`, `universal-behaviour.md`, or both. Question: which location actually gets loaded in the test context, and is one enough or does it need reinforcement in both?
-
-**Surfaced.** v130.
-
----
+None.
 
 ---
 
