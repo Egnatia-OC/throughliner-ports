@@ -99,7 +99,37 @@ Method-level questions not yet ready to be a batch. Each stays until resolved �
 
 ---
 
-None.
+### OQ — Session-start orientation gap (dev-side and plugin-side)
+
+**Surfaced.** v143.
+
+Neither the dev-side nor the plugin-side session start loads a functional overview of what's already built. Dev-side: CLAUDE.md has rules and conventions but no capabilities inventory — Alex lost track of whether proactive research was built because nothing at session open says "here's what the plugin already does." Plugin-side: the session-start hook gives Claude structural state (path block, template state, version mismatches, top batch) but not a plain-language summary of what the consumer project is, what features exist, and what's been built so far.
+
+The gap causes the same problem on both sides: things feel lost even when they exist, and Claude (or the user) can't orient without manually reading multiple docs.
+
+**Question.** What should load at session start — on each side — to give both Claude and the user enough orientation to not miss existing capabilities, not duplicate work, and not re-ask answered questions? How does this relate to existing artefacts (MANIFEST, proxies, CLAUDE.md path block) — is it a new doc, an addition to an existing one, or a hook output?
+
+---
+
+### OQ — /sovexplain reference covers "why" but underserves "what" and "how"
+
+**Surfaced.** v143.
+
+The explain-reference is strong on design rationale (why each feature works the way it does) but weaker on the other two question types users will ask. "What" answers exist but are buried inside rationale prose rather than leading with plain descriptions. "How" answers are absent entirely — the reference explicitly says "not a procedure doc" so questions like "how do I start a build?" have no concise answer. The procedure docs cover how, but `/sovexplain` doesn't bridge to them. A user asking "what does this method give me?" shouldn't need to wade through design rationale.
+
+**Question.** Should the explain-reference add standalone "what" descriptions and "how" pointers (linking to procedure docs) alongside the existing "why" rationale? Or should `/sovexplain` itself route what/how questions differently — e.g. answering "what" from the reference and redirecting "how" to the relevant skill?
+
+---
+
+### OQ — Design-decision sweep into UX.md at end of build
+
+**Surfaced.** v143.
+
+Build-log entries already capture "Decisions taken and why." Some of those decisions change what the product does — those should flow back into UX.md so the spec stays current. Currently nothing systematically routes build decisions into UX.md; doc-parity checks for inconsistencies but doesn't proactively enrich the spec with new rationale.
+
+Proposed shape: fold into the existing doc-parity step (close procedure step 3) rather than adding a separate pass. After writing the build-log entry, scan its decisions section, identify which ones are UX-relevant (change user-facing behaviour), and propose UX.md updates. Close procedure already flags "UX.md changes implied" in step 11 — this would make that flag systematic rather than ad-hoc.
+
+**Question.** Does this fold cleanly into doc-parity, or does it need its own step? How does it interact with the UX.md lock during builds — does it propose edits (like `[PROPOSED EDIT PENDING]`) or flag for next planning session? What threshold distinguishes a UX-relevant decision from an internal implementation choice?
 
 ---
 
@@ -107,6 +137,8 @@ None.
 
 Raw ideas captured during sessions. Date + one-liner. Promoted to OQs or batches during planning sessions.
 
+- 2026-05-30 — No hook prevents Claude from launching /sovbuild when it shouldn't (e.g. mid-ideation when user casually says "just do it"). Before-build checks in /sovrecap are prose discipline only. The phase gate (active-build.md) prevents source-code edits without a build, but nothing prevents the build itself from starting prematurely. Needs mechanical enforcement.
+- 2026-05-30 — Dev-side Claude defaults to filing ideas and open questions as research notes. Recurring pattern — may need a feedback memory or a dev-side rule that distinguishes: research notes are for external findings, OQs are for unresolved design questions, ideas are for raw captures. The routing instinct is wrong.
 - 2026-05-29 — E2E test for /sovexplain: validate the new explain skill against a real consumer project. Could fold into 0130/0131 when they unpark.
 
 ---
