@@ -60,17 +60,7 @@ Run while build context is fresh.
 
 4. **Open test session + run Claude tests.**
 
-   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` if present, else derive from recap (default: `Look and click` / `User`). 10-column format:
-   - `#` — next three-digit ID (global across all per-session files).
-   - `Date` — YYYY-MM-DD.
-   - `Session` — per identification above.
-   - `Component` — match MANIFEST entry name where possible.
-   - `Test Description` — one sentence, re-runnable.
-   - `Type` — `Look and click` / `Run and read` / `Trigger and observe` / `Generate and inspect`.
-   - `Verifier` — `Claude` or `User`.
-   - `Status` — blank initially (Claude rows filled in 4b).
-   - `Confirmed Explicitly` — `No`.
-   - `Notes` — blank initially.
+   **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` if present, else derive from recap (default: `Look and click` / `User`). 10-column format per `DOC-STRUCTURE.md` → *TEST-LOG structure*. Status blank initially (Claude rows filled in 4b); Confirmed Explicitly: `No`.
 
    **Folder mode (path block → proxy in `proxies/`):**
    - **4a-i.** Allocate filename: scan `test-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading. Write per-session file with H1 `# Test session — <Session> — YYYY-MM-DD` followed by the table.
@@ -105,13 +95,13 @@ Run while build context is fresh.
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
 
-7. **[SILENT] Delete build snapshot.** Delete `_method/active-build.md` — deletion signals build completion. The build-log entry (step 6) is the permanent record of what shipped; the completed batch is not written back to BACKLOG.
+7. **[SILENT] Delete build snapshot.** Delete `_method/active-build.md`. The build-log entry is the permanent shipped record; the batch is not written back to BACKLOG.
 
-8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts. Scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for old-behaviour references. If Close handoff empty/absent, assess from Files: whether the build changed how a feature works. Flag candidates. UX.md drift caught by planning drift check 2.
+8. **[BRIEF if found, SILENT if not] Frame-correction sweep.** Read `## Close handoff` for frame shifts. Scan BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for old-behaviour references. If Close handoff empty/absent, assess from Files:.
 
-9. **[BRIEF if found, SILENT if not] Queued-pipeline staleness sweep.** For each renamed/deleted/moved file in Files:: grep queued and parked BACKLOG batches and OQs for old name/path references. Same pattern as step 3 but targeting queued pipeline, not spine docs. Pattern-match only — literal strings, not semantics.
+9. **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed/deleted/moved file in Files:: grep queued and parked BACKLOG batches for old name/path references. Pattern-match only.
 
-10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for parked batches whose parking condition was just met (e.g. "parked until X ships" where X just shipped). Surface and ask about unparking. Skip if nothing could satisfy a parking condition.
+10. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan parked batches for parking conditions just met. Surface and ask about unparking.
 
 11. **End-of-recap flags:**
    - Stale references found by doc-parity check (step 3) and staleness sweep (step 9).
@@ -165,9 +155,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 1. **[BRIEF] Idea sweep.** Review session for unacted-on ideas, suggestions, or observations. Triage: BACKLOG (batch or OQ) or flag for user. Nothing unrouted.
 
-2. **[SILENT] Write build-log entry.** Record what the session accomplished — planning changes, OQ resolutions, deliberation outcomes, ideation results.
-   - **2a.** Allocate filename: scan `build-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from the session's primary activity.
-   - **2b.** Write per-build file. Narrative sections only — `## Performance` omitted for non-build sessions:
+2. **[SILENT] Write build-log entry.** Same allocation as post-build step 6 (scan `build-log/`, next number, kebab suffix). Narrative sections only — `## Performance` omitted:
      ```markdown
      # <Session> — YYYY-MM-DD — Summary
 
@@ -175,7 +163,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
      **Decisions taken and why.** <load-bearing decisions, if any>
      **Pivots and surprises.** <if any>
      ```
-   - **2c.** Prepend index line to `_method/proxies/build-log.md`. Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
+   Prepend index line to `_method/proxies/build-log.md`. Idempotency: skip if exists.
 
 3. **[PROMPT] Turn boundary.** Judgment done. State whether footers need bumping (old → new if so) and whether proxies need regeneration. Recommend `/compact` if session was long. Short sessions can continue directly.
 
@@ -204,13 +192,11 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ### Conditional steps (when this session consumed a batch)
 
-Skip all three unless the session removed, merged, or restructured a BACKLOG batch. A planning session that rescoped or dropped a batch counts.
+Skip all three unless the session removed, merged, or restructured a BACKLOG batch.
 
-- **[BRIEF if found, SILENT if not] Frame-correction sweep.** Scan remaining BACKLOG batches and `[PROPOSED EDIT PENDING]` blocks for references to old behaviour. Relevant when the consumed batch changed how a feature works or when restructuring shifted a frame other batches depend on.
-
-- **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed, deleted, or moved file this session: grep remaining BACKLOG batches for old name/path references. Pattern-match only — literal strings, not semantics.
-
-- **[BRIEF if found, SILENT if not] Lost-feature check.** Scan for parked batches whose parking condition was just met. Surface candidates and ask about unparking.
+- **Frame-correction sweep.** Scan remaining BACKLOG batches for references to old behaviour. `[BRIEF if found, SILENT if not]`.
+- **Staleness sweep.** Grep remaining BACKLOG batches for old name/path references from renamed/deleted/moved files. Pattern-match only. `[BRIEF if found, SILENT if not]`.
+- **Lost-feature check.** Scan parked batches for parking conditions just met. Surface and ask about unparking. `[BRIEF if found, SILENT if not]`.
 
 ---
 

@@ -22,7 +22,7 @@ Three version-ish numbers move independently:
 
 So `v52` coexisting with `V48` and scope `0050` is correct, not drift. The V21 tripwire compares loaded footers against `PLUGIN_METHOD_VERSION` in `session_start.py`; both stay locked until a method-changing session bumps them together.
 
-**History.** V18–V23 conflated session tag and method version. Going forward they're separated; historical mismatches stay. Scope files prior to 0050 used `V<N>.md`; 0050 renamed to `NNNN-kebab-title.md`. Git history still references old V-numbers; that divergence is permanent.
+**History.** Pre-V24 conflated session tag and method version; pre-0050 scope files used `V<N>.md`. Historical mismatches in git are permanent.
 
 ---
 
@@ -77,25 +77,25 @@ Claude's job mid-session: do the work, surface concerns, propose. Close/parity/t
 
 ### Mid-session rules
 
-- **No stealth fixes.** If a change causes a regression, state plainly: "The previous change broke [X], I am now reverting/fixing it." Silent fixes corrupt the build-log narrative.
+- **No stealth fixes.** If a change causes a regression, state plainly what broke and that you're fixing it. Silent fixes corrupt the build-log narrative.
 
-- **No unplanned refactoring.** Don't refactor, rename, or restructure anything outside the agreed batch scope. Two exceptions: (1) **prerequisite carve-out** — the batch can't complete without an unplanned change; halt, surface with one-line justification, wait for okay; (2) **re-batching carve-out** — verification burden much higher than estimated; halt, propose a split, wait for okay.
+- **No unplanned refactoring.** Stay inside agreed batch scope. Two exceptions: (1) **prerequisite carve-out** — batch can't complete without it; halt, justify, wait for okay; (2) **re-batching carve-out** — verification burden much higher than estimated; halt, propose split, wait.
 
-- **Default to the smallest accommodation.** When fixing a gap or inconsistency, propose the minimum-touch version first. Generalise only when a second project or use case would also benefit. Avoids the "full restructuring" trap where a one-line fix becomes a doc rewrite.
+- **Default to the smallest accommodation.** Propose the minimum-touch fix first. Generalise only when a second project or use case would also benefit.
 
-- **Verify after every edit to long files.** The Edit tool can silently truncate long replacements — the success message doesn't catch it. After editing a file longer than ~200 lines, read it back to confirm it's whole. A `diff` against the previous state or a tail check catches truncation that the tool's own output misses.
+- **Verify after every edit to long files.** The Edit tool can silently truncate long replacements. After editing a file longer than ~200 lines, read it back to confirm it's whole.
 
-- **Recognise cascading fixes.** When each fix exposes the next inconsistency, you're in a cascade — not a list of independent items. Name the condition explicitly ("this is cascading"), cap how many fixes deep you'll go before pausing for scope review, and track depth as you proceed.
+- **Recognise cascading fixes.** When each fix exposes the next inconsistency, name it as a cascade, cap depth before pausing for scope review, and track depth as you proceed.
 
-- **Signpost threads in long work.** During extended multi-fix or multi-topic work, periodically restate which thread you're on: "We're still following the [X] thread; the new finding is [Y]." Drift between threads without signposting is disorienting — especially after a cascade or a long planning discussion.
+- **Signpost threads in long work.** Periodically restate which thread you're on and what the new finding is. Drift between threads without signposting is disorienting.
 
-- **Grep after renames immediately.** When a change renames a concept, file, or term mid-session, grep for the old name across dev-side docs before moving on — don't wait for the close staleness sweep. Residue from a mid-session rename compounds through subsequent edits that build on the stale term.
+- **Grep after renames immediately.** When a change renames a concept, file, or term, grep for the old name across dev-side docs before moving on — don't wait for the close staleness sweep.
 
-- **Re-read affected queued work after mid-session changes.** When a change shifts a frame or absorbs scope that a queued or parked batch depends on, re-read that batch immediately — don't wait for the close frame-correction sweep. Mark it as partially superseded with a note on what's still left for it.
+- **Re-read affected queued work after mid-session changes.** When a change shifts a frame or absorbs scope a queued/parked batch depends on, re-read that batch immediately. Mark it as partially superseded with a note on what remains.
 
-- **Propose the wider sweep before applying the first edit.** When a targeted cleanup reveals a broader pattern the brief didn't name, stop and propose extending the sweep across the full doc (or all relevant docs) before applying the first fix. Don't wait for the user to notice the pattern exists.
+- **Propose the wider sweep before applying the first edit.** When a targeted cleanup reveals a broader pattern, stop and propose extending the sweep before applying the first fix.
 
-- **Mid-session compact nudge.** During implementation sessions, track session length by exchange count. When ~15 exchanges have passed since work started without reaching close, nudge: "This session has grown long — consider `/compact` to preserve context for the close steps." Informational, not blocking. Don't repeat after acknowledgment.
+- **Mid-session compact nudge.** After ~15 exchanges without reaching close, nudge about `/compact`. Informational, not blocking. Don't repeat after acknowledgment.
 
 ---
 
@@ -232,29 +232,13 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
 
 9. **[PROMPT] Push.** `git push origin main` and `git push origin v<N>`. Pause only for secrets/credentials/personal info.
 
-**Skipped explicitly (vs. implementation close):**
-- Doc-code parity — no implementation changes to audit.
-- Build recap — no build to recap.
-- End-of-recap flags — no implementation sweeps to consolidate. If conditional sweeps produce findings, surface them in the idea sweep.
-
-**Conditional:**
-- Frame-correction sweep — skip unless this session consumed a queued batch. A doc-only or planning session that rewrites scope text could shift a frame other batches depend on.
-- Staleness sweep — skip unless this session consumed a queued batch. Same trigger as frame-correction: batch consumption may rename or move files that other batches reference.
-- Lost-feature check — skip unless this session consumed a queued batch. Shipping a batch may satisfy a parked batch's parking condition.
-- If this session consumed a queued batch, remove it from BACKLOG's Queued batches section as part of the commit.
+**Skipped:** Doc-code parity, build recap, end-of-recap flags (no implementation to audit). **Conditional (batch-consuming sessions only):** frame-correction sweep, staleness sweep, lost-feature check — same definitions as implementation close steps 2–4. If findings surface, route through the idea sweep.
 
 ---
 
 ## Batch-ordering audit
 
-Run as part of any session that adds, removes, or reorders BACKLOG queued batches. Four checks:
-
-1. **Forward-dependency scan.** For each batch, verify its Dependencies resolve to shipped batches or earlier queued batches. Flag violations.
-2. **Stale-reference scan.** For each batch that renames/deletes/moves a file or skill, grep later batches for references to the old name. Flag hits.
-3. **Reorder if needed.** Propose reordering with one-line justification per move. Apply ordering principles: dependency flow first, then project-structure reasoning, then security bias (`[SECURITY]`-marked batches earlier), then stale-reference avoidance.
-4. **Fix scope text.** Update stale references in affected batch scope in the same pass as the reorder.
-
-Skip if no structural changes to BACKLOG were made this session.
+See `plugin/docs/procedures/planning.md` → *Batch-ordering audit*. Run when any session adds, removes, or reorders BACKLOG queued batches.
 
 ---
 

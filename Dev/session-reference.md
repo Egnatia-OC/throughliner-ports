@@ -6,29 +6,24 @@ Companion to `session-protocol.md`. Dip into sections as needed — don't load t
 
 ## Two-write rule for canonical docs — RETIRED
 
-> Deleted in v95. The repo-root docs-only set (`NO-CODE-METHOD.md`, `DOC-STRUCTURE.md`, `VOCABULARY.md`, `templates/`) was removed from the repo. All method content lives plugin-side only. Historical context: BUILD-LOG v32 (creation), v40 (shelved), v95 (deleted).
+> Deleted v95. All method content lives plugin-side only. Context: build-log v32, v40, v95.
 
 ---
 
 ## Testing
 
-Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. This *is* live testing. Hooks fire; slash commands appear; procedure docs load; SessionStart injects `additionalContext`; PreToolUse denies with reason text; `/sovsetup` scaffolds templates. V18/V19/V21/V22 each shipped with smoke tests. Outcomes → `Dev/Planning/test-log/`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. Outcomes → `Dev/Planning/test-log/`.
 
 **Pre-install options:**
 
-- **Local marketplace install.** `/plugin marketplace add` + `/plugin install`, then test in burner session. Highest fidelity. Standard for testable code. `/reload-plugins` picks up edits.
-- **Hook direct invocation.** `echo '{"cwd": "/path", "session_id": "test"}' | python plugin/hooks/session_start.py`. Validates parsing + stdout shape pre-smoke-test.
-- **Parser CLI.** `python plugin/scripts/parse_backlog.py <BACKLOG.md path>` — inspect output.
+- **Local marketplace install.** `/plugin marketplace add` + `/plugin install`, then burner session. Highest fidelity. `/reload-plugins` picks up edits.
+- **Hook direct invocation.** `echo '{"cwd": "/path", "session_id": "test"}' | python plugin/hooks/session_start.py`. Validates parsing + stdout shape.
+- **Parser CLI.** `python plugin/scripts/parse_backlog.py <BACKLOG.md path>`.
 - **Code review.** Read and reason. Catches structural errors; misses runtime issues.
 
-**What we don't do:**
+No CI — pytest runs locally; smoke tests hand-run by Alex on Windows. Build-log entries reference TEST-LOG row ranges, not restatements.
 
-- **No public marketplace.** Plugin installed locally via `/plugin marketplace add`. Public distribution is later.
-- **No CI.** Pytest runs locally; smoke tests are hand-run by Alex on Windows.
-
-**Where outcomes go.** Each check → a per-session file in `Dev/Planning/test-log/`. Build-log entries reference the TEST-LOG row range ("see TEST-LOG #045-052") rather than restating.
-
-**Pitfall.** "Live install + back-test" as single-session deliverable keeps resurfacing. Don't conflate a smoke test (does it work?) with a release test (does the published package install?).
+**Pitfall.** Don't conflate smoke tests (does it work?) with release tests (does the published package install?).
 
 ### Automated test suite (V53 — pytest)
 
@@ -273,64 +268,36 @@ Each entry:
 
 ---
 
-## Test sessions index shape
+## Test sessions index
 
-`Dev/Planning/test-log/INDEX.md` is the index of all per-session test files. Same role as the plugin-side test sessions section in `_method/proxies/backlog.md`, but as a standalone file.
-
-**Header.** H1 title, brief explanation of rules (status never edited, regressions append new rows, Superseded for invalidated tests). Points to session-reference.md for the entry-shape spec.
-
-**Index entries.** Newest-first bullet list:
-
-```
-- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — One-line summary
-```
-
-**Naming convention.** Per-session files: `vNN-slug.md` where `NN` is the session tag and `slug` is a kebab-case description. Exception: non-session tests (e.g. cowboy tests) use `<type>-YYYY-MM-DD.md`.
-
-**Maintenance.** New line prepended at session close. Lines never removed — test files are permanent.
+`Dev/Planning/test-log/INDEX.md` — standalone index of per-session files. Newest-first bullet list: `- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — Summary`. New line prepended at session close; never removed. Non-session tests (e.g. cowboy tests) use `<type>-YYYY-MM-DD.md`.
 
 ---
 
 ## INVENTORY entry shape
 
-`Dev/INVENTORY.md` is the plugin architecture reference. Living document — current state, not history.
+`Dev/INVENTORY.md` — plugin architecture reference. Current state, not history.
 
-**Structure.** Five top-level sections:
+**Component entry formats** (under *Plugin components*):
 
-1. **The two-layer split.** Content vs mechanics distinction.
-2. **Method-side doc fates.** Table: doc → home → plugin component.
-3. **Project-side doc fates.** Table: doc → access rules.
-4. **Plugin components — final list.** Four subsections (Hooks, Procedure docs, Slash commands, Bundled artefacts) with per-component entries.
-5. **Design decisions / Architecture revisions / Risks.** Historical context.
+- **Hooks:** `- **<Name> hook.** <Description>. <Version tags>.` Internal structure documented inline.
+- **Procedure docs:** `- **<name>.md** — V<N> origin, procedure doc V<N>. <Description>.`
+- **Slash commands:** `- **/<name>** — <description>. <Origin version>. **Shipped V<N>**.`
+- **Bundled artefacts:** `- <count> <type> under <path>: <list>.` or `- <path> — <description>.`
 
-**Component entries** (under *Plugin components*):
-
-- **Hooks:** `- **<Name> hook.** <Description>. <Version tags for origin and major changes>.` Internal structure (lettered sub-checks for PreToolUse, tiered behavior for SessionStart) documented inline.
-- **Procedure docs:** `- **<name>.md** — V<N> origin, procedure doc V<N>. <Description>. <Version tags for changes>.`
-- **Slash commands:** `- **/<name>** — <description>. <Origin version>. **Shipped V<N>** (rename history if any).`
-- **Bundled artefacts:** Bullet list: `- <count> <type> under <path>: <list>.` or `- <path> — <description>. <Version tag>.`
-
-**When updated.** Any session that adds, removes, or changes a plugin component. The close procedure's doc-code parity audit (step 4 in implementation close) catches misses.
+**When updated.** Any session that changes a plugin component. Doc-code parity audit catches misses.
 
 ---
 
 ## Research folder file shape
 
-`Dev/Resources/research/<topic>.md` holds findings from research done during dev sessions. Distinct from plugin-side `_method/research/` (consumer projects).
+`Dev/Resources/research/<topic>.md` — findings from dev-session research. Distinct from plugin-side `_method/research/`.
 
-**Naming.** Kebab-case topic slug, no date prefix. Example: `convergence-reconciliation-v134.md`, `desktop-app-plugin-upload.md`. Appending a session tag to the filename is optional — useful when the same topic gets revisited in a later session.
+**Naming.** Kebab-case topic slug, no date prefix. Session tag suffix optional for revisited topics.
 
-**Structure.** No fixed template. Common patterns:
+**Structure.** No fixed template — free-form, Q&A, or audit format as needed.
 
-- **Question/Answer format:** H1 title, `## Question`, `## Answer`, `## Details`. Used for factual lookups.
-- **Audit/analysis format:** H1 title with session tag, summary table, findings by category. Used for structured investigations.
-- **Free-form findings:** H1 title, prose sections. Used for exploratory research.
-
-**Persistence.** Indefinite — not deleted when consumed. Updated rather than duplicated when the same topic is revisited.
-
-**Maintenance.** Zero — no MANIFEST tracking, no BACKLOG entries, no pruning. Valid on queued-batch `Inputs:` lines.
-
-**When written.** During any session where Claude investigates an external fact or does a structured analysis. Filing is mandatory per CLAUDE.md → *File research before moving on*. Unfiled research is lost at session end.
+**Lifecycle.** Persists indefinitely; updated rather than duplicated on revisit. Zero maintenance — no MANIFEST tracking, no BACKLOG entries. Valid on queued-batch `Inputs:` lines. Filing mandatory per CLAUDE.md → *File research before moving on*.
 
 ---
 

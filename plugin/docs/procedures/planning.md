@@ -47,7 +47,7 @@ After loading state, perform in order:
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
 4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with `Surfaced` tag. Flag entries older than 5 build cycles as neglected. Empty/absent → note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs or any older than 5 cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
 5. **[BRIEF] Sort test notes** into Suggestions candidates (bugs against existing UX entries) and Discoveries candidates (new ideas). Skip if not `test notes`/`mixed`.
-5. **[DISCUSS] Discuss changes with user.** Propose better options; push back by default.
+5b. **[DISCUSS] Discuss changes with user.** Propose better options; push back by default.
 6. **[SILENT] Dedupe and reclassify.** Every candidate: already covered (skip), fits UX.md (build batch), or out of scope (Discovery).
 7. **[BRIEF] Suggestions list.** Fixes fitting current scope. Label `[Requested]` or `[Suggested]`. Ask: next build or BACKLOG for later?
 8. **[BRIEF] Discoveries list.** Outside current scope. Don't fix. Each needs a UX.md update via planning batch first.
@@ -63,31 +63,19 @@ After loading state, perform in order:
     - Commit: `plan: <one-line summary of structural changes>`.
     - No tag. No push. `/sovgit` available afterward for ad-hoc push.
 
-## Close previous build's test session (V27)
+## Close previous build's test session
 
-Implements *Never infer completion* and unblocks the test-confirmation gate. If TEST-LOG has rows from the previous batch with `Confirmed Explicitly: No`, walk them **one at a time** before other planning work. Already `Yes` rows skipped.
+If TEST-LOG has rows from the previous batch with `Confirmed Explicitly: No`, walk them **one at a time** before other planning work. Already `Yes` rows skipped. All rows `Yes` or TEST-LOG empty → log one line, proceed.
 
-**Per row:**
+**Per row:** Read `Test Description` aloud. Ask: "Pass, Fail, or Skipped?" Wait for this row's answer. Update: `Status`, `Confirmed Explicitly: Yes (YYYY-MM-DD)`, `Notes` (required for Fail/Skipped). Next row.
 
-1. Read the `Test Description` aloud.
-2. Ask: "Pass, Fail, or Skipped?" — Pass = works as expected; Fail = broken (I'll ask what happened); Skipped = didn't test (I'll ask why).
-3. Wait for *this specific row's* answer.
-4. Update: `Status`, `Confirmed Explicitly: Yes (YYYY-MM-DD)`, `Notes` (required for Fail/Skipped).
-5. Next pending row.
+**No bulk asks.** Push back: "I need to record each row by name. Next: row #042, *<test description>* — Pass, Fail, or Skipped?"
 
-**No bulk asks.** If the user says "they're all fine," push back with the next row:
+**Order:** lowest unconfirmed `#` first. **Skipped requires a reason** — satisfies the gate as "accounted for," not as passing.
 
-> "I need to record each row by name. Next: row #042, *<test description>* — Pass, Fail, or Skipped?"
+**Identifying previous batch rows:** `proxies/build-log.md` → first reference → per-build file H1 first token = session ID. Filter TEST-LOG rows by matching Session. Fallback: every `Confirmed Explicitly: No` row.
 
-**Order:** lowest unconfirmed `#` first, sequential.
-
-**Skipped requires a reason.** Skipped satisfies the gate only as "accounted for," not as passing.
-
-**Identifying previous batch rows:** `proxies/build-log.md` (or legacy `build-log/INDEX.md`) → first reference → per-build file → H1 first token = session ID. Legacy `BUILD-LOG.md`: first `## <token>` heading. Filter TEST-LOG rows by matching Session. Fallback: every row with `Confirmed Explicitly: No` counts.
-
-**Already done:** if all previous-batch rows are `Yes` or TEST-LOG is empty, log one line and proceed.
-
-If the user came for a non-planning reason but read-back is pending, open with: *"Before your question — N pending tests from session X. First: <test description>?"*
+If read-back is pending but user came for a different reason, open with: *"Before your question — N pending tests from session X. First: <test description>?"*
 
 ## The two flows
 
@@ -197,15 +185,7 @@ If BACKLOG contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V4
 
 ## Deferred build-material aging
 
-Folder mode: completed batches leave gaps in `NNNN` numbering. Any batch with a number below the highest gap is aging.
-
-**Detection:** Scan `BACKLOG/` for `NNNN-*.md`. Find missing numbers in `[1, max]`. Most recently completed = max(missing). Batches below that threshold are aging.
-
-**Surfacing:** One line per aging batch: "Batch NNNN (*<heading>*) predates completed batch MMMM. Consider pairing with current top batch or scheduling next."
-
-Prefer pairing but respect session-length constraint. Don't reorder automatically.
-
-Single-file mode: skip. No aging items: skip silently.
+Folder mode only. Scan `BACKLOG/` for `NNNN-*.md`; gaps in numbering = completed batches. Batches below the highest gap are aging. Surface one line each: "Batch NNNN predates completed MMMM — consider pairing or scheduling." Don't reorder automatically. No aging items → skip silently.
 
 ## TEST-LOG row pruning
 
@@ -239,7 +219,7 @@ Run as part of any planning session that adds, removes, or reorders batches. Fou
 
 1. **Forward-dependency scan.** For each batch, verify its Dependencies resolve to shipped batches or earlier queued batches. Flag violations.
 2. **Stale-reference scan.** For each batch that renames/deletes/moves a file or skill, grep later batches for references to the old name. Flag hits.
-3. **Reorder if needed.** Propose reordering to the user with one-line justification per move.
+3. **Reorder if needed.** Propose reordering with one-line justification per move. Apply ordering principles: dependency flow first, then project-structure reasoning, then security bias (`[SECURITY]`-marked batches earlier), then stale-reference avoidance.
 4. **Fix scope text.** Update stale references in affected batch scope in the same pass as the reorder.
 
 Skip if no structural changes to BACKLOG were made this session.

@@ -88,9 +88,7 @@ The rationale field records why the component was built — one clause, max 15 w
 
 Include things the user might ask about. Skip trivial helpers and boilerplate.
 
-**Paths field.** The `(path)` anchors the V39 read-before-edit gate. When an edit targets a MANIFEST-pathed file, the hook denies the first attempt with the entry inlined; retry succeeds (hook scans for prior block-once deny). Entries without paths skip the gate.
-
-**Paths-field shape:**
+**Paths field.** The `(path)` anchors the read-before-edit gate — hook denies first edit to a pathed file with the entry inlined; retry succeeds. Entries without paths skip the gate. Shapes:
 - Single file: `(app/src/TaskCard.kt)`
 - Multi-file list: `(a.kt, b.kt)`
 - Directory: `(app/src/settings/)` — trailing slash = prefix match
@@ -243,23 +241,13 @@ Lightweight index files summarizing source-of-truth docs. Claude reads proxies f
 
 **Entries section.** One line per entry. `L<N>` = starting line number in the source doc (for offset/limit reads).
 
-### UX proxy (ux.md)
+### Summary proxies
 
-Source: `UX.md`. State summary: project context (one sentence), principle count, functionality count.
-
-Entries: one line per UX principle, then one line per functionality. Format: `- L<N> **<name>** — <one-phrase summary>`.
-
-### MANIFEST proxy (manifest.md)
-
-Source: `MANIFEST.md`. State summary: entry count.
-
-Entries: one line per MANIFEST entry. Format: `- L<N> **<name>** (<path>)`. Description and rationale omitted — dip for detail.
-
-### Research index proxy (research.md)
-
-Source: `_method/research/` directory. State summary: file count.
-
-Entries: one line per file. Format: `- <filename> — <first heading or one-phrase summary>`. No line numbers.
+| Proxy | Source | State summary | Entry format |
+|---|---|---|---|
+| `ux.md` | `UX.md` | Project context, principle count, functionality count | `- L<N> **<name>** — <summary>` (principles then functionalities) |
+| `manifest.md` | `MANIFEST.md` | Entry count | `- L<N> **<name>** (<path>)` (description/rationale omitted) |
+| `research.md` | `_method/research/` | File count | `- <filename> — <summary>` (no line numbers) |
 
 ### BACKLOG index proxy (backlog.md)
 
@@ -363,23 +351,21 @@ Three formats, auto-detected:
   Serves UX.md: [entry name(s)].
   ```
 
-  **Handoff notes:** Optional block before Serves line during mid-build handoffs. Contains build-time context for resume. Stripped by `/sovclose` when batch completes.
+  **Handoff notes:** Optional block before Serves line during mid-build handoffs. Build-time context for resume; stripped by `/sovclose` on completion.
 
-  **Status: line.** Two active values under V99+: `queued` (default — absent means queued) and `parked` (paused by planning). Legacy `active` and `shipped` still recognized by the parser but no longer written. Build-snapshot architecture uses `_method/active-build.md` existence instead of `active`; the build-log entry replaces `shipped` as the completion record — `/sovclose` deletes the snapshot without writing the batch back. Position: first line of batch body, before Goal. Parser skips `shipped` (legacy) and `parked` when finding top build batch.
+  **Status: line.** `queued` (default — absent means queued) or `parked` (paused by planning). Position: first line of body, before Goal. Parser skips `parked` when finding top batch. Legacy `active`/`shipped` recognized but no longer written.
 
-  **Scope-context sections.** Goal/Outputs/Success criteria always present. Decisions/Dependencies omitted when empty. Red flags only when security-shaped scope.
+  **Changes: delimiter.** Separates scope-context from build operations. Required; parser falls back for legacy.
 
-  **Changes: delimiter.** Separates scope-context from change list. Required for new batches; parser falls back for legacy.
+  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, read by `/sovclose` for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) recap-time only.
 
-  **Change-list labels.** `[Requested]`/`[Suggested]` after `- `. Written by planning, preserved by `/sovrecap`, read by `/sovclose` for recap. Labels on changes, not files. Carve-out labels (`[Prerequisite]`/`[Re-batch]`) are recap-time only.
+  **Inputs:** Non-standard resources; standard docs omitted.
 
-  **Inputs: line.** Non-standard resources between change list and Files:. Standard docs omitted.
+  **Files:** `- [ ]`/`- [x]` task list per file. PreToolUse blocks edits to unlisted files.
 
-  **Files: sub-section.** `- [ ]`/`- [x]` task list per file. PreToolUse blocks edits to files not on the list.
+  **Tests:** `- <desc> [<Type>] [<Verifier>]` per test. Used for TEST-LOG rows.
 
-  **Tests: sub-section.** `- <desc> [<Type>] [<Verifier>]` per test. After-build uses these for TEST-LOG rows.
-
-  **Serves name matching.** Case-insensitive whitespace-trimmed match against doc headings. PreToolUse blocks mismatches on locked docs.
+  **Serves:** Case-insensitive match against doc headings. PreToolUse blocks mismatches on locked docs.
 
 - **Test sessions.** Index of per-session test files from `test-log/`. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. `/sovclose` prepends one line per build. The test-confirmation gate and TEST-LOG tripwire resolve test data from the per-session files in `test-log/`; this section is the index. See *TEST-LOG structure* above for column specs and per-session file format.
 
@@ -393,13 +379,9 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 
 **Phase detection.** Snapshot existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy: `Status: active` in BACKLOG still detected for pre-V90 projects.
 
-**Snapshot format.** Standalone markdown: batch heading (H1), scope context, build operations, plus `## Close handoff` section at bottom — same content as the per-batch file, extracted to its own file with the handoff section appended at creation.
+**Snapshot format.** Standalone markdown: batch heading (H1), scope context, build operations, plus `## Close handoff` at bottom.
 
-**Close handoff section.** `## Close handoff` at snapshot bottom. Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes with nothing for `/sovclose` to act on are skipped.
-
-`/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative — replacing codebase re-exploration. If empty or absent (legacy snapshots), falls back to scanning the batch's Files: list.
-
-The section is build-time context, not permanent scope — it is consumed by `/sovclose` and deleted with the snapshot.
+**Close handoff section.** Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes skipped. `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative. If empty or absent (legacy snapshots), falls back to scanning Files:. Consumed by `/sovclose` and deleted with the snapshot.
 
 ---
 *No-code method — Version 104.*
