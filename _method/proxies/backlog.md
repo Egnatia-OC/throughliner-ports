@@ -4,7 +4,7 @@
 
 All deferred work and test tracking. Six sections, top-to-bottom priority. Build batches in per-batch files under `_method/BACKLOG/`. Test session files in `_method/test-log/`.
 
-132 batches shipped or cancelled (V18–0149). Full history in `_method/proxies/build-log.md`.
+133 batches shipped or cancelled (V18–0150). Full history in `_method/proxies/build-log.md`.
 
 ## Red flags
 
@@ -18,7 +18,6 @@ None.
 
 - `0130-sovsetup-case1-retest.md` — /sovsetup case 1 retest (post-fix verification). E2E test.
 - `0131-build-lifecycle-retest.md` — Build lifecycle retest (post v115–v129 changes). E2E test.
-- `0150-graduation-step3-activate.md` — Graduation step 3: activate self-management.
 - `0147-merge-ideas-oqs.md` — Merge Ideas into Open Questions + combine ideation/deliberation.
 
 Parked:
@@ -54,7 +53,7 @@ None.
 
 ## Ideas
 
-None.
+- 2026-05-31 — Fix invalid escape sequence `\`` in pre_tool_use.py line 681 (SyntaxWarning on Python 3.12+; will become an error in a future version). Use raw string or `\\``.
 
 ---
-*No-code method — Version 107.*
+*No-code method — Version 108.*

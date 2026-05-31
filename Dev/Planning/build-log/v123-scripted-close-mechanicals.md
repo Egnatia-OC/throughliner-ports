@@ -1,7 +1,0 @@
-# v123 — 2026-05-28 — Scripted close mechanicals (dev-side)
-
-**What shipped.** Python script at `Dev/Resources/scripts/bump_version.py` that handles footer bumps across 24 files, `plugin.json` version, `PLUGIN_METHOD_VERSION` in `session_start.py`, and proxy header/line-number regeneration. Updated `Dev/session-protocol.md` close steps (both implementation and lighter) to reference the script with usage examples. Two modes: full bump + proxies (`<old> <new> --session-tag <tag>`) and proxies-only (`--session-tag <tag>`).
-
-**Decisions taken and why.** Footer discovery uses glob + string match rather than a hardcoded file list — catches all 24 footer-bearing files including procedure docs (which aren't in session-reference.md's explicit list but do carry the footer). Test fixtures excluded by path prefix. Proxy regeneration updates line-number pointers by matching heading text between proxy entries and source doc headings; summaries and descriptions left to Claude since they require judgment. Version args made optional so lighter-close sessions can run proxy-only without a method version bump.
-
-**Pivots and surprises.** Test run caught 9 stale line-number pointers across the backlog and session-reference proxies — the script immediately proved its value on the existing proxy set. One expected warning: `Guide parity (crash-course/)` in the session-protocol proxy doesn't match source heading `Guide parity (Guides/crash-course/)` due to the proxy abbreviating the path.

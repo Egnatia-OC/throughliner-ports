@@ -86,8 +86,12 @@ TEST_LOG_DATA_ROW_PATTERN = re.compile(
 BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 BUILD_LOG_ENTRY_HEADING_PATTERN = re.compile(r"^#\s+(\S+)", re.MULTILINE)
 
-# build-log/ INDEX.md reference line: `- `NNN-name.md` — ...`
-BUILD_LOG_INDEX_REF_PATTERN = re.compile(r"^-\s+`(\d{3}-.+?\.md)`", re.MULTILINE)
+# build-log/ INDEX.md or proxy reference line: `- `NNN-name.md` — ...`
+# Accepts both batch-numbered (0001-name.md) and session-tagged (v150-name.md)
+# filenames — the dev project uses session tags, consumer projects use batch numbers.
+BUILD_LOG_INDEX_REF_PATTERN = re.compile(
+    r"^-\s+`((?:\d+|v\d+)-.+?\.md)`", re.MULTILINE
+)
 
 # --- V29 adoption-state primitives ---
 #

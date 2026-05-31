@@ -1,7 +1,0 @@
-# Drafts in flight
-
-This folder holds substantive content generated in chat that a future session might want to start from — drafts, comparison tables, structural sketches, protocol rules, column shapes, option matrices.
-
-Convention and lifecycle: see `session-reference.md` → *Planning artefacts* → *Drafts in flight*.
-
-This `.gitkeep` file exists only so the empty folder commits. Delete it once the folder has real drafts in it.

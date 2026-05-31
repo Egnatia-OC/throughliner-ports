@@ -1,7 +1,0 @@
-# v149 — 2026-05-31 — Graduation step 1: migrate planning artifacts into _method/
-
-**What shipped.** Mechanical migration of dev-side planning artifacts into `_method/` structure (batch 0148). Plugin name fixed (`no-code-method` → `sovereign-implementer` in plugin.json). Created `_method/` with full plugin-standard structure: BACKLOG/ (9 per-batch files split from monolithic BACKLOG.md), build-log/ (133 files), test-log/ (18 files), proxies/ (5 files: ux, manifest, research, backlog, build-log), planning/drafts/ (2 files), research/ (25 files + search-queries/ subdirectory). Dev/ originals retained as safety net. Path references updated in CLAUDE.md, session-protocol.md, session-reference.md.
-
-**Decisions taken and why.** Copy-not-move approach: user requested Dev/ originals stay in place to prevent functionality loss. This means both locations exist — `_method/` is canonical (references point there), `Dev/` is the safety net. Trade-off: some disk duplication but zero risk of broken references in unconverted docs.
-
-**Pivots and surprises.** One research file (`dev-side-architecture-map.md`) was untracked — had to be handled separately from the git-tracked files. The `parse_backlog.py` parser returns `{}` for the new per-batch files because they follow dev-side scope format (Goal/Inputs/Outputs) rather than consumer-project format (Files/Tests/Serves). This is expected — the parser will work correctly once graduation completes and batches use consumer format.

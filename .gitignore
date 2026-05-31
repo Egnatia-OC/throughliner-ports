@@ -13,10 +13,11 @@ desktop.ini
 *.swo
 *~
 
-# Common build artefacts (forward-looking — for plugin code from V18 onwards)
+# Build artefacts and caches
 node_modules/
 __pycache__/
 *.pyc
+.pytest_cache/
 .env
 .env.local
 plugin.zip

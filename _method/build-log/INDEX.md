@@ -2,7 +2,7 @@
 
 Running record of decisions, changes, and reasoning. Newest first. Written for a friend skimming — half a page per session, less when possible.
 
-For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
+For format details, see `plugin/docs/DOC-STRUCTURE.md`.
 
 ---
 

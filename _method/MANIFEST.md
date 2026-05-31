@@ -1,4 +1,4 @@
-﻿# MANIFEST.md — [Project Name]
+# MANIFEST.md — Sovereign Implementer
 
 Flat alphabetical glossary of named codebase elements. One line per entry. Maintained by Claude during builds. Use as a reference for unfamiliar names and as the basis for drift checks against `UX.md`. If scanning becomes hard, switch to alphabetical sections by area.
 

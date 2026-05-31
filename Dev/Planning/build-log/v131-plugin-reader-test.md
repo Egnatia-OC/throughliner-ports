@@ -1,7 +1,0 @@
-# v131 — 2026-05-29 — Plugin reader test (batch 0132)
-
-**What shipped.** Ran the plugin reader test against v0.97.0 with three Opus sub-agents (routing comprehension, build.md procedure walk-through, boundary enforcement). Found 6 top-tier, 6 middle-tier, 5 bottom-tier gaps. Fixed 4 top-tier gaps in-session via 8 doc edits to `plugin/docs/procedures/build.md` (7 edits) and `plugin/hooks/universal-behaviour.md` (1 edit). Filed 2 new batches (0133 close-enforcement hook, 0134 routing clarifications) and 2 new OQs (volunteered test results protocol, re-batching snapshot state). Research file at `Dev/Resources/research/plugin-reader-test-v97.md`.
-
-**Decisions taken and why.** Fixed doc-level gaps immediately rather than filing all as batches — the E2E test batches (0130, 0131) should run against corrected instruction text. Filed hook enforcement (0133) as a separate batch because it's code, not docs. Placed 0133 and 0134 before 0130/0131 in the queue so E2E tests run post-fix.
-
-**Pivots and surprises.** The close-enforcement gap was the strongest finding — three independent sub-agent findings converged on it. Close compliance had zero enforcement layers (no rule, no prohibition, no hook) while the test-confirmation gate had three. The `[PROPOSED EDIT PENDING]` gap was also surprising: the mechanism is well-documented in VOCABULARY.md and DOC-STRUCTURE.md but build.md — the procedure a stranger-Claude actually reads during a build — never mentions it.

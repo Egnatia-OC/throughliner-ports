@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v151-graduation-step3-activate-self-management.md` — 2026-05-31 — Graduation step 3: activate self-management
 - `v150-graduation-step2-claude-md.md` — 2026-05-31 — Graduation step 2: CLAUDE.md reconciliation
 - `v149-graduation-step1-migrate-artifacts.md` — 2026-05-31 — Graduation step 1: migrate planning artifacts into _method/
 - `v148-sovexplain-routing-manifest-capabilities.md` — 2026-05-31 — /sovexplain three-way routing + MANIFEST capabilities summary
@@ -149,4 +150,4 @@ Index format (newest first):
 - `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
 
 ---
-*No-code method — Version 107.*
+*No-code method — Version 108.*

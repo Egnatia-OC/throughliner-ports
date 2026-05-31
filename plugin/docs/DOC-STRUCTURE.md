@@ -386,4 +386,4 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 **Close handoff section.** Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes skipped. `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative. If empty or absent (legacy snapshots), falls back to scanning Files:. Consumed by `/sovclose` and deleted with the snapshot.
 
 ---
-*No-code method — Version 107.*
+*No-code method — Version 108.*

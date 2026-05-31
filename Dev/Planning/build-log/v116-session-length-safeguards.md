@@ -1,9 +1,0 @@
-# v116 — 2026-05-28 — Session-length safeguards
-
-**What shipped.** Batch 0113. Three advisory mechanisms to prevent context-window blowout: (1) pre-build sizing in `before-build.md` — warns when Files: has 8+ entries AND batch has unresolved Decisions, (2) mid-session compact nudge in `universal-behaviour.md` — fires when 15+ exchanges pass since `/sovbuild` without reaching `/sovclose`, (3) invocation-prompt compact nudge — every skill handoff `[PROMPT]` in procedure docs (`before-build.md`, `build.md`, `close.md`, `git.md`) now recommends `/compact` before the next skill. Fold-in from OQ "/sovgit close prompt" (surfaced v97): `git.md` step 5/6 Done prompts standardised to recommend `/compact` for continuing, `/clear` for fresh start. Two new VOCABULARY terms (Pre-build sizing, Compact nudge). Reference manual updated. Crash-course `cycle.html` callout added. INVENTORY.md updated with V93 annotations. All 279 tests pass. 24 footers bumped V92 → V93.
-
-**Decisions taken and why.** Put the mid-session compact nudge and invocation-prompt rule in `universal-behaviour.md` rather than individual procedure docs — the nudge is a cross-cutting behavioural rule, not procedure-specific. Pre-build sizing stays in `before-build.md` because it runs at a specific procedural step (after Files:/Tests: populated). Used the compound trigger (8+ files AND open decisions) rather than file count alone — high file count with resolved decisions is normal; it's the deliberation-heavy builds that blow out.
-
-**Pivots and surprises.** None. Straightforward doc-only batch.
-
-**Carried forward.** Cosmetic: `conftest.py` cp1252 em-dash encoding warning (from v115). The OQ "Session-close cost" (surfaced v112) remains open — 0113 addressed only the compact-nudge fold-in, not the broader structured-handoff and scripted-mechanicals ideas.

@@ -17,7 +17,9 @@ Then open a Claude Code session in your project folder. The plugin detects your 
 
 `plugin/` — the Claude Code plugin distributing the method's rules via hooks, skills, slash commands, and templates.
 
-`Dev/` — dev-internal roadmap, batch queue, research, and tests.
+`_method/` — this project's own planning artifacts, managed by the plugin (also serves as a working example of the method in action).
+
+`tests/` — automated test suite for plugin hooks and scripts.
 
 ## Versioning
 
