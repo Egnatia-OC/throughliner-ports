@@ -74,6 +74,12 @@ The user runs `/sovtersify` to compress verbose docs. The skill triages by size,
 
 The user needs this because as docs grow they consume more context window, leaving less room for actual work. Compression recovers context budget.
 
+### Research
+
+The user runs `/sovresearch` to trigger an external information search. The plugin assesses the current work, identifies a gap where research would improve a decision, drafts a query with criteria, and waits for approval before executing. Results are filed to `_method/research/search-queries/` for future reference.
+
+The user needs this because decisions often depend on external facts (API behavior, platform constraints, competing approaches) that Claude shouldn't guess at — structured research prevents building on wrong assumptions.
+
 ### Method explanation
 
 The user runs `/sovexplain` to ask about the method. Three question types: "what does my project do" (reads MANIFEST capabilities summary), "how do I do X" (routes to the matching skill or procedure), and "why is X this way" (looks up design rationale).

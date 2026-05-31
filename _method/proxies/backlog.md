@@ -16,16 +16,18 @@ None.
 
 ## Build batches
 
+- `0147-merge-ideas-oqs.md` — Merge Ideas into Open Questions + combine ideation/deliberation.
+- `0152-host-target-safeguards.md` — Host/target safeguards for self-developing project.
+- `0153-planning-procedure-constraints.md` — Planning procedure: "what you don't do" constraint.
 - `0130-sovsetup-case1-retest.md` — /sovsetup case 1 retest (post-fix verification). E2E test.
 - `0131-build-lifecycle-retest.md` — Build lifecycle retest (post v115–v129 changes). E2E test.
-- `0147-merge-ideas-oqs.md` — Merge Ideas into Open Questions + combine ideation/deliberation.
 
 Parked:
-- `0095-sovtest-e2e-validation.md` — /sovtest skill E2E validation. **PARKED.**
 - `0151-graduation-step4-retire-protocol.md` — Graduation step 4: retire dev-side protocol files. **PARKED.**
 
 Cancelled:
 - `0146-first-graduation.md` — First graduation (replaced by 0148–0151). **CANCELLED.**
+- `0095-sovtest-e2e-validation.md` — /sovtest skill E2E validation. **CANCELLED** (v153 planning — stale).
 
 ## Test sessions
 
@@ -49,11 +51,18 @@ Cancelled:
 
 ## Open questions
 
-None.
+### Build-log writability during planning
+*Surfaced: v153*
+
+During this planning session, Claude successfully wrote a build-log entry for v152 (a pre-activation rename session that had no build-log record). The hook allowed it — build-log is in the method writable surface. But build-log entries are normally a `/sovclose` artifact. If Claude can create build-log entries during `/sovplan`, it could fabricate or backdate session records in a user project, or write entries for work that never went through the build pipeline.
+
+**Why it matters.** Build-log is the project's historical record. If planning sessions can write to it freely, the record's integrity depends on Claude's judgment rather than mechanical enforcement. The v152 backfill was legitimate (documenting a real pre-activation session), but the same capability could be misused.
+
+**Next step.** Decide whether build-log writes should be hook-gated to `/sovclose` and `/sovplan` step 13 (commit) only, or whether the current permissive surface is acceptable given that build-log entries are append-only and git-recoverable.
 
 ## Ideas
 
-- 2026-05-31 — Fix invalid escape sequence `\`` in pre_tool_use.py line 681 (SyntaxWarning on Python 3.12+; will become an error in a future version). Use raw string or `\\``.
+None.
 
 ---
 *Sovereign Implementer — Version 108.*

@@ -1,8 +1,8 @@
 # /sovtest skill E2E validation
 
-Status: parked
+Status: cancelled
 
-**Parked.** v114. 0088 shipped — dep met. Shelved: user is cowboy-testing informally rather than running structured E2E batches. Revisit when there's a specific reason to formalize. Note: 0120 merges TEST-LOG into BACKLOG — when this batch unparks after 0120 ships, the test plan needs a full rewrite against the merged BACKLOG structure.
+**Cancelled.** v153 planning. Stale — 55+ batches completed since filed. /sovtest E2E coverage is partially addressed by 0131 (build lifecycle retest walks through close + test rows). Remaining /sovtest-specific scenarios can be batched fresh if needed. 0088 shipped — dep met. Shelved: user is cowboy-testing informally rather than running structured E2E batches. Revisit when there's a specific reason to formalize. Note: 0120 merges TEST-LOG into BACKLOG — when this batch unparks after 0120 ships, the test plan needs a full rewrite against the merged BACKLOG structure.
 
 **Goal.** End-to-end test of `/sovtest` skill (shipped in 0094) against a real project. Validate the full flow: invoke after build, follow guided walkthrough, report failure, get debugging support.
 
