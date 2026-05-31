@@ -1,0 +1,7 @@
+# v125 — 2026-05-28 — Dev-side structure mirroring audit
+
+**What shipped.** Research file (`Dev/Resources/research/dev-side-mirroring-audit.md`) with systematic assessment of 11 plugin-side patterns against dev-side equivalents. BACKLOG.md restructured: 118-row shipped history table removed (replaced with pointer to build-log/INDEX.md), Ideas section added, Approach field established on queued batches. Two new batches scoped (0126, 0127). Two OQs promoted to batch 0126 (M6 session-open state summary, M8 step 2 load-purpose). Full 0121 gap-list reconciliation — all items addressed, deferred, or confirmed parked.
+
+**Decisions taken and why.** Skipped Planning batches section for dev-side BACKLOG — OQ "Next step" field already handles blocking relationships, so the separation wouldn't add value. Skipped VOCABULARY equivalent, formal DOC-STRUCTURE equivalent, Status: line, build-snapshot architecture, proposed-edits mechanism, and [SECURITY] marker — all serve plugin-side needs (hook enforcement, template scaffolding, phase-aware editing) that don't exist dev-side. Adopted only what the prose-only structure actually needed: Approach field (no build procedure to infer "how"), Ideas section (lower friction than full OQs), and history table removal (120 lines of context saved per session).
+
+**Pivots and surprises.** None. Scope matched expectations. The audit confirmed the dev-side convergence strategy: most plugin-side patterns exist to serve hooks and templates, making them unnecessary where enforcement is prose-based.

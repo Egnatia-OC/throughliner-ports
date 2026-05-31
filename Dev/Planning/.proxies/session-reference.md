@@ -1,4 +1,4 @@
-<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-31 v148 | when: dip on demand -->
+<!-- proxy | source: Dev/session-reference.md | generated: 2026-05-31 v149 | when: dip on demand -->
 
 # Session reference
 
@@ -22,4 +22,4 @@ Companion to session-protocol.md. Entry shapes, footer bump lists, testing detai
 - L277 **INVENTORY entry shape** — 5-section structure, per-component entry formats, when updated
 - L292 **Research folder file shape** — naming, three structure patterns, persistence, maintenance
 - L304 **Dev-side proxy file spec** — location, HTML comment header, body format, BACKLOG proxy difference, regeneration
-- L336 **Plugin migration context** — V17 onwards, design docs pointer
+- L334 **Plugin migration context** — V17 onwards, design docs pointer

@@ -36,7 +36,7 @@ In order:
    - `plugin/docs/DOC-STRUCTURE.md` — structural specs for project docs: entry shapes, section ordering, proxy format (~410 lines).
    - `plugin/docs/VOCABULARY.md` — method term definitions, cross-referenced from other docs (~140 lines).
    - `Guides/Reference manual.md` — install/usage primer and method overview for orientation (~410 lines).
-3. Read `Dev/Planning/BACKLOG.md` in full — *Queued batches* has full scope for each upcoming batch, *Open questions* has method-level questions. Both inform session routing.
+3. Read the BACKLOG: `_method/proxies/backlog.md` (index) for queue overview, then dip into per-batch files at `_method/BACKLOG/` for scope detail. *Open questions* are in the proxy's OQ section. Reading the proxy whole prevents stale-content drift.
 4. **Batch-input check.** Scan the top queued batch's *Inputs* for out-of-repo references — "Alex has the file locally," "from the previous chat," "see the artefact at [external location]," or any "[X] draft" with no committed path. These are uncommitted dependencies missing at session start. If found, **halt** — surface the offending line and fix (per `session-reference.md` → *Drafts in flight*) before the session proper starts.
 4b. **OQ blocker check.** Scan the top queued batch's scope for references to unresolved open questions or parked ideas that would force mid-session improvisation. If the batch depends on an answer that doesn't exist yet, **halt** — resolve via planning or deliberation before starting the batch.
 5. **State summary.** Brief summary: current version (session tag, method version, plugin version), queue depth, next batch (number and title), OQ count, notable conditions (parked batches, stale OQs). One short paragraph — not a dashboard. **OQ staleness detection:** flag any OQ whose `Surfaced` tag is 20+ session-tags old — nudge toward a deliberation session to resolve or re-park.
@@ -130,9 +130,9 @@ Use `git diff` to identify what changed — the dev-side equivalent of the plugi
 
 1. **[BRIEF] Doc-code parity** (see *Doc-code parity* below). Fix docs before the build-log entry.
 
-2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `Dev/Planning/BACKLOG.md` → *Queued batches* for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
+2. **[BRIEF] Frame-correction sweep.** If this session corrected a load-bearing frame — something next-session Claude would absorb wrongly from BACKLOG's queued batches — audit `_method/BACKLOG/` per-batch files and `_method/proxies/backlog.md` for references to the old frame. Fix in this commit. Bar: not "anything changed" but "rewrites how future-Claude should think about [X]."
 
-3. **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed, deleted, or moved file this session: grep `Dev/Planning/BACKLOG.md` → *Queued batches* and any parked batches for literal old-name/old-path references. Fix in this commit. Pattern-match level — literal strings, not semantics. Complements step 2 (semantic frame check).
+3. **[BRIEF if found, SILENT if not] Staleness sweep.** For each renamed, deleted, or moved file this session: grep `_method/BACKLOG/` per-batch files and any parked batches for literal old-name/old-path references. Fix in this commit. Pattern-match level — literal strings, not semantics. Complements step 2 (semantic frame check).
 
 4. **[BRIEF if found, SILENT if not] Lost-feature check.** Scan parked batches for parking conditions just met by this session's work (e.g. "parked until X ships" where X just shipped). Surface candidates and ask about unparking. Skip if no parked batches exist or nothing in this session could satisfy a parking condition.
 
@@ -140,7 +140,7 @@ Use `git diff` to identify what changed — the dev-side equivalent of the plugi
    - **What shipped.** One bullet per notable change.
    - **Sweep findings.** Anything surfaced by steps 1–4: doc-parity gaps fixed, frame corrections made, staleness fixes, lost-feature candidates.
 
-6. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+6. **[SILENT] Build-log entry** — create a new file in `_method/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `_method/proxies/build-log.md`.
 
 7. **[BRIEF] Idea sweep with routing.** Review session for ideas, suggestions, or observations not implemented. Triage each to one destination:
    - **BACKLOG batch** — add to BACKLOG.md → *Queued batches*.
@@ -198,7 +198,7 @@ Run for non-implementation sessions. Steps producing no-ops are skipped explicit
 
 1. **[BRIEF] Idea sweep with routing.** Same triage as implementation close step 7. Nothing left unrouted. (First because no parity/frame work precedes it — sweep while context is freshest.)
 
-2. **[SILENT] Build-log entry** — create a new file in `Dev/Planning/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `Dev/Planning/build-log/INDEX.md`.
+2. **[SILENT] Build-log entry** — create a new file in `_method/build-log/`; shape in `session-reference.md` → *BUILD-LOG entry shape*. Prepend index line to `_method/proxies/build-log.md`.
 
 3. **[PROMPT] Turn boundary.** Judgment done. State values: session tag (`v<N>`), whether footers need bumping (old → new if so), whether proxies need regeneration. Recommend `/compact` if session was long. Often short enough to continue directly.
 
@@ -257,7 +257,7 @@ Catching a gap in the session that created it is cheap. Three sessions later it'
 3. **Templates.** New sections, markers, canonical formats → `plugin/templates/`.
 4. **Inventory.** New/changed plugin components → `Dev/INVENTORY.md`.
 5. **Reference manual.** Load-bearing concept/mechanism changes → `Guides/Reference manual.md` reflects it at narrative altitude.
-6. **Ghost references.** Audit for paragraphs asserting state contradicted by `Dev/Planning/build-log/` entries or actual code. On disagreement, build-log wins.
+6. **Ghost references.** Audit for paragraphs asserting state contradicted by `_method/build-log/` entries or actual code. On disagreement, build-log wins.
 
 **Escape clause.** If the audit surfaces a gap whose doc work would dominate the session — surface in chat, weigh fold-in vs. new-session, decide together. **Default: fold in now.** Cost is usually overstated; shipping inconsistency is worse.
 

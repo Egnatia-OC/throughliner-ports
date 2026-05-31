@@ -12,7 +12,7 @@ Companion to `session-protocol.md`. Dip into sections as needed — don't load t
 
 ## Testing
 
-Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. Outcomes → `Dev/Planning/test-log/`.
+Testing means **smoke-testing in Claude Code** — install the plugin via local marketplace, run a desktop-app burner session against a scratch directory or Taskflow. Outcomes → `_method/test-log/`.
 
 **Pre-install options:**
 
@@ -65,7 +65,7 @@ Tags compose freely. Genuine tension (e.g. `[SILENT, PROMPT]`) is a doc bug — 
 
 When a session substantively changes the method/plugin, every method-side `*No-code method — Version N.*` footer bumps. **Dev-internal sessions skip.**
 
-Method-side = describes how the consumer method works. Dev-internal files (`Dev/Planning/build-log/`, `Dev/Planning/test-log/`, `BACKLOG.md`, these session files) don't carry the footer.
+Method-side = describes how the consumer method works. Dev-internal files (`_method/build-log/`, `_method/test-log/`, BACKLOG per-batch files, these session files) don't carry the footer.
 
 ### Plugin-side (the leader)
 
@@ -105,20 +105,20 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 | File | Lifecycle | Deleted when |
 |---|---|---|
-| `Dev/Planning/BACKLOG.md` → *Queued batches* entries | **Transient.** Full scope per batch. Removed at close when shipped — commit + code + docs are source of truth. | Batch ships (session close). |
-| `Dev/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
+| `_method/BACKLOG/` per-batch files | **Transient.** Full scope per batch. Removed at close when shipped — commit + code + docs are source of truth. | Batch ships (session close). |
+| `_method/planning/drafts/<topic>.md` | **Transient.** Substantive content a future session might start from. Committed when "good enough to walk away from." | Consumed (folded into spec/scope/persistent location). Dead-ends pruned with BUILD-LOG note. |
 | `Dev/INVENTORY.md` | **Living.** Current plugin architecture. | Never. |
-| `Dev/Planning/BACKLOG.md` | **Living.** Rolling roadmap + open questions. | Never. |
-| `Dev/Planning/build-log/` | **Historical.** One file per session, INDEX.md newest first. | Never. |
-| `Dev/Planning/test-log/` | **Living.** One file per session, one row per check. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
+| `_method/proxies/backlog.md` | **Living.** Rolling index of batches, test sessions, OQs. | Never. |
+| `_method/build-log/` | **Historical.** One file per session, index at `_method/proxies/build-log.md`. | Never. |
+| `_method/test-log/` | **Living.** One file per session, one row per check. Status may flip. | Rows for removed components pruned by planning subagent (V53). |
 | `Dev/session-protocol.md` | **Living.** Session lifecycle — always read. | Never. |
 | `Dev/session-reference.md` (this file) | **Living.** Entry shapes, lists, historical — dip on demand. | Never. |
 
 ### Drafts in flight
 
-`Dev/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. Committed in the drafting session's commit; "good enough to walk away from" is the bar. Deleted when consumed. Dead-end drafts: prune with BUILD-LOG note.
+`_method/planning/drafts/<topic>.md` is where substantive chat content lands as soon as a future session might start from it. Committed in the drafting session's commit; "good enough to walk away from" is the bar. Deleted when consumed. Dead-end drafts: prune with BUILD-LOG note.
 
-**Corollary.** If a batch's *Inputs* names content unreachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get it into `Dev/drafts/` retroactively or restate as something rebuildable from repo contents. Session-open scan catches the reading side; this catches the writing side.
+**Corollary.** If a batch's *Inputs* names content unreachable from the committed repo ("Alex has the file locally," "from the previous chat," etc.) — that's a bug. Get it into `_method/planning/drafts/` retroactively or restate as something rebuildable from repo contents. Session-open scan catches the reading side; this catches the writing side.
 
 ---
 
@@ -126,7 +126,7 @@ V21's smoke test caught a footer miss via the SessionStart tripwire. The two-loc
 
 Running record of decisions, changes, and reasoning. `INDEX.md` lists entries newest-first. Exists so Alex can talk progress without reading commits, and so future sessions can reconstruct *why*.
 
-One file per session in `Dev/Planning/build-log/`, named `vNN-slug.md`:
+One file per session in `_method/build-log/`, named `vNN-slug.md`:
 
 ```markdown
 # V<N> — YYYY-MM-DD — One-line summary
@@ -139,7 +139,7 @@ One file per session in `Dev/Planning/build-log/`, named `vNN-slug.md`:
 
 ```
 
-After writing the file, prepend an index line to `Dev/Planning/build-log/INDEX.md`:
+After writing the file, prepend an index line to `_method/proxies/build-log.md`:
 `- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — One-line summary`
 
 **Note:** Consumer build-log entries carry an additional `## Performance` section — see `plugin/docs/DOC-STRUCTURE.md`. This dev build-log doesn't use it.
@@ -150,7 +150,7 @@ Don't pad. Half a page is good; shorter is better.
 
 ## Queued batch entry shape
 
-`Dev/Planning/BACKLOG.md` → *Queued batches* section. Full scope per upcoming batch. Read at session open for context; removed when batch ships (session close).
+`_method/BACKLOG/` per-batch files. Full scope per upcoming batch. Read at session open for context; removed when batch ships (session close).
 
 Each entry:
 
@@ -186,7 +186,7 @@ Each entry:
 
 ## Open-questions entry shape
 
-Open questions live in `Dev/Planning/BACKLOG.md` → *Open questions* section. Parking lot for method-level questions not yet batch-ready.
+Open questions live in `_method/proxies/backlog.md` → *Open questions* section. Parking lot for method-level questions not yet batch-ready.
 
 Each entry:
 
@@ -226,7 +226,7 @@ The session-open scan is what makes graduation triggers fire.
 
 ## Ideas section entry shape
 
-Ideas live in `Dev/Planning/BACKLOG.md` → *Ideas* section. Lightest-weight capture — raw one-liners from any session type.
+Ideas live in `_method/proxies/backlog.md` → *Ideas* section. Lightest-weight capture — raw one-liners from any session type.
 
 Each entry:
 
@@ -246,7 +246,7 @@ Each entry:
 
 ## TEST-LOG entry shape
 
-`Dev/Planning/test-log/` is the smoke-test record. One file per session, named `vNN-slug.md`. One row per check:
+`_method/test-log/` is the smoke-test record. One file per session, named `vNN-slug.md`. One row per check:
 
 | Column | Meaning |
 |---|---|
@@ -270,7 +270,7 @@ Each entry:
 
 ## Test sessions index
 
-`Dev/Planning/test-log/INDEX.md` — standalone index of per-session files. Newest-first bullet list: `- [vNN-slug.md](vNN-slug.md) — YYYY-MM-DD — Summary`. New line prepended at session close; never removed. Non-session tests (e.g. cowboy tests) use `<type>-YYYY-MM-DD.md`.
+Test session index now lives in `_method/proxies/backlog.md` → *Test sessions* section. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. New line prepended at session close; never removed. Non-session tests (e.g. cowboy tests) use `<type>-YYYY-MM-DD.md`. Per-session files at `_method/test-log/`.
 
 ---
 
@@ -291,7 +291,7 @@ Each entry:
 
 ## Research folder file shape
 
-`Dev/Resources/research/<topic>.md` — findings from dev-session research. Distinct from plugin-side `_method/research/`.
+`_method/research/<topic>.md` — findings from dev-session research. Same location as plugin-side convention.
 
 **Naming.** Kebab-case topic slug, no date prefix. Session tag suffix optional for revisited topics.
 
@@ -303,9 +303,7 @@ Each entry:
 
 ## Dev-side proxy file spec
 
-`Dev/Planning/.proxies/` holds lightweight index files summarizing dev-side source-of-truth docs. Same concept as plugin-side `_method/proxies/`, adapted for dev-side sources.
-
-**Location.** `Dev/Planning/.proxies/`. Three files: `session-protocol.md`, `session-reference.md`, `backlog.md`.
+Planning artifact proxies now live at `_method/proxies/` (5 files: ux.md, manifest.md, research.md, backlog.md, build-log.md). Dev-side protocol proxies remain at `Dev/Planning/.proxies/` (session-protocol.md, session-reference.md) until batch 0151 retires the protocol files.
 
 **HTML comment header.** Every proxy starts with:
 
@@ -335,6 +333,6 @@ Each entry:
 
 ## Plugin migration context
 
-From V17, this project distributes the method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `Dev/INVENTORY.md`, `Dev/Planning/BACKLOG.md`.
+From V17, this project distributes the method's rules across Claude Code plugin components (hooks, subagents, skills, slash commands) so adherence becomes structural rather than prompt-based. Design and roadmap: `Dev/INVENTORY.md`, `_method/proxies/backlog.md` + `_method/BACKLOG/`.
 
 Context for working in the project, not a procedural rule.

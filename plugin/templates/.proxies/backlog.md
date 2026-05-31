@@ -76,4 +76,4 @@ Raw, unprocessed ideas captured during any session type. Date + one-liner. Claud
 -->
 
 ---
-*No-code method — Version 106.*
+*No-code method — Version 107.*

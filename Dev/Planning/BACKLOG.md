@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-129 batches shipped or cancelled (V18–0145). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+130 batches shipped or cancelled (V18–0146). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -94,41 +94,108 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ---
 
-### 0146 — First graduation: dogfood SI onto itself
+### 0146 — First graduation: dogfood SI onto itself — **CANCELLED**
 
-**Goal.** Make the sovereign-implementer repo a real SI-managed project. The host SI (current shipped version) manages this project's planning artifacts, session lifecycle, and builds. No `/sovsetup` — manual migration, since the project predates the plugin and running setup on the plugin's own repo would be circular.
+**Cancelled.** v149. Replaced by 0148–0151 (graduation split into four sessions). Original scope was too large and too tangled — mechanical migration, content reconciliation, rule retirement, and activation all in one batch. Research filed: `Dev/Resources/research/dev-side-architecture-map.md`.
+
+---
+
+### 0148 — Graduation step 1: migrate planning artifacts into _method/
+
+**Goal.** Move dev-side planning artifacts into the plugin's expected `_method/` structure so hooks and procedures can find them. Mechanical migration — no content changes, no judgment calls. The `.no-code-method-skip` marker stays in place throughout; the plugin remains inactive.
 
 **Vocabulary.** "Host SI" = the installed plugin doing the work. "Target SI" = the source code at `plugin/` being built. They are never both active in the same session. Building happens under the host SI; E2E testing happens in a separate session with only the target SI installed. "Graduation" = the target SI passes E2E, gets repackaged and installed as the new host SI.
 
 **Scope.**
 
-1. **Fix plugin name.** `plugin/.claude-plugin/plugin.json`: rename `"name": "no-code-method"` → `"name": "sovereign-implementer"`.
+1. Fix plugin name: `plugin/.claude-plugin/plugin.json` → rename `"name": "no-code-method"` to `"name": "sovereign-implementer"`.
+2. Create `_method/` at sovereign-implementer root with subdirectories: `BACKLOG/`, `build-log/`, `test-log/`, `proxies/`, `planning/drafts/`, `research/`, `research/search-queries/`.
+3. Move `Dev/Planning/build-log/` contents → `_method/build-log/`.
+4. Move `Dev/Planning/test-log/` contents → `_method/test-log/`.
+5. Move `Dev/drafts/` contents → `_method/planning/drafts/`.
+6. Move `Dev/Resources/research/` contents → `_method/research/`.
+7. Split monolithic `Dev/Planning/BACKLOG.md` queued batches into per-batch files under `_method/BACKLOG/`. Shipped-history summary becomes a note in the BACKLOG proxy.
+8. Create plugin-standard proxies in `_method/proxies/` (ux, manifest, research, backlog, build-log). Old dev-side proxies (`Dev/Planning/.proxies/`) retired.
+9. Update all path references in CLAUDE.md, session-protocol.md, session-reference.md, and INVENTORY.md to point at new `_method/` locations.
 
-2. **CLAUDE.md collision.** The dev CLAUDE.md and the plugin-scaffolded CLAUDE.md both want repo root. Resolve — likely merge dev-side instructions into the scaffolded format, retiring the standalone dev CLAUDE.md.
+**What stays in place.** `Dev/Resources/scripts/`, `Dev/Resources/tests/`, `Dev/Resources/Marketing/`, `Dev/Resources/Iteration playbook/`, `Guides/` — regular project files, not method artifacts. `session-protocol.md`, `session-reference.md`, `INVENTORY.md` — still needed as prose rules until 0151 retires them.
 
-3. **Migrate planning artifacts into `_method/`.** Move `Dev/Planning/` contents into the plugin's expected structure:
-   - `BACKLOG.md` → per-batch files under `_method/BACKLOG/`.
-   - `build-log/` → `_method/build-log/`.
-   - `test-log/` → `_method/test-log/`.
-   - `.proxies/` → `_method/proxies/` (regenerate against new paths).
+**Outputs.** `_method/` fully populated. Old planning locations empty or removed. All path references updated. Dev-side protocol files still in place but pointing at new paths.
 
-4. **Migrate drafts and research.** `Dev/drafts/` → `_method/planning/drafts/`. `Dev/Resources/research/` → `_method/research/`.
+**Success criteria.** Every file the plugin's hooks would look for in `_method/` exists at the expected path. No broken path references in dev docs. BACKLOG per-batch files parse correctly via `parse_backlog.py`.
 
-5. **Retire dev-side prose rules.** `session-protocol.md`, `session-reference.md`, `INVENTORY.md` — reconcile any content not yet in plugin procedure docs, then retire. These are replaced by the host SI's mechanical enforcement.
+**Risks / dependencies.** Large number of path references to update — grep thoroughly after moves. Soft dep on 0147 (Ideas/OQ merge changes BACKLOG template) — but dev-side BACKLOG already has no Ideas section, so no conflict. The skip marker stays throughout; no risk of plugin interference.
 
-6. **Remove `.no-code-method-skip`.** The skip marker tells the SI "don't manage this project." Dogfooding means the opposite — the host SI *should* manage it.
+---
 
-7. **Archive historical artifacts.** `Dev/Resources/Iteration playbook/` — pre-plugin procedures, read-only archive. Leave in place but not under `_method/`.
+### 0149 — Graduation step 2: CLAUDE.md reconciliation
 
-8. **No migration needed.** `Dev/Resources/scripts/`, `Dev/Resources/tests/`, `Dev/Resources/Marketing/`, `Guides/`, `LICENSE`, `README.md`, `.gitignore`, `.gitattributes` — regular project files, not SI-managed.
+**Goal.** Rewrite the dev CLAUDE.md into the plugin's template format so SessionStart can parse it and hooks can find the path block. The current CLAUDE.md has 100+ sessions of accumulated instructions; the template expects a product overview + path block + project-specific notes.
 
-9. **Dev-side session opener.** Add host/target disambiguation to the session open flow — "You are building target SI from within host SI" with path references. Exact mechanism TBD (CLAUDE.md section, or host SI session-start hook recognising its own repo).
+**Approach.** Archive current CLAUDE.md as `Dev/CLAUDE-pre-graduation.md`. Write new CLAUDE.md using CLAUDE-TEMPLATE.md as the skeleton. Carry forward all still-relevant dev instructions under `## Project-specific notes`.
 
-10. **Graduation procedure.** Document the version-graduation flow: target SI passes E2E → repackage `plugin/` → install as new host → bump host version reference in session opener. Lightweight — not a full procedure doc, just a checklist in CLAUDE.md or a dev-side reference.
+**Inputs.** `Dev/Resources/research/dev-side-architecture-map.md` — section-by-section mapping of current CLAUDE.md to template destinations.
 
-**What it doesn't do.** No plugin code changes beyond the name fix. No new hooks or skills for self-awareness. No changes to how the plugin manages user projects generally.
+**Scope.**
 
-**Risks.** BACKLOG migration is the largest mechanical task (~20 queued/shipped batches to split into individual files). CLAUDE.md merge requires careful content reconciliation — the dev CLAUDE.md has accumulated 100+ sessions of context. Convergence gaps between dev-side prose rules and plugin procedure docs may surface during step 5.
+1. Archive current CLAUDE.md.
+2. Write new CLAUDE.md with template structure: Product overview (what SI is, who it's for, what friction it solves, milestones), Language, path block (pointing at `_method/` from 0148), Project-specific notes, After-build steps.
+3. Product overview: distill from current "What this project is" and "Main goal."
+4. Project-specific notes: carry forward design constraints, dev/plugin disambiguation, E2E test workflow, host/target vocabulary, adherence-drop diagnostic, experience level, command execution, proactive research, Taskflowapp reference.
+5. Drop sections made obsolete by graduation: convergence strategy, dev-project marker file, "Read this first" load-order instructions (plugin procedures handle this), "Make BACKLOG edits directly" (plugin already does this).
+6. Keep Current state section — updated each session close.
+
+**Outputs.** New CLAUDE.md in template format. Archived old CLAUDE.md.
+
+**Success criteria.** SessionStart hook can parse the new CLAUDE.md (path block resolves, product overview populated). All still-relevant dev instructions preserved in project-specific notes. Nothing silently dropped — obsolete sections listed in the build-log entry with reason.
+
+**Standing constraint (all graduation batches).** Copy, don't move. Dev/ originals stay in place as a safety net. `_method/` is canonical; Dev/ is the fallback. Do not delete, rename, or git-rm any Dev/ file as part of graduation work.
+
+**Risks / dependencies.** Depends on 0148 (needs `_method/` paths for the path block). Risk: judgment calls on what's "still relevant" vs. "obsolete." Mitigant: archive the original — nothing is permanently lost.
+
+---
+
+### 0150 — Graduation step 3: activate self-management
+
+**Goal.** Remove the skip marker, let the plugin manage sovereign-implementer, and verify everything works. This is the session where graduation actually happens.
+
+**Scope.**
+
+1. Remove `.no-code-method-skip`.
+2. Scaffold any missing files the plugin expects but 0148 didn't create (e.g. `_method/UX.md`, `_method/MANIFEST.md` if not yet present).
+3. Open a fresh session (or `/clear`) and verify SessionStart fires correctly — state summary, orientation, no errors.
+4. Verify phase detection works (planning phase when no active build).
+5. Verify hook enforcement: PreToolUse allows `_method/` edits during planning, blocks source-code edits.
+6. Verify `/sovrecap` can parse the BACKLOG and present a batch.
+7. Fix any immediate issues found during verification.
+8. Add host/target disambiguation to CLAUDE.md project-specific notes: "You are building target SI from within host SI" with path references.
+9. Document the graduation procedure: target SI passes E2E → repackage → install as new host → bump version reference. Lightweight checklist in CLAUDE.md or a dev-side reference.
+
+**Outputs.** Sovereign-implementer is a self-managed project. Issues filed as new BACKLOG entries if not fixable in-session.
+
+**Success criteria.** Plugin recognises sovereign-implementer as a fully adopted project (tier 3). SessionStart produces a coherent state summary. Hooks enforce correctly. At least one skill (`/sovrecap`) works end-to-end.
+
+**Standing constraint (all graduation batches).** Copy, don't move. Dev/ originals stay in place as a safety net. `_method/` is canonical; Dev/ is the fallback. Do not delete, rename, or git-rm any Dev/ file as part of graduation work.
+
+**Risks / dependencies.** Depends on 0148 and 0149. Risk: hooks designed for consumer projects may behave unexpectedly with plugin source code in `plugin/` alongside `_method/` — e.g. batch file-list boundary enforcement might not expect `plugin/hooks/*.py` as valid build targets. Mitigant: this batch is explicitly about finding and fixing such issues.
+
+---
+
+### 0151 — Graduation step 4: retire dev-side protocol files — **PARKED**
+
+**Parked.** v149. Ship after 2–3 sessions of real work under self-management (post-0150). Build confidence that the plugin's procedures cover everything these files provide before deleting them.
+
+**Goal.** Retire session-protocol.md, session-reference.md, and INVENTORY.md once the plugin has proven it covers the same ground through actual use.
+
+**Approach.** Section-by-section comparison: for each section in the dev files, verify the plugin has a matching mechanism (procedure doc step, hook check, template field, VOCABULARY entry). File gap-batches for anything missing. Archive the retired files.
+
+**Outputs.** Retired files archived. Gap-batches filed if any coverage holes found.
+
+**Success criteria.** No dev-side rule exists that isn't enforced or documented plugin-side. CLAUDE.md project-specific notes carry any project-specific rules that don't belong in the plugin generally.
+
+**Standing constraint (all graduation batches).** Copy, don't move. Dev/ originals stay in place as a safety net. `_method/` is canonical; Dev/ is the fallback. Do not delete, rename, or git-rm any Dev/ file as part of graduation work. This batch is the *only* one that may eventually retire Dev/ files — and only after real sessions prove coverage.
+
+**Risks / dependencies.** Depends on 0150 (must have working self-management first). Risk: retiring too early and discovering a gap mid-session. Mitigant: parking condition requires real sessions first.
 
 ---
 
@@ -161,7 +228,7 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 10. `BACKLOG.md` — remove `## Ideas` section (currently empty).
 11. `session-protocol.md` — routing table: merge Ideation row into a combined type covering both capture and resolution. Update idea-sweep and close references.
 12. `session-reference.md` — update OQ entry shape if it references Ideas promotion.
-13. `Dev/Planning/.proxies/backlog.md` — update.
+13. `_method/proxies/backlog.md` — update Ideas section (or remove if merged into OQs).
 
 **Consumer-facing docs:**
 

@@ -1,0 +1,151 @@
+<!-- proxy | source: _method/build-log/ | generated: 2026-05-31 -->
+
+# Build log — Sovereign Implementer
+
+Decisions, changes, and reasoning for every session. One file per session, newest-first. Search when you need the "why" behind a previous build.
+
+Full entry shape: `DOC-STRUCTURE.md` → *Build log structure*.
+
+<!--
+Index format (newest first):
+- `NNN-batch-name.md` — YYYY-MM-DD — One-line summary
+-->
+
+---
+
+- `v149-graduation-step1-migrate-artifacts.md` — 2026-05-31 — Graduation step 1: migrate planning artifacts into _method/
+- `v148-sovexplain-routing-manifest-capabilities.md` — 2026-05-31 — /sovexplain three-way routing + MANIFEST capabilities summary
+- `v147-design-decision-sweep-at-close.md` — 2026-05-31 — Decision sweep added to close procedure
+- `v146-ideation-and-research.md` — 2026-05-31 — Ideation + research: batch 0147 scoped, Ideas section retired, hook research
+- `v144-oq-deliberation.md` — 2026-05-30 — OQ deliberation: two resolved, one partial, one new, ideas pending
+- `v143-prerequisite-audit-procedure-fixes.md` — 2026-05-29 — Prerequisite-audit procedure fixes (batch 0143)
+- `v142b-skill-invocation-flowchart-audit.md` — 2026-05-29 — Skill invocation flowchart and prerequisite audit (batch 0142)
+- `v142-playbook-discipline-rules.md` — 2026-05-29 — Playbook discipline rules folded into session-protocol and plugin docs
+- `v141-explain-skill-and-doc-enrichments.md` — 2026-05-29 — /sovexplain skill + consumer-doc rationale enrichments
+- `v140-plugin-oq-resolutions.md` — 2026-05-29 — Plugin OQ resolutions: volunteered test results, carve-out snapshot, walkthrough pacing
+- `v139-plugin-lighter-close-hardening.md` — 2026-05-29 — Plugin lighter-close hardening + batch lifecycle change
+- `v138-dev-side-structure-reconciliation.md` — 2026-05-29 — Dev-side structure reconciliation: 7 items documented
+- `v137-dev-side-workflow-reconciliation.md` — 2026-05-29 — Dev-side workflow reconciliation: 5 gaps (G11–G12, G22–G24) resolved
+- `v136-dev-side-rules-reconciliation.md` — 2026-05-29 — Dev-side rules reconciliation: 12 items (G01–G10, C03, C04) resolved
+- `v135-oq-deliberation.md` — 2026-05-29 — OQ deliberation: all five resolved, new batch 0140
+- `v134-convergence-reader-test-and-reconciliation-planning.md` — 2026-05-29 — Convergence reader test + reconciliation planning: full overlap map, four reconciliation batches, E2E testing parked
+- `v133-session-start-routing-clarifications.md` — 2026-05-29 — Session-start routing clarifications: output ordering, missing routes, priority statement
+- `v132-close-procedure-hook-enforcement.md` — 2026-05-29 — Close-procedure hook enforcement: unclosed-build commit guard
+- `v131-plugin-reader-test.md` — 2026-05-29 — Plugin reader test: 6 top-tier gaps found, 4 fixed in-session
+- `v130-test-queue-post-v114-plugin-changes.md` — 2026-05-28 — Planning: test queue for post-v114 plugin changes
+- `v129-backlog-convergence.md` — 2026-05-28 — BACKLOG convergence: naming and test merge (0120)
+- `v128-plugin-side-close-mechanicals.md` — 2026-05-28 — Plugin-side close mechanicals + two-turn procedure
+- `v127-batch-scope-shape-docs.md` — 2026-05-28 — Batch scope shape documentation
+- `v126-session-open-state-summary.md` — 2026-05-28 — Session-open state summary + step 2 annotations
+- `v125-dev-side-mirroring-audit.md` — 2026-05-28 — Dev-side structure mirroring audit
+- `v124-two-turn-close-procedure.md` — 2026-05-28 — Two-turn close procedure (dev-side)
+- `v123-scripted-close-mechanicals.md` — 2026-05-28 — Scripted close mechanicals (dev-side) — bump_version.py + session-protocol.md script references
+- `v122-opener-routing-completeness.md` — 2026-05-28 — Dev-side opener routing completeness + OQ fold-in
+- `v121-close-procedure-fixes.md` — 2026-05-28 — Dev-side close procedure fixes + 3 OQs folded in
+- `v120-dev-side-reader-test.md` — 2026-05-28 — Dev-side reader test: gap list and BACKLOG routing
+- `v119-planning-batch-splits-and-reader-test.md` — 2026-05-28 — Planning: batch splits, reader test, mirroring audit
+- `v118-close-handoff-artifact.md` — 2026-05-28 — Build-phase close handoff artifact
+- `v117-language-setting-bom-blocker-gate-carried-forward.md` — 2026-05-28 — Language setting, BOM hardening, pre-build blocker gate, carried-forward removal
+- `v116-session-length-safeguards.md` — 2026-05-28 — Session-length safeguards
+- `v115-method-infra-whitelist-phase-detection-fixes.md` — 2026-05-28 — Method-infra whitelist + phase-detection fixes
+- `v114-build-e2e-test.md` — 2026-05-28 — Build E2E test
+- `v113-sovsetup-e2e-fix-sweep.md` — 2026-05-28 — /sovsetup E2E fix sweep
+- `v112-skill-split-and-build-plan-rename.md` — 2026-05-28 — Skill split + BACKLOG→BUILD-PLAN rename
+- `v111-queued-pipeline-staleness-sweep-at-close.md` — 2026-05-28 — Queued-pipeline staleness sweep at close
+- `v110-oq-deliberation-and-ideation.md` — 2026-05-27 — OQ deliberation and ideation
+- `v109-sovsetup-case4-scaffold-drift-detection.md` — 2026-05-27 — /sovsetup case 4 scaffold drift detection
+- `v108-guided-rollback-procedure.md` — 2026-05-27 — Guided rollback procedure (/sovrevert)
+- `v107-unclosed-build-detection.md` — 2026-05-27 — Unclosed-build detection in SessionStart
+- `v106-method-orientation-in-claude-template.md` — 2026-05-27 — `_method/` orientation in CLAUDE.md template
+- `v105-sov-prefix-rename.md` — 2026-05-27 — Sov-prefix rename for remaining skills
+- `v104-session-protocol-convergence.md` — 2026-05-27 — Dev-side session-protocol procedural convergence
+- `v103-ideation-new-batches-and-oqs.md` — 2026-05-27 — Ideation: eight new batches (0104–0111), PostToolUseFailure parked
+- `v102-bash-write-guard.md` — 2026-05-27 — Bash write-guard + skill escape guidance
+- `v101-structured-markdown-validator.md` — 2026-05-27 — Structured-markdown validator (PostToolUse + validate_docs.py)
+- `v100-test-skill.md` — 2026-05-27 — /test skill and testing procedure
+- `v99-dev-session-close-convergence.md` — 2026-05-27 — Dev-side session-close convergence
+- `v98-tersify-skill.md` — 2026-05-27 — /tersify skill for doc compression
+- `v97-manifest-rationale-field.md` — 2026-05-27 — Manifest rationale field
+- `v96-sovplan-skill-ordering-security.md` — 2026-05-27 — /sovplan skill + ordering principles + [SECURITY] marker
+- `v95-sovrecap-sovbuild-rename-lock-timing.md` — 2026-05-26 — /sovrecap + /sovbuild rename + lock-timing fix
+- `v94-sovclose-sovgit-after-build-retirement.md` — 2026-05-26 — /sovclose + /sovgit skills, after-build.md retired
+- `v93-batch-ordering-audit.md` — 2026-05-26 — Batch ordering audit: reorder, stale-reference fixes, audit folded into 0098
+- `v92-planning-oq-promotion-and-backlog-cleanup.md` — 2026-05-26 — OQ promotion (0097–0101), BACKLOG cleanup, dev-side convergence strategy
+- `v91-oq-cluster-design.md` — 2026-05-26 — "Retire build session" OQ cluster design
+- `v90-build-method-split-and-dev-proxies.md` — 2026-05-26 — BUILD-METHOD split and dev-side proxies
+- `v89-test-log-folder-split.md` — 2026-05-26 — TEST-LOG folder split + proxy index
+- `v88-index-relocation-to-proxies.md` — 2026-05-26 — INDEX relocation to proxies
+- `v87-dev-side-terminology-alignment.md` — 2026-05-26 — Dev-side terminology and BACKLOG alignment
+- `v86-doc-folder-restructure.md` — 2026-05-26 — Doc folder restructure
+- `v85-scaffold-quality-fixes.md` — 2026-05-26 — Scaffold quality fixes
+- `v84-first-time-ux.md` — 2026-05-26 — First-time user experience
+- `v83-research-search-flow.md` — 2026-05-26 — Research search flow
+- `v82-claude-template-product-overview.md` — 2026-05-25 — CLAUDE template product overview
+- `v81-proxy-format-and-companions.md` — 2026-05-25 — Proxy format and companion proxies
+- `v80-proxy-layer-rescope.md` — 2026-05-25 — Proxy layer three-way split
+- `v79-greenfield-e2e-planning.md` — 2026-05-25 — Greenfield E2E: post-redesign planning phase
+- `v78-doc-permission-flip.md` — 2026-05-25 — Phase-aware editing surfaces
+- `v77-subagent-removal-code-and-procedures.md` — 2026-05-25 — Subagent removal: code and procedures
+- `v76-dev-side-log-folder-migration.md` — 2026-05-25 — Dev-side log folder migration
+- `v65-session-open-status-summary.md` — 2026-05-25 — Session-open status summary
+- `v64-after-build-source-code-boundary.md` — 2026-05-25 — After-build source-code boundary
+- `v63-subagent-cost-optimization.md` — 2026-05-25 — Subagent cost optimization
+- `v62-after-build-close-completeness.md` — 2026-05-25 — After-build close completeness
+- `v71-e2e-round-2-skills-migration.md` — 2026-05-24 — E2E round 2 + skills migration
+- `v60-backlog-batch-status-tracking.md` — 2026-05-24 — BACKLOG batch status tracking
+- `v69-html-crash-course-guide.md` — 2026-05-24 — HTML Crash Course guide
+- `v68-rename-crash-course-to-reference-manual.md` — 2026-05-24 — Rename "Crash course" to "Reference manual"
+- `v67-desktop-app-installupdate-documentation.md` — 2026-05-24 — Desktop app install/update documentation
+- `v66-permission-prompt-surface-audit.md` — 2026-05-24 — Permission prompt surface audit
+- `v65-memory-routing-and-research-filing-rules.md` — 2026-05-24 — Memory-routing and research-filing rules
+- `v64-project-boundary-pretooluse-hook.md` — 2026-05-24 — Project-boundary PreToolUse hook
+- `v63-setup-case-4-completion.md` — 2026-05-24 — /setup case 4 completion
+- `v62-subagent-efficiency-pass.md` — 2026-05-23 — Subagent efficiency pass
+- `v61-taskflow-e2e-prep-and-testing.md` — 2026-05-23 — Taskflow E2E prep and testing
+- `v60-session-performance-tracking.md` — 2026-05-23 — Session performance tracking
+- `v59-subagent-rule-loading-convergence.md` — 2026-05-23 — Subagent rule-loading convergence
+- `v58-test-log-row-pruning.md` — 2026-05-23 — TEST-LOG row pruning
+- `v57-new-hook-events-compaction-guard-opener-routing.md` — 2026-05-22 — New hook events (compaction guard + opener routing)
+- `v56-validation-warnings-bundle.md` — 2026-05-22 — Validation + warnings bundle
+- `v55-automated-test-suite-for-dev-project.md` — 2026-05-22 — Automated test suite for dev project
+- `v54-build-log-restructured-to-build-log-folder.md` — 2026-05-22 — BUILD-LOG restructured to build-log/ folder
+- `v53-research-folder-convention-sonnet-search-reword.md` — 2026-05-22 — Research folder convention + Sonnet-search reword
+- `v52-adr-style-numbering-per-batch-backlog-file-split.md` — 2026-05-22 — ADR-style numbering + per-batch BACKLOG file-split
+- `v51-consumer-batch-structure-overhaul.md` — 2026-05-22 — Consumer-batch structure overhaul
+- `v50-automated-vs-manual-test-split-non-ui-test-types.md` — 2026-05-22 — Automated vs. manual test split + non-UI test types
+- `v49-non-gui-vocabulary-generalisation-planningplan-mode-disa.md` — 2026-05-22 — Non-GUI vocabulary generalisation + planning/plan-mode disambiguation
+- `v48-backlogmd-posttooluse-parse-validation-hook.md` — 2026-05-22 — BACKLOG.md PostToolUse parse validation hook
+- `v47-distributed-fold-ins-backlog-open-questions-batch-inputs.md` — 2026-05-22 — Distributed fold-ins + BACKLOG open-questions + batch Inputs line
+- `v46-setup-ux-per-project-opt-out.md` — 2026-05-22 — /setup UX + per-project opt-out
+- `v45-permission-mode-ux-harmonization.md` — 2026-05-22 — Permission-mode UX harmonization
+- `v44-consumer-batch-structure-ideation-v49v50-scoping.md` — 2026-05-22 — Consumer-batch structure ideation + V49/V50 scoping
+- `v43-permission-mode-research-roadmap-rescope-v43v48.md` — 2026-05-22 — Permission-mode research + roadmap rescope V43–V48
+- `v42-git-diff-drift-detection-direct-edit-confirmation-protoc.md` — 2026-05-21 — Git-diff drift detection + direct-edit confirmation protocol
+- `v41-rescope-open-questions-into-v45v47.md` — 2026-05-21 — Rescope OPEN-QUESTIONS into V45–V47
+- `v40-shelve-the-two-write-rule-for-canonical-docs.md` — 2026-05-21 — Shelve the two-write rule for canonical docs
+- `v39-manifest-paths-field-read-before-edit-hook-gate.md` — 2026-05-21 — MANIFEST paths field + read-before-edit hook gate
+- `v38-locked-doc-edit-rules-sonnet-search-discipline.md` — 2026-05-21 — Locked-doc edit rules + Sonnet-search discipline
+- `v37-marketplacejson-local-install-first-globally-installed-s.md` — 2026-05-21 — Marketplace.json + local install + first globally-installed smoke test
+- `v36-open-questions-doc-only-bundle-test-log-newest-first-bac.md` — 2026-05-21 — OPEN-QUESTIONS doc-only bundle: TEST-LOG newest-first, BACKLOG authority, plan-panel resolved
+- `v35-e2e-taskflow-test-adopt-validated-planning-subagent-firs.md` — 2026-05-21 — E2E Taskflow test — `/adopt` validated; planning-subagent first contact
+- `v34-consumer-method-git-workflow-open-questions-promotion.md` — 2026-05-21 — Consumer-method git workflow + OPEN-QUESTIONS promotion
+- `v33-consumer-side-build-log-planningdrafts-and-frame-correct.md` — 2026-05-20 — Consumer-side BUILD-LOG, planning/drafts/, and frame-correction sweep
+- `v32-no-code-methodmd-retired-from-plugin-two-write-architect.md` — 2026-05-20 — NO-CODE-METHOD.md retired from plugin; two-write architecture established
+- `v31-planning-rescope-open-questions-into-v33v34-v32v35-numbe.md` — 2026-05-20 — Planning: rescope OPEN-QUESTIONS into V33/V34; V32–V35 numbering shifted
+- `v30-method-docs-relocated-into-plugin-reference-manual-rewri.md` — 2026-05-20 — Method docs relocated into plugin; Reference manual rewritten as standalone primer
+- `v29-safety-net-sessionstart-advisory-pretooluse-enforcement.md` — 2026-05-19 — Safety net (SessionStart advisory + PreToolUse enforcement) + unified `/adopt`
+- `v28-v27-fix-sweep-test-confirmation-gate-becomes-functional.md` — 2026-05-18 — V27 fix sweep: test-confirmation gate becomes functional
+- `v27-after-build-subagent-test-confirmation-gate-hook-session.md` — 2026-05-17 — After-build subagent + test-confirmation gate hook + SessionStart TEST-LOG tripwire + [Requested]/[Suggested] labels in BACKLOG.md
+- `v26-test-logmd-mechanism-drafts-in-flight-convention-v25-car.md` — 2026-05-17 — TEST-LOG.md mechanism + Drafts in flight convention + V25 carry-over bugfixes
+- `v25-build-orchestration-core-stop-hook-batch-executor-before.md` — 2026-05-17 — Build orchestration core: Stop hook + batch-executor + before-build + slash commands + spec rewrites
+- `v24-build-methodmd-and-test-logmd-added-session-tag-and-meth.md` — 2026-05-16 — BUILD-METHOD.md and TEST-LOG.md added; session-tag and method-version decoupled
+- `v23-remove-cowork-mentions-from-method-docs-claude-code-beco.md` — 2026-05-17 — Remove Cowork mentions from method docs; Claude Code becomes explicitly required
+- `v22-planning-subagent-serves-line-pretooluse-hook.md` — 2026-05-14 — Planning subagent + Serves-line PreToolUse hook
+- `v21-sessionstart-hook-extension-three-tier-detection-foundat.md` — 2026-05-14 — SessionStart hook extension: three-tier detection + foundational reads + footer tripwire
+- `v20-reference-manual-promoted-to-source-of-truth-doc-plannin.md` — 2026-05-14 — Reference manual promoted to source-of-truth doc; planning shifts
+- `v19-pretooluse-hook-bundled-templates-init-project-fold-ins.md` — 2026-05-13 — PreToolUse hook + bundled templates + /init-project + Fold-ins pending section
+- `v18-plugin-scaffold-sessionstart-hook-json-path-block.md` — 2026-05-12 — Plugin scaffold + SessionStart hook + JSON path block
+- `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
+
+---
+*No-code method — Version 107.*

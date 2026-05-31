@@ -205,4 +205,4 @@ Plain-English walkthrough of commit, tag, and push. Detects first-time use and w
 
 ---
 
-*No-code method — Version 106.*
+*No-code method — Version 107.*
