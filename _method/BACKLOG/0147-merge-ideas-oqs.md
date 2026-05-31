@@ -6,11 +6,9 @@
 
 **Success criteria.** BACKLOG has 5 sections. One skill handles both "I just had a thought" and "let's work through the backlog." No references to Ideas as a separate concept remain in plugin or dev docs. Consumer projects with legacy Ideas sections don't break.
 
-**Decisions to make this batch.**
-
-- **Combined skill name.** `/sovideate` (more inviting for mid-build "I just had a thought"), `/sovdeliberate` (broader — "careful consideration" covers both capture and resolution), or something new?
-
 **What it doesn't do.** No changes to other BACKLOG sections. No hook changes. No `/sovplan` changes. No migration tool for consumer projects with existing Ideas sections — the combined skill handles legacy format gracefully.
+
+**Decisions resolved.** Keep `/sovdeliberate`, delete `/sovideate`. No rename. Quick thoughts land directly in OQs (lighter format); `/sovdeliberate` remains the skill for working through accumulated OQs.
 
 Changes:
 - [Requested] `BACKLOG-TEMPLATE.md` — remove `## Ideas`. Update `## Open questions` to welcome light captures (heading + Surfaced + one sentence) alongside full entries. BACKLOG becomes 5 sections.

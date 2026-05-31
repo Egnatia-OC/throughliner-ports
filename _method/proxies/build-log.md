@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v153-oq-deliberation.md` — 2026-05-31 — OQ deliberation: batch 0147 skill-name decision resolved
 - `v152-rename-to-sovereign-implementer.md` — 2026-05-31 — Rename "no-code method" to "Sovereign Implementer" across codebase
 - `v151-graduation-step3-activate-self-management.md` — 2026-05-31 — Graduation step 3: activate self-management
 - `v150-graduation-step2-claude-md.md` — 2026-05-31 — Graduation step 2: CLAUDE.md reconciliation
