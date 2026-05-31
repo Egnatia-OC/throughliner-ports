@@ -69,9 +69,20 @@ During this planning session, Claude successfully wrote a build-log entry for v1
 
 **Next step.** Decide whether build-log writes should be hook-gated to `/sovclose` and `/sovplan` step 13 (commit) only, or whether the current permissive surface is acceptable given that build-log entries are append-only and git-recoverable.
 
+### Planning procedure lacks parser validation at close
+*Surfaced: v153*
+
+The planning procedure can create or modify batch files and close without confirming the result is machine-readable by the BACKLOG parser. `/sovrecap` is the first structural validation point, but by then the planning session is over. Batch 0147 was left with a `Scope:` heading and numbered items instead of the required `Changes:` delimiter, making it invisible to the parser.
+
+**Why it matters.** A planning session that produces structurally non-compliant batches creates a gap discovered only at build time — wasting a session transition.
+
+**Next step.** Decide whether the planning procedure's close step should run `parse_backlog.py` and require the top batch to parse, or whether a lighter check (presence of `Changes:` and `Serves UX.md:`) is sufficient.
+
 ## Ideas
 
 None.
+
+
 
 ---
 *Sovereign Implementer — Version 108.*

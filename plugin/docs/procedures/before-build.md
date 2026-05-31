@@ -22,8 +22,9 @@ Before anything else, check whether `_method/active-build.md` exists (resolve `_
 
 Before enumerating files:
 
-1. **Parses.** Resolve BACKLOG path from `CLAUDE.md`, then: `python "$CLAUDE_PLUGIN_ROOT/scripts/parse_backlog.py" "<BACKLOG absolute path>"` (both paths quoted — Windows spaces break unquoted). A `{}` result means no batch found — halt and route to planning.
-2. **Serves line resolves.** Every `Serves UX.md:` entry must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose UX.md additions.
+1. **Find top batch.** Read the BACKLOG proxy's `## Build batches` section. The first non-parked, non-cancelled reference line is the top batch. Read its per-batch file. If no batch exists or the section is empty — halt, route to planning.
+2. **Structure check.** The per-batch file must have a `Changes:` delimiter and a `Serves UX.md:` line. Missing either → halt, route to planning ("batch needs structural cleanup").
+3. **Serves line resolves.** Every `Serves UX.md:` entry must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose UX.md additions.
 
 You don't reorganise the queue. Planning owns BACKLOG structure. Reorganise authority here: verification-burden splits only (halt C).
 
