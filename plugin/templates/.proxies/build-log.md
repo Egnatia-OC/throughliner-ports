@@ -29,4 +29,4 @@ Entry file format:
 -->
 
 ---
-*No-code method — Version 105.*
+*No-code method — Version 106.*

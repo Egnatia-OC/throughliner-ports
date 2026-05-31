@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-128 batches shipped or cancelled (V18–0144). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+129 batches shipped or cancelled (V18–0145). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -91,27 +91,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Snapshot architecture works (create, tick, delete). Phase detection stable through build. Two-turn close produces all artifacts (MANIFEST, TEST-LOG, build-log, proxies). Consumer `bump_version.py` runs without errors. All BACKLOG naming correct throughout.
 
 **Risks / dependencies.** Depends on a set-up project — chains from 0130, or use an existing one. Risk: if 0130 surfaces scaffold issues, this test's starting state may be compromised. Mitigant: can use Taskflow or another already-adopted project instead.
-
----
-
-### 0145 — /sovexplain routing + MANIFEST capabilities summary
-
-**Goal.** Expand /sovexplain from "why"-only into a three-way router (what / how / why). Generate a capabilities summary section in MANIFEST at close time; the MANIFEST proxy reproduces it so Claude reads it at session start for orientation without loading full MANIFEST. Resolves the orientation gap OQ (plugin-side).
-
-**Scope.**
-
-1. `plugin/templates/MANIFEST-TEMPLATE.md` — Add `## Capabilities summary` section at the top (before entries). Starts with a placeholder comment; populated at first `/sovclose`.
-2. `plugin/templates/.proxies/manifest.md` — Add `## Capabilities summary` section. Reproduces the summary verbatim (it's short). This is what Claude reads for orientation.
-3. `plugin/docs/procedures/close.md` — Post-build path: add step 1b after MANIFEST entry updates. Generate/update the capabilities summary from the current MANIFEST entries — one plain-English paragraph summarizing what the project has built. Write to the `## Capabilities summary` section. Proxy regeneration (step 15) propagates it.
-4. `plugin/skills/sovexplain/SKILL.md` — Rewrite to add routing before lookup. Classify the question: **"What"** (capability identification) → read MANIFEST proxy's capabilities summary. **"How"** (usage) → identify the matching skill or procedure doc, read its SKILL.md. **"Why"** (design rationale) → existing explain-reference flow (unchanged).
-5. `plugin/docs/explain-proxy.md` — No change. Stays "why"-only. Routing happens in SKILL.md before the proxy is reached.
-6. Consumer-facing docs — Update /sovexplain description in Reference manual, crash course, INVENTORY.md to mention the three question types.
-
-**What it doesn't do.** No new index file for "how" routing — skills and procedures have predictable locations. No explain-reference entries for the routing itself.
-
-**Dependency.** None. 0144 is independent — these can ship in either order.
-
-**Success criteria.** "What does my project do?" answered from MANIFEST proxy without full MANIFEST read. "How do I close a build?" routes to close procedure. "Why" still works as before. Capabilities summary regenerates at each close.
 
 ---
 

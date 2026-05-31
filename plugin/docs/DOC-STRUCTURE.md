@@ -80,6 +80,8 @@ Undecided behaviour → BACKLOG as a planning batch, not here.
 
 Starts empty. Entry-format reminder in HTML comment.
 
+**Capabilities summary.** `## Capabilities summary` section, between the header comment and the entries. One plain-English paragraph summarizing what the project has built — derived from entry names and descriptions. Generated/updated by `/sovclose` step 1b after each build. Starts as a placeholder comment; populated at first close. The MANIFEST proxy reproduces it verbatim so Claude reads it at session start for orientation without loading full MANIFEST.
+
 **Entries.** Flat, alphabetical. One line each:
 
 > - **[Name]** (`path/to/file.ext`) — [plain-English description]. *Rationale: [why it exists / vNN].*
@@ -246,7 +248,7 @@ Lightweight index files summarizing source-of-truth docs. Claude reads proxies f
 | Proxy | Source | State summary | Entry format |
 |---|---|---|---|
 | `ux.md` | `UX.md` | Project context, principle count, functionality count | `- L<N> **<name>** — <summary>` (principles then functionalities) |
-| `manifest.md` | `MANIFEST.md` | Entry count | `- L<N> **<name>** (<path>)` (description/rationale omitted) |
+| `manifest.md` | `MANIFEST.md` | Entry count, capabilities summary (verbatim) | `- L<N> **<name>** (<path>)` (description/rationale omitted) |
 | `research.md` | `_method/research/` | File count | `- <filename> — <summary>` (no line numbers) |
 
 ### BACKLOG index proxy (backlog.md)
@@ -384,4 +386,4 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 **Close handoff section.** Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes skipped. `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative. If empty or absent (legacy snapshots), falls back to scanning Files:. Consumed by `/sovclose` and deleted with the snapshot.
 
 ---
-*No-code method — Version 105.*
+*No-code method — Version 106.*

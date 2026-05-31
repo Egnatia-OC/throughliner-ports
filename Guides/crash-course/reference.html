@@ -177,6 +177,17 @@
       <p><code>DOC-STRUCTURE.md</code> and <code>VOCABULARY.md</code> &mdash; read by procedure docs at runtime for structural and terminology rules.</p>
     </section>
 
+    <section data-source="manual:method-questions" data-transform="adapted">
+      <h2>Asking questions about the method</h2>
+      <p><code>/sovexplain</code> answers three kinds of questions:</p>
+      <ul>
+        <li><strong>&ldquo;What does my project do?&rdquo;</strong> &mdash; reads the capabilities summary from MANIFEST (a plain-English paragraph auto-generated at each close).</li>
+        <li><strong>&ldquo;How do I close a build?&rdquo;</strong> &mdash; routes to the matching procedure doc and summarizes the key steps.</li>
+        <li><strong>&ldquo;Why is close mandatory?&rdquo;</strong> &mdash; looks up design rationale from the explain-reference index.</li>
+      </ul>
+      <p>No arguments needed &mdash; Claude classifies the question and routes to the right source. Also works after a hook denial: invoke <code>/sovexplain</code> and Claude infers the question from context.</p>
+    </section>
+
     <section data-source="manual:where-it-sits" data-transform="adapted">
       <h2>Where the method sits</h2>
       <p>Part of the spec-driven development family. Closest relative: Cline's Memory Bank (same shape &mdash; markdown as project memory, read at session start; different file structure, different audience). In the broader spec-driven literature, this maps onto the <strong>spec-anchored</strong> rigour level.</p>

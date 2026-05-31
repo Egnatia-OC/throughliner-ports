@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v148-sovexplain-routing-manifest-capabilities.md](v148-sovexplain-routing-manifest-capabilities.md) — 2026-05-31 — /sovexplain three-way routing + MANIFEST capabilities summary
 - [v147-design-decision-sweep-at-close.md](v147-design-decision-sweep-at-close.md) — 2026-05-31 — Decision sweep added to close procedure
 - [v146-ideation-and-research.md](v146-ideation-and-research.md) — 2026-05-31 — Ideation + research: batch 0147 scoped, Ideas section retired, hook research
 - [v144-oq-deliberation.md](v144-oq-deliberation.md) — 2026-05-30 — OQ deliberation: two resolved, one partial, one new, ideas pending

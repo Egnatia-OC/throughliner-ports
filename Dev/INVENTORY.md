@@ -79,7 +79,7 @@ Eleven procedure docs at `plugin/docs/procedures/`, read into main context on de
 
 - **build.md** — V25 origin, procedure doc V76. V90: build-snapshot architecture — extracts batch to `_method/active-build.md`, removes from BACKLOG, ticks in snapshot. Receives JSON from `parse_backlog.py` for initial extraction. PreToolUse (c) enforces boundary (reads snapshot or BACKLOG). Prerequisite and re-batching carve-outs. V93: invocation-prompt compact nudge on completion prompt.
 
-- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). V96: two-turn structure — Turn 1 (judgment, while build context is fresh): MANIFEST update, doc-parity check, test session + Claude tests, recap, build-log entry, write-back + snapshot deletion, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, then `[PROMPT]` turn boundary recommending `/compact`. Turn 2 (mechanical): footer bumps via `bump_version.py` (if version mismatch), proxy regeneration (script for headers/line numbers, then Claude reviews summaries), after-build steps, pre-commit checkpoint, `/sovgit` nudge. Planning/general path also two-turn (idea sweep → boundary → proxy regen → closing). Idempotent.
+- **close.md** — V76 origin (absorbed after-build.md). V90: snapshot-aware phase detection (`_method/active-build.md` existence). V96: two-turn structure — Turn 1 (judgment, while build context is fresh): MANIFEST update, capabilities summary generation (step 1b, V106), doc-parity check, test session + Claude tests, recap, build-log entry, write-back + snapshot deletion, frame-correction sweep, staleness sweep, lost-feature check, idea sweep, then `[PROMPT]` turn boundary recommending `/compact`. Turn 2 (mechanical): footer bumps via `bump_version.py` (if version mismatch), proxy regeneration (script for headers/line numbers, then Claude reviews summaries), after-build steps, pre-commit checkpoint, `/sovgit` nudge. Planning/general path also two-turn (idea sweep → boundary → proxy regen → closing). Idempotent.
 
 - **git.md** — V76 origin. Commit, tag, push walkthrough. First-use detection writes `## Git workflow` to CLAUDE.md (solo/team). Solo: commit-tag-push to main. Team: branch, commit, push, PR guidance. V93: end-of-session prompt standardised (`/compact` for continuing, `/clear` for fresh start).
 
@@ -108,7 +108,7 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `/sovtest` — guided testing walkthrough (pending User-verified rows, debugging on failure). **Shipped V81** (sov-prefixed V84).
 - `/sovtersify` — guided doc compression (triage + audit). Planning phase only. **Shipped V80** (sov-prefixed V84).
 - `/sovrevert` — guided rollback (restore last committed state after a failed build). **Shipped V87.**
-- `/sovexplain` — answers "why" questions about method features. Self-contained (no procedure doc). Reads `explain-proxy.md` for topic lookup, then targeted reads into `explain-reference.md`. Handles both topic mode (user asks a question) and reactive mode (infers from last hook denial or skill interaction). **Shipped V102.**
+- `/sovexplain` — three-way router for method questions. Classifies as "what" (capability overview → MANIFEST proxy's capabilities summary), "how" (usage → matching skill or procedure doc), or "why" (design rationale → explain-proxy.md → explain-reference.md). Self-contained (no procedure doc). Handles both topic mode (user asks a question) and reactive mode (infers from last hook denial or skill interaction). **Shipped V102; routing V106.**
 
 ### Bundled artefacts
 
@@ -154,4 +154,4 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 105.*
+*No-code method — Version 106.*

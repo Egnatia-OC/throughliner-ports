@@ -4,6 +4,10 @@
 
 **Entries:** 0
 
+## Capabilities summary
+
+(Generated after first build populates MANIFEST.md.)
+
 ## Entries
 
 (Generated after first build populates MANIFEST.md.)

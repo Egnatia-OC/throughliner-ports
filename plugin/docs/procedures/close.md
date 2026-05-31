@@ -54,6 +54,8 @@ Run while build context is fresh.
    - Modified → update description if substantive. **No `(path)` yet** (legacy) → add. **No rationale yet** → add.
    Trivial helpers stay out.
 
+1b. **[SILENT] Update capabilities summary.** Read the current MANIFEST entries. Write one plain-English paragraph to the `## Capabilities summary` section summarizing what the project has built — what it does at a glance, derived from the entry names and descriptions. If the section doesn't exist (pre-V106 template), skip. Proxy regeneration (step 15) propagates the summary to the MANIFEST proxy.
+
 2. **[SILENT] Read `[Requested]`/`[Suggested]` labels** from the batch's change list in `_method/active-build.md`. Prerequisite carve-outs bear `[Prerequisite, not in plan]` on Files: entries.
 
 3. **[SILENT] Doc-parity check.** Read `## Close handoff` for names introduced, renamed, or invalidated. Grep UX.md, BACKLOG, MANIFEST.md, CLAUDE.md for stale references. If Close handoff empty/absent, fall back to scanning Files: for renames/deletes/moves. Flag in step 11.
@@ -221,4 +223,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 105.*
+*No-code method — Version 106.*
