@@ -78,6 +78,15 @@ The planning procedure can create or modify batch files and close without confir
 
 **Next step.** Decide whether the planning procedure's close step should run `parse_backlog.py` and require the top batch to parse, or whether a lighter check (presence of `Changes:` and `Serves UX.md:`) is sufficient.
 
+### Pre-compact hook over-detects build phase
+*Surfaced: 2026-05-31*
+
+The pre_compact hook blocks compaction whenever it detects build-adjacent activity, but it treats `/sovrecap` as build-in-progress. Recap finishes by advising "consider /compact before /sovbuild" for large batches — then the hook blocks the very action it just recommended. No `active-build.md` exists at that point; the build hasn't been locked yet.
+
+**Why it matters.** Large batches (24+ files) benefit from compaction between recap and build — clearing recap context gives the build more room. The current hook makes that impossible, and the conflicting advice (recap says compact, hook says no) is confusing.
+
+**Next step.** Decide how the pre_compact hook should detect build phase. The clean signal is `active-build.md` existence — present means build in progress, absent means safe to compact. Also decide whether recap should stop suggesting /compact if the hook won't allow it, or fix the hook to match the advice.
+
 ## Ideas
 
 None.
