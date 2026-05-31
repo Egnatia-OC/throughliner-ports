@@ -1,6 +1,6 @@
-﻿# Reference manual
+# Reference manual
 
-*A standalone primer for the no-code method as a Claude Code plugin.*
+*A standalone primer for Sovereign Implementer as a Claude Code plugin.*
 
 ## What this is, and who it's for
 
@@ -15,7 +15,7 @@ Shaped for non-coders who already know what their app should be. Extensive plan-
 Install via marketplace (persists across sessions):
 
 1. Clone: `git clone https://github.com/FlintCraftTech/sovereign-implementer.git`.
-2. In Claude Code: `/plugin marketplace add <path-to-clone>` then `/plugin install no-code-method@sovereign-implementer`.
+2. In Claude Code: `/plugin marketplace add <path-to-clone>` then `/plugin install sovereign-implementer@sovereign-implementer`.
 3. Open a session in the project folder. Hooks fire at session start. Adopted projects get a status summary (batch counts, next batch, pending tests). Empty or undocumented folders get an advisory pointing at `/sovsetup`.
 
 For one-off use: `claude --plugin-dir <path-to-clone>/plugin` loads without installing.
@@ -69,13 +69,13 @@ Once installed, the plugin fires in every folder.
 
 **Desktop app:** **Customise** → **Plugins** → gear icon → toggle off. Per-folder.
 
-**CLI:** `/plugin disable no-code-method@sovereign-implementer` or `/plugin` → **Installed** → select → **Disable**. Run `/reload-plugins` afterward.
+**CLI:** `/plugin disable sovereign-implementer@sovereign-implementer` or `/plugin` → **Installed** → select → **Disable**. Run `/reload-plugins` afterward.
 
 ### Re-enabling
 
 **Desktop app:** **Customise** → **Plugins** → toggle back on.
 
-**CLI:** `/plugin enable no-code-method@sovereign-implementer`. Run `/reload-plugins`.
+**CLI:** `/plugin enable sovereign-implementer@sovereign-implementer`. Run `/reload-plugins`.
 
 ### Uninstalling
 
@@ -88,7 +88,7 @@ Once installed, the plugin fires in every folder.
 
 **CLI:**
 ```
-/plugin uninstall no-code-method@sovereign-implementer
+/plugin uninstall sovereign-implementer@sovereign-implementer
 ```
 
 ### For `--plugin-dir` sessions
@@ -338,7 +338,7 @@ Hooks (deterministic) handle correctness; procedure docs (probabilistic) handle 
 
 Claude Code's permission modes (Ask/Accept/Plan/Auto/Bypass) control user prompting. The plugin's PreToolUse hooks decide whether Claude is allowed to act at all — firing in every mode, including Bypass.
 
-Every deny is prefixed `[No-code method]` with a `What to do:` line.
+Every deny is prefixed `[Sovereign Implementer]` with a `What to do:` line.
 
 ### Which mode for which phase
 
@@ -446,4 +446,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

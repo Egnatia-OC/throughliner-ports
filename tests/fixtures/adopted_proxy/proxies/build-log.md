@@ -2,4 +2,4 @@
 
 - `001-first-batch.md` — 2026-05-26 �� First build
 
-*No-code method — Version 73.*
+*Sovereign Implementer — Version 73.*

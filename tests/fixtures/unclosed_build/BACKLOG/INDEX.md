@@ -10,4 +10,4 @@
 
 ## Open questions
 
-*No-code method — Version 85.*
+*Sovereign Implementer — Version 85.*

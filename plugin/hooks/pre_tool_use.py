@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PreToolUse hook for the no-code-method plugin.
+PreToolUse hook for the Sovereign Implementer plugin.
 
 Runs six checks on Edit / Write / MultiEdit calls, plus two Bash/PowerShell
 guards:
@@ -125,7 +125,7 @@ WRITABLE_LOGICAL_NAMES = {"BACKLOG.md", "BUILD-LOG.md", "MANIFEST.md", "TEST-LOG
 # method deny could be mistaken for a Claude Code permission issue.
 _MODE_AWARE_SUFFIX = (
     "\n\nChanging your Claude Code permission mode won't unlock this — "
-    "this is a method rule enforced by the no-code-method plugin's hook, "
+    "this is a method rule enforced by the Sovereign Implementer plugin's hook, "
     "not a Claude Code permission check."
 )
 
@@ -177,7 +177,7 @@ STRUCTURAL_SECTION_NAMES = frozenset({"proposed edits pending"})
 # The em dash (U+2014) may arrive as the correct character or as a
 # mojibake sequence (â€") when Claude Code double-encodes UTF-8 on
 # Windows. The alternation handles both forms.
-FOOTER_LINE_PATTERN = re.compile(r"\*No-code method (?:—|â€”) Version \d+\.\*")
+FOOTER_LINE_PATTERN = re.compile(r"\*Sovereign Implementer (?:—|â€”) Version \d+\.\*")
 
 # V45: proposed-edits section heading pattern for the section carve-out.
 PROPOSED_EDITS_SECTION_HEADING = re.compile(r"^## Proposed edits pending\s*$", re.MULTILINE)
@@ -282,7 +282,7 @@ def make_reason(logical_name: str, permission_mode: str = "") -> str:
     change — the doc's own *Proposed edits pending* section at its bottom
     — so the instruction is unambiguous in any project layout."""
     return (
-        f"[No-code method] BLOCKED: {logical_name} is a locked source-of-"
+        f"[Sovereign Implementer] BLOCKED: {logical_name} is a locked source-of-"
         "truth doc. The main body is read-only to Claude (the agent); only "
         "the user can edit it, by hand during a planning session.\n\n"
         "What to do: add a `[PROPOSED EDIT PENDING]` block to the "
@@ -458,7 +458,7 @@ def make_serves_line_deny_reason(missing_names: list, known_normalised: set) -> 
             "(section missing or empty)."
         )
     return (
-        "[No-code method] BLOCKED: a build batch's `Serves UX.md:` line "
+        "[Sovereign Implementer] BLOCKED: a build batch's `Serves UX.md:` line "
         f"names entries that don't exist in `UX.md`: {missing_str}.\n\n"
         "What to do: if this is a typo, fix the name. If the entry "
         "genuinely doesn't exist yet, the feature has skipped the "
@@ -490,7 +490,7 @@ def make_serves_doc_deny_reason(
             "(no ## headings found, or doc is empty)."
         )
     return (
-        f"[No-code method] BLOCKED: a build batch's `Serves {doc_name}:` "
+        f"[Sovereign Implementer] BLOCKED: a build batch's `Serves {doc_name}:` "
         f"line names entries that don't exist in `{doc_name}`: "
         f"{missing_str}.\n\n"
         "What to do: if this is a typo, fix the name. If the entry "
@@ -652,7 +652,7 @@ def make_boundary_deny_reason(target_path, batch, files_entries,
     file_list_display = "\n".join(lines) if lines else "  (no files declared)"
 
     return (
-        f"[No-code method] BLOCKED: `{target_path}` is not on the current "
+        f"[Sovereign Implementer] BLOCKED: `{target_path}` is not on the current "
         "build batch's `Files:` list and cannot be edited from inside the "
         "batch.\n\n"
         f"Current batch: **{heading}**\n\n"
@@ -949,7 +949,7 @@ def make_v39_deny_reason(target_path, matching_entries, ux_headings, ux_present)
         )
 
     return (
-        f"[No-code method] {V39_DENY_MARKER}: {target_path}\n\n"
+        f"[Sovereign Implementer] {V39_DENY_MARKER}: {target_path}\n\n"
         "Before editing this file, you must have the MANIFEST entry and "
         "the relevant `UX.md` Functionalities entry in view — the "
         "MANIFEST line tells you what the element is, the `UX.md` entry "
@@ -1040,9 +1040,9 @@ def make_v29_edit_deny_reason(target_path, permission_mode="") -> str:
     in an unadopted folder. Names the path, points at /sovsetup, and
     documents the opt-out path so the user has a clear exit."""
     return (
-        "[No-code method] BLOCKED: this folder is unadopted (no `*No-code "
+        "[Sovereign Implementer] BLOCKED: this folder is unadopted (no `*No-code "
         "method — Version N.*` footer in `CLAUDE.md`), and it contains "
-        "pre-existing work that the no-code-method plugin would put at "
+        "pre-existing work that the Sovereign Implementer plugin would put at "
         f"risk if you proceed. The Edit/Write/MultiEdit target "
         f"`{target_path}` is outside the scaffolding paths the plugin "
         "manages.\n\n"
@@ -1243,7 +1243,7 @@ def is_method_infra_file(target_path, project_root):
 def make_planning_phase_source_lock_reason(target_path, permission_mode=""):
     """Deny message when source code is edited during planning phase."""
     return (
-        f"[No-code method] BLOCKED: `{target_path}` is a source-code file "
+        f"[Sovereign Implementer] BLOCKED: `{target_path}` is a source-code file "
         "and cannot be edited during the planning phase. Source code is only "
         "editable during a build, via the batch's `Files:` list.\n\n"
         "What to do: if you're planning a change to this file, describe it "
@@ -1260,8 +1260,8 @@ def make_unadopted_planning_deny_reason(target_path, permission_mode=""):
     (no method footer in CLAUDE.md). Points at /sovsetup instead of
     BACKLOG/sovrecap, which don't exist yet."""
     return (
-        f"[No-code method] BLOCKED: `{target_path}` cannot be edited — "
-        "this folder hasn't been set up with the no-code method yet.\n\n"
+        f"[Sovereign Implementer] BLOCKED: `{target_path}` cannot be edited — "
+        "this folder hasn't been set up with Sovereign Implementer yet.\n\n"
         "What to do: run `/sovsetup` first to set up your project, then "
         "you can start building. Or, if you don't want the method in "
         "this folder, disable the plugin for this project."
@@ -1305,8 +1305,8 @@ def make_project_boundary_deny_reason(target_path, project_root,
     """Build the deny-reason text when a writing tool targets a path outside
     the project root."""
     return (
-        f"[No-code method] BLOCKED: `{target_path}` is outside the project "
-        f"root (`{project_root}`). The no-code method plugin blocks edits to "
+        f"[Sovereign Implementer] BLOCKED: `{target_path}` is outside the project "
+        f"root (`{project_root}`). Sovereign Implementer plugin blocks edits to "
         "files outside the project being worked on.\n\n"
         "What to do: if you need to modify files in another project, open a "
         "separate Claude Code session in that project's folder."
@@ -1358,7 +1358,7 @@ def make_test_confirmation_deny_reason(unconfirmed_rows, build_log_status, sessi
         )
 
     return (
-        "[No-code method] BLOCKED: cannot start a new build batch while "
+        "[Sovereign Implementer] BLOCKED: cannot start a new build batch while "
         "the previous batch's test session is still open.\n\n"
         f"{mode_explanation}\n\n"
         f"Unconfirmed TEST-LOG.md rows:\n{rows_block}\n\n"
@@ -1532,10 +1532,10 @@ def _extract_write_targets(command: str) -> list:
 def _make_bash_boundary_deny(raw_path, resolved, project_root,
                              permission_mode=""):
     return (
-        f"[No-code method] BLOCKED: a Bash command writes to "
+        f"[Sovereign Implementer] BLOCKED: a Bash command writes to "
         f"`{resolved}`, which is outside the project root "
         f"(`{project_root}`).\n\n"
-        "What to do: the no-code method plugin blocks file writes outside "
+        "What to do: Sovereign Implementer plugin blocks file writes outside "
         "the project. If you need to modify files in another project, open "
         "a separate Claude Code session in that project's folder."
         + _mode_suffix(permission_mode)
@@ -1544,7 +1544,7 @@ def _make_bash_boundary_deny(raw_path, resolved, project_root,
 
 def _make_bash_locked_sot_deny(raw_path, logical_name, permission_mode=""):
     return (
-        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}` "
+        f"[Sovereign Implementer] BLOCKED: a Bash command writes to `{raw_path}` "
         f"({logical_name}), a locked source-of-truth doc. The main body is "
         "read-only to Claude during the build phase.\n\n"
         "What to do: use the `[PROPOSED EDIT PENDING]` mechanism — add a "
@@ -1558,7 +1558,7 @@ def _make_bash_locked_sot_deny(raw_path, logical_name, permission_mode=""):
 
 def _make_bash_batch_boundary_deny(raw_path, permission_mode=""):
     return (
-        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}`, "
+        f"[Sovereign Implementer] BLOCKED: a Bash command writes to `{raw_path}`, "
         "which is not on the current build batch's `Files:` list.\n\n"
         "What to do: if this file is a genuine prerequisite, halt and "
         "surface it in chat with a one-line justification (prerequisite "
@@ -1572,16 +1572,16 @@ def _make_bash_batch_boundary_deny(raw_path, permission_mode=""):
 def _make_bash_planning_source_deny(raw_path, is_adopted, permission_mode=""):
     if not is_adopted:
         return (
-            f"[No-code method] BLOCKED: a Bash command writes to "
+            f"[Sovereign Implementer] BLOCKED: a Bash command writes to "
             f"`{raw_path}` — this folder hasn't been set up with the "
-            "no-code method yet.\n\n"
+            "Sovereign Implementer yet.\n\n"
             "What to do: run `/sovsetup` first to set up your project. Or, "
             "if you don't want the method in this folder, disable the "
             "plugin for this project."
             + _mode_suffix(permission_mode)
         )
     return (
-        f"[No-code method] BLOCKED: a Bash command writes to `{raw_path}`, "
+        f"[Sovereign Implementer] BLOCKED: a Bash command writes to `{raw_path}`, "
         "a source-code file locked during the planning phase.\n\n"
         "What to do: describe the change in a build batch in `BACKLOG.md`, "
         "then invoke `/sovrecap` to review the batch and `/sovbuild` to "
@@ -1702,7 +1702,7 @@ def check_unclosed_build_commit(project_root, command, permission_mode=""):
     if not _snapshot_all_files_ticked(project_root):
         return None
     return (
-        "[No-code method] BLOCKED: all files in the build snapshot are "
+        "[Sovereign Implementer] BLOCKED: all files in the build snapshot are "
         "ticked but `/sovclose` has not run yet. Committing now would "
         "leave an orphaned `_method/active-build.md` that blocks all "
         "future builds, and skip MANIFEST updates, test rows, build-log "

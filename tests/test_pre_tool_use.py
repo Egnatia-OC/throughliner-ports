@@ -186,8 +186,8 @@ class TestLockedDocEnforcement:
         ux_path = str((root / "UX.md").resolve())
         data = _edit_input(
             root, ux_path,
-            old_string="*No-code method — Version 50.*",
-            new_string="*No-code method — Version 52.*",
+            old_string="*Sovereign Implementer — Version 50.*",
+            new_string="*Sovereign Implementer — Version 52.*",
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
         if raw:
@@ -203,13 +203,13 @@ class TestLockedDocEnforcement:
         ux_path = str((root / "UX.md").resolve())
         data = _edit_input(
             root, ux_path,
-            old_string="## Proposed edits pending\n\n*No-code method — Version 52.*",
+            old_string="## Proposed edits pending\n\n*Sovereign Implementer — Version 52.*",
             new_string=(
                 "## Proposed edits pending\n\n"
                 "[PROPOSED EDIT PENDING]\n"
                 "Origin: mid-build edit attempt — 2026-05-22.\n"
                 "Content: New feature.\n\n"
-                "*No-code method — Version 52.*"
+                "*Sovereign Implementer — Version 52.*"
             ),
         )
         code, parsed, raw = run_hook("pre_tool_use.py", data)
@@ -464,7 +464,7 @@ class TestMethodInfraWhitelist:
             '{"UX.md": "UX.md", "BACKLOG.md": "proxies/backlog.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "proxies").mkdir()
         target = str((root / "proxies" / "ux.md").resolve())
@@ -480,7 +480,7 @@ class TestMethodInfraWhitelist:
             '{"UX.md": "UX.md", "BACKLOG.md": "proxies/backlog.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "proxies").mkdir()
         target = str((root / "proxies" / "manifest.md").resolve())
@@ -495,7 +495,7 @@ class TestMethodInfraWhitelist:
             '## Where the docs live\n\n```json\n'
             '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "planning" / "drafts").mkdir(parents=True)
         target = str((root / "planning" / "drafts" / "comparison-table.md").resolve())
@@ -512,7 +512,7 @@ class TestMethodInfraWhitelist:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "proxies").mkdir(parents=True)
         target = str((root / "_method" / "proxies" / "ux.md").resolve())
@@ -529,7 +529,7 @@ class TestMethodInfraWhitelist:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "planning" / "drafts").mkdir(parents=True)
         target = str((root / "_method" / "planning" / "drafts" / "sketch.md").resolve())
@@ -546,7 +546,7 @@ class TestMethodInfraWhitelist:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "BACKLOG").mkdir(parents=True)
         target = str((root / "_method" / "BACKLOG" / "0001-new-batch.md").resolve())
@@ -857,7 +857,7 @@ class TestActiveBuildCreation:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method").mkdir()
         target = str((root / "_method" / "active-build.md").resolve())
@@ -873,7 +873,7 @@ class TestActiveBuildCreation:
             '## Where the docs live\n\n```json\n'
             '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         target = str((root / "active-build.md").resolve())
         data = _write_input(root, target, content="# Batch snapshot")
@@ -897,7 +897,7 @@ class TestClosePhaseLogWrites:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "test-log").mkdir(parents=True)
         (root / "_method" / "proxies").mkdir(parents=True)
@@ -918,7 +918,7 @@ class TestClosePhaseLogWrites:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "build-log").mkdir(parents=True)
         (root / "_method" / "proxies").mkdir(parents=True)
@@ -939,7 +939,7 @@ class TestClosePhaseLogWrites:
             '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md",\n'
             ' "BUILD-LOG.md": "build-log/INDEX.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "test-log").mkdir()
         (root / "BACKLOG").mkdir()
@@ -961,7 +961,7 @@ class TestClosePhaseLogWrites:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n'
+            '```\n\n*Sovereign Implementer — Version 91.*\n'
         )
         (root / "_method" / "proxies").mkdir(parents=True)
         (root / "_method" / "active-build.md").write_text(
@@ -991,7 +991,7 @@ class TestPhaseDetectionAllTicked:
             '## Where the docs live\n\n```json\n'
             '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n',
+            '```\n\n*Sovereign Implementer — Version 91.*\n',
             encoding="utf-8",
         )
         (root / "UX.md").write_text(
@@ -1029,7 +1029,7 @@ class TestPhaseDetectionAllTicked:
             '## Where the docs live\n\n```json\n'
             '{"UX.md": "UX.md", "BACKLOG.md": "BACKLOG/INDEX.md",\n'
             ' "MANIFEST.md": "MANIFEST.md", "TEST-LOG.md": "TEST-LOG.md"}\n'
-            '```\n\n*No-code method — Version 91.*\n',
+            '```\n\n*Sovereign Implementer — Version 91.*\n',
             encoding="utf-8",
         )
         (root / "UX.md").write_text("## Functionalities\n")
@@ -1111,7 +1111,7 @@ class TestUnclosedBuildCommitGuard:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 98.*\n',
+            '```\n\n*Sovereign Implementer — Version 98.*\n',
             encoding="utf-8",
         )
         (root / "_method").mkdir()
@@ -1133,7 +1133,7 @@ class TestUnclosedBuildCommitGuard:
             '{"UX.md": "_method/UX.md", "BACKLOG.md": "_method/proxies/backlog.md",\n'
             ' "MANIFEST.md": "_method/MANIFEST.md", "TEST-LOG.md": "_method/proxies/backlog.md",\n'
             ' "BUILD-LOG.md": "_method/proxies/build-log.md"}\n'
-            '```\n\n*No-code method — Version 98.*\n',
+            '```\n\n*Sovereign Implementer — Version 98.*\n',
             encoding="utf-8",
         )
         (root / "_method").mkdir()
@@ -1153,7 +1153,7 @@ class TestUnclosedBuildCommitGuard:
         (root / "CLAUDE.md").write_text(
             '## Where the docs live\n\n```json\n'
             '{"UX.md": "_method/UX.md"}\n'
-            '```\n\n*No-code method — Version 98.*\n',
+            '```\n\n*Sovereign Implementer — Version 98.*\n',
             encoding="utf-8",
         )
         data = _bash_input(root, 'git commit -m "planning changes"')
@@ -1164,7 +1164,7 @@ class TestUnclosedBuildCommitGuard:
         """Non-git-commit commands pass through even with ticked snapshot."""
         root = tmp_path
         (root / "CLAUDE.md").write_text(
-            '*No-code method — Version 98.*\n',
+            '*Sovereign Implementer — Version 98.*\n',
             encoding="utf-8",
         )
         (root / "_method").mkdir()

@@ -186,7 +186,7 @@ class TestScaffoldContent:
     def test_method_footer_present(self, tmp_path):
         run_scaffold_write(tmp_path)
         claude_md = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
-        assert "No-code method" in claude_md
+        assert "Sovereign Implementer" in claude_md
         assert "Version" in claude_md
 
     def test_path_block_points_to_method_dir(self, tmp_path):

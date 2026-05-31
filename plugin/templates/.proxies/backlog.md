@@ -1,4 +1,4 @@
-﻿# BACKLOG — [Project Name] Deferred Work
+# BACKLOG — [Project Name] Deferred Work
 
 All deferred work and test tracking in one place. Six sections, top-to-bottom priority. Build batches live in individual files — this index carries the order. Test session files live in `test-log/`.
 
@@ -76,4 +76,4 @@ Raw, unprocessed ideas captured during any session type. Date + one-liner. Claud
 -->
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

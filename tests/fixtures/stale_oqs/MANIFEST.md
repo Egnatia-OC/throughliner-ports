@@ -2,4 +2,4 @@
 
 - **Dashboard** (`app/src/Dashboard.kt`) — Main screen showing task list. *Rationale: core feature / v1.*
 
-*No-code method — Version 88.*
+*Sovereign Implementer — Version 88.*

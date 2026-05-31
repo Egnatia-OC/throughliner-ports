@@ -2,4 +2,4 @@
 
 This CLAUDE.md has no fenced JSON path block.
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

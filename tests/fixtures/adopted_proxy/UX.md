@@ -12,4 +12,4 @@ The user needs this because it's the entry point.
 A secondary view for additional content.
 The user needs this because some content is secondary.
 
-*No-code method — Version 73.*
+*Sovereign Implementer — Version 73.*

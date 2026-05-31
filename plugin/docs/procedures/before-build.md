@@ -1,4 +1,4 @@
-﻿# Before-build procedure — no-code method
+# Before-build procedure — Sovereign Implementer
 
 Follow this procedure during the *before-build* phase — never during planning or building. Lock the file list and verification burden for the top batch, then present the recap.
 
@@ -111,4 +111,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

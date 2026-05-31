@@ -1,4 +1,4 @@
-"""Shared fixtures and helpers for the no-code-method plugin test suite."""
+"""Shared fixtures and helpers for the Sovereign Implementer plugin test suite."""
 
 import json
 import subprocess

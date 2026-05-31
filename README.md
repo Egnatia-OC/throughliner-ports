@@ -6,7 +6,7 @@ A structured workflow for driving Claude Code as a non-coder. Spec-driven discip
 
 ```bash
 /plugin marketplace add <path-or-URL-to-this-repo>
-/plugin install no-code-method@sovereign-implementer
+/plugin install sovereign-implementer@sovereign-implementer
 ```
 
 Then open a Claude Code session in your project folder. The plugin detects your folder state and guides you from there. See [Reference manual.md](Guides/Reference%20manual.md) for the full primer.
@@ -23,7 +23,7 @@ Then open a Claude Code session in your project folder. The plugin detects your 
 
 ## Versioning
 
-Sessions are tracked as commits and tags (`v17`, `v18`, …). Each method file's footer (`*No-code method — Version N.*`) marks the snapshot you're reading.
+Sessions are tracked as commits and tags (`v17`, `v18`, …). Each method file's footer (`*Sovereign Implementer — Version N.*`) marks the snapshot you're reading.
 
 ## Status
 

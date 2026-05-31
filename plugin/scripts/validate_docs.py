@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_docs.py — structured-markdown validator for no-code-method docs.
+validate_docs.py — structured-markdown validator for Sovereign Implementer docs.
 
 Validates shape correctness of method docs at write time (PostToolUse)
 and as a standalone planning pre-flight. Four doc types:

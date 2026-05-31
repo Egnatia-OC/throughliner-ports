@@ -1,4 +1,4 @@
-﻿# Revert procedure — no-code method
+# Revert procedure — Sovereign Implementer
 
 Follow this procedure to undo a failed build. Plain-English narration throughout — the user may have minimal git experience.
 
@@ -82,4 +82,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

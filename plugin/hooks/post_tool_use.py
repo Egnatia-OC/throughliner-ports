@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PostToolUse hook for the no-code-method plugin.
+PostToolUse hook for the Sovereign Implementer plugin.
 
 Fires after Edit/Write/MultiEdit completes successfully. Validates
 structured method docs at write time — catching shape violations before
@@ -115,7 +115,7 @@ def check_backlog_parse(target_path, project_root, text):
             result = find_top_unticked_batch(text)
     except Exception:
         return (
-            "[No-code method] WARNING: BACKLOG parse error. The edit "
+            "[Sovereign Implementer] WARNING: BACKLOG parse error. The edit "
             "you just made caused the parser to crash. The format is "
             "likely broken — check the Build batches section immediately."
             "\n\n"
@@ -131,7 +131,7 @@ def check_backlog_parse(target_path, project_root, text):
         return None
 
     return (
-        "[No-code method] WARNING: BACKLOG parse failed. The file "
+        "[Sovereign Implementer] WARNING: BACKLOG parse failed. The file "
         "contains unticked file entries, but the parser could not "
         "extract a valid batch. The edit you just made likely broke "
         "the format."
@@ -156,7 +156,7 @@ def check_backlog_parse(target_path, project_root, text):
 def format_doc_warnings(doc_type, warnings):
     """Format a list of validation warnings into a single PostToolUse
     warning message."""
-    header = f"[No-code method] WARNING: {doc_type} validation issue."
+    header = f"[Sovereign Implementer] WARNING: {doc_type} validation issue."
     body = "\n".join(f"  - {w}" for w in warnings)
     return f"{header}\n\n{body}"
 

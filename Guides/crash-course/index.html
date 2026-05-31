@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No-code method — Crash Course</title>
+  <title>Sovereign Implementer — Crash Course</title>
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -510,14 +510,14 @@
   <!-- Sidebar outline -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      No-code method
+      Sovereign Implementer
       <small>Crash Course</small>
     </div>
     <ul class="outline" id="outline">
       <li class="outline-section expanded">
         <button class="outline-toggle" onclick="toggleSection(this)" data-target="sec-home">
           <svg class="outline-arrow" viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          The no-code method
+          Sovereign Implementer
         </button>
         <ul class="outline-children">
           <li><a href="#what-is-this">What is this?</a></li>
@@ -636,7 +636,7 @@
     <!-- ════════════════════════════════════════════ -->
     <section id="sec-home">
       <div class="hero">
-        <h1>The no-code method</h1>
+        <h1>Sovereign Implementer</h1>
         <p class="subtitle">A Claude Code plugin that keeps your app on track.</p>
       </div>
 
@@ -794,7 +794,7 @@
       <ol class="steps">
         <li>Clone the repository: <pre><code>git clone https://github.com/FlintCraftTech/sovereign-implementer.git</code></pre></li>
         <li>In Claude Code, run: <pre><code>/plugin marketplace add &lt;path-to-clone&gt;</code></pre></li>
-        <li>Then: <pre><code>/plugin install no-code-method@sovereign-implementer</code></pre></li>
+        <li>Then: <pre><code>/plugin install sovereign-implementer@sovereign-implementer</code></pre></li>
         <li>Open a session in your project folder. Hooks fire at session start.</li>
       </ol>
       <p>For one-off use without installing: <code>claude --plugin-dir &lt;path-to-clone&gt;/plugin</code></p>
@@ -809,7 +809,7 @@
         <li>Open a terminal (PowerShell or Terminal).</li>
         <li>Run <code>claude</code> to start a CLI session.</li>
         <li>Run <code>/plugin marketplace add &lt;path-to-clone&gt;</code></li>
-        <li>Run <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>Run <code>/plugin install sovereign-implementer@sovereign-implementer</code></li>
         <li>Close the CLI session. Open the desktop app. Verify under <strong>Customise</strong> (gear icon) &rarr; <strong>Plugins</strong>.</li>
       </ol>
 
@@ -819,8 +819,8 @@
       <h3>Updating</h3>
       <p>After pulling new changes, if the desktop app shows the old version:</p>
       <ol class="steps">
-        <li>CLI: <code>claude</code> &rarr; <code>/plugin uninstall no-code-method@sovereign-implementer</code></li>
-        <li><code>/plugin marketplace add &lt;path-to-clone&gt;</code> &rarr; <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>CLI: <code>claude</code> &rarr; <code>/plugin uninstall sovereign-implementer@sovereign-implementer</code></li>
+        <li><code>/plugin marketplace add &lt;path-to-clone&gt;</code> &rarr; <code>/plugin install sovereign-implementer@sovereign-implementer</code></li>
         <li>Close the CLI. Close the desktop app completely (on Windows: Task Manager to end the process). Reopen.</li>
         <li>Verify the version.</li>
       </ol>
@@ -856,18 +856,18 @@
       <h3>Disable in a specific project</h3>
       <ul>
         <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; gear icon &rarr; toggle off.</li>
-        <li><strong>CLI:</strong> <code>/plugin disable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+        <li><strong>CLI:</strong> <code>/plugin disable sovereign-implementer@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
       </ul>
 
       <h3>Re-enable</h3>
       <ul>
         <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; toggle on.</li>
-        <li><strong>CLI:</strong> <code>/plugin enable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+        <li><strong>CLI:</strong> <code>/plugin enable sovereign-implementer@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
       </ul>
 
       <h3>Uninstall</h3>
       <p>CLI only (the UI uninstall has been reported as unreliable):</p>
-      <pre><code>/plugin uninstall no-code-method@sovereign-implementer</code></pre>
+      <pre><code>/plugin uninstall sovereign-implementer@sovereign-implementer</code></pre>
 
       <div class="callout-warn callout">
         <p><strong>Known issue:</strong> Disabled plugins may still run hooks. If you need a plugin fully off, uninstall rather than disabling.</p>
@@ -1210,7 +1210,7 @@
     </section>
 
     <footer class="footer">
-      No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+      Sovereign Implementer &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
     </footer>
   </main>
 

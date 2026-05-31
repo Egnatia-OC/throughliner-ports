@@ -20,4 +20,4 @@ The user needs this because different users have different needs.
 
 ## Proposed edits pending
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

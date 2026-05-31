@@ -1,4 +1,4 @@
-﻿# /sovsetup procedure — no-code method
+# /sovsetup procedure — Sovereign Implementer
 
 Follow this procedure when the user runs `/sovsetup`. Bring a folder under the method's discipline.
 
@@ -163,4 +163,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

@@ -14,4 +14,4 @@ A test project for automated testing.
 The user can open a settings screen and toggle dark mode.
 The user needs this because they want control over the app's appearance.
 
-*No-code method — Version 85.*
+*Sovereign Implementer — Version 85.*

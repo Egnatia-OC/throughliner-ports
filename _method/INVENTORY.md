@@ -1,4 +1,4 @@
-﻿# Inventory — current architecture
+# Inventory — current architecture
 
 Two-layer split and plugin component list. Living document — current state, not history.
 
@@ -54,7 +54,7 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
   - ~~(g) Project-boundary enforcement. V56.~~ Removed V91. Downstream checks (planning source lock, build batch boundary) already prevent cross-project writes. The Bash write-guard retains its own boundary check.
   - (h) Bash/PowerShell write-guard. V83. Scans Bash/PowerShell commands for file-write patterns (`sed -i`, `>`, `>>`, `tee`, `Set-Content`, `Out-File`, `Add-Content`, `cp`, `mv`). V91: strips heredoc/here-string content before scanning to avoid false positives. Extracts target paths best-effort; applies existing rules (project boundary, locked docs, batch file list, planning source lock). BACKLOG/MANIFEST exempted as always-writable. Null targets (`/dev/null`, `$null`) skipped.
   - (i) Unclosed-build commit guard. V132. Blocks `git commit` via Bash/PowerShell when `_method/active-build.md` exists with all Files: ticked. Prevents orphaned snapshots from skipping `/sovclose`. Mid-build commits (some files unticked) allowed.
-  - V43 mode-aware messaging across all checks: `[No-code method]` prefix, `What to do:` line, mode-aware suffix in permissive modes for (a), (c), (f), (g), (i).
+  - V43 mode-aware messaging across all checks: `[Sovereign Implementer]` prefix, `What to do:` line, mode-aware suffix in permissive modes for (a), (c), (f), (g), (i).
   - V83 skill escape guidance on all phase-lock denies: (a), (b), (c), (h), (i) deny messages name the skill that unlocks the target (`/sovclose`, `/sovplan`, `/sovrecap`, `/sovbuild`).
 
 - **PreToolUse git safety guard.** V34. Separate hook (Bash matcher). Denies `git reset --hard` and `git push --force`/`-f`. Allows `--force-with-lease`. Mode-aware deny messages.
@@ -117,7 +117,7 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `plugin/scripts/validate_docs.py` — V82 structured-markdown validator. Four validators: TEST-LOG column count, build-log entry sections, scope-context completeness, proxy header format. Called by PostToolUse; usable standalone as CLI pre-flight.
 - `plugin/scripts/project_state.py` — shared module for path-block extraction, TEST-LOG parsing, build-log session identification, BACKLOG helpers, file-type detection (V82: `is_test_log_content_file`, `is_build_log_entry_file`, `is_proxy_file`, `is_backlog_batch_file`). V94: `safe_read_text()` uses `utf-8-sig` encoding to strip Windows BOM bytes.
 - `plugin/scripts/allocate_number.py` — 4-digit number allocator. V59 removed subagent calls (Glob-based instead); now dev-side only.
-- `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*No-code method — Version N.*` footers and regenerates proxy line-number pointers. Invoked by `/sovclose` Turn 2. Two modes: `<old> <new>` for bump + regen, no args for regen only.
+- `plugin/scripts/bump_version.py` — consumer-side close mechanical. Bumps `*Sovereign Implementer — Version N.*` footers and regenerates proxy line-number pointers. Invoked by `/sovclose` Turn 2. Two modes: `<old> <new>` for bump + regen, no args for regen only.
 - `plugin/docs/DOC-STRUCTURE.md` — structural specs. Read by planning, before-build, setup procedures.
 - `plugin/docs/VOCABULARY.md` — method-term definitions.
 - `plugin/docs/explain-reference.md` — curated design rationale for all 42 method features. Read by `/sovexplain` via targeted offset/limit reads.
@@ -154,4 +154,4 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

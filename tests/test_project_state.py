@@ -19,7 +19,7 @@ from conftest import fixture_path
 
 class TestFooterDetection:
     def test_footer_present(self):
-        assert ps.has_method_footer("*No-code method — Version 52.*")
+        assert ps.has_method_footer("*Sovereign Implementer — Version 52.*")
 
     def test_footer_absent(self):
         assert not ps.has_method_footer("# My Project\nNo footer here.")
@@ -29,7 +29,7 @@ class TestFooterDetection:
         assert not ps.has_method_footer(42)
 
     def test_extract_version_number(self):
-        assert ps.extract_footer_version("*No-code method — Version 52.*") == 52
+        assert ps.extract_footer_version("*Sovereign Implementer — Version 52.*") == 52
 
     def test_extract_version_none_when_missing(self):
         assert ps.extract_footer_version("no footer") is None
@@ -47,7 +47,7 @@ class TestSafeReadText:
         p = fixture_path("adopted_folder") / "CLAUDE.md"
         text = ps.safe_read_text(p)
         assert text is not None
-        assert "No-code method" in text
+        assert "Sovereign Implementer" in text
 
     def test_returns_none_for_missing_file(self):
         assert ps.safe_read_text(Path("/nonexistent/file.md")) is None

@@ -1,4 +1,4 @@
-﻿# Tersify procedure — no-code method
+# Tersify procedure — Sovereign Implementer
 
 Guided compression of source-of-truth docs to reduce token cost. Two phases: **triage** (rank and flag) then **audit** (compress user-selected targets one at a time).
 
@@ -76,4 +76,4 @@ Universal-behaviour rules apply. Keep triage output tight — the point is savin
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

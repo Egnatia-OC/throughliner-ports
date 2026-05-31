@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Getting started — No-code method</title>
+  <title>Getting started — Sovereign Implementer</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <nav class="nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">No-code method</a>
+      <a href="index.html" class="nav-brand">Sovereign Implementer</a>
       <input type="checkbox" id="nav-toggle" class="nav-toggle">
       <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
       <ul class="nav-links">
@@ -35,7 +35,7 @@
       <ol class="steps">
         <li>Clone the repository: <pre><code>git clone https://github.com/FlintCraftTech/sovereign-implementer.git</code></pre></li>
         <li>In Claude Code, run: <pre><code>/plugin marketplace add &lt;path-to-clone&gt;</code></pre></li>
-        <li>Then: <pre><code>/plugin install no-code-method@sovereign-implementer</code></pre></li>
+        <li>Then: <pre><code>/plugin install sovereign-implementer@sovereign-implementer</code></pre></li>
         <li>Open a session in your project folder. Hooks fire at session start. In adopted projects, Claude shows you a status summary (batch counts, next batch, pending tests) and asks if you'd like to proceed.</li>
       </ol>
 
@@ -53,7 +53,7 @@
         <li>Open a terminal (PowerShell or Terminal).</li>
         <li>Run <code>claude</code> to start a CLI session.</li>
         <li>Run <code>/plugin marketplace add &lt;path-to-clone&gt;</code></li>
-        <li>Run <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>Run <code>/plugin install sovereign-implementer@sovereign-implementer</code></li>
         <li>Close the CLI session. Open the desktop app. Verify under <strong>Customise</strong> (gear icon) &rarr; <strong>Plugins</strong>.</li>
       </ol>
 
@@ -63,8 +63,8 @@
       <h3>Updating</h3>
       <p>After pulling new changes, if the desktop app shows the old version:</p>
       <ol class="steps">
-        <li>CLI: <code>claude</code> &rarr; <code>/plugin uninstall no-code-method@sovereign-implementer</code></li>
-        <li><code>/plugin marketplace add &lt;path-to-clone&gt;</code> &rarr; <code>/plugin install no-code-method@sovereign-implementer</code></li>
+        <li>CLI: <code>claude</code> &rarr; <code>/plugin uninstall sovereign-implementer@sovereign-implementer</code></li>
+        <li><code>/plugin marketplace add &lt;path-to-clone&gt;</code> &rarr; <code>/plugin install sovereign-implementer@sovereign-implementer</code></li>
         <li>Close the CLI. Close the desktop app completely (on Windows: Task Manager to end the process). Reopen.</li>
         <li>Verify the version.</li>
       </ol>
@@ -107,18 +107,18 @@
       <h3>Disable in a specific project</h3>
       <ul>
         <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; gear icon &rarr; toggle off.</li>
-        <li><strong>CLI:</strong> <code>/plugin disable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+        <li><strong>CLI:</strong> <code>/plugin disable sovereign-implementer@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
       </ul>
 
       <h3>Re-enable</h3>
       <ul>
         <li><strong>Desktop app:</strong> <strong>Customise</strong> &rarr; <strong>Plugins</strong> &rarr; toggle on.</li>
-        <li><strong>CLI:</strong> <code>/plugin enable no-code-method@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
+        <li><strong>CLI:</strong> <code>/plugin enable sovereign-implementer@sovereign-implementer</code>, then <code>/reload-plugins</code>.</li>
       </ul>
 
       <h3>Uninstall</h3>
       <p>CLI only (the UI uninstall has been reported as unreliable):</p>
-      <pre><code>/plugin uninstall no-code-method@sovereign-implementer</code></pre>
+      <pre><code>/plugin uninstall sovereign-implementer@sovereign-implementer</code></pre>
 
       <div class="callout-warn callout">
         <p><strong>Known issue:</strong> Disabled plugins may still run hooks. If you need a plugin fully off, uninstall rather than disabling.</p>
@@ -132,7 +132,7 @@
   </main>
 
   <footer class="footer">
-    No-code method &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
+    Sovereign Implementer &middot; <a href="https://github.com/FlintCraftTech/sovereign-implementer">GitHub</a>
   </footer>
 </body>
 </html>

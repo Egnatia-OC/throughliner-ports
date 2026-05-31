@@ -32,4 +32,4 @@
 
 **Next step.** Research both options before next build cycle.
 
-*No-code method — Version 88.*
+*Sovereign Implementer — Version 88.*

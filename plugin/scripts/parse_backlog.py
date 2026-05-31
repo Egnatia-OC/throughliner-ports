@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-parse_backlog.py — shared BACKLOG parser for the no-code-method plugin.
+parse_backlog.py — shared BACKLOG parser for the Sovereign Implementer plugin.
 
 Locates the top unticked build batch and emits its data as JSON on stdout.
 The "top unticked batch" is the first build batch (in priority order) whose

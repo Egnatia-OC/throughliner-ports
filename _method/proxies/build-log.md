@@ -150,4 +150,4 @@ Index format (newest first):
 - `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

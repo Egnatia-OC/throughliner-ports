@@ -1,4 +1,4 @@
-﻿# Ideate procedure — no-code method
+# Ideate procedure — Sovereign Implementer
 
 Follow this procedure when the user has a fresh concept or wants to explore new ideas. Exploratory — lighter than planning or deliberation.
 
@@ -62,4 +62,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

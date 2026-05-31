@@ -12,4 +12,4 @@ The user needs this because personalisation matters.
 
 ## Proposed edits pending
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

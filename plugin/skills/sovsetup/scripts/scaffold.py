@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scaffold the no-code-method spine docs into the user's project (cwd), and
+Scaffold the Sovereign Implementer spine docs into the user's project (cwd), and
 classify the project root into one of /sovsetup's four cases.
 
 Three modes, each writes a single JSON object to stdout:
@@ -293,7 +293,7 @@ def cmd_write(target_dir: Path) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Scaffold no-code-method templates into a project, "
+        description="Scaffold Sovereign Implementer templates into a project, "
                     "and classify project state for /sovsetup.",
     )
     parser.add_argument(

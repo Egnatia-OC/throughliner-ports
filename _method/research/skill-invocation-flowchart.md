@@ -113,4 +113,4 @@ flowchart TD
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

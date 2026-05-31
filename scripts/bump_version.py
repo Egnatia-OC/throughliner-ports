@@ -38,8 +38,8 @@ def is_excluded(path: Path) -> bool:
 
 
 def bump_footers(old_v: int, new_v: int) -> list[str]:
-    old = f"*No-code method — Version {old_v}.*"
-    new = f"*No-code method — Version {new_v}.*"
+    old = f"*Sovereign Implementer — Version {old_v}.*"
+    new = f"*Sovereign Implementer — Version {new_v}.*"
     changed = []
     for md in sorted(REPO.rglob("*.md")):
         if is_excluded(md):

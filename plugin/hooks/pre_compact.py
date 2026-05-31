@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PreCompact hook for the no-code-method plugin.
+PreCompact hook for the Sovereign Implementer plugin.
 
 Fires before Claude Code compresses the conversation context (manual or
 automatic compaction). When a build batch is in progress (unticked files
@@ -101,7 +101,7 @@ def main():
         return 0
 
     reason = (
-        "[No-code method] Your session is getting long. Long sessions "
+        "[Sovereign Implementer] Your session is getting long. Long sessions "
         "cost more tokens and Claude follows the method less reliably "
         "as context grows. A fresh session will re-read the method docs "
         "and start with full adherence.\n\n"

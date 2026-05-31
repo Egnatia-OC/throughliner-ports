@@ -1,3 +1,3 @@
 # MANIFEST — Test Project
 
-*No-code method — Version 75.*
+*Sovereign Implementer — Version 75.*

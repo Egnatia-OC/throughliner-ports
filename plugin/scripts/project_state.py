@@ -2,7 +2,7 @@
 """
 project_state.py — shared helpers for reading project state from disk.
 
-Used by the no-code-method plugin's hooks (pre_tool_use.py, session_start.py,
+Used by the Sovereign Implementer plugin's hooks (pre_tool_use.py, session_start.py,
 and others) to read the project's state files in a consistent way: CLAUDE.md's
 path block, BACKLOG.md (via the parse_backlog.py subprocess), TEST-LOG.md,
 and build-log/.
@@ -100,11 +100,11 @@ BUILD_LOG_INDEX_REF_PATTERN = re.compile(
 # risk? Both hooks (SessionStart for advisory; PreToolUse for enforcement)
 # call into this section.
 
-# The `*No-code method — Version N.*` footer line that every method-side
+# The `*Sovereign Implementer — Version N.*` footer line that every method-side
 # file and template carries. Presence of this line in CLAUDE.md is the
 # canonical adoption marker — a folder is "adopted" iff its CLAUDE.md
 # carries this footer.
-FOOTER_PATTERN = re.compile(r"\*No-code method — Version (\d+)\.\*")
+FOOTER_PATTERN = re.compile(r"\*Sovereign Implementer — Version (\d+)\.\*")
 
 # Build-manifest filenames the Q2 detection rule (V29 open question 2)
 # treats as definitive "substantial work" signals at the project root.
@@ -130,7 +130,7 @@ BUILD_MANIFEST_NAMES = frozenset({
 SOURCE_DIR_NAMES = frozenset({"src", "lib", "app"})
 
 # Infrastructure files and directories excluded from the "substantial
-# work" file count. Tuned for the no-code-method's typical environment
+# work" file count. Tuned for the Sovereign Implementer's typical environment
 # (Obsidian is common on Alex's setup).
 INFRA_NAMES = frozenset({
     ".git",
@@ -148,7 +148,7 @@ SUBSTANTIAL_WORK_FILE_THRESHOLD = 5
 
 
 def has_method_footer(text):
-    """True if `text` carries the `*No-code method — Version N.*` footer.
+    """True if `text` carries the `*Sovereign Implementer — Version N.*` footer.
     The trust marker for adoption — a folder is adopted iff its CLAUDE.md
     carries this. Used as the primary adoption check by both hooks."""
     if not isinstance(text, str):
@@ -253,10 +253,9 @@ def is_unadopted_with_work(project_root):
     built-in plugin disable (``/plugin`` → Installed → toggle off), which
     prevents the plugin's hooks from firing at all.
 
-    Legacy: the dev project (sovereign-implementer/) keeps a
-    .no-code-method-skip file at its root because --plugin-dir plugins
-    don't appear in /plugin's Installed tab. This check honours that
-    file so the advisory stays quiet during dev sessions.
+    Legacy: the `.no-code-method-skip` marker file is honoured for
+    backward compatibility. Modern opt-out uses Claude Code's built-in
+    plugin disable toggle.
 
     Drives SessionStart's advisory emission and PreToolUse's enforcement
     gate. Both hooks call this function — same definition of "unadopted"

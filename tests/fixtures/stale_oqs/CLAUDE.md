@@ -12,4 +12,4 @@
 }
 ```
 
-*No-code method — Version 88.*
+*Sovereign Implementer — Version 88.*

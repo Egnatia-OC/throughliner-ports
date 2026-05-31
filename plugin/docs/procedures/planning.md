@@ -1,4 +1,4 @@
-﻿# Planning procedure — no-code method
+# Planning procedure — Sovereign Implementer
 
 Follow this procedure during the *planning* phase — not in the same session as a build, and not during setup or migration. Under V90 snapshot architecture, BACKLOG is unlocked during builds — planning in a parallel session is safe. Covers **structural planning**: reordering, splitting, merging, rescoping batches, revising dependencies, adding/removing batches, and housekeeping (test read-back, drift checks, batch pruning).
 
@@ -230,4 +230,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity. 
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

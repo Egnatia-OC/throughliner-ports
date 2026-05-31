@@ -1,4 +1,4 @@
-﻿# BACKLOG.md — [Project Name] Deferred Work
+# BACKLOG.md — [Project Name] Deferred Work
 
 All deferred work and test tracking in one place. Six sections, in this order; top section first, top item first.
 
@@ -120,4 +120,4 @@ Entry format: one line per idea.
 -->
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

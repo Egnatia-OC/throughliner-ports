@@ -87,4 +87,4 @@ Source: `${CLAUDE_PLUGIN_ROOT}/docs/explain-reference.md` (205 lines)
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

@@ -10,4 +10,4 @@ Errors are displayed inline below the input that caused them. Toast notification
 
 ## Proposed edits pending
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

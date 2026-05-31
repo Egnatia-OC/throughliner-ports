@@ -1,4 +1,4 @@
-﻿# Testing procedure — no-code method
+# Testing procedure — Sovereign Implementer
 
 Follow this procedure when the user invokes `/sovtest`. Guides non-coders through pending User-verified TEST-LOG rows one at a time, turning each Test Description into actionable steps and routing failures through structured debugging.
 
@@ -128,4 +128,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

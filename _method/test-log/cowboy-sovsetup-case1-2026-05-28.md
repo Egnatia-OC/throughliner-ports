@@ -271,7 +271,7 @@ Then:
 **Result:** BLOCKED
 
 ```
-[No-code method] BLOCKED: `..._method\BUILD-PLAN\0001-split-html-into-modules.md`
+[Sovereign Implementer] BLOCKED: `..._method\BUILD-PLAN\0001-split-html-into-modules.md`
 is a source-code file and cannot be edited during the planning phase.
 Source code is only editable during a build, via the batch's `Files:` list.
 ```
@@ -316,7 +316,7 @@ new_string: Actual batch reference line
 **Result:** BLOCKED
 
 ```
-[No-code method] BLOCKED: `..._method\proxies\ux.md` is a source-code file
+[Sovereign Implementer] BLOCKED: `..._method\proxies\ux.md` is a source-code file
 and cannot be edited during the planning phase.
 ```
 
@@ -329,7 +329,7 @@ and cannot be edited during the planning phase.
 **Result:** BLOCKED
 
 ```
-[No-code method] BLOCKED: a Bash command writes to `#`,
+[Sovereign Implementer] BLOCKED: a Bash command writes to `#`,
 a source-code file locked during the planning phase.
 ```
 
@@ -350,7 +350,7 @@ a source-code file locked during the planning phase.
 **Result:** BLOCKED
 
 ```
-[No-code method] BLOCKED: a Bash command writes to `C:\n\nUX.md`,
+[Sovereign Implementer] BLOCKED: a Bash command writes to `C:\n\nUX.md`,
 which is outside the project root
 ```
 
@@ -363,7 +363,7 @@ Step 2: Read temp file — SUCCESS
 Step 3: Write Python script to temp file via Write tool — BLOCKED
 
 ```
-[No-code method] BLOCKED: `C:\Users\Alex\AppData\Local\Temp\write_proxy.py`
+[Sovereign Implementer] BLOCKED: `C:\Users\Alex\AppData\Local\Temp\write_proxy.py`
 is outside the project root.
 ```
 

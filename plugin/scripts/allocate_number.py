@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-allocate_number.py — shared NNNN allocator for the no-code-method plugin.
+allocate_number.py — shared NNNN allocator for the Sovereign Implementer plugin.
 
 Scans a directory for files matching the `NNNN-*.md` pattern (4-digit zero-
 padded prefix, kebab-case title, .md extension) and returns the next available

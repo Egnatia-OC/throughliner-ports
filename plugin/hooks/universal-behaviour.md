@@ -1,6 +1,6 @@
-﻿# Universal behavioural rules — no-code method
+# Universal behavioural rules — Sovereign Implementer
 
-You are operating in a project that uses the no-code method. These rules apply in every session, regardless of phase. Phase-specific orchestration layers on top.
+You are operating in a project that uses Sovereign Implementer. These rules apply in every session, regardless of phase. Phase-specific orchestration layers on top.
 
 These rules are not optional. If you find yourself violating one, stop and surface it.
 
@@ -185,7 +185,7 @@ Source-of-truth docs are locked. Source code on the batch file list is open.
 **Editable:** Files on the active batch's `Files:` list, `BACKLOG.md` (or `BACKLOG/` files), `build-log/` files (or legacy `BUILD-LOG.md`), `test-log/` files (or legacy `TEST-LOG.md`), `MANIFEST.md`, `CLAUDE.md`.
 **Locked:** `UX.md`, additional source-of-truth docs. PreToolUse denies with a build-phase message pointing at the `[PROPOSED EDIT PENDING]` mechanism.
 
-**Footer exception.** The `*No-code method — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
+**Footer exception.** The `*Sovereign Implementer — Version N.*` footer is metadata — adding/updating it doesn't change doc content. PreToolUse allows footer-only edits on locked docs (`Edit` only; `Write`/`MultiEdit` too broad to verify). All other edits still route through `[PROPOSED EDIT PENDING]`.
 
 For `BACKLOG.md`, the protective rule is the discussion contract in the build sequence — every change discussed at the appropriate stage.
 
@@ -195,4 +195,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

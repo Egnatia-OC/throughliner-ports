@@ -13,4 +13,4 @@
 }
 ```
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

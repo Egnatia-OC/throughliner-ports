@@ -56,4 +56,4 @@ None.
 - 2026-05-31 — Fix invalid escape sequence `\`` in pre_tool_use.py line 681 (SyntaxWarning on Python 3.12+; will become an error in a future version). Use raw string or `\\``.
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

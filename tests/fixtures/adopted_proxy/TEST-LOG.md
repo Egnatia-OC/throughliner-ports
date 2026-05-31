@@ -3,4 +3,4 @@
 | # | Date | Session | Component | Test Description | Type | Verifier | Status | Confirmed Explicitly | Notes |
 |---|------|---------|-----------|------------------|------|----------|--------|---------------------|-------|
 
-*No-code method — Version 73.*
+*Sovereign Implementer — Version 73.*

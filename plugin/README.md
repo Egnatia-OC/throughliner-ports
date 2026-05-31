@@ -1,6 +1,6 @@
 # Sovereign Implementer
 
-The no-code method as a Claude Code plugin: hooks, procedure docs, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence.
+Sovereign Implementer as a Claude Code plugin: hooks, procedure docs, slash commands, and templates that distribute the method's rules across plugin components instead of relying on prompt-based adherence.
 
 ## Read this first
 
@@ -8,7 +8,7 @@ Before installing, read the [Reference manual](https://github.com/FlintCraftTech
 
 ## After install
 
-Run `/plugins` to confirm `no-code-method` is in the *Installed* tab.
+Run `/plugins` to confirm `sovereign-implementer` is in the *Installed* tab.
 
 ## Slash commands
 

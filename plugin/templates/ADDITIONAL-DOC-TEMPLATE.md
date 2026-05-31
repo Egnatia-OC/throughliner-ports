@@ -1,4 +1,4 @@
-﻿# [DOC NAME].md — [Project Name]
+# [DOC NAME].md — [Project Name]
 
 [Brief intro: what this doc is for, who its audience is, when it applies. Same care as UX.md's header — orient a future reader on whether to keep reading.]
 
@@ -31,4 +31,4 @@ Claude-queued entries or updates. Apply during planning, then delete. Starts emp
 Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

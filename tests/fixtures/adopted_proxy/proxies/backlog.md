@@ -11,4 +11,4 @@
 
 ## Open questions
 
-*No-code method — Version 73.*
+*Sovereign Implementer — Version 73.*

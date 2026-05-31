@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UserPromptSubmit hook for the no-code-method plugin.
+UserPromptSubmit hook for the Sovereign Implementer plugin.
 
 Fires when the user submits a prompt, before Claude processes it.
 Classifies the user's first message of a session into one of the routing
@@ -34,7 +34,7 @@ import re
 import sys
 from pathlib import Path
 
-CLASSIFICATION_MARKER = "[No-code method — opener classification]"
+CLASSIFICATION_MARKER = "[Sovereign Implementer — opener classification]"
 
 # --- Classification patterns ---
 

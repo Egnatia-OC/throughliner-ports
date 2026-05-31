@@ -1,4 +1,4 @@
-# Close procedure — no-code method
+# Close procedure — Sovereign Implementer
 
 Follow this procedure to close a session. Works after any session type — build, planning, or general.
 
@@ -223,4 +223,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

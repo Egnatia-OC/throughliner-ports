@@ -17,7 +17,7 @@ from pathlib import Path
 
 PROJECT = Path.cwd()
 
-FOOTER_RE = re.compile(r"\*No-code method — Version (\d+)\.\*")
+FOOTER_RE = re.compile(r"\*Sovereign Implementer — Version (\d+)\.\*")
 PROXY_HEADER_RE = re.compile(
     r"<!-- proxy \| source: (.+?) \| generated: .+? -->"
 )
@@ -35,8 +35,8 @@ def iter_md_files(root: Path):
 
 
 def bump_footers(old_v: int, new_v: int) -> list[str]:
-    old = f"*No-code method — Version {old_v}.*"
-    new = f"*No-code method — Version {new_v}.*"
+    old = f"*Sovereign Implementer — Version {old_v}.*"
+    new = f"*Sovereign Implementer — Version {new_v}.*"
     changed = []
     for md in iter_md_files(PROJECT):
         try:

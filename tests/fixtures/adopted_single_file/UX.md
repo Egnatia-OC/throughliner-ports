@@ -9,4 +9,4 @@ The user needs this because they want a quick overview.
 
 ## Proposed edits pending
 
-*No-code method — Version 52.*
+*Sovereign Implementer — Version 52.*

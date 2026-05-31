@@ -1,4 +1,4 @@
-﻿# Build procedure — no-code method
+# Build procedure — Sovereign Implementer
 
 Follow this procedure to execute exactly ONE build batch, then stop. Never plan, never reorganise the queue beyond documented carve-outs.
 
@@ -116,4 +116,4 @@ Surface inline as you notice them:
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

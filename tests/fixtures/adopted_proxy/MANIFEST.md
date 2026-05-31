@@ -2,4 +2,4 @@
 
 - **Config loader** (`src/config.py`) — Loads app configuration
 
-*No-code method — Version 73.*
+*Sovereign Implementer — Version 73.*

@@ -1,4 +1,4 @@
-﻿# Deliberate procedure — no-code method
+# Deliberate procedure — Sovereign Implementer
 
 Follow this procedure to work through accumulated open questions in BACKLOG. Not in the same session as a build, and not during setup or migration. Under V90 snapshot architecture, BACKLOG is unlocked during builds — deliberation in a parallel session is safe.
 
@@ -84,4 +84,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity, 
 
 ---
 
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

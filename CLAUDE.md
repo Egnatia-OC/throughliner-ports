@@ -4,9 +4,11 @@ Claude Code auto-loads this file on session start. The plugin's canonical docs l
 
 ## Product overview
 
-**What it is.** The no-code method — a Claude Code plugin (hooks, procedure docs, slash commands, templates) that gives non-coders a structured workflow for building apps with Claude.
-**Who it's for.** Non-coders using Claude Code who know what their app should be but need a framework to keep Claude on track.
-**What friction it solves.** Non-coders need heavy documentation to keep Claude aligned — UX specs, backlogs, manifests, test logs, build histories. Without them, Claude drifts. But heavy docs burn context window. The plugin navigates this: hooks enforce mechanically, procedure docs load on demand, skills give named entry points.
+**What it is.** Sovereign Implementer (SI) — a Claude Code plugin (hooks, procedure docs, slash commands, templates) that offers a structured workflow for building apps with Claude.
+
+**Who it's for.** SI is designed around the needs of  non-coders using Claude Code need a structured discipline in place to guide their project's development. The discipline is what we refer to as the "build cycle" which loosely refers to the ordered invocation of each of the plugin's skills in succession. Regardless we aim for the freest ordering of skill invocation reasonable.
+
+**What friction it solves.** Non-coders need heavy guardrail documentation to keep Claude aligned. In the case of SI this includes UX specs, backlogs, manifests, test logs, build histories, and so on. Without them, Claude drifts. But heavy docs burn context window. The plugin navigates this: hooks enforce mechanically, procedure docs load on demand, skills give named entry points, proxies offer read entry points.
 
 ## Language
 
@@ -50,37 +52,40 @@ When asked how to install, disable, enable, or uninstall the plugin, read `Guide
 
 ### What this project builds
 
-This project develops the method itself — the plugin, its docs, its templates. **Taskflow** and future apps are consumer projects that use it.
+This project develops the plugin itself — its docs, its templates. **Taskflow** and future apps are user projects that use it.
 
 The repo is at the project root:
 - **`plugin/`** — hooks, skills, procedure docs, canonical doc set, templates.
 - **`Guides/`** — Reference manual, crash course.
 - **`_method/`** — this project's own planning artifacts, managed by the plugin.
 - **`tests/`** — automated test suite for the plugin's hooks and scripts.
-- **`scripts/`** — dev-side scripts (bump_version.py for version bumps and proxy regeneration).
+- **`scripts/`** — project-level scripts (bump_version.py for version bumps and proxy regeneration).
 
 **Desktop app constraint.** Alex uses the Claude Code desktop app, not the CLI. `--plugin-dir` is CLI-only. See `_method/research/plugin-marketplace-scoping.md` § 6 Option B for marketplace install.
 
 ### Three files named CLAUDE.md
 
 1. **This file** — instructions for developing the method. The plugin never reads it at runtime.
-2. **`plugin/templates/CLAUDE-TEMPLATE.md`** — the template `/sovsetup` scaffolds into consumer projects.
-3. **A consumer project's `CLAUDE.md`** — the live file the plugin's hooks read at runtime.
+2. **`plugin/templates/CLAUDE-TEMPLATE.md`** — the template `/sovsetup` scaffolds into user projects.
+3. **A user project's `CLAUDE.md`** — the live file the plugin's hooks read at runtime.
 
-Same distinction applies to spine docs (UX.md, BACKLOG.md, MANIFEST.md). When discussing plugin behaviour, default to "the consumer project's copy."
+Same distinction applies to spine docs (UX.md, BACKLOG.md, MANIFEST.md). When discussing plugin behaviour, default to "the user project's copy."
 
 **When Alex reports "Claude did X in Taskflow"** — read the relevant plugin docs, identify the gap, state it in plain English, confirm before drafting changes.
 
-### Dev-side vs plugin-side
+### Host SI vs Target SI
 
-Every reference to something that exists in both layers must be prefixed **dev-side** or **plugin-side**.
+This project uses SI to build SI. Two copies of the plugin exist simultaneously:
 
-- **Dev-side** — building the method: this CLAUDE.md, `_method/` artifacts, and rules governing how we work.
-- **Plugin-side** — what ships to consumer projects: templates, procedure docs, hooks, skills, universal-behaviour.md.
+- **Host SI** — the installed plugin. Its hooks fire on this project (phase detection, file locking, batch management). It manages `_method/` artifacts. It is the previous version.
+- **Target SI** — the source code at `plugin/`. This is what gets edited during builds. Changes here don't take effect until repackaged and reinstalled as the new host (see *Plugin update procedure* below).
 
-Ambiguous terms (BACKLOG, planning, testing, CLAUDE.md, rules, docs) must carry the prefix.
+Never both active in the same session.
 
-**Host/target vocabulary.** "Host SI" = the installed plugin doing the work. "Target SI" = the source code at `plugin/` being built. You are building target SI from within host SI — the installed plugin's hooks fire on this project (phase detection, file locking, batch management), while target SI at `plugin/` is the code being edited during builds. When target SI changes ship, they don't take effect until repackaged and reinstalled as the new host (see *Plugin update procedure* below). Never both active in the same session.
+When a term is ambiguous (BACKLOG, CLAUDE.md, UX.md, hooks, rules, docs), specify which copy:
+- **This project's** — the host's working copy (e.g. `_method/proxies/backlog.md`)
+- **Target SI's** — the source code being edited (e.g. `plugin/templates/BACKLOG-TEMPLATE.md`)
+- **A user project's** — whatever the user scaffolded with `/sovsetup`
 
 ### Design constraints
 
@@ -98,7 +103,7 @@ Most sessions are dev-internal. E2E sessions run the plugin against Taskflow in 
 
 **Plugin reinstall before E2E:** uninstall → delete `plugin.zip` → repackage `plugin/` → reinstall.
 
-**Taskflowapp** at `C:\Users\Alex\Desktop\Taskflow Planning\Planning in here\Taskflowapp` is a real consumer project. Read and write access for E2E testing. The patient is always the method — if Taskflow needs a change, prepare a prompt for Alex's Taskflow project.
+**Taskflowapp** at `C:\Users\Alex\Desktop\Taskflow Planning\Planning in here\Taskflowapp` is a real user project. Read and write access for E2E testing. The patient is always the method — if Taskflow needs a change, prepare a prompt for Alex's Taskflow project.
 
 ### Plugin update procedure
 
@@ -110,7 +115,9 @@ When target SI changes need to take effect as the new host:
 4. In the desktop app: Customise → Plugins → gear icon → Uninstall. Then + → Create plugin → Upload plugin → select the new zip.
 5. Verify version: Customise → Plugins → gear icon on the entry.
 
-This cycle applies after any session that changes hook logic, procedure docs, templates, or skills. Doc-only or BACKLOG-only changes don't require reinstall — the host reads those from disk.
+This cycle applies after every push. The host must always match the last committed version. If the new host misbehaves, `git revert` → rezip → reinstall restores the previous working state. Git history is the safety net — no extra copies needed.
+
+Doc-only or BACKLOG-only changes don't require reinstall — the host reads those from disk.
 
 ### User context
 
@@ -129,4 +136,4 @@ Run `python scripts/bump_version.py <old> <new> --session-tag v<N>` for substant
 Build-cycle position lives in `_method/proxies/backlog.md` (index) and `_method/BACKLOG/` (per-batch files).
 
 ---
-*No-code method — Version 108.*
+*Sovereign Implementer — Version 108.*

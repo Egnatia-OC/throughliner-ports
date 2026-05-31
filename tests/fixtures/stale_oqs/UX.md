@@ -14,4 +14,4 @@ A test project for validating OQ staleness detection.
 The user sees a summary of their tasks on launch.
 The user needs this because they want a quick overview.
 
-*No-code method — Version 88.*
+*Sovereign Implementer — Version 88.*

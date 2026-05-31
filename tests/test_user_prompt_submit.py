@@ -117,7 +117,7 @@ def test_silent_on_feature_request():
 
 def test_silent_on_subsequent_prompt():
     """Should no-op when the classification marker is already in the transcript."""
-    marker = "[No-code method — opener classification]"
+    marker = "[Sovereign Implementer — opener classification]"
     data, tf = _make_input(
         "Here are test results: Pass, Fail, Skipped for #001 #002",
         transcript_content=f'{{"role":"assistant","content":"{marker}"}}'

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SessionStart hook for the no-code-method plugin.
+SessionStart hook for the Sovereign Implementer plugin.
 
 Runs at the start of every Claude Code session in any folder where the plugin
 is installed. Two phases:
@@ -52,7 +52,7 @@ is installed. Two phases:
 Why SessionStart and not UserPromptSubmit:
   UserPromptSubmit hooks declared in plugin hooks.json don't execute due to
   GitHub bug anthropics/claude-code#10225. SessionStart works in plugins
-  today, and given the no-code method's /clear-after-every-build discipline,
+  today, and given Sovereign Implementer's /clear-after-every-build discipline,
   it's functionally equivalent: every new session re-fires the hook.
 
 Locating the project root:
@@ -70,7 +70,7 @@ Output protocol:
   combined universal rules + tier-specific summary). Exit 0.
 
   Hook errors (missing universal-behaviour.md, etc.) are surfaced *as*
-  additionalContext with a [no-code-method plugin warning] prefix rather
+  additionalContext with a [Sovereign Implementer plugin warning] prefix rather
   than dying silently — Claude (and the user) should know if the plugin is
   broken, not see no rules and assume everything is fine.
 """
@@ -208,21 +208,21 @@ BUILD_LOG_SESSION_HEADING_PATTERN = re.compile(r"^##\s+(\S+)", re.MULTILINE)
 
 def read_universal_rules() -> str:
     """Read universal-behaviour.md (sibling file in hooks/). Preserves V18's
-    behaviour: surface a [no-code-method plugin warning] in-context rather
+    behaviour: surface a [Sovereign Implementer plugin warning] in-context rather
     than silently emitting nothing if the file can't be read."""
     rules_path = Path(__file__).parent / "universal-behaviour.md"
     try:
         return rules_path.read_text(encoding="utf-8-sig")
     except FileNotFoundError:
         return (
-            "[no-code-method plugin warning] "
+            "[Sovereign Implementer plugin warning] "
             f"universal-behaviour.md not found at {rules_path}. "
             "The universal behavioural rules could not be injected. "
             "This is a plugin installation problem, not a method problem."
         )
     except OSError as exc:
         return (
-            "[no-code-method plugin warning] "
+            "[Sovereign Implementer plugin warning] "
             f"Could not read universal-behaviour.md ({exc}). "
             "The universal behavioural rules could not be injected."
         )
@@ -1127,7 +1127,7 @@ def build_unadopted_advisory_context(project_root: Path) -> str:
 
     return (
         "## No-code-method plugin — unadopted folder\n\n"
-        "**This folder has not been adopted by the no-code-method plugin, "
+        "**This folder has not been adopted by the Sovereign Implementer plugin, "
         "and it contains existing work that the plugin would put at risk "
         "if you proceed normally.** No method-aware behaviour is active "
         "until the user runs `/sovsetup`.\n\n"
@@ -1153,7 +1153,7 @@ def build_unadopted_system_message() -> str:
     Kept short — system messages are noisier than additionalContext and
     we want this one to land."""
     return (
-        "[no-code-method] Folder has work but isn't set up — run /sovsetup "
+        "[Sovereign Implementer] Folder has work but isn't set up — run /sovsetup "
         "to start, or disable the plugin for this project via /plugin → "
         "Installed → toggle off. Edit/Write/MultiEdit calls will be "
         "denied until /sovsetup completes."
@@ -1565,7 +1565,7 @@ def build_tier_2_gap_flag(claude_text, spine_docs, project_root=None) -> str:
         gap = (
             "`CLAUDE.md` is present but its *Where the docs live* path block "
             "can't be parsed as a fenced JSON block, and no method-aware "
-            "spine docs (carrying the `*No-code method — Version N.*` "
+            "spine docs (carrying the `*Sovereign Implementer — Version N.*` "
             "footer) were found at the project root."
         )
         next_step = (
@@ -1666,11 +1666,11 @@ def main() -> int:
         tier_output = build_state_summary(project_root, claude_text, path_block)
 
     preamble = (
-        "**Two-layer permission model.** This project uses the no-code-method "
+        "**Two-layer permission model.** This project uses the Sovereign Implementer "
         "plugin. Some actions are blocked by method rules enforced via "
         "PreToolUse hooks — these blocks apply regardless of your Claude Code "
         "permission mode (including Auto and `--dangerously-skip-permissions`). "
-        "Deny messages are prefixed `[No-code method]` and include a "
+        "Deny messages are prefixed `[Sovereign Implementer]` and include a "
         "`What to do:` line.\n\n"
     )
     combined = preamble + universal_rules + "\n\n---\n\n" + tier_output

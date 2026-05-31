@@ -10,7 +10,7 @@ def test_blocks_when_active_build(adopted_folder):
     assert code == 0
     assert parsed is not None
     assert parsed["decision"] == "block"
-    assert "No-code method" in parsed["reason"]
+    assert "Sovereign Implementer" in parsed["reason"]
     assert "tokens" in parsed["reason"].lower()
     assert "handoff" in parsed["reason"].lower()
 

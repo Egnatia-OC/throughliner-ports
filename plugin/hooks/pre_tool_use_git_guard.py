@@ -37,7 +37,7 @@ PUSH_FORCE = re.compile(r"\bgit\b.*\bpush\b.*(?:--force(?!-with-lease)\b|-f\b)")
 
 _MODE_AWARE_SUFFIX = (
     "\n\nChanging your Claude Code permission mode won't unlock this — "
-    "this is a method rule enforced by the no-code-method plugin's hook, "
+    "this is a method rule enforced by the Sovereign Implementer plugin's hook, "
     "not a Claude Code permission check."
 )
 
@@ -54,7 +54,7 @@ def _mode_suffix(permission_mode: str) -> str:
 
 def make_reset_hard_reason(permission_mode: str) -> str:
     return (
-        "[No-code method] BLOCKED: `git reset --hard` destroys uncommitted "
+        "[Sovereign Implementer] BLOCKED: `git reset --hard` destroys uncommitted "
         "work and cannot be undone.\n\n"
         "What to do: use a safer alternative:\n"
         "- `git stash` — saves your changes so you can restore them later.\n"
@@ -71,7 +71,7 @@ def make_reset_hard_reason(permission_mode: str) -> str:
 
 def make_push_force_reason(permission_mode: str) -> str:
     return (
-        "[No-code method] BLOCKED: `git push --force` can overwrite commits "
+        "[Sovereign Implementer] BLOCKED: `git push --force` can overwrite commits "
         "on the remote that you or a collaborator pushed from another machine "
         "or session.\n\n"
         "What to do: use `git push --force-with-lease` instead. It does the "

@@ -182,7 +182,7 @@ Add complete Polite Fart Announcer app
 - Playback speed slider (0.5x–2.0x)
 - Regal dark/gold aesthetic with serif typography
 - Voice recorder utility for consistent cross-install audio
-- No-code method docs: UX, build plan, manifest, proxies
+- Sovereign Implementer docs: UX, build plan, manifest, proxies
 ```
 
 **User:** "looks good"
@@ -279,4 +279,4 @@ Polite Fart Announcer/
 
 ---
 
-*Session transcript generated 2026-05-28. No-code method plugin V91 lifecycle test.*
+*Session transcript generated 2026-05-28. Sovereign Implementer plugin V91 lifecycle test.*
