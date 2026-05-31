@@ -4,7 +4,7 @@
 
 All deferred work and test tracking. Six sections, top-to-bottom priority. Build batches in per-batch files under `_method/BACKLOG/`. Test session files in `_method/test-log/`.
 
-130 batches shipped or cancelled (V18–0146). Full history in `_method/proxies/build-log.md`.
+132 batches shipped or cancelled (V18–0149). Full history in `_method/proxies/build-log.md`.
 
 ## Red flags
 
@@ -18,8 +18,6 @@ None.
 
 - `0130-sovsetup-case1-retest.md` — /sovsetup case 1 retest (post-fix verification). E2E test.
 - `0131-build-lifecycle-retest.md` — Build lifecycle retest (post v115–v129 changes). E2E test.
-- `0148-graduation-step1-migrate-artifacts.md` — Graduation step 1: migrate planning artifacts into _method/.
-- `0149-graduation-step2-claude-md.md` — Graduation step 2: CLAUDE.md reconciliation.
 - `0150-graduation-step3-activate.md` — Graduation step 3: activate self-management.
 - `0147-merge-ideas-oqs.md` — Merge Ideas into Open Questions + combine ideation/deliberation.
 

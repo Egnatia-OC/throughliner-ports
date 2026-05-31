@@ -1,0 +1,7 @@
+# v150 — 2026-05-31 — Graduation step 2: CLAUDE.md reconciliation
+
+**What shipped.** Dev CLAUDE.md rewritten from 159 lines of accumulated prose (20 sections) into the plugin's template format (batch 0149). New structure: product overview (four fields), language setting, path block (sovereign-implementer/_method/ paths), _method/ orientation, plugin management, project-specific notes (10 grouped subsections), after-build steps, current state. Archive of the pre-graduation CLAUDE.md at Dev/CLAUDE-pre-graduation.md. Stale 0148 entry cleaned from BACKLOG proxy.
+
+**Decisions taken and why.** Four sections dropped as obsolete — "Read this first" (replaced by "Session lifecycle" note; plugin procedures will handle load order post-graduation), "Dev-side convergence strategy" (goal achieved by graduation itself), "Make BACKLOG edits directly" (universal-behaviour.md covers this), "Dev-project marker file" (mechanical escape hatch, not doc-level; marker stays until 0150). Path block paths use `sovereign-implementer/` prefix because CLAUDE.md sits at `No code method/` level while the repo and _method/ are inside `sovereign-implementer/`. UX.md and MANIFEST.md included in path block as forward-looking entries — not yet created for this project.
+
+**Pivots and surprises.** 0148 was still in the BACKLOG proxy despite being shipped in v149 — a v149 close-step gap. Cleaned up. 0150 scope item 8 (host/target disambiguation) partially superseded by the host/target vocabulary added to "Dev-side vs plugin-side" — annotated in the batch file.

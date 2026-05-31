@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v150-graduation-step2-claude-md.md` — 2026-05-31 — Graduation step 2: CLAUDE.md reconciliation
 - `v149-graduation-step1-migrate-artifacts.md` — 2026-05-31 — Graduation step 1: migrate planning artifacts into _method/
 - `v148-sovexplain-routing-manifest-capabilities.md` — 2026-05-31 — /sovexplain three-way routing + MANIFEST capabilities summary
 - `v147-design-decision-sweep-at-close.md` — 2026-05-31 — Decision sweep added to close procedure

@@ -11,7 +11,7 @@
 5. Verify hook enforcement: PreToolUse allows `_method/` edits during planning, blocks source-code edits.
 6. Verify `/sovrecap` can parse the BACKLOG and present a batch.
 7. Fix any immediate issues found during verification.
-8. Add host/target disambiguation to CLAUDE.md project-specific notes: "You are building target SI from within host SI" with path references.
+8. Add host/target disambiguation to CLAUDE.md project-specific notes: "You are building target SI from within host SI" with path references. *(Note: v150 partially addressed — host/target vocabulary added under "Dev-side vs plugin-side." Remaining: the "building from within" framing and path references.)*
 9. Document the graduation procedure: target SI passes E2E → repackage → install as new host → bump version reference. Lightweight checklist in CLAUDE.md or a dev-side reference.
 
 **Outputs.** Sovereign-implementer is a self-managed project. Issues filed as new BACKLOG entries if not fixable in-session.
