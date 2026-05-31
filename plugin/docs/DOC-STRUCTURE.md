@@ -253,7 +253,7 @@ Lightweight index files summarizing source-of-truth docs. Claude reads proxies f
 
 ### BACKLOG index proxy (backlog.md)
 
-Source: `_method/BACKLOG/` and `_method/test-log/`. Unlike other proxies, this IS the operational index — six sections (Red flags, Planning batches, Build batches, Test sessions, Open questions, Ideas) with reference lines pointing at per-batch and per-session test files. Not a summary; directly edited by Claude during planning. Test sessions section also serves as the TEST-LOG index.
+Source: `_method/BACKLOG/` and `_method/test-log/`. Unlike other proxies, this IS the operational index — five sections (Red flags, Planning batches, Build batches, Test sessions, Open questions) with reference lines pointing at per-batch and per-session test files. Not a summary; directly edited by Claude during planning. Test sessions section also serves as the TEST-LOG index.
 
 Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`. `"TEST-LOG.md"` also points here. Parser resolves batch files relative to `_method/BACKLOG/`; hooks resolve per-session test files relative to `_method/test-log/`.
 
@@ -313,7 +313,7 @@ Three formats, auto-detected:
 
 **Maintained by Claude during planning.** Claude edits directly; user reviews.
 
-**Six sections, in order** (INDEX.md or BACKLOG.md):
+**Five sections, in order** (INDEX.md or BACKLOG.md):
 
 - **Red flags.** Deferred security/privacy/data-integrity concerns. Each: `**[RED FLAG]**` [description]. Found during [batch] ([date]). Fix: [fix]. Active-batch concerns stay there; planned-feature concerns become batch questions. Red flags are specifically deferred with no active plan.
 
@@ -371,13 +371,11 @@ Three formats, auto-detected:
 
 - **Test sessions.** Index of per-session test files from `test-log/`. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. `/sovclose` prepends one line per build. The test-confirmation gate and TEST-LOG tripwire resolve test data from the per-session files in `test-log/`; this section is the index. See *TEST-LOG structure* above for column specs and per-session file format.
 
-- **Open questions.** Non-blocking parking. Each: question title, *Surfaced* (session tag when created — so planning detects neglected entries), framing paragraph, *Why it matters*, *Next step* (trigger for promotion/resolution). Distinct from planning batches (which name what they block).
-
-- **Ideas.** Raw ideas captured during any session type. Lighter than OQs — date + one-liner. Writable regardless of build phase (BACKLOG unlocked under snapshot architecture). `/sovideate` or `/sovdeliberate` promotes to OQs or batches. Format: `- YYYY-MM-DD — [one-line description]`.
+- **Open questions.** Unscoped captures — from quick one-liner thoughts to fleshed-out questions. `/sovdeliberate` works through accumulated entries. Full entries: question title, *Surfaced* tag, framing paragraph, *Why it matters*, *Next step*. Light entries: heading, *Surfaced* tag, one sentence. Why it matters and Next step are optional — useful when the question has enough shape to benefit from them. Distinct from planning batches (which name what they block).
 
 ### Build-snapshot architecture (V90)
 
-When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_method/active-build.md` and removed from BACKLOG. The build reads and ticks files in the snapshot. BACKLOG is fully unlocked — parallel sessions can plan, deliberate, or ideate freely. At `/sovclose`, the snapshot is deleted — the build-log entry serves as the permanent shipped record; the batch is not written back to BACKLOG.
+When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_method/active-build.md` and removed from BACKLOG. The build reads and ticks files in the snapshot. BACKLOG is fully unlocked — parallel sessions can plan or deliberate freely. At `/sovclose`, the snapshot is deleted — the build-log entry serves as the permanent shipped record; the batch is not written back to BACKLOG.
 
 **Phase detection.** Snapshot existence replaces `Status: active` as the build-in-progress signal. `_method/active-build.md` exists → build phase. Absent → planning phase. Legacy: `Status: active` in BACKLOG still detected for pre-V90 projects.
 
@@ -386,4 +384,4 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 **Close handoff section.** Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes skipped. `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative. If empty or absent (legacy snapshots), falls back to scanning Files:. Consumed by `/sovclose` and deleted with the snapshot.
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

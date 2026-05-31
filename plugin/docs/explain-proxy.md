@@ -33,8 +33,7 @@ Source: `${CLAUDE_PLUGIN_ROOT}/docs/explain-reference.md` (205 lines)
 
 - /sovplan and drift checks → L50–53
 - /sovrecap (before-build validation) → L55–56
-- /sovdeliberate (open questions vs batches) → L58–61
-- /sovideate (idea routing) → L63–66
+- /sovdeliberate (open questions + idea capture) → L58–67
 
 ## Testing
 
@@ -87,4 +86,4 @@ Source: `${CLAUDE_PLUGIN_ROOT}/docs/explain-reference.md` (205 lines)
 
 ---
 
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

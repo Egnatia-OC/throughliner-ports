@@ -156,7 +156,7 @@ Needs only the values from the turn boundary.
 
 ## Planning/general path
 
-Run when no active-with-ticked-files batch exists. Lighter close for planning, ideation, or general sessions.
+Run when no active-with-ticked-files batch exists. Lighter close for planning, deliberation, or general sessions.
 
 ### Turn 1 — judgment
 
@@ -176,7 +176,7 @@ Run when no active-with-ticked-files batch exists. Lighter close for planning, i
 
 ### Turn 2 — mechanical
 
-4. **[SILENT] Bump method-version footers.** Only if the session made substantive method or plugin changes — most planning/ideation sessions skip. Run from project root:
+4. **[SILENT] Bump method-version footers.** Only if the session made substantive method or plugin changes — most planning/deliberation sessions skip. Run from project root:
    ```
    python "${CLAUDE_PLUGIN_ROOT}/scripts/bump_version.py" <old> <new>
    ```
@@ -223,4 +223,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

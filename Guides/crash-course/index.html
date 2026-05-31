@@ -684,11 +684,10 @@
       </div>
 
       <h2 id="planning-sessions">Planning sessions</h2>
-      <p>Planning sessions decide <em>what</em> gets built. Three skills cover different planning modes:</p>
+      <p>Planning sessions decide <em>what</em> gets built. Two skills cover different planning modes:</p>
       <ul>
         <li><code>/sovplan</code> &mdash; <strong>structural planning.</strong> Confirms test results, runs drift checks, reorders/splits/merges batches, edits BACKLOG.</li>
-        <li><code>/sovdeliberate</code> &mdash; <strong>OQ deliberation.</strong> Works through accumulated open questions: promote, drop, or re-park each one.</li>
-        <li><code>/sovideate</code> &mdash; <strong>new ideas.</strong> Explores a fresh concept, assesses fit, routes it to an OQ, batch, or idea entry.</li>
+        <li><code>/sovdeliberate</code> &mdash; <strong>OQ deliberation and idea capture.</strong> Works through accumulated open questions: promote, drop, or re-park. Also captures new thoughts as light OQs.</li>
       </ul>
       <p>Source-of-truth docs (like UX.md) are directly editable by Claude during planning &mdash; no ceremony needed. You remove resolved batches and reorganise priorities.</p>
 
@@ -1178,7 +1177,7 @@
       </ul>
 
       <h3>Slash commands</h3>
-      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovideate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
+      <p><code>/sovsetup</code>, <code>/sovplan</code>, <code>/sovdeliberate</code>, <code>/sovrecap</code>, <code>/sovbuild</code>, <code>/sovclose</code>, <code>/sovgit</code>, <code>/sovtest</code>, <code>/sovresearch</code>, <code>/sovtersify</code>, <code>/sovrevert</code>, <code>/sovexplain</code> &mdash; user-facing entry points that direct Claude to matching procedure docs or flows.</p>
 
       <h3>Scripts</h3>
       <p>Python helpers invoked by procedure docs: BACKLOG parser, batch-number allocator, version bumper (footer updates + proxy line-number fixes for the close mechanical pass), shared project-state helpers, and doc validators.</p>

@@ -1,6 +1,6 @@
 # BACKLOG — [Project Name] Deferred Work
 
-All deferred work and test tracking in one place. Six sections, top-to-bottom priority. Build batches live in individual files — this index carries the order. Test session files live in `test-log/`.
+All deferred work and test tracking in one place. Five sections, top-to-bottom priority. Build batches live in individual files — this index carries the order. Test session files live in `test-log/`.
 
 *Full spec: `DOC-STRUCTURE.md` → BACKLOG structure.*
 
@@ -55,25 +55,27 @@ Entry file format:
 
 ## Open questions
 
-Questions worth tracking that don't block a specific build yet. Each has a question, context, and a next-step trigger. The planning procedure scans this section at every planning session start. When a question blocks something specific, promote to a planning batch.
+Unscoped captures — from quick thoughts to fleshed-out questions. `/sovdeliberate` works through accumulated entries. Light entries need only a heading, Surfaced tag, and one sentence. Full entries add Why it matters and Next step.
 
 <!--
+Full format:
+
 ### [Short question title]
+*Surfaced: [session tag]*
 
 [One paragraph framing the question.]
 
 **Why it matters.** [Context.]
 
 **Next step.** [What resolves or promotes this.]
--->
 
-## Ideas
+Light format:
 
-Raw, unprocessed ideas captured during any session type. Date + one-liner. Claude can write here regardless of build phase. `/sovideate` or `/sovdeliberate` promotes ideas to OQs or batches.
+### [Short title]
+*Surfaced: [session tag]*
 
-<!--
-- YYYY-MM-DD — [One-line description of the idea]
+[One sentence.]
 -->
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

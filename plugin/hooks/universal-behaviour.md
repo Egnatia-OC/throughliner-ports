@@ -136,8 +136,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 | "New project," "set this up" | Recommend `/sovsetup`. Wait for okay. |
 | Non-conforming project docs | Recommend `/sovsetup`. Wait for okay. |
 | "Planning session," `/sovplan`, reorder/split/merge/rescope batches | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md`. |
-| "Open questions," `/sovdeliberate`, OQ work-through | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/deliberate.md`. |
-| "New idea," `/sovideate`, feature request, brainstorm | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/ideate.md`. |
+| "Open questions," `/sovdeliberate`, OQ work-through, "new idea," feature request, brainstorm | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/deliberate.md`. |
 | Scope question | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: scope question`. |
 | "That broke everything," "put it back," "undo," `/sovrevert` | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/revert.md`. |
 | Bug report ("X doesn't work," "found a bug," "Y is broken") | Read and follow `${CLAUDE_PLUGIN_ROOT}/docs/procedures/planning.md` with `primary_intent: bug report`. |
@@ -150,7 +149,7 @@ Classify and route the session opener. Routes are exclusive; pick highest-priori
 
 **Procedure docs — how to invoke:**
 
-Read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Eleven procedures: `planning.md` (structural, `/sovplan`), `deliberate.md` (OQ work-through, `/sovdeliberate`), `ideate.md` (new ideas, `/sovideate`), `before-build.md` (`/sovrecap`), `build.md` (`/sovbuild`), `close.md`, `git.md`, `revert.md` (`/sovrevert`), `setup.md`, `testing.md` (`/sovtest`), `tersify.md` (`/sovtersify`). Each specifies what to load, what to do, and what recap to produce. Follow in main context — don't spawn agents.
+Read and follow the matching procedure doc at `${CLAUDE_PLUGIN_ROOT}/docs/procedures/<phase>.md`. Ten procedures: `planning.md` (structural, `/sovplan`), `deliberate.md` (OQ work-through + idea capture, `/sovdeliberate`), `before-build.md` (`/sovrecap`), `build.md` (`/sovbuild`), `close.md`, `git.md`, `revert.md` (`/sovrevert`), `setup.md`, `testing.md` (`/sovtest`), `tersify.md` (`/sovtersify`). Each specifies what to load, what to do, and what recap to produce. Follow in main context — don't spawn agents.
 
 ## Session handoff
 
@@ -195,4 +194,4 @@ For `BACKLOG.md`, the protective rule is the discussion contract in the build se
 
 *This file is the canonical home for universal behavioural rules, prohibited behaviours, flag taxonomy, response-shape tags, routing, and editing-surfaces rule.*
 
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

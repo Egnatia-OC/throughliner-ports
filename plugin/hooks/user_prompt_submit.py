@@ -77,9 +77,8 @@ DELIBERATE_PATTERNS = [
     re.compile(r"\breckon with\b", re.IGNORECASE),
 ]
 
-# V90: Ideate signals — user has a new idea or wants to brainstorm.
-IDEATE_PATTERNS = [
-    re.compile(r"/sovideate\b"),
+# V109: Idea-capture signals — route to /sovdeliberate (merged from /sovideate).
+IDEA_CAPTURE_PATTERNS = [
     re.compile(r"\bnew idea\b", re.IGNORECASE),
     re.compile(r"\bbrainstorm\b", re.IGNORECASE),
     re.compile(r"\bwhat if\b", re.IGNORECASE),
@@ -138,13 +137,12 @@ def classify(prompt):
     if count_pattern_hits(prompt, RESUME_PATTERNS) >= 1:
         return ("resume", "Detected resume/continue request.")
 
-    # V90: Deliberate — OQ work-through.
+    # V109: Deliberate — OQ work-through or idea capture (merged).
     if count_pattern_hits(prompt, DELIBERATE_PATTERNS) >= 1:
         return ("deliberate", "Detected OQ deliberation request.")
 
-    # V90: Ideate — new idea or feature request.
-    if count_pattern_hits(prompt, IDEATE_PATTERNS) >= 1:
-        return ("ideate", "Detected new idea / brainstorm request.")
+    if count_pattern_hits(prompt, IDEA_CAPTURE_PATTERNS) >= 1:
+        return ("deliberate", "Detected new idea / brainstorm — routing to deliberate.")
 
     # V90: Structural planning — roadmap reshaping.
     if count_pattern_hits(prompt, PLAN_STRUCTURAL_PATTERNS) >= 1:
@@ -174,10 +172,6 @@ def build_context(route, detail):
         "deliberate": (
             "Suggested route: read and follow the deliberate procedure at "
             "${CLAUDE_PLUGIN_ROOT}/docs/procedures/deliberate.md."
-        ),
-        "ideate": (
-            "Suggested route: read and follow the ideate procedure at "
-            "${CLAUDE_PLUGIN_ROOT}/docs/procedures/ideate.md."
         ),
         "plan_structural": (
             "Suggested route: read and follow the planning procedure at "

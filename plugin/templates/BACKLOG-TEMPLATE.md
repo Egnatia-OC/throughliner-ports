@@ -1,6 +1,6 @@
 # BACKLOG.md — [Project Name] Deferred Work
 
-All deferred work and test tracking in one place. Six sections, in this order; top section first, top item first.
+All deferred work and test tracking in one place. Five sections, in this order; top section first, top item first.
 
 *Full spec for these sections: `DOC-STRUCTURE.md` → BACKLOG structure.*
 
@@ -91,12 +91,12 @@ Index format (newest first):
 
 ## Open questions
 
-Questions worth tracking that aren't blocking a specific build batch yet. Each entry has a question, brief context, and a next-step trigger describing what would promote it to a planning batch or resolve it. The planning procedure scans this section at the start of every planning session and lists all entries with their triggers.
+Unscoped captures — from quick one-liner thoughts to fleshed-out questions. Not blocking a specific build batch yet. `/sovdeliberate` works through accumulated entries: promotes to planning batches, resolves, or drops.
 
-When an open question matures to the point where it blocks a specific build, promote it to a planning batch above.
+Light entries need only a heading, Surfaced tag, and one sentence. Full entries add Why it matters and Next step when the question has enough shape to benefit from them.
 
 <!--
-Entry format:
+Entry format — full:
 
 ### [Short question title]
 
@@ -107,17 +107,14 @@ Entry format:
 **Why it matters.** [Brief context — who raised it, what's at risk.]
 
 **Next step.** [What would resolve or promote this — e.g. "promote to planning batch if X happens", "incorporate into next batch touching Y", "park until Z".]
--->
 
-## Ideas
+Entry format — light (quick capture):
 
-Raw, unprocessed ideas captured during any session type. Lighter than open questions — just a date and a one-liner. Claude can write here regardless of build phase. `/sovideate` or `/sovdeliberate` promotes ideas to OQs or batches when the user is ready.
+### [Short title]
+*Surfaced: [session tag]*
 
-<!--
-Entry format: one line per idea.
-
-- YYYY-MM-DD — [One-line description of the idea]
+[One sentence describing the thought or question.]
 -->
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

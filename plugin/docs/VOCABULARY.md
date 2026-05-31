@@ -38,7 +38,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Inputs line.** Optional bullet list in a build batch of non-standard resources needed. Standard docs omitted. Written by `/sovrecap`; consumed during the build. Full rules: `DOC-STRUCTURE.md`.
 
-- **Open question (BACKLOG).** Non-blocking parking in BACKLOG's Open questions section. Has question, *Why it matters*, *Next step* trigger. Distinct from planning batches (which name what they block). Promoted when it blocks something specific.
+- **Open question (BACKLOG).** Unscoped capture in BACKLOG's Open questions section. Two formats: full (question, *Why it matters*, *Next step* trigger) and light (heading, *Surfaced* tag, one sentence). Distinct from planning batches (which name what they block). Promoted when it blocks something specific. `/sovdeliberate` works through accumulated entries.
 
 - **Planning session (not plan mode).** The method's planning phase — confirming tests, drift checks, sorting ideas, editing BACKLOG. Requires Accept edits mode. Distinct from Claude Code's plan mode (Shift+Tab), which blocks all edits.
 
@@ -79,7 +79,7 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Close handoff.** `## Close handoff` section at bottom of `_method/active-build.md`. One-liner per ticked file noting what changed — new names, renamed concepts, shifted frames, invalidated doc references. Appended incrementally during build; read by `/sovclose` for doc-parity, frame-correction, and build-log narrative. Distinct from session handoff (interrupted builds). Spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
 
-- **Opener classification.** UserPromptSubmit hook's keyword detection on first prompt: sovsetup/test notes/resume/deliberate/ideate/plan structural. Injected as routing hint. A hint, not a gate.
+- **Opener classification.** UserPromptSubmit hook's keyword detection on first prompt: sovsetup/test notes/resume/deliberate/plan structural. Injected as routing hint. A hint, not a gate.
 
 - **Row pruning (TEST-LOG).** Auto-deletion of rows whose Component has no MANIFEST match, plus `Superseded` rows. Runs at planning step 2c. Cross-component rows exempt.
 
@@ -129,19 +129,17 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Build snapshot.** `_method/active-build.md`. Extracted from BACKLOG by `/sovbuild`, deleted by `/sovclose`. Contains the active batch's full content. Its existence is the build-in-progress signal. Replaces `Status: active` for phase detection. Full spec: `DOC-STRUCTURE.md` → *Build-snapshot architecture*.
 
-- **Ideas section (BACKLOG).** Lightest-weight capture. Date + one-liner. Writable during any phase. Promoted to OQs or batches by `/sovideate` or `/sovdeliberate`.
+- **Ideas section (BACKLOG, legacy).** Pre-V109 lightest-weight capture. Date + one-liner. Replaced by light OQ format (heading + Surfaced + one sentence). Legacy sections handled gracefully by `/sovdeliberate`.
 
 - **Cowboy test.** Informal testing where the user tests independently and reports results, as opposed to a guided `/sovtest` walkthrough. Cowboy tests are exempt from one-at-a-time walkthrough pacing. Volunteered results accepted per `testing.md` → *Volunteered results*.
 
-- **Deliberation session.** Via `/sovdeliberate`. Works through accumulated OQs: promote, drop, or re-park each. Produces build-log entry recording dispositions.
-
-- **Ideation session.** Via `/sovideate`. Explores a fresh concept: discuss, assess fit, route to OQ/batch/idea/drop. Lighter than planning — no drift checks, no test read-back.
+- **Deliberation session.** Via `/sovdeliberate`. Works through accumulated OQs and captures new thoughts: promote, drop, re-park, or capture as light OQ. Produces build-log entry recording dispositions.
 
 - **OQ accumulation nudge.** SessionStart and `/sovrecap` check: 3+ OQs or any older than 5 build cycles → nudge toward `/sovdeliberate`. Informational, not blocking.
 
 - **Language setting.** `Language:` field in CLAUDE.md. Language for responses and doc content. Defaults to English. Control tokens (`Status:`, `Changes:`, etc.) stay English — hooks regex-match them. Set during `/sovsetup`; migrated by case 4. Full rule: `universal-behaviour.md` → *Respect the Language: field*.
 
-- **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
+- **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved items that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

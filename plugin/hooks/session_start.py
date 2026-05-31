@@ -103,7 +103,7 @@ from project_state import (  # noqa: E402 — must follow sys.path insert
 # Three numbers to keep distinct) — dev-internal-only sessions do not bump
 # this. Used by the version-footer mismatch tripwire to compare each loaded
 # doc's footer against the plugin's expected method version.
-PLUGIN_METHOD_VERSION = 108
+PLUGIN_METHOD_VERSION = 109
 
 # Spine doc filenames the hook scans for when CLAUDE.md is missing — to
 # distinguish tier 1 from tier 2. Checked at both project root (legacy
@@ -737,8 +737,8 @@ def format_mid_build_block(batch_name):
         "progress — are you resuming this build, or working in parallel?\" "
         "Parallel builds corrupt file state and git history. If resuming, "
         "confirm and continue the build. If working in parallel, only "
-        "ideation is safe (writes only to the Ideas section of BACKLOG). "
-        "Planning and deliberation carry git risks."
+        "deliberation is safe (writes only to the Open Questions section of BACKLOG). "
+        "Planning carries git risks."
     )
 
 
@@ -799,7 +799,7 @@ def format_snapshot_mid_build_block(batch_name):
         "  **Ask the user:** \"A build of *" + batch_name + "* is in "
         "progress — are you resuming this build, or working in parallel?\" "
         "If resuming, invoke `/sovbuild` to continue. If working in parallel, "
-        "BACKLOG is unlocked — `/sovplan`, `/sovdeliberate`, and `/sovideate` "
+        "BACKLOG is unlocked — `/sovplan` and `/sovdeliberate` "
         "are safe."
     )
 

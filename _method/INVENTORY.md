@@ -63,17 +63,15 @@ Three plugin sub-categories: **Process** (phase orchestration via procedure docs
 
 - **PreCompact hook.** V52. Blocks compaction during active builds (unticked files in top batch). Surfaces handoff prompt. Silent when no build active.
 
-- **UserPromptSubmit hook.** V52, extended V90. Classifies first prompt (setup / test notes / resume / deliberate / ideate / plan structural) via keyword detection. Injects routing hint as `additionalContext`. Conservative: test notes need 2+ keyword hits. V90 adds three new classifications for the skill split. First-prompt detection via transcript marker.
+- **UserPromptSubmit hook.** V52, extended V90. Classifies first prompt (setup / test notes / resume / deliberate / plan structural) via keyword detection. Injects routing hint as `additionalContext`. Conservative: test notes need 2+ keyword hits. V109: idea-capture patterns merged into deliberate route (formerly separate ideate classification). First-prompt detection via transcript marker.
 
 ### Procedure docs (phase orchestration)
 
-Eleven procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
+Ten procedure docs at `plugin/docs/procedures/`, read into main context on demand. Replaced the subagent layer (V66).
 
-- **planning.md** — V22 origin, procedure doc V66. V90: narrowed to structural-only (reorder/split/merge/rescope batches). Test-note sort, drift checks (5, inlined), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning, per-row read-back, recap. OQ work-through and feature requests redirected to `/sovdeliberate` and `/sovideate` respectively. Inline git commit step with `plan:` prefix. V78: ordering principles and batch-ordering audit.
+- **planning.md** — V22 origin, procedure doc V66. V90: narrowed to structural-only (reorder/split/merge/rescope batches). Test-note sort, drift checks (5, inlined), BACKLOG edits, Discoveries promotion, TEST-LOG row pruning, per-row read-back, recap. OQ work-through and feature requests redirected to `/sovdeliberate`. Inline git commit step with `plan:` prefix. V78: ordering principles and batch-ordering audit.
 
-- **deliberate.md** — V90 origin. OQ deliberation: per-OQ work-through (promote/drop/re-park), Ideas-section triage, build-log entry for dispositions, inline git commit step with `deliberate:` prefix.
-
-- **ideate.md** — V90 origin. New idea exploration: open-ended discussion, overlap check, fit assessment, routing (OQ/batch/idea/drop). Claude-offered ideas optional. Inline git commit step with `ideate:` prefix.
+- **deliberate.md** — V90 origin; V109: absorbed ideate.md. OQ deliberation and idea capture: per-OQ work-through (promote/drop/re-park), new-topic exploration (discuss/assess/route), legacy Ideas-section triage, build-log entry for dispositions, inline git commit step with `deliberate:` prefix.
 
 - **before-build.md** — V25 origin, procedure doc V66. Validates top batch, enumerates Files:, estimates verification burden, proposes splits. V27: label-preservation on splits. Halt-and-confirm for (a) no batch, (b) malformed BACKLOG, (c) vague changes, (d) split needed. V93: pre-build sizing check (8+ files AND open decisions → advisory warning). Invocation-prompt compact nudge on recap closing. V94: pre-build blocker gate — scans batch body and BACKLOG OQs for unresolved items before proceeding; halts with `/sovdeliberate` or `/sovplan` nudge if blockers found.
 
@@ -99,8 +97,7 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `/sovresearch` — proactive research search flow. Drafts query, proposes to user, executes via MCP/WebSearch/copyable prompt, files results. **Shipped V70** (sov-prefixed V84).
 - `/add-sot-doc <name>` — scaffolds additional-doc template. *Pending.*
 - `/sovplan` — structural planning (test read-back, drift checks, BACKLOG editing, ordering audit). Narrowed V90 to structural-only. **Shipped V78.**
-- `/sovdeliberate` — OQ deliberation (per-OQ work-through, dispositions, build-log entry). **Shipped V90.**
-- `/sovideate` — new idea exploration (discuss, assess fit, route to OQ/batch/idea/drop). **Shipped V90.**
+- `/sovdeliberate` — OQ deliberation and idea capture (per-OQ work-through, new-topic exploration, dispositions, build-log entry). **Shipped V90; V109: absorbed `/sovideate`.**
 - `/sovrecap` — pre-build planning recap (before-build procedure). **Shipped V25** (as `/before-build`); renamed V77.
 - `/sovbuild` — lock and build procedure. **Shipped V25** (as `/build`); renamed V77.
 - `/sovclose` — close procedure (dual-path: post-build or planning/general). **Shipped V76.** Absorbed after-build.md.
@@ -154,4 +151,4 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

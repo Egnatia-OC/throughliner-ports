@@ -55,15 +55,12 @@ Confirms test results from the last build, runs five drift checks, and edits BAC
 ### /sovrecap — before-build recap
 Validates the upcoming batch before the user commits: checks the Serves line, populates file lists, proposes splits if the batch is too large. BACKLOG stays editable during the recap so the user can discuss and adjust — locking it prematurely blocks productive conversation.
 
-### /sovdeliberate — open-question deliberation
-Walks through accumulated open questions: promote to a batch, fold into an existing batch, drop, or keep parked.
+### /sovdeliberate — open-question deliberation and idea capture
+Walks through accumulated open questions: promote to a batch, fold into an existing batch, drop, or keep parked. Also handles capturing new thoughts — quick one-liners land as light OQs (heading + Surfaced + one sentence), richer topics get full deliberation.
 
 **Why are OQs separate from batches?** Different lifecycle. OQs are non-blocking parking for things that need deliberation but shouldn't stall the build pipeline. A batch is a commitment to build; an OQ is a question that needs answering before it can become a batch (or get dropped).
 
-### /sovideate — new ideas
-Explores a fresh concept, checks overlap with existing work, and routes it to an OQ, batch, Ideas entry, or drop.
-
-**Why not just add it to the backlog?** Ideas need triage. Some are OQs (need deliberation), some are batches (ready to scope), some overlap with existing work (fold in), some aren't worth pursuing (drop). The routing step prevents the backlog from accumulating unvetted entries.
+**Why not just add ideas directly to the backlog?** Ideas need triage. Some are OQs (need deliberation), some are batches (ready to scope), some overlap with existing work (fold in), some aren't worth pursuing (drop). The routing step prevents the backlog from accumulating unvetted entries.
 
 ---
 
@@ -113,7 +110,7 @@ The app from the user's perspective. Every entry is something experienceable, wi
 ### BACKLOG
 Work organized into discrete batches rather than a flat task list. Each batch has scope-context (Goal, Outputs, Success criteria, Decisions, Dependencies) separated from operational file lists by a `Changes:` delimiter.
 
-Six sections: Red flags, Queued batches, Open questions, Ideas, Parked, Archive. Batch numbering uses 4-digit zero-padded IDs.
+Five sections: Red flags, Planning batches, Build batches, Test sessions, Open questions. Batch numbering uses 4-digit zero-padded IDs.
 
 ### Build log
 Per-session record of what shipped, decisions made, pivots, and items carried forward. Per-entry files rather than a single growing file — Claude reads only relevant history, not the entire log.
@@ -205,4 +202,4 @@ Plain-English walkthrough of commit, tag, and push. Detects first-time use and w
 
 ---
 
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

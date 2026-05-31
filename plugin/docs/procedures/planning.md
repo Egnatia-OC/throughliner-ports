@@ -2,7 +2,7 @@
 
 Follow this procedure during the *planning* phase — not in the same session as a build, and not during setup or migration. Under V90 snapshot architecture, BACKLOG is unlocked during builds — planning in a parallel session is safe. Covers **structural planning**: reordering, splitting, merging, rescoping batches, revising dependencies, adding/removing batches, and housekeeping (test read-back, drift checks, batch pruning).
 
-For working through open questions, use `/sovdeliberate`. For exploring new ideas or feature requests, use `/sovideate`.
+For working through open questions or exploring new ideas, use `/sovdeliberate`.
 
 You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) yours to make; user reviews after. **Two formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). Folder mode: planning batches/Red flags/OQs in `INDEX.md`; build batches in per-batch files. Resolve from `CLAUDE.md` path block.
 
@@ -14,7 +14,7 @@ Classify the user's opener into one of:
 - **scope question** — whether something should exist.
 - **mixed** — primary named, e.g. `mixed (primary: test notes)`.
 
-Feature requests and new ideas route to `/sovideate`, not here. If the opener is a feature request, redirect. The UserPromptSubmit hook may have injected a routing hint — trust unless it clearly doesn't match intent. See *Mixed-input sort* for secondary items.
+Feature requests and new ideas route to `/sovdeliberate`, not here. If the opener is a feature request, redirect. The UserPromptSubmit hook may have injected a routing hint — trust unless it clearly doesn't match intent. See *Mixed-input sort* for secondary items.
 
 ## First action — classify, then load
 
@@ -82,7 +82,7 @@ If read-back is pending but user came for a different reason, open with: *"Befor
 - **test notes** → sort into two piles: bugs against existing UX entries (Suggestions) vs. new ideas without UX backing (Discoveries).
 - **scope question** → planning batch in BACKLOG with `Blocks: scope decision — no build batch yet.`
 
-**Feature requests** route to `/sovideate`. Redirect: "That's a new idea — invoke `/sovideate` to explore it."
+**Feature requests** route to `/sovdeliberate`. Redirect: "That's a new idea — invoke `/sovdeliberate` to explore it."
 
 Both flows converge into discuss-with-user.
 
@@ -161,9 +161,9 @@ Surface scope-context in recap before writing to BACKLOG.
 
 ## How a new feature enters the project
 
-Fixed pipeline — no shortcuts. Entry point is `/sovideate`; structural work happens here:
+Fixed pipeline — no shortcuts. Entry point is `/sovdeliberate`; structural work happens here:
 
-1. **Idea raised** via `/sovideate`. Conflicts with UX principles surfaced first.
+1. **Idea raised** via `/sovdeliberate`. Conflicts with UX principles surfaced first.
 2. **Planning batch** in BACKLOG asking questions needed for UX.md entry.
 3. **Questions answered** this or future session. Resolved → edit UX.md directly (V67 — open during planning).
 4. **Planning batch removed** once UX.md entry exists.
@@ -230,4 +230,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity. 
 
 ---
 
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

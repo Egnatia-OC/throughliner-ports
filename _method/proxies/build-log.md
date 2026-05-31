@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v154-merge-ideas-into-oqs.md` — 2026-05-31 — Merge Ideas into OQs + combine ideation/deliberation
 - `v153-oq-deliberation.md` — 2026-05-31 — OQ deliberation: batch 0147 skill-name decision resolved
 - `v152-rename-to-sovereign-implementer.md` — 2026-05-31 — Rename "no-code method" to "Sovereign Implementer" across codebase
 - `v151-graduation-step3-activate-self-management.md` — 2026-05-31 — Graduation step 3: activate self-management
@@ -152,4 +153,4 @@ Index format (newest first):
 - `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*

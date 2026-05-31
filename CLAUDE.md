@@ -123,17 +123,21 @@ Doc-only or BACKLOG-only changes don't require reinstall — the host reads thos
 
 Alex is a non-coder and inexperienced in Claude Code. For test runs in Taskflow, explain in plain English how to enable the plugin and what to look for.
 
+## Git workflow
+
+Solo. Commit to main, tag, push.
+
 ## After-build steps
 
 Run `python scripts/bump_version.py <old> <new> --session-tag v<N>` for substantive method/plugin changes. For proxy-only regeneration: `python scripts/bump_version.py --session-tag v<N>`. The script bumps footers, `plugin.json` version, `PLUGIN_METHOD_VERSION` in `session_start.py`, and regenerates proxy headers.
 
 ## Current state (update at every session close)
 
-**Current version:** v152 (session tag). Method version **V108**. Plugin version **0.108.0**.
+**Current version:** v154 (session tag). Method version **V109**. Plugin version **0.109.0**.
 
-**What's next:** Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files — completed by repo restructure v152). One implementation: 0147 (merge Ideas/OQs + combine ideation/deliberation). One parked: 0095 (/sovtest E2E). No open OQs.
+**What's next:** Two implementation batches: 0152 (host/target safeguards), 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files). Five open OQs.
 
 Build-cycle position lives in `_method/proxies/backlog.md` (index) and `_method/BACKLOG/` (per-batch files).
 
 ---
-*Sovereign Implementer — Version 108.*
+*Sovereign Implementer — Version 109.*
