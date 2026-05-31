@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v146-ideation-and-research.md](v146-ideation-and-research.md) — 2026-05-31 — Ideation + research: batch 0147 scoped, Ideas section retired, hook research
 - [v144-oq-deliberation.md](v144-oq-deliberation.md) — 2026-05-30 — OQ deliberation: two resolved, one partial, one new, ideas pending
 - [v143-prerequisite-audit-procedure-fixes.md](v143-prerequisite-audit-procedure-fixes.md) — 2026-05-29 — Prerequisite-audit procedure fixes (batch 0143)
 - [v142b-skill-invocation-flowchart-audit.md](v142b-skill-invocation-flowchart-audit.md) — 2026-05-29 — Skill invocation flowchart and prerequisite audit (batch 0142)

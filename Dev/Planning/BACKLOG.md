@@ -38,9 +38,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0130 — /sovsetup case 1 retest (post-fix verification)
 
-**Unparked.** v142. Reconciliation (0136–0139) complete. Test plan needs review before running — reconciliation changed instruction surfaces, and batches 0140–0142 added /sovexplain, resolved plugin OQs, and fixed procedure-doc gaps. Repackage plugin at HEAD before E2E run.
+**Unparked.** v142. Test plan rewritten v145 — reconciliation (0136–0139), /sovexplain (0140), plugin OQ fixes (0141–0142) all accounted for. Repackage plugin at HEAD before E2E run.
 
-**Goal.** Verify that v113, v115, v117, and v129 changes work end-to-end in a real `/sovsetup` case 1 run. The cowboy test (plugin v90) found 7 hook issues; v113 and v115 shipped fixes for most of them. v117 added setup Q5 (language setting). v129 renamed BUILD-PLAN → BACKLOG across the entire plugin. None of these fixes have been verified E2E.
+**Goal.** Verify that v113, v115, v117, and v129 changes work end-to-end in a real `/sovsetup` case 1 run. v113/v115 fixed hook path resolution (7 cowboy-test issues from plugin v90). v117 added setup Q5 (language setting) and BOM hardening. v129 renamed BUILD-PLAN → BACKLOG across the plugin. None verified E2E.
 
 **Inputs.** Fresh empty folder. Plugin repackaged at current HEAD.
 
@@ -50,15 +50,16 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Test plan.**
 
-1. Invoke `/sovsetup` on empty folder. Confirm case 1 detected.
-2. Walk through all five questions (Q1–Q4 as before, Q5 should be the new language setting from v117). Verify Q5 appears and the answer flows into `CLAUDE.md` and `core.quotepath` config.
-3. After scaffold: verify output uses `BACKLOG/` directory name (not `BUILD-PLAN/`). Verify BACKLOG proxy includes `## Test sessions` section. Verify no `test-log.md` proxy was created.
-4. After Q answers applied: attempt Edit on `_method/BACKLOG/<batch>.md` — should succeed (cowboy issue 1 fix). Attempt Edit on `_method/proxies/ux.md` — should succeed (cowboy issue 2 fix). Attempt Edit on `_method/planning/drafts/<file>.md` — should succeed (cowboy issue 6 fix).
-5. Write a heredoc/here-string containing markdown headings — verify no false-positive filename extraction (cowboy issue 3 fix).
-6. Attempt Write to a file outside the project root (e.g. Desktop) — verify not blocked by Edit/Write path (cowboy issues 4/7 fix). Note: Bash write-guard still enforces its own boundary, which is correct.
-7. Verify scaffolded files don't contain BOM bytes that break `safe_read_text()` (v117 BOM hardening).
+1. Invoke `/sovsetup` on empty folder. Confirm `detect-case` returns case 1.
+2. Walk through all five questions with test content. Verify Q5 (language setting) appears. Answer Q1–Q4 in a non-English language to test Q5 default detection.
+3. After scaffold: verify full output structure — `_method/` with `UX.md`, `MANIFEST.md`, `BACKLOG/`, `build-log/`, `test-log/`, `planning/drafts/`, `research/`, `research/search-queries/`, `proxies/` (5 proxy files: ux, manifest, research, backlog, build-log). `CLAUDE.md` at root. All directory names use BACKLOG (not BUILD-PLAN). BACKLOG proxy includes `## Test sessions` section. No separate test-log proxy.
+4. After Q answers applied: verify doc population. Q1 → CLAUDE.md `## Product overview` (4 fields) + UX.md `## Project context`. Q2 → UX.md `## UX principles`. Q3 → UX.md `## Functionalities` with `###` entries. Q4 → batch file in `_method/BACKLOG/` with scope content. Q5 → CLAUDE.md `## Language` field + `git config --local core.quotepath false` (if `.git/` exists).
+5. Hook path validation (planning phase): Edit `_method/BACKLOG/<batch>.md` → allowed. Edit `_method/proxies/ux.md` → allowed. Edit `_method/planning/drafts/<file>.md` → allowed. Edit `_method/research/<file>.md` → allowed.
+6. Bash heredoc test: write a heredoc containing markdown headings → verify no false-positive filename extraction from the write-guard.
+7. BOM hardening: verify scaffolded files don't contain BOM bytes that break `safe_read_text()`.
+8. Verify recap message and handoff. Handoff should direct to `/sovplan` or `/sovrecap` + `/sovbuild` depending on Q4 scope completeness.
 
-**Success criteria.** Clean case 1 setup with no hook blocks on method-file writes. All 7 cowboy-test issues resolved or clearly scoped. Language question appears and persists correctly. BACKLOG naming throughout.
+**Success criteria.** Clean case 1 setup with no hook blocks on method-file writes. Full scaffold structure correct. All five Q answers persist in the right docs. Language default detection works. BACKLOG naming throughout. Handoff message matches Q4 scope state.
 
 **Risks / dependencies.** Requires repackaging plugin at HEAD. If scaffold.py still outputs `BUILD-PLAN/` paths (missed in v129 rename), the test surfaces it immediately at step 3.
 
@@ -66,9 +67,9 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 ### 0131 — Build lifecycle retest (post v115–v129 changes)
 
-**Unparked.** v142. Reconciliation (0136–0139) complete. Test plan needs review before running — reconciliation changed close procedure and instruction surfaces. Steps 5–6 (close procedure) likely need updating for reconciled close.md. Repackage plugin at HEAD before E2E run.
+**Unparked.** v142. Test plan rewritten v145 — reconciliation (0136–0139), procedure-doc fixes (0140–0142) all accounted for. Corrected skill-to-procedure attribution (blocker gate is /sovrecap not /sovbuild). Repackage plugin at HEAD before E2E run.
 
-**Goal.** Verify the full build pipeline works end-to-end after six implementation sessions (v115, v116, v117, v118, v128, v129) that changed phase detection, close procedure, naming, and safeguards. The last lifecycle E2E (v114/batch 0088) predates all of these. The v129 BACKLOG rename alone touched ~30 plugin files — any missed reference breaks path resolution.
+**Goal.** Verify the full build pipeline works end-to-end after implementation sessions v115–v129 plus reconciliation (0136–0139). Changes under test: phase detection stability (v115), pre-build sizing + compact nudges (v116), close handoff one-liners (v118), two-turn close (v128), BACKLOG rename (v129), reconciled close/build procedures (0136–0139). The last lifecycle E2E (v114/batch 0088) predates all of these.
 
 **Inputs.** A project with a completed `/sovsetup` and at least one queued batch in BACKLOG. Can chain from 0130's output if that test passes clean. Plugin repackaged at current HEAD.
 
@@ -78,18 +79,143 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 
 **Test plan.**
 
-1. `/sovplan` — create or confirm a queued batch. Verify it lands in `_method/BACKLOG/` (not `BUILD-PLAN/`). Verify BACKLOG proxy updates.
-2. `/sovrecap` — verify it reads BACKLOG correctly and presents batch state.
-3. `/sovbuild` (before-build phase) — verify blocker gate runs all 5 checks (batch OQs, planning batches, BACKLOG OQs, test sessions, ideas/red flags) per v129 expansion. Verify pre-build sizing warning fires if batch has 8+ files AND open decisions (v116). Lock the batch.
-4. `/sovbuild` (build phase) — build at least a few files. Verify phase detection holds as "build" throughout (v115 fix). Verify close handoff one-liners accumulate in `active-build.md` → `## Close handoff` as files are ticked (v118).
-5. `/sovclose` (judgment turn) — verify two-turn procedure (v128): MANIFEST, doc-parity, frame-correction, idea sweep. Verify it stops at the turn boundary and recommends `/compact`.
-6. `/sovclose` (mechanical turn) — verify `bump_version.py` runs (v128). Verify proxy regeneration. Verify checkpoint list. Verify all references say BACKLOG not BUILD-PLAN (v129).
-7. `/sovgit` — verify commit prompt, tag, push prompts. Verify compact nudge at done prompt (v116).
-8. Throughout: verify compact nudges fire at skill-handoff `[PROMPT]` points between steps (v116).
+1. `/sovplan` — create or confirm a queued batch in `_method/BACKLOG/`. Verify folder mode: per-batch file created + BACKLOG proxy reference updated. No BUILD-PLAN references.
+2. `/sovrecap` — verify: batch parses correctly, serves-line resolves against UX.md, blocker gate runs 5 checks (batch OQs, planning batches, BACKLOG OQs, test sessions, ideas/red flags). Files: and Tests: sub-sections populated with correct format. Recap presented with `[PROMPT]` recommending `/sovbuild` + compact nudge. If batch has 8+ files AND open decisions, verify pre-build sizing warning fires.
+3. `/sovbuild` (snapshot) — verify: `_method/active-build.md` created with full batch content + `## Close handoff` (empty). Batch removed from BACKLOG (per-batch file deleted, proxy reference removed). Snapshot message shown to user.
+4. `/sovbuild` (work loop) — build at least a few files. Verify: ticks update per file in `_method/active-build.md` (not batched at end). Close handoff one-liners accumulate as files are ticked. Phase detection holds as "build" throughout (v115).
+5. `/sovbuild` (completion) — verify `[PROMPT]` recommends `/compact` before `/sovclose`.
+6. `/sovclose` (judgment turn) — verify: MANIFEST updated per ticked files (step 1). TEST-LOG rows written in 10-column format (step 4a). Claude-automatable tests run (step 4b). Build recap (step 5) with `[Requested]`/`[Suggested]` labels, Claude-verified results, user-check list. Build-log entry written with Performance section (step 6). `_method/active-build.md` deleted (step 7). Idea sweep (step 12). Turn boundary `[PROMPT]` (step 13) recommends `/compact`.
+7. `/sovclose` (mechanical turn) — verify: `bump_version.py` runs if applicable (step 14). Proxies regenerated (step 15). Pre-commit checkpoint complete (step 17). Closing `[PROMPT]` (step 18) recommends `/sovgit` and mentions `/sovtest`.
+8. `/sovgit` — verify commit prompt, tag prompt, push prompt in sequence.
 
-**Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Phase detection stable through build. Two-turn close works as designed. Consumer `bump_version.py` runs without errors.
+**Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Snapshot architecture works (create, tick, delete). Phase detection stable through build. Two-turn close produces all artifacts (MANIFEST, TEST-LOG, build-log, proxies). Consumer `bump_version.py` runs without errors. All BACKLOG naming correct throughout.
 
 **Risks / dependencies.** Depends on a set-up project — chains from 0130, or use an existing one. Risk: if 0130 surfaces scaffold issues, this test's starting state may be compromised. Mitigant: can use Taskflow or another already-adopted project instead.
+
+---
+
+### 0144 — Design-decision sweep at close
+
+**Goal.** Add a decision-routing step to the close procedure so design decisions from builds don't stay buried in build-log entries. After writing the build-log entry, scan its "Decisions taken and why" for decisions that belong in permanent homes.
+
+**What it does.** After step 6 (build-log entry written), read the entry's "Decisions taken and why." For each decision:
+- UX-relevant → flag in step 11 (UX.md is locked — flag only, same as existing pattern).
+- Implementation-relevant → update MANIFEST rationale for the matching entry. Step 1 already writes per-file rationale; this catches cross-cutting design decisions that apply to existing MANIFEST entries not in the current batch.
+- Neither → skip.
+
+**Files.**
+1. `plugin/docs/procedures/close.md` — add step 6d (decision sweep) in post-build path. Update step 17 checkpoint.
+2. Planning/general path: skip — planning decisions are future-facing, not shipped-feature rationale.
+
+**What it doesn't do.** No template changes (MANIFEST rationale already exists in the template). No new explain-reference entries (internal procedure, not user-facing). No universal-behaviour rule about reading rationale — Claude already loads MANIFEST at close; the read path for project-specific "why" questions works naturally once rationale exists.
+
+**Success criteria.** Close procedure has the step. A build with cross-cutting decisions routes them to MANIFEST rationale without the operator needing to remember.
+
+---
+
+### 0145 — /sovexplain routing + MANIFEST capabilities summary
+
+**Goal.** Expand /sovexplain from "why"-only into a three-way router (what / how / why). Generate a capabilities summary section in MANIFEST at close time; the MANIFEST proxy reproduces it so Claude reads it at session start for orientation without loading full MANIFEST. Resolves the orientation gap OQ (plugin-side).
+
+**Scope.**
+
+1. `plugin/templates/MANIFEST-TEMPLATE.md` — Add `## Capabilities summary` section at the top (before entries). Starts with a placeholder comment; populated at first `/sovclose`.
+2. `plugin/templates/.proxies/manifest.md` — Add `## Capabilities summary` section. Reproduces the summary verbatim (it's short). This is what Claude reads for orientation.
+3. `plugin/docs/procedures/close.md` — Post-build path: add step 1b after MANIFEST entry updates. Generate/update the capabilities summary from the current MANIFEST entries — one plain-English paragraph summarizing what the project has built. Write to the `## Capabilities summary` section. Proxy regeneration (step 15) propagates it.
+4. `plugin/skills/sovexplain/SKILL.md` — Rewrite to add routing before lookup. Classify the question: **"What"** (capability identification) → read MANIFEST proxy's capabilities summary. **"How"** (usage) → identify the matching skill or procedure doc, read its SKILL.md. **"Why"** (design rationale) → existing explain-reference flow (unchanged).
+5. `plugin/docs/explain-proxy.md` — No change. Stays "why"-only. Routing happens in SKILL.md before the proxy is reached.
+6. Consumer-facing docs — Update /sovexplain description in Reference manual, crash course, INVENTORY.md to mention the three question types.
+
+**What it doesn't do.** No new index file for "how" routing — skills and procedures have predictable locations. No explain-reference entries for the routing itself.
+
+**Dependency.** None. 0144 is independent — these can ship in either order.
+
+**Success criteria.** "What does my project do?" answered from MANIFEST proxy without full MANIFEST read. "How do I close a build?" routes to close procedure. "Why" still works as before. Capabilities summary regenerates at each close.
+
+---
+
+### 0146 — First graduation: dogfood SI onto itself
+
+**Goal.** Make the sovereign-implementer repo a real SI-managed project. The host SI (current shipped version) manages this project's planning artifacts, session lifecycle, and builds. No `/sovsetup` — manual migration, since the project predates the plugin and running setup on the plugin's own repo would be circular.
+
+**Vocabulary.** "Host SI" = the installed plugin doing the work. "Target SI" = the source code at `plugin/` being built. They are never both active in the same session. Building happens under the host SI; E2E testing happens in a separate session with only the target SI installed. "Graduation" = the target SI passes E2E, gets repackaged and installed as the new host SI.
+
+**Scope.**
+
+1. **Fix plugin name.** `plugin/.claude-plugin/plugin.json`: rename `"name": "no-code-method"` → `"name": "sovereign-implementer"`.
+
+2. **CLAUDE.md collision.** The dev CLAUDE.md and the plugin-scaffolded CLAUDE.md both want repo root. Resolve — likely merge dev-side instructions into the scaffolded format, retiring the standalone dev CLAUDE.md.
+
+3. **Migrate planning artifacts into `_method/`.** Move `Dev/Planning/` contents into the plugin's expected structure:
+   - `BACKLOG.md` → per-batch files under `_method/BACKLOG/`.
+   - `build-log/` → `_method/build-log/`.
+   - `test-log/` → `_method/test-log/`.
+   - `.proxies/` → `_method/proxies/` (regenerate against new paths).
+
+4. **Migrate drafts and research.** `Dev/drafts/` → `_method/planning/drafts/`. `Dev/Resources/research/` → `_method/research/`.
+
+5. **Retire dev-side prose rules.** `session-protocol.md`, `session-reference.md`, `INVENTORY.md` — reconcile any content not yet in plugin procedure docs, then retire. These are replaced by the host SI's mechanical enforcement.
+
+6. **Remove `.no-code-method-skip`.** The skip marker tells the SI "don't manage this project." Dogfooding means the opposite — the host SI *should* manage it.
+
+7. **Archive historical artifacts.** `Dev/Resources/Iteration playbook/` — pre-plugin procedures, read-only archive. Leave in place but not under `_method/`.
+
+8. **No migration needed.** `Dev/Resources/scripts/`, `Dev/Resources/tests/`, `Dev/Resources/Marketing/`, `Guides/`, `LICENSE`, `README.md`, `.gitignore`, `.gitattributes` — regular project files, not SI-managed.
+
+9. **Dev-side session opener.** Add host/target disambiguation to the session open flow — "You are building target SI from within host SI" with path references. Exact mechanism TBD (CLAUDE.md section, or host SI session-start hook recognising its own repo).
+
+10. **Graduation procedure.** Document the version-graduation flow: target SI passes E2E → repackage `plugin/` → install as new host → bump host version reference in session opener. Lightweight — not a full procedure doc, just a checklist in CLAUDE.md or a dev-side reference.
+
+**What it doesn't do.** No plugin code changes beyond the name fix. No new hooks or skills for self-awareness. No changes to how the plugin manages user projects generally.
+
+**Risks.** BACKLOG migration is the largest mechanical task (~20 queued/shipped batches to split into individual files). CLAUDE.md merge requires careful content reconciliation — the dev CLAUDE.md has accumulated 100+ sessions of context. Convergence gaps between dev-side prose rules and plugin procedure docs may surface during step 5.
+
+---
+
+### 0147 — Merge Ideas into Open Questions + combine ideation/deliberation
+
+**Goal.** Eliminate the Ideas → OQ promotion step. One BACKLOG section holds all unscoped captures — from raw one-liners to fleshed-out questions. One skill and procedure replaces `/sovideate` and `/sovdeliberate`.
+
+**Scope.**
+
+**Plugin-side — structure:**
+
+1. `BACKLOG-TEMPLATE.md` — remove `## Ideas`. Update `## Open questions` to welcome light captures (heading + Surfaced + one sentence) alongside full entries. BACKLOG becomes 5 sections.
+2. `DOC-STRUCTURE.md` — update BACKLOG spec: remove Ideas, loosen OQ entry format (Why-it-matters and Next-step become optional, not mandatory). Update proxy description to 5 sections.
+3. `templates/.proxies/backlog.md` — update to 5 sections.
+
+**Plugin-side — procedures and skills:**
+
+4. Merge `procedures/ideate.md` and `procedures/deliberate.md` into one procedure doc. Combined flow: present existing OQs, explore user's new topic, route everything. Light captures get quick routing; fleshed-out entries get full deliberation. Delete the retired doc.
+5. Keep one skill, delete the other. Update SKILL.md description to cover both activities.
+6. `procedures/close.md` — update "planning, ideation, or general sessions" wording. Idea sweep routing already goes to "batch or OQ" — no functional change.
+
+**Plugin-side — reference docs:**
+
+7. `universal-behaviour.md` — update routing table entries referencing ideation/deliberation as separate activities.
+8. `VOCABULARY.md` — retire "Ideas section" as distinct concept. Merge ideation/deliberation definitions.
+9. `explain-reference.md` — check and update entries referencing Ideas vs OQs.
+
+**Dev-side:**
+
+10. `BACKLOG.md` — remove `## Ideas` section (currently empty).
+11. `session-protocol.md` — routing table: merge Ideation row into a combined type covering both capture and resolution. Update idea-sweep and close references.
+12. `session-reference.md` — update OQ entry shape if it references Ideas promotion.
+13. `Dev/Planning/.proxies/backlog.md` — update.
+
+**Consumer-facing docs:**
+
+14. `Reference manual.md` — update skill descriptions, BACKLOG section list.
+15. `crash-course/` — update relevant HTML sections (check `data-source` attributes).
+16. `INVENTORY.md` — update component listings.
+
+**Decisions to make this batch.**
+
+- **Combined skill name.** `/sovideate` (more inviting for mid-build "I just had a thought"), `/sovdeliberate` (broader — "careful consideration" covers both capture and resolution), or something new?
+
+**What it doesn't do.** No changes to other BACKLOG sections. No hook changes. No `/sovplan` changes. No migration tool for consumer projects with existing Ideas sections — the combined skill handles legacy format gracefully.
+
+**Success criteria.** BACKLOG has 5 sections. One skill handles both "I just had a thought" and "let's work through the backlog." No references to Ideas as a separate concept remain in plugin or dev docs. Consumer projects with legacy Ideas sections don't break.
 
 ---
 
@@ -98,33 +224,5 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 Method-level questions not yet ready to be a batch. Each stays until resolved — folded into a batch's scope, promoted to its own batch, or dropped with a reason in `Dev/Planning/build-log/`. Newest first. Removed when resolved. Every entry carries a `**Surfaced.**` line with the session tag when it was created, so planning can detect neglected entries.
 
 ---
-
-### OQ — Session-start orientation gap (dev-side and plugin-side)
-
-**Surfaced.** v143. **Partial decision.** v144 — plugin-side: `/sovclose` already reads MANIFEST in full during doc-parity. Generate a capabilities summary at close time, write it to the top of MANIFEST, let the proxy pick it up. Any context that needs orientation reads the proxy — zero extra full-reads. Dev-side approach still open.
-
-**Remaining question.** Dev-side equivalent — does INVENTORY.md get a similar treatment, or is the dev-side need shaped differently?
-
----
-
-### OQ — Session-start hook doesn't re-fire after /clear or context loss
-
-**Surfaced.** v144.
-
-The session-start hook fires mechanically at session start, but the user can `/clear` or `/compact` mid-session, and Claude loses all the context the hook provided. The hook doesn't re-fire. The build cycle is a taught abstraction, not a programmed one — Claude after `/clear` has no build-cycle awareness at all and is reading hook output cold. "Session start" isn't really one moment; the orientation need arises at first message, post-clear, post-compact, or whenever context has drifted far enough.
-
-**Question.** What should happen when the user `/clear`s or context is otherwise lost? Should the hook re-fire? Should orientation live somewhere Claude re-reads naturally (like CLAUDE.md path block)? Or is this a fundamental limitation of hooks — they fire on events, and `/clear` may not be an event the hook system exposes?
-
----
-
----
-
-## Ideas
-
-Raw ideas captured during sessions. Date + one-liner. Promoted to OQs or batches during planning sessions.
-
-- 2026-05-30 — No hook prevents Claude from launching /sovbuild when it shouldn't (e.g. mid-ideation when user casually says "just do it"). Before-build checks in /sovrecap are prose discipline only. The phase gate (active-build.md) prevents source-code edits without a build, but nothing prevents the build itself from starting prematurely. Needs mechanical enforcement.
-- 2026-05-30 — Dev-side Claude defaults to filing ideas and open questions as research notes. Recurring pattern — may need a feedback memory or a dev-side rule that distinguishes: research notes are for external findings, OQs are for unresolved design questions, ideas are for raw captures. The routing instinct is wrong.
-- 2026-05-29 — E2E test for /sovexplain: validate the new explain skill against a real consumer project. Could fold into 0130/0131 when they unpark.
 
 ---
