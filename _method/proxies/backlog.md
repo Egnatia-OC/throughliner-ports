@@ -51,6 +51,15 @@ Cancelled:
 
 ## Open questions
 
+### Git commit access during planning
+*Surfaced: v153*
+
+The planning procedure (step 13) includes its own commit step — staging and committing with a `plan:` prefix. But `/sovgit` exists as the dedicated skill for all git operations (commit, tag, push). Having two commit paths means Claude can run git commands outside `/sovgit`, bypassing whatever guardrails that skill provides. In this session, Claude committed directly from `/sovplan` without routing through `/sovgit`.
+
+**Why it matters.** If `/sovgit` is the single entry point for git operations, it can enforce conventions (message format, pre-commit checks, tag discipline) in one place. A separate commit step in the planning procedure splits that responsibility. On the other hand, requiring `/sovgit` after every planning session adds friction to what should be a lightweight close.
+
+**Next step.** Decide whether planning's step 13 should commit directly (current) or hand off to `/sovgit` (single entry point). Consider whether the friction tradeoff is worth the consistency gain.
+
 ### Build-log writability during planning
 *Surfaced: v153*
 
