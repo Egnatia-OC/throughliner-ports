@@ -16,7 +16,6 @@ None.
 
 ## Build batches
 
-- `0147-merge-ideas-oqs.md` — Merge Ideas into Open Questions + combine ideation/deliberation.
 - `0152-host-target-safeguards.md` — Host/target safeguards for self-developing project.
 - `0153-planning-procedure-constraints.md` — Planning procedure: "what you don't do" constraint.
 - `0130-sovsetup-case1-retest.md` — /sovsetup case 1 retest (post-fix verification). E2E test.
@@ -86,6 +85,17 @@ The pre_compact hook blocks compaction whenever it detects build-adjacent activi
 **Why it matters.** Large batches (24+ files) benefit from compaction between recap and build — clearing recap context gives the build more room. The current hook makes that impossible, and the conflicting advice (recap says compact, hook says no) is confusing.
 
 **Next step.** Decide how the pre_compact hook should detect build phase. The clean signal is `active-build.md` existence — present means build in progress, absent means safe to compact. Also decide whether recap should stop suggesting /compact if the hook won't allow it, or fix the hook to match the advice.
+
+### Devside fix not carried over: per-batch files + proxy still in use
+*Surfaced: 2026-05-31*
+
+The old devside method moved away from per-batch files and the backlog proxy — Claude was supposed to read the whole BACKLOG in one go. The per-file split with a proxy index caused major build reordering problems because Claude couldn't see the full picture when making ordering decisions. The fix was to collapse everything into a single file so the whole backlog is in memory at once.
+
+That fix was never carried over. The current plugin still uses per-batch files under `_method/BACKLOG/` with a proxy-as-index at `_method/proxies/backlog.md` — the exact structure the devside fix was meant to replace.
+
+**Why it matters.** The same reordering problems that motivated the original fix could recur in any project using the plugin. Claude reads the proxy (batch names and one-line summaries), not the full scope/goal/dependency context of each batch. Reordering decisions made on summaries alone miss dependencies and logical sequencing that only show up in the full entries.
+
+**Next step.** Decide whether to collapse BACKLOG back to a single file (matching the devside fix), or whether the per-batch architecture has enough compensating benefits (smaller reads during builds, cleaner diffs) to keep. If collapsing, scope a batch — parser, templates, procedures, and hooks all reference the folder structure.
 
 ## Ideas
 
