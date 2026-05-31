@@ -111,6 +111,8 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Doc-parity check.** After-build step: for each renamed/deleted/moved file, grep spine docs for stale references. Scoped to blast radius. Findings flagged in recap.
 
+- **Decision sweep.** After-build close step: scan the build-log entry's "Decisions taken and why" for decisions that belong in permanent homes. UX-relevant → flag (UX.md locked). Implementation-relevant → update MANIFEST rationale on the matching existing entry. Catches cross-cutting decisions that apply to MANIFEST entries not in the current batch.
+
 - **Idea sweep.** After-build step: review session for ideas, suggestions, or observations raised but not implemented. Each triaged to BACKLOG (batch or OQ) or recap flag. Nothing left unrouted.
 
 - **Pre-commit checkpoint.** After-build step: verify MANIFEST updated, TEST-LOG rows written, build-log entry written, idea sweep done, doc-parity done. Complete any missing steps before prompting commit.
@@ -140,4 +142,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved OQs or ideas that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*No-code method — Version 104.*
+*No-code method — Version 105.*

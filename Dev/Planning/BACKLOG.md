@@ -10,7 +10,7 @@ Each batch heading carries a 4-digit number (e.g. `### 0096 — Manifest rationa
 
 ## Shipped history
 
-127 batches shipped or cancelled (V18–0143). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
+128 batches shipped or cancelled (V18–0144). Full history in `Dev/Planning/build-log/INDEX.md`. Per-batch details in individual build-log files.
 
 ## Queued batches
 
@@ -91,25 +91,6 @@ Full scope for each queued batch lives inline here — no separate scope files. 
 **Success criteria.** Full pipeline completes with no broken references, no BUILD-PLAN ghosts, no hook blocks on legitimate writes. Snapshot architecture works (create, tick, delete). Phase detection stable through build. Two-turn close produces all artifacts (MANIFEST, TEST-LOG, build-log, proxies). Consumer `bump_version.py` runs without errors. All BACKLOG naming correct throughout.
 
 **Risks / dependencies.** Depends on a set-up project — chains from 0130, or use an existing one. Risk: if 0130 surfaces scaffold issues, this test's starting state may be compromised. Mitigant: can use Taskflow or another already-adopted project instead.
-
----
-
-### 0144 — Design-decision sweep at close
-
-**Goal.** Add a decision-routing step to the close procedure so design decisions from builds don't stay buried in build-log entries. After writing the build-log entry, scan its "Decisions taken and why" for decisions that belong in permanent homes.
-
-**What it does.** After step 6 (build-log entry written), read the entry's "Decisions taken and why." For each decision:
-- UX-relevant → flag in step 11 (UX.md is locked — flag only, same as existing pattern).
-- Implementation-relevant → update MANIFEST rationale for the matching entry. Step 1 already writes per-file rationale; this catches cross-cutting design decisions that apply to existing MANIFEST entries not in the current batch.
-- Neither → skip.
-
-**Files.**
-1. `plugin/docs/procedures/close.md` — add step 6d (decision sweep) in post-build path. Update step 17 checkpoint.
-2. Planning/general path: skip — planning decisions are future-facing, not shipped-feature rationale.
-
-**What it doesn't do.** No template changes (MANIFEST rationale already exists in the template). No new explain-reference entries (internal procedure, not user-facing). No universal-behaviour rule about reading rationale — Claude already loads MANIFEST at close; the read path for project-specific "why" questions works naturally once rationale exists.
-
-**Success criteria.** Close procedure has the step. A build with cross-cutting decisions routes them to MANIFEST rationale without the operator needing to remember.
 
 ---
 

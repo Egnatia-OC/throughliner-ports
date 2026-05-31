@@ -136,7 +136,7 @@ Source-of-truth docs (UX.md, additional docs) are directly editable by Claude du
 
 **Build sessions** ship engineering work. `/sovrecap` reviews the batch (validates Serves line, populates Inputs/Files/Tests, proposes splits if needed). `/sovbuild` snapshots the batch into `_method/active-build.md` and removes it from BACKLOG. The snapshot serves two purposes: it gives phase detection an unambiguous signal (file exists = build in progress), and it unlocks BACKLOG for parallel planning, deliberation, or ideation in other sessions. The build runs against the snapshot's file list; PreToolUse enforces batch boundaries. `/sovclose` runs in two turns:
 
-- **Turn 1 (judgment)** — while context is fresh: MANIFEST, doc parity, test session + Claude-automatable tests, build recap, build-log entry, snapshot deleted (build-log is the shipped record), frame-correction and staleness sweeps, lost-feature check, idea sweep, then `/compact` recommendation.
+- **Turn 1 (judgment)** — while context is fresh: MANIFEST, doc parity, test session + Claude-automatable tests, build recap, build-log entry, decision sweep (routes cross-cutting design decisions to MANIFEST rationale), snapshot deleted (build-log is the shipped record), frame-correction and staleness sweeps, lost-feature check, idea sweep, then `/compact` recommendation.
 - **Turn 2 (mechanical)** — after compaction: footer bumps if plugin version changed (`bump_version.py`), proxy regeneration, project-specific after-build steps, pre-commit checkpoint, `/sovgit` nudge.
 
 Short sessions can run both turns without compacting. `/sovgit` walks you through commit, tag, and push in plain English.
@@ -436,4 +436,4 @@ Full spec: `plugin/hooks/universal-behaviour.md` (behavioural rules) and `plugin
 Reach for them when a concept needs detail, a rule's edge case matters, a migration surfaces structural reasoning, or the method itself is being extended.
 
 ---
-*No-code method — Version 104.*
+*No-code method — Version 105.*

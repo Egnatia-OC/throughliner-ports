@@ -94,6 +94,10 @@ Run while build context is fresh.
      - **User-verified tests:** <N pending>
      ```
    - **6c.** Prepend index line to `_method/proxies/build-log.md` (the build-log index). Idempotency: skip if same-numbered line exists. Fallback: `build-log/INDEX.md` (legacy), then `BUILD-LOG.md` (single-file legacy).
+   - **6d.** **[SILENT] Decision sweep.** Read the entry's "Decisions taken and why." For each decision:
+     - UX-relevant → flag in step 11 (UX.md is locked — flag only).
+     - Implementation-relevant → update MANIFEST rationale for the matching existing entry. Step 1 handles per-file rationale for batch files; this catches cross-cutting decisions that apply to existing MANIFEST entries not in the current batch.
+     - Neither → skip.
 
 7. **[SILENT] Delete build snapshot.** Delete `_method/active-build.md`. The build-log entry is the permanent shipped record; the batch is not written back to BACKLOG.
 
@@ -135,6 +139,7 @@ Needs only the values from the turn boundary.
     - [ ] MANIFEST updated (step 1)
     - [ ] TEST-LOG rows written (step 4a)
     - [ ] Build-log entry written (step 6)
+    - [ ] Decision sweep done (step 6d)
     - [ ] Build snapshot deleted (step 7)
     - [ ] Staleness sweep done (step 9)
     - [ ] Idea sweep done (step 12)
@@ -216,4 +221,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*No-code method — Version 104.*
+*No-code method — Version 105.*

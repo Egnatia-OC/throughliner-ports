@@ -6,6 +6,7 @@ For format details, see `Dev/session-reference.md` → *BUILD-LOG entry shape*.
 
 ---
 
+- [v147-design-decision-sweep-at-close.md](v147-design-decision-sweep-at-close.md) — 2026-05-31 — Decision sweep added to close procedure
 - [v146-ideation-and-research.md](v146-ideation-and-research.md) — 2026-05-31 — Ideation + research: batch 0147 scoped, Ideas section retired, hook research
 - [v144-oq-deliberation.md](v144-oq-deliberation.md) — 2026-05-30 — OQ deliberation: two resolved, one partial, one new, ideas pending
 - [v143-prerequisite-audit-procedure-fixes.md](v143-prerequisite-audit-procedure-fixes.md) — 2026-05-29 — Prerequisite-audit procedure fixes (batch 0143)
