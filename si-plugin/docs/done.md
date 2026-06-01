@@ -1,0 +1,119 @@
+# /done procedure
+
+You are closing the current build — recording what happened, updating the registry, and committing.
+
+## Pre-condition
+
+_build.md must exist. If it doesn't, tell the user there's no active build to close and suggest /next or /plan.
+
+## Phase 1: Judgment (do this while context is fresh)
+
+These steps capture meaning that would be lost after compaction.
+
+### 1.1 Verify completion
+
+Read _build.md. Are all files ticked in Progress?
+- **All ticked:** Proceed.
+- **Some unticked:** Ask the user — finish them (/next to continue), or close partial (mark unticked items as deferred and route back to QUEUE.md).
+
+### 1.2 Generate tests
+
+For each file that was built or changed, write one test per observable behaviour:
+
+Format each test as:
+```
+- [ ] [Type] Description — Verifier
+```
+
+Types:
+- **[Look]** — visual check (open the page/screen, confirm it looks right)
+- **[Run]** — execute a command or action, check the output
+- **[Trigger]** — cause an event, observe the response
+- **[Inspect]** — examine generated output or file content
+
+Verifier is either `Claude` (can be checked programmatically or by reading code) or `User` (requires human eyes or interaction).
+
+### 1.3 Run Claude-verifiable tests
+
+For any test marked `Claude`: run it now. Report pass/fail. Update the test line:
+- `- [x] [Run] API returns 200 — Claude ✓`
+- `- [ ] [Run] API returns 200 — Claude ✗ (got 404, see note)`
+
+Failed Claude tests: note the failure, suggest whether it's a bug (route to queue) or expected (user decides).
+
+### 1.4 Present user tests
+
+List remaining tests (User-verified) for the user. One at a time:
+- State what to check and how.
+- Wait for pass/fail.
+- On failure: gather what happened, investigate if possible, route the fix to QUEUE.md. Do NOT fix during close.
+
+If the user wants to skip testing: allow it, but note "tests skipped" in the log.
+
+### 1.5 Update REGISTRY.md
+
+For each file that was created, renamed, deleted, or significantly modified:
+- Add new entries (path + one-line description of what it is)
+- Update descriptions if the file's role changed
+- Remove entries for deleted files
+
+### 1.6 Build recap
+
+Summarize for the user:
+- What was built (from _build.md Changes section)
+- Test results (passed / failed / skipped)
+- Anything deferred to the queue
+
+## Phase 2: Mechanical (rote file operations)
+
+### 2.1 Write LOG entry
+
+Create `LOG/YYYY-MM-DD.md` (or append if one exists for today) with:
+```markdown
+## Session — [time or sequence number]
+
+**Built:** [one-line summary of what shipped]
+
+**Files touched:**
+- [list from _build.md]
+
+**Tests:** [X passed, Y failed, Z skipped]
+
+**Decisions:** [any design decisions made during the build — these are the historical record]
+
+**Deferred:** [anything routed back to queue, or "none"]
+```
+
+### 2.2 Staleness sweep
+
+Quick check of QUEUE.md:
+- Do any remaining entries reference files that were renamed or deleted in this build?
+- Do any reference old behaviour that this build changed?
+- If so, flag them (don't edit without asking).
+
+### 2.3 Delete _build.md
+
+This unlocks future builds. Only do this after everything above is complete.
+
+### 2.4 Git commit
+
+1. Stage only the files that were part of this build plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
+2. Never use `git add -A` or `git add .`.
+3. Draft a commit message. Present it for approval.
+4. Wait for the user's okay before committing.
+5. After commit: "Push to remote? (yes / not yet)" — never push automatically.
+
+## Phase 3: Handoff
+
+Tell the user what's next:
+- If QUEUE.md has more entries: "Next up is [entry]. Run /next when ready."
+- If QUEUE.md is empty: "Queue is clear. Run /plan when you have more to add."
+- If tests failed: "There's a fix queued from the test failure. Run /next to address it."
+
+## Rules
+
+- Do NOT skip Phase 1 even if the user says "just commit." The judgment steps prevent drift.
+- One test at a time for user-verified tests. Don't dump the full list.
+- Failed tests route to the queue — never fix during /done.
+- Git push is always a prompt, never automatic.
+- If _build.md doesn't exist, refuse to run. There's nothing to close.

@@ -1,0 +1,29 @@
+# CLAUDE.md
+
+This project uses the Sovereign Implementer method.
+
+## Project docs
+
+- **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
+- **REGISTRY.md** — components that exist. Updated after each build.
+- **LOG/** — per-session records of what was built, tested, and decided.
+
+## Workflow
+
+- `/setup` — initial project scaffolding (already done if you're reading this).
+- `/plan` — manage the queue, add ideas, resolve questions, check for drift.
+- `/next` — execute the top queue entry (build or test).
+- `/done` — close the build, record what happened, commit.
+
+## Rules for Claude
+
+- SPEC.md is read-only during builds. Edit it only during /plan.
+- Only touch files listed in the active build scope. Halt and ask if you need more.
+- One build at a time. Finish and /done before starting another.
+- State problems plainly. Don't hide them or silently fix unrelated things.
+- Route discoveries to QUEUE.md rather than acting on them immediately.
+
+## Language
+
+Language: English

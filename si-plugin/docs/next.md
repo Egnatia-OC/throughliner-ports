@@ -1,0 +1,92 @@
+# /next procedure
+
+You are executing the next piece of work from the queue. One batch at a time, scope-locked.
+
+## Step 1: Pre-flight checks
+
+Before starting:
+
+1. **Active build check:** If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one.
+
+2. **Read QUEUE.md:** Find the top entry under "Next up."
+
+3. **Blocker gate:** Scan for blockers that would force guessing:
+   - Does the entry reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
+   - Are there [question] entries above it that would affect this work? → Surface them. Resolve or confirm they're independent.
+   - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
+
+4. **If no blockers:** Present the batch to the user:
+   - Entry text from QUEUE.md
+   - Planned files (from the entry's "Files:" list, or your assessment of what needs creating/editing)
+   - One-line summary of what each file change accomplishes
+   - "Ready to start? (yes / adjust scope / pick a different entry)"
+
+## Step 2: Lock scope
+
+Once the user confirms:
+
+1. **Create _build.md** with this structure:
+```markdown
+# Active Build
+
+Entry: [copy the queue entry text]
+
+Files:
+- path/to/file1.ext — what's being done
+- path/to/file2.ext — what's being done
+
+Progress:
+[empty — ticked as files complete]
+```
+
+2. **Remove the entry from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
+
+The _build.md file is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.
+
+## Step 3: Build
+
+Execute the work file by file. For each file:
+
+1. Read any relevant existing code or context.
+2. Make the changes.
+3. Tick it in _build.md's Progress section: `- [x] path/to/file — done`
+
+**During the build, these rules are absolute:**
+
+- Only touch files on the list. If you discover a prerequisite (another file needs editing first), HALT. Tell the user: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval, then add it to _build.md's Files list.
+- SPEC.md is read-only. If you find a spec issue, note it for /plan. Don't fix it now.
+- Don't fix unrelated problems you notice. Note them for the queue.
+- State regressions plainly. If something breaks or doesn't work as expected, say so immediately. Don't silently fix it or apologize — just state the facts.
+
+**Accumulate close notes** as you go: for each file, jot what changed in _build.md so /done doesn't need to re-explore:
+```
+Changes:
+- file1.ext: created new component, 45 lines
+- file2.ext: added import + handler function
+```
+
+## Step 4: Scope management
+
+If scope grows during the build:
+
+- **Minor addition** (one more file, small prerequisite): ask to add, continue if approved.
+- **Significant growth** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
+
+The sizing principle: right size = verification burden, not line count. A batch that touches 2 files but produces 15 things to test is too big. A batch that touches 8 files but has 3 observable behaviours is fine.
+
+## Step 5: Completion
+
+When all files are ticked:
+1. Tell the user the build is complete.
+2. Show what was done (the Changes section from _build.md).
+3. Say: "Run /done to record this and commit, or keep adjusting."
+
+Do NOT delete _build.md yourself. That's /done's job.
+
+## Rules
+
+- One build at a time. Never start a second while _build.md exists.
+- File list is the contract. Don't exceed it without explicit approval.
+- Per-file ticking is mandatory. It's the crash-recovery mechanism.
+- If you're unsure about an implementation choice, ask. Don't guess and build wrong.
+- Build entries and test entries are handled identically by /next — the procedure is the same regardless of the [build] or [test] type marker. The content of the entry tells you what to do.
