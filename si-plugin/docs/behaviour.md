@@ -12,7 +12,7 @@ These rules are active in every session where the plugin is installed and the pr
 
 ## Scope discipline
 
-- Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, or LOG/, write it there.
+- Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, DECISIONS.md, or LOG/, write it there.
 - Don't build during /plan. Don't plan during /next.
 - New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry.
 - Don't fix things outside the current scope. Note them for the queue.
@@ -26,6 +26,11 @@ These rules are active in every session where the plugin is installed and the pr
 - Never `git push` without asking. Never `git push --force`.
 - Never `git reset --hard`.
 - Secret scanning: check for API keys, tokens, or credentials before committing.
+
+## Decisions
+
+- Before raising a design question, check DECISIONS.md. If it's already been decided, state the prior decision rather than re-opening it. If the user revisits a prior decision, flag that it was decided before and in which commit — they may have good reason, but they should know.
+- When asked "why does the app do X?" or when inferring rationale from code, consult DECISIONS.md first. It's the first port of call for design intent — code shows what, DECISIONS.md shows why.
 
 ## Context awareness
 

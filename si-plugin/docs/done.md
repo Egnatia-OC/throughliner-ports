@@ -86,40 +86,52 @@ Summarize for the user:
 
 #### 2.1 Write LOG entry
 
-Create `LOG/YYYY-MM-DD.md` (or append if one exists for today) with:
-```markdown
-## Session — [time or sequence number]
+Write the log entry to `LOG/YYYY-MM-DD.md` (create or append). Use a placeholder for the commit hash — it gets filled in after the commit (step 2.5).
 
-**Built:** [one-line summary of what shipped]
+```markdown
+## [HASH] — [one-line summary of what shipped]
 
 **Files touched:**
 - [list from _build.md]
 
 **Tests:** [X passed, Y failed, Z skipped]
 
-**Decisions:** [any design decisions made during the build — these are the historical record]
+**Decisions:** [any design decisions made during the build, or "none"]
 
 **Routed to Ideas:** [anything added to the Ideas section, or "none"]
 ```
 
-#### 2.2 Staleness sweep
+#### 2.2 Write DECISIONS.md entries
+
+If any design decisions were made during this session, append each to DECISIONS.md:
+
+```markdown
+- **[short decision name]** — [HASH] — [one-line summary of what was decided and why]
+```
+
+Use the same `[HASH]` placeholder. Skip this step if no decisions were made.
+
+#### 2.3 Staleness sweep
 
 Quick check of QUEUE.md:
 - Do any remaining batches or Ideas reference files that were renamed or deleted in this build?
 - Do any reference old behaviour that this build changed?
 - If so, flag them (don't edit without asking).
 
-#### 2.3 Delete _build.md
+#### 2.4 Delete _build.md
 
 This unlocks future builds. Only do this after everything above is complete.
 
-#### 2.4 Git commit
+#### 2.5 Git commit and hash backfill
 
-1. Stage only the files that were part of this build plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
+1. Stage only the files that were part of this build plus the method docs (QUEUE.md, REGISTRY.md, DECISIONS.md, LOG/, _build.md deletion).
 2. Never use `git add -A` or `git add .`.
 3. Draft a commit message. Present it for approval.
 4. Wait for the user's okay before committing.
-5. After commit: "Push to remote? (yes / not yet)" — never push automatically.
+5. After commit: run `git rev-parse --short HEAD` to get the hash.
+6. Replace every `[HASH]` placeholder in today's LOG entry and DECISIONS.md with the actual hash.
+7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
+8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
 ### Phase 3: Handoff
 
@@ -144,11 +156,10 @@ Summarize what happened during the /plan session:
 
 ### 2. Write LOG entry
 
-Create `LOG/YYYY-MM-DD.md` (or append if one exists for today) with:
-```markdown
-## Session — [time or sequence number]
+Write the log entry to `LOG/YYYY-MM-DD.md` (create or append). Use a placeholder for the commit hash.
 
-**Planned:** [one-line summary of what was decided or organized]
+```markdown
+## [HASH] — [one-line summary of what was decided or organized]
 
 **Queue changes:**
 - [batches added, reordered, or modified]
@@ -158,15 +169,22 @@ Create `LOG/YYYY-MM-DD.md` (or append if one exists for today) with:
 **Ideas routed:** [what was promoted/parked/dropped from Ideas, or "none"]
 ```
 
-### 3. Git commit
+### 3. Write DECISIONS.md entries
 
-1. Stage only the method docs that changed (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
+If any design decisions were made during this session, append each to DECISIONS.md using the same `[HASH]` placeholder format. Skip if no decisions were made.
+
+### 4. Git commit and hash backfill
+
+1. Stage only the method docs that changed (QUEUE.md, SPEC.md, REGISTRY.md, DECISIONS.md, LOG/).
 2. Never use `git add -A` or `git add .`.
 3. Draft a commit message. Present it for approval.
 4. Wait for the user's okay before committing.
-5. After commit: "Push to remote? (yes / not yet)" — never push automatically.
+5. After commit: run `git rev-parse --short HEAD` to get the hash.
+6. Replace every `[HASH]` placeholder in today's LOG entry and DECISIONS.md with the actual hash.
+7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
+8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
-### 4. Handoff
+### 5. Handoff
 
 Tell the user what's next:
 - If QUEUE.md has batches: "Next up is [batch]. Run /next when ready."

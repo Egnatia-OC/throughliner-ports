@@ -61,6 +61,15 @@ Components that exist in this project. Updated after each build.
 [empty until first build completes]
 ```
 
+**DECISIONS.md:**
+```markdown
+# DECISIONS
+
+Design decisions made during this project. Each entry maps a decision to the commit where it was made.
+
+Format: **[decision name]** — [commit hash] — [what was decided and why]
+```
+
 **LOG/ folder:** Create the directory. It stays empty until the first /done.
 
 **CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block to it rather than overwriting.
