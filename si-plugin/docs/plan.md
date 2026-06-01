@@ -71,6 +71,8 @@ Rules:
 - Ordering logic: dependencies first, then structural scaffolding, then features, then polish.
 - Don't reorder without stating why and getting approval.
 - New entries need: a type marker ([build], [test], [idea], [question]), a clear one-line scope, and optionally a "Files:" list if known.
+- **Specificity gate:** entries must name concrete outputs ("add a validation function to utils.py", "create the login page"), not categories ("improve error handling", "work on authentication"). If you can't name what will exist after the build that doesn't exist now, the entry isn't ready.
+- **Verification-burden gate:** before an entry leaves /plan, estimate how many things the user will need to test. If the count is unclear or exceeds 5, split the entry or sharpen its scope. The right size is what the user can verify in one sitting without losing track.
 
 ## Step 7: Compression
 
