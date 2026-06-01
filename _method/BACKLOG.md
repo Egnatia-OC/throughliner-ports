@@ -14,6 +14,24 @@ None.
 
 ## Build batches
 
+### Batch: Rewrite build-cycle procedure docs
+
+**Goal.** Fix three broken procedure docs that define the build cycle. before-build.md acts as a setup phase instead of a read-only recap. close.md is too long for Claude to follow with discipline — in at least one session Claude ran /sovclose silently. No procedure distinguishes build-time tests from E2E tests.
+
+**Outputs.** Three rewritten procedure docs: before-build.md (read-only recap), build.md (absorbs Files/Tests population, test-type distinction), close.md (dramatically shorter, explicit [PROMPT] stops).
+
+**Success criteria.** before-build.md makes no BACKLOG writes. close.md has explicit [PROMPT] stops at every judgment point where Claude must wait for the user. build.md distinguishes build-time tests (verifiable this session) from E2E tests (verifiable in a separate session). Existing hook enforcement unchanged.
+
+Changes:
+- [Requested] Rewrite before-build.md as read-only recap: reads batch, shows what's coming, stops. No BACKLOG writes. Files/Tests population moves to build.md.
+- [Requested] Rewrite close.md: dramatically shorter, explicit [PROMPT] stops where Claude must wait for user. Prevent Claude from absorbing close into build wrap-up.
+- [Requested] Rewrite build.md: absorb Files/Tests population from before-build. Build-time vs E2E test distinction throughout.
+
+Inputs:
+- `_method/BACKLOG.md` Open questions section — four related OQs with analysis
+
+Serves UX.md: Build workflow.
+
 ### Batch: Planning procedure: "what you don't do" constraint
 
 **Goal.** Prevent Claude from offering to implement changes during /sovplan sessions. Currently procedures/planning.md defines what planning does but not what it doesn't — the V67 carve-out for source-of-truth doc editing creates ambiguity about what's allowed vs what should route through a build batch.
