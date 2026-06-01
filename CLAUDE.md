@@ -87,6 +87,11 @@ When a term is ambiguous (BACKLOG, CLAUDE.md, UX.md, hooks, rules, docs), specif
 - **Target SI's** — the source code being edited (e.g. `plugin/templates/BACKLOG-TEMPLATE.md`)
 - **A user project's** — whatever the user scaffolded with `/sovsetup`
 
+**Behavioral rules for this project:**
+1. When editing files under `plugin/`, state that you are editing target SI — not the installed host.
+2. Never claim that target SI changes are live. Changes to `plugin/` don't take effect until repackaged and reinstalled (see *Plugin update procedure*).
+3. Use full paths when referencing docs that exist in both `_method/` and `plugin/templates/`. Never say just "BACKLOG.md" or "UX.md" when either copy could be meant.
+
 ### Design constraints
 
 Every design choice navigates the tension between non-coders needing heavy docs (to keep Claude on track) and those docs burning context window:
@@ -133,11 +138,11 @@ Run `python scripts/bump_version.py <old> <new> --session-tag v<N>` for substant
 
 ## Current state (update at every session close)
 
-**Current version:** v155 (session tag). Method version **V110**. Plugin version **0.110.0**.
+**Current version:** v156 (session tag). Method version **V111**. Plugin version **0.111.0**.
 
-**What's next:** Two implementation batches: 0152 (host/target safeguards), 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files). Five open OQs.
+**What's next:** One implementation batch: 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files). Eight open OQs.
 
 Build-cycle position lives in `_method/BACKLOG.md`.
 
 ---
-*Sovereign Implementer — Version 110.*
+*Sovereign Implementer — Version 111.*

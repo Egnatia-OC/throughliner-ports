@@ -112,4 +112,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*Sovereign Implementer — Version 110.*
+*Sovereign Implementer — Version 111.*

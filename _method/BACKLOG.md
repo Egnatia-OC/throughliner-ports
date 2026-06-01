@@ -14,22 +14,6 @@ None.
 
 ## Build batches
 
-### Batch: Host/target safeguards for self-developing project
-
-**Goal.** Prevent Claude from confusing the installed plugin (host SI) with the source code being edited (target SI). Three failure modes identified in v152: (1) expecting target edits to take effect immediately, (2) editing the wrong copy of a doc, (3) hooks validating template files as real project files.
-
-**Outputs.** CLAUDE.md behavioral rules in the Host SI vs Target SI section.
-
-**Success criteria.** Claude states "editing target SI" when touching `plugin/` files. Claude never claims target changes are live without reinstall. Claude uses full paths when referencing docs that exist in both `_method/` and `plugin/templates/`.
-
-Changes:
-- [Requested] Add behavioral rules to CLAUDE.md Host SI vs Target SI section: state when editing target SI, never expect target changes to take effect, use full paths for ambiguous docs.
-
-Files:
-- [ ] `CLAUDE.md` — Add behavioral rules to Host SI vs Target SI section for self-developing project orientation.
-
-Serves UX.md: Session-open orientation.
-
 ### Batch: Planning procedure: "what you don't do" constraint
 
 **Goal.** Prevent Claude from offering to implement changes during /sovplan sessions. Currently procedures/planning.md defines what planning does but not what it doesn't — the V67 carve-out for source-of-truth doc editing creates ambiguity about what's allowed vs what should route through a build batch.
@@ -123,6 +107,7 @@ Status: parked
 
 ## Test sessions
 
+- `0070-host-target-safeguards.md` — 2026-06-01 — 1 rows (0 unconfirmed)
 - `0069-merge-ideas-into-oqs.md` — 2026-05-31 — 4 rows (0 unconfirmed)
 - `cowboy-sovsetup-case1-2026-05-28.md` — 2026-05-28 — Cowboy test: /sovsetup case 1 (empty folder)
 - `0068-e2e-round-2-taskflow-build-cycle.md` — 2026-05-24 — E2E round 2: Taskflow build cycle
@@ -143,6 +128,24 @@ Status: parked
 - `session-transcript.md` — session transcript
 
 ## Open questions
+
+### Host/target safeguard verification needs a test home
+*Surfaced: v156*
+
+Batch 0152 (host/target safeguards) adds behavioral rules to CLAUDE.md but has no way to test them at build time — the rules are only verifiable in a subsequent session where Claude edits `plugin/` files. Three checks need routing: (1) Claude states it's editing target SI when touching `plugin/`, (2) Claude doesn't claim target changes are live without reinstall, (3) Claude uses full paths for docs that exist in both `_method/` and `plugin/templates/`.
+
+**Why it matters.** Without routing these to an E2E batch, the safeguards ship unverified. Batch 0131 (build lifecycle retest) is the natural candidate — it exercises the build workflow in this project and would touch `plugin/` files.
+
+**Next step.** During planning, add these as test steps to batch 0131's test plan.
+
+### Plugin doesn't distinguish build-time tests from E2E test sessions
+*Surfaced: v156*
+
+The plugin treats all tests the same — build batches get a Tests: sub-section (/sovrecap writes it), E2E test batches have their own test plans, and test-log files record results. But there's no structural distinction between "verify this during the build session" and "verify this in a separate E2E session." The result is tests peppered everywhere: behavioral checks that can only be verified in a future session get written into build batches as if they're build-time tests, while dedicated E2E batches (0130, 0131) carry their own test plans in a different format.
+
+**Why it matters.** Claude doesn't know where a test belongs. /sovrecap's procedure says to write a Tests: sub-section for every batch, so it generates tests even when the batch is a doc edit whose effects can only be observed in a later session. This creates noise (tests that can't actually run) and misroutes verification work that should land in E2E batches.
+
+**Next step.** Decide whether the plugin needs a formal distinction between build-time verification (testable in the same session) and E2E verification (requires a separate session). If yes, design the routing — options: a marker on test entries, separate sections, or a rule that certain batch types (doc-only, behavioral rules) skip Tests: and route verification to E2E batches.
 
 ### Git commit access during planning
 *Surfaced: v153*
@@ -203,4 +206,4 @@ During the 0147 build, Claude ran `/sovclose` without prompting the user to invo
 **Next step.** Investigate whether the build procedure explicitly hands off to `/sovclose` as a user-invoked step, or whether Claude is absorbing it into its own wrap-up. If the latter, decide whether to enforce the handoff mechanically (hook that blocks close-time writes unless `/sovclose` was explicitly invoked) or procedurally (stronger instruction in build.md).
 
 ---
-*Sovereign Implementer — Version 110.*
+*Sovereign Implementer — Version 111.*
