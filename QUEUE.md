@@ -4,10 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Tighten host/target language in CLAUDE.md**
-Files: CLAUDE.md
-- [build] Replace "installed plugin" / "source code" with clearer host/target definitions. Preserve DECISIONS.md additions from the previous batch.
-
 **CLAUDE.md template ownership**
 Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
 - [build] Delineate plugin-seeded content from user-appended content so users know where they can add their own rules without breaking plugin behaviours.

@@ -11,10 +11,10 @@ The Sovereign Implementer — a Claude Code plugin that gives non-coders a struc
 
 ## Host and target
 
-**Host** = the installed plugin. Its hooks fire in this project. Its skills are available. It's the running copy.
-**Target** = the source code at `plugin/si-plugin/`. This is what's being built and edited.
+**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only uninstalling and reinstalling does.
+**Target** = the editable source at `plugin/si-plugin/`. This is what sessions build and edit. Target changes have no effect until packaged and installed as the new host.
 
-Host and target are the same plugin at different stages. When target changes ship, they don't take effect until repackaged and reinstalled as the new host. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target.
+Host and target are the same plugin at different stages. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target.
 
 ## Architecture
 
@@ -42,7 +42,7 @@ No code method/
   CLAUDE.md              — this file
   .gitignore
   plugin/                — plugin packaging
-    si-plugin/           — target (plugin source code)
+    si-plugin/           — target source
       .claude-plugin/    — plugin manifest
       hooks/             — session_start, pre_tool_use
       skills/            — setup, plan, next, done
@@ -64,7 +64,7 @@ No code method/
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
-## Plugin install/update procedure
+## Host update procedure
 
 1. Archive the current zip: `Move-Item plugin\si-plugin.zip plugin\zip-archive\si-plugin-v<OLD_VERSION>.zip`
 2. Prune the archive to the three most recent versions: delete anything older in `plugin\zip-archive\`.
@@ -82,7 +82,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 ## Current state
 
-**Status:** Plugin v1.0.0 built and installed. Repo initialized, not yet pushed. Method docs set up (/setup complete).
+**Status:** Target v1.0.0 built and installed as host. Repo initialized, not yet pushed. Method docs set up (/setup complete).
 
 ## Method docs
 
