@@ -1,12 +1,36 @@
 # QUEUE
 
-Entries are worked top-to-bottom. Each entry has a type marker and a clear scope.
+## Batches
 
-## Next up
+Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-- [build] Add mid-build course-correction procedure to next.md — when Claude realises mid-build that scope grew beyond estimate, stop at a clean boundary (finish current file), /done what's shipped, split remainder back to queue. Compact mid-build is last resort, not primary offer. Files: `si-plugin/docs/next.md`. [Requested]
-- [build] Add missing rules and compact nudge to behaviour.md — (1) SPEC.md is read-only during builds, (2) one build at a time, (3) between-skill compact nudge. First two mirror CLAUDE-TEMPLATE.md rules that behaviour.md currently lacks — if compaction drops the CLAUDE.md rules, behaviour.md is what remains. Files: `si-plugin/docs/behaviour.md`. [Requested + Discovered]
-- [build] Add findings-routing step to done.md — when a [test] validation surfaces findings, /done should route each finding to QUEUE.md as a queue entry, not just log them under "Deferred." Currently findings only land in the LOG, where nobody looks to pick up work. Files: `si-plugin/docs/done.md`. [Discovered]
+**Queue restructure**
+Files:
+- `si-plugin/docs/plan.md`
+- `si-plugin/docs/next.md`
+- `si-plugin/docs/done.md`
+- `si-plugin/docs/setup.md`
+- [build] Update target plan.md — batch creation, ideas processing, sizing gates apply to batches not entries
+- [build] Update target next.md — pick up batches instead of entries, mid-build course-correction procedure, compact as last resort
+- [build] Update target done.md — route findings to host Ideas section, not just LOG
+- [build] Update target setup.md — scaffold host QUEUE.md in the new batch/ideas format
+- [test] Verify /plan creates batches with correct format
+- [test] Verify /next picks up a batch and builds all items
+- [test] Verify /done routes findings to Ideas
 
-## Parked
+**Behaviour gaps**
+Files: `si-plugin/docs/behaviour.md`
+- [build] Add SPEC.md read-only rule
+- [build] Add one-build-at-a-time rule
+- [build] Add between-skill compact nudge
 
+### Parked
+
+## Ideas
+
+Captured outside /plan. Picked up and routed during the next /plan session.
+
+- [idea] Tighten host CLAUDE.md host/target language — current description uses "installed plugin" vs "source code" but working definitions are simpler: root-level files = host, si-plugin/ contents = target
+- [idea] No skill covers committing outside builds — /done requires an active build, so /plan edits to host QUEUE.md have no commit path. Either add a lightweight commit skill or make /done stage-agnostic so it works after any skill that changes files
+
+### Parked
