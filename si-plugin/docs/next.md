@@ -8,16 +8,16 @@ Before starting:
 
 1. **Active build check:** If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one.
 
-2. **Read QUEUE.md:** Find the top entry under "Next up."
+2. **Read QUEUE.md:** Find the top batch under "Batches."
 
 3. **Blocker gate:** Scan for blockers that would force guessing:
-   - Does the entry reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
-   - Are there [question] entries above it that would affect this work? → Surface them. Resolve or confirm they're independent.
+   - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
+   - Are there [question] entries within or above the batch that would affect this work? → Surface them. Resolve or confirm they're independent.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 4. **If no blockers:** Present the batch to the user:
-   - Entry text from QUEUE.md
-   - Planned files (from the entry's "Files:" list, or your assessment of what needs creating/editing)
+   - Batch title and all entry text from QUEUE.md
+   - File list from the batch (or your assessment if the batch lacks one)
    - One-line summary of what each file change accomplishes
    - "Ready to start? (yes / adjust scope / pick a different entry)"
 
@@ -29,7 +29,7 @@ Once the user confirms:
 ```markdown
 # Active Build
 
-Entry: [copy the queue entry text]
+Entry: [copy the batch title and all entry text]
 
 Files:
 - path/to/file1.ext — what's being done
@@ -37,9 +37,12 @@ Files:
 
 Progress:
 [empty — ticked as files complete]
+
+Changes:
+[empty — accumulated as files complete]
 ```
 
-2. **Remove the entry from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
+2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
 
 The _build.md file is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.
 
@@ -74,7 +77,28 @@ If scope grows during the build:
 
 The sizing principle: right size = verification burden, not line count. A batch that touches 2 files but produces 15 things to test is too big. A batch that touches 8 files but has 3 observable behaviours is fine.
 
-## Step 5: Completion
+## Step 5: Mid-build course-correction
+
+If something goes wrong during the build — an assumption turns out to be false, a dependency is missing, or the approach isn't working:
+
+1. **Stop building.** Don't push through a broken approach.
+2. **State the problem plainly.** What you expected, what actually happened, why the current approach won't work.
+3. **Propose a path forward:**
+   - **Adjust scope:** drop an entry, add a prerequisite, change the approach. Update _build.md to match.
+   - **Abort and requeue:** if the whole batch is unsalvageable, close what's done via /done and route the rest back to QUEUE.md for replanning.
+4. **Wait for the user's call.** Don't pick a path without confirmation.
+
+## Step 6: Context management
+
+If the conversation is getting long and context is running low, prefer these options in order:
+
+1. **Finish and /done.** If most files are ticked, push through to completion. Short-term memory is enough.
+2. **Close partial.** If significant work remains, /done what's ticked and requeue the rest. The next session picks up cleanly from _build.md and QUEUE.md state.
+3. **Compact as last resort.** Only if you can't close the build and the remaining work would lose critical context. Tell the user: "Context is running low. I can compact, but I'll lose detail on [X]. Okay to proceed?"
+
+Never compact silently. The user should know what's being traded away.
+
+## Step 8: Completion
 
 When all files are ticked:
 1. Tell the user the build is complete.

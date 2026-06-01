@@ -57,12 +57,22 @@ For each file that was created, renamed, deleted, or significantly modified:
 - Update descriptions if the file's role changed
 - Remove entries for deleted files
 
-### 1.6 Build recap
+### 1.6 Route findings to Ideas
+
+During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. For each finding:
+
+- Add it to the **Ideas** section of QUEUE.md as an `[idea]` entry.
+- Don't promote findings to batches during /done — that's /plan's job.
+- If a test failure needs a fix, route the fix to Ideas too (not directly to a batch).
+
+This keeps /done mechanical and defers judgment to the next /plan session.
+
+### 1.7 Build recap
 
 Summarize for the user:
 - What was built (from _build.md Changes section)
 - Test results (passed / failed / skipped)
-- Anything deferred to the queue
+- Anything routed to Ideas
 
 ## Phase 2: Mechanical (rote file operations)
 
@@ -81,13 +91,13 @@ Create `LOG/YYYY-MM-DD.md` (or append if one exists for today) with:
 
 **Decisions:** [any design decisions made during the build — these are the historical record]
 
-**Deferred:** [anything routed back to queue, or "none"]
+**Routed to Ideas:** [anything added to the Ideas section, or "none"]
 ```
 
 ### 2.2 Staleness sweep
 
 Quick check of QUEUE.md:
-- Do any remaining entries reference files that were renamed or deleted in this build?
+- Do any remaining batches or Ideas reference files that were renamed or deleted in this build?
 - Do any reference old behaviour that this build changed?
 - If so, flag them (don't edit without asking).
 
@@ -106,14 +116,14 @@ This unlocks future builds. Only do this after everything above is complete.
 ## Phase 3: Handoff
 
 Tell the user what's next:
-- If QUEUE.md has more entries: "Next up is [entry]. Run /next when ready."
-- If QUEUE.md is empty: "Queue is clear. Run /plan when you have more to add."
-- If tests failed: "There's a fix queued from the test failure. Run /next to address it."
+- If QUEUE.md has more batches: "Next up is [batch]. Run /next when ready."
+- If QUEUE.md Batches section is empty: "Queue is clear. Run /plan when you have more to add."
+- If items were routed to Ideas: "There are new items in Ideas. Run /plan to process them before the next build."
 
 ## Rules
 
 - Do NOT skip Phase 1 even if the user says "just commit." The judgment steps prevent drift.
 - One test at a time for user-verified tests. Don't dump the full list.
-- Failed tests route to the queue — never fix during /done.
+- Failed tests route to Ideas — never fix during /done.
 - Git push is always a prompt, never automatic.
 - If _build.md doesn't exist, refuse to run. There's nothing to close.

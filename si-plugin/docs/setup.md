@@ -37,15 +37,19 @@ Create these files (empty structure, content comes from the interview):
 ```markdown
 # QUEUE
 
-Entries are worked top-to-bottom. Each entry has a type marker and a clear scope.
+## Batches
 
-## Next up
+Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
 [filled by Q4]
 
-## Parked
+### Parked
 
-[empty]
+## Ideas
+
+Captured outside /plan. Picked up and routed during the next /plan session.
+
+### Parked
 ```
 
 **REGISTRY.md:**
