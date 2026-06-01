@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v157-rewrite-build-cycle-procedure-docs.md` — 2026-06-01 — Build-cycle procedure doc rewrite: read-only recap, [Build]/[E2E] test markers, close [PROMPT] stops
 - `v156-host-target-safeguards.md` — 2026-06-01 — Host/target safeguards for self-developing project
 - `v155-unblock-build-backlog-unification.md` — 2026-06-01 — Unblock build: BACKLOG unification + batch cleanup
 - `v154-merge-ideas-into-oqs.md` — 2026-05-31 — Merge Ideas into OQs + combine ideation/deliberation
@@ -155,4 +156,4 @@ Index format (newest first):
 - `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
 
 ---
-*Sovereign Implementer — Version 111.*
+*Sovereign Implementer — Version 112.*

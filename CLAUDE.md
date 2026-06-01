@@ -102,6 +102,10 @@ Every design choice navigates the tension between non-coders needing heavy docs 
 
 When evaluating a change: does it add to what Claude must read every session, or does it keep enforcement mechanical and docs demand-loaded?
 
+### Procedure docs are product code
+
+`plugin/docs/procedures/*.md` are the plugin's runtime behavior — each skill loads its procedure doc and follows it. They are equivalent to source code: if a procedure doc is wrong, the plugin behaves wrong. Keep them current with every change that affects build-cycle behavior (phase transitions, what gets written where, what Claude is/isn't allowed to do). A stale procedure doc is a bug, not a documentation debt.
+
 ### E2E testing
 
 Most sessions are dev-internal. E2E sessions run the plugin against Taskflow in a separate desktop-app burner session — Alex runs that; observations come back as BACKLOG items.
@@ -138,11 +142,11 @@ Run `python scripts/bump_version.py <old> <new> --session-tag v<N>` for substant
 
 ## Current state (update at every session close)
 
-**Current version:** v156 (session tag). Method version **V111**. Plugin version **0.111.0**.
+**Current version:** v157 (session tag). Method version **V112**. Plugin version **0.112.0**.
 
-**What's next:** One implementation batch: 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files). Eight open OQs.
+**What's next:** One implementation batch: 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest — test plan step 2 references old /sovrecap behavior, needs update). One parked graduation: 0151 (retire protocol files). Eight open OQs (two addressed by v157: test-type distinction, silent close).
 
 Build-cycle position lives in `_method/BACKLOG.md`.
 
 ---
-*Sovereign Implementer — Version 111.*
+*Sovereign Implementer — Version 112.*

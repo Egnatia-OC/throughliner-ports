@@ -163,4 +163,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*Sovereign Implementer — Version 111.*
+*Sovereign Implementer — Version 112.*

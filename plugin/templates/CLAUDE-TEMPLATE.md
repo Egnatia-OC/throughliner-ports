@@ -60,4 +60,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*Sovereign Implementer — Version 111.*
+*Sovereign Implementer — Version 112.*
