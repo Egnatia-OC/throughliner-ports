@@ -12,7 +12,7 @@ The Sovereign Implementer — a Claude Code plugin that gives non-coders a struc
 ## Host and target
 
 **Host** = the installed plugin. Its hooks fire in this project. Its skills are available. It's the running copy.
-**Target** = the source code at `si-plugin/`. This is what's being built and edited.
+**Target** = the source code at `plugin/si-plugin/`. This is what's being built and edited.
 
 Host and target are the same plugin at different stages. When target changes ship, they don't take effect until repackaged and reinstalled as the new host. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target.
 
@@ -40,12 +40,15 @@ Host and target are the same plugin at different stages. When target changes shi
 No code method/
   CLAUDE.md              — this file
   .gitignore
-  si-plugin/             — target (plugin source code)
-    .claude-plugin/      — plugin manifest
-    hooks/               — session_start, pre_tool_use
-    skills/              — setup, plan, next, done
-    templates/           — CLAUDE-TEMPLATE.md
-    docs/                — procedure docs loaded by skills
+  plugin/                — plugin packaging
+    si-plugin/           — target (plugin source code)
+      .claude-plugin/    — plugin manifest
+      hooks/             — session_start, pre_tool_use
+      skills/            — setup, plan, next, done
+      templates/         — CLAUDE-TEMPLATE.md
+      docs/              — procedure docs loaded by skills
+    si-plugin.zip        — current installable zip
+    zip-archive/         — versioned archive of past zips
   SPEC.md                — this project's spec (once /setup has run)
   QUEUE.md               — this project's work queue
   REGISTRY.md            — this project's component registry
@@ -54,17 +57,18 @@ No code method/
 
 ## Working conventions
 
-- **Use absolute paths** for sub-folder lookups. `C:\Users\Alex\Desktop\Taskflow Planning\No code method\si-plugin\...`
+- **Use absolute paths** for sub-folder lookups. `C:\Users\Alex\Desktop\Taskflow Planning\No code method\plugin\si-plugin\...`
 - **Run commands directly.** Don't ask Alex to run them unless they require the desktop app UI or a separate session.
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
 ## Plugin install/update procedure
 
-1. Delete old zip if present: `Remove-Item si-plugin.zip -ErrorAction SilentlyContinue`
-2. Package: `Compress-Archive -Path si-plugin\* -DestinationPath si-plugin.zip`
-3. Desktop app: Customise → Plugins → + → Create plugin → Upload plugin → select `si-plugin.zip`.
-4. To update: gear icon → Uninstall, then repeat steps 1-3.
+1. Archive the current zip: `Move-Item plugin\si-plugin.zip plugin\zip-archive\si-plugin-v<OLD_VERSION>.zip`
+2. Prune the archive to the three most recent versions: delete anything older in `plugin\zip-archive\`.
+3. Package: `Compress-Archive -Path plugin\si-plugin\* -DestinationPath plugin\si-plugin.zip`
+4. Desktop app: Customise → Plugins → + → Create plugin → Upload plugin → select `plugin\si-plugin.zip`.
+5. To update: gear icon → Uninstall, then repeat steps 1-4.
 
 ## E2E testing
 

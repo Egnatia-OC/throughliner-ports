@@ -1,4 +1,6 @@
 *.zip
+!plugin/*.zip
+!plugin/zip-archive/*.zip
 __pycache__/
 *.pyc
 .claude/

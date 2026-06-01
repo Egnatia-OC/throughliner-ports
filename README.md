@@ -23,10 +23,9 @@ Two hooks enforce discipline without burning context:
 ## Install
 
 1. Download or clone this repo
-2. Zip the `si-plugin/` folder contents: `Compress-Archive -Path si-plugin\* -DestinationPath si-plugin.zip`
-3. In the Claude Code desktop app: Customise > Plugins > + > Create plugin > Upload plugin > select `si-plugin.zip`
+2. In the Claude Code desktop app: Customise > Plugins > + > Create plugin > Upload plugin > select `plugin/si-plugin.zip`
 
-To update: uninstall the old version first (gear icon > Uninstall), then repeat steps 2-3.
+To update: uninstall the old version first (gear icon > Uninstall), then repeat step 2.
 
 ## Getting started
 
