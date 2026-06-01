@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Behaviour gaps**
-Files: `si-plugin/docs/behaviour.md`
-- [build] Add SPEC.md read-only rule
-- [build] Add one-build-at-a-time rule
-- [build] Add between-skill compact nudge
-
 **Stage-agnostic /done** [Requested]
 Files: `si-plugin/docs/done.md`, `si-plugin/docs/plan.md`, `si-plugin/hooks/session_start.py`
 - [build] Make /done detect preceding skill and write the appropriate log entry shape — full build close-out after /next, lighter plan close-out after /plan
