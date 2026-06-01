@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Stage-agnostic /done** [Requested]
-Files: `si-plugin/docs/done.md`, `si-plugin/docs/plan.md`, `si-plugin/hooks/session_start.py`
-- [build] Make /done detect preceding skill and write the appropriate log entry shape — full build close-out after /next, lighter plan close-out after /plan
-- [build] Add close-out step to /plan procedure directing to /done when planning is finished
-
 **Commit-based logging + decision index** [Requested]
 Files: `si-plugin/docs/done.md`, `si-plugin/docs/setup.md`, `si-plugin/templates/`
 - [build] Restructure LOG/ from per-date files to per-commit entries — commit hash as identifier, one entry per /done

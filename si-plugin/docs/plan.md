@@ -114,6 +114,15 @@ When docs have grown bloated:
 4. Never cut rules, constraints, or principles — only compress prose.
 5. User approves each change.
 
+## Step 8: Close out
+
+When planning work is done (ideas processed, questions resolved, queue updated):
+
+1. Summarize what changed this session.
+2. Say: "Run /done to record this and commit, or keep planning."
+
+Don't skip this — /done writes the log entry and handles the commit. Planning sessions close through /done just like build sessions do.
+
 ## Rules
 
 - Never build anything during /plan. If you find yourself wanting to write code, stop and add it to the queue.
