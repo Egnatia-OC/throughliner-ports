@@ -28,7 +28,7 @@ Returns JSON: `{"case": 1, "case_name": "...", "target_path": "...", "details": 
 
 No CLAUDE.md, no substantial work.
 
-**Open:** "Fresh folder. I'll ask five questions, then create starter docs inside `_method/` (UX.md, BACKLOG/, build-log/, test-log/, MANIFEST.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
+**Open:** "Fresh folder. I'll ask five questions, then create starter docs inside `_method/` (UX.md, BACKLOG.md, build-log/, test-log/, MANIFEST.md) plus CLAUDE.md at the project root, and `_method/planning/drafts/`, `_method/research/`, and `_method/research/search-queries/`."
 
 **Five questions (one per message, wait for each):**
 
@@ -46,7 +46,7 @@ After answers:
    - **Q1 →** CLAUDE.md Product overview (all four fields) + UX.md Project context (synthesized from the product description).
    - **Q2 →** UX.md UX principles section. Write every principle the user agreed to — replace the template placeholders with the full set.
    - **Q3 →** UX.md Functionalities section. Write every functionality with its experience description and rationale.
-   - **Q4 →** Seed BACKLOG batch (folder mode: create per-batch file with `Status: queued` line + INDEX.md reference).
+   - **Q4 →** Seed BACKLOG batch (add inline `### Batch:` entry in BACKLOG.md with `Status: queued` line).
    - **Q5 →** CLAUDE.md Language: field. Replace the default `English` with the user's answer.
 
 After applying answers, regenerate proxies per `DOC-STRUCTURE.md` → *Proxy files (_method/proxies/)*.
@@ -113,15 +113,15 @@ Surface planned bumps before touching anything. Edit every footer via `Edit` —
 
 **After bumps — BACKLOG batch-structure migration (V47).** Check for pre-V47 format (no scope-context sections, no `Changes:` delimiter). For each old-format batch: extract existing prose → use as Goal, add Outputs/Success criteria with `Scope not yet defined — fill during the next planning session.` Insert `Changes:` delimiter. Don't use `[placeholder]` brackets — `/sovrecap` reads those as blocking.
 
-**After V47 — BACKLOG folder-split (V48).** If path block points at `BACKLOG.md` (not `BACKLOG/INDEX.md`): create `BACKLOG/`, extract inline batches to per-batch files, create INDEX.md, update path block, delete old file.
+**After V47 — BACKLOG folder-split (V48, obsolete).** Folder mode is no longer the default (V110+). Skip this migration — single-file BACKLOG.md is now the standard format. If a project is already in folder mode, the parser handles both formats.
 
 **After folder split — TEST-LOG migration (V46).** If 8-column format (no Type/Verifier): add columns, existing rows default to `Look and click` / `User`.
 
 **After TEST-LOG — BUILD-LOG folder migration (V50).** If flat `BUILD-LOG.md`: create `build-log/`, extract entries to per-build files, create INDEX.md, update path block, delete old file.
 
-**After BUILD-LOG — INDEX relocation to proxies (V70).** If path block points at `BACKLOG/INDEX.md` or `_method/BACKLOG/INDEX.md`: move INDEX.md content into `_method/proxies/backlog.md` (create proxies/ dir if needed), delete `BACKLOG/INDEX.md`, update path block to `_method/proxies/backlog.md`. Same for `build-log/INDEX.md` → `_method/proxies/build-log.md`. If `_method/proxies/` dir already has these files, skip.
+**After BUILD-LOG — INDEX relocation to proxies (V70).** For build-log only: if path block points at `build-log/INDEX.md`, move content into `_method/proxies/build-log.md` (create proxies/ dir if needed), delete `build-log/INDEX.md`, update path block. BACKLOG INDEX relocation is no longer needed — single-file BACKLOG.md is the target format. If `_method/proxies/` dir already has build-log.md, skip.
 
-**After INDEX relocation — TEST-LOG folder split (V75).** If path block points at `TEST-LOG.md` (flat file, not a proxy in `proxies/`): create `_method/test-log/`, split rows by Session into per-session files (`NNN-batch-name.md`), add `## Test sessions` section to the BACKLOG proxy with the folder index, update path block `"TEST-LOG.md"` to `_method/proxies/backlog.md`, delete old `TEST-LOG.md`. If `_method/test-log/` already exists, skip.
+**After INDEX relocation — TEST-LOG folder split (V75).** If path block points at `TEST-LOG.md` (flat file, not a proxy in `proxies/`): create `_method/test-log/`, split rows by Session into per-session files (`NNN-batch-name.md`), add `## Test sessions` section to BACKLOG.md with the folder index, update path block `"TEST-LOG.md"` to `_method/proxies/backlog.md`, delete old `TEST-LOG.md`. If `_method/test-log/` already exists, skip.
 
 **After TEST-LOG folder split — Product overview backfill (V69).** If CLAUDE.md has no `## Product overview` section: ask the overview question (Case 1, Q1) and write the section above the path block.
 
@@ -163,4 +163,4 @@ Surface errors verbatim, name what couldn't be done, stop. Don't retry silently 
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

@@ -102,12 +102,12 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 
 ## TEST-LOG structure
 
-**Location.** `_method/test-log/`. One file per build session. Test session index lives in the BACKLOG proxy (`_method/proxies/backlog.md`) → `## Test sessions`. Legacy: flat `TEST-LOG.md` at project root or inside `_method/`.
+**Location.** `_method/test-log/`. One file per build session. Test session index lives in `_method/BACKLOG.md` → `## Test sessions`. Legacy: flat `TEST-LOG.md` at project root or inside `_method/`.
 
-**Index (BACKLOG proxy → Test sessions).** Newest-first bullet list inside the `## Test sessions` section of `_method/proxies/backlog.md`:
+**Index (BACKLOG.md → Test sessions).** Newest-first bullet list inside the `## Test sessions` section of `_method/BACKLOG.md`:
 > `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``
 
-`/sovclose` prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/proxies/backlog.md` (same file as `"BACKLOG.md"`).
+`/sovclose` prepends one line per build. Path block: `"TEST-LOG.md"` → `_method/BACKLOG.md` (same file as `"BACKLOG.md"`).
 
 **Per-session files.** `NNN-batch-name.md`:
 
@@ -143,7 +143,7 @@ Include things the user might ask about. Skip trivial helpers and boilerplate.
 - **Component removed** → planning procedure deletes rows with no MANIFEST match (step 2c). `Superseded` rows also deleted. Cross-component rows exempt. Git preserves history.
 - **Empty files** → when pruning empties a per-session file, delete it and remove its index line.
 
-**Template.** Test session index section is part of `plugin/templates/.proxies/backlog.md`. Per-session file template: `plugin/templates/test-log/ENTRY-TEMPLATE.md`. Path block: `"TEST-LOG.md"` → `_method/proxies/backlog.md`.
+**Template.** Test session index section is part of `plugin/templates/BACKLOG-TEMPLATE.md`. Per-session file template: `plugin/templates/test-log/ENTRY-TEMPLATE.md`. Path block: `"TEST-LOG.md"` → `_method/BACKLOG.md`.
 
 **Backwards compatibility.** Flat `TEST-LOG.md` still supported. 8-column (pre-V48) migrated on `/sovsetup` case 4: Type→`Look and click`, Verifier→`User`. Case 4 also migrates flat file → folder.
 
@@ -251,11 +251,13 @@ Lightweight index files summarizing source-of-truth docs. Claude reads proxies f
 | `manifest.md` | `MANIFEST.md` | Entry count, capabilities summary (verbatim) | `- L<N> **<name>** (<path>)` (description/rationale omitted) |
 | `research.md` | `_method/research/` | File count | `- <filename> — <summary>` (no line numbers) |
 
-### BACKLOG index proxy (backlog.md)
+### BACKLOG (single-file, V110+)
 
-Source: `_method/BACKLOG/` and `_method/test-log/`. Unlike other proxies, this IS the operational index — five sections (Red flags, Planning batches, Build batches, Test sessions, Open questions) with reference lines pointing at per-batch and per-session test files. Not a summary; directly edited by Claude during planning. Test sessions section also serves as the TEST-LOG index.
+Default format: `_method/BACKLOG.md` is the primary file — all five sections (Red flags, Planning batches, Build batches, Test sessions, Open questions) with batch content inline using `### Batch:` headings. No proxy needed. Path block: `"BACKLOG.md"` → `_method/BACKLOG.md`. `"TEST-LOG.md"` also points here (Test sessions section serves as the test-log index).
 
-Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`. `"TEST-LOG.md"` also points here. Parser resolves batch files relative to `_method/BACKLOG/`; hooks resolve per-session test files relative to `_method/test-log/`.
+### BACKLOG index proxy (legacy, backlog.md)
+
+Legacy format (V73–V109): `_method/proxies/backlog.md` as operational index with reference lines pointing at per-batch files in `_method/BACKLOG/`. Still supported by parser and hooks for existing projects. Path block: `"BACKLOG.md"` → `_method/proxies/backlog.md`.
 
 ### Build-log index proxy (build-log.md)
 
@@ -306,10 +308,9 @@ Inline marker for entries that touch a sensitive surface — authentication, PII
 
 ## BACKLOG structure
 
-Three formats, auto-detected:
-- **Single-file (legacy):** `BACKLOG.md` with everything inline. Path block → `BACKLOG.md`.
-- **Folder with INDEX (V48–V72):** `BACKLOG/` with `INDEX.md` + per-batch files. Path block → `BACKLOG/INDEX.md`.
-- **Proxy-as-index (V73+, default):** `BACKLOG/` with per-batch files only. Index lives at `_method/proxies/backlog.md`. Path block → `_method/proxies/backlog.md`.
+Two formats, auto-detected:
+- **Single-file (V110+, default):** `BACKLOG.md` with everything inline. Path block → `_method/BACKLOG.md`.
+- **Folder (legacy, V48–V109):** `BACKLOG/` with per-batch files. Index at `_method/proxies/backlog.md` or `BACKLOG/INDEX.md`. Still supported by parser and hooks for existing projects.
 
 **Maintained by Claude during planning.** Claude edits directly; user reviews.
 
@@ -321,7 +322,7 @@ Three formats, auto-detected:
 
 - **Build batches.** Engineering work, priority-ordered. Top = next build. Two regions: scope context (Goal→Dependencies/Red flags) and build operations (Changes→Serves). Must fit one session. Completed batches removed next planning session.
 
-  Folder mode: per-batch files (`NNNN-name.md`), INDEX.md carries reference list. Single-file: inline `### Batch:` headings.
+  Single-file (default): inline `### Batch:` headings. Legacy folder mode: per-batch files (`NNNN-name.md`) with index carrying reference list.
 
   **Batch structure — full shape:**
   ```
@@ -333,7 +334,6 @@ Three formats, auto-detected:
   **Goal.** [Why this batch exists.]
   **Outputs.** [What changes the user experiences.]
   **Success criteria.** [Observable conditions for success.]
-  **Decisions to make this batch.** [Unresolved questions. Omit if resolved.]
   **Dependencies.** [What's needed from outside. Omit if none.]
   **Red flags.** [Security concerns. Only when detected.]
 
@@ -369,7 +369,7 @@ Three formats, auto-detected:
 
   **Serves:** Case-insensitive match against doc headings. PreToolUse blocks mismatches on locked docs.
 
-- **Test sessions.** Index of per-session test files from `test-log/`. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. `/sovclose` prepends one line per build. The test-confirmation gate and TEST-LOG tripwire resolve test data from the per-session files in `test-log/`; this section is the index. See *TEST-LOG structure* above for column specs and per-session file format.
+- **Test sessions.** Index of per-session test files from `test-log/`. Newest-first bullet list: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. `/sovclose` prepends one line per build. The test-confirmation gate and TEST-LOG tripwire resolve test data from the per-session files in `test-log/`; this section is the index. In single-file mode, this lives inline in BACKLOG.md. See *TEST-LOG structure* above for column specs and per-session file format.
 
 - **Open questions.** Unscoped captures — from quick one-liner thoughts to fleshed-out questions. `/sovdeliberate` works through accumulated entries. Full entries: question title, *Surfaced* tag, framing paragraph, *Why it matters*, *Next step*. Light entries: heading, *Surfaced* tag, one sentence. Why it matters and Next step are optional — useful when the question has enough shape to benefit from them. Distinct from planning batches (which name what they block).
 
@@ -384,4 +384,4 @@ When `/sovbuild` is invoked, the active batch is extracted from BACKLOG into `_m
 **Close handoff section.** Created empty by `/sovbuild`; appended incrementally during per-file work. One bullet per file recording what changed — new names, renamed concepts, shifted frames, invalidated doc references. Mechanical changes skipped. `/sovclose` reads this as its primary source for doc-parity, frame-correction, and build-log narrative. If empty or absent (legacy snapshots), falls back to scanning Files:. Consumed by `/sovclose` and deleted with the snapshot.
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

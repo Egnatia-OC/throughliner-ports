@@ -95,4 +95,4 @@ Format: `DOC-STRUCTURE.md` → *Proposed edits pending sections*.
 > **[PROPOSED EDIT PENDING]** UX.md — Update Planning sessions entry to remove `/sovideate` reference. Line 37 currently says "…`/sovdeliberate` to work through accumulated open questions, or `/sovideate` to explore new ideas." Replace with: "…or `/sovdeliberate` to work through accumulated open questions or capture new ideas." **Action:** replace — `### Planning sessions`, first paragraph. Surfaced 2026-05-31; origin: 0147 build close flags.
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

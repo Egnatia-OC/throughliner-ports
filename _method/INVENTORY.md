@@ -151,4 +151,4 @@ All commands use the **skill-with-flags** pattern (`skills/<name>/SKILL.md` with
 - `UserPromptSubmit`-in-plugin bug (anthropics/claude-code#10225) — pivoted to SessionStart.
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

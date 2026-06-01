@@ -1,0 +1,7 @@
+# V155 — 2026-06-01 — Unblock build: BACKLOG unification + batch cleanup
+
+**What shipped.** Freeform build session with plugin disabled to break a build-cycle loop. (1) BACKLOG unified into single file — collapsed `_method/BACKLOG/` (10 per-batch files) + `_method/proxies/backlog.md` (proxy-as-index) into one `_method/BACKLOG.md`. All five sections inline. Cancelled/shipped batches dropped; parked batch 0151 retained. (2) Batch 0152 layer-scope decision resolved: A-only (CLAUDE.md rules), removed suggested session_start.py change. (3) Files: sections added to batches 0152 and 0153. (4) "Decisions to make this batch" field removed from DOC-STRUCTURE.md, BACKLOG-TEMPLATE.md, BATCH-TEMPLATE.md, VOCABULARY.md, and before-build.md. (5) Plugin source updated across 16 files for single-file BACKLOG as default, folder mode as legacy backward-compat. (6) Test row 140 cleared (Skipped — plugin disabled for unblock session). 287 tests pass.
+
+**Decisions taken and why.** (a) Layer A-only for 0152 — CLAUDE.md rules are sufficient; session_start.py banner adds per-session read cost for marginal benefit. (b) Dropped "Decisions to make this batch" field entirely — build batches should be fully decided; unresolved questions belong in Open Questions. (c) Kept folder-mode code paths in parser and hooks for backward compat with existing user projects.
+
+**Pivots and surprises.** None. Clean execution of the plan.

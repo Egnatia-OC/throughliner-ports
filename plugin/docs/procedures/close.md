@@ -25,7 +25,7 @@ Load only what's needed for batch ID and idempotency. Defer heavier reads to wor
 
 1. `CLAUDE.md` — path block and project notes.
 2. `_method/active-build.md` — single source of truth for the completed batch. Read `## Close handoff` — primary source for what changed (names introduced, concepts renamed, frames shifted, doc references invalidated).
-3. `TEST-LOG.md` — idempotency check. Folder mode: read `test-log/` files.
+3. `TEST-LOG.md` — idempotency check. Read per-session files in `test-log/`.
 4. `MANIFEST.md` — for the MANIFEST update.
 
 **Defer:** UX.md, BUILD-LOG/build-log, DOC-STRUCTURE.md sections — read when the step using them runs.
@@ -38,8 +38,8 @@ If TEST-LOG already has rows matching this session covering the batch's Files: �
 
 TEST-LOG's Session column needs a stable build-session identifier:
 
-- **Proxy-as-index:** `proxies/build-log.md` → first reference → per-build file H1 → first token.
-- **Folder mode (legacy):** `build-log/INDEX.md` → first reference → per-build file H1 → first token.
+- **Build-log proxy:** `proxies/build-log.md` → first reference → per-build file H1 → first token.
+- **Legacy folder:** `build-log/INDEX.md` → first reference → per-build file H1 → first token.
 - **Single-file:** `BUILD-LOG.md` → first `## <token>` heading.
 - **Last resort:** today's YYYY-MM-DD.
 
@@ -64,9 +64,9 @@ Run while build context is fresh.
 
    **4a. Write TEST-LOG rows.** One row per distinct observable behaviour. Draw from batch's `Tests:` if present, else derive from recap (default: `Look and click` / `User`). 10-column format per `DOC-STRUCTURE.md` → *TEST-LOG structure*. Status blank initially (Claude rows filled in 4b); Confirmed Explicitly: `No`.
 
-   **Folder mode (path block → proxy in `proxies/`):**
+   **Per-session test files (default):**
    - **4a-i.** Allocate filename: scan `test-log/` for `[0-9]*-*.md`, highest number + 1 (start at `001`). Kebab suffix from batch heading. Write per-session file with H1 `# Test session — <Session> — YYYY-MM-DD` followed by the table.
-   - **4a-ii.** Prepend index line to the BACKLOG proxy's `## Test sessions` section: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. Idempotency: skip if same-numbered line exists. Fallback: `TEST-LOG.md` (single-file legacy).
+   - **4a-ii.** Prepend index line to BACKLOG.md's `## Test sessions` section: `` - `NNN-batch-name.md` — YYYY-MM-DD — N rows (N unconfirmed) ``. Idempotency: skip if same-numbered line exists. Fallback: `TEST-LOG.md` (single-file legacy).
 
    **Single-file mode (path block → `TEST-LOG.md` directly):**
    - Position rows at top of table body (below header separator). Within batch: recap order (lowest # at top).
@@ -223,4 +223,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

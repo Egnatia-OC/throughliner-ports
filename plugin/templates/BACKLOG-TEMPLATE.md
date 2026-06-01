@@ -47,8 +47,6 @@ Status: [queued|parked]  ← written by Claude; absent = queued. Legacy active/s
 
 **Success criteria.** [Observable, testable conditions for knowing the batch succeeded.]
 
-**Decisions to make this batch.** [Unresolved scope questions. Omit if all decisions are made.]
-
 **Dependencies.** [What this batch needs from outside itself. Omit if none.]
 
 **Red flags.** [Security/privacy/data-integrity concerns. Only present when detected.]
@@ -70,7 +68,7 @@ Tests:
 Serves UX.md: [entry name(s)].
 
 Notes:
-- Goal, Outputs, Success criteria are always present. Decisions, Dependencies omit if empty.
+- Goal, Outputs, Success criteria are always present. Dependencies omitted if none.
 - Red flags appears only when planning detects security-shaped scope.
 - Changes: delimiter is required — separates scope sections from the change list.
 - Inputs: is optional — omit if the batch only needs standard docs.
@@ -117,4 +115,4 @@ Entry format — light (quick capture):
 -->
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

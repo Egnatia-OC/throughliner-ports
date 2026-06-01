@@ -24,10 +24,10 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
 ```json
 {
   "UX.md": "_method/UX.md",
-  "BACKLOG.md": "_method/proxies/backlog.md",
+  "BACKLOG.md": "_method/BACKLOG.md",
   "BUILD-LOG.md": "_method/proxies/build-log.md",
   "MANIFEST.md": "_method/MANIFEST.md",
-  "TEST-LOG.md": "_method/proxies/backlog.md"
+  "TEST-LOG.md": "_method/BACKLOG.md"
 }
 ```
 
@@ -39,9 +39,9 @@ The `_method/` folder holds the method's working docs. The underscore prefix kee
 
 - **UX.md** — your product described from the user's perspective. Features, rationale, design principles. Source of truth for what gets built.
 - **MANIFEST.md** — glossary of named components in your codebase. Maintained by Claude during builds.
-- **BACKLOG/** — queued work. One file per batch, with scope, file lists, and test plans.
+- **BACKLOG.md** — queued work, test session index, and open questions. Single file with inline batch entries.
 - **build-log/** — record of each build session: what shipped, decisions made, surprises.
-- **test-log/** — per-session test files. The test session index lives in the BACKLOG proxy.
+- **test-log/** — per-session test files. Index in BACKLOG.md's Test sessions section.
 - **proxies/** — compact indexes Claude reads first so it doesn't have to load entire docs every session.
 - **planning/drafts/** — scratch space for ideas not yet ready for a specific doc.
 - **research/** — findings from research on external questions. Persists across sessions.
@@ -60,4 +60,4 @@ When the user asks how to install, disable, enable, or uninstall the plugin, rea
 
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

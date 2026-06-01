@@ -86,4 +86,4 @@ Source: `${CLAUDE_PLUGIN_ROOT}/docs/explain-reference.md` (205 lines)
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

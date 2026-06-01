@@ -12,7 +12,7 @@ Follow this procedure when the user invokes `/sovtest`. Guides non-coders throug
 
 1. `CLAUDE.md` — path block.
 2. `MANIFEST.md` — component names for cross-referencing.
-3. `TEST-LOG` — in folder mode (path block → proxy in `proxies/`): read the BACKLOG proxy's Test sessions section, then the most recent per-session file in `test-log/`. In single-file mode: read `TEST-LOG.md`.
+3. `TEST-LOG` — read BACKLOG.md's Test sessions section, then the most recent per-session file in `test-log/`. Legacy single-file mode: read `TEST-LOG.md` directly.
 4. Identify pending rows: `Verifier: User` with blank `Status`, or unrunnable Claude-verified rows with blank `Status`.
 
 **No pending rows.** If every User-verified row already has a Status, say so and stop: "No pending tests — nothing to walk through."
@@ -128,4 +128,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

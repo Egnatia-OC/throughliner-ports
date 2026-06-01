@@ -63,7 +63,7 @@ When ambiguous, default to "why" — it was the original and most common use cas
 - Plain English. No jargon the user hasn't used first.
 - Lead with the direct answer, then supporting detail only if it helps understanding.
 - Keep it short. A paragraph is usually enough. Two if the topic has layers.
-- If the answer involves a doc the user has in their project (`_method/UX.md`, `_method/BACKLOG/`, etc.), mention it so they can look.
+- If the answer involves a doc the user has in their project (`_method/UX.md`, `_method/BACKLOG.md`, etc.), mention it so they can look.
 - If the answer connects to another feature, name it but don't explain it unprompted — let the user ask if they want to go deeper.
 
 `[PROMPT]` — end with a brief signal that the user can ask another question or move on.

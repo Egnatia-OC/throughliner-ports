@@ -4,7 +4,7 @@ Follow this procedure during the *planning* phase — not in the same session as
 
 For working through open questions or exploring new ideas, use `/sovdeliberate`.
 
-You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) yours to make; user reviews after. **Two formats:** single `BACKLOG.md` (legacy) or `BACKLOG/` folder with `INDEX.md` + per-batch files (V48+). Folder mode: planning batches/Red flags/OQs in `INDEX.md`; build batches in per-batch files. Resolve from `CLAUDE.md` path block.
+You hold structural authority over BACKLOG: every change (add, remove, reorder, split, reclassify) yours to make; user reviews after. **Default format:** single `BACKLOG.md` with all five sections and batch content inline using `### Batch:` headings. Legacy folder mode (`BACKLOG/` with per-batch files) still supported — resolve from `CLAUDE.md` path block.
 
 ## Classifying the opener
 
@@ -23,7 +23,7 @@ Classify project state before loading full doc set. Cold-start projects skip his
 **Step 1 — always load:**
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows. In folder mode (path block → proxy in `proxies/`): walk files in `test-log/`.
+2. `MANIFEST.md` — scan for entries. `TEST-LOG.md` — scan for data rows. Walk per-session files in `test-log/`.
 
 **Step 2 — cold-start check:**
 
@@ -31,8 +31,8 @@ If MANIFEST has no entries and TEST-LOG has no data rows → **cold start**. Log
 
 **Step 3 — load remaining docs:**
 
-- **Always:** `UX.md`, `BACKLOG.md` (resolves to `_method/proxies/backlog.md` or legacy `BACKLOG/INDEX.md`; + per-batch files in folder mode), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
-- **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md` or legacy `build-log/INDEX.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG structure*.
+- **Always:** `UX.md`, `BACKLOG.md` (resolves to `_method/BACKLOG.md`; legacy: `_method/proxies/backlog.md` + per-batch files), additional source-of-truth docs, `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *BACKLOG structure*, *Proposed edits pending sections*.
+- **Not cold start only:** `BUILD-LOG.md` (resolves to `_method/proxies/build-log.md`), `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *TEST-LOG structure*.
 
 ## Procedure order
 
@@ -41,8 +41,8 @@ After loading state, perform in order:
 **Cold-start gate.** If cold start (empty MANIFEST + empty TEST-LOG): skip steps 1–3 entirely. Jump to step 4.
 
 1. **[BRIEF, SEQUENCE] Close previous build's test session.** Per-row read-back of pending TEST-LOG rows.
-2. **[SILENT] Remove legacy completed batches.** Under V99+, `/sovclose` deletes the build snapshot without writing back — completed batches are already absent from BACKLOG. This step handles pre-V99 legacy: any batch with `Status: shipped` (or batches without Status where every `Files:` entry is ticked). In folder mode: delete per-batch file + remove INDEX.md reference. Skip if no legacy shipped batches found.
-2b. **[BRIEF] Flag aging batches (folder mode only).** Batches predating the most recently completed batch.
+2. **[SILENT] Remove legacy completed batches.** Under V99+, `/sovclose` deletes the build snapshot without writing back — completed batches are already absent from BACKLOG. This step handles pre-V99 legacy: any batch with `Status: shipped` (or batches without Status where every `Files:` entry is ticked). Single-file: remove the `### Batch:` section. Legacy folder mode: delete per-batch file + remove index reference. Skip if no legacy shipped batches found.
+2b. **[BRIEF] Flag aging batches.** Batches predating the most recently completed batch (identified by numbering gaps).
 2c. **[BRIEF] Prune orphaned TEST-LOG rows.** Delete rows whose Component no longer exists in MANIFEST.md, plus `Superseded` rows.
 3. **[BRIEF, SEQUENCE] Five drift checks.** Direct-edit detection, UX↔build, MANIFEST↔codebase, MANIFEST↔UX (loose), TEST-LOG↔code-touch.
 4. **[BRIEF] Scan BACKLOG Open questions.** One-line summary per entry with `Surfaced` tag. Flag entries older than 5 build cycles as neglected. Empty/absent → note in one line. **Don't work through OQs here** — `/sovdeliberate` handles that. If 3+ OQs or any older than 5 cycles, nudge: "You have N open questions (oldest: <tag>) — consider `/sovdeliberate` before your next build."
@@ -149,7 +149,7 @@ When adding a `Serves UX.md:` line, verify every named entry exists in UX.md Fun
 2. **Red flags** — only if security-shaped scope. No empty section.
 3. **Build operations** — `Changes:` delimiter + bullets with `[Requested]`/`[Suggested]` labels. Leave `Inputs:`/`Files:`/`Tests:` for `/sovrecap`.
 
-Folder mode: allocate number by Glob scan, create per-batch file, add reference to INDEX.md. Single-file mode: inline `### Batch:` heading.
+Add inline `### Batch:` heading in the `## Build batches` section. Allocate batch number by scanning existing batch headings. Legacy folder mode: create per-batch file + add index reference.
 
 Surface scope-context in recap before writing to BACKLOG.
 
@@ -185,19 +185,19 @@ If BACKLOG contains `[PROPOSED EDIT PENDING]`/`[FOLD-IN PENDING]` blocks (pre-V4
 
 ## Deferred build-material aging
 
-Folder mode only. Scan `BACKLOG/` for `NNNN-*.md`; gaps in numbering = completed batches. Batches below the highest gap are aging. Surface one line each: "Batch NNNN predates completed MMMM — consider pairing or scheduling." Don't reorder automatically. No aging items → skip silently.
+Scan batch headings for numbering gaps (completed batches leave gaps). Batches below the highest gap are aging. Surface one line each: "Batch NNNN predates completed MMMM — consider pairing or scheduling." Don't reorder automatically. No aging items → skip silently.
 
 ## TEST-LOG row pruning
 
 Prune before drift checks. Bounds file growth and reduces check 5's workload.
 
 1. Read MANIFEST.md — collect all entry names.
-2. Walk TEST-LOG rows (in folder mode: across all per-session files in `test-log/`):
+2. Walk TEST-LOG rows (across all per-session files in `test-log/`):
    - `Superseded` status → delete.
    - Component matches MANIFEST entry (case-insensitive) → keep.
    - Cross-component descriptive phrase → keep (exempt).
    - Specific element not in MANIFEST → delete.
-3. In folder mode: if an entire per-session file is emptied by pruning, delete the file and remove its index line from the BACKLOG proxy's Test sessions section.
+3. If an entire per-session file is emptied by pruning, delete the file and remove its index line from BACKLOG.md's Test sessions section.
 4. Surface: "Pruned N rows — [row #s, components, reasons]." Nothing pruned: skip silently.
 
 Deleted rows recoverable via git. Rows for existing components stay regardless of age.
@@ -230,4 +230,4 @@ Universal-behaviour rules apply — push back, plain English, ask on ambiguity. 
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

@@ -13,6 +13,7 @@ Index format (newest first):
 
 ---
 
+- `v155-unblock-build-backlog-unification.md` — 2026-06-01 — Unblock build: BACKLOG unification + batch cleanup
 - `v154-merge-ideas-into-oqs.md` — 2026-05-31 — Merge Ideas into OQs + combine ideation/deliberation
 - `v153-oq-deliberation.md` — 2026-05-31 — OQ deliberation: batch 0147 skill-name decision resolved
 - `v152-rename-to-sovereign-implementer.md` — 2026-05-31 — Rename "no-code method" to "Sovereign Implementer" across codebase
@@ -153,4 +154,4 @@ Index format (newest first):
 - `v17-plugin-migration-architecture-decided.md` — 2026-05-11 — Plugin-migration architecture decided
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

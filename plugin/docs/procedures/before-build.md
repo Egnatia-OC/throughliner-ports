@@ -7,7 +7,7 @@ Follow this procedure during the *before-build* phase — never during planning 
 Read only what before-build uses:
 
 1. `CLAUDE.md` — path block and project-specific notes.
-2. `BACKLOG.md`/`BACKLOG/INDEX.md` — find and validate the top build batch. In folder mode, read the per-batch file.
+2. `BACKLOG.md` — find and validate the top build batch.
 3. `UX.md` — validate `Serves UX.md:` line.
 4. `MANIFEST.md` — context on existing elements.
 5. `${CLAUDE_PLUGIN_ROOT}/docs/DOC-STRUCTURE.md` → *Build batches*, *Files: sub-section*, *Tests: sub-section*.
@@ -22,8 +22,8 @@ Before anything else, check whether `_method/active-build.md` exists (resolve `_
 
 Before enumerating files:
 
-1. **Find top batch.** Read the BACKLOG proxy's `## Build batches` section. The first non-parked, non-cancelled reference line is the top batch. Read its per-batch file. If no batch exists or the section is empty — halt, route to planning.
-2. **Structure check.** The per-batch file must have a `Changes:` delimiter and a `Serves UX.md:` line. Missing either → halt, route to planning ("batch needs structural cleanup").
+1. **Find top batch.** Read BACKLOG.md's `## Build batches` section. The first non-parked `### Batch:` entry is the top batch. If no batch exists or the section is empty — halt, route to planning. Legacy folder mode: follow the first reference line to its per-batch file.
+2. **Structure check.** The batch must have a `Changes:` delimiter and a `Serves UX.md:` line. Missing either → halt, route to planning ("batch needs structural cleanup").
 3. **Serves line resolves.** Every `Serves UX.md:` entry must exist in UX.md Functionalities (case-insensitive). Missing → halt and route to planning; don't propose UX.md additions.
 
 You don't reorganise the queue. Planning owns BACKLOG structure. Reorganise authority here: verification-burden splits only (halt C).
@@ -46,7 +46,7 @@ After validation, scan BACKLOG for unresolved items that would force mid-build i
 
 1. **Enumerate Files:.** For each change-list bullet, identify files needing modification via Glob/Grep + MANIFEST. One-sentence summary per file.
 2. **Populate Inputs: (if needed).** Non-standard resources the batch needs — specs, research files, external references. Omit standard docs (UX, BACKLOG, MANIFEST, CLAUDE.md). Spec: `DOC-STRUCTURE.md` → *Inputs: line*.
-3. **Write Files: sub-section** into the batch's BACKLOG file (per-batch file in folder mode) after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
+3. **Write Files: sub-section** into the batch entry in BACKLOG.md after Changes: and Inputs:. Shape: `Files:` heading + `- [ ] \`<path>\` — <summary>` per file.
 4. **Write Tests: sub-section.** One entry per distinct observable behaviour. Each entry: `- <description> [<Type>] [<Verifier>]`. Types: `Look and click`, `Run and read`, `Trigger and observe`, `Generate and inspect`. Verifier: `Claude` (structural/factual) or `User` (judgement/taste/visual). Spec: `DOC-STRUCTURE.md` → *Tests: sub-section*. If no pre-specifiable tests (rare), omit.
 5. **Apply batch-sizing principle.** Long test list relative to change scope → propose split (halt C).
 
@@ -66,7 +66,7 @@ The "small enough to build and test in one session" rule means **one session's w
 
 **(B) Change list too vague.** Can't enumerate Files: confidently (e.g. "Improve onboarding" with no specifics). Halt, surface the ambiguity, ask user.
 
-**(C) Verification burden triggers split.** Surface the test list, propose a split, wait for okay. On okay: current batch keeps one coherent verification surface; rest moves to new batch(es) immediately below. New batches inherit scope-context and Serves line(s). In folder mode: create new per-batch file (allocate number by Glob scan), add reference to INDEX.md after current batch's line. Re-run work loop on new top batch.
+**(C) Verification burden triggers split.** Surface the test list, propose a split, wait for okay. On okay: current batch keeps one coherent verification surface; rest moves to new batch(es) immediately below. New batches inherit scope-context and Serves line(s). Add new `### Batch:` section(s) after the current batch in BACKLOG.md. Re-run work loop on new top batch.
 
 ## Change-list label preservation (V27)
 
@@ -80,11 +80,11 @@ After populating Files:/Tests:, scan the Open Questions section. If 3+ OQs exist
 
 After Files: and Tests: are populated, check whether the batch fits in one session. Claude can't see token count or context fullness — use conversation-visible proxy signals only.
 
-**Trigger condition:** Files: has **8+ entries** AND scope-context includes unresolved **Decisions to make this batch** entries. Either alone is manageable; together they predict extended deliberation plus high file-touch count — the combination that blows out sessions.
+**Trigger condition:** Files: has **8+ entries**. High file-touch count predicts sessions that risk running out of context.
 
 **Action:** Surface a warning in the recap. Advisory, not blocking:
 
-> "This batch has N files and open design questions — sessions with this profile risk running out of context. Consider splitting via halt C before starting, or plan to `/compact` between `/sovbuild` and `/sovclose`."
+> "This batch has N files — sessions with this profile risk running out of context. Consider splitting via halt C before starting, or plan to `/compact` between `/sovbuild` and `/sovclose`."
 
 If the user acknowledges and proceeds, don't repeat the warning.
 
@@ -112,4 +112,4 @@ Universal-behaviour rules apply. Push back, plain English, ask on ambiguity, eng
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

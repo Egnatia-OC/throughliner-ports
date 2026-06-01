@@ -23,10 +23,10 @@ Paths for each project doc, relative to the project root. Bare filenames elsewhe
 ```json
 {
   "UX.md": "_method/UX.md",
-  "BACKLOG.md": "_method/proxies/backlog.md",
+  "BACKLOG.md": "_method/BACKLOG.md",
   "BUILD-LOG.md": "_method/proxies/build-log.md",
   "MANIFEST.md": "_method/MANIFEST.md",
-  "TEST-LOG.md": "_method/proxies/backlog.md"
+  "TEST-LOG.md": "_method/BACKLOG.md"
 }
 ```
 
@@ -36,9 +36,9 @@ Fenced JSON so plugin hooks can parse it deterministically. Keys are logical nam
 
 Located at `_method/`. The underscore prefix keeps it visually separate from project files.
 
-- **BACKLOG/** — queued work. One file per batch.
+- **BACKLOG.md** — queued work, test session index, and open questions. Single file with inline batch entries.
 - **build-log/** — record of each session: what shipped, decisions made, surprises.
-- **test-log/** — per-session test files. Index in BACKLOG proxy.
+- **test-log/** — per-session test files. Index in BACKLOG.md's Test sessions section.
 - **proxies/** — compact indexes Claude reads first for context efficiency.
 - **planning/drafts/** — scratch space for ideas not yet ready for a specific doc.
 - **research/** — findings from research on external questions. Persists across sessions.
@@ -133,11 +133,11 @@ Run `python scripts/bump_version.py <old> <new> --session-tag v<N>` for substant
 
 ## Current state (update at every session close)
 
-**Current version:** v154 (session tag). Method version **V109**. Plugin version **0.109.0**.
+**Current version:** v155 (session tag). Method version **V110**. Plugin version **0.110.0**.
 
 **What's next:** Two implementation batches: 0152 (host/target safeguards), 0153 (planning procedure constraints). Two E2E test batches: 0130 (/sovsetup case 1 retest), 0131 (build lifecycle retest). One parked graduation: 0151 (retire protocol files). Five open OQs.
 
-Build-cycle position lives in `_method/proxies/backlog.md` (index) and `_method/BACKLOG/` (per-batch files).
+Build-cycle position lives in `_method/BACKLOG.md`.
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

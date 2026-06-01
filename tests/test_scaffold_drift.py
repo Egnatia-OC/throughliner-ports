@@ -36,14 +36,13 @@ EXPECTED_FILES = frozenset({
     "_method/proxies/ux.md",
     "_method/proxies/manifest.md",
     "_method/proxies/research.md",
-    "_method/proxies/backlog.md",
     "_method/proxies/build-log.md",
+    "_method/BACKLOG.md",
 })
 
 # Every directory scaffold.py write creates (including implicit parents).
 EXPECTED_DIRS = frozenset({
     "_method",
-    "_method/BACKLOG",
     "_method/build-log",
     "_method/test-log",
     "_method/planning",

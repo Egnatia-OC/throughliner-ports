@@ -67,7 +67,6 @@ METHOD_DIR_FILENAMES = (
 
 # Directory names that conflict if they already exist inside _method/.
 METHOD_DIR_DIRNAMES = (
-    "BACKLOG",
     "build-log",
     "test-log",
     "proxies",
@@ -78,19 +77,18 @@ METHOD_DIR = "_method"
 
 # Mapping: template filename (in plugin/templates/) -> destination filename.
 # CLAUDE.md goes at project root; others go inside _method/.
-# BACKLOG and build-log are handled separately (folder scaffolds).
 TEMPLATE_TO_ROOT = (
     ("CLAUDE-TEMPLATE.md", "CLAUDE.md"),
 )
 TEMPLATE_TO_METHOD_DIR = (
     ("UX-TEMPLATE.md", "UX.md"),
     ("MANIFEST-TEMPLATE.md", "MANIFEST.md"),
+    ("BACKLOG-TEMPLATE.md", "BACKLOG.md"),
 )
 
 # Proxy templates: .proxies/<name>.md → _method/proxies/<name>.md.
-# backlog.md and build-log.md serve as indexes for their respective folders.
 PROXY_TEMPLATES = ("ux.md", "manifest.md", "research.md",
-                   "backlog.md", "build-log.md")
+                   "build-log.md")
 
 # Human-readable case name for each case number. Mirrors V29.md's
 # *Outputs* → */sovsetup five-case branching* wording for stability in the
@@ -247,9 +245,6 @@ def cmd_write(target_dir: Path) -> int:
         (method_dir / dest_name).write_text(content, encoding="utf-8")
         written.append(f"{METHOD_DIR}/{dest_name}")
 
-    backlog_dir = method_dir / "BACKLOG"
-    backlog_dir.mkdir(exist_ok=True)
-
     build_log_dir = method_dir / "build-log"
     build_log_dir.mkdir(exist_ok=True)
 
@@ -279,7 +274,6 @@ def cmd_write(target_dir: Path) -> int:
         "files": written,
         "directories_created": [
             f"{METHOD_DIR}/",
-            f"{METHOD_DIR}/BACKLOG/",
             f"{METHOD_DIR}/build-log/",
             f"{METHOD_DIR}/test-log/",
             f"{METHOD_DIR}/planning/drafts/",

@@ -53,11 +53,9 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 
 - **Batch status.** Two active values under V99+: `queued` (default — absent = queued) and `parked` (paused by planning). Legacy `active` and `shipped` still recognized by the parser but no longer written. Build-snapshot architecture uses `_method/active-build.md` existence instead of `active`; the build-log entry replaces `shipped` as the completion record — `/sovclose` deletes the snapshot without writing the batch back. State machine: `queued → [snapshotted] → deleted (build-log is the record)`, `parked ↔ queued` via planning. Parser and session-start skip `shipped` (legacy) and `parked`. Spec: `DOC-STRUCTURE.md` → *Status: line*.
 
-- **Scope-context sections.** Five (optionally six) sections framing a build batch: Goal, Outputs, Success criteria, Decisions, Dependencies, Red flags. First three always present. Full spec: `DOC-STRUCTURE.md`.
+- **Scope-context sections.** Four (optionally five) sections framing a build batch: Goal, Outputs, Success criteria, Dependencies, Red flags. First three always present. Full spec: `DOC-STRUCTURE.md`.
 
 - **Changes: delimiter.** Separates scope-context from change list in a build batch. Required for new batches; parser falls back for legacy.
-
-- **Decisions to make this batch.** Unresolved scope questions within a batch. Distinct from Open questions (non-blocking) and planning batches (blocking with `Blocks:` line).
 
 - **Dependencies (batch).** What the batch needs from outside itself. Peer to `Blocks:` — Dependencies points backward, Blocks points forward.
 
@@ -142,4 +140,4 @@ Method-specific terms used across the plugin. Cross-references point here. Froze
 - **Pre-build blocker gate.** Check during `/sovrecap`: scan top batch for unresolved items that would force mid-build improvisation. If found, halt and nudge `/sovdeliberate` or `/sovplan`. Distinct from pre-build sizing (session-fit risk, not scope completeness). Full rule: `before-build.md` → *Blocker gate*.
 
 ---
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*

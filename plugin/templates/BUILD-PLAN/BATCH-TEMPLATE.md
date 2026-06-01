@@ -10,8 +10,6 @@ Full spec: DOC-STRUCTURE.md → Build batches. -->
 
 **Success criteria.** [Observable, testable conditions for success.]
 
-**Decisions to make this batch.** [Unresolved scope questions. Omit if resolved.]
-
 **Dependencies.** [What this batch needs from outside. Omit if none.]
 
 **Red flags.** [Security/privacy/data-integrity concerns. Only when detected.]

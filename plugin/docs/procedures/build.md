@@ -14,7 +14,7 @@ Both paths quoted (Windows spaces). Parser emits JSON:
 
     {
       "batch_heading": "<name>",
-      "batch_file": "<filename — folder mode only>",
+      "batch_file": "<filename — legacy folder mode only>",
       "change_list": ["<narrative bullet>", ...],
       "files": [
         {"path": "...", "summary": "...", "ticked": false, "prerequisite": false},
@@ -30,11 +30,11 @@ If the parser returns a batch but `files` is empty, the batch has no Files: sub-
 
 Unticked files (`ticked: false`) are your work list. Already-ticked files: skip.
 
-**Two formats.** `batch_file` present → folder mode (ticks in per-batch file). Absent → single-file `BACKLOG.md`. Resolve from path block.
+**Default format:** single-file `BACKLOG.md` (no `batch_file` in output). Legacy folder mode: `batch_file` present → ticks in per-batch file. Resolve from path block.
 
 ## First action — snapshot the batch
 
-**Extract batch to `_method/active-build.md`.** Copy full content (heading, scope context, build operations) into `_method/active-build.md`. Remove from BACKLOG. Three formats: single-file → delete the batch section; folder-with-INDEX → delete per-batch file + its INDEX.md reference line; proxy-as-index (V73+) → delete per-batch file from `_method/BACKLOG/` + its reference line in `_method/proxies/backlog.md`.
+**Extract batch to `_method/active-build.md`.** Copy full content (heading, scope context, build operations) into `_method/active-build.md`. Remove from BACKLOG. Single-file (default): delete the `### Batch:` section from BACKLOG.md. Legacy folder mode: delete per-batch file + its index reference line.
 
 Tell the user: "I've snapshotted batch NNNN — working from the snapshot now. BACKLOG is unlocked for other sessions."
 
@@ -87,7 +87,7 @@ If verification burden is much higher than pre-build estimate:
 
 1. **Halt.** Stop editing.
 2. **Surface.** What changed in your estimate, propose a split of remaining unticked files.
-3. **On okay**, reorganise. Ticked files stay; unticked move to new batch(es) below. New batches inherit scope-context and Serves line(s). In folder mode: create new per-batch file + reference line in the project's BACKLOG index (INDEX.md or `_method/proxies/backlog.md`, whichever the project uses).
+3. **On okay**, reorganise. Ticked files stay; unticked move to new batch(es) below. New batches inherit scope-context and Serves line(s). Add new `### Batch:` sections after the current batch in BACKLOG.md. Legacy folder mode: create new per-batch file + index reference line.
 4. **Label `[Re-batch, not in plan]`** in recap.
 
 **Snapshot reflects the split.** After the re-batch, `_method/active-build.md` contains only the retained files (already ticked plus any that remain in the reduced batch). `/sovclose` runs on this reduced snapshot normally — its scope is whatever remains at completion.
@@ -116,4 +116,4 @@ Surface inline as you notice them:
 
 ---
 
-*Sovereign Implementer — Version 109.*
+*Sovereign Implementer — Version 110.*
