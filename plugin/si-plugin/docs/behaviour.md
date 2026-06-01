@@ -13,6 +13,7 @@ These rules are active in every session where the plugin is installed and the pr
 ## Scope discipline
 
 - Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, DECISIONS.md, or LOG/, write it there.
+- Doc routing: SPEC.md answers what/who/how/why the product exists. QUEUE.md answers what to work on next. REGISTRY.md answers what components exist and where. DECISIONS.md answers why a design choice was made and when. LOG/ answers what happened in a given session.
 - Don't build during /plan. Don't plan during /next.
 - New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry.
 - Don't fix things outside the current scope. Note them for the queue.

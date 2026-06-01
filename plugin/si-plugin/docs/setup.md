@@ -29,6 +29,15 @@ Create these files (empty structure, content comes from the interview):
 ## How it works
 [filled by Q2]
 
+## Project docs
+
+Five project docs structure each project:
+- `SPEC.md` — product truth. What the app is, who it's for, how it works.
+- `QUEUE.md` — work batches and captured ideas.
+- `REGISTRY.md` — components list. What exists, where it lives.
+- `DECISIONS.md` — design decisions mapped to the commits where they were made.
+- `LOG/` — per-session records of what was built, tested, and decided.
+
 ## Principles
 [filled by Q3]
 ```

@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**DECISIONS.md full integration**
-Files: CLAUDE.md, plugin/si-plugin/templates/CLAUDE-TEMPLATE.md, plugin/si-plugin/docs/setup.md, plugin/si-plugin/docs/behaviour.md
-- [build] Add DECISIONS.md to all doc lists — host CLAUDE.md (Architecture "4 project docs" → 5, Where things live tree, Method docs list), target CLAUDE-TEMPLATE.md (Project docs list), target setup.md (SPEC.md scaffold needs a project docs section). Host SPEC.md already done.
-- [build] Add doc-routing rule to behaviour.md — list what each doc answers (DECISIONS.md answers X, SPEC.md answers Y, etc.) so Claude can match questions to docs without classifying them first.
-
 **Tighten host/target language in CLAUDE.md**
 Files: CLAUDE.md
 - [build] Replace "installed plugin" / "source code" with clearer host/target definitions. Preserve DECISIONS.md additions from the previous batch.
