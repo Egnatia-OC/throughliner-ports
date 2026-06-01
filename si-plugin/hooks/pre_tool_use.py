@@ -4,7 +4,7 @@ PreToolUse hook — enforces three rules:
 
 1. SPEC.md is read-only during active builds.
 2. During a build, only files listed in _build.md are editable
-   (plus method docs: QUEUE.md, REGISTRY.md, LOG/).
+   (plus method docs: QUEUE.md, REGISTRY.md, LOG/, _build.md).
 3. Git safety: block git reset --hard and git push --force.
 
 For Edit/Write/MultiEdit: checks rules 1 and 2.
@@ -72,11 +72,10 @@ def _normalise(path: str) -> str:
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """Check if a path is a method doc (QUEUE.md, REGISTRY.md, LOG/)."""
+    """Check if a path is a method doc (QUEUE.md, REGISTRY.md, LOG/, _build.md)."""
     norm = _normalise(filepath)
-    cwd_norm = _normalise(cwd)
 
-    for doc in ("QUEUE.md", "REGISTRY.md"):
+    for doc in ("QUEUE.md", "REGISTRY.md", "_build.md"):
         if norm == _normalise(os.path.join(cwd, doc)):
             return True
 
