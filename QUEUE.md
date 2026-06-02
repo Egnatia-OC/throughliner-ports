@@ -4,30 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Remove DECISIONS.md, restructure LOG to index + log**
-Files:
-- `plugin/si-plugin/docs/done.md`
-- `plugin/si-plugin/docs/setup.md`
-- `plugin/si-plugin/docs/behaviour.md`
-- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
-- `plugin/si-plugin/templates/faq-template.md`
-- `plugin/si-plugin/templates/faq-index-template.md`
-- `SPEC.md`
-- `CLAUDE.md`
-- `DECISIONS.md`
-- `LOG/`
-- [build] Rewrite done.md LOG steps: append entries to LOG/log.md, update LOG/index.md with one-line summary + hash, remove all DECISIONS.md writing and hash backfill for it
-- [build] Update setup.md scaffolding: remove DECISIONS.md, scaffold LOG/index.md and LOG/log.md instead of empty LOG/
-- [build] Remove DECISIONS.md rules from behaviour.md (prior-decision check, design-intent lookup) — replace with "check LOG/index.md for prior decisions"
-- [build] Update CLAUDE-TEMPLATE.md: remove DECISIONS.md from project docs list, update LOG description
-- [build] Update SPEC.md: remove DECISIONS.md from project docs list
-- [build] Update CLAUDE.md: remove DECISIONS.md from project structure and working conventions
-- [build] Update FAQ templates: remove DECISIONS.md Q&A, update LOG Q&A to reflect new structure
-- [build] Delete DECISIONS.md from this project
-- [build] Migrate existing LOG entries: merge LOG/2026-06-01.md and LOG/2026-06-02.md into LOG/log.md, create LOG/index.md from existing entries, delete old per-date files
-- [test] Grep all plugin docs for "DECISIONS" and confirm zero references remain
-- [test] Verify LOG/index.md and LOG/log.md structure matches the new done.md instructions
-
 **Drop file lists from batches**
 Files:
 - `plugin/si-plugin/docs/plan.md`
@@ -59,8 +35,8 @@ Files:
 - `plugin/si-plugin/docs/next.md`
 - `plugin/si-plugin/docs/done.md`
 - [build] Clarify in next.md that REGISTRY.md is not in build scope — /done Step 1.5 handles all registry updates after the build
-- [build] Clean up done.md staging list (Step 2.5) to explain why QUEUE.md is included: /next already modified it, not /done
-- [build] Add cross-references between /next Step 2 (batch moves to _build.md) and /done Step 2.4 (deletes _build.md) so the batch lifecycle is traceable across both docs
+- [build] Clean up done.md staging list (Step 2.4) to explain why QUEUE.md is included: /next already modified it, not /done
+- [build] Add cross-references between /next Step 2 (batch moves to _build.md) and /done Step 2.3 (deletes _build.md) so the batch lifecycle is traceable across both docs
 - [test] Read next.md and done.md end-to-end and confirm the handoff between them is unambiguous
 
 **Procedure doc cleanup sweep**

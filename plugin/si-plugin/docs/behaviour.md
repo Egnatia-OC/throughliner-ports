@@ -30,8 +30,8 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 
 ## Scope discipline
 
-- Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, DECISIONS.md, or LOG/, write it there.
-- Doc routing: SPEC.md answers what/who/how/why the product exists. QUEUE.md answers what to work on next. REGISTRY.md answers what components exist and where. DECISIONS.md answers why a design choice was made and when. LOG/ answers what happened in a given session.
+- Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, or LOG/, write it there.
+- Doc routing: SPEC.md answers what/who/how/why the product exists. QUEUE.md answers what to work on next. REGISTRY.md answers what components exist and where. LOG/ answers what happened in a given session.
 - Planning takes place in /plan, and building takes place in build. Don't build during /plan. Don't plan during /next.
 - New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry.
 - Don't fix things outside the current scope. Note them for the queue.
@@ -46,10 +46,10 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 - Never `git reset --hard`.
 - Secret scanning: check for API keys, tokens, or credentials before committing.
 
-## Decisions
+## Prior decisions
 
-- Before raising a design question, check DECISIONS.md. If it's already been decided, state the prior decision rather than re-opening it. If the user revisits a prior decision, flag that it was decided before and in which commit — they may have good reason, but they should know.
-- When asked "why does the app do X?" or when inferring rationale from code, consult DECISIONS.md first. It's the first port of call for design intent — code shows what, DECISIONS.md shows why.
+- Before raising a design question, check LOG/index.md for prior decisions. If it's already been decided, state the prior decision rather than re-opening it. If the user revisits a prior decision, flag that it was decided before and in which commit — they may have good reason, but they should know.
+- When asked "why does the app do X?" or when inferring rationale from code, check LOG/ first. LOG entries record what was decided and why — code shows what, LOG shows why.
 
 ## Context awareness
 

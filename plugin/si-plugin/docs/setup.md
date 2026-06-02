@@ -31,11 +31,10 @@ Create these files (empty structure, content comes from the interview):
 
 ## Project docs
 
-Five project docs structure each project:
+Four project docs structure each project:
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches and captured ideas.
 - `REGISTRY.md` — components list. What exists, where it lives.
-- `DECISIONS.md` — design decisions mapped to the commits where they were made.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 ## Principles
@@ -70,16 +69,21 @@ Components that exist in this project. Updated after each build.
 [empty until first build completes]
 ```
 
-**DECISIONS.md:**
+**LOG/ folder:** Create the directory with two files:
+
+**LOG/index.md:**
 ```markdown
-# DECISIONS
+# LOG Index
 
-Design decisions made during this project. Each entry maps a decision to the commit where it was made.
-
-Format: **[decision name]** — [commit hash] — [what was decided and why]
+One-line summaries of each session, linked to the full entry by commit hash.
 ```
 
-**LOG/ folder:** Create the directory. It stays empty until the first /done.
+**LOG/log.md:**
+```markdown
+# LOG
+
+Full session entries, appended chronologically. Each entry is written by /done.
+```
 
 **FAQ/ folder:** Create the directory with two files scaffolded from templates:
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`

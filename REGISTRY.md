@@ -18,4 +18,6 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
 - `plugin/si-plugin/templates/faq-template.md` — FAQ content template (13 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
-- `reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
+- `resources/reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
+- `LOG/index.md` — one-line summaries of each session with commit hashes
+- `LOG/log.md` — full session entries, appended chronologically by /done

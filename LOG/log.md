@@ -1,4 +1,67 @@
-## Session — 1
+# LOG
+
+Full session entries, appended chronologically. Each entry is written by /done.
+
+## Session 1 — Validated prose-only guardrail system
+
+**Built:** Validated prose-only guardrail system (session_start → behaviour.md loading, setup → CLAUDE-TEMPLATE.md scaffolding, rule coverage).
+
+**Files touched:**
+- si-plugin/hooks/session_start.py (read-only)
+- si-plugin/docs/behaviour.md (read-only)
+- si-plugin/templates/CLAUDE-TEMPLATE.md (read-only)
+- si-plugin/docs/setup.md (read-only)
+- si-plugin/skills/setup/SKILL.md (read-only)
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Decisions:** _build.md must be whitelisted as a method doc in pre_tool_use.py — currently blocked, creating a catch-22 where the hook prevents Claude from tracking build progress and prevents fixing the bug during an active build.
+
+**Deferred:** _build.md whitelist bugfix queued.
+
+## Session 2 — Fixed _build.md whitelist bug
+
+**Built:** Fixed _build.md whitelist bug in pre_tool_use.py — hook now recognises _build.md as a method doc, unblocking build progress tracking.
+
+**Files touched:**
+- si-plugin/hooks/pre_tool_use.py (edited)
+
+**Tests:** 3 passed, 0 failed, 0 skipped
+
+**Decisions:** Self-listed _build.md in the build's own file list as a one-time workaround so progress could be tracked despite the bug being the thing we were fixing.
+
+**Deferred:** None
+
+## Session 3 — Added batch-sizing guidance to plan.md
+
+**Built:** Added batch-sizing guidance to plan.md — specificity gate (name concrete outputs) and verification-burden gate (>5 items = split or sharpen).
+
+**Files touched:**
+- si-plugin/docs/plan.md (edited)
+
+**Tests:** 3 passed, 0 failed, 0 skipped
+
+**Decisions:** Placed both gates in Step 6 (Queue editing) as rules alongside the existing entry-format rule, rather than as a separate section.
+
+**Deferred:** None
+
+## Session 4 — Queue restructure
+
+**Built:** Queue restructure — updated all 4 target procedure docs to use batch/ideas queue format instead of loose entries.
+
+**Files touched:**
+- si-plugin/docs/plan.md (edited)
+- si-plugin/docs/next.md (edited)
+- si-plugin/docs/done.md (edited)
+- si-plugin/docs/setup.md (edited)
+
+**Tests:** 6 passed (Claude inspection), 0 failed, 3 deferred (E2E — requires plugin reinstall)
+
+**Decisions:** None
+
+**Routed to Ideas:** CLAUDE.md management as explicit plugin concern (user-raised mid-build), 3 E2E tests deferred to queue
+
+## Session 5 — Added three missing behaviour rules
 
 **Built:** Added three missing behaviour rules to behaviour.md (SPEC.md read-only, one-build-at-a-time, between-skill compact nudge)
 
@@ -11,7 +74,7 @@
 
 **Deferred:** None
 
-## Session — 2
+## Session 6 — Made /done stage-agnostic
 
 **Built:** Made /done stage-agnostic — detects build vs plan mode automatically, runs full close-out after /next and lighter close-out after /plan. Added close-out step to /plan directing to /done.
 
@@ -282,3 +345,26 @@
 plan.md was rewritten from scratch because the original was too long, unreadable, had principles in the wrong order, repeated itself, and buried ground rules at the bottom. The routing step ("Determine what the user wants") was removed because it caused Claude to dump a full queue summary when Captures was empty — batches already went through /plan to get there, so summarising them serves no purpose. Compression was removed because it was a leftover from the old plugin shoved in as an afterthought; it shouldn't come back until the plugin is working much better.
 
 5 new items added to Captures for future processing: remove "design decisions" as a separate category (reasons are being lost), sizing gates need rethinking, rename "questions" to "captures" across docs, what /plan should do when Captures is empty, and Claude's dependency-management ownership model. 2 items were added then removed (summary format ideas, superseded by the broader question about whether the summary should exist at all).
+
+## 77c1557 — Remove DECISIONS.md, restructure LOG to index + log
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md
+- plugin/si-plugin/docs/setup.md
+- plugin/si-plugin/docs/behaviour.md
+- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
+- plugin/si-plugin/templates/faq-template.md
+- plugin/si-plugin/templates/faq-index-template.md
+- SPEC.md
+- CLAUDE.md
+- DECISIONS.md (deleted)
+- LOG/index.md (created)
+- LOG/log.md (created)
+- LOG/2026-06-01.md (deleted)
+- LOG/2026-06-02.md (deleted)
+
+**Tests:** 9 passed, 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** None

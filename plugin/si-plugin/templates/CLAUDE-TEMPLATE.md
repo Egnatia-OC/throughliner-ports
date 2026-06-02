@@ -9,7 +9,6 @@ This project uses the Sovereign Implementer method.
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
 - **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
 - **REGISTRY.md** — components that exist. Updated after each build.
-- **DECISIONS.md** — design decisions mapped to the commits where they were made.
 - **LOG/** — per-session records of what was built, tested, and decided.
 - **FAQ/** — quick-reference answers about how the workflow works. Index loaded at session start; full answers in FAQ/faq.md.
 

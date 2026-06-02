@@ -18,11 +18,10 @@ Four skills drive the workflow:
 - `/next` — pick the top queue entry and execute it.
 - `/done` — close the build, record what happened, commit.
 
-Five project docs structure each project:
+Four project docs structure each project:
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches and captured ideas.
 - `REGISTRY.md` — components list. What exists, where it lives.
-- `DECISIONS.md` — design decisions mapped to the commits where they were made.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 Two hooks enforce discipline mechanically:

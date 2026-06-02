@@ -18,12 +18,11 @@ Host and target are the same plugin at different stages. Ambiguous references to
 
 ## Architecture
 
-**5 project docs** (created by `/setup` in consumer projects):
+**4 project docs** (created by `/setup` in consumer projects):
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches. Flat inline entries, type-marked (build/test/idea/question).
 - `REGISTRY.md` — components list. What exists, where it lives.
-- `DECISIONS.md` — design decisions mapped to the commits where they were made.
-- `LOG/` — per-session files. What happened, what shipped, what broke.
+- `LOG/` — per-session records. `LOG/index.md` for one-line summaries, `LOG/log.md` for full entries.
 
 **4 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
@@ -53,8 +52,7 @@ No code method/
   SPEC.md                — this project's spec (once /setup has run)
   QUEUE.md               — this project's work queue
   REGISTRY.md            — this project's component registry
-  DECISIONS.md           — this project's design decisions
-  LOG/                   — this project's session logs
+  LOG/                   — this project's session logs (index.md + log.md)
 ```
 
 ## Working conventions
@@ -94,8 +92,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
 - **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
 - **REGISTRY.md** — components list. What exists, where it lives.
-- **DECISIONS.md** — design decisions mapped to the commits where they were made.
-- **LOG/** — per-session records of what was built, tested, and decided.
+- **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries, `LOG/log.md` for full entries.
 
 ## Workflow
 

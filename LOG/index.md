@@ -1,0 +1,32 @@
+# LOG Index
+
+One-line summaries of each session, linked to the full entry by commit hash.
+
+- (pre-hash) Session 1 — Validated prose-only guardrail system
+- (pre-hash) Session 2 — Fixed _build.md whitelist bug in pre_tool_use.py
+- (pre-hash) Session 3 — Added batch-sizing guidance to plan.md
+- (pre-hash) Session 4 — Queue restructure to batch/ideas format
+- (pre-hash) Session 5 — Added three missing behaviour rules to behaviour.md
+- (pre-hash) Session 6 — Made /done stage-agnostic (build vs plan mode)
+- a06d140 — Commit-based logging and DECISIONS.md
+- 7867b1c — /plan session: route Ideas, form batches
+- f8146b2 — DECISIONS.md full integration
+- 049cf69 — Tighten host/target language in CLAUDE.md
+- 448efdb — /plan session: response-shape tags, Captures processing, drift check removal
+- 433beb9 — Fix /plan Captures processing: discussion step and type-agnostic disposition
+- e954603 — Rename Ideas to Captures and remove drift check
+- aaddae4 — /plan session: route reader-test findings, define pipeline threshold
+- 0a82fd3 — /plan session: design reader-test workflow
+- ab36e39 — CLAUDE.md template ownership markers
+- 09573ac — /plan session: route Captures, add batches, LOG decision
+- e935cfb — /plan session: LOG and planning process observations
+- 694fbc9 — LOG test-to-decision linkage
+- 6a3b843 — Session-start message tone
+- 2513f2e — Reader-test workflow: build, run, and route findings
+- 687d31f — Test entry lifecycle: define mechanics and close gaps
+- ac78fc9 — Restore response-shape tags and annotate procedure docs
+- e022197 — Response-shape tag rules: defaults, precedence, hierarchy, BRIEF carve-out
+- 474fd41 — FAQ reference: create templates and wire into /setup
+- a08b65b — /plan session: remove DECISIONS.md, drop file lists, process Captures
+- f11be10 — /plan session: rewrite plan.md, add Captures for plan behaviour
+- 77c1557 — Remove DECISIONS.md, restructure LOG to index + log

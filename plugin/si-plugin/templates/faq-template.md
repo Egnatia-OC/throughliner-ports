@@ -38,10 +38,6 @@ Not necessarily. An empty queue just means there's no planned work right now. It
 
 REGISTRY.md is a list of every component in your project — what files exist and what each one does. Claude updates it after every build (during /done). It helps Claude find things quickly without searching through code. You don't need to maintain it yourself.
 
-## What is DECISIONS.md for?
-
-DECISIONS.md records design decisions — the "why" behind choices made during the project. Each entry names the decision, links to the commit where it was made, and explains the reasoning. When a question comes up that was already decided, Claude checks here first so you don't re-debate settled issues.
-
 ## What happens if Claude needs to edit a file that isn't in the build scope?
 
 Claude will stop and ask. The build scope (the file list in _build.md) is a contract — Claude won't touch files outside it without your approval. If it discovers a prerequisite, it will say "I need to also edit [file] because [reason]. Add to scope?" and wait for your answer.
@@ -52,4 +48,4 @@ Parked items are ideas or questions you've decided not to work on right now, but
 
 ## How do I know what was done in a previous session?
 
-Check the LOG/ folder. Each commit gets a log entry recording what was built or planned, which files were touched, test results, any decisions made, and anything routed to Captures. If you want to know why a design choice was made, check DECISIONS.md — it links decisions to the commits where they happened.
+Check the LOG/ folder. `LOG/index.md` has one-line summaries of every session with commit hashes. `LOG/log.md` has the full entries — what was built or planned, which files were touched, test results, any decisions made, and anything routed to Captures. If you want to know why a design choice was made, search the log entries — they record the reasoning behind each decision.
