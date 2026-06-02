@@ -421,3 +421,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** /done Phase 3 should be single recommendation; /next presentation should group by Build/Test headers not show type markers; /next prompt should be "Ready?" not a menu; /done test generation should scope to code changes not all file changes
+
+## 409b0b7 — /plan session: process Captures, create batches, file sizing research
+
+**Queue changes:**
+- Created 5 batches: Dependency ownership (absorbed 2 Captures), LOG reasoning, Rename "open questions" to "captures", Tighten /plan Captures step 2, Scope /done test generation to code changes
+- Processed 9 Captures items: 5 promoted (2 absorbed into dependency batch), 2 dropped (already fixed in target), 1 parked with research
+- 1 new Captures item added: planning-time test entry inflation
+- Pushed v1.3.0 repackage before planning
+
+**Decisions:** None
+
+**Captures routed:** All 9 processed — 5 promoted, 2 dropped, 1 parked, 1 new item added

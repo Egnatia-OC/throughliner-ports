@@ -34,3 +34,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - a24e5ad — Captures flow: thresholds, drop reasons, placement, empty state
 - f6d4a78 — Scope and staging clarity: cross-reference /next and /done
 - 50a0d73 — Procedure doc cleanup sweep
+- 409b0b7 — /plan session: process Captures, create batches, file sizing research

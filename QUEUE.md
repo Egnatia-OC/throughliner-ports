@@ -4,6 +4,28 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Dependency ownership: state the principle and audit for violations**
+- [build] Add dependency-ownership rule to behaviour.md — Claude owns sequencing, batch ordering, and dependency management; the user owns what enters the queue and whether to proceed
+- [build] Audit procedure docs for places that defer sequencing decisions to the user (some already captured individually — fold those in during the build)
+- [test] Verify no procedure step invites the user to override Claude's ordering
+
+**LOG reasoning: replace Decisions field with mandatory WHY**
+- [build] Rework the LOG entry template in done.md — replace the separate "Decisions" field with a structure that always captures why things were built the way they were (user-given reasons, Claude-given reasons the user approved, planning-time rationale)
+- [build] Update existing LOG template references in done.md (both build and plan close-out sections)
+- [test] Review recent LOG entries to confirm the new template would have captured reasoning that the old one missed
+
+**Rename "open questions" to "captures" across plugin docs**
+- [build] Search all target procedure docs and templates for "open questions" and "questions" references that should say "captures" — rename where applicable
+- [test] Grep target docs for any remaining "open question" references
+
+**Tighten /plan Captures processing step 2**
+- [build] Rewrite plan.md step 2 of the Captures loop — require engaging with substance and recommending in the same turn as presentation, and require presenting all four disposition options (promote / question first / park / drop) with the recommendation marked
+- [test] Verify step 2 text explicitly requires both engagement and full option set
+
+**Scope /done test generation to code changes**
+- [build] Add scoping rule to done.md Step 1.2 — generate post-build tests only for code/app file changes, not for procedure doc or template edits where the batch's own [test] entries already cover verification
+- [test] Verify Step 1.2 text distinguishes code from doc changes
+
 **E2E: consumer project smoke tests**
 - [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, type-marked entries)
 - [test] Run /next in consumer project, verify it picks up a batch and builds all items
@@ -11,18 +33,12 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 ### Parked
 
+- [idea] Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
+
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [question] Claude asked "reorder?" at end of summary, but reordering is Claude's responsibility — need full enquiry into when and where the plugin empowers Claude to own dependency management (per SPEC: "helps the user harness Claude's skills in dependency management")
-- [build] Remove "design decisions" as a separate category everywhere — everything is a decision. The LOG should always record WHY things were implemented (reasons given by user or by Claude and approved). Reasons made explicit at planning time must also be preserved. The current framing causes important information to be lost and never recorded.
-- [idea] Sizing gates in plan.md need future planning work — current rules may not be right
-- [build] Find all instances of "open questions" and "questions" across plugin docs and rename to "captures" where applicable — "open questions" is a retired name for captures
-- [question] Why is /plan showing a full summary of the batches queue at all? Everything in batches already went through /plan discussion to get there. The summary appeared when Captures was empty — is the procedure defaulting to "present queue state" when there's nothing to process? What should /plan actually do when Captures is empty?
-- [build] /done Phase 3 handoff should not present options — Claude should evaluate the queue state (do any Captures block the next batch?) and make a single recommendation, not ask the user to figure it out
-- [build] /next pre-flight presentation (Step 1.4) should not show raw type markers ([build], [test]) — group items under Build and Test headers instead. Type markers are for Claude's processing, not user-facing display.
-- [build] /next Step 1.4 prompt should not offer "adjust scope / pick a different entry" — Claude owns dependency management and batch ordering. The presentation is the recommendation; the prompt should just be "Ready?" not a menu that invites the user to second-guess the sequencing.
-- [build] /done Step 1.2 test generation is a blanket rule that doesn't distinguish code from docs. For procedure doc edits, the batch's own [test] entry already verifies correctness — /done tests just produce trivial "does line exist" checks. Step 1.2 should scope test generation to code/app changes, not all file changes.
+- [build] /plan batch format implies every batch needs a [test] entry — Claude pattern-matches and generates arbitrary tests even when the build entries are self-verifying. plan.md should say test entries are only added when there's a behaviour to verify that isn't self-evident from the build entries. Related to but distinct from the /done test-generation scoping fix (that's about post-build tests; this is about planning-time test entries).
 
 ### Parked
