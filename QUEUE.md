@@ -4,6 +4,13 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Reader-test workflow: build, run, and route findings**
+Files:
+- `reader-test-workflow.js`
+- [build] Write the Workflow script. Fake project: bookshelf tracker (personal, local JSON storage, flat list, mid-project). Four simulation phases — /plan (3 Captures to process), /next (top batch execution), /done (build close-out), questions panel (5 user questions). Each agent gets docs as plugin delivers: CLAUDE-TEMPLATE.md + behaviour.md + session_start hook output + the relevant procedure doc. Verification agent per phase scores against actual procedures. Synthesis agent splits findings into FAQ-relevant (bundled for one future batch) and other (routed individually/grouped to Captures).
+- [build] Run the workflow and collect results.
+- [build] Route findings: FAQ-relevant findings go to Captures as one grouped item for future batch promotion. Other findings (doc gaps, procedure bugs, etc.) go to Captures individually or grouped by theme.
+
 **Session-start message tone**
 Files:
 - `plugin/si-plugin/hooks/session_start.py`
