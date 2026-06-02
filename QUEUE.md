@@ -4,6 +4,34 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Restore response-shape tags and annotate procedure docs**
+Files:
+- `plugin/si-plugin/docs/behaviour.md`
+- `plugin/si-plugin/docs/setup.md`
+- `plugin/si-plugin/docs/plan.md`
+- `plugin/si-plugin/docs/next.md`
+- `plugin/si-plugin/docs/done.md`
+- [build] Add response-shape tag definitions to behaviour.md ([SILENT], [BRIEF], [DISCUSS], [PROMPT], [SEQUENCE]) with composition rule. Remove the blanket "one step at a time / all at once" rule — tags replace it.
+- [build] Annotate setup.md steps: interview → [SEQUENCE], results + handoff → [BRIEF, PROMPT]
+- [build] Annotate plan.md steps: ideas processing → [SEQUENCE, PROMPT], questions flow → [DISCUSS, PROMPT], close out → [BRIEF, PROMPT]
+- [build] Annotate next.md steps: batch presentation → [BRIEF, PROMPT], building → [SILENT], course correction → [DISCUSS, PROMPT], completion → [BRIEF, PROMPT]
+- [build] Annotate done.md steps: user tests → [SEQUENCE, PROMPT], build recap → [BRIEF], mechanical phase → [SILENT], commit approval → [BRIEF, PROMPT], handoff → [BRIEF, PROMPT]
+
+**Fix /plan Captures processing: add discussion step and make disposition type-agnostic**
+Files:
+- `plugin/si-plugin/docs/plan.md`
+- [build] Add a discussion step before disposition — engage with the substance of each item (especially open-ended ones) before jumping to promote/park/drop
+- [build] Make disposition type-agnostic — every Captures item gets the same flow regardless of type marker ([idea], [question], [build], [test])
+
+**Rename Ideas to Captures and remove drift check**
+Files:
+- `plugin/si-plugin/docs/plan.md`
+- `plugin/si-plugin/docs/done.md`
+- `plugin/si-plugin/docs/setup.md`
+- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
+- [build] Rename "Ideas" to "Captures" throughout all procedure docs and template
+- [build] Remove drift check (Step 3) from plan.md — existing /done safeguards already cover it
+
 **CLAUDE.md template ownership**
 Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
 - [build] Delineate plugin-seeded content from user-appended content so users know where they can add their own rules without breaking plugin behaviours.
@@ -19,10 +47,5 @@ Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [question] Is it a problem that scope is unlocked during /done? _build.md is deleted before the commit, meaning there's a window where no build is active but /done is still making file changes (log entries, DECISIONS.md, registry updates). Should _build.md deletion move to after the commit, or is the current order fine since /done's changes are mechanical and scoped by the procedure?
-- [idea] Rename "Ideas" section to "Captures" or similar
-- [idea] Drift check findings need teeth — currently /plan presents them as informational and immediately defers to the queue. Drift should be resolved (or explicitly deferred) before moving on to Ideas routing, not treated as an afterthought
-- [idea] /plan Ideas routing should apply the same disposition step (promote, park, or drop) to every item regardless of type — current procedure only describes routing for [idea] and [question], causing other types to skip disposition entirely
-- [idea] Host/target propagation gap — when a feature is built (e.g. DECISIONS.md), host-side docs get updated but corresponding target-side changes (scaffolds, templates, procedures) get missed. Claude needs to treat "which side?" as an active question whenever a change touches project docs, and flag when only one side has been updated
 
 ### Parked
