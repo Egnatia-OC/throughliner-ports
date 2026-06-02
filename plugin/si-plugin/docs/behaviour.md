@@ -33,7 +33,7 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 - Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, or LOG/, write it there.
 - Doc routing: SPEC.md answers what/who/how/why the product exists. QUEUE.md answers what to work on next. REGISTRY.md answers what components exist and where. LOG/ answers what happened in a given session.
 - Planning takes place in /plan, and building takes place in build. Don't build during /plan. Don't plan during /next.
-- New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry.
+- New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry. The threshold: if a user would see or experience the difference, it changes the product — update SPEC.md first.
 - Don't fix things outside the current scope. Note them for the queue.
 - Nothing unrouted survives a session. Ideas, questions, and observations get filed or explicitly dropped before close.
 - SPEC.md is read-only during builds. If you find a spec issue mid-build, note it for /plan — don't edit it now.

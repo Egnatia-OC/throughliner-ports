@@ -31,3 +31,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - f11be10 — /plan session: rewrite plan.md, add Captures for plan behaviour
 - 77c1557 — Remove DECISIONS.md, restructure LOG to index + log
 - e6432a5 — Drop file lists from batches
+- a24e5ad — Captures flow: thresholds, drop reasons, placement, empty state

@@ -4,14 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**/plan Captures flow: define thresholds and fill gaps**
-- [build] Define the pipeline threshold in behaviour.md: "if a user would see or experience the difference, it changes the product — update SPEC.md first"
-- [build] Add "already decided (found in LOG/index.md)" as an explicit drop reason in plan.md Step 3
-- [build] Specify whether new batch placement needs user approval or Claude places using ordering logic and reports
-- [build] Add instruction to state the item count before processing Captures ("3 items in Captures. First: ...")
-- [build] Specify what the Captures section looks like after all items are processed (empty section with Parked subsection intact)
-- [test] Walk through the Captures flow with the updated plan.md and confirm all five fixes are clear
-
 **Scope and staging clarity: cross-reference /next and /done**
 - [build] Clarify in next.md that REGISTRY.md is not in build scope — /done Step 1.5 handles all registry updates after the build
 - [build] Clean up done.md staging list (Step 2.4) to explain why QUEUE.md is included: /next already modified it, not /done

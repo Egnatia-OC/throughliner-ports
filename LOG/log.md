@@ -384,3 +384,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** None
+
+## a24e5ad — Captures flow: thresholds, drop reasons, placement, empty state
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md
+- plugin/si-plugin/docs/plan.md
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** None
