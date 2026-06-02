@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
+
 This project uses the Sovereign Implementer method.
 
 ## Project docs
@@ -28,3 +30,9 @@ This project uses the Sovereign Implementer method.
 ## Language
 
 Language: English
+
+<!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
+
+## Project rules
+
+<!-- Add your own rules, conventions, and context below. This section is yours — the plugin won't touch it. -->
