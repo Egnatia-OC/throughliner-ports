@@ -40,26 +40,27 @@ Report findings briefly. Don't fix anything without the user's say-so.
 
 ## Step 4: Ideas flow [SEQUENCE, PROMPT]
 
-### Processing accumulated ideas
+### Processing accumulated items
 
-At the start of a /plan session, check the Ideas section of QUEUE.md. If items have accumulated there (captured during builds or between sessions), process them one at a time before moving to new work. For each idea:
+At the start of a /plan session, check the Ideas section of QUEUE.md. If items have accumulated there (captured during builds or between sessions), process them one at a time before moving to new work. For each item, regardless of its type marker ([idea], [question], [build], [test]):
 
 1. Present it to the user.
-2. Route to one of:
+2. Discuss — engage with the substance of the item before jumping to disposition. If it's open-ended or has exploratory language ("or similar", "maybe", "consider"), explore alternatives and tradeoffs. If it's straightforward, a brief assessment is enough. The goal is to make sure the user has enough context to make a good disposition call.
+3. Dispose:
    - **Promote** — add as entry in an existing batch, or create a new batch for it (Step 6)
    - **Question first** — it needs a design decision before it can become work. Go to Step 5.
    - **Park** — move to Ideas → Parked (interesting but not now)
    - **Drop** — remove it (conflicts with SPEC.md, or user decides no)
-3. Remove the idea from the Ideas section after routing.
+4. Remove the item from the Ideas section after routing.
 
-One idea at a time. Disposition before moving to the next.
+One item at a time. Discussion and disposition before moving to the next.
 
-### New ideas from conversation
+### New items from conversation
 
-When the user brings a new idea:
+When the user brings a new item (idea, question, feature request, observation):
 1. Check QUEUE.md for overlap — does this duplicate existing work?
-2. Assess: Is it clear enough to become a batch entry right now, or does it need a question resolved first?
-3. Route using the same options as above (promote, question first, park, drop).
+2. Discuss — same as above. Engage with substance before disposition.
+3. Dispose using the same options as above (promote, question first, park, drop).
 
 When Claude notices a gap or opportunity: "I notice [X] — want to hear a suggestion?" One at a time. Don't volunteer more than one per exchange.
 
@@ -126,8 +127,8 @@ Don't skip this — /done writes the log entry and handles the commit. Planning 
 ## Rules
 
 - Never build anything during /plan. If you find yourself wanting to write code, stop and add it to the queue.
-- One decision at a time when resolving questions or routing ideas.
+- One item at a time when resolving questions or routing captured items.
 - Don't add to the queue without the user knowing. Always surface additions.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 - Read SPEC.md before proposing new work — don't queue things that contradict the spec.
-- Process accumulated ideas before new planning work. The Ideas section is the inbox.
+- Process accumulated items before new planning work. The Ideas section is the inbox.

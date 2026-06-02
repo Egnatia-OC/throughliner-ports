@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Fix /plan Captures processing: add discussion step and make disposition type-agnostic**
-Files:
-- `plugin/si-plugin/docs/plan.md`
-- [build] Add a discussion step before disposition — engage with the substance of each item (especially open-ended ones) before jumping to promote/park/drop
-- [build] Make disposition type-agnostic — every Captures item gets the same flow regardless of type marker ([idea], [question], [build], [test])
-
 **Rename Ideas to Captures and remove drift check**
 Files:
 - `plugin/si-plugin/docs/plan.md`
