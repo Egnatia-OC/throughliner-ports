@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Scope and staging clarity: cross-reference /next and /done**
-- [build] Clarify in next.md that REGISTRY.md is not in build scope — /done Step 1.5 handles all registry updates after the build
-- [build] Clean up done.md staging list (Step 2.4) to explain why QUEUE.md is included: /next already modified it, not /done
-- [build] Add cross-references between /next Step 2 (batch moves to _build.md) and /done Step 2.3 (deletes _build.md) so the batch lifecycle is traceable across both docs
-- [test] Read next.md and done.md end-to-end and confirm the handoff between them is unambiguous
-
 **Procedure doc cleanup sweep**
 - [build] Fix next.md step numbering gap (Step 6 → Step 8, no Step 7)
 - [build] Clarify blocker gate scope in next.md: specify whether Captures-section [question] items count

@@ -36,7 +36,7 @@ Changes:
 [empty — accumulated as entries complete]
 ```
 
-2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
+2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done Step 2.3 deletes _build.md after the build closes.
 
 For test entries, the Progress section uses pass/fail format instead of entry ticking:
 ```
@@ -79,6 +79,7 @@ When a batch contains [test] entries, execution is verification — not file edi
 These rules are absolute regardless of entry type:
 
 - Stay within the work described by the entries. If you need to touch something unrelated, say so first: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval.
+- REGISTRY.md is not build scope. /done Step 1.5 handles all registry updates after the build closes.
 - SPEC.md is read-only. If you find a spec issue, note it for /plan. Don't fix it now.
 - Don't fix unrelated problems you notice. Note them for the queue.
 - State regressions plainly. If something breaks or doesn't work as expected, say so immediately. Don't silently fix it or apologize — just state the facts.

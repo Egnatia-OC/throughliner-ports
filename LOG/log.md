@@ -396,3 +396,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** None
+
+## f6d4a78 — Scope and staging clarity: cross-reference /next and /done
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md
+- plugin/si-plugin/docs/done.md
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** None

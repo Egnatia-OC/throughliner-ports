@@ -118,11 +118,11 @@ Quick check of QUEUE.md:
 
 #### 2.3 Delete _build.md
 
-This unlocks future builds. Only do this after everything above is complete.
+Created by /next Step 2 when the batch was locked. Deleting it unlocks future builds. Only do this after everything above is complete.
 
 #### 2.4 Git commit and hash backfill [BRIEF, PROMPT]
 
-1. Stage the files listed in _build.md's Changes section plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
+1. Stage the files listed in _build.md's Changes section plus the method docs (QUEUE.md — already modified by /next Step 2 when the batch moved to _build.md, REGISTRY.md, LOG/, _build.md deletion).
 2. Never use `git add -A` or `git add .`.
 3. Draft a commit message. Present it for approval.
 4. Wait for the user's okay before committing.
