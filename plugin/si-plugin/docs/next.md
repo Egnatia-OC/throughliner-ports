@@ -15,7 +15,7 @@ Before starting:
    - Are there [question] entries within or above the batch that would affect this work? → Surface them. Resolve or confirm they're independent.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
-4. **If no blockers:** Present the batch to the user:
+4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
    - Batch title and all entry text from QUEUE.md
    - File list from the batch (or your assessment if the batch lacks one)
    - One-line summary of what each file change accomplishes
@@ -46,7 +46,7 @@ Changes:
 
 The _build.md file is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.
 
-## Step 3: Build
+## Step 3: Build [SILENT]
 
 Execute the work file by file. For each file:
 
@@ -77,7 +77,7 @@ If scope grows during the build:
 
 The sizing principle: right size = verification burden, not line count. A batch that touches 2 files but produces 15 things to test is too big. A batch that touches 8 files but has 3 observable behaviours is fine.
 
-## Step 5: Mid-build course-correction
+## Step 5: Mid-build course-correction [DISCUSS, PROMPT]
 
 If something goes wrong during the build — an assumption turns out to be false, a dependency is missing, or the approach isn't working:
 
@@ -98,7 +98,7 @@ If the conversation is getting long and context is running low, prefer these opt
 
 Never compact silently. The user should know what's being traded away.
 
-## Step 8: Completion
+## Step 8: Completion [BRIEF, PROMPT]
 
 When all files are ticked:
 1. Tell the user the build is complete.

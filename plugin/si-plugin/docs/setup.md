@@ -83,7 +83,7 @@ Format: **[decision name]** — [commit hash] — [what was decided and why]
 
 **CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block to it rather than overwriting.
 
-## Step 3: Interview (5 questions, one at a time)
+## Step 3: Interview (5 questions, one at a time) [SEQUENCE, PROMPT]
 
 Ask these questions one per message. Wait for the answer before asking the next. Use the answers to fill SPEC.md and QUEUE.md.
 
@@ -102,7 +102,7 @@ Ask these questions one per message. Wait for the answer before asking the next.
 **Q5. Anything else I should know before we start?**
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
 
-## Step 4: Write the docs
+## Step 4: Write the docs [BRIEF, PROMPT]
 
 After all 5 answers:
 1. Fill SPEC.md with the interview answers.

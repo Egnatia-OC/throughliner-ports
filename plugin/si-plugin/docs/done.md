@@ -49,7 +49,7 @@ For any test marked `Claude`: run it now. Report pass/fail. Update the test line
 
 Failed Claude tests: note the failure, suggest whether it's a bug (route to queue) or expected (user decides).
 
-#### 1.4 Present user tests
+#### 1.4 Present user tests [SEQUENCE, PROMPT]
 
 List remaining tests (User-verified) for the user. One at a time:
 - State what to check and how.
@@ -75,14 +75,14 @@ During the build, Claude or the user may have noticed gaps, issues, or opportuni
 
 This keeps /done mechanical and defers judgment to the next /plan session.
 
-#### 1.7 Build recap
+#### 1.7 Build recap [BRIEF]
 
 Summarize for the user:
 - What was built (from _build.md Changes section)
 - Test results (passed / failed / skipped)
 - Anything routed to Ideas
 
-### Phase 2: Mechanical (rote file operations)
+### Phase 2: Mechanical (rote file operations) [SILENT]
 
 #### 2.1 Write LOG entry
 
@@ -122,7 +122,7 @@ Quick check of QUEUE.md:
 
 This unlocks future builds. Only do this after everything above is complete.
 
-#### 2.5 Git commit and hash backfill
+#### 2.5 Git commit and hash backfill [BRIEF, PROMPT]
 
 1. Stage only the files that were part of this build plus the method docs (QUEUE.md, REGISTRY.md, DECISIONS.md, LOG/, _build.md deletion).
 2. Never use `git add -A` or `git add .`.
@@ -133,7 +133,7 @@ This unlocks future builds. Only do this after everything above is complete.
 7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
 8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
-### Phase 3: Handoff
+### Phase 3: Handoff [BRIEF, PROMPT]
 
 Tell the user what's next:
 - If QUEUE.md has more batches: "Next up is [batch]. Run /next when ready."
@@ -173,7 +173,7 @@ Write the log entry to `LOG/YYYY-MM-DD.md` (create or append). Use a placeholder
 
 If any design decisions were made during this session, append each to DECISIONS.md using the same `[HASH]` placeholder format. Skip if no decisions were made.
 
-### 4. Git commit and hash backfill
+### 4. Git commit and hash backfill [BRIEF, PROMPT]
 
 1. Stage only the method docs that changed (QUEUE.md, SPEC.md, REGISTRY.md, DECISIONS.md, LOG/).
 2. Never use `git add -A` or `git add .`.
@@ -184,7 +184,7 @@ If any design decisions were made during this session, append each to DECISIONS.
 7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
 8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
-### 5. Handoff
+### 5. Handoff [BRIEF, PROMPT]
 
 Tell the user what's next:
 - If QUEUE.md has batches: "Next up is [batch]. Run /next when ready."

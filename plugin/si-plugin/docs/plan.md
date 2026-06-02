@@ -38,7 +38,7 @@ Quick scan for discrepancies:
 
 Report findings briefly. Don't fix anything without the user's say-so.
 
-## Step 4: Ideas flow
+## Step 4: Ideas flow [SEQUENCE, PROMPT]
 
 ### Processing accumulated ideas
 
@@ -63,7 +63,7 @@ When the user brings a new idea:
 
 When Claude notices a gap or opportunity: "I notice [X] — want to hear a suggestion?" One at a time. Don't volunteer more than one per exchange.
 
-## Step 5: Questions flow
+## Step 5: Questions flow [DISCUSS, PROMPT]
 
 For open questions or design decisions:
 1. Present the question clearly.
@@ -114,7 +114,7 @@ When docs have grown bloated:
 4. Never cut rules, constraints, or principles — only compress prose.
 5. User approves each change.
 
-## Step 8: Close out
+## Step 8: Close out [BRIEF, PROMPT]
 
 When planning work is done (ideas processed, questions resolved, queue updated):
 

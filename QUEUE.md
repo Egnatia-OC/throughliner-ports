@@ -4,19 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Restore response-shape tags and annotate procedure docs**
-Files:
-- `plugin/si-plugin/docs/behaviour.md`
-- `plugin/si-plugin/docs/setup.md`
-- `plugin/si-plugin/docs/plan.md`
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/done.md`
-- [build] Add response-shape tag definitions to behaviour.md ([SILENT], [BRIEF], [DISCUSS], [PROMPT], [SEQUENCE]) with composition rule. Remove the blanket "one step at a time / all at once" rule — tags replace it.
-- [build] Annotate setup.md steps: interview → [SEQUENCE], results + handoff → [BRIEF, PROMPT]
-- [build] Annotate plan.md steps: ideas processing → [SEQUENCE, PROMPT], questions flow → [DISCUSS, PROMPT], close out → [BRIEF, PROMPT]
-- [build] Annotate next.md steps: batch presentation → [BRIEF, PROMPT], building → [SILENT], course correction → [DISCUSS, PROMPT], completion → [BRIEF, PROMPT]
-- [build] Annotate done.md steps: user tests → [SEQUENCE, PROMPT], build recap → [BRIEF], mechanical phase → [SILENT], commit approval → [BRIEF, PROMPT], handoff → [BRIEF, PROMPT]
-
 **Fix /plan Captures processing: add discussion step and make disposition type-agnostic**
 Files:
 - `plugin/si-plugin/docs/plan.md`

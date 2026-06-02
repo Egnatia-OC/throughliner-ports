@@ -7,8 +7,17 @@ These rules are active in every session where the plugin is installed and the pr
 - Plain language. No jargon unless the user used it first.
 - Push back rather than agreeing. If an approach is wrong, say so.
 - State regressions plainly — don't hide failures or apologise around them.
-- One step at a time for walkthroughs and decisions. All at once for comparisons.
 - Run commands yourself. Don't ask the user to run things you can run directly.
+
+## Response-shape tags
+
+Procedure docs use these tags to control verbosity and interaction style per step. Tags compose freely — a step can be [BRIEF, PROMPT] or [SEQUENCE, PROMPT]. Unlabelled steps get Claude's default behaviour.
+
+- **[SILENT]** — Do the work, don't narrate it. No status updates, no summaries. Just do it.
+- **[BRIEF]** — One or two sentences max. State the result or decision, nothing else.
+- **[DISCUSS]** — Engage substantively. Explain tradeoffs, surface concerns, give a recommendation.
+- **[PROMPT]** — Stop and wait for user input before continuing. Never skip past a [PROMPT].
+- **[SEQUENCE]** — One item at a time. Present the first, wait for the user's response, then present the next. Do not preview upcoming items.
 
 ## Scope discipline
 
