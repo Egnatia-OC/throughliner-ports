@@ -89,6 +89,9 @@ Files:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [idea] This project's LOG has "Decisions: none" on almost every entry. We built decision-logging machinery but nothing in the self-hosting workflow actually generates decisions worth logging. Either the LOG format needs a lighter variant for method-building projects, or the E2E smoke tests should exercise decision logging in a consumer project where real product decisions happen.
+- [idea] /plan Captures processing skips real discussion — items go from Captures straight to batches without the thinking that turns a problem into a plan. The "discuss" step in Step 3 is treated as a speed bump between present and dispose, not actual planning.
+- [idea] /plan moves to the next item before the current one is resolved — Claude previews or describes the next agenda item before agreement that the previous one is done. Needs an explicit gate: no next item until the user signals the current one is finished.
+- [idea] Decisions aren't being captured — /done writes "Decisions: none" on nearly every entry even when the user made real design decisions during the build. The procedure doesn't define what counts as a decision, so Claude defaults to "none" unless it feels architecturally significant. Needs a definition or examples in done.md so Claude recognises user decisions when they happen (e.g. "session-start message should reference prior session" is a decision about user-facing tone).
+- [build] LOG format is wrong — currently writes to one file per date (LOG/YYYY-MM-DD.md) with multiple entries stacked inside. Should be one file per commit (LOG/<hash>.md) plus a lightweight index file (one-line summaries with links). This was decided 2026-05-22 but never implemented. Affects done.md (both build and plan close-out sections), setup.md (LOG scaffolding), and possibly session_start.py if it reads LOG.
 
 ### Parked
