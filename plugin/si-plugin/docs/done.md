@@ -111,6 +111,8 @@ If any design decisions were made during this session, append each to DECISIONS.
 
 Use the same `[HASH]` placeholder. Skip this step if no decisions were made.
 
+**Test-to-decision linkage:** When a test outcome drove a design decision (failure caused requeue, rethink, or revealed a gap), the decision entry cites that test outcome as its rationale. Routine passes stay in the LOG's Tests field only — they don't generate decision entries.
+
 #### 2.3 Staleness sweep
 
 Quick check of QUEUE.md:

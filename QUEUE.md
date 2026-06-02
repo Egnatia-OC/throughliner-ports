@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**LOG test-to-decision linkage**
-Files:
-- `plugin/si-plugin/docs/done.md`
-- [build] Add rule to done.md: LOG keeps all test results in the Tests field. When a test outcome drove a design decision (failure caused requeue, rethink, or revealed a gap), the Decisions entry cites that test outcome as its rationale. Routine passes stay in Tests only — they don't generate decisions.
-
 **Test entry lifecycle: define mechanics and close gaps**
 Files:
 - `plugin/si-plugin/docs/next.md`
@@ -93,5 +88,7 @@ Files:
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session.
+
+- [idea] This project's LOG has "Decisions: none" on almost every entry. We built decision-logging machinery but nothing in the self-hosting workflow actually generates decisions worth logging. Either the LOG format needs a lighter variant for method-building projects, or the E2E smoke tests should exercise decision logging in a consumer project where real product decisions happen.
 
 ### Parked
