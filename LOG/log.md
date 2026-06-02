@@ -368,3 +368,19 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** None
+
+## e6432a5 — Drop file lists from batches
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md
+- plugin/si-plugin/docs/next.md
+- plugin/si-plugin/docs/done.md
+- plugin/si-plugin/templates/faq-template.md
+- plugin/si-plugin/templates/faq-index-template.md
+- QUEUE.md
+
+**Tests:** 10 passed, 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** None

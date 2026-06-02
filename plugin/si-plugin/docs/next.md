@@ -17,8 +17,6 @@ Before starting:
 
 4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
    - Batch title and all entry text from QUEUE.md
-   - File list from the batch (or your assessment if the batch lacks one)
-   - One-line summary of what each file change accomplishes
    - "Ready to start? (yes / adjust scope / pick a different entry)"
 
 ## Step 2: Lock scope
@@ -31,20 +29,16 @@ Once the user confirms:
 
 Entry: [copy the batch title and all entry text]
 
-Files:
-- path/to/file1.ext — what's being done
-- path/to/file2.ext — what's being done
-
 Progress:
-[empty — ticked as files complete]
+[empty — ticked as entries complete]
 
 Changes:
-[empty — accumulated as files complete]
+[empty — accumulated as entries complete]
 ```
 
 2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
 
-For test entries, the Progress section uses pass/fail format instead of file ticking:
+For test entries, the Progress section uses pass/fail format instead of entry ticking:
 ```
 Progress:
 - [x] Test description — ✓
@@ -59,11 +53,11 @@ Execute the work entry by entry.
 
 ### Build entries
 
-For each [build] entry, work file by file:
+For each [build] entry:
 
 1. Read any relevant existing code or context.
 2. Make the changes.
-3. Tick it in _build.md's Progress section: `- [x] path/to/file — done`
+3. Tick it in _build.md's Progress section: `- [x] entry description — done`
 
 ### Test entries
 
@@ -84,7 +78,7 @@ When a batch contains [test] entries, execution is verification — not file edi
 
 These rules are absolute regardless of entry type:
 
-- Only touch files on the list. If you discover a prerequisite (another file needs editing first), HALT. Tell the user: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval, then add it to _build.md's Files list.
+- Stay within the work described by the entries. If you need to touch something unrelated, say so first: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval.
 - SPEC.md is read-only. If you find a spec issue, note it for /plan. Don't fix it now.
 - Don't fix unrelated problems you notice. Note them for the queue.
 - State regressions plainly. If something breaks or doesn't work as expected, say so immediately. Don't silently fix it or apologize — just state the facts.
@@ -121,7 +115,7 @@ If something goes wrong during the build — an assumption turns out to be false
 
 If the conversation is getting long and context is running low, prefer these options in order:
 
-1. **Finish and /done.** If most files are ticked, push through to completion. Short-term memory is enough.
+1. **Finish and /done.** If most entries are ticked, push through to completion. Short-term memory is enough.
 2. **Close partial.** If significant work remains, /done what's ticked and requeue the rest. The next session picks up cleanly from _build.md and QUEUE.md state.
 3. **Compact as last resort.** Only if you can't close the build and the remaining work would lose critical context. Tell the user: "Context is running low. I can compact, but I'll lose detail on [X]. Okay to proceed?"
 
@@ -129,7 +123,7 @@ Never compact silently. The user should know what's being traded away.
 
 ## Step 8: Completion [BRIEF, PROMPT]
 
-When all files are ticked:
+When all entries are ticked:
 1. Tell the user the build is complete.
 2. Show what was done (the Changes section from _build.md).
 3. Say: "Run /done to record this and commit, or keep adjusting."
@@ -139,7 +133,7 @@ Do NOT delete _build.md yourself. That's /done's job.
 ## Rules
 
 - One build at a time. Never start a second while _build.md exists.
-- File list is the contract. Don't exceed it without explicit approval.
-- Per-file ticking is mandatory. It's the crash-recovery mechanism.
+- The entries are the contract. Don't exceed the described work without explicit approval.
+- Per-entry ticking is mandatory. It's the crash-recovery mechanism.
 - If you're unsure about an implementation choice, ask. Don't guess and build wrong.
 - Build and test entries follow the same procedure (pre-flight → lock → execute → close). Execution mechanics differ: [build] entries edit files, [test] entries verify behaviour. See Step 3 for each.

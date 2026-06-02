@@ -11,6 +11,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
 - [What is _build.md? Should I edit it?](faq.md#what-is-_buildmd-should-i-edit-it)
 - [What is REGISTRY.md for?](faq.md#what-is-registrymd-for)
-- [What happens if Claude needs to edit a file that isn't in the build scope?](faq.md#what-happens-if-claude-needs-to-edit-a-file-that-isnt-in-the-build-scope)
+- [What happens if Claude needs to touch something outside the current batch?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-batch)
 - [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)

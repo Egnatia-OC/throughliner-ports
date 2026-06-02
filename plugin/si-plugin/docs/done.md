@@ -20,9 +20,9 @@ These steps capture meaning that would be lost after compaction.
 
 #### 1.1 Verify completion
 
-Read _build.md. Are all files ticked in Progress?
+Read _build.md. Are all entries ticked in Progress?
 - **All ticked:** Proceed.
-- **Some unticked:** Ask the user — finish them (/next to continue), or close partial (mark unticked items as deferred and route back to QUEUE.md).
+- **Some unticked:** Ask the user — finish them (/next to continue), or close partial (mark unticked entries as deferred and route back to QUEUE.md).
 
 #### 1.2 Generate tests
 
@@ -94,7 +94,7 @@ Append the log entry to `LOG/log.md`. Use a placeholder for the commit hash — 
 ## [HASH] — [one-line summary of what shipped]
 
 **Files touched:**
-- [list from _build.md]
+- [from _build.md Changes section]
 
 **Tests:** [X passed, Y failed, Z skipped]
 
@@ -122,7 +122,7 @@ This unlocks future builds. Only do this after everything above is complete.
 
 #### 2.4 Git commit and hash backfill [BRIEF, PROMPT]
 
-1. Stage only the files that were part of this build plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
+1. Stage the files listed in _build.md's Changes section plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
 2. Never use `git add -A` or `git add .`.
 3. Draft a commit message. Present it for approval.
 4. Wait for the user's okay before committing.

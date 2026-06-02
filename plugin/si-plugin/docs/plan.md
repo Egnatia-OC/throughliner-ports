@@ -33,7 +33,7 @@ For each item:
 2. **Discuss and recommend** `[DISCUSS, PROMPT]` — Engage with the substance. Depth scales with the item — explore alternatives for open-ended ones, a sentence or two for straightforward ones. Close with a recommended disposition (promote / question first / park / drop) and why. **Stop and wait.** The user decides.
 
 3. **Execute the disposition:**
-   - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, Files list, type-marked lines). Show it in full. Don't write to QUEUE.md until the user approves the wording.
+   - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, type-marked lines). Show it in full. Don't write to QUEUE.md until the user approves the wording.
    - **Question first** — The item needs a design decision before it becomes work. Present the question, offer options, recommend one, wait. Once decided, return to disposition.
    - **Park** — Move to Parked.
    - **Drop** — Remove it.
@@ -49,12 +49,10 @@ If Claude notices a gap or opportunity: "I notice [X] — want to hear a suggest
 Batches group related work into one /next session:
 
     **Batch title**
-    Files:
-    - `path/to/file.ext`
     - [build] What to build
     - [test] How to verify
 
-Bold title, Files list, type-marked entries. Builds first, tests follow.
+Bold title, type-marked entries. Builds first, tests follow. Each entry names its own target — no separate file list.
 
 **Sizing gates** (per batch, not per entry):
 - *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."

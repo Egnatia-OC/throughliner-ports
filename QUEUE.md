@@ -4,25 +4,7 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Drop file lists from batches**
-Files:
-- `plugin/si-plugin/docs/plan.md`
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/done.md`
-- `plugin/si-plugin/templates/faq-template.md`
-- `plugin/si-plugin/templates/faq-index-template.md`
-- [build] Remove Files: list from batch format in plan.md Step 5 — entries name their own targets
-- [build] Rewrite next.md scope enforcement: remove "only touch files on the list" rule, replace with "stay within the work described by the entries — if you need to touch something unrelated, say so first"
-- [build] Update _build.md structure in next.md Step 2: remove Files section, keep Progress and Changes
-- [build] Update done.md staging references to use _build.md Changes section instead of file list
-- [build] Update FAQ templates: remove/rewrite the "what happens if Claude needs to edit a file outside scope" Q&A
-- [build] Strip Files: lists from all existing batches in QUEUE.md
-- [test] Read plan.md, next.md, and done.md to confirm no remaining references to batch file lists
-
 **/plan Captures flow: define thresholds and fill gaps**
-Files:
-- `plugin/si-plugin/docs/plan.md`
-- `plugin/si-plugin/docs/behaviour.md`
 - [build] Define the pipeline threshold in behaviour.md: "if a user would see or experience the difference, it changes the product — update SPEC.md first"
 - [build] Add "already decided (found in LOG/index.md)" as an explicit drop reason in plan.md Step 3
 - [build] Specify whether new batch placement needs user approval or Claude places using ordering logic and reports
@@ -31,19 +13,12 @@ Files:
 - [test] Walk through the Captures flow with the updated plan.md and confirm all five fixes are clear
 
 **Scope and staging clarity: cross-reference /next and /done**
-Files:
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/done.md`
 - [build] Clarify in next.md that REGISTRY.md is not in build scope — /done Step 1.5 handles all registry updates after the build
 - [build] Clean up done.md staging list (Step 2.4) to explain why QUEUE.md is included: /next already modified it, not /done
 - [build] Add cross-references between /next Step 2 (batch moves to _build.md) and /done Step 2.3 (deletes _build.md) so the batch lifecycle is traceable across both docs
 - [test] Read next.md and done.md end-to-end and confirm the handoff between them is unambiguous
 
 **Procedure doc cleanup sweep**
-Files:
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/done.md`
-- `plugin/si-plugin/docs/behaviour.md`
 - [build] Fix next.md step numbering gap (Step 6 → Step 8, no Step 7)
 - [build] Clarify blocker gate scope in next.md: specify whether Captures-section [question] items count
 - [build] Add next.md Step 2 (Lock scope) response-shape tag
@@ -55,7 +30,7 @@ Files:
 - [test] Read all three files end-to-end and confirm each fix is present and non-contradictory
 
 **E2E: consumer project smoke tests**
-- [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, Files list, type-marked entries)
+- [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, type-marked entries)
 - [test] Run /next in consumer project, verify it picks up a batch and builds all items
 - [test] Run /done in consumer project, verify it routes findings to Captures
 

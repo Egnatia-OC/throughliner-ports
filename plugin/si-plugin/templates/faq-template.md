@@ -8,7 +8,7 @@ They split work into three modes so nothing gets mixed up. **/plan** is for thin
 
 ## What's the difference between Batches and Captures in QUEUE.md?
 
-**Batches** are ready-to-build work — organized groups of entries with a file list, worked top to bottom. Each batch is one /next session. **Captures** is an inbox — ideas, questions, and observations jotted down during builds or between sessions. Captures aren't actionable yet. During the next /plan session, each captured item gets discussed and either promoted into a batch, parked for later, or dropped.
+**Batches** are ready-to-build work — organized groups of type-marked entries, worked top to bottom. Each batch is one /next session. **Captures** is an inbox — ideas, questions, and observations jotted down during builds or between sessions. Captures aren't actionable yet. During the next /plan session, each captured item gets discussed and either promoted into a batch, parked for later, or dropped.
 
 ## What are the type markers — [build], [test], [idea], [question]?
 
@@ -32,15 +32,15 @@ Not necessarily. An empty queue just means there's no planned work right now. It
 
 ## What is _build.md? Should I edit it?
 
-`_build.md` is a temporary file that exists only while a build is in progress. It tracks which batch is being built, which files are in scope, what's been completed, and what changed. Claude manages it — you don't need to edit it. It gets deleted automatically when you run /done. If it exists when you start a new session, that means a previous build was interrupted.
+`_build.md` is a temporary file that exists only while a build is in progress. It tracks which batch is being built, what's been completed, and what changed. Claude manages it — you don't need to edit it. It gets deleted automatically when you run /done. If it exists when you start a new session, that means a previous build was interrupted.
 
 ## What is REGISTRY.md for?
 
 REGISTRY.md is a list of every component in your project — what files exist and what each one does. Claude updates it after every build (during /done). It helps Claude find things quickly without searching through code. You don't need to maintain it yourself.
 
-## What happens if Claude needs to edit a file that isn't in the build scope?
+## What happens if Claude needs to touch something outside the current batch?
 
-Claude will stop and ask. The build scope (the file list in _build.md) is a contract — Claude won't touch files outside it without your approval. If it discovers a prerequisite, it will say "I need to also edit [file] because [reason]. Add to scope?" and wait for your answer.
+Claude will stop and ask. The batch entries describe the work — Claude stays within that scope. If it discovers something else needs changing, it will say "I need to also edit [file] because [reason]. Add to scope?" and wait for your answer.
 
 ## What does "Parked" mean in the queue?
 
