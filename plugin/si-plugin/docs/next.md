@@ -44,28 +44,57 @@ Changes:
 
 2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions).
 
+For test entries, the Progress section uses pass/fail format instead of file ticking:
+```
+Progress:
+- [x] Test description — ✓
+- [x] Test description — ✗ (reason)
+```
+
 The _build.md file is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.
 
 ## Step 3: Build [SILENT]
 
-Execute the work file by file. For each file:
+Execute the work entry by entry.
+
+### Build entries
+
+For each [build] entry, work file by file:
 
 1. Read any relevant existing code or context.
 2. Make the changes.
 3. Tick it in _build.md's Progress section: `- [x] path/to/file — done`
 
-**During the build, these rules are absolute:**
+### Test entries
+
+When a batch contains [test] entries, execution is verification — not file editing:
+
+1. Read the test description to understand what's being checked.
+2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests requiring real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user.
+3. Tick each test in _build.md's Progress section using pass/fail format:
+   - `- [x] Test description — ✓`
+   - `- [x] Test description — ✗ (reason)`
+4. Accumulate results in the Changes section: what was checked, what passed, what failed.
+
+**On test failure:**
+- Isolated failure (one test, rest of batch unaffected): note the failure, continue with remaining tests, route the fix to Captures at close.
+- Fundamental failure (invalidates the batch premise or blocks remaining tests): stop and go to Step 5 (course-correction).
+
+### Rules during build
+
+These rules are absolute regardless of entry type:
 
 - Only touch files on the list. If you discover a prerequisite (another file needs editing first), HALT. Tell the user: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval, then add it to _build.md's Files list.
 - SPEC.md is read-only. If you find a spec issue, note it for /plan. Don't fix it now.
 - Don't fix unrelated problems you notice. Note them for the queue.
 - State regressions plainly. If something breaks or doesn't work as expected, say so immediately. Don't silently fix it or apologize — just state the facts.
 
-**Accumulate close notes** as you go: for each file, jot what changed in _build.md so /done doesn't need to re-explore:
+**Accumulate close notes** as you go: for each file or test, jot what changed in _build.md so /done doesn't need to re-explore:
 ```
 Changes:
 - file1.ext: created new component, 45 lines
 - file2.ext: added import + handler function
+- [test] walked through mixed batch scenario — ✓, procedure unambiguous
 ```
 
 ## Step 4: Scope management
@@ -113,4 +142,4 @@ Do NOT delete _build.md yourself. That's /done's job.
 - File list is the contract. Don't exceed it without explicit approval.
 - Per-file ticking is mandatory. It's the crash-recovery mechanism.
 - If you're unsure about an implementation choice, ask. Don't guess and build wrong.
-- Build entries and test entries are handled identically by /next — the procedure is the same regardless of the [build] or [test] type marker. The content of the entry tells you what to do.
+- Build and test entries follow the same procedure (pre-flight → lock → execute → close). Execution mechanics differ: [build] entries edit files, [test] entries verify behaviour. See Step 3 for each.

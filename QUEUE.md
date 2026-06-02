@@ -4,18 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Test entry lifecycle: define mechanics and close gaps**
-Files:
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/done.md`
-- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
-- [build] Define what "executing a [test] entry" means in next.md: Claude runs every test it can verify itself (read code, run commands, inspect output); only tests requiring real user interaction go to the user; avoid visual-confirmation tests Claude could do by inspecting code/DOM
-- [build] Add _build.md ticking format for test entries (not file-based — needs its own format showing pass/fail)
-- [build] Add test-failure path to next.md: what happens when a test fails mid-build (route to Step 5 course-correction, or note and continue?)
-- [build] Clarify relationship between batch [test] entries (executed during /next) and /done-generated tests (verification after build) in done.md
-- [build] Add nudge to CLAUDE-TEMPLATE.md Project rules comment: mention users can put project-specific test procedures here or point to them from here
-- [test] Walk through a hypothetical batch with mixed [build] and [test] entries and confirm the procedure is unambiguous at each step
-
 **Response-shape tag rules: fill gaps in behaviour.md**
 Files:
 - `plugin/si-plugin/docs/behaviour.md`
