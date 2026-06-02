@@ -1,0 +1,17 @@
+# FAQ Index
+
+Quick answers about how this project's workflow works. Each question links to a full answer in [faq.md](faq.md).
+
+- [What do /plan, /next, and /done each do?](faq.md#what-do-plan-next-and-done-each-do)
+- [What's the difference between Batches and Captures in QUEUE.md?](faq.md#whats-the-difference-between-batches-and-captures-in-queuemd)
+- [What are the type markers — [build], [test], [idea], [question]?](faq.md#what-are-the-type-markers--build-test-idea-question)
+- [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
+- [Can I edit SPEC.md while doing a build?](faq.md#can-i-edit-specmd-while-doing-a-build)
+- [I just had an idea for a feature. How do I record it?](faq.md#i-just-had-an-idea-for-a-feature-how-do-i-record-it-without-losing-my-train-of-thought)
+- [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
+- [What is _build.md? Should I edit it?](faq.md#what-is-_buildmd-should-i-edit-it)
+- [What is REGISTRY.md for?](faq.md#what-is-registrymd-for)
+- [What is DECISIONS.md for?](faq.md#what-is-decisionsmd-for)
+- [What happens if Claude needs to edit a file that isn't in the build scope?](faq.md#what-happens-if-claude-needs-to-edit-a-file-that-isnt-in-the-build-scope)
+- [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
+- [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)

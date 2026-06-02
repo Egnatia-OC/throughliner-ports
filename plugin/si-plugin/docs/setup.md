@@ -81,6 +81,10 @@ Format: **[decision name]** — [commit hash] — [what was decided and why]
 
 **LOG/ folder:** Create the directory. It stays empty until the first /done.
 
+**FAQ/ folder:** Create the directory with two files scaffolded from templates:
+- `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`
+- `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
+
 **CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block to it rather than overwriting.
 
 ## Step 3: Interview (5 questions, one at a time) [SEQUENCE, PROMPT]

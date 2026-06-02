@@ -64,13 +64,18 @@ No code method/
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
-## Host update procedure
+## Push-and-rezip (automatic)
 
-1. Archive the current zip: `Move-Item plugin\si-plugin.zip plugin\zip-archive\si-plugin-v<OLD_VERSION>.zip`
-2. Prune the archive to the three most recent versions: delete anything older in `plugin\zip-archive\`.
-3. Package: `Compress-Archive -Path plugin\si-plugin\* -DestinationPath plugin\si-plugin.zip`
-4. Desktop app: Customise → Plugins → + → Create plugin → Upload plugin → select `plugin\si-plugin.zip`.
-5. To update: gear icon → Uninstall, then repeat steps 1-4.
+When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
+
+1. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
+2. FAQ freshness check: compare `git log --oneline plugin/si-plugin/docs/` against the last commit that touched `plugin/si-plugin/templates/faq-template.md`. If procedure docs changed more recently, update the FAQ templates to reflect the current procedures before packaging.
+3. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+4. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+5. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
+6. Stage the zip, archive changes, and plugin.json. Commit: "Bump to v<VERSION> and repackage".
+7. `git push`.
+8. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 
 ## E2E testing
 
@@ -106,3 +111,4 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - One build at a time. Finish and /done before starting another.
 - State problems plainly. Don't hide them or silently fix unrelated things.
 - Route discoveries to QUEUE.md rather than acting on them immediately.
+- All use of the plugin to develop the plugin is testing the plugin. Any observation of Claude's behaviour — wrong, unexpected, or improvable — is a testing outcome and must be routed to Captures. Not to memory, not discussed and dropped. Captures.

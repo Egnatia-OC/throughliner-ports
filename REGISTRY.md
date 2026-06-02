@@ -4,7 +4,7 @@ Components that exist in this project. Updated after each build.
 
 - `plugin/si-plugin/.claude-plugin/plugin.json` — plugin manifest (name, version, description)
 - `plugin/si-plugin/hooks/hooks.json` — hook declarations (session_start, pre_tool_use)
-- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules
+- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules and FAQ index
 - `plugin/si-plugin/hooks/pre_tool_use.py` — SPEC.md read-only, scope-lock, git safety
 - `plugin/si-plugin/skills/setup/SKILL.md` — /setup skill definition
 - `plugin/si-plugin/skills/plan/SKILL.md` — /plan skill definition
@@ -16,4 +16,6 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/docs/done.md` — /done procedure
 - `plugin/si-plugin/docs/behaviour.md` — universal behaviour rules loaded into every adopted session
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
+- `plugin/si-plugin/templates/faq-template.md` — FAQ content template (13 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
+- `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
 - `reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project

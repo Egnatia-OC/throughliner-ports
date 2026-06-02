@@ -27,11 +27,21 @@ def main() -> int:
     queue_path = os.path.join(cwd, "QUEUE.md")
     registry_path = os.path.join(cwd, "REGISTRY.md")
     build_path = os.path.join(cwd, "_build.md")
+    faq_index_path = os.path.join(cwd, "FAQ", "index.md")
 
     has_spec = os.path.isfile(spec_path)
     has_queue = os.path.isfile(queue_path)
     has_registry = os.path.isfile(registry_path)
     has_active_build = os.path.isfile(build_path)
+    has_faq_index = os.path.isfile(faq_index_path)
+
+    faq_index_content = ""
+    if has_faq_index:
+        try:
+            with open(faq_index_path, "r", encoding="utf-8") as f:
+                faq_index_content = f.read()
+        except OSError:
+            pass
 
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
     behaviour_path = os.path.join(plugin_root, "docs", "behaviour.md") if plugin_root else ""
@@ -103,6 +113,10 @@ def main() -> int:
             "No unfinished builds from a previous session. "
             "Run /plan to manage the queue, or /next to start the top batch."
         )
+
+    if faq_index_content:
+        context_parts.append("")
+        context_parts.append(faq_index_content)
 
     output = {
         "additionalContext": "\n".join(context_parts),

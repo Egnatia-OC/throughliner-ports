@@ -4,22 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**FAQ reference: create templates and wire into /setup**
-Files:
-- `plugin/si-plugin/templates/faq-template.md`
-- `plugin/si-plugin/templates/faq-index-template.md`
-- `plugin/si-plugin/docs/setup.md`
-- `plugin/si-plugin/hooks/session_start.py`
-- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
-- [build] Create faq.md template with 13 Q&A pairs from reader test (source: workflow output in reader-test-workflow.js results)
-- [build] Create index.md template with thin question list, each pointing to the relevant section in faq.md
-- [build] Update /setup to scaffold FAQ/ directory with both files into consumer projects
-- [build] Update session_start.py to detect FAQ/index.md and load it into session context
-- [build] Update CLAUDE-TEMPLATE.md to list FAQ/ in the project docs section
-- [build] Add FAQ freshness check to the push-and-rezip procedure in CLAUDE.md — when repackaging, check if procedure docs changed since the last FAQ update; if so, update the FAQ templates before packaging
-- [test] Verify FAQ/index.md content loads at session start in an adopted project
-- [test] Verify Claude can match a user question to the index and read the right answer from faq.md
-
 **/plan Captures flow: define thresholds and fill gaps**
 Files:
 - `plugin/si-plugin/docs/plan.md`
@@ -69,6 +53,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] /plan Captures processing skips real discussion — items go from Captures straight to batches without the thinking that turns a problem into a plan. The "discuss" step in Step 3 is treated as a speed bump between present and dispose, not actual planning.
 - [idea] /plan moves to the next item before the current one is resolved — Claude previews or describes the next agenda item before agreement that the previous one is done. Needs an explicit gate: no next item until the user signals the current one is finished.
 - [idea] Decisions aren't being captured — /done writes "Decisions: none" on nearly every entry even when the user made real design decisions during the build. The procedure doesn't define what counts as a decision, so Claude defaults to "none" unless it feels architecturally significant. Needs a definition or examples in done.md so Claude recognises user decisions when they happen (e.g. "session-start message should reference prior session" is a decision about user-facing tone).
+- [idea] File list in batches may not be pulling its weight — it duplicated information already in the entries, and this build's CLAUDE.md omission shows it can be wrong without anyone noticing. Is the file list actually useful, or is it ceremony?
 - [build] LOG format is wrong — currently writes to one file per date (LOG/YYYY-MM-DD.md) with multiple entries stacked inside. Should be one file per commit (LOG/<hash>.md) plus a lightweight index file (one-line summaries with links). This was decided 2026-05-22 but never implemented. Affects done.md (both build and plan close-out sections), setup.md (LOG scaffolding), and possibly session_start.py if it reads LOG.
 
 ### Parked
