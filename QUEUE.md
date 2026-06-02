@@ -4,17 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Procedure doc cleanup sweep**
-- [build] Fix next.md step numbering gap (Step 6 → Step 8, no Step 7)
-- [build] Clarify blocker gate scope in next.md: specify whether Captures-section [question] items count
-- [build] Add next.md Step 2 (Lock scope) response-shape tag
-- [build] Specify LOG format for multiple entries on the same day (consecutive ## headings)
-- [build] Add priority ordering to /done Phase 3 handoff conditions when multiple are true
-- [build] Scope "routed to Captures" in /done handoff to items added during this session only
-- [build] Standardise pass/fail marker format in done.md Step 1.3
-- [build] Add empty-queue lifecycle note to behaviour.md or CLAUDE-TEMPLATE.md (empty = normal resting state, not terminal)
-- [test] Read all three files end-to-end and confirm each fix is present and non-contradictory
-
 **E2E: consumer project smoke tests**
 - [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, type-marked entries)
 - [test] Run /next in consumer project, verify it picks up a batch and builds all items
@@ -31,5 +20,9 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Sizing gates in plan.md need future planning work — current rules may not be right
 - [build] Find all instances of "open questions" and "questions" across plugin docs and rename to "captures" where applicable — "open questions" is a retired name for captures
 - [question] Why is /plan showing a full summary of the batches queue at all? Everything in batches already went through /plan discussion to get there. The summary appeared when Captures was empty — is the procedure defaulting to "present queue state" when there's nothing to process? What should /plan actually do when Captures is empty?
+- [build] /done Phase 3 handoff should not present options — Claude should evaluate the queue state (do any Captures block the next batch?) and make a single recommendation, not ask the user to figure it out
+- [build] /next pre-flight presentation (Step 1.4) should not show raw type markers ([build], [test]) — group items under Build and Test headers instead. Type markers are for Claude's processing, not user-facing display.
+- [build] /next Step 1.4 prompt should not offer "adjust scope / pick a different entry" — Claude owns dependency management and batch ordering. The presentation is the recommendation; the prompt should just be "Ready?" not a menu that invites the user to second-guess the sequencing.
+- [build] /done Step 1.2 test generation is a blanket rule that doesn't distinguish code from docs. For procedure doc edits, the batch's own [test] entry already verifies correctness — /done tests just produce trivial "does line exist" checks. Step 1.2 should scope test generation to code/app changes, not all file changes.
 
 ### Parked

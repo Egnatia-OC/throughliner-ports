@@ -47,7 +47,7 @@ Verifier is either `Claude` (can be checked programmatically or by reading code)
 
 For any test marked `Claude`: run it now. Report pass/fail. Update the test line:
 - `- [x] [Run] API returns 200 — Claude ✓`
-- `- [ ] [Run] API returns 200 — Claude ✗ (got 404, see note)`
+- `- [x] [Run] API returns 200 — Claude ✗ (got 404, see note)`
 
 Failed Claude tests: note the failure, suggest whether it's a bug (route to queue) or expected (user decides).
 
@@ -88,7 +88,7 @@ Summarize for the user:
 
 #### 2.1 Write LOG entry
 
-Append the log entry to `LOG/log.md`. Use a placeholder for the commit hash — it gets filled in after the commit (step 2.4).
+Append the log entry to `LOG/log.md`. Multiple entries are consecutive `##` headings — no date separators. Use a placeholder for the commit hash — it gets filled in after the commit (step 2.4).
 
 ```markdown
 ## [HASH] — [one-line summary of what shipped]
@@ -133,10 +133,10 @@ Created by /next Step 2 when the batch was locked. Deleting it unlocks future bu
 
 ### Phase 3: Handoff [BRIEF, PROMPT]
 
-Tell the user what's next:
-- If QUEUE.md has more batches: "Next up is [batch]. Run /next when ready."
-- If QUEUE.md Batches section is empty: "Queue is clear. Run /plan when you have more to add."
-- If items were routed to Captures: "There are new items in Captures. Run /plan to process them before the next build."
+Evaluate the queue state and make one recommendation (check in this order):
+1. If items were routed to Captures during this session and any of them affect the next batch → recommend /plan first, name the blocking item.
+2. If QUEUE.md has more batches → recommend the next batch by name.
+3. If QUEUE.md Batches section is empty → "Queue is clear. Run /plan when you have more to add."
 
 ---
 

@@ -38,6 +38,7 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 - Nothing unrouted survives a session. Ideas, questions, and observations get filed or explicitly dropped before close.
 - SPEC.md is read-only during builds. If you find a spec issue mid-build, note it for /plan — don't edit it now.
 - One build at a time. Never start a new /next while _build.md exists. Finish and /done first.
+- An empty Batches section is the normal resting state — it means all planned work is done, not that something is wrong. Run /plan to add more when the user is ready.
 
 ## File safety
 

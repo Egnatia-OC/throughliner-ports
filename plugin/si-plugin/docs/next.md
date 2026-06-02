@@ -12,14 +12,14 @@ Before starting:
 
 3. **Blocker gate:** Scan for blockers that would force guessing:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
-   - Are there [question] entries within or above the batch that would affect this work? → Surface them. Resolve or confirm they're independent.
+   - Are there [question] entries in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
    - Batch title and all entry text from QUEUE.md
    - "Ready to start? (yes / adjust scope / pick a different entry)"
 
-## Step 2: Lock scope
+## Step 2: Lock scope [SILENT]
 
 Once the user confirms:
 
@@ -122,7 +122,7 @@ If the conversation is getting long and context is running low, prefer these opt
 
 Never compact silently. The user should know what's being traded away.
 
-## Step 8: Completion [BRIEF, PROMPT]
+## Step 7: Completion [BRIEF, PROMPT]
 
 When all entries are ticked:
 1. Tell the user the build is complete.

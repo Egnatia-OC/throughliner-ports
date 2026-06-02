@@ -408,3 +408,16 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** None
+
+## 50a0d73 — Procedure doc cleanup sweep
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md
+- plugin/si-plugin/docs/done.md
+- plugin/si-plugin/docs/behaviour.md
+
+**Tests:** 1 passed (batch end-to-end read), 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** /done Phase 3 should be single recommendation; /next presentation should group by Build/Test headers not show type markers; /next prompt should be "Ready?" not a menu; /done test generation should scope to code changes not all file changes
