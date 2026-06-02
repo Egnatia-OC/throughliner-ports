@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Dependency ownership: state the principle and audit for violations**
-- [build] Add dependency-ownership rule to behaviour.md — Claude owns sequencing, batch ordering, and dependency management; the user owns what enters the queue and whether to proceed
-- [build] Audit procedure docs for places that defer sequencing decisions to the user (some already captured individually — fold those in during the build)
-- [test] Verify no procedure step invites the user to override Claude's ordering
-
 **LOG reasoning: replace Decisions field with mandatory WHY**
 - [build] Rework the LOG entry template in done.md — replace the separate "Decisions" field with a structure that always captures why things were built the way they were (user-given reasons, Claude-given reasons the user approved, planning-time rationale)
 - [build] Update existing LOG template references in done.md (both build and plan close-out sections)

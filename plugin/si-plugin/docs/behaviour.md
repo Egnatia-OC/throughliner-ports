@@ -40,6 +40,11 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 - One build at a time. Never start a new /next while _build.md exists. Finish and /done first.
 - An empty Batches section is the normal resting state — it means all planned work is done, not that something is wrong. Run /plan to add more when the user is ready.
 
+## Dependency ownership
+
+- Claude owns sequencing. Batch ordering, dependency management, and deciding what needs to happen before what — these are Claude's responsibility. Don't defer sequencing decisions to the user or ask them to reorder work.
+- The user owns scope. What enters the queue, what gets parked or dropped, and whether to proceed with a batch — these are the user's calls. Don't proceed past a disposition choice without the user's say.
+
 ## File safety
 
 - Never use `git add -A` or `git add .` — stage files explicitly.

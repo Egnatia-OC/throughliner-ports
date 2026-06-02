@@ -60,7 +60,7 @@ Bold title, type-marked entries. Builds first, tests follow. Each entry names it
 - *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."
 - *Verification burden:* if the user would need to test more than 5 things, split it.
 
-**Ordering:** Dependencies first, then scaffolding, then features, then polish. Claude proposes this ordering and explains why.
+**Ordering:** Dependencies first, then scaffolding, then features, then polish. Claude determines this ordering and reports where each batch landed and why.
 
 ## Step 4: Close out `[BRIEF, PROMPT]`
 

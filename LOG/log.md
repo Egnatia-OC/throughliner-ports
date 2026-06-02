@@ -433,3 +433,16 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Captures routed:** All 9 processed — 5 promoted, 2 dropped, 1 parked, 1 new item added
+
+## 6a5ec81 — Dependency ownership: state the principle and audit for violations
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md: added "Dependency ownership" section (Claude owns sequencing, user owns scope)
+- plugin/si-plugin/docs/next.md: removed "pick a different entry" from Step 1.4, added /plan routing note
+- plugin/si-plugin/docs/plan.md: changed "proposes" to "determines" in Step 3 Ordering
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Decisions:** None
+
+**Routed to Captures:** None
