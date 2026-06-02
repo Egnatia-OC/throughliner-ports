@@ -65,13 +65,13 @@ For each file that was created, renamed, deleted, or significantly modified:
 - Update descriptions if the file's role changed
 - Remove entries for deleted files
 
-#### 1.6 Route findings to Ideas
+#### 1.6 Route findings to Captures
 
 During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. For each finding:
 
-- Add it to the **Ideas** section of QUEUE.md as an `[idea]` entry.
+- Add it to the **Captures** section of QUEUE.md as an `[idea]` entry.
 - Don't promote findings to batches during /done — that's /plan's job.
-- If a test failure needs a fix, route the fix to Ideas too (not directly to a batch).
+- If a test failure needs a fix, route the fix to Captures too (not directly to a batch).
 
 This keeps /done mechanical and defers judgment to the next /plan session.
 
@@ -80,7 +80,7 @@ This keeps /done mechanical and defers judgment to the next /plan session.
 Summarize for the user:
 - What was built (from _build.md Changes section)
 - Test results (passed / failed / skipped)
-- Anything routed to Ideas
+- Anything routed to Captures
 
 ### Phase 2: Mechanical (rote file operations) [SILENT]
 
@@ -98,7 +98,7 @@ Write the log entry to `LOG/YYYY-MM-DD.md` (create or append). Use a placeholder
 
 **Decisions:** [any design decisions made during the build, or "none"]
 
-**Routed to Ideas:** [anything added to the Ideas section, or "none"]
+**Routed to Captures:** [anything added to the Captures section, or "none"]
 ```
 
 #### 2.2 Write DECISIONS.md entries
@@ -114,7 +114,7 @@ Use the same `[HASH]` placeholder. Skip this step if no decisions were made.
 #### 2.3 Staleness sweep
 
 Quick check of QUEUE.md:
-- Do any remaining batches or Ideas reference files that were renamed or deleted in this build?
+- Do any remaining batches or Captures reference files that were renamed or deleted in this build?
 - Do any reference old behaviour that this build changed?
 - If so, flag them (don't edit without asking).
 
@@ -138,7 +138,7 @@ This unlocks future builds. Only do this after everything above is complete.
 Tell the user what's next:
 - If QUEUE.md has more batches: "Next up is [batch]. Run /next when ready."
 - If QUEUE.md Batches section is empty: "Queue is clear. Run /plan when you have more to add."
-- If items were routed to Ideas: "There are new items in Ideas. Run /plan to process them before the next build."
+- If items were routed to Captures: "There are new items in Captures. Run /plan to process them before the next build."
 
 ---
 
@@ -150,7 +150,7 @@ Use this after /plan. Lighter procedure: log what was decided, commit.
 
 Summarize what happened during the /plan session:
 - Batches created or modified
-- Ideas promoted, parked, or dropped
+- Captures promoted, parked, or dropped
 - Questions resolved
 - Any spec changes
 
@@ -166,7 +166,7 @@ Write the log entry to `LOG/YYYY-MM-DD.md` (create or append). Use a placeholder
 
 **Decisions:** [design decisions made, or "none"]
 
-**Ideas routed:** [what was promoted/parked/dropped from Ideas, or "none"]
+**Captures routed:** [what was promoted/parked/dropped from Captures, or "none"]
 ```
 
 ### 3. Write DECISIONS.md entries
@@ -196,6 +196,6 @@ Tell the user what's next:
 
 - Do NOT skip Phase 1 (build close-out) even if the user says "just commit." The judgment steps prevent drift.
 - One test at a time for user-verified tests. Don't dump the full list.
-- Failed tests route to Ideas — never fix during /done.
+- Failed tests route to Captures — never fix during /done.
 - Git push is always a prompt, never automatic.
 - Mode detection is automatic. Don't ask the user which mode — check for _build.md.

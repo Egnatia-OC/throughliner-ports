@@ -4,15 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Rename Ideas to Captures and remove drift check**
-Files:
-- `plugin/si-plugin/docs/plan.md`
-- `plugin/si-plugin/docs/done.md`
-- `plugin/si-plugin/docs/setup.md`
-- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
-- [build] Rename "Ideas" to "Captures" throughout all procedure docs and template
-- [build] Remove drift check (Step 3) from plan.md — existing /done safeguards already cover it
-
 **CLAUDE.md template ownership**
 Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
 - [build] Delineate plugin-seeded content from user-appended content so users know where they can add their own rules without breaking plugin behaviours.
@@ -20,13 +11,15 @@ Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md
 **E2E: consumer project smoke tests**
 - [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, Files list, type-marked entries)
 - [test] Run /next in consumer project, verify it picks up a batch and builds all items
-- [test] Run /done in consumer project, verify it routes findings to Ideas
+- [test] Run /done in consumer project, verify it routes findings to Captures
 
 ### Parked
 
-## Ideas
+## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] Rephrase "no active build" pre-flight message in next.md — the wording sounds alarming, like something is already wrong. It should reassure, not startle.
+- [question] Should LOG entries still include test results? The recent shift toward LOG as a decision log was not discussed in the context of testing data. Deserves its own discussion.
 
 ### Parked

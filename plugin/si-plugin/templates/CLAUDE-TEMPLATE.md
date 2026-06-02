@@ -13,7 +13,7 @@ This project uses the Sovereign Implementer method.
 ## Workflow
 
 - `/setup` — initial project scaffolding (already done if you're reading this).
-- `/plan` — manage the queue, add ideas, resolve questions, check for drift.
+- `/plan` — manage the queue, process captures, resolve questions.
 - `/next` — execute the top queue entry (build or test).
 - `/done` — close the build, record what happened, commit.
 

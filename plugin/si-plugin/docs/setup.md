@@ -54,7 +54,7 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 ### Parked
 
-## Ideas
+## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
