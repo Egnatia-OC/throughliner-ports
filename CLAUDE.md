@@ -67,7 +67,14 @@ No code method/
 When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
 
 1. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
-2. FAQ freshness check: compare `git log --oneline plugin/si-plugin/docs/` against the last commit that touched `plugin/si-plugin/templates/faq-template.md`. If procedure docs changed more recently, update the FAQ templates to reflect the current procedures before packaging.
+2. Pre-push consistency sweep — two passes, run in order:
+
+   **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries in LOG/log.md to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
+
+   **Pass B — Check for staleness against those changes:**
+   - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
+   - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
+   - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
 3. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
 4. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
 5. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).

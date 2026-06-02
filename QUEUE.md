@@ -4,10 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Rename "open questions" to "captures" across plugin docs**
-- [build] Search all target procedure docs and templates for "open questions" and "questions" references that should say "captures" — rename where applicable
-- [test] Grep target docs for any remaining "open question" references
-
 **Tighten /plan Captures processing step 2**
 - [build] Rewrite plan.md step 2 of the Captures loop — require engaging with substance and recommending in the same turn as presentation, and require presenting all four disposition options (promote / question first / park / drop) with the recommendation marked
 - [test] Verify step 2 text explicitly requires both engagement and full option set
@@ -29,6 +25,8 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
+- [idea] Push markers in LOG — append a `**Pushed:** v<VERSION>` line to the last LOG entry before push-and-rezip runs, so you can scan what happened between releases without running git commands.
 - [build] /plan batch format implies every batch needs a [test] entry — Claude pattern-matches and generates arbitrary tests even when the build entries are self-verifying. plan.md should say test entries are only added when there's a behaviour to verify that isn't self-evident from the build entries. Related to but distinct from the /done test-generation scoping fix (that's about post-build tests; this is about planning-time test entries).
 
 ### Parked

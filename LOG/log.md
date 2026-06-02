@@ -457,3 +457,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The Decisions field was too narrow — it only captured explicit "decisions" and defaulted to "none" in almost every entry. Reasoning existed for every build (user direction, planning rationale, tradeoffs) but didn't register as a "decision." Replacing with a mandatory **Why:** field ensures reasoning is always recorded.
 
 **Routed to Captures:** None
+
+## dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
+
+**Files touched:**
+- CLAUDE.md: restructured push-and-rezip step 2 — two-pass sweep with explicit feed, separated target consistency from project staleness
+- QUEUE.md: added push-marker Capture
+
+**Tests:** 1 passed (grep for "open question" — 0 hits), 0 failed, 0 skipped
+
+**Why:** The batch was queued to catch lingering "open questions" references, but the rename had already been completed in session e954603. All remaining "question" uses are the [question] type marker, pipeline stage, disposition, or plain English. The mid-build CLAUDE.md edit came from a user question about what feeds the pre-push staleness sweep — the original step 2 said "check for staleness" without specifying against what. Now explicitly fed by `git log origin/main..HEAD` → LOG entries.
+
+**Routed to Captures:** Push markers in LOG (added during build)
