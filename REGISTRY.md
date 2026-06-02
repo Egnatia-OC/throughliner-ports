@@ -16,3 +16,4 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/docs/done.md` — /done procedure
 - `plugin/si-plugin/docs/behaviour.md` — universal behaviour rules loaded into every adopted session
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
+- `reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
