@@ -4,13 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Session-start message tone**
-Files:
-- `plugin/si-plugin/hooks/session_start.py`
-- [build] Reword the active-build branch (~line 96): "The previous session was interrupted mid-build" implies a crash. Make it neutral — the build is simply still open/unfinished, which is normal when the user closes the app deliberately.
-- [build] Review the no-active-build branch (~line 103) and soften if needed so both branches share a calm, reassuring tone.
-- [test] Trigger session_start in both states (active build present / absent) and confirm each message reads as reassuring, not alarming.
-
 **LOG test-to-decision linkage**
 Files:
 - `plugin/si-plugin/docs/done.md`

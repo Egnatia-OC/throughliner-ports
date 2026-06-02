@@ -94,14 +94,14 @@ def main() -> int:
         context_parts.append("")
         context_parts.append(
             "ACTIVE BUILD in progress (_build.md exists). "
-            "The previous session was interrupted mid-build. "
+            "A build is still open from a previous session. "
             "Run /next to resume, or /done if the work is complete."
         )
     else:
         context_parts.append("")
         context_parts.append(
-            "No active build. Run /plan to manage the queue, "
-            "or /next to start the top batch."
+            "No unfinished builds from a previous session. "
+            "Run /plan to manage the queue, or /next to start the top batch."
         )
 
     output = {
