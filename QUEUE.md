@@ -89,5 +89,10 @@ Files:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [question] Claude asked "reorder?" at end of summary, but reordering is Claude's responsibility — need full enquiry into when and where the plugin empowers Claude to own dependency management (per SPEC: "helps the user harness Claude's skills in dependency management")
+- [build] Remove "design decisions" as a separate category everywhere — everything is a decision. The LOG should always record WHY things were implemented (reasons given by user or by Claude and approved). Reasons made explicit at planning time must also be preserved. The current framing causes important information to be lost and never recorded.
+- [idea] Sizing gates in plan.md need future planning work — current rules may not be right
+- [build] Find all instances of "open questions" and "questions" across plugin docs and rename to "captures" where applicable — "open questions" is a retired name for captures
+- [question] Why is /plan showing a full summary of the batches queue at all? Everything in batches already went through /plan discussion to get there. The summary appeared when Captures was empty — is the procedure defaulting to "present queue state" when there's nothing to process? What should /plan actually do when Captures is empty?
 
 ### Parked
