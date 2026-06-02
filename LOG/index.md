@@ -36,3 +36,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - 50a0d73 — Procedure doc cleanup sweep
 - 409b0b7 — /plan session: process Captures, create batches, file sizing research
 - 6a5ec81 — Dependency ownership: state the principle and audit for violations
+- cf3217e — LOG reasoning: replace Decisions field with mandatory WHY

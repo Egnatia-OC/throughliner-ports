@@ -446,3 +446,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Decisions:** None
 
 **Routed to Captures:** None
+
+## cf3217e — LOG reasoning: replace Decisions field with mandatory WHY
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: replaced **Decisions:** with **Why:** in both build and plan close-out LOG templates
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Why:** The Decisions field was too narrow — it only captured explicit "decisions" and defaulted to "none" in almost every entry. Reasoning existed for every build (user direction, planning rationale, tradeoffs) but didn't register as a "decision." Replacing with a mandatory **Why:** field ensures reasoning is always recorded.
+
+**Routed to Captures:** None

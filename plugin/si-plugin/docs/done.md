@@ -98,7 +98,7 @@ Append the log entry to `LOG/log.md`. Multiple entries are consecutive `##` head
 
 **Tests:** [X passed, Y failed, Z skipped]
 
-**Decisions:** [any design decisions made during the build, or "none"]
+**Why:** [what motivated the work and the approach — user direction, planning rationale, tradeoffs, constraints discovered during the build. Always present — every build has reasoning worth recording.]
 
 **Routed to Captures:** [anything added to the Captures section, or "none"]
 ```
@@ -162,7 +162,7 @@ Append the log entry to `LOG/log.md`. Use a placeholder for the commit hash.
 **Queue changes:**
 - [batches added, reordered, or modified]
 
-**Decisions:** [design decisions made, or "none"]
+**Why:** [what motivated the queue changes — user priorities, dependency analysis, captured observations. Always present.]
 
 **Captures routed:** [what was promoted/parked/dropped from Captures, or "none"]
 ```

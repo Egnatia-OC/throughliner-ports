@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**LOG reasoning: replace Decisions field with mandatory WHY**
-- [build] Rework the LOG entry template in done.md — replace the separate "Decisions" field with a structure that always captures why things were built the way they were (user-given reasons, Claude-given reasons the user approved, planning-time rationale)
-- [build] Update existing LOG template references in done.md (both build and plan close-out sections)
-- [test] Review recent LOG entries to confirm the new template would have captured reasoning that the old one missed
-
 **Rename "open questions" to "captures" across plugin docs**
 - [build] Search all target procedure docs and templates for "open questions" and "questions" references that should say "captures" — rename where applicable
 - [test] Grep target docs for any remaining "open question" references
