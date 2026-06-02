@@ -28,17 +28,20 @@ One item at a time, oldest first. Never preview upcoming items. State the count 
 
 For each item:
 
-1. **Present** `[BRIEF]` — Show the item. One line of context if needed. Don't assess yet.
+1. **Present and recommend** `[DISCUSS, PROMPT]` — Show the item, then engage with its substance in the same turn. Depth scales with the item — explore alternatives for open-ended ones, a sentence or two for straightforward ones. Close with all four dispositions and your recommendation marked:
+   - **Promote** — ready to become a batch
+   - **Question first** — needs a design decision before it becomes work
+   - **Park** — not now, keep for later
+   - **Drop** — remove it
+   Recommend one and say why. **Stop and wait.** The user decides.
 
-2. **Discuss and recommend** `[DISCUSS, PROMPT]` — Engage with the substance. Depth scales with the item — explore alternatives for open-ended ones, a sentence or two for straightforward ones. Close with a recommended disposition (promote / question first / park / drop) and why. **Stop and wait.** The user decides.
-
-3. **Execute the disposition:**
+2. **Execute the disposition:**
    - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, type-marked lines). Show it in full. Don't write to QUEUE.md until the user approves the wording. Claude places the batch using dependency ordering and reports where it went.
    - **Question first** — The item needs a design decision before it becomes work. Present the question, offer options, recommend one, wait. Once decided, return to disposition.
    - **Park** — Move to Parked.
    - **Drop** — Remove it. If the item has already been decided (check LOG/index.md), state the prior decision and commit rather than re-opening discussion.
 
-4. Remove the item from Captures once routed.
+3. Remove the item from Captures once routed.
 
 After all items are processed, Captures should be empty (just the section header and `### Parked` subsection intact).
 

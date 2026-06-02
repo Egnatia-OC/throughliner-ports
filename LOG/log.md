@@ -469,3 +469,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The batch was queued to catch lingering "open questions" references, but the rename had already been completed in session e954603. All remaining "question" uses are the [question] type marker, pipeline stage, disposition, or plain English. The mid-build CLAUDE.md edit came from a user question about what feeds the pre-push staleness sweep — the original step 2 said "check for staleness" without specifying against what. Now explicitly fed by `git log origin/main..HEAD` → LOG entries.
 
 **Routed to Captures:** Push markers in LOG (added during build)
+
+## 8512268 — Tighten /plan Captures processing step 2
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: merged sub-steps 1 (present) and 2 (discuss/recommend) into single sub-step with explicit four-disposition list
+
+**Tests:** 2 passed, 0 failed, 0 skipped
+
+**Why:** The two-step split (present without assessing → then discuss and recommend) forced Claude to produce an empty first turn before engaging. Merging into one turn is more natural and ensures substance engagement always accompanies presentation. Adding the explicit disposition list (promote / question first / park / drop) prevents Claude from omitting options or defaulting to promote without surfacing alternatives.
+
+**Routed to Captures:** None

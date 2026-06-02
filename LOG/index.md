@@ -38,3 +38,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - 6a5ec81 — Dependency ownership: state the principle and audit for violations
 - cf3217e — LOG reasoning: replace Decisions field with mandatory WHY
 - dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
+- 8512268 — Tighten /plan Captures processing step 2
