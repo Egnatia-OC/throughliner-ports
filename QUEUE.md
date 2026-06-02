@@ -4,12 +4,51 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Remove DECISIONS.md, restructure LOG to index + log**
+Files:
+- `plugin/si-plugin/docs/done.md`
+- `plugin/si-plugin/docs/setup.md`
+- `plugin/si-plugin/docs/behaviour.md`
+- `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md`
+- `plugin/si-plugin/templates/faq-template.md`
+- `plugin/si-plugin/templates/faq-index-template.md`
+- `SPEC.md`
+- `CLAUDE.md`
+- `DECISIONS.md`
+- `LOG/`
+- [build] Rewrite done.md LOG steps: append entries to LOG/log.md, update LOG/index.md with one-line summary + hash, remove all DECISIONS.md writing and hash backfill for it
+- [build] Update setup.md scaffolding: remove DECISIONS.md, scaffold LOG/index.md and LOG/log.md instead of empty LOG/
+- [build] Remove DECISIONS.md rules from behaviour.md (prior-decision check, design-intent lookup) — replace with "check LOG/index.md for prior decisions"
+- [build] Update CLAUDE-TEMPLATE.md: remove DECISIONS.md from project docs list, update LOG description
+- [build] Update SPEC.md: remove DECISIONS.md from project docs list
+- [build] Update CLAUDE.md: remove DECISIONS.md from project structure and working conventions
+- [build] Update FAQ templates: remove DECISIONS.md Q&A, update LOG Q&A to reflect new structure
+- [build] Delete DECISIONS.md from this project
+- [build] Migrate existing LOG entries: merge LOG/2026-06-01.md and LOG/2026-06-02.md into LOG/log.md, create LOG/index.md from existing entries, delete old per-date files
+- [test] Grep all plugin docs for "DECISIONS" and confirm zero references remain
+- [test] Verify LOG/index.md and LOG/log.md structure matches the new done.md instructions
+
+**Drop file lists from batches**
+Files:
+- `plugin/si-plugin/docs/plan.md`
+- `plugin/si-plugin/docs/next.md`
+- `plugin/si-plugin/docs/done.md`
+- `plugin/si-plugin/templates/faq-template.md`
+- `plugin/si-plugin/templates/faq-index-template.md`
+- [build] Remove Files: list from batch format in plan.md Step 5 — entries name their own targets
+- [build] Rewrite next.md scope enforcement: remove "only touch files on the list" rule, replace with "stay within the work described by the entries — if you need to touch something unrelated, say so first"
+- [build] Update _build.md structure in next.md Step 2: remove Files section, keep Progress and Changes
+- [build] Update done.md staging references to use _build.md Changes section instead of file list
+- [build] Update FAQ templates: remove/rewrite the "what happens if Claude needs to edit a file outside scope" Q&A
+- [build] Strip Files: lists from all existing batches in QUEUE.md
+- [test] Read plan.md, next.md, and done.md to confirm no remaining references to batch file lists
+
 **/plan Captures flow: define thresholds and fill gaps**
 Files:
 - `plugin/si-plugin/docs/plan.md`
 - `plugin/si-plugin/docs/behaviour.md`
 - [build] Define the pipeline threshold in behaviour.md: "if a user would see or experience the difference, it changes the product — update SPEC.md first"
-- [build] Add "already decided (found in DECISIONS.md)" as an explicit drop reason in plan.md Step 3
+- [build] Add "already decided (found in LOG/index.md)" as an explicit drop reason in plan.md Step 3
 - [build] Specify whether new batch placement needs user approval or Claude places using ordering logic and reports
 - [build] Add instruction to state the item count before processing Captures ("3 items in Captures. First: ...")
 - [build] Specify what the Captures section looks like after all items are processed (empty section with Parked subsection intact)
@@ -50,10 +89,5 @@ Files:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [idea] /plan Captures processing skips real discussion — items go from Captures straight to batches without the thinking that turns a problem into a plan. The "discuss" step in Step 3 is treated as a speed bump between present and dispose, not actual planning.
-- [idea] /plan moves to the next item before the current one is resolved — Claude previews or describes the next agenda item before agreement that the previous one is done. Needs an explicit gate: no next item until the user signals the current one is finished.
-- [idea] Decisions aren't being captured — /done writes "Decisions: none" on nearly every entry even when the user made real design decisions during the build. The procedure doesn't define what counts as a decision, so Claude defaults to "none" unless it feels architecturally significant. Needs a definition or examples in done.md so Claude recognises user decisions when they happen (e.g. "session-start message should reference prior session" is a decision about user-facing tone).
-- [idea] File list in batches may not be pulling its weight — it duplicated information already in the entries, and this build's CLAUDE.md omission shows it can be wrong without anyone noticing. Is the file list actually useful, or is it ceremony?
-- [build] LOG format is wrong — currently writes to one file per date (LOG/YYYY-MM-DD.md) with multiple entries stacked inside. Should be one file per commit (LOG/<hash>.md) plus a lightweight index file (one-line summaries with links). This was decided 2026-05-22 but never implemented. Affects done.md (both build and plan close-out sections), setup.md (LOG scaffolding), and possibly session_start.py if it reads LOG.
 
 ### Parked
