@@ -4,17 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Response-shape tag rules: fill gaps in behaviour.md**
-Files:
-- `plugin/si-plugin/docs/behaviour.md`
-- `plugin/si-plugin/docs/next.md`
-- `plugin/si-plugin/docs/plan.md`
-- [build] Define default behaviour for unlabelled steps (e.g. "brief acknowledgment unless the step is purely internal, in which case no output")
-- [build] Add tag precedence rule: step-level tags override phase-level tags when they conflict
-- [build] Add hierarchy rule: procedure response-shape tags govern during skill execution; user communication preferences from CLAUDE.md apply to unlabelled steps and general conversation
-- [build] Fix [BRIEF] tag conflicts: either retag steps whose content requirements exceed two sentences (next.md Step 1.4, plan.md Step 7, plan.md Step 2 queue-state presentation) or add a carve-out to the [BRIEF] definition — structured content (lists, option sets) doesn't count against the sentence limit
-- [test] Re-read behaviour.md and all procedure docs to confirm tag rules are clear, non-contradictory, and cover all nine findings from the reader test (6 tag system + 3 BRIEF conflicts)
-
 **FAQ reference: create templates and wire into /setup**
 Files:
 - `plugin/si-plugin/templates/faq-template.md`

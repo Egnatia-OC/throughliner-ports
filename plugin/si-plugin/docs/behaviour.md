@@ -11,19 +11,28 @@ These rules are active in every session where the plugin is installed and the pr
 
 ## Response-shape tags
 
-Procedure docs use these tags to control verbosity and interaction style per step. Tags compose freely — a step can be [BRIEF, PROMPT] or [SEQUENCE, PROMPT]. Unlabelled steps get Claude's default behaviour.
+Procedure docs use these tags to control verbosity and interaction style per step. Tags compose freely — a step can be [BRIEF, PROMPT] or [SEQUENCE, PROMPT].
 
 - **[SILENT]** — Do the work, don't narrate it. No status updates, no summaries. Just do it.
-- **[BRIEF]** — One or two sentences max. State the result or decision, nothing else.
+- **[BRIEF]** — One or two sentences of prose max. State the result or decision, nothing else. Structured content (lists, file lists, option sets) doesn't count against the sentence limit — include whatever the user needs to make a decision.
 - **[DISCUSS]** — Engage substantively. Explain tradeoffs, surface concerns, give a recommendation.
 - **[PROMPT]** — Stop and wait for user input before continuing. Never skip past a [PROMPT].
 - **[SEQUENCE]** — One item at a time. Present the first, wait for the user's response, then present the next. Do not preview upcoming items.
+
+### Unlabelled steps
+
+Steps without a tag get a brief acknowledgment if the user needs to know the step happened, or no output if the step is purely internal. Don't narrate work, but don't go silent when the user would reasonably want confirmation.
+
+### Tag precedence
+
+- Step-level tags override phase-level tags. If a phase is marked [SILENT] but one step within it is marked [PROMPT], the step-level [PROMPT] wins.
+- During skill execution, procedure response-shape tags govern. User communication preferences from CLAUDE.md (conversation style, verbosity, one-item-at-a-time) apply to unlabelled steps and to general conversation outside skill execution.
 
 ## Scope discipline
 
 - Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, DECISIONS.md, or LOG/, write it there.
 - Doc routing: SPEC.md answers what/who/how/why the product exists. QUEUE.md answers what to work on next. REGISTRY.md answers what components exist and where. DECISIONS.md answers why a design choice was made and when. LOG/ answers what happened in a given session.
-- Don't build during /plan. Don't plan during /next.
+- Planning takes place in /plan, and building takes place in build. Don't build during /plan. Don't plan during /next.
 - New features need a spec entry before a build entry. The pipeline is: idea → question (if unclear) → SPEC.md entry → QUEUE.md [build] entry.
 - Don't fix things outside the current scope. Note them for the queue.
 - Nothing unrouted survives a session. Ideas, questions, and observations get filed or explicitly dropped before close.
