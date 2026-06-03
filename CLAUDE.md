@@ -75,12 +75,13 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
    - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
-3. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
-4. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-5. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
-6. Stage the zip, archive changes, and plugin.json. Commit: "Bump to v<VERSION> and repackage".
-7. `git push`.
-8. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+3. Append a push marker to the last entry in `LOG/log.md`: `**Pushed:** v<VERSION>` on its own line at the end of the entry (before the next `##` heading or end of file).
+4. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+6. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
+7. Stage the zip, archive changes, and plugin.json. Commit: "Bump to v<VERSION> and repackage".
+8. `git push`.
+9. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 
 ## E2E testing
 

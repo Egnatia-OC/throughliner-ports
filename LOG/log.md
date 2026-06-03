@@ -514,3 +514,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** /plan was jumping straight into Captures processing without asking the user what brought them here. Users often invoke /plan because they have something top of mind, not because they want to process Captures. The entry question loop lets them share and route their items first, repeating "anything else?" until they explicitly say they're ready for Captures.
 
 **Routed to Captures:** None
+
+## 52be5d4 — Add push markers to push-and-rezip procedure
+
+**Files touched:**
+- CLAUDE.md: inserted step 3 ("Append push marker to last LOG entry") into push-and-rezip procedure, renumbered steps 3-8 → 4-9
+
+**Tests:** 0 (procedure doc change — no code/app tests generated)
+
+**Why:** Release boundaries were invisible in LOG without running git commands. Adding a `**Pushed:** v<VERSION>` line to the last LOG entry during push-and-rezip makes it clear which entries shipped in each release, directly in the log.
+
+**Routed to Captures:** None

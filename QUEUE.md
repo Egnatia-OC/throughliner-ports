@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Push markers in LOG**
-- [build] Add a `**Pushed:** v<VERSION>` line to the push-and-rezip procedure — appended to the last LOG entry before repackaging, so release boundaries are visible in LOG without git commands
-
 **Move /done handoff before push prompt**
 - [build] Reorder done.md so the queue-state recommendation (Phase 3 handoff) comes before the "push to remote?" prompt in Step 2.4, not after
 
@@ -18,6 +15,9 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 **E2E: verify /setup on fresh project**
 - [test] Run /setup in consumer project, verify it scaffolds all four project docs and CLAUDE.md correctly
+
+**README overhaul**
+- [build] Rewrite README.md to capture repo browsers and smooth their entry — add a direct download link to the latest zip (`raw/main/plugin/si-plugin.zip`), sharpen the pitch for the front page, and streamline install-to-first-use flow
 
 ### Parked
 
