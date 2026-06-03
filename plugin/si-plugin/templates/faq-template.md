@@ -4,7 +4,7 @@ Answers to common questions about how this project's workflow operates.
 
 ## What do /plan, /next, and /done each do?
 
-They split work into three modes so nothing gets mixed up. **/plan** is for thinking — managing the queue, processing captured ideas, resolving design questions. **/next** is for doing — it picks the top batch from the queue and builds it. **/done** is for closing — it records what happened, runs tests, updates docs, and commits. You always move through them in that order: plan what to do, do it, close it out.
+They split work into three modes so nothing gets mixed up. **/plan** is for thinking — managing the queue, processing captured ideas, resolving design questions. **/next** is for doing — it picks the top batch from the queue and builds it. **/done** is for closing — it records what happened, updates docs, and commits. You always move through them in that order: plan what to do, do it, close it out.
 
 ## What's the difference between Batches and Captures in QUEUE.md?
 
@@ -48,4 +48,4 @@ Parked items are ideas or questions you've decided not to work on right now, but
 
 ## How do I know what was done in a previous session?
 
-Check the LOG/ folder. `LOG/index.md` has one-line summaries of every session with commit hashes (newest first). `LOG/log.md` has the full entries for the current release — what was built or planned, which files were touched, test results, the reasoning behind the work, and anything routed to Captures. Older entries are in per-release log files (`LOG/log-v*.md`). If you want to know why a design choice was made, search the log entries — every entry records why the work was done and the approach taken.
+Check the LOG/ folder. `LOG/index.md` has one-line summaries of every session with commit hashes (newest first). `LOG/log.md` has the full entries for the current release — what was built or planned, which files were touched, the reasoning behind the work, and anything routed to Captures. Older entries are in per-release log files (`LOG/log-v*.md`). If you want to know why a design choice was made, search the log entries — every entry records why the work was done and the approach taken.
