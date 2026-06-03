@@ -104,13 +104,12 @@ def main() -> int:
         context_parts.append("")
         context_parts.append(
             "ACTIVE BUILD in progress (_build.md exists). "
-            "A build is still open from a previous session. "
             "Run /next to resume, or /done if the work is complete."
         )
     else:
         context_parts.append("")
         context_parts.append(
-            "No unfinished builds from a previous session. "
+            "Ready. "
             "Run /plan to manage the queue, or /next to start the top batch."
         )
 

@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Rephrase session-start status messages**
-- [build] Update session_start.py to rephrase "no active build" so it reads as neutral status, not a failure — review all session-start messages for similar tone issues while in there
-
 **Scope planning-time test entries**
 - [build] Add rule to plan.md Step 3 — test entries are only added to a batch when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs a [test] entry.
 
@@ -24,6 +21,7 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] Post-update migration — no version tracking exists in consumer projects. After a plugin update that changes doc structure, existing projects silently drift. session_start should detect a version mismatch and trigger a migration process before any skill runs. Design questions: where to store the version (CLAUDE.md managed block? dotfile?), what migration looks like (automated rewrite vs guided walkthrough), how to handle interrupting the user's intended skill.
 - [idea] Mid-build scope expansion protocol — when a user raises something out of scope during /next, Claude should default to routing it to Captures (or batch at discretion), explicitly mentioning "you can also add it to this build's scope" as a last-resort workaround framed as out-of-procedure. Two sub-questions: (1) should CLAUDE.md always be in scope for every batch, since it's the most common target for mid-build out-of-scope edits? (2) should the explicit "add to scope" workaround only be available in self-hosting projects building their own SI fork?
 - [idea] Capture moments should loop — when a user shares an idea or observation during any skill (not just /plan), Claude should ask "anything else?" before resuming the procedure. Currently the user has to interrupt to share a second thought.
 

@@ -536,3 +536,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The handoff recommendation ("next up is X") gives the user context for whether to push now or keep building. Having the push prompt before the handoff meant the user was deciding blind. Reordering both close-out paths so the user sees what's next before being asked about pushing.
 
 **Routed to Captures:** None
+
+## 20de57d — Rephrase session-start status messages
+
+**Files touched:**
+- plugin/si-plugin/hooks/session_start.py: replaced "No unfinished builds from a previous session" with "Ready."; trimmed redundant "A build is still open from a previous session" from active build message
+
+**Tests:** 2 passed, 0 failed, 0 skipped
+
+**Why:** The no-active-build message defined the state by what was absent, reading as a failure report rather than neutral status. "Ready." states what's true. The active build message had a redundant sentence restating what "ACTIVE BUILD in progress" already conveyed.
+
+**Routed to Captures:** None
