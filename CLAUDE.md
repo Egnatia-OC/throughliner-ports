@@ -20,7 +20,7 @@ Host and target are the same plugin at different stages. Ambiguous references to
 
 **4 project docs** (created by `/setup` in consumer projects):
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
-- `QUEUE.md` — work batches. Flat inline entries, type-marked (build/test/idea/question).
+- `QUEUE.md` — work batches (Build/Test subheadings) and captured ideas ([idea]/[question] tags).
 - `REGISTRY.md` — components list. What exists, where it lives.
 - `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), `LOG/log.md` for current release entries, `LOG/log-v*.md` for archived releases.
 
@@ -31,8 +31,8 @@ Host and target are the same plugin at different stages. Ambiguous references to
 - `/done` — record what happened, clean up, commit.
 
 **2 hooks:**
-- `session_start` — detect project state (unadopted / adopted / active build), load behaviour rules.
-- `pre_tool_use` — SPEC.md read-only during builds, batch file-list boundary, git safety.
+- `session_start` — detect project state (unadopted / adopted / active build), load behaviour rules, check plugin version against .si-version.
+- `pre_tool_use` — SPEC.md read-only during builds, scope-lock, git safety.
 
 ## Where things live
 
@@ -106,7 +106,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures use [idea] and [question] tags.
 - **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), `LOG/log.md` for full entries (current release, newest first), `LOG/log-v*.md` for archived per-release entries.
 

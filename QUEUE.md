@@ -5,24 +5,36 @@
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
 **README operating conditions**
-- [build] Add an operating conditions section to the README distinguishing prerequisites (run /setup on first use) from tested-environment assumptions (Opus 4.6 on high, auto mode, /compact between commits, /clear or new chat between pushes)
+
+Build:
+- Add an operating conditions section to the README distinguishing prerequisites (run /setup on first use) from tested-environment assumptions (Opus 4.6 on high, auto mode, /compact between commits, /clear or new chat between pushes)
 
 **Test-aware planning**
-- [build] Add test execution context to plan.md: reference next.md's rules for what Claude can verify itself (code traces) vs what needs a live user session, so the planner splits test entries correctly at planning time
-- [build] Add planning rule to plan.md: user-run E2E tests get their own batch, not appended to build batches
+
+Build:
+- Add test execution context to plan.md: reference next.md's rules for what Claude can verify itself (code traces) vs what needs a live user session, so the planner splits test entries correctly at planning time
+- Add planning rule to plan.md: user-run E2E tests get their own batch, not appended to build batches
 
 **Remove test generation from /done**
-- [build] Remove the test generation step from /done (step 1.2). All testing is planned work — it belongs in batches via /plan, not generated ad hoc during close-out.
+
+Build:
+- Remove the test generation step from /done (step 1.2). All testing is planned work — it belongs in batches via /plan, not generated ad hoc during close-out.
 
 **Capture wording approval**
-- [build] Add rule to all skill procedure docs (next.md, done.md, plan.md): when capturing something the user raises, show the proposed wording and wait for approval before writing it to QUEUE.md
+
+Build:
+- Add rule to all skill procedure docs (next.md, done.md, plan.md): when capturing something the user raises, show the proposed wording and wait for approval before writing it to QUEUE.md
 
 **Restore web-search-when-uncertain rule**
-- [build] Add rule to all skill procedure docs (setup.md, plan.md, next.md, done.md): when Claude is uncertain about how something works, whether a better approach exists, or needs more information to answer confidently, offer to do a web search. File all research under resources/research/ for later reference.
+
+Build:
+- Add rule to all skill procedure docs (setup.md, plan.md, next.md, done.md): when Claude is uncertain about how something works, whether a better approach exists, or needs more information to answer confidently, offer to do a web search. File all research under resources/research/ for later reference.
 
 **Interview flow replaces "question first" disposition**
-- [build] Rewrite plan.md's capture processing loop: remove "question first" as a disposition. After presenting and discussing a capture, Claude interviews the user with follow-up questions it identifies, then asks if there's anything else to add. Only then recommend promote, park, or drop (three dispositions instead of four).
-- [build] Add in-session capture rule to plan.md: captures created during a /plan session go to the bottom of the list and get processed in order when their turn comes. No special announcement or permission check when reaching them.
+
+Build:
+- Rewrite plan.md's capture processing loop: remove "question first" as a disposition. After presenting and discussing a capture, Claude interviews the user with follow-up questions it identifies, then asks if there's anything else to add. Only then recommend promote, park, or drop (three dispositions instead of four).
+- Add in-session capture rule to plan.md: captures created during a /plan session go to the bottom of the list and get processed in order when their turn comes. No special announcement or permission check when reaching them.
 
 ### Parked
 
