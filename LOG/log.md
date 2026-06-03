@@ -2,6 +2,19 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 51ba675 — Why pipeline polish
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: added why-line to batch format (Step 3 example + Step 2.2 Promote instruction)
+- plugin/si-plugin/docs/done.md: pointed LOG Why field at batch's why-line (Step 2.1); added reasoning requirement to capture routing (Step 1.6)
+- plugin/si-plugin/docs/setup.md: tightened Q4 to one rough [build] entry; changed Step 4 closing message to direct to /plan first
+
+**Tests:** 0 (procedure doc changes only)
+
+**Why:** Reasoning was getting lost between pipeline stages. Captures recorded what was noticed but not why it mattered. Batches dropped the /plan discussion context entirely — the format had no place for reasoning. By /done, Claude had to reconstruct the "why" from whatever context survived compaction. Adding a why-line to the batch format gives reasoning a place to live from promotion through execution to logging. The Q4 tightening came from E2E observation: Claude was expanding a single user answer into 5 scoped entries, making scope decisions that belong in /plan.
+
+**Routed to Captures:** /setup closing message fix already covers Skill handoff polish batch entry — flag for removal
+
 ## dd67804 — LOG multi-file split
 
 **Files touched:**

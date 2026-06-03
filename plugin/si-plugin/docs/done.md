@@ -71,7 +71,7 @@ For each file that was created, renamed, deleted, or significantly modified:
 
 During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. For each finding:
 
-- Add it to the **Captures** section of QUEUE.md as an `[idea]` entry.
+- Add it to the **Captures** section of QUEUE.md as an `[idea]` entry. Include the reasoning — why it matters, what prompted the observation — not just what was noticed.
 - Don't promote findings to batches during /done — that's /plan's job.
 - If a test failure needs a fix, route the fix to Captures too (not directly to a batch).
 
@@ -98,7 +98,7 @@ Prepend the log entry to `LOG/log.md` — insert it immediately after the `# LOG
 
 **Tests:** [X passed, Y failed, Z skipped]
 
-**Why:** [what motivated the work and the approach — user direction, planning rationale, tradeoffs, constraints discovered during the build. Always present — every build has reasoning worth recording.]
+**Why:** [Start from the batch's why-line in _build.md, then expand with anything learned during the build — tradeoffs, constraints discovered, approach changes. Always present — every build has reasoning worth recording.]
 
 **Routed to Captures:** [anything added to the Captures section, or "none"]
 ```

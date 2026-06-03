@@ -4,10 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Why pipeline polish**
-- [build] Audit capture, /plan promotion, batch drafting, /next execution, and /done logging for why-preservation — ensure reasoning captured at any stage survives through the full pipeline into the log
-- [build] Tighten Q4 procedure in /setup to produce one rough [build] entry, not multiple scoped entries — E2E showed Claude expanding a singular instruction into 5 entries (2 build + 3 test), making scope decisions that belong in /plan
-
 **Skill handoff polish**
 - [build] Audit all skill-to-skill handoff prompts across /setup, /plan, /next, and /done — for each, simulate the prompt text and summarise the immediate context the user is in when they see it, then polish for clarity and flow
 - [build] Fix /done handoff ordering — push question first, then "run /next or /plan when ready" if not pushing
@@ -32,8 +28,9 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-
-
+- [idea] Batch entry format shows type tags ([build], [test]) inline instead of grouping under Build/Test headers — tags are for Claude's routing, not user display. Fix by changing how /plan writes batches: entries go under a **Build** or **Test** subheading instead of carrying inline type markers.
+- [idea] /next's "Ready to start, or adjust scope?" prompt offers scope adjustment, but scoping belongs in /plan — /next should present the batch and ask "Ready?" with a route to /plan if the user wants changes, not imply it can adjust scope itself.
+- [idea] Skill handoff polish batch entry "Fix /setup closing message — direct to /plan first, not /next" is already done — completed as part of the Why pipeline polish build (setup.md Step 4.4 now directs to /plan first). Remove from the handoff batch during /plan.
 
 
 

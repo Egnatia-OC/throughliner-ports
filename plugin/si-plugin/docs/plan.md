@@ -38,7 +38,7 @@ For each item:
    Recommend one and say why. **Stop and wait.** The user decides.
 
 2. **Execute the disposition:**
-   - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, type-marked lines). Show it in full. Don't write to QUEUE.md until the user approves the wording. Claude places the batch using dependency ordering and reports where it went.
+   - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, why-line, type-marked lines). The why-line captures the reasoning from the discussion — why this work matters, what prompted it. Show it in full. Don't write to QUEUE.md until the user approves the wording. Claude places the batch using dependency ordering and reports where it went.
    - **Question first** — The item needs a design decision before it becomes work. Present the question, offer options, recommend one, wait. Once decided, return to disposition.
    - **Park** — Move to Parked.
    - **Drop** — Remove it. If the item has already been decided (check LOG/index.md), state the prior decision and commit rather than re-opening discussion.
@@ -56,10 +56,11 @@ If Claude notices a gap or opportunity: "I notice [X] — want to hear a suggest
 Batches group related work into one /next session:
 
     **Batch title**
+    Why: [one line — what motivated this work]
     - [build] What to build
     - [test] How to verify
 
-Bold title, type-marked entries. Builds first, tests follow. Each entry names its own target — no separate file list.
+Bold title, why-line, type-marked entries. Builds first, tests follow. Each entry names its own target — no separate file list. The why-line carries reasoning through the pipeline — /next copies it to _build.md, /done uses it as the foundation for the LOG **Why:** field.
 
 **Test entries:** Only add a [test] entry when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — /done already generates post-build tests for code changes.
 
