@@ -48,3 +48,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - 81135bc — Scope planning-time test entries
 - 9edb8fa — E2E: verify /setup on fresh project
 - 388f68e — README overhaul
+- ef416bc — /plan session: 5 batches from Captures, post-update migration design

@@ -584,3 +584,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Routed to Captures:** None
 
 **Pushed:** v1.5.1
+
+## ef416bc — /plan session: 5 batches from Captures, post-update migration design
+
+**Queue changes:**
+- Created 5 batches: LOG multi-file split, Why pipeline polish, Skill handoff polish, Mid-build scope expansion protocol, Post-update migration detection
+- Processed 6 Captures: 4 promoted to batches, 1 rolled into mid-build scope expansion batch, 1 parked (batch cohesion ordering heuristic)
+- 2 new items from conversation: LOG multi-file split (promoted), batch cohesion heuristic (parked)
+- Resolved 3 design questions for post-update migration: dotfile for version storage, guided walkthrough via /setup, warning not blocking
+
+**Why:** Captures had accumulated from the E2E testing session and prior builds. Post-update migration was the meatiest item — design questions needed resolving before it could become a batch. User identified that the project-docs portion of the pre-push sweep would be superseded by the migration process (same problem for consumers and self-hosters). LOG multi-file split arose from user observing that a single log file becomes unwieldy — per-push files with reversed index keeps the most relevant context where Claude reads first. Several captures naturally grouped: /done handoff and /setup closing message merged into a cross-skill handoff polish batch; capture moments loop rolled into mid-build scope expansion.
+
+**Captures routed:** 6 processed (4 promoted, 1 rolled in, 1 parked), 2 new from conversation (1 promoted, 1 parked)
