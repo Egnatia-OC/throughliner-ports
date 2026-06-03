@@ -14,13 +14,15 @@ Claude owns dependency management — what order batches go in, how work groups 
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call before proceeding.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 
-## Step 1: Read state
+## Step 1: Read state and entry question
 
 Read QUEUE.md and SPEC.md. Check whether Captures has items.
 
-- If yes, go to Step 2.
-- If the user brought something to discuss, go to Step 2 (treat it as a new item).
-- If neither, say so and ask what they'd like to work on.
+Then ask the user: "Do you have something you'd like to discuss, or are you ready to process Captures?" (If Captures is empty, ask what they'd like to work on instead.)
+
+**If the user has something to discuss:** Handle it using the same loop as Captures items in Step 2 — present, discuss, recommend a disposition, wait for their call, execute. Then ask: "Anything else on your mind, or ready to start Captures?" Repeat until the user says they're ready.
+
+**When the user is ready:** Move to Step 2.
 
 ## Step 2: Process captures `[SEQUENCE]`
 

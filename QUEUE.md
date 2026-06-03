@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Add entry question to /plan Step 1**
-- [build] Add a prompt to plan.md Step 1 — after reading state, ask the user whether they have something to discuss or are ready to process Captures. If the user brought something, handle it first (same loop as Captures items), then loop: ask if there's anything else on their mind or if they're ready to start Captures. Only move to Step 2 when the user explicitly says they're ready.
-
 **Push markers in LOG**
 - [build] Add a `**Pushed:** v<VERSION>` line to the push-and-rezip procedure — appended to the last LOG entry before repackaging, so release boundaries are visible in LOG without git commands
 

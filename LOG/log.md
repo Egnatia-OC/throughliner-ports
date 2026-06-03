@@ -503,3 +503,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** User observed that /plan jumps straight into Captures processing without asking what brought them here — led to a new batch for an entry question loop. E2E batch was redundant because self-hosting already exercises /plan, /next, /done every session; only /setup on a fresh project is untested. Push markers, handoff ordering, session-start tone, and planning-time test inflation were all concrete fixes from recent build observations.
 
 **Captures routed:** 4 promoted, 2 parked, 1 new added
+
+## fe48e89 — Add entry question to /plan Step 1
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: rewrote Step 1 to include entry question loop before Captures processing
+
+**Tests:** 0 (procedure doc change — no code/app tests generated)
+
+**Why:** /plan was jumping straight into Captures processing without asking the user what brought them here. Users often invoke /plan because they have something top of mind, not because they want to process Captures. The entry question loop lets them share and route their items first, repeating "anything else?" until they explicitly say they're ready for Captures.
+
+**Routed to Captures:** None

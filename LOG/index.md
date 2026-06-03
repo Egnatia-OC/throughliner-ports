@@ -41,3 +41,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - 8512268 — Tighten /plan Captures processing step 2
 - 994ca84 — Scope /done test generation to code changes
 - cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope
+- fe48e89 — Add entry question to /plan Step 1
