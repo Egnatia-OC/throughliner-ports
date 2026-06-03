@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 13c4612 — /plan session: 4 batches promoted, Plan panel dropped, context-window research
 - 23a1da8 — /plan session: promote inline-reads rule, add capture
 - 2fa0bae — Interview flow and capture rule consolidation
 - e46e2ea — Restore web-search-when-uncertain rule
