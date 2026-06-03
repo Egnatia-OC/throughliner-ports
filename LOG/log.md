@@ -2,6 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 2fa0bae — Interview flow and capture rule consolidation
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: rewrote Step 2 — replaced 4-disposition flow (promote/question first/park/drop) with interview-then-recommend flow (present → follow-up questions → "anything else?" → promote/park/drop). Narrowed ground rule to batch entries only. Updated Step 1 reference.
+- plugin/si-plugin/docs/behaviour.md: added Captures section with universal rules — approval before writing, include reasoning, append to bottom, don't promote outside /plan, mid-session captures follow same rules
+- plugin/si-plugin/docs/next.md: stripped capture rules from Step 4 — now just "Route it to Captures in QUEUE.md"
+- plugin/si-plugin/docs/done.md: stripped capture rules from Step 1.3 — simplified to procedural step only
+
+**Why:** Two changes that turned out to be connected. The "question first" disposition in /plan was a separate step for items needing design decisions, but it added ceremony without value — the discussion step already surfaces questions naturally. Replacing it with an interview flow (follow-up questions before recommending a disposition) makes the questioning organic rather than procedural. Separately, capture rules were duplicated across three procedure docs with slightly different wording. The user identified that captures are a universal mechanism, so the rules belong in behaviour.md — stated once, applied everywhere. Moving them also removed the last capture-specific content from the plan.md ground rules, which now only govern batch writes.
+
+**Routed to Captures:** none
+
 ## e46e2ea — Restore web-search-when-uncertain rule
 
 **Files touched:**

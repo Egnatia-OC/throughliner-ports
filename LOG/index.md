@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 2fa0bae — Interview flow and capture rule consolidation
 - e46e2ea — Restore web-search-when-uncertain rule
 - 090d845 — Capture wording approval rule
 - 9905759 — Remove test generation from /done

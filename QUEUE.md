@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Interview flow replaces "question first" disposition**
-
-Build:
-- Rewrite plan.md's capture processing loop: remove "question first" as a disposition. After presenting and discussing a capture, Claude interviews the user with follow-up questions it identifies, then asks if there's anything else to add. Only then recommend promote, park, or drop (three dispositions instead of four).
-- Add in-session capture rule to plan.md: captures created during a /plan session go to the bottom of the list and get processed in order when their turn comes. No special announcement or permission check when reaching them.
-
 ### Parked
 
 - [idea] Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
@@ -27,6 +21,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Plugin is not compatible with the Claude desktop app's Plan panel. Research filed at resources/research/plan-panel-integration.md. Key finding: EnterPlanMode restricts Claude to read-only tools, so /plan can't run inside it. Most feasible path is post-write sync (enter Plan Mode after /plan finishes to show a summary) or integrating /next's batch presentation with the panel's approve/reject flow.
 - [idea] Pull-down audit: review Alex's global CLAUDE.md for rules that should be universal plugin behaviour (behaviour.md). Anything that shapes how Claude works with the user — and would apply to any user, not just Alex — belongs in the plugin so it doesn't behave differently on other people's devices.
 - [idea] Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
+- [idea] /done close-out steps need user-facing context in their output — "staleness sweep" and similar labels are internal jargon that tells the user nothing about what's happening or why they're waiting. Each visible step should say what it's checking and against what (e.g. "sweeping QUEUE.md for references to files or behaviour changed in this build"). Not explanations, just enough that someone watching knows what they're being held up for.
 
 ### Parked
 

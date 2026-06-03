@@ -10,7 +10,7 @@ Claude owns dependency management — what order batches go in, how work groups 
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue things that contradict it.
 - Process accumulated captures before new planning work.
-- Never write to QUEUE.md — batches or captures — without showing the user the exact entry text first.
+- Never write batch entries to QUEUE.md without showing the user the exact entry text first.
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call before proceeding.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 
@@ -20,7 +20,7 @@ Read QUEUE.md and SPEC.md. Check whether Captures has items.
 
 Then ask the user: "Do you have something you'd like to discuss, or are you ready to process Captures?" (If Captures is empty, ask what they'd like to work on instead.)
 
-**If the user has something to discuss:** Handle it using the same loop as Captures items in Step 2 — present, discuss, recommend a disposition, wait for their call, execute. Then ask: "Anything else on your mind, or ready to start Captures?" Repeat until the user says they're ready.
+**If the user has something to discuss:** Handle it using the same loop as Captures items in Step 2 — present, interview, recommend a disposition, wait for their call, execute. Then ask: "Anything else on your mind, or ready to start Captures?" Repeat until the user says they're ready.
 
 **When the user is ready:** Move to Step 2.
 
@@ -30,20 +30,20 @@ One item at a time, oldest first. Never preview upcoming items. State the count 
 
 For each item:
 
-1. **Present and recommend** `[DISCUSS, PROMPT]` — Show the item, then engage with its substance in the same turn. Depth scales with the item — explore alternatives for open-ended ones, a sentence or two for straightforward ones. Close with all four dispositions and your recommendation marked:
+1. **Present and interview** `[DISCUSS, PROMPT]` — Show the item and engage with its substance. Then ask follow-up questions that would sharpen it or surface missing context. Depth scales with the item — several rounds for open-ended ones, a question or two for straightforward ones. Continue until the picture is clear. Close by asking "anything else to add?"
+
+2. **Recommend** `[PROMPT]` — Once the interview is done, recommend one of three dispositions:
    - **Promote** — ready to become a batch
-   - **Question first** — needs a design decision before it becomes work
    - **Park** — not now, keep for later
    - **Drop** — remove it
    Recommend one and say why. **Stop and wait.** The user decides.
 
-2. **Execute the disposition:**
+3. **Execute the disposition:**
    - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, why-line, entries under Build/Test subheadings). The why-line captures the reasoning from the discussion — why this work matters, what prompted it. Show it in full. Don't write to QUEUE.md until the user approves the wording. Claude places the batch using dependency ordering and reports where it went.
-   - **Question first** — The item needs a design decision before it becomes work. Present the question, offer options, recommend one, wait. Once decided, return to disposition.
    - **Park** — Move to Parked.
    - **Drop** — Remove it. If the item has already been decided (check LOG/index.md), state the prior decision and commit rather than re-opening discussion.
 
-3. Remove the item from Captures once routed.
+4. Remove the item from Captures once routed.
 
 After all items are processed, Captures should be empty (just the section header and `### Parked` subsection intact).
 

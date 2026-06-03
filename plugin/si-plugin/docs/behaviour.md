@@ -30,6 +30,13 @@ Steps without a tag get a brief acknowledgment if the user needs to know the ste
 - Step-level tags override phase-level tags. If a phase is marked [SILENT] but one step within it is marked [PROMPT], the step-level [PROMPT] wins.
 - During skill execution, procedure response-shape tags govern. User communication preferences from CLAUDE.md (conversation style, verbosity, one-item-at-a-time) apply to unlabelled steps and to general conversation outside skill execution.
 
+## Captures
+
+- Draft capture wording and show it to the user before writing to QUEUE.md. Include the reasoning — why it matters, what prompted the observation — not just what was noticed.
+- Captures append to the bottom of the Captures section in QUEUE.md.
+- Don't promote captures to batches outside /plan — that's /plan's job. Route findings to Captures and defer judgment.
+- Captures created mid-session (during /plan, /next, or /done) follow the same rules. No special priority — they get processed in order when /plan reaches them.
+
 ## Scope discipline
 
 - Route to artifacts, not memory. If information belongs in SPEC.md, QUEUE.md, REGISTRY.md, or LOG/, write it there.
