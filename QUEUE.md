@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**LOG multi-file split**
-- [build] Split LOG into per-push files — push caps the current file and creates a new one. Naming convention TBD during implementation.
-- [build] Reverse index.md ordering (newest first) and ensure it works across multiple log files
-- [build] Update /done to prepend new entries to the top of the current log file
-- [build] Update push-and-rezip to cap the current log file and start a new one
-
 **Why pipeline polish**
 - [build] Audit capture, /plan promotion, batch drafting, /next execution, and /done logging for why-preservation — ensure reasoning captured at any stage survives through the full pipeline into the log
 - [build] Tighten Q4 procedure in /setup to produce one rough [build] entry, not multiple scoped entries — E2E showed Claude expanding a singular instruction into 5 entries (2 build + 3 test), making scope decisions that belong in /plan

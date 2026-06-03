@@ -1,51 +1,52 @@
 # LOG Index
 
-One-line summaries of each session, linked to the full entry by commit hash.
+One-line summaries of each session. Newest first.
 
-- (pre-hash) Session 1 — Validated prose-only guardrail system
-- (pre-hash) Session 2 — Fixed _build.md whitelist bug in pre_tool_use.py
-- (pre-hash) Session 3 — Added batch-sizing guidance to plan.md
-- (pre-hash) Session 4 — Queue restructure to batch/ideas format
-- (pre-hash) Session 5 — Added three missing behaviour rules to behaviour.md
-- (pre-hash) Session 6 — Made /done stage-agnostic (build vs plan mode)
-- a06d140 — Commit-based logging and DECISIONS.md
-- 7867b1c — /plan session: route Ideas, form batches
-- f8146b2 — DECISIONS.md full integration
-- 049cf69 — Tighten host/target language in CLAUDE.md
-- 448efdb — /plan session: response-shape tags, Captures processing, drift check removal
-- 433beb9 — Fix /plan Captures processing: discussion step and type-agnostic disposition
-- e954603 — Rename Ideas to Captures and remove drift check
-- aaddae4 — /plan session: route reader-test findings, define pipeline threshold
-- 0a82fd3 — /plan session: design reader-test workflow
-- ab36e39 — CLAUDE.md template ownership markers
-- 09573ac — /plan session: route Captures, add batches, LOG decision
-- e935cfb — /plan session: LOG and planning process observations
-- 694fbc9 — LOG test-to-decision linkage
-- 6a3b843 — Session-start message tone
-- 2513f2e — Reader-test workflow: build, run, and route findings
-- 687d31f — Test entry lifecycle: define mechanics and close gaps
-- ac78fc9 — Restore response-shape tags and annotate procedure docs
-- e022197 — Response-shape tag rules: defaults, precedence, hierarchy, BRIEF carve-out
-- 474fd41 — FAQ reference: create templates and wire into /setup
-- a08b65b — /plan session: remove DECISIONS.md, drop file lists, process Captures
-- f11be10 — /plan session: rewrite plan.md, add Captures for plan behaviour
-- 77c1557 — Remove DECISIONS.md, restructure LOG to index + log
-- e6432a5 — Drop file lists from batches
-- a24e5ad — Captures flow: thresholds, drop reasons, placement, empty state
-- f6d4a78 — Scope and staging clarity: cross-reference /next and /done
-- 50a0d73 — Procedure doc cleanup sweep
-- 409b0b7 — /plan session: process Captures, create batches, file sizing research
-- 6a5ec81 — Dependency ownership: state the principle and audit for violations
-- cf3217e — LOG reasoning: replace Decisions field with mandatory WHY
-- dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
-- 8512268 — Tighten /plan Captures processing step 2
-- 994ca84 — Scope /done test generation to code changes
-- cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope
-- fe48e89 — Add entry question to /plan Step 1
-- 52be5d4 — Add push markers to push-and-rezip procedure
-- bcf24cc — Move /done handoff before push prompt
-- 20de57d — Rephrase session-start status messages
-- 81135bc — Scope planning-time test entries
-- 9edb8fa — E2E: verify /setup on fresh project
-- 388f68e — README overhaul
+- dd67804 — LOG multi-file split
 - ef416bc — /plan session: 5 batches from Captures, post-update migration design
+- 388f68e — README overhaul
+- 9edb8fa — E2E: verify /setup on fresh project
+- 81135bc — Scope planning-time test entries
+- 20de57d — Rephrase session-start status messages
+- bcf24cc — Move /done handoff before push prompt
+- 52be5d4 — Add push markers to push-and-rezip procedure
+- fe48e89 — Add entry question to /plan Step 1
+- cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope
+- 994ca84 — Scope /done test generation to code changes
+- 8512268 — Tighten /plan Captures processing step 2
+- dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
+- cf3217e — LOG reasoning: replace Decisions field with mandatory WHY
+- 6a5ec81 — Dependency ownership: state the principle and audit for violations
+- 409b0b7 — /plan session: process Captures, create batches, file sizing research
+- 50a0d73 — Procedure doc cleanup sweep
+- f6d4a78 — Scope and staging clarity: cross-reference /next and /done
+- a24e5ad — Captures flow: thresholds, drop reasons, placement, empty state
+- e6432a5 — Drop file lists from batches
+- 77c1557 — Remove DECISIONS.md, restructure LOG to index + log
+- f11be10 — /plan session: rewrite plan.md, add Captures for plan behaviour
+- a08b65b — /plan session: remove DECISIONS.md, drop file lists, process Captures
+- 474fd41 — FAQ reference: create templates and wire into /setup
+- e022197 — Response-shape tag rules: defaults, precedence, hierarchy, BRIEF carve-out
+- ac78fc9 — Restore response-shape tags and annotate procedure docs
+- 687d31f — Test entry lifecycle: define mechanics and close gaps
+- 2513f2e — Reader-test workflow: build, run, and route findings
+- 6a3b843 — Session-start message tone
+- 694fbc9 — LOG test-to-decision linkage
+- e935cfb — /plan session: LOG and planning process observations
+- 09573ac — /plan session: route Captures, add batches, LOG decision
+- ab36e39 — CLAUDE.md template ownership markers
+- 0a82fd3 — /plan session: design reader-test workflow
+- aaddae4 — /plan session: route reader-test findings, define pipeline threshold
+- e954603 — Rename Ideas to Captures and remove drift check
+- 433beb9 — Fix /plan Captures processing: discussion step and type-agnostic disposition
+- 448efdb — /plan session: response-shape tags, Captures processing, drift check removal
+- 049cf69 — Tighten host/target language in CLAUDE.md
+- f8146b2 — DECISIONS.md full integration
+- 7867b1c — /plan session: route Ideas, form batches
+- a06d140 — Commit-based logging and DECISIONS.md
+- (pre-hash) Session 6 — Made /done stage-agnostic (build vs plan mode)
+- (pre-hash) Session 5 — Added three missing behaviour rules to behaviour.md
+- (pre-hash) Session 4 — Queue restructure to batch/ideas format
+- (pre-hash) Session 3 — Added batch-sizing guidance to plan.md
+- (pre-hash) Session 2 — Fixed _build.md whitelist bug in pre_tool_use.py
+- (pre-hash) Session 1 — Validated prose-only guardrail system

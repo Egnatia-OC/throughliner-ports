@@ -1,6 +1,22 @@
 # LOG
 
-Full session entries, appended chronologically. Each entry is written by /done.
+Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
+
+## dd67804 — LOG multi-file split
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: changed "Append" to "Prepend" for log.md and index.md in both build and plan close-out paths
+- plugin/si-plugin/docs/setup.md: updated LOG/index.md and LOG/log.md scaffolds for newest-first ordering and per-release description
+- plugin/si-plugin/templates/faq-template.md: updated LOG answer to mention per-release files and newest-first ordering
+- CLAUDE.md: added log capping steps (3-4) to push-and-rezip, renumbered steps 5-10; updated Architecture and Method docs sections for multi-file LOG
+- LOG/index.md: reversed entry order (newest first), updated header
+- LOG/log.md: updated header for prepend ordering
+
+**Tests:** 0 (procedure doc and template changes only)
+
+**Why:** A single log.md file grows indefinitely and pushes older context further from where Claude reads first. Per-push log files keep each release's history self-contained, and newest-first ordering in both index and log ensures the most relevant context is always at the top. The naming convention (log.md = current, log-v*.md = archived) keeps the active file path stable so procedures don't need conditional logic.
+
+**Routed to Captures:** None
 
 ## Session 1 — Validated prose-only guardrail system
 

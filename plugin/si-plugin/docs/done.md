@@ -88,7 +88,7 @@ Summarize for the user:
 
 #### 2.1 Write LOG entry
 
-Append the log entry to `LOG/log.md`. Multiple entries are consecutive `##` headings — no date separators. Use a placeholder for the commit hash — it gets filled in after the commit (step 2.4).
+Prepend the log entry to `LOG/log.md` — insert it immediately after the `# LOG` header line and its description, before any existing entries. Use a placeholder for the commit hash — it gets filled in after the commit (step 2.4).
 
 ```markdown
 ## [HASH] — [one-line summary of what shipped]
@@ -103,7 +103,7 @@ Append the log entry to `LOG/log.md`. Multiple entries are consecutive `##` head
 **Routed to Captures:** [anything added to the Captures section, or "none"]
 ```
 
-Add a one-line entry to `LOG/index.md`:
+Prepend a one-line entry to `LOG/index.md` — insert it immediately after the `# LOG Index` header line and its description, before any existing entries:
 
 ```
 - [HASH] — [one-line summary]
@@ -155,7 +155,7 @@ Summarize what happened during the /plan session:
 
 ### 2. Write LOG entry
 
-Append the log entry to `LOG/log.md`. Use a placeholder for the commit hash.
+Prepend the log entry to `LOG/log.md` — insert it immediately after the header, before any existing entries. Use a placeholder for the commit hash.
 
 ```markdown
 ## [HASH] — [one-line summary of what was decided or organized]
@@ -168,7 +168,7 @@ Append the log entry to `LOG/log.md`. Use a placeholder for the commit hash.
 **Captures routed:** [what was promoted/parked/dropped from Captures, or "none"]
 ```
 
-Add a one-line entry to `LOG/index.md`:
+Prepend a one-line entry to `LOG/index.md` — insert it immediately after the header, before any existing entries:
 
 ```
 - [HASH] — [one-line summary]

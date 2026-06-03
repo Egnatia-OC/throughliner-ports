@@ -22,7 +22,7 @@ Host and target are the same plugin at different stages. Ambiguous references to
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches. Flat inline entries, type-marked (build/test/idea/question).
 - `REGISTRY.md` — components list. What exists, where it lives.
-- `LOG/` — per-session records. `LOG/index.md` for one-line summaries, `LOG/log.md` for full entries.
+- `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), `LOG/log.md` for current release entries, `LOG/log-v*.md` for archived releases.
 
 **4 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
@@ -75,13 +75,21 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
    - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
-3. Append a push marker to the last entry in `LOG/log.md`: `**Pushed:** v<VERSION>` on its own line at the end of the entry (before the next `##` heading or end of file).
-4. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
-5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-6. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
-7. Stage the zip, archive changes, and plugin.json. Commit: "Bump to v<VERSION> and repackage".
-8. `git push`.
-9. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+3. Add a push marker to the most recent entry in `LOG/log.md` (the first `##` heading — entries are newest-first): `**Pushed:** v<VERSION>` on its own line at the end of that entry's content.
+4. Cap the current log file and start a new one:
+   - Rename `LOG/log.md` to `LOG/log-v<VERSION>.md`
+   - Create a fresh `LOG/log.md`:
+     ```
+     # LOG
+
+     Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
+     ```
+5. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+6. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+7. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
+8. Stage the zip, archive changes, and plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
+9. `git push`.
+10. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 
 ## E2E testing
 
@@ -100,7 +108,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
 - **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
 - **REGISTRY.md** — components list. What exists, where it lives.
-- **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries, `LOG/log.md` for full entries.
+- **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), `LOG/log.md` for full entries (current release, newest first), `LOG/log-v*.md` for archived per-release entries.
 
 ## Workflow
 

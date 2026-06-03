@@ -48,4 +48,4 @@ Parked items are ideas or questions you've decided not to work on right now, but
 
 ## How do I know what was done in a previous session?
 
-Check the LOG/ folder. `LOG/index.md` has one-line summaries of every session with commit hashes. `LOG/log.md` has the full entries — what was built or planned, which files were touched, test results, the reasoning behind the work, and anything routed to Captures. If you want to know why a design choice was made, search the log entries — every entry records why the work was done and the approach taken.
+Check the LOG/ folder. `LOG/index.md` has one-line summaries of every session with commit hashes (newest first). `LOG/log.md` has the full entries for the current release — what was built or planned, which files were touched, test results, the reasoning behind the work, and anything routed to Captures. Older entries are in per-release log files (`LOG/log-v*.md`). If you want to know why a design choice was made, search the log entries — every entry records why the work was done and the approach taken.

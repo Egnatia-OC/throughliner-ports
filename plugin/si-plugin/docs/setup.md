@@ -75,14 +75,14 @@ Components that exist in this project. Updated after each build.
 ```markdown
 # LOG Index
 
-One-line summaries of each session, linked to the full entry by commit hash.
+One-line summaries of each session. Newest first.
 ```
 
 **LOG/log.md:**
 ```markdown
 # LOG
 
-Full session entries, appended chronologically. Each entry is written by /done.
+Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 ```
 
 **FAQ/ folder:** Create the directory with two files scaffolded from templates:
