@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Scope planning-time test entries**
-- [build] Add rule to plan.md Step 3 — test entries are only added to a batch when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs a [test] entry.
-
 **E2E: verify /setup on fresh project**
 - [test] Run /setup in consumer project, verify it scaffolds all four project docs and CLAUDE.md correctly
 

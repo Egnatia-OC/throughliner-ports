@@ -61,6 +61,8 @@ Batches group related work into one /next session:
 
 Bold title, type-marked entries. Builds first, tests follow. Each entry names its own target — no separate file list.
 
+**Test entries:** Only add a [test] entry when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — /done already generates post-build tests for code changes.
+
 **Sizing gates** (per batch, not per entry):
 - *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."
 - *Verification burden:* if the user would need to test more than 5 things, split it.

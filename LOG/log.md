@@ -547,3 +547,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The no-active-build message defined the state by what was absent, reading as a failure report rather than neutral status. "Ready." states what's true. The active build message had a redundant sentence restating what "ACTIVE BUILD in progress" already conveyed.
 
 **Routed to Captures:** None
+
+## 81135bc — Scope planning-time test entries
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: added "Test entries" rule to Step 3 between batch structure example and sizing gates
+
+**Tests:** 0 (procedure doc change — no code/app tests generated)
+
+**Why:** Claude was inflating batches with [test] entries for behaviours already self-evident from the build entries, and /done already generates post-build tests for code changes. The new rule makes [test] entries opt-in at planning time — only when there's a distinct behaviour to verify that the build entries don't cover.
+
+**Routed to Captures:** None
