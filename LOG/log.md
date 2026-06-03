@@ -2,6 +2,18 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## e84e281 — Mid-build scope expansion protocol
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 4 split into "User raises something out of scope" (capture → "anything else?" → resume) and "Scope grows during the build" (existing handling); added "Adding to scope instead" workaround
+- plugin/si-plugin/docs/behaviour.md: added universal "anything else?" rule to Communication section
+
+**Tests:** none (procedure doc edits only)
+
+**Why:** Users were having to interrupt builds multiple times to share multiple thoughts — each capture moment was a one-shot with no follow-up prompt. The "anything else?" loop gives users space. Separately, /next had no defined response for when users raise out-of-scope items mid-build: the rules said "note them for the queue" but didn't describe the interaction. The capture routing makes it explicit. The add-to-scope workaround exists because sometimes the user knows something needs to happen now — but it's framed as out-of-procedure to keep captures as the default.
+
+**Routed to Captures:** none
+
 ## 3f53377 — Batch entry format: replace inline type tags with subheadings
 
 **Files touched:**

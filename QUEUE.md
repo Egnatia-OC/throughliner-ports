@@ -4,13 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Mid-build scope expansion protocol**
-
-Build:
-- Add mid-build capture routing to /next procedure — when user raises something out of scope, default to capturing it and ask "anything else?" before resuming
-- Add "anything else?" loop to all skills after any capture moment — currently the user has to interrupt to share a second thought
-- Add "add to scope" workaround as an explicit last-resort option, framed as out-of-procedure behaviour requiring user confirmation
-
 **Post-update migration detection**
 
 Build:

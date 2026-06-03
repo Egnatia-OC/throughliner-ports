@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- e84e281 — Mid-build scope expansion protocol
 - 3f53377 — Batch entry format: replace inline type tags with subheadings
 - 491fa6e — Skill handoff polish
 - 11e2750 — /plan session: process Captures, clean up handoff batch

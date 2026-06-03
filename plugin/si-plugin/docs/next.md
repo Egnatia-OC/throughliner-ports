@@ -94,7 +94,19 @@ Changes:
 
 ## Step 4: Scope management
 
-If scope grows during the build:
+### User raises something out of scope [PROMPT]
+
+When the user brings up something that isn't part of the current batch:
+
+1. Capture it to QUEUE.md Captures as an [idea] entry.
+2. Ask "anything else?" — repeat until the user says no.
+3. Resume the build.
+
+**Adding to scope instead:** If the user explicitly asks to add it to the current build rather than capturing it, confirm first: "This would expand the current build scope. Add it here, or capture it for a future batch?" If confirmed, add it to _build.md as a new entry and continue. This is a workaround, not the normal flow — captures keep builds focused and reasoning traceable.
+
+### Scope grows during the build
+
+If Claude discovers during the build that additional work is needed:
 
 - **Minor addition** (one more file, small prerequisite): ask to add, continue if approved.
 - **Significant growth** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
