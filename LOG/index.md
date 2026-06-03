@@ -40,3 +40,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
 - 8512268 — Tighten /plan Captures processing step 2
 - 994ca84 — Scope /done test generation to code changes
+- cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope

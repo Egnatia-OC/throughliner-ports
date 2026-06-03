@@ -491,3 +491,15 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** Claude was generating arbitrary post-build tests for procedure doc and template edits even though those batches already include their own [test] entries for verification. Scoping Step 1.2 to code/app files only eliminates the redundancy and stops Claude from inventing tests where the batch already has coverage.
 
 **Routed to Captures:** Session-start "no active build" message is confusing when user is about to start a build
+
+## cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope
+
+**Queue changes:**
+- Created 5 batches: add entry question to /plan Step 1, push markers in LOG, move /done handoff before push prompt, rephrase session-start status messages, scope planning-time test entries
+- Reworked E2E batch from 3 smoke tests to just /setup verification
+- Processed 6 Captures: 4 promoted into batches, 2 parked (self-hosting support with sweep design note, /done spec check)
+- 1 new Capture added: capture moments should loop across all skills
+
+**Why:** User observed that /plan jumps straight into Captures processing without asking what brought them here — led to a new batch for an entry question loop. E2E batch was redundant because self-hosting already exercises /plan, /next, /done every session; only /setup on a fresh project is untested. Push markers, handoff ordering, session-start tone, and planning-time test inflation were all concrete fixes from recent build observations.
+
+**Captures routed:** 4 promoted, 2 parked, 1 new added
