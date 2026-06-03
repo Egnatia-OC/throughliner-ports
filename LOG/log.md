@@ -2,6 +2,25 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 3f53377 — Batch entry format: replace inline type tags with subheadings
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: batch structure example, Promote disposition, prose description, test entry rule — all updated from inline tags to subheading format
+- plugin/si-plugin/docs/next.md: blocker gate, build entry, test entry references updated
+- plugin/si-plugin/docs/done.md: test generation scoping references updated
+- plugin/si-plugin/docs/setup.md: Q4 and Step 4 updated to reference Build subheading
+- plugin/si-plugin/docs/behaviour.md: pipeline description updated
+- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: queue description split into batches/captures format; comment updated
+- plugin/si-plugin/templates/faq-template.md: Batches description updated; type markers FAQ rewritten as "How are entries organized in the queue?"
+- plugin/si-plugin/templates/faq-index-template.md: link updated to match new FAQ question
+- QUEUE.md: two remaining batches reformatted with Build/Test subheadings
+
+**Tests:** none (procedure doc and template edits only)
+
+**Why:** Inline type tags ([build], [test]) are routing metadata for Claude — they tell it what kind of entry to execute. But they clutter the user-facing batch presentation with implementation details. Separating entries under Build/Test subheadings keeps the routing information structural (Claude reads the subheading to know the type) while making batch text cleaner for the user. Captures retain [idea]/[question] inline tags because those entries aren't grouped by type — they're a flat inbox.
+
+**Routed to Captures:** none
+
 ## 491fa6e — Skill handoff polish
 
 **Files touched:**

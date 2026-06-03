@@ -7,7 +7,7 @@ This project uses the Sovereign Implementer method.
 ## Project docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures use [idea] and [question] tags.
 - **REGISTRY.md** — components that exist. Updated after each build.
 - **LOG/** — per-session records of what was built, tested, and decided.
 - **FAQ/** — quick-reference answers about how the workflow works. Index loaded at session start; full answers in FAQ/faq.md.
@@ -37,4 +37,4 @@ Language: English
 
 <!-- Add your own rules, conventions, and context below. This section is yours — the plugin won't touch it.
      If your project has specific test procedures (how to run tests, what to check, environment setup),
-     add them here or point to where they live — Claude will follow them during [test] entries and /done verification. -->
+     add them here or point to where they live — Claude will follow them during test entries and /done verification. -->

@@ -8,11 +8,11 @@ They split work into three modes so nothing gets mixed up. **/plan** is for thin
 
 ## What's the difference between Batches and Captures in QUEUE.md?
 
-**Batches** are ready-to-build work — organized groups of type-marked entries, worked top to bottom. Each batch is one /next session. **Captures** is an inbox — ideas, questions, and observations jotted down during builds or between sessions. Captures aren't actionable yet. During the next /plan session, each captured item gets discussed and either promoted into a batch, parked for later, or dropped.
+**Batches** are ready-to-build work — organized groups of entries under Build/Test subheadings, worked top to bottom. Each batch is one /next session. **Captures** is an inbox — ideas, questions, and observations jotted down during builds or between sessions. Captures aren't actionable yet. During the next /plan session, each captured item gets discussed and either promoted into a batch, parked for later, or dropped.
 
-## What are the type markers — [build], [test], [idea], [question]?
+## How are entries organized in the queue?
 
-They tell Claude what kind of work an entry represents. **[build]** means create or change something — edit files, add features, fix things. **[test]** means verify something works — read code, run commands, or ask the user to check. **[idea]** is a suggestion or observation that hasn't been evaluated yet. **[question]** is a design decision that needs resolving before it can become work. Ideas and questions live in Captures until /plan processes them.
+Batches group entries under **Build** and **Test** subheadings. Build entries create or change something — edit files, add features, fix things. Test entries verify something works — read code, run commands, or ask the user to check. Not every batch has a Test section — /done generates its own post-build tests, so batch-level tests are only for behaviours that need explicit verification. In the Captures section, entries use inline tags: **[idea]** for suggestions or observations that haven't been evaluated yet, and **[question]** for design decisions that need resolving before they can become work.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 

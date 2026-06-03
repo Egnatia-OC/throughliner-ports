@@ -12,7 +12,7 @@ Before starting:
 
 3. **Blocker gate:** Scan for blockers that would force guessing:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
-   - Are there [question] entries in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
+   - Are there unresolved questions in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
@@ -53,7 +53,7 @@ Execute the work entry by entry.
 
 ### Build entries
 
-For each [build] entry:
+For each build entry:
 
 1. Read any relevant existing code or context.
 2. Make the changes.
@@ -61,7 +61,7 @@ For each [build] entry:
 
 ### Test entries
 
-When a batch contains [test] entries, execution is verification — not file editing:
+When a batch contains test entries (under a Test subheading), execution is verification — not file editing:
 
 1. Read the test description to understand what's being checked.
 2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests requiring real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user.

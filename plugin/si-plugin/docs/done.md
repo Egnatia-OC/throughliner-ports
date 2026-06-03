@@ -26,7 +26,7 @@ Read _build.md. Are all entries ticked in Progress?
 
 #### 1.2 Generate tests
 
-These are post-build verification tests — distinct from batch [test] entries. Batch [test] entries were already executed during /next and their results are recorded in _build.md. Generate /done tests only for [build] entries that changed code or app files — not for procedure doc or template edits, where the batch's own [test] entries already cover verification.
+These are post-build verification tests — distinct from batch test entries. Batch test entries were already executed during /next and their results are recorded in _build.md. Generate /done tests only for build entries that changed code or app files — not for procedure doc or template edits, where the batch's own test entries already cover verification.
 
 For each code/app file that was built or changed, write one test per observable behaviour:
 

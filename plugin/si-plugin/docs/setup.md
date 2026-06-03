@@ -105,7 +105,7 @@ Ask these questions one per message. Wait for the answer before asking the next.
 → Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave this section with a note that it can be added later.
 
 **Q4. What's the first thing to build? What would you want working by the end of today?**
-→ Creates one rough `[build]` entry in QUEUE.md. Use the user's words, don't expand or split — scope decisions belong in /plan.
+→ Creates one rough build entry in QUEUE.md under a Build subheading. Use the user's words, don't expand or split — scope decisions belong in /plan.
 
 **Q5. Anything else I should know before we start?**
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
@@ -114,7 +114,7 @@ Ask these questions one per message. Wait for the answer before asking the next.
 
 After all 5 answers:
 1. Fill SPEC.md with the interview answers.
-2. Write one `[build]` entry in QUEUE.md from Q4 — a single entry in the user's words, not multiple scoped entries.
+2. Write one build entry in QUEUE.md from Q4 — under a Build subheading, in the user's words, not multiple scoped entries.
 3. Show the user what was created (file list + one-line summary of each).
 4. Tell them: "Run /plan to scope your first batch, or /next if you're ready to build."
 

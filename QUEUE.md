@@ -4,22 +4,22 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Batch entry format: replace inline type tags with subheadings**
-Why: Type tags ([build], [test]) are Claude's routing metadata visible to the user, cluttering batch presentation with implementation details.
-- [build] Replace inline [build]/[test] type markers with Build/Test subheadings in the batch format — update plan.md Step 3, and all procedure docs that reference entry types by inline tag (next.md, done.md, setup.md, behaviour.md)
-- [build] Update templates (CLAUDE-TEMPLATE.md, faq-template.md, faq-index-template.md) to reflect the new format
-- [build] Reformat existing QUEUE.md batches to use the new subheading format
-
 **Mid-build scope expansion protocol**
-- [build] Add mid-build capture routing to /next procedure — when user raises something out of scope, default to capturing it and ask "anything else?" before resuming
-- [build] Add "anything else?" loop to all skills after any capture moment — currently the user has to interrupt to share a second thought
-- [build] Add "add to scope" workaround as an explicit last-resort option, framed as out-of-procedure behaviour requiring user confirmation
+
+Build:
+- Add mid-build capture routing to /next procedure — when user raises something out of scope, default to capturing it and ask "anything else?" before resuming
+- Add "anything else?" loop to all skills after any capture moment — currently the user has to interrupt to share a second thought
+- Add "add to scope" workaround as an explicit last-resort option, framed as out-of-procedure behaviour requiring user confirmation
 
 **Post-update migration detection**
-- [build] Add .si-version dotfile to /setup scaffolding, written with the current plugin version
-- [build] Add version mismatch detection to session_start — compare .si-version against plugin version, warn user to run /setup if mismatched
-- [build] Update /setup to handle existing docs (re-scaffold without overwriting user content)
-- [test] E2E: run /setup in a project that already has docs from an older plugin version — verify it handles existing files without corrupting or silently dropping content
+
+Build:
+- Add .si-version dotfile to /setup scaffolding, written with the current plugin version
+- Add version mismatch detection to session_start — compare .si-version against plugin version, warn user to run /setup if mismatched
+- Update /setup to handle existing docs (re-scaffold without overwriting user content)
+
+Test:
+- E2E: run /setup in a project that already has docs from an older plugin version — verify it handles existing files without corrupting or silently dropping content
 
 ### Parked
 
@@ -31,7 +31,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 
 - [idea] README needs operating conditions section — document the normal runtime assumptions: Opus 4.6 on high, tested in auto mode only, /compact between commits, /clear or new chat between pushes, run /setup on first use. Users need to know these to get the expected experience.
 - [idea] Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Motivated by sessions where the user is just pressing yes through entire builds. Key design concerns: (1) wording must not create pressure for Claude to push through — it needs to stop genuinely when uncertain, not treat autonomy as a goal; (2) touches dependency management — Claude would need to decide at its own discretion when to wrap a batch and move to the next; (3) commit cadence and /done judgment steps still need to happen, not get skipped for speed.
-
+- [idea] Restore web-search-when-uncertain rule — older plugin versions had a rule: when Claude is uncertain about how something works, whether a better approach exists, or needs more information to answer confidently, it should always offer to do a web search. Whether offered by Claude or requested by the user, all research gets filed under resources/research/ for later reference in the relevant build batch, log entry, or capture.
 
 
 ### Parked
