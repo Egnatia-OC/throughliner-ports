@@ -2,6 +2,15 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## e46e2ea — Restore web-search-when-uncertain rule
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md: added web-search rule to Communication section — offer to search rather than guess, file research under resources/research/
+
+**Why:** The batch originally called for adding this rule to all four skill procedure docs, but the user correctly identified it as universal behaviour — it applies in every context, not just within specific skills. Adding it once in behaviour.md instead of repeating it four times keeps the rule in one place and ensures it applies even outside skill execution. The rule itself restores guidance from the user's global CLAUDE.md: when uncertain about an external fact, offer to search rather than guess or hedge.
+
+**Routed to Captures:** Pull-down audit (move universal rules from user's global CLAUDE.md to behaviour.md), Trickle-up audit (move repeated/non-skill-specific rules from procedure docs to behaviour.md)
+
 ## 090d845 — Capture wording approval rule
 
 **Files touched:**

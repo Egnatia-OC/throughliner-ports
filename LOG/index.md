@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- e46e2ea — Restore web-search-when-uncertain rule
 - 090d845 — Capture wording approval rule
 - 9905759 — Remove test generation from /done
 - e3e6db9 — Add test execution context and E2E batch rule to plan.md

@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Restore web-search-when-uncertain rule**
-
-Build:
-- Add rule to all skill procedure docs (setup.md, plan.md, next.md, done.md): when Claude is uncertain about how something works, whether a better approach exists, or needs more information to answer confidently, offer to do a web search. File all research under resources/research/ for later reference.
-
 **Interview flow replaces "question first" disposition**
 
 Build:
@@ -30,6 +25,8 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] next.md Step 1 blocker gate should check whether any new captures since the last /plan session present a hard blocker for the top batch — something that directly contradicts or invalidates the work. Not a full dependency analysis; just a last-chance catch for captures that landed after planning.
 - [idea] _build.md entry ticking is over-communicated. The ticking is a crash-recovery mechanism, not a user-facing status report — Claude shouldn't list entries and show them being ticked. Either mark the ticking step [SILENT] in next.md or [BRIEF] at most. Also, the crossed-out formatting on every line is redundant noise.
 - [idea] Plugin is not compatible with the Claude desktop app's Plan panel. Research filed at resources/research/plan-panel-integration.md. Key finding: EnterPlanMode restricts Claude to read-only tools, so /plan can't run inside it. Most feasible path is post-write sync (enter Plan Mode after /plan finishes to show a summary) or integrating /next's batch presentation with the panel's approve/reject flow.
+- [idea] Pull-down audit: review Alex's global CLAUDE.md for rules that should be universal plugin behaviour (behaviour.md). Anything that shapes how Claude works with the user — and would apply to any user, not just Alex — belongs in the plugin so it doesn't behave differently on other people's devices.
+- [idea] Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
 
 ### Parked
 

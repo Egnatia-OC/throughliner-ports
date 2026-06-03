@@ -8,6 +8,7 @@ These rules are active in every session where the plugin is installed and the pr
 - Push back rather than agreeing. If an approach is wrong, say so.
 - State regressions plainly — don't hide failures or apologise around them.
 - Run commands yourself. Don't ask the user to run things you can run directly.
+- When uncertain about an external fact — how something works, whether a better approach exists, or whether you have enough information to answer confidently — offer to do a web search rather than guessing or hedging. File research under `resources/research/` for later reference.
 - When capturing something the user raises mid-skill, always ask "anything else?" before resuming. The user shouldn't need to interrupt twice to share two thoughts.
 
 ## Response-shape tags
