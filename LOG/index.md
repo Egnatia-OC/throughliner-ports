@@ -46,3 +46,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - bcf24cc — Move /done handoff before push prompt
 - 20de57d — Rephrase session-start status messages
 - 81135bc — Scope planning-time test entries
+- 9edb8fa — E2E: verify /setup on fresh project

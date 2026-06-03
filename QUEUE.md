@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**E2E: verify /setup on fresh project**
-- [test] Run /setup in consumer project, verify it scaffolds all four project docs and CLAUDE.md correctly
-
 **README overhaul**
 - [build] Rewrite README.md to capture repo browsers and smooth their entry — add a direct download link to the latest zip (`raw/main/plugin/si-plugin.zip`), sharpen the pitch for the front page, and streamline install-to-first-use flow
 
@@ -20,6 +17,8 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 
 - [idea] Post-update migration — no version tracking exists in consumer projects. After a plugin update that changes doc structure, existing projects silently drift. session_start should detect a version mismatch and trigger a migration process before any skill runs. Design questions: where to store the version (CLAUDE.md managed block? dotfile?), what migration looks like (automated rewrite vs guided walkthrough), how to handle interrupting the user's intended skill.
 - [idea] Mid-build scope expansion protocol — when a user raises something out of scope during /next, Claude should default to routing it to Captures (or batch at discretion), explicitly mentioning "you can also add it to this build's scope" as a last-resort workaround framed as out-of-procedure. Two sub-questions: (1) should CLAUDE.md always be in scope for every batch, since it's the most common target for mid-build out-of-scope edits? (2) should the explicit "add to scope" workaround only be available in self-hosting projects building their own SI fork?
+- [test] E2E: run /setup in a project that already has docs from an older plugin version — verify it handles existing files (overwrites, merges, or errors) without corrupting or silently dropping content
+- [idea] /setup oversteps into /plan territory — two related issues from E2E testing: (1) Q4 procedure says "creates the first entry, mark it as [build]" (singular) but Claude expanded into 5 entries (2 build + 3 test), making scope decisions that belong in /plan; (2) closing message directs to /next first ("Run /next to start building, or /plan to adjust the queue first") which implies the batch is build-ready. Both need fixing: Q4 should produce one rough [build] entry, closing should direct to /plan to scope the work.
 - [idea] Capture moments should loop — when a user shares an idea or observation during any skill (not just /plan), Claude should ask "anything else?" before resuming the procedure. Currently the user has to interrupt to share a second thought.
 
 ### Parked

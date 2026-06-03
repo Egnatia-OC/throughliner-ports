@@ -560,3 +560,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Routed to Captures:** None
 
 **Pushed:** v1.5.0
+
+## 9edb8fa — E2E: verify /setup on fresh project
+
+**Files touched:**
+- Polite Fart Announcer 3/ (temporary test project, read-only inspection)
+
+**Tests:** 1 passed (with 2 deviations), 0 failed, 0 skipped
+
+**Why:** First E2E test of /setup against a fresh consumer project. Needed to verify that the host plugin scaffolds all project docs correctly from templates before testing more complex scenarios. All 8 files scaffolded correctly and templates matched exactly. Two deviations found from the same root cause: /setup oversteps into /plan territory — Q4 expands a single user answer into a fully scoped batch (procedure says singular [build] entry), and the closing message directs to /next first (implying the batch is build-ready when scope decisions belong in /plan).
+
+**Routed to Captures:** /setup oversteps into /plan territory (Q4 entry expansion + closing message directing to /next)
