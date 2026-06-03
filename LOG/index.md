@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 855c3d1 — /plan session: process Captures, create 6 batches
 - 91b7164 — Post-update migration detection
 - e84e281 — Mid-build scope expansion protocol
 - 3f53377 — Batch entry format: replace inline type tags with subheadings

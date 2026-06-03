@@ -2,6 +2,17 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 855c3d1 — /plan session: process Captures, create 6 batches
+
+**Queue changes:**
+- Created 6 batches: README operating conditions, test-aware planning, remove test generation from /done, capture wording approval, restore web-search rule, interview flow + in-session capture rule
+- Processed 7 Captures: 5 promoted, 1 parked (cruise control skill), 1 dropped (dropped live E2E — covered by promoted batches)
+- 2 new ideas captured and promoted mid-session: interview flow disposition, in-session capture processing rule (bundled into interview flow batch)
+
+**Why:** Captures had accumulated from prior builds. The biggest design move was removing test generation from /done entirely — user identified that /done isn't a batch, so it shouldn't do work. All testing belongs in the planning→batch pipeline. This cascaded: the dropped E2E capture was already covered by the test-aware planning batch. Two mid-session ideas improved the /plan process itself: replacing the four-disposition model with an interview flow (Claude asks follow-ups before reaching disposition), and processing in-session captures in order rather than announcing them separately.
+
+**Captures routed:** 7 processed (5 promoted, 1 parked, 1 dropped), 2 new mid-session (both promoted)
+
 ## 91b7164 — Post-update migration detection
 
 **Files touched:**
