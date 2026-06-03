@@ -2,6 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 9905759 — Remove test generation from /done
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: removed steps 1.2 (Generate tests), 1.3 (Run Claude-verifiable tests), 1.4 (Present user tests); renumbered 1.5→1.2, 1.6→1.3, 1.7→1.4; removed Tests field from LOG template; removed "test results" from recap; removed test-related rules; updated Phase 1 description
+- plugin/si-plugin/docs/plan.md: updated Test section guidance — replaced "/done already generates post-build tests" with "/done does not generate tests, so anything that needs verification must be planned here"
+- plugin/si-plugin/skills/done/SKILL.md: removed "generate tests" from skill description
+- plugin/si-plugin/templates/faq-template.md: removed reference to /done generating post-build tests
+
+**Why:** /done was generating ad hoc tests after every build, duplicating what /plan should be doing. Testing is planned work — it belongs in batches where the planner can decide what needs verification, assign the right verifier (Claude vs user), and size the batch accordingly. Ad hoc generation at close-out produced tests with no planning context and no connection to the batch's intent. Removing it makes /plan the single owner of test planning and simplifies the /done flow.
+
+**Routed to Captures:** Plan panel compatibility (captured before build, research filed at resources/research/plan-panel-integration.md)
+
 ## e3e6db9 — Add test execution context and E2E batch rule to plan.md
 
 **Files touched:**

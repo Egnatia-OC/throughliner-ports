@@ -12,7 +12,7 @@ They split work into three modes so nothing gets mixed up. **/plan** is for thin
 
 ## How are entries organized in the queue?
 
-Batches group entries under **Build** and **Test** subheadings. Build entries create or change something — edit files, add features, fix things. Test entries verify something works — read code, run commands, or ask the user to check. Not every batch has a Test section — /done generates its own post-build tests, so batch-level tests are only for behaviours that need explicit verification. In the Captures section, entries use inline tags: **[idea]** for suggestions or observations that haven't been evaluated yet, and **[question]** for design decisions that need resolving before they can become work.
+Batches group entries under **Build** and **Test** subheadings. Build entries create or change something — edit files, add features, fix things. Test entries verify something works — read code, run commands, or ask the user to check. Not every batch has a Test section — only add one when there's a behaviour to verify that isn't self-evident from the build entries. In the Captures section, entries use inline tags: **[idea]** for suggestions or observations that haven't been evaluated yet, and **[question]** for design decisions that need resolving before they can become work.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 

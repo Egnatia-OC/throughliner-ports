@@ -66,7 +66,7 @@ Batches group related work into one /next session:
 
 Bold title, why-line, entries grouped under Build and Test subheadings. Each entry names its own target — no separate file list. The why-line carries reasoning through the pipeline — /next copies it to _build.md, /done uses it as the foundation for the LOG **Why:** field.
 
-**Test section:** Only add a Test section when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — /done already generates post-build tests for code changes.
+**Test section:** Only add a Test section when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — but /done does not generate tests, so anything that needs verification must be planned here.
 
 When writing test entries, split by who runs them. Claude can verify anything through code: read files, run commands, inspect output, trace logic. Only tests requiring real human interaction — visual appearance, physical device behaviour, subjective judgment, or running a separate live session — need the user. Write each test entry so /next knows which kind it is.
 

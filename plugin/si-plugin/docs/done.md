@@ -12,7 +12,7 @@ Check whether _build.md exists:
 
 ## Build close-out
 
-Use this after /next. The full procedure: verify, test, log, commit.
+Use this after /next. The full procedure: verify, log, commit.
 
 ### Phase 1: Judgment (do this while context is fresh)
 
@@ -24,50 +24,14 @@ Read _build.md. Are all entries ticked in Progress?
 - **All ticked:** Proceed.
 - **Some unticked:** Ask the user — finish them (/next to continue), or close partial (mark unticked entries as deferred and route back to QUEUE.md).
 
-#### 1.2 Generate tests
-
-These are post-build verification tests — distinct from batch test entries. Batch test entries were already executed during /next and their results are recorded in _build.md. Generate /done tests only for build entries that changed code or app files — not for procedure doc or template edits, where the batch's own test entries already cover verification.
-
-For each code/app file that was built or changed, write one test per observable behaviour:
-
-Format each test as:
-```
-- [ ] [Type] Description — Verifier
-```
-
-Types:
-- **[Look]** — visual check (open the page/screen, confirm it looks right)
-- **[Run]** — execute a command or action, check the output
-- **[Trigger]** — cause an event, observe the response
-- **[Inspect]** — examine generated output or file content
-
-Verifier is either `Claude` (can be checked programmatically or by reading code) or `User` (requires human eyes or interaction).
-
-#### 1.3 Run Claude-verifiable tests
-
-For any test marked `Claude`: run it now. Report pass/fail. Update the test line:
-- `- [x] [Run] API returns 200 — Claude ✓`
-- `- [x] [Run] API returns 200 — Claude ✗ (got 404, see note)`
-
-Failed Claude tests: note the failure, suggest whether it's a bug (route to queue) or expected (user decides).
-
-#### 1.4 Present user tests [SEQUENCE, PROMPT]
-
-List remaining tests (User-verified) for the user. One at a time:
-- State what to check and how.
-- Wait for pass/fail.
-- On failure: gather what happened, investigate if possible, route the fix to QUEUE.md. Do NOT fix during close.
-
-If the user wants to skip testing: allow it, but note "tests skipped" in the log.
-
-#### 1.5 Update REGISTRY.md
+#### 1.2 Update REGISTRY.md
 
 For each file that was created, renamed, deleted, or significantly modified:
 - Add new entries (path + one-line description of what it is)
 - Update descriptions if the file's role changed
 - Remove entries for deleted files
 
-#### 1.6 Route findings to Captures
+#### 1.3 Route findings to Captures
 
 During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. For each finding:
 
@@ -77,11 +41,10 @@ During the build, Claude or the user may have noticed gaps, issues, or opportuni
 
 This keeps /done mechanical and defers judgment to the next /plan session.
 
-#### 1.7 Build recap [BRIEF]
+#### 1.4 Build recap [BRIEF]
 
 Summarize for the user:
 - What was built (from _build.md Changes section)
-- Test results (passed / failed / skipped)
 - Anything routed to Captures
 
 ### Phase 2: Mechanical (rote file operations) [SILENT]
@@ -95,8 +58,6 @@ Prepend the log entry to `LOG/log.md` — insert it immediately after the `# LOG
 
 **Files touched:**
 - [from _build.md Changes section]
-
-**Tests:** [X passed, Y failed, Z skipped]
 
 **Why:** [Start from the batch's why-line in _build.md, then expand with anything learned during the build — tradeoffs, constraints discovered, approach changes. Always present — every build has reasoning worth recording.]
 
@@ -197,7 +158,5 @@ Then tell the user what's next:
 ## Rules
 
 - Do NOT skip Phase 1 (build close-out) even if the user says "just commit." The judgment steps prevent drift.
-- One test at a time for user-verified tests. Don't dump the full list.
-- Failed tests route to Captures — never fix during /done.
 - Git push is always a prompt, never automatic.
 - Mode detection is automatic. Don't ask the user which mode — check for _build.md.

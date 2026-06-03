@@ -1,6 +1,6 @@
 ---
 name: done
-description: Close the current build — record what happened, update REGISTRY.md, generate tests, handle git commit.
+description: Close the current build — record what happened, update REGISTRY.md, handle git commit.
 disable-model-invocation: true
 user-invocable: true
 ---

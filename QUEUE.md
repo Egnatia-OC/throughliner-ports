@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Remove test generation from /done**
-
-Build:
-- Remove the test generation step from /done (step 1.2). All testing is planned work — it belongs in batches via /plan, not generated ad hoc during close-out.
-
 **Capture wording approval**
 
 Build:
@@ -39,7 +34,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] done.md Phase 3 (Handoff) ordering is wrong. The next-up recommendation should come before the push prompt, not after — knowing whether more work is queued changes whether the user wants to push now. Then the push question on its own turn. Current flow: push question + next-up bundled. Correct flow: next-up first, then push question as a separate turn.
 - [idea] next.md Step 1 blocker gate should check whether any new captures since the last /plan session present a hard blocker for the top batch — something that directly contradicts or invalidates the work. Not a full dependency analysis; just a last-chance catch for captures that landed after planning.
 - [idea] _build.md entry ticking is over-communicated. The ticking is a crash-recovery mechanism, not a user-facing status report — Claude shouldn't list entries and show them being ticked. Either mark the ticking step [SILENT] in next.md or [BRIEF] at most. Also, the crossed-out formatting on every line is redundant noise.
-
+- [idea] Plugin is not compatible with the Claude desktop app's Plan panel. Research filed at resources/research/plan-panel-integration.md. Key finding: EnterPlanMode restricts Claude to read-only tools, so /plan can't run inside it. Most feasible path is post-write sync (enter Plan Mode after /plan finishes to show a summary) or integrating /next's batch presentation with the panel's approve/reject flow.
 
 ### Parked
 
