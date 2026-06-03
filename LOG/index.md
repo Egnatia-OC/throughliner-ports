@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- e3e6db9 — Add test execution context and E2E batch rule to plan.md
 - a8a7c28 — Add operating conditions section to README
 - 855c3d1 — /plan session: process Captures, create 6 batches
 - 91b7164 — Post-update migration detection

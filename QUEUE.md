@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Test-aware planning**
-
-Build:
-- Add test execution context to plan.md: reference next.md's rules for what Claude can verify itself (code traces) vs what needs a live user session, so the planner splits test entries correctly at planning time
-- Add planning rule to plan.md: user-run E2E tests get their own batch, not appended to build batches
-
 **Remove test generation from /done**
 
 Build:
@@ -42,6 +36,9 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Pre-push consistency sweep should use direct reads, not agents — the sweep is a checklist of file reads and string comparisons. An agent adds ~60k tokens of overhead for work that takes a handful of Grep and Read calls inline. Not justified for users watching their usage.
 - [idea] /done lost context on what Captures is — after completing the /done turn, Claude tried to route a new observation to memory instead of Captures in QUEUE.md. The routing rules were available in context but Claude didn't follow them. May need a reminder in the close-out or handoff step that new observations always go to Captures.
 - [idea] next.md Step 1 (active build check) needs explicit output guidance for the clean-slate case. When no _build.md exists, Claude currently narrates "No active build" which reads like a failure. Add direction so Claude communicates readiness, not absence.
+- [idea] done.md Phase 3 (Handoff) ordering is wrong. The next-up recommendation should come before the push prompt, not after — knowing whether more work is queued changes whether the user wants to push now. Then the push question on its own turn. Current flow: push question + next-up bundled. Correct flow: next-up first, then push question as a separate turn.
+- [idea] next.md Step 1 blocker gate should check whether any new captures since the last /plan session present a hard blocker for the top batch — something that directly contradicts or invalidates the work. Not a full dependency analysis; just a last-chance catch for captures that landed after planning.
+- [idea] _build.md entry ticking is over-communicated. The ticking is a crash-recovery mechanism, not a user-facing status report — Claude shouldn't list entries and show them being ticked. Either mark the ticking step [SILENT] in next.md or [BRIEF] at most. Also, the crossed-out formatting on every line is redundant noise.
 
 
 ### Parked

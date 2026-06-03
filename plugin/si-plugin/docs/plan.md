@@ -68,6 +68,10 @@ Bold title, why-line, entries grouped under Build and Test subheadings. Each ent
 
 **Test section:** Only add a Test section when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — /done already generates post-build tests for code changes.
 
+When writing test entries, split by who runs them. Claude can verify anything through code: read files, run commands, inspect output, trace logic. Only tests requiring real human interaction — visual appearance, physical device behaviour, subjective judgment, or running a separate live session — need the user. Write each test entry so /next knows which kind it is.
+
+**E2E tests get their own batch.** User-run E2E tests (tests requiring a live session in a separate project) don't go in build batches. They're a different mode of work — the user runs them outside this session and reports back. Give them their own batch so the build flow isn't blocked waiting on external verification.
+
 **Sizing gates** (per batch, not per entry):
 - *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."
 - *Verification burden:* if the user would need to test more than 5 things, split it.
