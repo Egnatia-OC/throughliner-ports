@@ -39,3 +39,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - cf3217e — LOG reasoning: replace Decisions field with mandatory WHY
 - dee7e5e — Verify "open questions" rename complete; tighten pre-push sweep
 - 8512268 — Tighten /plan Captures processing step 2
+- 994ca84 — Scope /done test generation to code changes

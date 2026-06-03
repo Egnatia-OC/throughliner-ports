@@ -4,10 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Scope /done test generation to code changes**
-- [build] Add scoping rule to done.md Step 1.2 — generate post-build tests only for code/app file changes, not for procedure doc or template edits where the batch's own [test] entries already cover verification
-- [test] Verify Step 1.2 text distinguishes code from doc changes
-
 **E2E: consumer project smoke tests**
 - [test] Run /plan in consumer project, verify it creates a batch with correct format (bold title, type-marked entries)
 - [test] Run /next in consumer project, verify it picks up a batch and builds all items
@@ -24,6 +20,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
 - [idea] Push markers in LOG — append a `**Pushed:** v<VERSION>` line to the last LOG entry before push-and-rezip runs, so you can scan what happened between releases without running git commands.
 - [idea] /done spec check — after authoring the LOG **Why:** field, Claude checks whether any reasoning constitutes a product decision that should update SPEC.md. If so, surfaces it to the user and updates spec on approval. May replace the current /plan pipeline gate ("if a user would see or experience the difference") rather than complement it — the /done check works retrospectively with actual decisions written down, which is a stronger signal than Claude guessing prospectively at planning time.
+- [idea] Session-start "no active build" message is confusing — when the user is about to start a build, reporting the absence of one reads like a failure. Rephrase or remove so it doesn't alarm the user before they've even begun.
 - [build] /plan batch format implies every batch needs a [test] entry — Claude pattern-matches and generates arbitrary tests even when the build entries are self-verifying. plan.md should say test entries are only added when there's a behaviour to verify that isn't self-evident from the build entries. Related to but distinct from the /done test-generation scoping fix (that's about post-build tests; this is about planning-time test entries).
 
 ### Parked

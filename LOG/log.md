@@ -480,3 +480,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The two-step split (present without assessing → then discuss and recommend) forced Claude to produce an empty first turn before engaging. Merging into one turn is more natural and ensures substance engagement always accompanies presentation. Adding the explicit disposition list (promote / question first / park / drop) prevents Claude from omitting options or defaulting to promote without surfacing alternatives.
 
 **Routed to Captures:** None
+
+## 994ca84 — Scope /done test generation to code changes
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: added scoping rule to Step 1.2 — post-build tests limited to code/app file changes, excluding procedure doc and template edits
+
+**Tests:** 1 passed, 0 failed, 0 skipped
+
+**Why:** Claude was generating arbitrary post-build tests for procedure doc and template edits even though those batches already include their own [test] entries for verification. Scoping Step 1.2 to code/app files only eliminates the redundancy and stops Claude from inventing tests where the batch already has coverage.
+
+**Routed to Captures:** Session-start "no active build" message is confusing when user is about to start a build
