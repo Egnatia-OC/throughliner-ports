@@ -6,18 +6,18 @@ This project uses the Sovereign Implementer method.
 
 ## Project docs
 
-- **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures use [idea] and [question] tags.
-- **REGISTRY.md** — components that exist. Updated after each build.
-- **LOG/** — per-session records of what was built, tested, and decided.
-- **FAQ/** — quick-reference answers about how the workflow works. Index loaded at session start; full answers in FAQ/faq.md.
+- **SPEC.md** — product truth. What it is, who it's for, how it works.
+- **QUEUE.md** — work queue, top-to-bottom. Batches (Build/Test subheadings), Captures ([idea]/[question] tags).
+- **REGISTRY.md** — components list. Updated after each build.
+- **LOG/** — session records: what was built, tested, decided.
+- **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md.
 
 ## Workflow
 
-- `/setup` — initial project scaffolding (already done if you're reading this).
-- `/plan` — manage the queue, process captures, resolve questions.
-- `/next` — execute the top queue entry (build or test).
-- `/done` — close the build, record what happened, commit.
+- `/setup` — scaffold project docs (done if you're reading this).
+- `/plan` — queue management, captures, design questions.
+- `/next` — execute the top batch.
+- `/done` — record, update docs, commit.
 
 ## Rules for Claude
 
