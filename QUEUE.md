@@ -51,6 +51,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] "Disposition" in plan.md is jargon non-coders won't understand. Replace with a plain-language term (e.g. "decision" or "call") throughout the procedure.
 - [idea] Output tag overhaul across all procedure docs. The tagging system ([SILENT], [BRIEF], [PROMPT], [DISCUSS], [SEQUENCE]) is defined in behaviour.md but many steps describe output behaviour in prose instead of using the tags. Audit all procedure docs (setup.md, plan.md, next.md, done.md) and replace prose output guidance with the proper tags. Includes: _build.md entry ticking in next.md should be [SILENT] (crash-recovery bookkeeping, not a status report).
 - [idea] When /plan decides no Test section is needed for a batch, that decision should be [SILENT] — no need to narrate "no test section because..." to the user.
+- [idea] /done hash backfill is self-defeating: it commits, writes the short hash into LOG/log.md + index.md, then `git commit --amend` — but amending rewrites the commit to a new hash, so the recorded hash never matches the final commit. Confirmed this session: commit was 13c4612, post-amend HEAD is 44ab617, LOG records 13c4612. Every entry is affected. Fix: record the hash in a separate follow-up commit instead of amending, or stop recording hashes and reference by date/summary instead.
 
 ### Parked
 
