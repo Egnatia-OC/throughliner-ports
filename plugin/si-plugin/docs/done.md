@@ -84,16 +84,22 @@ Unlocks future builds. Only after everything above is complete.
 6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
 7. Stage updated files, amend (`git commit --amend --no-edit`).
 
-### Phase 3: Handoff [BRIEF, PROMPT]
+### Phase 3: Recommend next [BRIEF, PROMPT]
 
-"Push to remote? (yes / not yet)"
-
-Then recommend based on queue state:
+Based on queue state:
 1. Captures routed that affect next batch → recommend /plan, name the blocker.
 2. More batches → "Next up is [batch]. Run /next or /plan when ready."
 3. Batches empty → "Queue is clear. Run /plan when you have more."
 
-Tell the user to run `/clear` before the next skill — a commit (and possibly a push) just happened.
+This is its own turn — wait for the user to acknowledge before moving to Phase 4. Knowing what's queued shapes whether they want to push now.
+
+### Phase 4: Push and context [BRIEF, PROMPT]
+
+"Push to remote? (yes / not yet)"
+
+Then tell the user how to manage context before the next skill:
+- If they pushed: run `/clear` — a push closes the loop, start fresh.
+- If they didn't push: run `/compact` — keep the work visible but trim context.
 
 ---
 

@@ -4,13 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Reorder done.md Phase 3 handoff**
-Why: Knowing what's queued changes whether the user wants to push. Current flow bundles push + next-up; correct flow separates them and adds context management.
-
-Build:
-- Reorder target done.md Phase 3: next-up recommendation first (its own turn), then push prompt as a separate turn.
-- The push/handoff turn includes context management guidance: run `/compact` before invoking the next skill, or `/clear` if a push just happened.
-
 **Add capture scan to next.md blocker gate**
 Why: Captures can land between /plan and /next. The blocker gate checks SPEC.md and unresolved questions but not fresh captures — a relevant capture could contradict or improve the batch about to be built.
 
@@ -33,6 +26,8 @@ Build:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] Strip internal-mechanism language from anything the user sees. Skills currently leak procedure-internal names into output — e.g. surfacing a draft LOG entry with the parenthetical "(per why-pipeline)". The user doesn't need to know which internal rule causes the draft to appear; they only need the draft. Audit all skill output (setup.md, plan.md, next.md, done.md) for similar leaks — phase numbers, rule names, pipeline labels, step references, anything that's bookkeeping for Claude rather than information for the user. Overlaps with the existing capture about "/done close-out steps need user-facing context" (jargon labels like "staleness sweep") — same principle, opposite framing: that one is about adding user-facing context, this one is about removing internal-facing context.
+- [idea] Plan close-out's step 4 "Handoff" (done.md ~line 142) has the same bundled shape as Build close-out's old Phase 3 — push prompt + next-up + always-`/clear`. The V47 batch just fixed that anti-pattern in Build close-out by splitting into Phase 3 (recommend next) + Phase 4 (push and context). Plan close-out should get the same treatment for symmetry; the bundling reason (knowing what's queued shapes the push decision) applies equally to /plan sessions. Surfaced during the Phase 3 reorder build — Plan close-out was deliberately out of scope.
 - [idea] Capture tags ([idea]/[question]) aren't pulling their weight — everything gets tagged [idea] and the tag does no work. Rethink whether these tags are useful or should be dropped/replaced.
 - [idea] Pull-down audit: review Alex's global CLAUDE.md for rules that should be universal plugin behaviour (behaviour.md). Anything that shapes how Claude works with the user — and would apply to any user, not just Alex — belongs in the plugin so it doesn't behave differently on other people's devices.
 - [idea] Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.

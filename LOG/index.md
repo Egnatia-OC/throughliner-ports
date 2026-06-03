@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 5b67dc3 — Split done.md Build close-out handoff into recommend + push phases
 - 39663a4 — Fix next.md clean-slate output for active build check
 - 8bc750a — Context management at skill handoffs + README model
 - 3a51184 — Add inline-reads rule to behaviour.md

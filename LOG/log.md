@@ -2,6 +2,15 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 5b67dc3 — Split done.md Build close-out handoff into recommend + push phases
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: split Phase 3 into Phase 3 "Recommend next" (queue-state recommendation, its own turn) and Phase 4 "Push and context" (push prompt + branching context guidance — `/clear` after push, `/compact` if not)
+
+The old Phase 3 bundled three things into a single turn: a queue-state recommendation, a push prompt, and a blanket `/clear` instruction. Bundling defeats the recommendation — the user needs to absorb what's next before deciding whether to push, and the right context-management move depends on whether they pushed. Splitting makes both decisions sequential and gives the context guidance a real branch. Plan close-out's step 4 has the same anti-pattern; routed to Captures rather than fixed in this batch.
+
+**Routed to Captures:** Plan close-out step 4 has the same bundled-handoff shape — symmetry candidate for /plan.
+
 ## 39663a4 — Fix next.md clean-slate output for active build check
 
 **Files touched:**
