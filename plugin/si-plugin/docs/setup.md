@@ -8,9 +8,22 @@ Before anything else, classify this folder:
 
 - **Case A — Empty/near-empty:** No source code, no docs. Fresh start.
 - **Case B — Existing code, no method docs:** Source files exist but no SPEC.md/QUEUE.md/REGISTRY.md.
-- **Case C — Already set up:** SPEC.md exists. This is a refresh/version-migration.
+- **Case C — Already set up:** SPEC.md exists.
 
-For Case C: tell the user the project is already set up and offer to run /plan instead. Stop here.
+For Case C, check `.si-version`:
+- **Version matches current plugin:** Project is fully up to date. Tell the user and offer to run /plan instead. Stop here.
+- **Version missing or outdated:** The plugin has been updated since this project was set up. Go to Step 2C (migration scaffolding).
+
+## Step 2C: Migration scaffolding [BRIEF]
+
+The plugin version has changed since this project was last set up. Re-scaffold without overwriting user content:
+
+1. **Check each doc/folder** from the Step 2 scaffold list. If it exists, skip it. If it doesn't exist, create it from the standard scaffold (empty structure, not interview-filled).
+2. **Update .si-version** to the current plugin version.
+3. **Skip the interview** — the project is already described in SPEC.md.
+4. **Tell the user** what was created or updated, and that they're ready for /plan or /next.
+
+Do NOT overwrite existing files. The goal is to add anything the project is missing from a newer plugin version, not to refresh content.
 
 ## Step 2: Scaffold the docs
 
@@ -90,6 +103,8 @@ Full session entries, newest first. Each entry is written by /done. This file co
 - `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
 
 **CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block to it rather than overwriting.
+
+**.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. This file is used by session_start to detect when the plugin has been updated and the project needs re-scaffolding.
 
 ## Step 3: Interview (5 questions, one at a time) [SEQUENCE, PROMPT]
 

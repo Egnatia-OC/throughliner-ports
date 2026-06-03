@@ -28,6 +28,7 @@ def main() -> int:
     registry_path = os.path.join(cwd, "REGISTRY.md")
     build_path = os.path.join(cwd, "_build.md")
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
+    si_version_path = os.path.join(cwd, ".si-version")
 
     has_spec = os.path.isfile(spec_path)
     has_queue = os.path.isfile(queue_path)
@@ -53,6 +54,27 @@ def main() -> int:
                 behaviour_rules = f.read()
         except OSError:
             pass
+
+    plugin_version = ""
+    if plugin_root:
+        plugin_json_path = os.path.join(plugin_root, ".claude-plugin", "plugin.json")
+        if os.path.isfile(plugin_json_path):
+            try:
+                with open(plugin_json_path, "r", encoding="utf-8") as f:
+                    plugin_data = json.load(f)
+                    plugin_version = plugin_data.get("version", "")
+            except (OSError, json.JSONDecodeError):
+                pass
+
+    project_version = ""
+    if os.path.isfile(si_version_path):
+        try:
+            with open(si_version_path, "r", encoding="utf-8") as f:
+                project_version = f.read().strip()
+        except OSError:
+            pass
+
+    version_mismatch = has_spec and plugin_version and project_version != plugin_version
 
     # State 1: Not adopted
     if not has_spec:
@@ -99,6 +121,20 @@ def main() -> int:
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
     context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
     context_parts.append(f"  REGISTRY.md: {'found' if has_registry else 'MISSING'}")
+
+    if version_mismatch:
+        context_parts.append("")
+        if project_version:
+            context_parts.append(
+                f"VERSION MISMATCH: project was set up with v{project_version}, "
+                f"plugin is now v{plugin_version}. "
+                "Run /setup to update project scaffolding."
+            )
+        else:
+            context_parts.append(
+                f"VERSION UNKNOWN: no .si-version file found. Plugin is v{plugin_version}. "
+                "Run /setup to update project scaffolding."
+            )
 
     if has_active_build:
         context_parts.append("")

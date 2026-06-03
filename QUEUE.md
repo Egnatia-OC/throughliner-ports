@@ -4,16 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Post-update migration detection**
-
-Build:
-- Add .si-version dotfile to /setup scaffolding, written with the current plugin version
-- Add version mismatch detection to session_start — compare .si-version against plugin version, warn user to run /setup if mismatched
-- Update /setup to handle existing docs (re-scaffold without overwriting user content)
-
-Test:
-- E2E: run /setup in a project that already has docs from an older plugin version — verify it handles existing files without corrupting or silently dropping content
-
 ### Parked
 
 - [idea] Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
@@ -24,6 +14,10 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 
 - [idea] README needs operating conditions section — document the normal runtime assumptions: Opus 4.6 on high, tested in auto mode only, /compact between commits, /clear or new chat between pushes, run /setup on first use. Users need to know these to get the expected experience.
 - [idea] Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Motivated by sessions where the user is just pressing yes through entire builds. Key design concerns: (1) wording must not create pressure for Claude to push through — it needs to stop genuinely when uncertain, not treat autonomy as a goal; (2) touches dependency management — Claude would need to decide at its own discretion when to wrap a batch and move to the next; (3) commit cadence and /done judgment steps still need to happen, not get skipped for speed.
+- [idea] Test session design — two problems: (1) /plan needs enough context about test execution to split entries correctly at planning time. Currently plan.md doesn't reference next.md's test execution rules, so the planner doesn't know Claude can run code-trace tests itself vs what needs a live user session. This led to a single test entry that Claude ad-hoc split during the build. (2) User-run E2E tests should be their own batch, not afterthoughts on build batches — building should progress without waiting on user testing. Still open: how to deliver point-and-click tests without clipboard transfer or excessive turn-by-turn.
+- [idea] /done test generation duplicates batch test entries — /done 1.2 generates tests for every code file changed, regardless of whether the batch already had test entries covering the same code. This led to 4 hook tests in /done that re-verified what the batch's own test entry already traced. 1.2 needs a gate: skip test generation for code already covered by batch test entries. Related: the test session design capture (tests as their own batches vs embedded in builds).
+- [idea] Dropped live E2E from post-update migration batch — the batch test entry ("E2E: run /setup on older project") was ticked as passed via code trace, but the actual live E2E (user runs /setup after reinstall) was only noted in the tick text, never routed to Captures or requeued. /done 1.6 should have caught it. Root cause: the test was ticked "passed" with a qualifier, which made it look complete. Unfinished work inside a passed test needs explicit routing — a note in parentheses isn't a routing mechanism. Broader principle: all Claude-doable testing should be anticipated during planning, not discovered ad hoc during post-build. All human-doable testing needs its own batch.
+- [idea] Capture wording approval — when capturing something the user raises, show the proposed wording before writing it. User oversight preserves rationale that feeds the why pipeline. Applies across all skills (mid-build captures, /plan processing, /done routing).
 - [idea] Restore web-search-when-uncertain rule — older plugin versions had a rule: when Claude is uncertain about how something works, whether a better approach exists, or needs more information to answer confidently, it should always offer to do a web search. Whether offered by Claude or requested by the user, all research gets filed under resources/research/ for later reference in the relevant build batch, log entry, or capture.
 
 

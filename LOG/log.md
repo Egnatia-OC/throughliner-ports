@@ -2,6 +2,18 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 91b7164 — Post-update migration detection
+
+**Files touched:**
+- plugin/si-plugin/docs/setup.md: added .si-version to Step 2 scaffold list; rewrote Case C into version-match check + new Step 2C migration scaffolding flow
+- plugin/si-plugin/hooks/session_start.py: reads plugin version from plugin.json and project version from .si-version; warns on mismatch with version-specific message
+
+**Tests:** 4 passed, 0 failed, 0 skipped
+
+**Why:** Users who update the plugin get no signal that their project docs might be missing newer scaffolding (e.g. FAQ/ added in a later version). The .si-version dotfile creates a version anchor at setup time; session_start compares it against the running plugin and warns on mismatch; /setup's new Step 2C handles the migration by creating missing docs without touching existing content. The design prioritises safety — existing files are never overwritten, only gaps are filled.
+
+**Routed to Captures:** test session design (tests running inside build batches vs their own batches), capture wording approval (show proposed wording before writing)
+
 ## e84e281 — Mid-build scope expansion protocol
 
 **Files touched:**
