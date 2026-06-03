@@ -558,3 +558,5 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** Claude was inflating batches with [test] entries for behaviours already self-evident from the build entries, and /done already generates post-build tests for code changes. The new rule makes [test] entries opt-in at planning time — only when there's a distinct behaviour to verify that the build entries don't cover.
 
 **Routed to Captures:** None
+
+**Pushed:** v1.5.0

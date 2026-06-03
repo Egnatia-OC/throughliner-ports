@@ -93,7 +93,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 ## Current state
 
-**Status:** Target v1.0.0 built and installed as host. Repo initialized, not yet pushed. Method docs set up (/setup complete).
+**Status:** Target v1.5.0. Repo on GitHub, method docs set up (/setup complete).
 
 ## Method docs
 
