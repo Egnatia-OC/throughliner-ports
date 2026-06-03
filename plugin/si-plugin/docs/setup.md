@@ -131,7 +131,7 @@ After all 5 answers:
 1. Fill SPEC.md with the interview answers.
 2. Write one build entry in QUEUE.md from Q4 — under a Build subheading, in the user's words, not multiple scoped entries.
 3. Show the user what was created (file list + one-line summary of each).
-4. Tell them: "Run /plan to scope your first batch, or /next if you're ready to build."
+4. Tell them: "Run /plan to scope your first batch, or /next if you're ready to build. Run `/compact` or `/clear` first to keep context clean."
 
 ## Rules
 

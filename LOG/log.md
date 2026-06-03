@@ -2,6 +2,20 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 8bc750a — Context management at skill handoffs + README model
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md — removed "Between skills, nudge compact if context is long" bullet from Context awareness (superseded by per-skill lines)
+- plugin/si-plugin/docs/setup.md — appended "/compact or /clear" handoff line to Step 4
+- plugin/si-plugin/docs/plan.md — appended the same line to Step 4 Close out
+- plugin/si-plugin/docs/next.md — appended the same line to Step 7 Completion
+- plugin/si-plugin/docs/done.md — appended "/clear after commit" line to both handoff sections (Build close-out Phase 3 and Plan close-out Step 4)
+- README.md — "Opus 4.6 on high-output mode" → "Opus 4.6 on max effort"
+
+**Why:** Claude loses routing accuracy as context degrades late in sessions — prescribing context management at every skill handoff addresses the root cause instead of patching individual symptoms. The rule splits by what just happened: `/compact` or `/clear` (user's choice) between skills where nothing has been committed, `/clear` specifically after /done because a commit always happens (and possibly a push). Offering `/compact` OR `/clear` between skills rather than just `/compact` preserves choice — some sessions warrant the deeper reset that `/clear` provides even when nothing has been committed. Scope expansion approved mid-build: behaviour.md's "Between skills, nudge compact if context is long" bullet was removed because the new per-skill lines supersede it — keeping both would have created contradictory rules. README tested-model line updated to match current desktop-app terminology. During /done close-out, four files surfaced as orphaned-tightening from a prior pre-push sweep (next.md, setup.md, CLAUDE-TEMPLATE.md, faq-template.md); build edits to next.md and setup.md had layered on top before the mix was caught. Recovered via `git checkout HEAD` on the two mixed files, re-applied just the build change; the two templates remain orphaned for the next push. Underlying staging gap routed to Captures.
+
+**Routed to Captures:** 1 — push-and-rezip step 8 doesn't stage sweep-modified files
+
 ## 3a51184 — Add inline-reads rule to behaviour.md
 
 **Files touched:**

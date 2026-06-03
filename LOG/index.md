@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 8bc750a — Context management at skill handoffs + README model
 - 3a51184 — Add inline-reads rule to behaviour.md
 - 2f2a0f2 — Wire up the why-pipeline across behaviour/plan/done
 - a72a721 — /plan session: promote why-pipeline + tag removal, add 3 captures

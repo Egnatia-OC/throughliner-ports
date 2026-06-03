@@ -139,7 +139,7 @@ Never compact silently. The user should know what's being traded away.
 When all entries are ticked:
 1. Tell the user the build is complete.
 2. Show what was done (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or keep adjusting."
+3. Say: "Run /done to record this and commit, or keep adjusting. Run `/compact` or `/clear` first to keep context clean."
 
 Do NOT delete _build.md yourself. That's /done's job.
 

@@ -93,6 +93,8 @@ Then recommend based on queue state:
 2. More batches → "Next up is [batch]. Run /next or /plan when ready."
 3. Batches empty → "Queue is clear. Run /plan when you have more."
 
+Tell the user to run `/clear` before the next skill — a commit (and possibly a push) just happened.
+
 ---
 
 ## Plan close-out
@@ -143,6 +145,8 @@ Prepend to `LOG/index.md`:
 
 - Batches exist: "Next up is [batch]. Run /next or /plan when ready."
 - Batches empty: "Queue is clear."
+
+Tell the user to run `/clear` before the next skill — a commit (and possibly a push) just happened.
 
 ---
 

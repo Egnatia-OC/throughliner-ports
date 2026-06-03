@@ -79,4 +79,4 @@ Split test entries by who runs them. Claude verifies through code: read files, r
 ## Step 4: Close out [BRIEF, PROMPT]
 
 1. Summarize what changed.
-2. "Run /done to record this and commit, or keep planning."
+2. "Run /done to record this and commit, or keep planning. Run `/compact` or `/clear` first to keep context clean."

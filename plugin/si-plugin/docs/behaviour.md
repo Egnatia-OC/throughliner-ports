@@ -83,4 +83,3 @@ Rationale is prose. Carry it forward; don't collapse it into a structured "why" 
 
 - If context is long mid-build, suggest completing the current file and running /done.
 - When resuming (active _build.md), read it for state rather than re-exploring.
-- Between skills, nudge compact if context is long.
