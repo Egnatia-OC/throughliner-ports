@@ -4,6 +4,12 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Add inline-reads rule to behaviour.md**
+Why: Claude spawned an agent for the pre-push consistency sweep — a sequential checklist that only needs a handful of Read and Grep calls. No procedure told it to use agents, but nothing told it not to. A general rule prevents this across all skills.
+
+Build:
+- Add rule to target behaviour.md: use direct tool calls (Read, Grep, Glob) for work that's a bounded checklist of file reads and comparisons. Don't spawn agents for lookups that don't require exploration.
+
 ### Parked
 
 - [idea] Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
@@ -12,7 +18,6 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [idea] Pre-push consistency sweep should use direct reads, not agents — the sweep is a checklist of file reads and string comparisons. An agent adds ~60k tokens of overhead for work that takes a handful of Grep and Read calls inline. Not justified for users watching their usage.
 - [idea] /done lost context on what Captures is — after completing the /done turn, Claude tried to route a new observation to memory instead of Captures in QUEUE.md. The routing rules were available in context but Claude didn't follow them. May need a reminder in the close-out or handoff step that new observations always go to Captures.
 - [idea] next.md Step 1 (active build check) needs explicit output guidance for the clean-slate case. When no _build.md exists, Claude currently narrates "No active build" which reads like a failure. Add direction so Claude communicates readiness, not absence.
 - [idea] done.md Phase 3 (Handoff) ordering is wrong. The next-up recommendation should come before the push prompt, not after — knowing whether more work is queued changes whether the user wants to push now. Then the push question on its own turn. Current flow: push question + next-up bundled. Correct flow: next-up first, then push question as a separate turn.
@@ -22,6 +27,8 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Pull-down audit: review Alex's global CLAUDE.md for rules that should be universal plugin behaviour (behaviour.md). Anything that shapes how Claude works with the user — and would apply to any user, not just Alex — belongs in the plugin so it doesn't behave differently on other people's devices.
 - [idea] Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
 - [idea] /done close-out steps need user-facing context in their output — "staleness sweep" and similar labels are internal jargon that tells the user nothing about what's happening or why they're waiting. Each visible step should say what it's checking and against what (e.g. "sweeping QUEUE.md for references to files or behaviour changed in this build"). Not explanations, just enough that someone watching knows what they're being held up for.
+
+- [idea] When /plan decides no Test section is needed for a batch, that decision should be [SILENT] — no need to narrate "no test section because..." to the user.
 
 ### Parked
 
