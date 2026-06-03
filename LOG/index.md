@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 491fa6e — Skill handoff polish
 - 11e2750 — /plan session: process Captures, clean up handoff batch
 - 51ba675 — Why pipeline polish
 - dd67804 — LOG multi-file split

@@ -17,7 +17,7 @@ Before starting:
 
 4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
    - Batch title and all entry text from QUEUE.md
-   - "Ready to start? (yes / adjust scope)" — if the user wants a different batch, route to /plan for reordering rather than cherry-picking here
+   - "Ready?" — if the user wants to change scope or reorder, route to /plan
 
 ## Step 2: Lock scope [SILENT]
 

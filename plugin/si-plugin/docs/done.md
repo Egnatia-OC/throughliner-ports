@@ -132,12 +132,12 @@ Created by /next Step 2 when the batch was locked. Deleting it unlocks future bu
 
 ### Phase 3: Handoff [BRIEF, PROMPT]
 
-Evaluate the queue state and make one recommendation (check in this order):
-1. If items were routed to Captures during this session and any of them affect the next batch → recommend /plan first, name the blocking item.
-2. If QUEUE.md has more batches → recommend the next batch by name.
-3. If QUEUE.md Batches section is empty → "Queue is clear. Run /plan when you have more to add."
+"Push to remote? (yes / not yet)" — never push automatically.
 
-Then: "Push to remote? (yes / not yet)" — never push automatically.
+Then make one recommendation based on queue state (check in this order):
+1. If items were routed to Captures during this session and any of them affect the next batch → recommend /plan first, name the blocking item.
+2. If QUEUE.md has more batches → "Next up is [batch name]. Run /next or /plan when ready."
+3. If QUEUE.md Batches section is empty → "Queue is clear. Run /plan when you have more to add."
 
 ---
 
@@ -186,11 +186,11 @@ Prepend a one-line entry to `LOG/index.md` — insert it immediately after the h
 
 ### 4. Handoff [BRIEF, PROMPT]
 
-Tell the user what's next:
-- If QUEUE.md has batches: "Next up is [batch]. Run /next when ready."
-- If QUEUE.md Batches section is empty: "Queue is clear."
+"Push to remote? (yes / not yet)" — never push automatically.
 
-Then: "Push to remote? (yes / not yet)" — never push automatically.
+Then tell the user what's next:
+- If QUEUE.md has batches: "Next up is [batch]. Run /next or /plan when ready."
+- If QUEUE.md Batches section is empty: "Queue is clear."
 
 ---
 

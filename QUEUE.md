@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Skill handoff polish**
-- [build] Audit all skill-to-skill handoff prompts across /setup, /plan, /next, and /done — for each, simulate the prompt text and summarise the immediate context the user is in when they see it, then polish for clarity and flow
-- [build] Fix /done handoff ordering — push question first, then "run /next or /plan when ready" if not pushing
-- [build] Fix /next batch presentation prompt — replace "Ready to start? (yes / adjust scope)" with a simple "Ready?" and route to /plan if the user wants changes
-
 **Batch entry format: replace inline type tags with subheadings**
 Why: Type tags ([build], [test]) are Claude's routing metadata visible to the user, cluttering batch presentation with implementation details.
 - [build] Replace inline [build]/[test] type markers with Build/Test subheadings in the batch format — update plan.md Step 3, and all procedure docs that reference entry types by inline tag (next.md, done.md, setup.md, behaviour.md)
@@ -34,6 +29,8 @@ Why: Type tags ([build], [test]) are Claude's routing metadata visible to the us
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] README needs operating conditions section — document the normal runtime assumptions: Opus 4.6 on high, tested in auto mode only, /compact between commits, /clear or new chat between pushes, run /setup on first use. Users need to know these to get the expected experience.
+- [idea] Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Motivated by sessions where the user is just pressing yes through entire builds. Key design concerns: (1) wording must not create pressure for Claude to push through — it needs to stop genuinely when uncertain, not treat autonomy as a goal; (2) touches dependency management — Claude would need to decide at its own discretion when to wrap a batch and move to the next; (3) commit cadence and /done judgment steps still need to happen, not get skipped for speed.
 
 
 

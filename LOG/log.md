@@ -2,6 +2,18 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 491fa6e — Skill handoff polish
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: reordered build close-out Phase 3 and plan close-out Step 4 — push question before queue recommendation; made build option 2 explicit
+- plugin/si-plugin/docs/next.md: Step 1.4 — replaced "Ready to start? (yes / adjust scope)" with "Ready?" and simplified routing
+
+**Tests:** none (procedure doc edits only)
+
+**Why:** Handoff prompts are the main touch-points where users decide what to do next. The /done ordering (recommendation then push) buried the immediate action; the /next prompt ("adjust scope") implied scoping happens in /next when it belongs in /plan. Audited all 11 handoff prompts across the plugin to fix these and confirm the rest were clear.
+
+**Routed to Captures:** README operating conditions, cruise control skill (both captured during build)
+
 ## 11e2750 — /plan session: process Captures, clean up handoff batch
 
 **Queue changes:**
