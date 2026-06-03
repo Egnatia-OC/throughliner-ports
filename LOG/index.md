@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 39663a4 — Fix next.md clean-slate output for active build check
 - 8bc750a — Context management at skill handoffs + README model
 - 3a51184 — Add inline-reads rule to behaviour.md
 - 2f2a0f2 — Wire up the why-pipeline across behaviour/plan/done

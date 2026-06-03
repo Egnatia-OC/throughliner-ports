@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Fix next.md clean-slate output for active build check**
-Why: Four attempts to land this fix — it keeps getting lost. The active build check narrates "No active build" when no _build.md exists, which reads like a failure. Needs explicit direction for the clean-slate path.
-
-Build:
-- In target next.md Step 1 point 1, mark the active build check `[SILENT]`. If _build.md exists, offer to resume. If not, move on — no output either way.
-
 **Reorder done.md Phase 3 handoff**
 Why: Knowing what's queued changes whether the user wants to push. Current flow bundles push + next-up; correct flow separates them and adds context management.
 

@@ -6,7 +6,7 @@ You are executing the next piece of work from the queue. One batch at a time, sc
 
 Before starting:
 
-1. **Active build check:** If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one.
+1. **Active build check:** [SILENT] If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one. If _build.md does not exist, move on — no output either way.
 
 2. **Read QUEUE.md:** Find the top batch under "Batches."
 

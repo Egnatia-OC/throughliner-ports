@@ -2,6 +2,15 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 39663a4 — Fix next.md clean-slate output for active build check
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Added `[SILENT]` tag to active build check (Step 1 point 1), added explicit "no output" direction for the clean-slate path
+
+This fix has been attempted four times and kept getting lost. The active build check narrates "No active build" when no _build.md exists, which reads like a failure to users — the check is internal bookkeeping and should be silent. The fix is two things: the `[SILENT]` tag so the output rules suppress it, and an explicit sentence covering the no-_build.md path so Claude doesn't improvise output for the "nothing found" case.
+
+**Routed to Captures:** none
+
 ## 8bc750a — Context management at skill handoffs + README model
 
 **Files touched:**
