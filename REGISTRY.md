@@ -22,3 +22,4 @@ Components that exist in this project. Updated after each build.
 - `LOG/index.md` — one-line summaries of each session, newest first
 - `LOG/log.md` — full session entries for the current release, newest first
 - `LOG/log-v*.md` — archived per-release log files (created at push time)
+- `README.md` — public-facing project description, install instructions, operating conditions

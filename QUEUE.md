@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**README operating conditions**
-
-Build:
-- Add an operating conditions section to the README distinguishing prerequisites (run /setup on first use) from tested-environment assumptions (Opus 4.6 on high, auto mode, /compact between commits, /clear or new chat between pushes)
-
 **Test-aware planning**
 
 Build:
@@ -44,6 +39,9 @@ Build:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+- [idea] Pre-push consistency sweep should use direct reads, not agents — the sweep is a checklist of file reads and string comparisons. An agent adds ~60k tokens of overhead for work that takes a handful of Grep and Read calls inline. Not justified for users watching their usage.
+- [idea] /done lost context on what Captures is — after completing the /done turn, Claude tried to route a new observation to memory instead of Captures in QUEUE.md. The routing rules were available in context but Claude didn't follow them. May need a reminder in the close-out or handoff step that new observations always go to Captures.
+- [idea] next.md Step 1 (active build check) needs explicit output guidance for the clean-slate case. When no _build.md exists, Claude currently narrates "No active build" which reads like a failure. Add direction so Claude communicates readiness, not absence.
 
 
 ### Parked

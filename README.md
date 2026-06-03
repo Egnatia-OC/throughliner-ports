@@ -25,6 +25,17 @@ Hooks run automatically in the background to enforce discipline — keeping your
 
 To update: uninstall the old version first (gear icon > Uninstall), then repeat steps 1–3.
 
+## Operating conditions
+
+**Prerequisites** — do these once per project:
+- Run `/setup` in your project folder to scaffold the method docs
+
+**Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
+- Claude Opus 4.6 on high-output mode
+- Auto mode enabled
+- `/compact` between commits (keeps context clean within a session)
+- `/clear` or a new chat between pushes (gives each session a fresh context window)
+
 ## Getting started
 
 Open any project folder in Claude Code and type `/setup`. The plugin asks five questions about what you're building, then scaffolds your project docs. When you're ready to build, run `/plan` to scope your first batch, then `/next` to start.
