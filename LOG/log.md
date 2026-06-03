@@ -2,6 +2,18 @@
 
 Full session entries written by /done. New entries are prepended (newest first). Legacy entries below are in chronological order and will be archived at the next push.
 
+## 11e2750 — /plan session: process Captures, clean up handoff batch
+
+**Queue changes:**
+- Created batch "Batch entry format: replace inline type tags with subheadings" (placed after Skill handoff polish)
+- Folded /next scope prompt fix into Skill handoff polish batch
+- Removed completed entry from Skill handoff polish batch (/setup closing message — already shipped in cfdd6b0)
+- Processed 3 Captures: 1 promoted, 1 folded, 1 dropped
+
+**Why:** Entered /plan from /next after the blocker gate surfaced a Capture affecting the top batch. The setup closing message entry was stale — already completed during the Why pipeline polish build. The batch entry format and /next scope prompt both came from user observations during earlier builds about how the plugin presents information.
+
+**Captures routed:** All 3 processed — 1 promoted to new batch, 1 folded into existing batch, 1 dropped (already done)
+
 ## 51ba675 — Why pipeline polish
 
 **Files touched:**

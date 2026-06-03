@@ -7,7 +7,13 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 **Skill handoff polish**
 - [build] Audit all skill-to-skill handoff prompts across /setup, /plan, /next, and /done — for each, simulate the prompt text and summarise the immediate context the user is in when they see it, then polish for clarity and flow
 - [build] Fix /done handoff ordering — push question first, then "run /next or /plan when ready" if not pushing
-- [build] Fix /setup closing message — direct to /plan first, not /next
+- [build] Fix /next batch presentation prompt — replace "Ready to start? (yes / adjust scope)" with a simple "Ready?" and route to /plan if the user wants changes
+
+**Batch entry format: replace inline type tags with subheadings**
+Why: Type tags ([build], [test]) are Claude's routing metadata visible to the user, cluttering batch presentation with implementation details.
+- [build] Replace inline [build]/[test] type markers with Build/Test subheadings in the batch format — update plan.md Step 3, and all procedure docs that reference entry types by inline tag (next.md, done.md, setup.md, behaviour.md)
+- [build] Update templates (CLAUDE-TEMPLATE.md, faq-template.md, faq-index-template.md) to reflect the new format
+- [build] Reformat existing QUEUE.md batches to use the new subheading format
 
 **Mid-build scope expansion protocol**
 - [build] Add mid-build capture routing to /next procedure — when user raises something out of scope, default to capturing it and ask "anything else?" before resuming
@@ -28,9 +34,6 @@ Worked top to bottom. Each batch is one /next session — builds first, then tes
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- [idea] Batch entry format shows type tags ([build], [test]) inline instead of grouping under Build/Test headers — tags are for Claude's routing, not user display. Fix by changing how /plan writes batches: entries go under a **Build** or **Test** subheading instead of carrying inline type markers.
-- [idea] /next's "Ready to start, or adjust scope?" prompt offers scope adjustment, but scoping belongs in /plan — /next should present the batch and ask "Ready?" with a route to /plan if the user wants changes, not imply it can adjust scope itself.
-- [idea] Skill handoff polish batch entry "Fix /setup closing message — direct to /plan first, not /next" is already done — completed as part of the Why pipeline polish build (setup.md Step 4.4 now directs to /plan first). Remove from the handoff batch during /plan.
 
 
 

@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 11e2750 — /plan session: process Captures, clean up handoff batch
 - 51ba675 — Why pipeline polish
 - dd67804 — LOG multi-file split
 - ef416bc — /plan session: 5 batches from Captures, post-update migration design
