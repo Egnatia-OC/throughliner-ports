@@ -43,3 +43,4 @@ One-line summaries of each session, linked to the full entry by commit hash.
 - cc0ccb9 — /plan session: process Captures, create batches, rework E2E scope
 - fe48e89 — Add entry question to /plan Step 1
 - 52be5d4 — Add push markers to push-and-rezip procedure
+- bcf24cc — Move /done handoff before push prompt

@@ -525,3 +525,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** Release boundaries were invisible in LOG without running git commands. Adding a `**Pushed:** v<VERSION>` line to the last LOG entry during push-and-rezip makes it clear which entries shipped in each release, directly in the log.
 
 **Routed to Captures:** None
+
+## bcf24cc — Move /done handoff before push prompt
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: moved push prompt from step 2.4.8 to after Phase 3 handoff (build close-out); moved push prompt from step 3.8 to after step 4 handoff (plan close-out)
+
+**Tests:** 0 (procedure doc change — no code/app tests generated)
+
+**Why:** The handoff recommendation ("next up is X") gives the user context for whether to push now or keep building. Having the push prompt before the handoff meant the user was deciding blind. Reordering both close-out paths so the user sees what's next before being asked about pushing.
+
+**Routed to Captures:** None

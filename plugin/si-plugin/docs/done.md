@@ -129,7 +129,6 @@ Created by /next Step 2 when the batch was locked. Deleting it unlocks future bu
 5. After commit: run `git rev-parse --short HEAD` to get the hash.
 6. Replace every `[HASH]` placeholder in LOG/log.md and LOG/index.md with the actual hash.
 7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
-8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
 ### Phase 3: Handoff [BRIEF, PROMPT]
 
@@ -137,6 +136,8 @@ Evaluate the queue state and make one recommendation (check in this order):
 1. If items were routed to Captures during this session and any of them affect the next batch → recommend /plan first, name the blocking item.
 2. If QUEUE.md has more batches → recommend the next batch by name.
 3. If QUEUE.md Batches section is empty → "Queue is clear. Run /plan when you have more to add."
+
+Then: "Push to remote? (yes / not yet)" — never push automatically.
 
 ---
 
@@ -182,13 +183,14 @@ Add a one-line entry to `LOG/index.md`:
 5. After commit: run `git rev-parse --short HEAD` to get the hash.
 6. Replace every `[HASH]` placeholder in LOG/log.md and LOG/index.md with the actual hash.
 7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
-8. After amend: "Push to remote? (yes / not yet)" — never push automatically.
 
 ### 4. Handoff [BRIEF, PROMPT]
 
 Tell the user what's next:
 - If QUEUE.md has batches: "Next up is [batch]. Run /next when ready."
 - If QUEUE.md Batches section is empty: "Queue is clear."
+
+Then: "Push to remote? (yes / not yet)" — never push automatically.
 
 ---
 
