@@ -2,6 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 090d845 — Capture wording approval rule
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 4 "User raises something out of scope" — changed step 1 from silent capture to draft-and-approve flow
+- plugin/si-plugin/docs/done.md: Step 1.3 "Route findings to Captures" — changed from direct write to draft-show-approve before writing
+- plugin/si-plugin/docs/plan.md: ground rules — broadened "never add to the queue" rule to explicitly cover both batches and captures
+
+**Why:** Claude was writing captures to QUEUE.md without showing the user the wording first. The user has no chance to refine, correct, or reject what gets captured — and since captures flow through to batches via /plan, bad wording compounds. All other writes to QUEUE.md (batch entries, promote dispositions) already require approval; captures were the gap. Adding the rule to all three procedure docs where captures originate (next.md for out-of-scope items, done.md for findings, plan.md as a ground rule) closes it.
+
+**Routed to Captures:** none
+
 ## 9905759 — Remove test generation from /done
 
 **Files touched:**

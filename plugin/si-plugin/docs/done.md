@@ -35,7 +35,7 @@ For each file that was created, renamed, deleted, or significantly modified:
 
 During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. For each finding:
 
-- Add it to the **Captures** section of QUEUE.md as an `[idea]` entry. Include the reasoning — why it matters, what prompted the observation — not just what was noticed.
+- Draft the capture wording as an `[idea]` entry. Include the reasoning — why it matters, what prompted the observation — not just what was noticed. Show the proposed wording to the user and wait for approval before writing it to QUEUE.md.
 - Don't promote findings to batches during /done — that's /plan's job.
 - If a test failure needs a fix, route the fix to Captures too (not directly to a batch).
 

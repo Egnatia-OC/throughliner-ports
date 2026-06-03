@@ -4,11 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Capture wording approval**
-
-Build:
-- Add rule to all skill procedure docs (next.md, done.md, plan.md): when capturing something the user raises, show the proposed wording and wait for approval before writing it to QUEUE.md
-
 **Restore web-search-when-uncertain rule**
 
 Build:

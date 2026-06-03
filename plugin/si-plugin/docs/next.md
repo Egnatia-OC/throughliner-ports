@@ -98,7 +98,7 @@ Changes:
 
 When the user brings up something that isn't part of the current batch:
 
-1. Capture it to QUEUE.md Captures as an [idea] entry.
+1. Draft the capture wording and show it to the user. Wait for approval before writing it to QUEUE.md Captures.
 2. Ask "anything else?" — repeat until the user says no.
 3. Resume the build.
 

@@ -10,7 +10,7 @@ Claude owns dependency management — what order batches go in, how work groups 
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue things that contradict it.
 - Process accumulated captures before new planning work.
-- Never add to the queue without showing the user the exact entry text first.
+- Never write to QUEUE.md — batches or captures — without showing the user the exact entry text first.
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call before proceeding.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 
