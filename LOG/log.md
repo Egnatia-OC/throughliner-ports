@@ -2,6 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## a72a721 — /plan session: promote why-pipeline + tag removal, add 3 captures
+
+**Queue changes:**
+- Promoted "Wire up the why-pipeline: preserve prose rationale, retrieve from log" to top of Batches
+- Promoted "Remove the [idea]/[question] capture tags" to bottom of Batches
+- Added 3 captures: promote-before-draft visibility; one-item-at-a-time rule for behaviour.md; don't-collapse-rationale-into-structure rule for behaviour.md
+
+**Why:** The why-pipeline (rationale carried capture → batch → log, then retrievable to answer "why does X exist") is the foundational system that's never actually worked end-to-end — preservation re-authors too freely, retrieval has never fired (Claude always infers from code, never reads the log). Promoted to top of queue ahead of the five touch-up fixes. Design crystallised mid-session: reasons are prose, never collapsed into one-line fields or typed taxonomies; capture wording → batch wording → log wording carries the prose forward with user approval at each stage; retrieval rule directs Claude to search the log first. Capture tags [idea]/[question] confirmed dead: nothing branches on them, and the two definitions contradict (faq-template.md frames them as parallel categories; plan.md/behaviour.md describe them as sequential refinement stages). Three behaviour captures surfaced live during the session: user approved promotion before seeing concrete entries (visibility gap in /plan); Claude sent walls of text instead of one item at a time (Alex's global preference should be plugin-wide); designing the why-pipeline almost collapsed rationale into structured fields before user corrected it — the prose-not-structure principle generalises beyond the why-pipeline batch.
+
+**Captures routed:** 1 capture promoted (tag removal); 1 emergent batch promoted (why-pipeline, surfaced mid-interview); 3 new captures added; 7 original captures left unprocessed.
+
 ## 13c4612 — /plan session: 4 batches promoted, Plan panel dropped, context-window research
 
 **Queue changes:**

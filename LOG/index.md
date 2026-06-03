@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- a72a721 — /plan session: promote why-pipeline + tag removal, add 3 captures
 - 13c4612 — /plan session: 4 batches promoted, Plan panel dropped, context-window research
 - 23a1da8 — /plan session: promote inline-reads rule, add capture
 - 2fa0bae — Interview flow and capture rule consolidation
