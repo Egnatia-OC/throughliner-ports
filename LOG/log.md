@@ -2,6 +2,15 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## c28297e — Add capture scan to next.md blocker gate
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: added a fourth bullet to Step 1's blocker gate that scans Captures for items relevant to the top batch, flags any that contradict, invalidate, or would benefit the batch, and recommends switching to /plan if found. Placed after the existing questions check and before the unconfirmed-tests check.
+
+Captures can land between /plan and /next. The blocker gate already checks SPEC.md and unresolved questions but didn't look at fresh captures — a relevant capture could contradict or improve the batch about to be built. The existing questions bullet already handled the narrow case of capture-section questions affecting the current batch; the new bullet generalises that to all captures (ideas too), keeping it as a separate check so the questions bullet stays focused on its own concern.
+
+**Routed to Captures:** none
+
 ## 5b67dc3 — Split done.md Build close-out handoff into recommend + push phases
 
 **Files touched:**

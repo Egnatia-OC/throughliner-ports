@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Add capture scan to next.md blocker gate**
-Why: Captures can land between /plan and /next. The blocker gate checks SPEC.md and unresolved questions but not fresh captures — a relevant capture could contradict or improve the batch about to be built.
-
-Build:
-- Add a step to target next.md Step 1 blocker gate: scan Captures for items relevant to the top batch. Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend switching to /plan if found.
-
 **Remove the [idea]/[question] capture tags**
 Why: The tags are defined only in faq-template.md and CLAUDE-TEMPLATE.md, nothing in any procedure branches on them, and the two definitions contradict each other — the FAQ frames them as parallel categories while the idea → question pipeline in plan.md/behaviour.md treats them as sequential refinement stages. Dead and self-contradictory; leaving them ships that confusion to every new project.
 
@@ -44,7 +38,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 
 ### Parked
 
-- [idea] Batch cohesion ordering heuristic — the build log as decision log creates pressure for discrete builds, and batch ceremony is friction for users. Two parts: (1) queue ordering rule — builds touching an area with no related batches yet should sink (absent urgency or dependency), giving time for more captures to accumulate and make the batch worthwhile; (2) /next-time check — if related captures exist for the top batch, Claude should recommend switching to /plan to incorporate them first. Batching also touches context window management, not just coherent logging — Claude needs to think about one area of related concerns at a time. Needs design work to sharpen "no friends" and "related" into mechanical rules.
+- [idea] Batch cohesion ordering heuristic — the build log as decision log creates pressure for discrete builds, and batch ceremony is friction for users. Queue ordering rule: builds touching an area with no related batches yet should sink (absent urgency or dependency), giving time for more captures to accumulate and make the batch worthwhile. Batching also touches context window management, not just coherent logging — Claude needs to think about one area of related concerns at a time. Needs design work to sharpen "no friends" and "related" into a mechanical rule. (The companion /next-time check — recommend switching to /plan if related captures exist for the top batch — shipped as the next.md blocker-gate capture scan.)
 - [idea] Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed. Parked: depends on stabilizing the skills it would chain.
 - [idea] Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
 - [idea] /done spec check — after writing the **Why:** field, Claude checks whether any reasoning constitutes a product decision that should update SPEC.md. Retrospective check (at decision time) vs the current /plan pipeline gate (prospective, at planning time). Both mechanisms need more real usage before deciding how they relate.

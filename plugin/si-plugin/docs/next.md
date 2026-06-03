@@ -13,6 +13,7 @@ Before starting:
 3. **Blocker gate:** Scan for blockers that would force guessing:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Are there unresolved questions in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
+   - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend switching to /plan if any are found.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]

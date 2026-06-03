@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- c28297e — Add capture scan to next.md blocker gate
 - 5b67dc3 — Split done.md Build close-out handoff into recommend + push phases
 - 39663a4 — Fix next.md clean-slate output for active build check
 - 8bc750a — Context management at skill handoffs + README model
