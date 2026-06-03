@@ -1,64 +1,63 @@
 # /done procedure
 
-You are closing the current session — recording what happened, updating docs, and committing.
+Close the current session — record what happened, update docs, commit.
 
 ## Mode detection
 
-Check whether _build.md exists:
-- **Yes → Build close-out.** A /next build just finished. Follow the full procedure below.
-- **No → Plan close-out.** A /plan session just finished. Skip to the Plan close-out section.
+Check for _build.md:
+- **Exists → Build close-out.** Full procedure below.
+- **Missing → Plan close-out.** Skip to Plan close-out section.
 
 ---
 
 ## Build close-out
 
-Use this after /next. The full procedure: verify, log, commit.
+### Phase 1: Judgment (while context is fresh)
 
-### Phase 1: Judgment (do this while context is fresh)
-
-These steps capture meaning that would be lost after compaction.
+Captures meaning that would be lost after compaction.
 
 #### 1.1 Verify completion
 
-Read _build.md. Are all entries ticked in Progress?
-- **All ticked:** Proceed.
-- **Some unticked:** Ask the user — finish them (/next to continue), or close partial (mark unticked entries as deferred and route back to QUEUE.md).
+Read _build.md. All entries ticked?
+- **Yes:** Proceed.
+- **Some unticked:** Ask — finish (/next) or close partial (defer unticked, route back to QUEUE.md).
 
 #### 1.2 Update REGISTRY.md
 
-For each file that was created, renamed, deleted, or significantly modified:
-- Add new entries (path + one-line description of what it is)
-- Update descriptions if the file's role changed
+For each file created, renamed, deleted, or significantly modified:
+- Add new entries (path + one-line description)
+- Update descriptions if role changed
 - Remove entries for deleted files
 
 #### 1.3 Route findings to Captures
 
-During the build, Claude or the user may have noticed gaps, issues, or opportunities that weren't part of the current scope. Check _build.md and conversation for anything flagged. Route each finding to Captures in QUEUE.md. If a test failure needs a fix, route the fix to Captures too.
+Check _build.md and conversation for anything flagged during the build. Route each to Captures. Route test failure fixes too.
 
 #### 1.4 Build recap [BRIEF]
 
-Summarize for the user:
-- What was built (from _build.md Changes section)
+- What was built (from _build.md Changes)
 - Anything routed to Captures
 
-### Phase 2: Mechanical (rote file operations) [SILENT]
+### Phase 2: Mechanical
 
-#### 2.1 Write LOG entry
+#### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-Prepend the log entry to `LOG/log.md` — insert it immediately after the `# LOG` header line and its description, before any existing entries. Use a placeholder for the commit hash — it gets filled in after the commit (step 2.4).
+Draft the entry for `LOG/log.md` using this template (placeholder hash — filled after commit at 2.4):
 
 ```markdown
-## [HASH] — [one-line summary of what shipped]
+## [HASH] — [one-line summary]
+
+[Prose rationale — re-authored from the batch's rationale, expanded with what was learned during the build (tradeoffs, constraints, approach changes). Inline prose, no `Why:` label.]
 
 **Files touched:**
-- [from _build.md Changes section]
+- [from _build.md Changes]
 
-**Why:** [Start from the batch's why-line in _build.md, then expand with anything learned during the build — tradeoffs, constraints discovered, approach changes. Always present — every build has reasoning worth recording.]
-
-**Routed to Captures:** [anything added to the Captures section, or "none"]
+**Routed to Captures:** [items added, or "none"]
 ```
 
-Prepend a one-line entry to `LOG/index.md` — insert it immediately after the `# LOG Index` header line and its description, before any existing entries:
+Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
+
+Prepend to `LOG/index.md` after the header:
 
 ```
 - [HASH] — [one-line summary]
@@ -67,63 +66,62 @@ Prepend a one-line entry to `LOG/index.md` — insert it immediately after the `
 #### 2.2 Staleness sweep
 
 Quick check of QUEUE.md:
-- Do any remaining batches or Captures reference files that were renamed or deleted in this build?
-- Do any reference old behaviour that this build changed?
-- If so, flag them (don't edit without asking).
+- Remaining batches or Captures reference renamed/deleted files?
+- Reference old behaviour this build changed?
+- If so, flag (don't edit without asking).
 
 #### 2.3 Delete _build.md
 
-Created by /next Step 2 when the batch was locked. Deleting it unlocks future builds. Only do this after everything above is complete.
+Unlocks future builds. Only after everything above is complete.
 
 #### 2.4 Git commit and hash backfill [BRIEF, PROMPT]
 
-1. Stage the files listed in _build.md's Changes section plus the method docs (QUEUE.md — already modified by /next Step 2 when the batch moved to _build.md, REGISTRY.md, LOG/, _build.md deletion).
-2. Never use `git add -A` or `git add .`.
-3. Draft a commit message. Present it for approval.
-4. Wait for the user's okay before committing.
-5. After commit: run `git rev-parse --short HEAD` to get the hash.
-6. Replace every `[HASH]` placeholder in LOG/log.md and LOG/index.md with the actual hash.
-7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
+1. Stage files from _build.md Changes plus method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
+2. Never `git add -A` or `git add .`.
+3. Draft commit message. Present for approval.
+4. Wait for okay.
+5. After commit: `git rev-parse --short HEAD` for the hash.
+6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
+7. Stage updated files, amend (`git commit --amend --no-edit`).
 
 ### Phase 3: Handoff [BRIEF, PROMPT]
 
-"Push to remote? (yes / not yet)" — never push automatically.
+"Push to remote? (yes / not yet)"
 
-Then make one recommendation based on queue state (check in this order):
-1. If items were routed to Captures during this session and any of them affect the next batch → recommend /plan first, name the blocking item.
-2. If QUEUE.md has more batches → "Next up is [batch name]. Run /next or /plan when ready."
-3. If QUEUE.md Batches section is empty → "Queue is clear. Run /plan when you have more to add."
+Then recommend based on queue state:
+1. Captures routed that affect next batch → recommend /plan, name the blocker.
+2. More batches → "Next up is [batch]. Run /next or /plan when ready."
+3. Batches empty → "Queue is clear. Run /plan when you have more."
 
 ---
 
 ## Plan close-out
 
-Use this after /plan. Lighter procedure: log what was decided, commit.
-
 ### 1. Recap
 
-Summarize what happened during the /plan session:
 - Batches created or modified
 - Captures promoted, parked, or dropped
 - Questions resolved
-- Any spec changes
+- Spec changes
 
-### 2. Write LOG entry
+### 2. Write LOG entry [DISCUSS, PROMPT]
 
-Prepend the log entry to `LOG/log.md` — insert it immediately after the header, before any existing entries. Use a placeholder for the commit hash.
+Draft the entry for `LOG/log.md` using this template (placeholder hash):
 
 ```markdown
-## [HASH] — [one-line summary of what was decided or organized]
+## [HASH] — [one-line summary]
+
+[Prose rationale — what motivated these queue changes, as inline prose. No `Why:` label.]
 
 **Queue changes:**
 - [batches added, reordered, or modified]
 
-**Why:** [what motivated the queue changes — user priorities, dependency analysis, captured observations. Always present.]
-
-**Captures routed:** [what was promoted/parked/dropped from Captures, or "none"]
+**Captures routed:** [promoted/parked/dropped, or "none"]
 ```
 
-Prepend a one-line entry to `LOG/index.md` — insert it immediately after the header, before any existing entries:
+Show the wording to the user for approval before writing — see Why-pipeline in behaviour.md. After approval, prepend to `LOG/log.md` after the header.
+
+Prepend to `LOG/index.md`:
 
 ```
 - [HASH] — [one-line summary]
@@ -131,26 +129,25 @@ Prepend a one-line entry to `LOG/index.md` — insert it immediately after the h
 
 ### 3. Git commit and hash backfill [BRIEF, PROMPT]
 
-1. Stage only the method docs that changed (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
-2. Never use `git add -A` or `git add .`.
-3. Draft a commit message. Present it for approval.
-4. Wait for the user's okay before committing.
-5. After commit: run `git rev-parse --short HEAD` to get the hash.
-6. Replace every `[HASH]` placeholder in LOG/log.md and LOG/index.md with the actual hash.
-7. Stage the updated files and amend the commit (`git commit --amend --no-edit`).
+1. Stage only changed method docs (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
+2. Never `git add -A` or `git add .`.
+3. Draft commit message. Present for approval.
+4. Wait for okay.
+5. After commit: `git rev-parse --short HEAD`.
+6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
+7. Stage, amend (`git commit --amend --no-edit`).
 
 ### 4. Handoff [BRIEF, PROMPT]
 
-"Push to remote? (yes / not yet)" — never push automatically.
+"Push to remote? (yes / not yet)"
 
-Then tell the user what's next:
-- If QUEUE.md has batches: "Next up is [batch]. Run /next or /plan when ready."
-- If QUEUE.md Batches section is empty: "Queue is clear."
+- Batches exist: "Next up is [batch]. Run /next or /plan when ready."
+- Batches empty: "Queue is clear."
 
 ---
 
 ## Rules
 
-- Do NOT skip Phase 1 (build close-out) even if the user says "just commit." The judgment steps prevent drift.
+- Do NOT skip Phase 1 even if the user says "just commit."
 - Git push is always a prompt, never automatic.
-- Mode detection is automatic. Don't ask the user which mode — check for _build.md.
+- Mode detection is automatic. Don't ask — check for _build.md.

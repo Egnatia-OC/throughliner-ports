@@ -2,61 +2,59 @@
 
 /plan is where captures become batches through discussion. No building happens here.
 
-Claude owns dependency management — what order batches go in, how work groups together, what depends on what. This happens through discussion with the user, not silently.
+Claude owns dependency management — ordering, grouping, dependencies — through discussion, not silently.
 
 ## Ground rules
 
 - Never build during /plan. Want to write code? Queue it.
 - One item at a time. Finish one before presenting the next.
-- Read SPEC.md before proposing work. Don't queue things that contradict it.
+- Read SPEC.md before proposing work. Don't queue contradictions.
 - Process accumulated captures before new planning work.
-- Never write batch entries to QUEUE.md without showing the user the exact entry text first.
-- A recommendation is not a decision. A draft is not a written entry. Both need the user's call before proceeding.
+- Never write batch entries to QUEUE.md without showing the user the exact text first.
+- A recommendation is not a decision. A draft is not a written entry. Both need the user's call.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 
 ## Step 1: Read state and entry question
 
 Read QUEUE.md and SPEC.md. Check whether Captures has items.
 
-Then ask the user: "Do you have something you'd like to discuss, or are you ready to process Captures?" (If Captures is empty, ask what they'd like to work on instead.)
+Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.)
 
-**If the user has something to discuss:** Handle it using the same loop as Captures items in Step 2 — present, interview, recommend a disposition, wait for their call, execute. Then ask: "Anything else on your mind, or ready to start Captures?" Repeat until the user says they're ready.
+**If the user has something:** Handle it using the Step 2 loop — present, interview, recommend, wait, execute. Then: "Anything else, or ready for Captures?" Repeat until ready.
 
-**When the user is ready:** Move to Step 2.
+**When ready:** Move to Step 2.
 
-## Step 2: Process captures `[SEQUENCE]`
+## Step 2: Process captures [SEQUENCE]
 
-One item at a time, oldest first. Never preview upcoming items. State the count upfront ("3 items in Captures. First: ...").
+One item at a time, oldest first. Never preview upcoming items. State the count upfront ("3 items. First: ...").
 
 For each item:
 
-1. **Present and interview** `[DISCUSS, PROMPT]` — Show the item and engage with its substance. Then ask follow-up questions that would sharpen it or surface missing context. Depth scales with the item — several rounds for open-ended ones, a question or two for straightforward ones. Continue until the picture is clear. Close by asking "anything else to add?"
+1. **Present and interview** [DISCUSS, PROMPT] — Show the item, engage with its substance. Ask follow-ups to sharpen it or surface missing context. Depth scales with the item. Continue until the picture is clear. Close: "anything else to add?"
 
-2. **Recommend** `[PROMPT]` — Once the interview is done, recommend one of three dispositions:
+2. **Recommend** [PROMPT] — Recommend one disposition and say why:
    - **Promote** — ready to become a batch
    - **Park** — not now, keep for later
    - **Drop** — remove it
-   Recommend one and say why. **Stop and wait.** The user decides.
+   Stop and wait. The user decides.
 
 3. **Execute the disposition:**
-   - **Promote** `[DISCUSS, PROMPT]` — Draft the batch entry (bold title, why-line, entries under Build/Test subheadings). The why-line captures the reasoning from the discussion — why this work matters, what prompted it. Show it in full. Don't write to QUEUE.md until the user approves the wording. Claude places the batch using dependency ordering and reports where it went.
+   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in behaviour.md. Show in full. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
    - **Park** — Move to Parked.
-   - **Drop** — Remove it. If the item has already been decided (check LOG/index.md), state the prior decision and commit rather than re-opening discussion.
+   - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.
 
 4. Remove the item from Captures once routed.
 
-After all items are processed, Captures should be empty (just the section header and `### Parked` subsection intact).
+After all items: Captures should be empty (section header and `### Parked` intact).
 
 New items from conversation follow the same loop — check QUEUE.md for overlap first.
 
-If Claude notices a gap or opportunity: "I notice [X] — want to hear a suggestion?" One at a time.
+If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a time.
 
 ## Step 3: Batch structure
 
-Batches group related work into one /next session:
-
     **Batch title**
-    Why: [one line — what motivated this work]
+    [Prose rationale — one or more sentences. What motivated this work, what's broken or missing, what changes once it lands.]
 
     Build:
     - What to build
@@ -64,21 +62,21 @@ Batches group related work into one /next session:
     Test:
     - How to verify
 
-Bold title, why-line, entries grouped under Build and Test subheadings. Each entry names its own target — no separate file list. The why-line carries reasoning through the pipeline — /next copies it to _build.md, /done uses it as the foundation for the LOG **Why:** field.
+Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in behaviour.md.
 
-**Test section:** Only add a Test section when there's a behaviour to verify that isn't self-evident from the build entries. Not every batch needs one — but /done does not generate tests, so anything that needs verification must be planned here.
+**Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here.
 
-When writing test entries, split by who runs them. Claude can verify anything through code: read files, run commands, inspect output, trace logic. Only tests requiring real human interaction — visual appearance, physical device behaviour, subjective judgment, or running a separate live session — need the user. Write each test entry so /next knows which kind it is.
+Split test entries by who runs them. Claude verifies through code: read files, run commands, inspect output, trace logic. Only tests requiring real human interaction (visual, physical, subjective, separate live session) need the user. Write each so /next knows which kind.
 
-**E2E tests get their own batch.** User-run E2E tests (tests requiring a live session in a separate project) don't go in build batches. They're a different mode of work — the user runs them outside this session and reports back. Give them their own batch so the build flow isn't blocked waiting on external verification.
+**E2E tests get their own batch.** User-run E2E tests (separate project, live session) don't go in build batches — they'd block the build flow.
 
-**Sizing gates** (per batch, not per entry):
+**Sizing gates** (per batch):
 - *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."
-- *Verification burden:* if the user would need to test more than 5 things, split it.
+- *Verification burden:* more than 5 things to test → split.
 
-**Ordering:** Dependencies first, then scaffolding, then features, then polish. Claude determines this ordering and reports where each batch landed and why.
+**Ordering:** Dependencies first, then scaffolding, features, polish. Claude determines ordering and reports placement.
 
-## Step 4: Close out `[BRIEF, PROMPT]`
+## Step 4: Close out [BRIEF, PROMPT]
 
-1. Summarize what changed this session.
+1. Summarize what changed.
 2. "Run /done to record this and commit, or keep planning."

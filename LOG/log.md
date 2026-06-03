@@ -2,6 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 2f2a0f2 — Wire up the why-pipeline across behaviour/plan/done
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md — added "Why-pipeline" section (Preserve + Retrieve halves); rewrote Prior decisions bullets to point at the retrieve rule
+- plugin/si-plugin/docs/plan.md — Step 3 batch structure now uses inline prose rationale instead of a labelled `Why:` line; Step 2.3 Promote and pipeline description updated to match
+- plugin/si-plugin/docs/done.md — dropped [SILENT] from Phase 2; both LOG entry templates (Build close-out 2.1 and Plan close-out section 2) drop the `**Why:**` field in favour of inline prose; LOG write tagged [DISCUSS, PROMPT] with draft-and-approve flow
+
+**Why:** The why-pipeline existed in fragments across the procedure docs but wasn't named or owned, and the retrieval half had never fired — Claude always inferred why-questions from code rather than searching the log. This build names the pipeline as a single thing and gives it two explicit halves. Preserve: rationale travels capture → batch → log as prose, re-authored at each stage with user approval, never collapsed into a structured `Why:` field. Retrieve: when asked why something exists, search LOG/log.md and LOG/log-v*.md first; only fall back to code if nothing relevant. The cross-doc changes line up with that: plan.md and done.md no longer carve out a labelled `Why:` field (which had been quietly bypassing user approval at the /done stage), and done.md's LOG write is now [DISCUSS, PROMPT] — closing the one place where rationale was being written without the user seeing the wording. Test entry deferred: the runtime check ("ask Claude why X exists, confirm it reads LOG first") needs push + reinstall + fresh session because target edits don't affect host behaviour. Sanity-demoed the rule manually mid-build (asked "why does the inline-reads rule exist?" → found in LOG entry 23a1da8 without code inference).
+
+**Routed to Captures:** 1 capture added during /next — "/next shouldn't dump the full batch at session start" — but routed before the build proper began.
+
 ## a72a721 — /plan session: promote why-pipeline + tag removal, add 3 captures
 
 **Queue changes:**

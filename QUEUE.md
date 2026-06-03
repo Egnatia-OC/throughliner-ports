@@ -4,19 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Wire up the why-pipeline: preserve prose rationale, retrieve from log**
-Why: The why-pipeline exists in fragments across behaviour.md, plan.md, and done.md but isn't named or owned as a single thing — and the retrieval half has never fired (Claude always infers from code, never reads the log). Captures, batches, and log entries must carry rationale as prose, re-authored at each stage with user approval, never collapsed into a structured field. When asked why something exists, Claude searches the log first.
-
-Build:
-- behaviour.md: add a "Why-pipeline" section. Two halves. Preserve: rationale travels capture → batch → log as prose; Claude shows wording at each stage for user approval; no dedicated why-field, the reasons live inline in the entry text. Retrieve: when asked why something exists or why a decision was made, Claude searches LOG/log.md and LOG/log-v*.md first; only falls back to the code if nothing relevant is found.
-- behaviour.md Prior decisions: rewrite the two "check LOG/" lines so they point at the new Why-pipeline section instead of duplicating the rule.
-- plan.md: remove the dedicated "why-line" from the batch structure (Step 3). Captures keep their prose rationale; batches carry that prose forward in the entry itself; user approves wording before write, same as today.
-- done.md: remove the dedicated Why: field from both LOG entry templates (Build close-out 2.1, Plan close-out section 2). Log entry prose carries the rationale inline.
-- done.md: change Phase 2 from [SILENT] to require log-entry wording approval before write — closes the one stage that currently bypasses user oversight.
-
-Test:
-- Ask Claude "why does [some recently-built component] exist?" — confirm it reads from LOG before inferring from code.
-
 **Add inline-reads rule to behaviour.md**
 Why: Claude spawned an agent for the pre-push consistency sweep — a sequential checklist that only needs a handful of Read and Grep calls. No procedure told it to use agents, but nothing told it not to. A general rule prevents this across all skills.
 
@@ -76,6 +63,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] During /plan, the promote/park/drop call comes before the batch entry is drafted, so the user approves a direction without seeing concrete outputs — they can't fully know what they're approving. Two candidate fixes: (a) Claude frames the work in concrete-output terms when recommending promotion, so the call is informed; (b) move the promote question to after the entry is drafted. (b) risks repeated re-drafting and fatigue from re-reading full entries. Surfaced live this session: user approved promotion of a three-part conceptual item with nothing concrete in front of them. Overlaps with the parked Sizing-gates-rework idea (concrete outputs as the readiness gate).
 - [idea] Add a "one item at a time" rule to behaviour.md. When presenting multiple things where the user's next action depends on the previous (sequential questions, items needing approval, walkthrough steps), give one per message and state the count upfront. Don't preview upcoming items. Currently this lives only in Alex's global CLAUDE.md as a user preference — it should be universal plugin behaviour so it applies on every install. Overlaps with the parked Pull-down-audit capture.
 - [idea] Add a "don't collapse rationale into structure" rule to behaviour.md. Reasons exist as prose. Don't force them into one-line summaries, dedicated why-fields, or typed taxonomies (e.g. "UX reason / functionality reason"). Both collapse meaning — a line truncates, a taxonomy is never complete. Preserving rationale means carrying the prose forward. Surfaced this session designing the why-pipeline; the why-pipeline batch encodes it specifically for capture→batch→log flow, but the general principle belongs in behaviour.md so it prevents the same mistake elsewhere.
+- [idea] /next shouldn't dump the full batch at session start. A two-or-three-line summary is enough — the user can open QUEUE.md if they want the full text. Currently /next.md Step 1.4 instructs "Batch title and all entry text from QUEUE.md" which re-renders content the user already wrote and can read anytime. Surfaced live this session: full batch re-rendered when the user already knew what was in it.
 
 ### Parked
 
