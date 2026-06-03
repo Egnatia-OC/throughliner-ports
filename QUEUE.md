@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Add inline-reads rule to behaviour.md**
-Why: Claude spawned an agent for the pre-push consistency sweep — a sequential checklist that only needs a handful of Read and Grep calls. No procedure told it to use agents, but nothing told it not to. A general rule prevents this across all skills.
-
-Build:
-- Add rule to target behaviour.md: use direct tool calls (Read, Grep, Glob) for work that's a bounded checklist of file reads and comparisons. Don't spawn agents for lookups that don't require exploration.
-
 **Add context management to skill handoffs + update README model**
 Why: Claude loses routing accuracy as context degrades late in sessions — prescribing `/compact` or `/clear` between skills addresses the root cause instead of patching individual symptoms.
 

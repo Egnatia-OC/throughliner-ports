@@ -2,6 +2,15 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
+## 3a51184 — Add inline-reads rule to behaviour.md
+
+**Files touched:**
+- plugin/si-plugin/docs/behaviour.md — added "Tool use" section (2 bullets) between Response-shape tags and Captures
+
+**Why:** Last session Claude spawned an agent for the pre-push consistency sweep — a sequential checklist that only needs a handful of Read and Grep calls. No procedure told it to use agents, but nothing told it not to. The fix is a general rule that applies across all skills so the failure mode doesn't recur in some other lookup procedure. Placed the rule under a new "Tool use" section: first bullet says direct tool calls (Read, Grep, Glob) for bounded checklists — a known set of files to read, fields to compare, strings to grep; second bullet says agents are for open-ended exploration where the shape of the answer isn't known in advance, with the embedded heuristic "if you can write out the lookups before doing them, do them inline." The heuristic in the second bullet is doing the load-bearing work — it gives Claude a concrete test rather than relying on the fuzzy bounded/open-ended distinction alone.
+
+**Routed to Captures:** none
+
 ## 2f2a0f2 — Wire up the why-pipeline across behaviour/plan/done
 
 **Files touched:**

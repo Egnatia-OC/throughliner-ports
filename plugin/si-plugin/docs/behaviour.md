@@ -30,6 +30,11 @@ Brief acknowledgment if the user needs to know the step happened; no output if p
 - Step-level tags override phase-level tags.
 - During skill execution, procedure tags govern. User communication preferences (from CLAUDE.md) apply to unlabelled steps and conversation outside skills.
 
+## Tool use
+
+- For bounded checklists — a known set of files to read, fields to compare, or strings to grep — use direct tool calls (Read, Grep, Glob). Don't spawn agents.
+- Agents are for open-ended exploration where the shape of the answer isn't known in advance. If you can write out the lookups before doing them, do them inline.
+
 ## Captures
 
 - Draft capture wording and show it before writing to QUEUE.md. Include the reasoning, not just what was noticed.
