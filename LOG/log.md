@@ -582,3 +582,5 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** The README was written for someone already familiar with the project. Repo browsers landing on the GitHub page need to quickly understand what this is, why they'd want it, and how to get it running. Rewrote the pitch from feature description to user benefit, added a direct download link so users don't need to clone the repo, and expanded "Getting started" to set expectations about the setup → plan → next flow.
 
 **Routed to Captures:** None
+
+**Pushed:** v1.5.1
