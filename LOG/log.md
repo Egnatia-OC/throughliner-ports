@@ -571,3 +571,14 @@ plan.md was rewritten from scratch because the original was too long, unreadable
 **Why:** First E2E test of /setup against a fresh consumer project. Needed to verify that the host plugin scaffolds all project docs correctly from templates before testing more complex scenarios. All 8 files scaffolded correctly and templates matched exactly. Two deviations found from the same root cause: /setup oversteps into /plan territory — Q4 expands a single user answer into a fully scoped batch (procedure says singular [build] entry), and the closing message directs to /next first (implying the batch is build-ready when scope decisions belong in /plan).
 
 **Routed to Captures:** /setup oversteps into /plan territory (Q4 entry expansion + closing message directing to /next)
+
+## 388f68e — README overhaul
+
+**Files touched:**
+- README.md (rewritten)
+
+**Tests:** 1 passed (download link URL), 1 deferred (GitHub render — post-push)
+
+**Why:** The README was written for someone already familiar with the project. Repo browsers landing on the GitHub page need to quickly understand what this is, why they'd want it, and how to get it running. Rewrote the pitch from feature description to user benefit, added a direct download link so users don't need to clone the repo, and expanded "Getting started" to set expectations about the setup → plan → next flow.
+
+**Routed to Captures:** None

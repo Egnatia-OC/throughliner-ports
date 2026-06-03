@@ -1,35 +1,33 @@
 # Sovereign Implementer
 
-A Claude Code plugin for non-coders. It gives you a structured workflow for building apps with Claude Code without needing to know how to code.
+A Claude Code plugin that lets you build apps without writing code yourself. You describe what you want; Claude builds it — and the plugin keeps the work organised across sessions so nothing drifts or gets lost.
 
 ## Who it's for
 
-People who know what their app should do but need a framework to keep Claude aligned through multi-session builds.
+Non-coders who know what their app should do but need a framework to keep Claude on track through multi-session builds.
 
-## How it works
+## What it does
 
-The plugin splits work into a build queue and manages it through four skills:
+The plugin splits your project into a build queue and walks you through it with four slash commands:
 
-- `/setup` — scaffold project docs and run an onboarding interview
-- `/plan` — manage the queue, capture ideas, resolve questions, check for drift
-- `/next` — pick the top batch and build it, scope-locked
-- `/done` — record what happened, run tests, commit
+- `/setup` — answers five questions about your project and scaffolds everything
+- `/plan` — organise the queue, capture ideas, resolve design questions
+- `/next` — build the next item, scope-locked so Claude stays focused
+- `/done` — record what happened, test, commit
 
-Two hooks enforce discipline without burning context:
-
-- **session_start** — detects project state and loads behaviour rules
-- **pre_tool_use** — keeps SPEC.md read-only during builds, locks scope to the file list, prevents unsafe git operations
+Hooks run automatically in the background to enforce discipline — keeping your spec read-only during builds, locking scope to the current batch, and preventing unsafe git operations.
 
 ## Install
 
-1. Download or clone this repo
-2. In the Claude Code desktop app: Customise > Plugins > + > Create plugin > Upload plugin > select `plugin/si-plugin.zip`
+1. **[Download the plugin zip](https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip)** (direct download)
+2. Open the Claude Code desktop app
+3. Go to **Customise > Plugins > + > Create plugin > Upload plugin** and select the downloaded `si-plugin.zip`
 
-To update: uninstall the old version first (gear icon > Uninstall), then repeat step 2.
+To update: uninstall the old version first (gear icon > Uninstall), then repeat steps 1–3.
 
 ## Getting started
 
-Open a project folder in Claude Code and run `/setup`. The plugin will scaffold your project docs and ask five questions to get started.
+Open any project folder in Claude Code and type `/setup`. The plugin asks five questions about what you're building, then scaffolds your project docs. When you're ready to build, run `/plan` to scope your first batch, then `/next` to start.
 
 ## License
 

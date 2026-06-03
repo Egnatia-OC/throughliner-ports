@@ -4,9 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**README overhaul**
-- [build] Rewrite README.md to capture repo browsers and smooth their entry — add a direct download link to the latest zip (`raw/main/plugin/si-plugin.zip`), sharpen the pitch for the front page, and streamline install-to-first-use flow
-
 ### Parked
 
 - [idea] Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
@@ -19,6 +16,7 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - [idea] Mid-build scope expansion protocol — when a user raises something out of scope during /next, Claude should default to routing it to Captures (or batch at discretion), explicitly mentioning "you can also add it to this build's scope" as a last-resort workaround framed as out-of-procedure. Two sub-questions: (1) should CLAUDE.md always be in scope for every batch, since it's the most common target for mid-build out-of-scope edits? (2) should the explicit "add to scope" workaround only be available in self-hosting projects building their own SI fork?
 - [test] E2E: run /setup in a project that already has docs from an older plugin version — verify it handles existing files (overwrites, merges, or errors) without corrupting or silently dropping content
 - [idea] /setup oversteps into /plan territory — two related issues from E2E testing: (1) Q4 procedure says "creates the first entry, mark it as [build]" (singular) but Claude expanded into 5 entries (2 build + 3 test), making scope decisions that belong in /plan; (2) closing message directs to /next first ("Run /next to start building, or /plan to adjust the queue first") which implies the batch is build-ready. Both need fixing: Q4 should produce one rough [build] entry, closing should direct to /plan to scope the work.
+- [idea] /done handoff ordering — push question should come first, not after the "next up" recommendation. Currently "not yet" results in nothing, and the user is left choosing between a dead-end answer and ignoring the question to run /next. Better flow: ask about push first, then if the answer is "not yet," give the handoff ("run /next or /plan when ready").
 - [idea] Capture moments should loop — when a user shares an idea or observation during any skill (not just /plan), Claude should ask "anything else?" before resuming the procedure. Currently the user has to interrupt to share a second thought.
 
 ### Parked
