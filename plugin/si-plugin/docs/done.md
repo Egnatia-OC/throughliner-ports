@@ -97,9 +97,7 @@ This is its own turn — wait for the user to acknowledge before moving to Phase
 
 "Push to remote? (yes / not yet)"
 
-Then tell the user how to manage context before the next skill:
-- If they pushed: run `/clear` — a push closes the loop, start fresh.
-- If they didn't push: run `/compact` — keep the work visible but trim context.
+Either way, run `/clear` before the next skill.
 
 ---
 
@@ -145,14 +143,19 @@ Prepend to `LOG/index.md`:
 6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
 7. Stage, amend (`git commit --amend --no-edit`).
 
-### 4. Handoff [BRIEF, PROMPT]
+### 4. Recommend next [BRIEF, PROMPT]
+
+Based on queue state:
+- Batches exist: "Next up is [batch]. Run /next when ready."
+- Batches empty: "Queue is clear. Run /plan when you have more."
+
+This is its own turn — wait for the user to acknowledge before moving to Step 5. Knowing what's queued shapes whether they want to push now.
+
+### 5. Push and context [BRIEF, PROMPT]
 
 "Push to remote? (yes / not yet)"
 
-- Batches exist: "Next up is [batch]. Run /next or /plan when ready."
-- Batches empty: "Queue is clear."
-
-Tell the user to run `/clear` before the next skill — a commit (and possibly a push) just happened.
+Either way, run `/clear` before the next skill.
 
 ---
 

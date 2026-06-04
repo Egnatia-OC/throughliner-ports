@@ -10,19 +10,6 @@ The plugin ships to external non-coders, not the person developing it. Without a
 Build:
 - This project's CLAUDE.md: add an Audience section establishing that the plugin's users are external non-coders (not the person developing the plugin), and that anything skills cause Claude to say to the user — chat narration, drafts, prompts, status lines — must read cleanly without referencing internal procedure terms.
 
-**Split Plan close-out and remove all /compact recommendations**
-The capture flagged Plan close-out's Step 4 as having the same bundled shape as Build close-out's old Phase 3 — push prompt + next-up + always-/clear in one breath. The V47 split fixed that anti-pattern in Build close-out by separating "what's queued" from "push and context"; Plan close-out deserves the same treatment so each decision lands as its own turn. Interview surfaced a related principle: /compact is being phased out as a recommendation. It was only ever hedging by maintaining daisy-chained context between builds, and /clear has proven stable. That collapses Build close-out Phase 4's asymmetric context advice (push → /clear, no push → /compact) into a single line — push or not, /clear is the right move. Same removal applies anywhere /compact is currently recommended (plan.md Step 4 close-out at minimum; setup.md and next.md need a scan). The rule is universal but stays skill-doc-local rather than going into behaviour.md, because it needs to be sequenced carefully against each skill's flow.
-
-Build:
-- done.md Build close-out Phase 4: remove the /compact branch. Becomes "Push to remote? (yes / not yet)" followed by "Either way, run /clear before the next skill."
-- done.md Plan close-out: split current Step 4 ("Handoff") into Step 4 ("Recommend next") and Step 5 ("Push and context"). Step 4 mirrors Build Phase 3's shape with Plan-flavored branches — batches exist → "Next up is [batch]. Run /next when ready"; batches empty → "Queue is clear. Run /plan when you have more." Step 4 is its own turn; wait for user acknowledgment before Step 5. Step 5: push prompt, then /clear (no /compact branch).
-- plan.md Step 4: drop "/compact or" from the context advice. Becomes "Run /done to record this and commit, or keep planning. Run /clear first to keep context clean."
-- setup.md and next.md: scan for any /compact recommendations and remove. If found, replace with /clear-only advice mirroring the new convention.
-
-Test:
-- Grep across plugin/si-plugin/ for "/compact" — should return zero hits, or only legitimate non-recommendation references (flag any of those for review).
-- Re-read done.md end to end. Build close-out should flow Phase 1 → 2 → 3 → 4 with Phase 4 collapsed to push + /clear. Plan close-out should flow Step 1 → 2 → 3 → 4 (Recommend next) → 5 (Push and context) with each turn standalone.
-
 **Pull "one item at a time" rule into behaviour.md**
 Alex's global CLAUDE.md carries a detailed rule about sequencing multi-part responses — one per message when the next action depends on the previous, count upfront, no preview, alternatives are the one exception. The plugin currently delegates this to the user's CLAUDE.md via the tag-precedence note in behaviour.md, which means it only governs unlabelled steps and free conversation when the user has it set. On any install without that rule, skills' close-outs and walkthroughs become bundle-prone. The [SEQUENCE] tag already covers procedure steps that explicitly carry it, but the broader principle — applying to any multi-part response across the session — needs to be plugin behaviour, not user preference. The Communication section is the right home.
 
@@ -103,6 +90,8 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
 
 - Output tag overhaul audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for prose that describes output behaviour where a tag ([SILENT], [BRIEF], [PROMPT], [DISCUSS], [SEQUENCE]) should be used instead. Includes: _build.md entry ticking in next.md should be [SILENT] (crash-recovery bookkeeping, not a status report).
+
+- Repo installation guide for Claude — add a subpage (or top-level doc) to the GitHub repo aimed at a Claude Code session that a user has pointed at the repo URL. When a non-coder pastes the repo address into Claude and says "install this for me," Claude should be able to read this page and walk them through getting SI installed in their desktop app. Covers: what SI is in one line, that it's a desktop-app plugin (not a CLI install), where to get the zip (plugin/si-plugin.zip in the repo), and the desktop-app install steps. Audience for the page is Claude reading on the user's behalf, not the user directly.
 
 
 ### Parked

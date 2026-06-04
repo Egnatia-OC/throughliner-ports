@@ -131,16 +131,13 @@ If the conversation is getting long and context is running low, prefer these opt
 
 1. **Finish and /done.** If most entries are ticked, push through to completion. Short-term memory is enough.
 2. **Close partial.** If significant work remains, /done what's ticked and requeue the rest. The next session picks up cleanly from _build.md and QUEUE.md state.
-3. **Compact as last resort.** Only if you can't close the build and the remaining work would lose critical context. Tell the user: "Context is running low. I can compact, but I'll lose detail on [X]. Okay to proceed?"
-
-Never compact silently. The user should know what's being traded away.
 
 ## Step 7: Completion [BRIEF, PROMPT]
 
 When all entries are ticked:
 1. Tell the user the build is complete.
 2. Show what was done (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or keep adjusting. Run `/compact` or `/clear` first to keep context clean."
+3. Say: "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean."
 
 Do NOT delete _build.md yourself. That's /done's job.
 

@@ -2,7 +2,23 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — V60 planning: capture sweep, structural rules, hash-backfill fix
+## [HASH] — Split Plan close-out and remove /compact recommendations
+
+Plan close-out's Step 4 had the same bundled shape as Build close-out's old Phase 3 — push prompt + next-up + always-/clear in one breath. The V47 split fixed that anti-pattern in Build close-out by separating "what's queued" from "push and context"; Plan close-out now gets the same treatment, with Step 4 ("Recommend next") landing as its own turn before Step 5 ("Push and context"). Plan branches collapse to two — batches exist or queue is clear — since /plan output doesn't include the "Captures affect next batch" case that Build's third branch covers.
+
+/compact has been quietly phased out as a recommendation. It was only ever hedging by maintaining daisy-chained context between builds, and /clear has proven stable. That collapsed Build Phase 4's asymmetric advice (push → /clear, no push → /compact) into one line: push or not, /clear is the right move. Same removal applied to plan.md Step 4, next.md Step 7, and setup.md Step 4. A judgement call extended the removal to next.md Step 6's "Compact as last resort" option in the mid-build context-management ladder — the batch's "phased out as a recommendation" framing was universal, and option 3 there was a recommendation, even if a fallback one. The "Never compact silently" footer went with it. The ladder now stops at "Close partial."
+
+The session also surfaced a sibling pattern at the audience-anchor frontier: when the user mentioned mid-build that they needed to pull a branch, Claude's first response named git risks ("merge conflict potential") and asked the user to evaluate the sequence — pushing technical decisional burden onto a non-coder user who came to SI specifically to have that burden carried. The next-up audience-anchor batch is expected to cover this pattern; not captured separately.
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md
+- plugin/si-plugin/docs/plan.md
+- plugin/si-plugin/docs/next.md
+- plugin/si-plugin/docs/setup.md
+
+**Routed to Captures:** none
+
+## 5a32c34 — V60 planning: capture sweep, structural rules, hash-backfill fix
 
 The session opened by catching the top batch — "Audience-framing anchor and skill-output language audit" — for embedding audit passes that the queued "thinking work isn't a batch" rule will forbid. Restructured: the concrete CLAUDE.md anchor stayed as a small batch; the audit passes dropped (no parked planning entries — those aren't a queue shape). Two parked entries with the same problem (Trickle-up audit, Output tag overhaul audit) got moved back to active Captures rather than left as planning-batch-shaped Parked items.
 
