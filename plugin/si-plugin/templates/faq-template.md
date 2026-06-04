@@ -12,7 +12,7 @@ They split work into three modes. **/plan** is for thinking — queue management
 
 ## How are entries organized in the queue?
 
-Batches group entries under **Build** and **Test** subheadings. Build entries create or change things. Test entries verify things work. Not every batch needs a Test section — only when verification isn't self-evident. Captures use inline tags: **[idea]** for unevaluated suggestions, **[question]** for design decisions needing resolution.
+Batches group entries under **Build** and **Test** subheadings. Build entries create or change things. Test entries verify things work. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
@@ -24,7 +24,7 @@ No. SPEC.md is read-only during builds to prevent the spec from shifting under a
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
-Tell Claude. It gets added to Captures as an [idea] entry without derailing current work. Next /plan session picks it up for discussion and routing.
+Tell Claude. It gets added to Captures without derailing current work. Next /plan session picks it up for discussion and routing.
 
 ## The queue is empty. Does that mean the project is done?
 

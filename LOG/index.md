@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 24b5feb — Remove the [idea]/[question] capture tags
 - 3da827c — /plan session: queue one-item-at-a-time and thinking-work-isn't-a-batch rules
 - c28297e — Add capture scan to next.md blocker gate
 - 5b67dc3 — Split done.md Build close-out handoff into recommend + push phases
