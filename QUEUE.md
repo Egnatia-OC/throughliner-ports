@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Audience anchor in this project's CLAUDE.md**
-The plugin ships to external non-coders, not the person developing it. Without an audience anchor in this project's CLAUDE.md, skill docs drift — language meant for the developer leaks into chat output the user sees. Adding an Audience section makes the distinction visible to any session editing skill docs, so future skill-doc work writes for the right audience by default.
-
-Build:
-- This project's CLAUDE.md: add an Audience section establishing that the plugin's users are external non-coders (not the person developing the plugin), and that anything skills cause Claude to say to the user — chat narration, drafts, prompts, status lines — must read cleanly without referencing internal procedure terms.
-
 **Pull "one item at a time" rule into behaviour.md**
 Alex's global CLAUDE.md carries a detailed rule about sequencing multi-part responses — one per message when the next action depends on the previous, count upfront, no preview, alternatives are the one exception. The plugin currently delegates this to the user's CLAUDE.md via the tag-precedence note in behaviour.md, which means it only governs unlabelled steps and free conversation when the user has it set. On any install without that rule, skills' close-outs and walkthroughs become bundle-prone. The [SEQUENCE] tag already covers procedure steps that explicitly carry it, but the broader principle — applying to any multi-part response across the session — needs to be plugin behaviour, not user preference. The Communication section is the right home.
 

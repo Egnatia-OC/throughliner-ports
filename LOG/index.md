@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- 734c8d2 — Audience anchor added to this project's CLAUDE.md
 - [HASH] — Split Plan close-out and remove /compact recommendations
 - 5a32c34 — V60 planning: capture sweep, structural rules, hash-backfill fix
 - 24b5feb — Remove the [idea]/[question] capture tags
