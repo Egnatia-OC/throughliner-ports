@@ -33,8 +33,7 @@ To update: uninstall the old version first (gear icon > Uninstall), then repeat 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
 - Claude Opus 4.6 on max effort
 - Auto mode enabled
-- `/compact` between commits (keeps context clean within a session)
-- `/clear` or a new chat between pushes (gives each session a fresh context window)
+- `/clear` after every skill (keeps each session's context clean)
 
 ## Getting started
 
