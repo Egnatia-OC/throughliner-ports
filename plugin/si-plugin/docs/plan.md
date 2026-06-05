@@ -42,7 +42,7 @@ For each item:
    Stop and wait. The user decides.
 
 3. **Execute the disposition:**
-   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in behaviour.md. Show in full. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
+   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in plugin-behaviour.md. Show in full. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
    - **Park** — Move to Parked.
    - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.
 
@@ -65,7 +65,7 @@ If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a 
     Test:
     - How to verify
 
-Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in behaviour.md.
+Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 
 **Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here.
 

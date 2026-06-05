@@ -45,7 +45,7 @@ def main() -> int:
             pass
 
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
-    behaviour_path = os.path.join(plugin_root, "docs", "behaviour.md") if plugin_root else ""
+    behaviour_path = os.path.join(plugin_root, "docs", "plugin-behaviour.md") if plugin_root else ""
 
     behaviour_rules = ""
     if behaviour_path and os.path.isfile(behaviour_path):
@@ -115,7 +115,11 @@ def main() -> int:
     context_parts = []
 
     if behaviour_rules:
-        context_parts.append(behaviour_rules)
+        context_parts.append(
+            "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===\n"
+            + behaviour_rules
+            + "\n=== END BEHAVIOUR RULES ==="
+        )
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")

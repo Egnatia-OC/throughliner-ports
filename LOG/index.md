@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan session: process 3 captures, promote behaviour-rules restructuring batch
+- [HASH] — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
+- 11c81a2 — /plan session: process 3 captures, promote behaviour-rules restructuring batch
 - f97990f — Thinking-work rule added to /plan Ground rules
 - 8a01255 — Sequencing rule pulled into behaviour.md
 - a9088e6 — Hash backfill moved out of /done into /plan and /next start

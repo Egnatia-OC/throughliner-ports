@@ -13,7 +13,7 @@ export const meta = {
 
 const P = 'C:/Users/Alex/Desktop/Taskflow Planning/No code method/plugin/si-plugin'
 const TEMPLATE = P + '/templates/CLAUDE-TEMPLATE.md'
-const BEHAVIOUR = P + '/docs/behaviour.md'
+const BEHAVIOUR = P + '/docs/plugin-behaviour.md'
 const PLAN_DOC = P + '/docs/plan.md'
 const NEXT_DOC = P + '/docs/next.md'
 const DONE_DOC = P + '/docs/done.md'

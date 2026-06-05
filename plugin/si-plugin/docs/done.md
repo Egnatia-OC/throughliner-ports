@@ -55,7 +55,7 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash — backf
 **Routed to Captures:** [items added, or "none"]
 ```
 
-Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
+Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
 
 Prepend to `LOG/index.md` after the header:
 
@@ -124,7 +124,7 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash):
 **Captures routed:** [promoted/parked/dropped, or "none"]
 ```
 
-Show the wording to the user for approval before writing — see Why-pipeline in behaviour.md. After approval, prepend to `LOG/log.md` after the header.
+Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header.
 
 Prepend to `LOG/index.md`:
 

@@ -14,7 +14,7 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/docs/plan.md` — /plan procedure
 - `plugin/si-plugin/docs/next.md` — /next procedure
 - `plugin/si-plugin/docs/done.md` — /done procedure
-- `plugin/si-plugin/docs/behaviour.md` — universal behaviour rules loaded into every adopted session
+- `plugin/si-plugin/docs/plugin-behaviour.md` — universal behaviour rules loaded into every adopted session
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
 - `plugin/si-plugin/templates/faq-template.md` — FAQ content template (13 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
