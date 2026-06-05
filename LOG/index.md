@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
+- [HASH] — /plan: parked 2 stuck audit captures under new /audit skill dependency; 6 new captures from session
+- e5d3ca4 — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
 - 11c81a2 — /plan session: process 3 captures, promote behaviour-rules restructuring batch
 - f97990f — Thinking-work rule added to /plan Ground rules
 - 8a01255 — Sequencing rule pulled into behaviour.md

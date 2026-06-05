@@ -2,7 +2,7 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
+## e5d3ca4 — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
 
 behaviour.md was the method's spine but drifted across sessions: it loaded once at session start under the ambient "additional context" framing, with no header asserting authority, while procedure docs at skill invocation pushed 100+ lines of newer material that out-prominenced it. Three structural changes close the gap. The file is renamed to plugin-behaviour.md so its scope is self-describing. The session_start hook now wraps the file's contents with "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===" / "=== END BEHAVIOUR RULES ===" so the framing reads as governing rules rather than ambient notes; SPEC/QUEUE/REGISTRY status, version warnings, and FAQ index stay outside the wrapped block. Each SKILL.md (plan, next, done) gained one line above the "Read and follow the procedure" pointer that re-anchors plugin-behaviour.md as governing this skill at a level above the procedure, so the spine arrives alongside the procedure with equal recency. Internal references in plan.md, done.md, CLAUDE.md, REGISTRY.md, and the live reader-test-workflow.js were all updated to the new filename. This batch supersedes the earlier "mirror response shape tags into CLAUDE.md and template" batch — that was a partial mirror compensating for unreliable spine loading; with the spine now reliably loaded and authoritatively framed, mirroring is unnecessary.
 
