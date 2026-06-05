@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Add "thinking work isn't a batch" rule to plan.md**
-The current Ground rules section says "Never build during /plan" but has no inverse — nothing stops planning work from being queued as a batch. Surfaced twice this session: I framed both the trickle-up audit and the output tag overhaul as candidate batches when both are planning work whose output is decisions, not changed files. Without a structural rule, this becomes a judgment call each time and defaults to whatever shape the previous capture took. Naming the recurring shapes (audits, reviews, reconciliations/drift checks, design exploration) gives the routing decision a clear test.
-
-Build:
-- plan.md Ground rules: add a rule pairing the existing "Never build during /plan" — never queue thinking work as a batch. Name the four shapes (audits, reviews, reconciliations/drift checks, design exploration), include the test (if the main work is figuring something out rather than executing on a decision, it's planning work), and state that thinking work runs inside /plan and spawns batches as output. Place it right after "Never build during /plan."
-
 **Brief batch display at /next start**
 Step 1.4 of /next currently dumps the full batch text — title plus every entry — when starting a build. That re-renders content the user just wrote in QUEUE.md and can open anytime. A brief summary serves the user better: title (which batch), one-line gist synthesized from the rationale (what it's about), and entry counts (how big). The full text lives in _build.md the moment the user confirms; QUEUE.md has it before then.
 
@@ -65,6 +59,10 @@ Build:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+
+- next.md Step 7 close-out tells the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" places /clear *before* /done, but /done reads the conversation to write a faithful LOG entry (nuance, decisions, regressions surfaced mid-build) — clearing first strips exactly what /done draws on. The /clear advice belongs after /done lands, when the session's work is recorded and committed. Same shape likely lives in done.md and plan.md close-outs; check all three.
+
+- next.md hash-backfill is slower than it needs to be — the procedure suggests `git log --diff-filter=A` or blame, both of which still require Claude to scan results and match entry titles to commits by eye, plus reading the full log files for orientation. Replace with `git log -S "<entry title>" --pretty=%h -- LOG/` per placeholder: the hash drops out mechanically, no log reading needed. Pair with an instruction to batch-read all files containing [HASH] upfront so Edit's read-first rule doesn't force a second round-trip.
 
 - behaviour.md should be loaded always, not on-demand. It's the spine of the whole method — response-shape tags, why-pipeline, tool-use rules, captures discipline all live there. Skills reference its tags ([SILENT], [BRIEF], etc.) as symbols, but the definitions only enter context when a skill explicitly reads behaviour.md. Result: tag adherence is inconsistent because Claude acts on remembered meanings rather than the live rules. Always-loaded would put the spine in front of every turn, not just turns where a skill happened to pull it in. Mechanism: load via CLAUDE.md (mirror the file inline, or @-reference it) or via a session_start hook that injects it. Trade-off: behaviour.md is ~N lines of permanent context cost on every session; weigh against the adherence floor it raises. Related to the queued "Mirror response shape tags into CLAUDE.md" batch, which is a partial version of this — that batch only mirrors the tag names, not the rest of the spine.
 

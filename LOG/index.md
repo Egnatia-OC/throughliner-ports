@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Sequencing rule pulled into behaviour.md
+- [HASH] — Thinking-work rule added to /plan Ground rules
+- 8a01255 — Sequencing rule pulled into behaviour.md
 - a9088e6 — Hash backfill moved out of /done into /plan and /next start
 - 734c8d2 — Audience anchor added to this project's CLAUDE.md
 - f605d68 — Split Plan close-out and remove /compact recommendations

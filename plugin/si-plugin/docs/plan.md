@@ -7,6 +7,7 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 ## Ground rules
 
 - Never build during /plan. Want to write code? Queue it.
+- Never queue thinking work as a batch. Audits, reviews, reconciliations/drift checks, and design exploration are planning work — their output is decisions, not changed files. Test: if the main work is figuring something out rather than executing on a decision, it's planning work. Run it inside /plan; it spawns batches as output.
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue contradictions.
 - Process accumulated captures before new planning work.

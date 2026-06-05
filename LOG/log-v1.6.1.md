@@ -2,7 +2,7 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Split Plan close-out and remove /compact recommendations
+## f605d68 — Split Plan close-out and remove /compact recommendations
 
 Plan close-out's Step 4 had the same bundled shape as Build close-out's old Phase 3 — push prompt + next-up + always-/clear in one breath. The V47 split fixed that anti-pattern in Build close-out by separating "what's queued" from "push and context"; Plan close-out now gets the same treatment, with Step 4 ("Recommend next") landing as its own turn before Step 5 ("Push and context"). Plan branches collapse to two — batches exist or queue is clear — since /plan output doesn't include the "Captures affect next batch" case that Build's third branch covers.
 
