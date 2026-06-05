@@ -4,6 +4,27 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
+**Re-anchor plugin-wide behaviour rules at skill invocation and inject them with authority**
+behaviour.md is the spine of the method — response-shape tags, why-pipeline, captures discipline, scope rules, file safety. It's loaded today by the session_start hook into Claude Code's `additionalContext` field, but in practice tag adherence and rule-following drift across sessions. Two structural causes: (1) the spine arrives once at session start under the ambient framing "additional context," with no header asserting it as authoritative; meanwhile the procedure docs that load at skill invocation are 100+ lines of just-read material that out-prominences it. (2) SKILL.md for each skill jumps straight from "user invoked /next" to "read the procedure," with no re-anchor to the spine — and the procedure docs themselves use the tags bare with only soft "see also" pointers to behaviour.md. Three changes together close the gap: rename behaviour.md to plugin-behaviour.md so the file name itself describes its scope; wrap its injected text in a strong header inside the hook's output so the model treats it as governing rules; and add one line to each SKILL.md re-loading the file before the procedure doc, so the spine arrives alongside the procedure with equal recency. Supersedes the queued batch *"Mirror response shape tags into CLAUDE.md and template"* — that batch was a partial mirror to compensate for unreliable spine loading; once the spine is reliably loaded and authoritatively framed, mirroring is unnecessary.
+
+Build:
+- Rename `plugin/si-plugin/docs/behaviour.md` → `plugin/si-plugin/docs/plugin-behaviour.md`.
+- `plugin/si-plugin/hooks/session_start.py`: update `behaviour_path` to point at `plugin-behaviour.md`. Update the injected string so the file's contents are wrapped with a header (e.g. `=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===` above, `=== END BEHAVIOUR RULES ===` below). Keep the SPEC/QUEUE/REGISTRY status, version warnings, and FAQ index outside the wrapped block.
+- `plugin/si-plugin/skills/plan/SKILL.md`: insert one line above the "Read and follow the procedure" line — "Plugin-wide behaviour rules at `${CLAUDE_PLUGIN_ROOT}/docs/plugin-behaviour.md` govern this skill at a level above the procedure below. Re-read them before continuing."
+- `plugin/si-plugin/skills/next/SKILL.md`: same one-line addition.
+- `plugin/si-plugin/skills/done/SKILL.md`: same one-line addition.
+- `plugin/si-plugin/docs/plan.md`: update any reference to `behaviour.md` → `plugin-behaviour.md`.
+- `plugin/si-plugin/docs/done.md`: update both `behaviour.md` references → `plugin-behaviour.md`.
+- This project's `CLAUDE.md`: update any reference to `behaviour.md` → `plugin-behaviour.md`.
+- `REGISTRY.md`: update reference to `behaviour.md` → `plugin-behaviour.md`.
+- `resources/reader-test-workflow.js`: check the reference; update if it's still live, ignore if it's archived test material.
+- `QUEUE.md`: remove the queued batch *"Mirror response shape tags into CLAUDE.md and template"* — superseded by this batch.
+- LOG files (`LOG/log.md`, `LOG/log-v*.md`, `LOG/index.md`): do NOT edit. References there are historical records of past sessions.
+
+Test:
+- After repackaging and reinstalling the plugin, open a fresh session in this project. Verify the session-start system reminder shows the wrapped behaviour-rules block with the header, and that the file path referenced is plugin-behaviour.md.
+- Invoke `/next`, `/plan`, and `/done` in turn (in a project where they make sense). For each, confirm the SKILL.md instruction surfaces the plugin-behaviour.md re-read before the procedure read.
+
 **Brief batch display at /next start**
 Step 1.4 of /next currently dumps the full batch text — title plus every entry — when starting a build. That re-renders content the user just wrote in QUEUE.md and can open anytime. A brief summary serves the user better: title (which batch), one-line gist synthesized from the rationale (what it's about), and entry counts (how big). The full text lives in _build.md the moment the user confirms; QUEUE.md has it before then.
 
@@ -44,12 +65,19 @@ Build:
 - CLAUDE.md push-and-rezip step 8: replace the fixed stage list ("zip, archive changes, plugin.json, LOG/ changes") with an instruction to stage every dirty path in `plugin/si-plugin/` (via `git status --porcelain plugin/si-plugin/`) plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, and LOG/ changes. Sweep edits get caught automatically.
 - CLAUDE.md (this project's, root): add a session-start dirty-tree check. When a session starts with no `_build.md` present in the project root, run `git status --porcelain plugin/si-plugin/` and warn the user if non-empty, listing the dirty paths. Surfaces orphaned sweep edits before /next layers build changes on top.
 
-**Mirror response shape tags into CLAUDE.md and template**
-The response shape tags (`[SILENT]`, `[BRIEF]`, `[PROMPT]`, `[DISCUSS]`, `[SEQUENCE]`) live in behaviour.md, which only loads on-demand. So at session start, Claude doesn't have the tags in immediate context — when /plan drafts changes to procedure docs, it tends to write prose describing output behaviour instead of reaching for an existing tag. Mirroring the tag names and one-line meanings into CLAUDE.md puts the system in front of Claude from the start, making tag use the default move when authoring. The same mirroring into CLAUDE-TEMPLATE.md propagates to consumer projects via /setup. Drift risk between the two copies is low — the tag set is stable.
+**Fix /clear-before-/done close-out order**
+next.md Step 7 and plan.md Step 4 close-outs both tell the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" places /clear *before* /done, but /done reads the conversation to write a faithful LOG entry — clearing first strips exactly what /done draws on. The /clear advice already lives correctly at the end of /done itself, where it recommends clearing before the next skill. Fix is to drop the misplaced sentence from both offering close-outs; the post-/done placement carries the advice in the right spot.
 
 Build:
-- this project's CLAUDE.md: add a brief "Response shape tags" section mirroring the five tag bullets from behaviour.md (names + one-line meanings only). The sub-sections in behaviour.md (Unlabelled steps, Tag precedence) stay there as elaboration; CLAUDE.md surfaces just the at-a-glance reference.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: add the same mirrored section so consumer projects get it on /setup.
+- plugin/si-plugin/docs/next.md Step 7 (line 142): remove the "Run `/clear` first to keep context clean." sentence from the close-out. Keep the /done offer.
+- plugin/si-plugin/docs/plan.md Step 4 (line 85): same change — drop the /clear sentence, keep the /done offer.
+
+**Speed up LOG hash backfill with `git log -S`**
+The backfill instruction in plan.md and next.md suggests `git log --diff-filter=A` or blame, both of which return a wider set of commits that Claude has to scan and match to entry titles by eye, plus often reading the full log files for orientation. `git log -S "<entry title>" --pretty=%h -- LOG/` returns the hash mechanically per placeholder — no scanning, no matching, no log reading. Pair it with a batch-read of every file containing `[HASH]` upfront so Edit's read-first rule is satisfied in one round-trip instead of one per placeholder. The instruction lives in two places (plan.md Step 1, next.md Step 1) and gets the same rewrite in both.
+
+Build:
+- plugin/si-plugin/docs/plan.md Step 1 "Backfill LOG hashes first": rewrite the instruction. New shape: (1) batch-read every file in LOG/ that contains `[HASH]` upfront; (2) for each placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash; (3) replace `[HASH]` in place. Drop the `--diff-filter=A` and blame fallbacks.
+- plugin/si-plugin/docs/next.md Step 1 "Backfill LOG hashes": same rewrite, same shape.
 
 ### Parked
 
@@ -59,12 +87,6 @@ Build:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-
-- next.md Step 7 close-out tells the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" places /clear *before* /done, but /done reads the conversation to write a faithful LOG entry (nuance, decisions, regressions surfaced mid-build) — clearing first strips exactly what /done draws on. The /clear advice belongs after /done lands, when the session's work is recorded and committed. Same shape likely lives in done.md and plan.md close-outs; check all three.
-
-- next.md hash-backfill is slower than it needs to be — the procedure suggests `git log --diff-filter=A` or blame, both of which still require Claude to scan results and match entry titles to commits by eye, plus reading the full log files for orientation. Replace with `git log -S "<entry title>" --pretty=%h -- LOG/` per placeholder: the hash drops out mechanically, no log reading needed. Pair with an instruction to batch-read all files containing [HASH] upfront so Edit's read-first rule doesn't force a second round-trip.
-
-- behaviour.md should be loaded always, not on-demand. It's the spine of the whole method — response-shape tags, why-pipeline, tool-use rules, captures discipline all live there. Skills reference its tags ([SILENT], [BRIEF], etc.) as symbols, but the definitions only enter context when a skill explicitly reads behaviour.md. Result: tag adherence is inconsistent because Claude acts on remembered meanings rather than the live rules. Always-loaded would put the spine in front of every turn, not just turns where a skill happened to pull it in. Mechanism: load via CLAUDE.md (mirror the file inline, or @-reference it) or via a session_start hook that injects it. Trade-off: behaviour.md is ~N lines of permanent context cost on every session; weigh against the adherence floor it raises. Related to the queued "Mirror response shape tags into CLAUDE.md" batch, which is a partial version of this — that batch only mirrors the tag names, not the rest of the spine.
 
 - Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
 

@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Thinking-work rule added to /plan Ground rules
+- [HASH] — /plan session: process 3 captures, promote behaviour-rules restructuring batch
+- f97990f — Thinking-work rule added to /plan Ground rules
 - 8a01255 — Sequencing rule pulled into behaviour.md
 - a9088e6 — Hash backfill moved out of /done into /plan and /next start
 - 734c8d2 — Audience anchor added to this project's CLAUDE.md

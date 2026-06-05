@@ -2,7 +2,19 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Thinking-work rule added to /plan Ground rules
+## [HASH] — /plan session: process 3 captures, promote behaviour-rules restructuring batch
+
+Three captures processed before the user closed the session: the /clear-before-/done close-out misordering (next.md and plan.md both tell the user to /clear before running /done, but /done reads the conversation to write the LOG entry, so clearing first strips what /done draws on), the slow hash-backfill procedure (`git log --diff-filter=A` and blame both require eyeball matching of titles to commits and full-log reading for orientation; `git log -S "<title>" --pretty=%h -- LOG/` returns the hash mechanically), and behaviour.md not reliably governing skill behaviour despite the session_start hook already loading it. The third capture's premise turned out to be partly wrong — the hook does inject behaviour.md — but the symptom (inconsistent tag adherence) is real, so investigation continued in-session. Doc-injection chain checked across all three skills: SKILL.md is 13 lines and jumps straight from "user invoked /next" to "read the procedure," with no re-anchor to the spine; procedure docs (100+ lines, just-read, high prominence) then out-prominence the ambient session-start injection. Three combined fixes resolved as one batch: rename behaviour.md to plugin-behaviour.md so the filename describes its scope, wrap the injected text in an authoritative header inside the hook output so the model treats it as governing rules, and add one line to each SKILL.md re-loading the file before the procedure doc. The queued "Mirror response shape tags into CLAUDE.md and template" batch was dropped as superseded — it was a partial mirror compensating for unreliable spine loading. Session ended at capture 4 of 12 because the user closed early; remaining 9 captures stay in QUEUE.md for the next /plan session.
+
+**Queue changes:**
+- Added (position 1): "Re-anchor plugin-wide behaviour rules at skill invocation and inject them with authority"
+- Added (position 8): "Fix /clear-before-/done close-out order"
+- Added (position 9): "Speed up LOG hash backfill with `git log -S`"
+- Removed: "Mirror response shape tags into CLAUDE.md and template" (superseded)
+
+**Captures routed:** 3 promoted (/clear close-out misordering, hash-backfill speedup, behaviour.md authoritative loading); 9 remain unprocessed.
+
+## f97990f — Thinking-work rule added to /plan Ground rules
 
 plan.md's Ground rules already forbade building during /plan but had no inverse, leaving thinking work (audits, reviews, reconciliations/drift checks, design exploration) to be queued as batches by default — the routing call collapsed to whatever shape the previous capture took. Surfaced twice in V60 planning when both the trickle-up audit and output tag overhaul got framed as candidate batches. The new bullet pairs the existing rule: never queue thinking work as a batch, names the four recurring shapes, and gives the test — if the main work is figuring something out rather than executing on a decision, it's planning work, run it inside /plan, it spawns batches as output. Placed directly after "Never build during /plan" so the two rules read as paired.
 
