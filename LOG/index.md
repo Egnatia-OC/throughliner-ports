@@ -2,9 +2,10 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — Sequencing rule pulled into behaviour.md
 - a9088e6 — Hash backfill moved out of /done into /plan and /next start
 - 734c8d2 — Audience anchor added to this project's CLAUDE.md
-- [HASH] — Split Plan close-out and remove /compact recommendations
+- f605d68 — Split Plan close-out and remove /compact recommendations
 - 5a32c34 — V60 planning: capture sweep, structural rules, hash-backfill fix
 - 24b5feb — Remove the [idea]/[question] capture tags
 - 3da827c — /plan session: queue one-item-at-a-time and thinking-work-isn't-a-batch rules

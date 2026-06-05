@@ -4,12 +4,6 @@
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.
 
-**Pull "one item at a time" rule into behaviour.md**
-Alex's global CLAUDE.md carries a detailed rule about sequencing multi-part responses — one per message when the next action depends on the previous, count upfront, no preview, alternatives are the one exception. The plugin currently delegates this to the user's CLAUDE.md via the tag-precedence note in behaviour.md, which means it only governs unlabelled steps and free conversation when the user has it set. On any install without that rule, skills' close-outs and walkthroughs become bundle-prone. The [SEQUENCE] tag already covers procedure steps that explicitly carry it, but the broader principle — applying to any multi-part response across the session — needs to be plugin behaviour, not user preference. The Communication section is the right home.
-
-Build:
-- behaviour.md: add a "Sequencing multi-part responses" rule under Communication. Cover: one item per message when the user's next action depends on the prior one, state the count upfront, don't preview upcoming items, close-outs and walkthroughs are where the pull to bundle is strongest, the one inversion is alternatives the user is choosing between (because the choice requires seeing them together).
-
 **Add "thinking work isn't a batch" rule to plan.md**
 The current Ground rules section says "Never build during /plan" but has no inverse — nothing stops planning work from being queued as a batch. Surfaced twice this session: I framed both the trickle-up audit and the output tag overhaul as candidate batches when both are planning work whose output is decisions, not changed files. Without a structural rule, this becomes a judgment call each time and defaults to whatever shape the previous capture took. Naming the recurring shapes (audits, reviews, reconciliations/drift checks, design exploration) gives the routing decision a clear test.
 
@@ -71,6 +65,8 @@ Build:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
+
+- behaviour.md should be loaded always, not on-demand. It's the spine of the whole method — response-shape tags, why-pipeline, tool-use rules, captures discipline all live there. Skills reference its tags ([SILENT], [BRIEF], etc.) as symbols, but the definitions only enter context when a skill explicitly reads behaviour.md. Result: tag adherence is inconsistent because Claude acts on remembered meanings rather than the live rules. Always-loaded would put the spine in front of every turn, not just turns where a skill happened to pull it in. Mechanism: load via CLAUDE.md (mirror the file inline, or @-reference it) or via a session_start hook that injects it. Trade-off: behaviour.md is ~N lines of permanent context cost on every session; weigh against the adherence floor it raises. Related to the queued "Mirror response shape tags into CLAUDE.md" batch, which is a partial version of this — that batch only mirrors the tag names, not the rest of the spine.
 
 - Trickle-up audit: review all procedure docs (setup.md, plan.md, next.md, done.md) for rules that are repeated across multiple docs or aren't skill-specific. Move them to behaviour.md so they're stated once and apply everywhere.
 

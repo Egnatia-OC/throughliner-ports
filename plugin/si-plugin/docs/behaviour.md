@@ -10,6 +10,7 @@ Active in every session where the plugin is installed and the project is set up.
 - Run commands yourself. Don't ask the user to run things you can run.
 - When uncertain about an external fact, offer a web search rather than guessing. File research under `resources/research/`.
 - When capturing something mid-skill, always ask "anything else?" before resuming.
+- Sequencing multi-part responses: when the user's next action depends on the prior one, give one item per message. State the count upfront, then stop — don't preview the upcoming items, even briefly. The pull to bundle is strongest at close-outs and walkthroughs (commit instructions, smoke-test plans, audit checklists); resist it there especially. The one inversion is alternatives the user is choosing between — comparisons need everything visible at once because the choice is between them.
 
 ## Response-shape tags
 
