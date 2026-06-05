@@ -6,17 +6,19 @@ You are executing the next piece of work from the queue. One batch at a time, sc
 
 Before starting:
 
-1. **Active build check:** [SILENT] If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one. If _build.md does not exist, move on — no output either way.
+1. **Backfill LOG hashes:** [BRIEF] Scan `LOG/log.md` and `LOG/index.md` for `[HASH]` placeholders. For each, find the hash of the commit that introduced the entry (e.g. `git log --diff-filter=A --pretty=%h -- LOG/log.md` walked top-down, or by blame) and replace `[HASH]` in place. No separate commit — the working-tree edit folds into whatever commit this session later makes. If nothing to backfill, no output.
 
-2. **Read QUEUE.md:** Find the top batch under "Batches."
+2. **Active build check:** [SILENT] If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one. If _build.md does not exist, move on — no output either way.
 
-3. **Blocker gate:** Scan for blockers that would force guessing:
+3. **Read QUEUE.md:** Find the top batch under "Batches."
+
+4. **Blocker gate:** Scan for blockers that would force guessing:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Are there unresolved questions in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
    - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend switching to /plan if any are found.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
-4. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
+5. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
    - Batch title and all entry text from QUEUE.md
    - "Ready?" — if the user wants to change scope or reorder, route to /plan
 

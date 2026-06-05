@@ -20,7 +20,7 @@ Build:
 Step 1.4 of /next currently dumps the full batch text — title plus every entry — when starting a build. That re-renders content the user just wrote in QUEUE.md and can open anytime. A brief summary serves the user better: title (which batch), one-line gist synthesized from the rationale (what it's about), and entry counts (how big). The full text lives in _build.md the moment the user confirms; QUEUE.md has it before then.
 
 Build:
-- next.md Step 1.4: replace the "Batch title and all entry text from QUEUE.md" bullet with an instruction to display the batch title, a one-line gist drawn from the rationale, and entry counts (build / test).
+- next.md Step 1.5: replace the "Batch title and all entry text from QUEUE.md" bullet with an instruction to display the batch title, a one-line gist drawn from the rationale, and entry counts (build / test).
 
 **Verbatim-copy strings in fenced blocks; combine commit approval**
 In the desktop app, Ctrl+C copies the whole assistant message, so strings the user needs to lift verbatim (commit message, commit body, paste-ready prompts) only work as copy targets when each one sits in its own fenced code block. Commit message and body are the most frequent case — every /done. Currently they're presented and approved as separate steps, which is redundant; they can be displayed together as two adjacent copyable blocks and approved in one go. A general rule in behaviour.md keeps this from drifting back as other copy-need cases surface.
@@ -35,15 +35,6 @@ When /plan drafts a batch without a Test section, the absence currently gets nar
 
 Build:
 - plan.md Step 3 Test section: tag the omission case as `[SILENT]` so the decision to skip a test section doesn't get narrated to the user. Use the tag, not a prose substitute.
-
-**Backfill LOG hashes at the start of /plan and /next**
-The current /done flow writes LOG with `[HASH]` placeholder, commits, runs `rev-parse` to fill in the hash, then amends — but the amend changes the hash, so the recorded value is stale (13c4612 / 44ab617 this session). Move the infill out of /done entirely: /done leaves the placeholder committed. The next /plan or /next session, at start, finds any `[HASH]` placeholders in LOG/log.md and LOG/index.md and fills them with the hash of the commit that introduced the entry. The infill is just a working-tree edit; whatever commit that session later makes folds it in — no separate commit, no amend, no two-commit flow.
-
-Build:
-- done.md Section 2.4 (Build close-out commit step): drop steps 5–7 (rev-parse, replace placeholder, amend). The committed LOG entry keeps the `[HASH]` placeholder. Section ends after the commit.
-- done.md Plan close-out Section 3 (commit step): same simplification.
-- next.md Step 1 pre-flight: add a sub-step at the very start `[BRIEF]` — scan LOG/log.md and LOG/index.md for `[HASH]` placeholders. For each, find the hash of the commit that introduced that entry (e.g. `git log --diff-filter=A --pretty=%h -- LOG/log.md` walked top-down, or blame-based) and replace in place. No new commit; the infill is uncommitted working-tree state that the session's next commit picks up.
-- plan.md Step 1: add the same backfill sub-step at the very start, before the captures/discussion question.
 
 **Promote recommendation must name concrete outputs**
 The current /plan procedure asks for promote/park/drop before the batch entry is drafted, so the user approves a direction without seeing what would actually get built. This session that gap was bridged by Claude's style — concrete outputs got named at recommendation time organically. Style isn't a guarantee; a different model could recommend promote in abstract terms, leaving the user to approve blind. Codifying it structurally — promote must describe what would actually get built, in terms the user can recognize as the work product — closes the hole regardless of model. If the interview hasn't yielded enough to describe it concretely, the recommendation isn't ready; keep interviewing.

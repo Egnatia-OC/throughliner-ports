@@ -42,7 +42,7 @@ Check _build.md and conversation for anything flagged during the build. Route ea
 
 #### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-Draft the entry for `LOG/log.md` using this template (placeholder hash — filled after commit at 2.4):
+Draft the entry for `LOG/log.md` using this template (placeholder hash — backfilled at the next /plan or /next session start):
 
 ```markdown
 ## [HASH] — [one-line summary]
@@ -74,15 +74,14 @@ Quick check of QUEUE.md:
 
 Unlocks future builds. Only after everything above is complete.
 
-#### 2.4 Git commit and hash backfill [BRIEF, PROMPT]
+#### 2.4 Git commit [BRIEF, PROMPT]
 
 1. Stage files from _build.md Changes plus method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
 2. Never `git add -A` or `git add .`.
 3. Draft commit message. Present for approval.
-4. Wait for okay.
-5. After commit: `git rev-parse --short HEAD` for the hash.
-6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
-7. Stage updated files, amend (`git commit --amend --no-edit`).
+4. Wait for okay, then commit.
+
+The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
 
 ### Phase 3: Recommend next [BRIEF, PROMPT]
 
@@ -133,15 +132,14 @@ Prepend to `LOG/index.md`:
 - [HASH] — [one-line summary]
 ```
 
-### 3. Git commit and hash backfill [BRIEF, PROMPT]
+### 3. Git commit [BRIEF, PROMPT]
 
 1. Stage only changed method docs (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
 2. Never `git add -A` or `git add .`.
 3. Draft commit message. Present for approval.
-4. Wait for okay.
-5. After commit: `git rev-parse --short HEAD`.
-6. Replace `[HASH]` in LOG/log.md and LOG/index.md.
-7. Stage, amend (`git commit --amend --no-edit`).
+4. Wait for okay, then commit.
+
+The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
 
 ### 4. Recommend next [BRIEF, PROMPT]
 

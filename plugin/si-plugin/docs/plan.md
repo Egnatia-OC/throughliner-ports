@@ -16,7 +16,9 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 
 ## Step 1: Read state and entry question
 
-Read QUEUE.md and SPEC.md. Check whether Captures has items.
+**Backfill LOG hashes first:** [BRIEF] Scan `LOG/log.md` and `LOG/index.md` for `[HASH]` placeholders. For each, find the hash of the commit that introduced the entry (e.g. `git log --diff-filter=A --pretty=%h -- LOG/log.md` walked top-down, or by blame) and replace `[HASH]` in place. No separate commit — the working-tree edit folds into whatever commit this session later makes. If nothing to backfill, no output.
+
+Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 
 Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.)
 
