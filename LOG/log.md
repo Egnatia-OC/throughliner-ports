@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Reframe research-volunteering as face-saving in plugin-behaviour.md
+## [HASH] — Add spectrum-options bullet to plugin-behaviour.md Communication
+
+When Claude offers the user choices it surfaces a bounded list — deliberately, because exhaustive listings overload — but the side effect is the user only steers among what Claude chose to show. Arranging visible options along an axis (easy → hard, minimal → exhaustive) and signalling that more options exist off one or both ends gives the user steering room without bloating the list. The new bullet codifies the shape and splits it by altitude: component-level choices (one file, one bullet, one wording) use a single spectrum; choices that shape a whole feature, skill, or area use two or three axes laid out as a small table. The trigger for which altitude is the scope of the decision, not edit size. Extending a spectrum is a research moment — when the user asks to push past the ends or add an axis, or when Claude is about to extend beyond what it confidently knows even unprompted, Claude offers a web search per the Research section landed in the prior batch. The cross-reference makes the spectrum hook one concrete trigger for the broader research-volunteering behaviour, not a parallel mechanism. Bullet placed between the sequencing bullet (which shapes multi-part responses) and the verbatim-copy bullet (which shapes string presentation) since all three govern how Claude shapes user-facing output.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: added spectrum-options bullet in Communication section
+
+**Routed to Captures:** none
+
+## 43c6da8 — Reframe research-volunteering as face-saving in plugin-behaviour.md
 
 Claude's default reluctance to offer web searches reads — to Claude itself — as admitting a knowledge gap, so the offer gets withheld even at moments where extra background would meaningfully inform the work. The Communication bullet about offering web searches names the *what* but doesn't address the *why-not* that keeps the behaviour from firing. The new Research section sits directly above Captures and reframes the offer from three angles: framing (checking current information is normal diligence in a fast-moving field, not a knowledge gap to hide), stakes (under-researched assumptions can cost a week of wrong work that's costly to undo, so when stakes are high the offer matters most), and how it reads to the user (waiting to be reminded the internet exists reads as weak; volunteering reads as capable). The trigger is wide on purpose — "any time extra background would meaningfully inform the work" — paired with the cheap-offer note (the user can always decline) so the bar to offer is low. External systems, libraries, and APIs are called out as one illustrative example rather than the rule, since the trigger is "would more current information change what we do next," not a fixed category list. The existing Communication bullet stays in place as the *what*; the new section is the *why*.
 
