@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Verbatim-copy strings get fenced blocks; commit title + body share one approval
+- [HASH] — /plan session: 4 batches promoted including audit-as-batch-type pivot; 1 capture dropped after sanity check
+- d0d8c8e — Verbatim-copy strings get fenced blocks; commit title + body share one approval
 - fecdf76 — /plan session: 3 batches promoted (research reframe, spectrum options, index-entry shape), 2 captures added
 - bc9b8e2 — /next batch presentation slimmed to title + gist + entry counts
 - 1a74685 — /plan: parked 2 stuck audit captures under new /audit skill dependency; 6 new captures from session
