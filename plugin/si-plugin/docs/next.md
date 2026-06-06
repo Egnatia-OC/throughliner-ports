@@ -116,7 +116,7 @@ When the user brings up something that isn't part of the current batch:
 2. Ask "anything else?" — repeat until the user says no.
 3. Resume the build.
 
-**Adding to scope instead:** If the user explicitly asks to add it to the current build rather than capturing it, confirm first: "This would expand the current build scope. Add it here, or capture it for a future batch?" If confirmed, add it to _build.md as a new entry and continue. This is a workaround, not the normal flow — captures keep builds focused and reasoning traceable.
+**Coherence exception:** Default is to capture, per above. The exception is narrow and keyed to why-pipeline coherence: if the raised item would share the build's log entry and index line — per plugin-behaviour.md Index entries — and folding it in makes the batch easier to find later rather than harder, add it to _build.md as a new entry and continue. Evaluation is against the coherence rules, not user convenience. When uncertain, capture.
 
 ### Scope grows during the build
 

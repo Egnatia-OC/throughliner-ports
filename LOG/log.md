@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Sweep "disposition" jargon from plugin/si-plugin/
+## [HASH] — Narrow next.md Step 4 add-to-scope to a coherence exception
+
+next.md Step 4's "Adding to scope instead" paragraph framed mid-/next folding as a user-convenience workaround — confirm with the user, then add the raised item to _build.md as a new entry. The framing was load-bearing on whether the user wanted it in, not on whether the item belonged in the same change, which let out-of-scope ideas leak into the active build's commit and log entry and pollute what should be one coherent change. The replacement keys the exception to why-pipeline coherence: the default (route to Captures) already lives in sub-steps 1–3; the new "Coherence exception" paragraph fires only when the raised item would share the build's log entry and index line per plugin-behaviour.md Index entries and folding it in makes the batch easier to find later rather than harder. Evaluation is against the coherence rules, not user convenience, with "when uncertain, capture" as the tiebreaker. The Index entries cross-reference does the work of stating the criteria once — the paragraph stays short because Index entries already defines what "shares an index line" means.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 4 — "Adding to scope instead" paragraph replaced with "Coherence exception" paragraph, cross-referencing plugin-behaviour.md Index entries
+
+**Routed to Captures:** none
+
+## 307c2c2 — Sweep "disposition" jargon from plugin/si-plugin/
 
 "Disposition" was the label used across procedure docs for the promote/park/drop choice and was leaking through into user-facing chat (e.g. /plan Step 2's "Disposition?" prompt). The audience anchor in CLAUDE.md already ruled out the user-facing leak, but keeping the term inside the procedure docs maintains an internal-vs-external vocabulary split with no payoff — the docs read more clearly with the plain phrasing the user already sees. One vocabulary across docs and chat. Six hits swept: two in plan.md Step 2 (recommend + execute sub-steps), three in next.md Audit procedure (intro paragraph, route step, close step), one in plugin-behaviour.md Dependency ownership. Re-grep across plugin/si-plugin/ confirmed zero surviving hits.
 

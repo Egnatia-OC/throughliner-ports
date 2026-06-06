@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — plan.md, next.md, plugin-behaviour.md: swept "disposition" jargon to plain "promote/park/drop" — six hits across recommend/execute steps, Audit procedure, and Dependency ownership
+- [HASH] — next.md Step 4: replaced "Adding to scope instead" with a coherence exception — default routes to Captures; fold into _build.md only when the raised item would share the build's log entry and index line per plugin-behaviour.md Index entries
+- 307c2c2 — plan.md, next.md, plugin-behaviour.md: swept "disposition" jargon to plain "promote/park/drop" — six hits across recommend/execute steps, Audit procedure, and Dependency ownership
 - 8ec72a3 — setup.md and next.md (audit close-out): swept stray "Run `/clear` first" sentences — safety net behind the prior two `/clear` batches; `/compact` had no hits
 - dfdc113 — next.md Step 7 and plan.md Step 4 close-outs: dropped misplaced "Run `/clear` first" sentence — clearing before /done would strip the conversation /done reads
 - 710e56e — CLAUDE.md push-and-rezip + session-start: stage every dirty path in plugin/si-plugin/ at push; warn on uncommitted target tree at session start
