@@ -104,7 +104,6 @@ Otherwise, based on queue state:
 
 - Batches created or modified
 - Captures promoted, parked, or dropped
-- Questions resolved
 - Spec changes
 
 ### 2. Write LOG entry [DISCUSS, PROMPT]

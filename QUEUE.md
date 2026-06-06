@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Sweep done.md Plan close-out for removed-concept leftovers** **[sweep-removed-concepts]**
-
-done.md Plan close-out Step 1 (Recap) still lists "Questions resolved" as a bullet type — leftover from when OPEN-QUESTIONS existed as a tracked concept. That concept was removed but the recap field wasn't swept. Small fix on its own, but worth doing as a sweep — drift checks were also removed during the V47 OQ-promotion era, and any other Plan close-out field referencing concepts that no longer exist should go on the same pass. Stale field names in a recap template train Claude to fabricate content to fill them.
-
-Build:
-- plugin/si-plugin/docs/done.md Plan close-out Step 1 (Recap): drop "Questions resolved" from the bullet list.
-- Same pass: sweep done.md Plan close-out for any other field referencing removed concepts — OPEN-QUESTIONS, drift check, or anything else from the V47 OQ-promotion era. Drop any found. If nothing else surfaces, the batch is the single bullet removal.
-
 **Stage sweep edits at push; warn on dirty plugin tree at session start** **[stage-sweep-dirty-warn]**
 
 push-and-rezip step 8 stages a fixed list (zip, archive, plugin.json, LOG/) that doesn't include whatever the pre-push sweep modified. Sweep edits — prose tightening in plugin/si-plugin/ to keep templates and skill docs aligned with the procedure changes being pushed — fall out of the commit and sit orphaned in the working tree across sessions. The next /next can then layer build edits on top of orphaned sweep changes, mixing unrelated work into one commit. Two complementary fixes addressing the two failure modes: at push, stage every dirty path in plugin/si-plugin/ rather than a named list (catches sweep edits automatically); at session start, when no build is in progress, warn if plugin/si-plugin/ has uncommitted state (catches existing orphans before a new build layers on top). Both edits land in this project's CLAUDE.md — the push-and-rezip workflow lives there, not in the shipped plugin.

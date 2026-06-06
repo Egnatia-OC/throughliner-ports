@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — done.md recommend-next: overlap scan, continuation ask, reorder offer
+## [HASH] — Sweep "Questions resolved" leftover from done.md Plan close-out Step 1 Recap
+
+done.md's Plan close-out Step 1 Recap still listed "Questions resolved" as one of the bullet types to populate — a leftover from when OPEN-QUESTIONS existed as a tracked concept and got promoted out during the V47 era. The field name outlived the concept, and stale recap field names train Claude to fabricate content to fill them (a recap with "Questions resolved" as a named bullet pressures the next /done to produce something for that slot even when no questions were resolved, because empty named fields read as omissions rather than as inapplicable). The bullet got dropped. The batch was authored as a sweep rather than a single-bullet edit because drift checks also got removed in the V47-era cleanup and other recap or close-out fields could be carrying the same shape of staleness — but the sweep walked Plan close-out Steps 1–4 plus the LOG-entry template and every remaining field maps to a current concept (Batches, Captures, Spec changes, Queue changes, Parked, unpark watch), so the build collapsed to the one bullet removal.
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: Plan close-out Step 1 Recap — removed the "Questions resolved" bullet.
+
+**Routed to Captures:** none
+
+## 8c2e2fc — done.md recommend-next: overlap scan, continuation ask, reorder offer
 
 done.md's two recommend-next sections (Build close-out Phase 3, Plan close-out Step 4) were collapsing to "Run /next when ready" whenever batches existed, regardless of whether unprocessed captures in the queue contradicted, invalidated, or would benefit the top batch. That shape deferred sequencing to the user — exactly the case Dependency ownership says Claude should own. Three additions tighten the close-out symmetrically across both modes: (1) an upfront overlap scan of unprocessed Captures against the top batch, mirroring next.md Step 1.4's blocker-gate, with /plan recommended if anything hits; (2) when the recommendation lands on /next, an explicit continuation ask, since back-to-back /next runs are the common pattern and the close-out is the right moment to surface it; (3) when continuing and a reorder applies, an offer to reorder the queue first so the next /next picks the right item — leaning on the general reorder-offering rule already in plugin-behaviour.md.
 
