@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: parked 2 stuck audit captures under new /audit skill dependency; 6 new captures from session
+- [HASH] — /next batch presentation slimmed to title + gist + entry counts
+- 1a74685 — /plan: parked 2 stuck audit captures under new /audit skill dependency; 6 new captures from session
 - e5d3ca4 — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
 - 11c81a2 — /plan session: process 3 captures, promote behaviour-rules restructuring batch
 - f97990f — Thinking-work rule added to /plan Ground rules

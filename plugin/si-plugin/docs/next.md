@@ -19,7 +19,7 @@ Before starting:
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 5. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
-   - Batch title and all entry text from QUEUE.md
+   - Batch title, a one-line gist synthesized from the rationale, and entry counts (build / test). Don't re-render the full entry text — the user just wrote it in QUEUE.md and can open it anytime; the full text moves into _build.md once they confirm.
    - "Ready?" — if the user wants to change scope or reorder, route to /plan
 
 ## Step 2: Lock scope [SILENT]
