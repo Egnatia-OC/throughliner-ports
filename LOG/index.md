@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — plugin-behaviour.md Dependency ownership: added rule that Claude offers to reorder the queue (capture or batch) when an ordering issue is spotted, not just naming it
+- [HASH] — plugin-behaviour.md / plan.md / next.md / done.md: reconciled queue placement (Claude-directed with oldest-first fallback), added Unpark + Staleness watches and an ordering-narration rule, introduced batch slugs and Depends on/Blocks headers; backfilled across QUEUE.md
+- ac461c4 — plugin-behaviour.md Dependency ownership: added rule that Claude offers to reorder the queue (capture or batch) when an ordering issue is spotted, not just naming it
 - 2055d97 — Tighten Why-pipeline preserve to name three collapse-shapes and retrieve to start at LOG/index.md
 - 6fd7fed — Add between-captures checkpoint to plan.md Step 2
 - f15e8e8 — Scan for downstream revision before recommending promote on structural captures

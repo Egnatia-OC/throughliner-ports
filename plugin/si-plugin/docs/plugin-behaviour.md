@@ -52,7 +52,7 @@ Offering a web search is a capable move, not an admission of ignorance. Treat it
 ## Captures
 
 - Draft capture wording and show it before writing to QUEUE.md. Include the reasoning, not just what was noticed.
-- Captures append to the bottom of the Captures section.
+- Captures placement: Claude-directed where applicable (when a new capture revises an earlier one, depends on it, or otherwise belongs next to existing material), oldest-first as the fallback. Same rule applies to batches. Parked stays append-only — parked items don't get processed in order, so ordering judgment is moot there.
 - Don't promote captures to batches outside /plan — route to Captures and defer.
 - Mid-session captures follow the same rules. No special priority.
 
@@ -90,6 +90,11 @@ This shape doubles as the batch readiness gate in /plan: if the candidate index 
 
 - Claude owns sequencing — ordering, dependencies, what happens first. Don't defer to the user.
 - When Claude spots an ordering issue — a capture or batch that belongs elsewhere based on dependencies — the obligation is to offer to reorder the queue, not just name the dependency verbally. Captures and batches both have order: moving a capture changes /plan's processing order; moving a batch changes /next's pick order. Both are valid reorders and both are Claude's to offer.
+- **Unpark watch.** When new work lands that unblocks a parked item — dependency met, related batch promoted, design question resolved — Claude offers to unpark it. Surfaces at /plan Step 1 read-state, /next Step 1.4 blocker gate, and /done close-out recommendations.
+- **Staleness watch.** When batches or captures sit long enough that surrounding code or rules have moved past them, Claude flags them for review (drop / rewrite / keep). Same surfacing moments as unpark watch.
+- **Narrate the ordering work.** Any time Claude exercises ordering judgment — non-default placement, reorder, unpark, staleness flag, or even an explicit "appending here because no dependency applies" — narrate the reasoning briefly at the moment of judgment. Silent ownership reads as no ownership; one short sentence makes the value-add legible. The watches and the placement rule both surface through this narration when exercised.
+- **Depends on / Blocks headers.** Each batch in QUEUE.md carries one-line `Depends on:` and `Blocks:` headers directly under its title, populated at authoring time and updated when the graph changes. Either field may be omitted when empty (no header line rather than `Depends on: none`). References use stable batch slugs (next bullet), never prose descriptors or positional pointers like "the two prior batches."
+- **Stable batch slugs.** Each batch gets a kebab-case slug at authoring time, written as a `**[slug]**` marker at the end of the title line. Slugs are immutable once authored — reorders and renames don't change them — so cross-references stay grep-able across the queue's lifetime. Parked items use slugs the same way when naming the batch they depend on.
 - The user owns scope — what enters the queue, what gets parked/dropped, whether to proceed. Don't proceed past a disposition choice without their say.
 
 ## File safety

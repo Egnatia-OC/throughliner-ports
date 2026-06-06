@@ -16,6 +16,8 @@ Before starting:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Are there unresolved questions in batches above the current one, or within the batch itself? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — they get processed in /plan — but if one clearly affects this batch, surface it.
    - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend switching to /plan if any are found.
+   - Unpark-candidate scan (per plugin-behaviour.md Dependency ownership Unpark watch). → Any parked item newly unblocked by work that's landed since? Surface and recommend /plan first if any are found.
+   - Stale-batch scan (per plugin-behaviour.md Dependency ownership Staleness watch). → Any batch or capture stale enough that surrounding code or rules have moved past it? Surface and recommend /plan first if any are found.
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 5. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
@@ -110,7 +112,7 @@ Changes:
 
 When the user brings up something that isn't part of the current batch:
 
-1. Route it to Captures in QUEUE.md. Draft the wording first and show it in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs).
+1. Route it to Captures in QUEUE.md, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Draft the wording first and show it in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs).
 2. Ask "anything else?" — repeat until the user says no.
 3. Resume the build.
 

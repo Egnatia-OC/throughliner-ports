@@ -31,7 +31,7 @@ For each file created, renamed, deleted, or significantly modified:
 
 #### 1.3 Route findings to Captures
 
-Check _build.md and conversation for anything flagged during the build. Route each to Captures. Route test failure fixes too.
+Check _build.md and conversation for anything flagged during the build. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
 
 #### 1.4 Build recap [BRIEF]
 
@@ -67,10 +67,11 @@ If _build.md contains an `Index entry candidate:` line and the build ran as plan
 
 #### 2.2 Staleness sweep
 
-Quick check of QUEUE.md:
+Quick check of QUEUE.md against plugin-behaviour.md Dependency ownership Staleness watch — any staleness from any cause, not just what this build changed:
 - Remaining batches or Captures reference renamed/deleted files?
-- Reference old behaviour this build changed?
-- If so, flag (don't edit without asking).
+- Reference behaviour or rules that this build (or any prior shift the queue hasn't caught up to) has moved past?
+- Items sitting long enough that the surrounding code or rules have drifted away from them?
+- If so, flag (don't edit without asking). Run the unpark watch on the same pass — anything parked that's now newly unblocked? Flag for /plan.
 
 #### 2.3 Delete _build.md
 
@@ -89,8 +90,9 @@ The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next se
 
 Based on queue state:
 1. Captures routed that affect next batch → recommend /plan, name the blocker.
-2. More batches → "Next up is [batch]. Run /next or /plan when ready."
-3. Batches empty → "Queue is clear. Run /plan when you have more."
+2. Parked items unblocked by this session's work (per plugin-behaviour.md Dependency ownership Unpark watch) → recommend /plan, name the unpark candidate(s).
+3. More batches → "Next up is [batch]. Run /next or /plan when ready."
+4. Batches empty → "Queue is clear. Run /plan when you have more."
 
 This is its own turn — wait for the user to acknowledge before moving to Phase 4. Knowing what's queued shapes whether they want to push now.
 
@@ -146,6 +148,7 @@ The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next se
 ### 4. Recommend next [BRIEF, PROMPT]
 
 Based on queue state:
+- Parked items unblocked by this session's planning work (per plugin-behaviour.md Dependency ownership Unpark watch) → mention the unpark candidate(s) as part of the recommendation.
 - Batches exist: "Next up is [batch]. Run /next when ready."
 - Batches empty: "Queue is clear. Run /plan when you have more."
 

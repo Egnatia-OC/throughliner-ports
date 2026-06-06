@@ -22,6 +22,8 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 
 Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 
+**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: anything newly unblocked by work that's landed since it was parked? For Batches and Captures: anything stale enough that the surrounding code or rules have moved past it? Surface any findings as part of the read-state phase — name the item, name the trigger, narrate per Dependency ownership. The user decides whether to act now or hold; no silent edits.
+
 Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.)
 
 **If the user has something:** Handle it using the Step 2 loop — present, interview, recommend, wait, execute. Then: "Anything else, or ready for Captures?" Repeat until ready.
@@ -60,7 +62,10 @@ If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a 
 ## Step 3: Batch structure
 
 ```markdown
-**Batch title**
+**Batch title** **[batch-slug]**
+Depends on: [other-slug], [other-slug]
+Blocks: [other-slug]
+
 [Prose rationale — one or more sentences. What motivated this work, what's broken or missing, what changes once it lands.]
 
 Build:
@@ -74,7 +79,7 @@ Audit:
 - Criteria: what to look for (repetition, drift, tag misuse, prose-where-tag-belongs, etc.)
 ```
 
-Bold title, prose rationale directly under it, entries under Build, Test, and/or Audit subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
+Bold title with a stable kebab-case slug appended as a `**[slug]**` marker, then optional `Depends on:` / `Blocks:` header lines (omit either when empty — no `Depends on: none` placeholders), then the prose rationale, then entries under Build, Test, and/or Audit subheadings. See plugin-behaviour.md Dependency ownership for the slug and header rules. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 
 **Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what can Claude verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
 
@@ -88,7 +93,7 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 **Audit batch sizing gate:** for audit batches specifically, the readiness check is whether the target and criteria are specific enough that Claude can write the audit prompt without further dialogue. If the target is vague ("the procedure docs") or the criteria are open-ended ("anything off"), keep interviewing until both pin down.
 
-**Ordering:** Dependencies first, then scaffolding, features, polish. Claude determines ordering and reports placement.
+**Ordering:** Claude places by dependency where applicable — dependencies first, then scaffolding, features, polish. Oldest-first is the fallback when no dependency applies (per plugin-behaviour.md Captures placement). Either way, Claude reports placement and the reasoning per Dependency ownership narration — including the explicit "appending here because no dependency applies" case.
 
 ## Step 4: Close out [BRIEF, PROMPT]
 
