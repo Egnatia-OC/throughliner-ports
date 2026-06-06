@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Scan for downstream revision before recommending promote on structural captures
+## [HASH] — Add between-captures checkpoint to plan.md Step 2
+
+plan.md Step 2 sequenced captures back-to-back with no checkpoint between them — the "anything else?" interview check sat *within* a capture but not *between* them, so any mid-sequence intent (wrap up, surface a new capture, close out before the end) forced the user to interrupt the presentation. The fix adds sub-step 5 as a Checkpoint after each capture is routed: three uniform-phrased options every time — continue to the next capture, close out (jump to Step 4), or share something else (loop back into Step 2 with the new item). On the last capture, option 1 drops out naturally without needing different wording — the same pattern Step 1's entry question uses. Codifies behaviour Claude was already inferring this session.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: added Step 2 sub-step 5 (Checkpoint) with [PROMPT] tag.
+
+**Routed to Captures:** none
+
+## f15e8e8 — Scan for downstream revision before recommending promote on structural captures
 
 /plan Step 2's Recommend step had no procedural check for downstream revision exposure before recommending a capture be promoted. The session that triggered this fix promoted an "affirmative batch-definition" capture as structural, then absorbed three queued captures later when the /audit capture pivoted to "audit as batch type" — the conflict was visible at original promote time but no step asked the question. The fix adds a downstream-impact scan to the Promote bullet, sitting alongside the concrete-outputs requirement from the adjacent batch. Trigger is rule shape rather than edit size: a capture installing a *structural* rule (defines what something is, frames how other captures get evaluated) gets the scan; a localized fix doesn't. When the scan surfaces a conflict, Claude flags it at recommend time, names the conflict, and offers three options — process the downstream capture first, hold this one, or proceed accepting the possible later revision. The two requirements compose: concrete-outputs forces the recommendation to be specific enough to be approved knowingly; the downstream-impact scan forces it to be specific enough to *check* against other captures.
 

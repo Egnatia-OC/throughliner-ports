@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Scan for downstream revision before recommending promote on structural captures
+- [HASH] — Add between-captures checkpoint to plan.md Step 2
+- f15e8e8 — Scan for downstream revision before recommending promote on structural captures
 - 533fc85 — Require concrete work-product in /plan promote recommendations
 - ee15451 — Audit becomes a third batch type with its own /next procedure
 - 4c9ee70 — Define index-entry shape and reframe sizing as a single readiness gate

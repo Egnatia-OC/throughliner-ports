@@ -7,13 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Add between-captures checkpoint with three options to plan.md Step 2**
-
-plan.md Step 2 sequences captures back-to-back with no checkpoint between dispositions, which forces the user to interrupt mid-presentation if they want to wrap the session, surface a new capture, or close out before reaching the end. The checkpoint already exists *within* a capture (the "anything else?" at the end of the interview), but not *between* them. Fix: after each capture is fully disposed and removed from Captures, Claude offers three options — continue to next capture, close out (jump to Step 4), or share something else (loop back into Step 2 with the new item). Same wording every time; on the last capture, "continue to next" naturally drops out and the offer collapses to two options without needing a separate last-capture form. Mirrors the entry-question pattern from Step 1. Codifies behaviour Claude was already inferring this session.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 2: after sub-step 4 (remove the item from Captures), add a between-captures checkpoint as a sub-step. Three options offered every time — (1) continue to next capture, (2) close out (go to Step 4), (3) share something else (loop back into Step 2 with the new item). Wait for the user's call. On the last capture the "continue to next" option naturally drops out — no special-case wording needed. Apply uniform phrasing every time the checkpoint fires.
-
 **Tighten Why-pipeline preserve and retrieve rules**
 plugin-behaviour.md's Why-pipeline section already covers preserving rationale as prose and retrieving it from LOG when a user asks why-questions. Two gaps blunt the rule. Preserve doesn't call out the common collapse-shapes (one-line summaries, dedicated why-fields, typed taxonomies) that look reasonable to a future doc or skill designer but lose meaning silently — without naming them, the same mistake gets remade. Retrieve doesn't mention LOG/index.md — so a why-search reads the full log files when the one-line-per-entry index would point to candidates first, faster and more accurately. Both edits serve the same end: when the user asks "why is the app like this?", the answer needs to exist as preserved prose AND be findable.
 

@@ -49,6 +49,8 @@ For each item:
 
 4. Remove the item from Captures once routed.
 
+5. **Checkpoint** [PROMPT] — Offer three options every time, in uniform phrasing: (1) continue to the next capture, (2) close out now (go to Step 4), (3) share something else (loop back into Step 2 with the new item). Wait for the user's call. On the last capture, option 1 drops out naturally — the offer collapses to two options without needing different wording.
+
 After all items: Captures should be empty (section header and `### Parked` intact).
 
 New items from conversation follow the same loop — check QUEUE.md for overlap first.
