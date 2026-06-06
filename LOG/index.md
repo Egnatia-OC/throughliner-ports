@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Add spectrum-options bullet to plugin-behaviour.md Communication
+- [HASH] — Add testing-thinking step to plan.md Step 3 batch authoring
+- d1e9b5f — Add spectrum-options bullet to plugin-behaviour.md Communication
 - 43c6da8 — Reframe research-volunteering as face-saving in plugin-behaviour.md
 - 16fb410 — /plan session: 6 batches promoted, reconcile batch expanded with annotation+slugs pillar
 - 93b73a5 — /plan session: 4 batches promoted including audit-as-batch-type pivot; 1 capture dropped after sanity check

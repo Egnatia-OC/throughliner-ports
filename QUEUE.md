@@ -7,12 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Add testing-thinking step to plan.md Step 3 batch authoring**
-plan.md Step 3 shows Build + Test subheadings in the template but never instructs Claude to actively think about what testing the batch would need at the moment of drafting. The omission lets Test sections get skipped silently when they shouldn't, or get authored thinly because the thinking happened as an afterthought rather than as part of authoring. The fix adds the thinking explicitly: when drafting a batch, work through what verification the change needs, split Claude-runnable (read files, run commands, trace logic, inspect output) from user-runnable (visual, physical, subjective, separate live session), and populate the Test section accordingly — or proceed without one when the change is self-verifying from the build entries. The thinking happens in the drafter's head; whether to *narrate* the no-test decision is governed separately by the adjacent [SILENT] batch.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 3: add a sub-step or instruction (positioned before the Test section description) telling Claude to actively think through what testing the batch would need when drafting. Split Claude-runnable from user-runnable explicitly so the question doesn't collapse into "does it need a test or not." Either populates the Test section or proceeds without one — the decision-to-omit gets made consciously rather than by inattention. Pairs with the adjacent [SILENT] tag batch which controls how the no-test decision narrates.
-
 **Tag the no-test-section decision as [SILENT]**
 When /plan drafts a batch without a Test section, the absence currently gets narrated ("No Test section because the change is verifiable..."). That narration is noise — the user wrote the rationale and knows what kind of change it is. The existing tag system covers this case; using `[SILENT]` rather than prose keeps the procedure doc consistent with how output behaviour is described elsewhere.
 

@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Add spectrum-options bullet to plugin-behaviour.md Communication
+## [HASH] — Add testing-thinking step to plan.md Step 3 batch authoring
+
+plan.md Step 3 showed Build + Test subheadings in the template but never instructed Claude to actively think about what testing the batch would need at the moment of drafting. That omission let Test sections get skipped silently when they shouldn't, or get authored thinly because the thinking happened as an afterthought rather than as part of authoring. The fix adds the thinking explicitly, before the Test section paragraph: when drafting a batch, work through what verification the change needs, split Claude-runnable (read files, run commands, trace logic, inspect output) from user-runnable (visual, physical, subjective, separate live session), and populate the Test section with what falls out — or proceed without one when the change is self-verifying from the build entries. Either way the decision to omit gets made consciously, not by inattention. The split that used to live inside the Test section paragraph (Claude-vs-user split) was trimmed to a cross-reference since it's now the substance of the new thinking step. Pairs with the queued [SILENT] batch which governs how the no-test decision narrates rather than how it's reached.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: added "Think through testing when drafting" paragraph before the Test section paragraph; trimmed redundant Claude-vs-user split sentence from the Test section paragraph
+
+**Routed to Captures:** none
+
+## d1e9b5f — Add spectrum-options bullet to plugin-behaviour.md Communication
 
 When Claude offers the user choices it surfaces a bounded list — deliberately, because exhaustive listings overload — but the side effect is the user only steers among what Claude chose to show. Arranging visible options along an axis (easy → hard, minimal → exhaustive) and signalling that more options exist off one or both ends gives the user steering room without bloating the list. The new bullet codifies the shape and splits it by altitude: component-level choices (one file, one bullet, one wording) use a single spectrum; choices that shape a whole feature, skill, or area use two or three axes laid out as a small table. The trigger for which altitude is the scope of the decision, not edit size. Extending a spectrum is a research moment — when the user asks to push past the ends or add an axis, or when Claude is about to extend beyond what it confidently knows even unprompted, Claude offers a web search per the Research section landed in the prior batch. The cross-reference makes the spectrum hook one concrete trigger for the broader research-volunteering behaviour, not a parallel mechanism. Bullet placed between the sequencing bullet (which shapes multi-part responses) and the verbatim-copy bullet (which shapes string presentation) since all three govern how Claude shapes user-facing output.
 

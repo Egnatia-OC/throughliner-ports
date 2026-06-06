@@ -67,9 +67,11 @@ If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a 
 
 Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 
+**Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what can Claude verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
+
 **Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here.
 
-Split test entries by who runs them. Claude verifies through code: read files, run commands, inspect output, trace logic. Only tests requiring real human interaction (visual, physical, subjective, separate live session) need the user. Write each so /next knows which kind.
+Split test entries by who runs them, per the thinking above. Write each so /next knows which kind.
 
 **E2E tests get their own batch.** User-run E2E tests (separate project, live session) don't go in build batches — they'd block the build flow.
 
