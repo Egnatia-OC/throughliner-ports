@@ -7,16 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Sweep all `/clear` and `/compact` references from skill and procedure docs** **[sweep-clear-compact]**
-Depends on: push-in-commit, fix-clear-before-done
-
-The two prior batches (**[push-in-commit]** and **[fix-clear-before-done]**) remove every known `/clear` site in skill close-outs. This batch is the safety sweep behind them: confirm nothing survives. `/compact` gets swept on the same pass — the principle is the same. When to clear or compact is a user judgment call about session continuity, not a procedural step Claude should issue routinely; surfacing it as close-out boilerframe trains both Claude and the user to treat it as default behaviour when in practice it depends on what's coming next. Skill and procedure docs should not nudge either way.
-
-Build:
-- Grep `plugin/si-plugin/` for `/clear` and `/compact`. For each hit in a skill doc (skills/*) or procedure doc (docs/*.md), remove the reference — close-out sentences, reminder lines, "run /clear before X" guidance.
-- Hits in plugin-behaviour.md get reviewed case-by-case. Per the capture's reasoning, even a single principle-level statement there counts as a routine nudge; default is to remove unless there's a specific reason to keep.
-- After edits, re-grep to confirm no `/clear` or `/compact` references survive in skill or procedure docs.
-
 **Sweep "disposition" jargon from plugin/si-plugin/** **[sweep-disposition-jargon]**
 
 Alex flagged she has trouble parsing "disposition" herself — external non-coders will too. The term currently appears in procedure docs as the label for the promote/park/drop choice, and leaks through into user-facing chat during /plan Step 2 ("Disposition?"). The audience anchor in CLAUDE.md already rules out the user-facing leak, but the term should go from the procedure docs as well — the docs read more clearly with plain phrasing, and there's no internal-vs-external split worth maintaining. One vocabulary across docs and chat.

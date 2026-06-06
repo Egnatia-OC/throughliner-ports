@@ -171,7 +171,7 @@ Progress:
 
 5. **Route approved findings to Captures** — For each "capture" disposition, draft the capture wording in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md's Progress section as `captured` or `dropped`.
 
-6. **Close** [BRIEF, PROMPT] — When all findings are disposed, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing. Run `/clear` first to keep context clean." /done writes the LOG entry (audits get a normal entry — the "files touched" line names the target docs that were read, and the routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
+6. **Close** [BRIEF, PROMPT] — When all findings are disposed, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing." /done writes the LOG entry (audits get a normal entry — the "files touched" line names the target docs that were read, and the routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
 
 ## Rules
 

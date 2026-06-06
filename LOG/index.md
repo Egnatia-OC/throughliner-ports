@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — next.md Step 7 and plan.md Step 4 close-outs: dropped misplaced "Run `/clear` first" sentence — clearing before /done would strip the conversation /done reads
+- [HASH] — setup.md and next.md (audit close-out): swept stray "Run `/clear` first" sentences — safety net behind the prior two `/clear` batches; `/compact` had no hits
+- dfdc113 — next.md Step 7 and plan.md Step 4 close-outs: dropped misplaced "Run `/clear` first" sentence — clearing before /done would strip the conversation /done reads
 - 710e56e — CLAUDE.md push-and-rezip + session-start: stage every dirty path in plugin/si-plugin/ at push; warn on uncommitted target tree at session start
 - 215f431 — done.md Plan close-out Step 1 Recap: dropped "Questions resolved" bullet (OPEN-QUESTIONS leftover from V47); rest of Plan close-out swept, no other removed-concept fields surfaced
 - 8c2e2fc — done.md Build close-out Phase 3 and Plan close-out Step 4: added overlap-scan against top batch, continuation ask, and conditional reorder offer

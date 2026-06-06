@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Drop misplaced "Run `/clear` first" sentence from next.md and plan.md close-outs
+## [HASH] — Sweep stray `/clear` references from setup.md and next.md close-outs
+
+Safety sweep behind the prior two batches (push-in-commit and fix-clear-before-done). Grep across plugin/si-plugin/ for `/clear` and `/compact` turned up two surviving close-out sentences — setup.md's final "Run /plan or /next" sign-off and next.md's audit close-out (Step 6) — both still trailing the misplaced "Run `/clear` first to keep context clean." advice the prior batches had cleared from the more visible close-outs. Reasoning: when to clear or compact is a user judgment about session continuity, not a procedural nudge skill docs should issue routinely. plugin-behaviour.md had zero hits so the case-by-case review there was a no-op. Re-grep confirmed nothing survives in skill or procedure docs. `/compact` had no hits anywhere.
+
+**Files touched:**
+- plugin/si-plugin/docs/setup.md: Step "After all 5 answers" sub-step 4 — dropped trailing "Run `/clear` first to keep context clean." sentence
+- plugin/si-plugin/docs/next.md: Step 6 audit close-out — dropped trailing "Run `/clear` first to keep context clean." sentence
+
+**Routed to Captures:** none
+
+## dfdc113 — Drop misplaced "Run `/clear` first" sentence from next.md and plan.md close-outs
 
 next.md Step 7 and plan.md Step 4 both told the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" placed /clear before /done, but /done reads the conversation to write a faithful LOG entry — clearing first would strip exactly what /done draws on. The /clear advice already lives correctly at the end of /done itself, where it recommends clearing before the next skill. Fix was a one-sentence drop in each of the two close-outs; the /done offer stays, and the correctly-placed advice at the tail of /done continues to carry the guidance. This batch removes two specific sites; the queued sweep-clear-compact batch is the safety net behind it.
 
