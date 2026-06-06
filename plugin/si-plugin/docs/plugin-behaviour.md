@@ -62,9 +62,19 @@ Rationale is prose. Carry it forward; don't collapse it into a structured "why" 
 
 **Preserve.** A reason originates in a capture and travels capture → batch → log as prose. At each stage Claude re-authors the prose to fit context and shows the wording to the user for approval before writing. The reasons live inline in the entry text — there is no dedicated why-field at any stage.
 
-**Retrieve.** When asked why something exists or why a decision was made, search `LOG/log.md` and `LOG/log-v*.md` first. Only fall back to inferring from code if the log has nothing relevant.
+**Retrieve.** When asked why something exists or why a decision was made, search `LOG/log.md` and `LOG/log-v*.md` first. Only fall back to inferring from code if the log has nothing relevant. `LOG/index.md` is the entry point — its shape is governed by the Index entries section below.
 
-## Scope discipline
+## Index entries
+
+`LOG/index.md` is Claude-facing, not user-facing. It exists so that a why-pipeline retrieve can decide which log entry to open without reading every entry's full prose. Terseness for human scannability is not the criterion — specificity for that open/skip decision is.
+
+Each entry must contain:
+- **The artifact touched** — which file, doc, section, rule, or area was changed.
+- **The nature of the change** — what kind of change it was (added, removed, renamed, reframed, tightened, etc.) and enough of the substance that the retrieve decision can be made without opening the full log entry.
+
+No absolute length cap. Length follows from the content requirement — typically one line, sometimes two for sessions that ran multiple threads. An entry that's too short to support the open/skip decision fails the rule even if it's one line; an entry that's two lines because the session genuinely covered two threads passes.
+
+This shape doubles as the batch readiness gate in /plan: if the candidate index entry can't be written yet because the batch isn't specific enough, the batch isn't ready — keep interviewing. /next pre-generates the candidate entry at batch-confirm time so it's reusable at close; /done writes it (or re-authors it if scope shifted during the build).
 
 - Route to artifacts, not memory. If it belongs in SPEC.md, QUEUE.md, REGISTRY.md, or LOG/, write it there.
 - Doc routing: SPEC.md = what/who/how/why the product exists. QUEUE.md = what to work on next. REGISTRY.md = what components exist. LOG/ = what happened.

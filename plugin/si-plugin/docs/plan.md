@@ -77,9 +77,7 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 **E2E tests get their own batch.** User-run E2E tests (separate project, live session) don't go in build batches — they'd block the build flow.
 
-**Sizing gates** (per batch):
-- *Specificity:* every entry names a concrete output. "Add validation to utils.py", not "improve error handling."
-- *Verification burden:* more than 5 things to test → split.
+**Readiness gate** (per batch): can you write the candidate index entry now — artifact touched + nature of the change, per plugin-behaviour.md Index entries? If yes, the batch is ready and the entry can be pre-generated for /next to carry into _build.md. If no, the batch isn't coherent enough yet — keep interviewing.
 
 **Ordering:** Dependencies first, then scaffolding, features, polish. Claude determines ordering and reports placement.
 

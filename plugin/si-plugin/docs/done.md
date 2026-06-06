@@ -57,11 +57,13 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash — backf
 
 Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
 
-Prepend to `LOG/index.md` after the header:
+Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries:
 
 ```
-- [HASH] — [one-line summary]
+- [HASH] — [index entry]
 ```
+
+If _build.md contains an `Index entry candidate:` line and the build ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
 
 #### 2.2 Staleness sweep
 
@@ -126,10 +128,10 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash):
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header.
 
-Prepend to `LOG/index.md`:
+Prepend to `LOG/index.md`, per plugin-behaviour.md Index entries:
 
 ```
-- [HASH] — [one-line summary]
+- [HASH] — [index entry]
 ```
 
 ### 3. Git commit [BRIEF, PROMPT]

@@ -2,7 +2,19 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Standardise approval-time outputs as fenced blocks across procedure docs
+## [HASH] — Define index-entry shape and reframe sizing as a single readiness gate
+
+LOG/index.md is Claude-facing — it exists so a why-pipeline retrieve can decide which entry to open without reading every entry's full prose. The old "~one line" framing in the LOG conventions was a proxy for human scannability that didn't match how the index is actually used. The new rule in plugin-behaviour.md states what an index entry must contain — artifact touched and the nature of the change, with enough substance to make the open/skip call — and explicitly drops any absolute length cap. Length follows from the content requirement: usually one line, sometimes two for multi-thread sessions. The same definition does double duty as the batch readiness gate in plan.md: if you can't write the candidate index entry yet, the batch isn't specific enough — keep interviewing. That collapses Step 3's two sizing gates (specificity bullet + 5-test verification-burden rule) into one. /next now pre-generates the candidate at lock-scope time and stores it in _build.md alongside the batch entry, so /done can reuse it verbatim when the build ran as planned and re-author against the same rule when scope shifted. The 5-test rule and its echo in next.md's sizing-principle paragraph are both gone — sizing now keys to coherence, not test count.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: added "Index entries" section after Why-pipeline; Why-pipeline > Retrieve cross-references it
+- plugin/si-plugin/docs/plan.md: Step 3 sizing gates rewritten as single readiness gate, verification-burden bullet dropped
+- plugin/si-plugin/docs/next.md: Step 2 sub-step 1 added (pre-generate candidate index entry); _build.md template gained `Index entry candidate:` line; Step 4 sizing-principle paragraph dropped
+- plugin/si-plugin/docs/done.md: Build close-out 2.1 + Plan close-out 2 — index line references Index entries rule; Build close-out 2.1 reuses _build.md's pre-generated candidate when scope matches
+
+**Routed to Captures:** none
+
+## a0c6a63 — Standardise approval-time outputs as fenced blocks across procedure docs
 
 Approval-time outputs (batch drafts, capture wordings, proposed file content, recommendations, commit messages) were getting inconsistent visual treatment across plan.md / next.md / done.md — sometimes fenced, sometimes 4-space indented, sometimes inline prose. The shipped verbatim-copy rule already governed paste-target strings, but didn't cover approval outputs that aren't copy targets (a batch draft is read, not pasted). The fix names the rule once in plugin-behaviour.md Communication and sweeps the procedure sites that didn't already comply. done.md was already correct via the LOG-entry templates and verbatim-copy commit-message instructions, so it was left as-is per the batch instruction. The two rules now compose: a commit message is both verbatim-copy and approval-time, satisfied by one fenced block.
 

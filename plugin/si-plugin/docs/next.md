@@ -26,11 +26,15 @@ Before starting:
 
 Once the user confirms:
 
-1. **Create _build.md** with this structure:
+1. **Pre-generate the candidate index entry** from the batch title and rationale, per plugin-behaviour.md Index entries (artifact touched + nature of change). This is the same shape /done will write to LOG/index.md at close — pre-generating it here makes it reusable instead of regenerated. If the build runs as planned, /done reuses it verbatim; if scope shifts during the build, /done re-authors against the same rule.
+
+2. **Create _build.md** with this structure:
 ```markdown
 # Active Build
 
 Entry: [copy the batch title and all entry text]
+
+Index entry candidate: [the pre-generated entry from sub-step 1]
 
 Progress:
 [empty — ticked as entries complete]
@@ -39,7 +43,7 @@ Changes:
 [empty — accumulated as entries complete]
 ```
 
-2. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done Step 2.3 deletes _build.md after the build closes.
+3. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done Step 2.3 deletes _build.md after the build closes.
 
 For test entries, the Progress section uses pass/fail format instead of entry ticking:
 ```
@@ -113,8 +117,6 @@ If Claude discovers during the build that additional work is needed:
 
 - **Minor addition** (one more file, small prerequisite): ask to add, continue if approved.
 - **Significant growth** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
-
-The sizing principle: right size = verification burden, not line count. A batch that touches 2 files but produces 15 things to test is too big. A batch that touches 8 files but has 3 observable behaviours is fine.
 
 ## Step 5: Mid-build course-correction [DISCUSS, PROMPT]
 
