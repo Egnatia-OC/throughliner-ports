@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /next batch presentation slimmed to title + gist + entry counts
+- [HASH] — /plan session: 3 batches promoted (research reframe, spectrum options, index-entry shape), 2 captures added
+- bc9b8e2 — /next batch presentation slimmed to title + gist + entry counts
 - 1a74685 — /plan: parked 2 stuck audit captures under new /audit skill dependency; 6 new captures from session
 - e5d3ca4 — Plugin-behaviour spine re-anchored at skill invocation with authoritative framing
 - 11c81a2 — /plan session: process 3 captures, promote behaviour-rules restructuring batch
