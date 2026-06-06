@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Audit becomes a third batch type with its own /next procedure
+- [HASH] — Require concrete work-product in /plan promote recommendations
+- ee15451 — Audit becomes a third batch type with its own /next procedure
 - 4c9ee70 — Define index-entry shape and reframe sizing as a single readiness gate
 - a0c6a63 — Standardise approval-time outputs as fenced blocks across procedure docs
 - cd574a8 — Tag the no-test-section decision as [SILENT] in plan.md Step 3

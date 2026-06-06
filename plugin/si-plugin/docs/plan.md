@@ -37,7 +37,7 @@ For each item:
 1. **Present and interview** [DISCUSS, PROMPT] — Show the item, engage with its substance. Ask follow-ups to sharpen it or surface missing context. Depth scales with the item. Continue until the picture is clear. Close: "anything else to add?"
 
 2. **Recommend** [PROMPT] — Recommend one disposition and say why:
-   - **Promote** — ready to become a batch
+   - **Promote** — ready to become a batch. The recommendation must describe what would actually get built, in terms the user can recognize as the work product (which files change, what subsection or rule, what gets added/removed/rewritten — not just the topic or intent). Forcing function: if sub-step 1's interview hasn't yielded enough to describe the outputs concretely, the recommendation isn't ready — return to interviewing.
    - **Park** — not now, keep for later
    - **Drop** — remove it
    Stop and wait. The user decides.
