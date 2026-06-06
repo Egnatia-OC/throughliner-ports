@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan session: 3 batches promoted (research reframe, spectrum options, index-entry shape), 2 captures added
+## [HASH] — Verbatim-copy strings get fenced blocks; commit title + body share one approval
+
+The desktop app's Ctrl+C copies the whole assistant message, so a string is only cleanly copyable when it sits alone in its own fenced block. The plugin-behaviour rule now states that explicitly and covers the full set of cases — commit messages, commit bodies, paste-ready prompts, shell commands the user runs elsewhere — so the same shape applies wherever a copy-need surfaces, not just /done's commit step. Done.md's commit steps (Build 2.4 and Plan 3) were splitting commit title and body across two approval turns, which was redundant ceremony once the fenced-block rule exists: both halves are now presented as adjacent fenced blocks in one message and approved together. The rule lives in plugin-behaviour.md (one place), and the done.md steps cross-reference it rather than restating the why.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: added Communication bullet for verbatim-copy strings
+- plugin/si-plugin/docs/done.md Section 2.4 (Build close-out commit): combined title + body into single approval, cross-referenced the new rule
+- plugin/si-plugin/docs/done.md Section 3 (Plan close-out commit): same change
+
+**Routed to Captures:** none
+
+## fecdf76 — /plan session: 3 batches promoted (research reframe, spectrum options, index-entry shape), 2 captures added
 
 Three captures became batches this session, each landing in plugin-behaviour.md territory. The research-volunteering reframe addresses Claude's reluctance to offer research because the offer reads to itself as admitting a knowledge gap — the new section frames the offer as face-saving rather than face-losing, with a wide trigger (any time extra background would meaningfully inform the work) since offering is cheap and the user always filters. The spectrum-options batch fixes the bounded-list shape that lets users only steer among what Claude chose to show — visible options get arranged along a spectrum with off-the-ends extensions hinted, altitude-scaled (single spectrum for component-level, 2-3 axes tabular for whole-feature decisions), with a research-extension hook bound to the broader research rule. The index-entry batch fused two captures: the question of length limits on LOG index entries, and the parked coherence-test reframe. Both resolved to the same underlying rule — the index is Claude-facing, what an entry needs is artifact + nature of change with enough specificity for why-pipeline retrieve to decide whether to open the log entry. Length follows from that. The coherence test becomes "can you write the index entry now?" — when yes, the batch is ready, and the entry can be pre-generated in /next and reused by /done. Two new captures came out of the session: inconsistent visual treatment of output types Claude produces (batch drafts, recommendations, commit messages) across plan.md/next.md/done.md, and a rule that Claude's dependency-management ownership should be narrated rather than silent so the user perceives the value.
 

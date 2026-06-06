@@ -78,7 +78,7 @@ Unlocks future builds. Only after everything above is complete.
 
 1. Stage files from _build.md Changes plus method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
 2. Never `git add -A` or `git add .`.
-3. Draft commit message. Present for approval.
+3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask for a single approval covering both.
 4. Wait for okay, then commit.
 
 The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
@@ -136,7 +136,7 @@ Prepend to `LOG/index.md`:
 
 1. Stage only changed method docs (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
 2. Never `git add -A` or `git add .`.
-3. Draft commit message. Present for approval.
+3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask for a single approval covering both.
 4. Wait for okay, then commit.
 
 The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.

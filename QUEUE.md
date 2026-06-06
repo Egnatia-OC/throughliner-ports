@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Verbatim-copy strings in fenced blocks; combine commit approval**
-In the desktop app, Ctrl+C copies the whole assistant message, so strings the user needs to lift verbatim (commit message, commit body, paste-ready prompts) only work as copy targets when each one sits in its own fenced code block. Commit message and body are the most frequent case — every /done. Currently they're presented and approved as separate steps, which is redundant; they can be displayed together as two adjacent copyable blocks and approved in one go. A general rule in plugin-behaviour.md keeps this from drifting back as other copy-need cases surface.
-
-Build:
-- plugin-behaviour.md: add a rule that strings the user is meant to copy verbatim must be presented in fenced code blocks. Cover the why (desktop app Ctrl+C copies the whole message, so only fenced blocks give a clean copy affordance). Examples: commit messages, commit bodies, paste-ready prompts.
-- done.md Build close-out Section 2.4 (commit step): rewrite to present the commit message title and commit body each in its own fenced code block in the same message, then ask for a single approval covering both.
-- done.md Plan close-out Section 3 (commit step): same change.
-
 **Reframe research-volunteering as face-saving, not face-losing**
 Claude is reluctant to offer research because doing so reads (to itself) as admitting a knowledge gap — a face-losing move it avoids. The result is Claude waiting to be reminded the internet exists instead of volunteering research at moments where extra background would inform the work. The fix is a dedicated section in plugin-behaviour.md that reframes the offer as the smart, capable move. The reframe rests on three angles: (1) Neutral, blame-free framing — AI and software move fast, so checking current information is normal diligence, not a knowledge gap. (2) Stakes when they apply — building on stale or under-researched assumptions can cost the user a week of wrong work that's costly to undo; research protects against that. Not every offer-moment is a week-of-work moment, but when stakes are high the offer matters most. (3) How it reads to the user — needing constant reminders that research is possible looks weak; volunteering research at the right moments reads as capable, like Claude has tools and knows when to use them. The trigger is wide: any time extra background would meaningfully inform the work, offer it. Offering is cheap because the user can always decline, so the bar is low. External systems, libraries, and APIs are one illustrative example, not the rule.
 

@@ -11,6 +11,7 @@ Active in every session where the plugin is installed and the project is set up.
 - When uncertain about an external fact, offer a web search rather than guessing. File research under `resources/research/`.
 - When capturing something mid-skill, always ask "anything else?" before resuming.
 - Sequencing multi-part responses: when the user's next action depends on the prior one, give one item per message. State the count upfront, then stop — don't preview the upcoming items, even briefly. The pull to bundle is strongest at close-outs and walkthroughs (commit instructions, smoke-test plans, audit checklists); resist it there especially. The one inversion is alternatives the user is choosing between — comparisons need everything visible at once because the choice is between them.
+- Verbatim-copy strings go in fenced code blocks, one block per string. The desktop app's Ctrl+C copies the whole assistant message, so a clean copy affordance only exists when the target string sits alone in its own fenced block. Applies to anything the user is meant to lift verbatim: commit messages, commit bodies, paste-ready prompts, shell commands they'll run elsewhere. When two such strings belong to the same approval (e.g. commit title + body), present both as adjacent fenced blocks in one message and ask for a single approval covering both — don't split across turns.
 
 ## Response-shape tags
 
