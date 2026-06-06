@@ -77,12 +77,12 @@ Quick check of QUEUE.md against plugin-behaviour.md Dependency ownership Stalene
 
 Unlocks future builds. Only after everything above is complete.
 
-#### 2.4 Git commit [BRIEF, PROMPT]
+#### 2.4 Git commit and push [BRIEF, PROMPT]
 
 1. Stage files from _build.md Changes plus method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md deletion).
 2. Never `git add -A` or `git add .`.
-3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask for a single approval covering both.
-4. Wait for okay, then commit.
+3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
+4. Wait for okay, then commit — and push if the user chose to push.
 
 The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
 
@@ -93,14 +93,6 @@ Based on queue state:
 2. Parked items unblocked by this session's work (per plugin-behaviour.md Dependency ownership Unpark watch) → recommend /plan, name the unpark candidate(s).
 3. More batches → "Next up is [batch]. Run /next or /plan when ready."
 4. Batches empty → "Queue is clear. Run /plan when you have more."
-
-This is its own turn — wait for the user to acknowledge before moving to Phase 4. Knowing what's queued shapes whether they want to push now.
-
-### Phase 4: Push and context [BRIEF, PROMPT]
-
-"Push to remote? (yes / not yet)"
-
-Either way, run `/clear` before the next skill.
 
 ---
 
@@ -136,12 +128,12 @@ Prepend to `LOG/index.md`, per plugin-behaviour.md Index entries:
 - [HASH] — [index entry]
 ```
 
-### 3. Git commit [BRIEF, PROMPT]
+### 3. Git commit and push [BRIEF, PROMPT]
 
 1. Stage only changed method docs (QUEUE.md, SPEC.md, REGISTRY.md, LOG/).
 2. Never `git add -A` or `git add .`.
-3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask for a single approval covering both.
-4. Wait for okay, then commit.
+3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
+4. Wait for okay, then commit — and push if the user chose to push.
 
 The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
 
@@ -151,14 +143,6 @@ Based on queue state:
 - Parked items unblocked by this session's planning work (per plugin-behaviour.md Dependency ownership Unpark watch) → mention the unpark candidate(s) as part of the recommendation.
 - Batches exist: "Next up is [batch]. Run /next when ready."
 - Batches empty: "Queue is clear. Run /plan when you have more."
-
-This is its own turn — wait for the user to acknowledge before moving to Step 5. Knowing what's queued shapes whether they want to push now.
-
-### 5. Push and context [BRIEF, PROMPT]
-
-"Push to remote? (yes / not yet)"
-
-Either way, run `/clear` before the next skill.
 
 ---
 

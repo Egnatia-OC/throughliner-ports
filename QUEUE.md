@@ -7,19 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Fold push offer into commit step; delete Push and context phase** **[push-in-commit]**
-Blocks: recommend-next-overlap, sweep-clear-compact
-
-done.md's Build close-out Phase 4 ("Push to remote? (yes / not yet)") gets routinely skipped — Phase 3 reads as a natural close (recap-style sentence + recommendation), so once it lands the procedure feels finished and Phase 4 falls off the end. The fix isn't to harden Phase 4's sequencing; it's to move the push offer earlier, to the commit step where the user is already making a "what happens to this work now" decision. Combined offer becomes "commit and push, or just commit?" — push is never gated on guessing user intent, the user always gets to choose. Phase 4 then deletes entirely, and Phase 3 becomes the genuine close (no false ending). Plan close-out gets the same change in parallel — Step 5 deletes (which subsumes the separate capture about Step 5 not belonging at all), Step 3 becomes the combined commit+push offer. The `/clear` line currently in Phase 4 / Step 5 disappears as a side effect of the deletions.
-
-Build:
-- plugin/si-plugin/docs/done.md Phase 2.4 (Build close-out Git commit): rename to "Git commit and push". Rewrite sub-step 3 so the draft-and-approval covers commit message *and* a "commit and push, or just commit?" choice in the same approval moment. Sub-step 4 executes whichever the user chose.
-- plugin/si-plugin/docs/done.md Phase 3 (Build close-out Recommend next): drop the tail sentence "This is its own turn — wait for the user to acknowledge before moving to Phase 4. Knowing what's queued shapes whether they want to push now." Phase 3 is now the genuine close.
-- plugin/si-plugin/docs/done.md Phase 4 (Build close-out Push and context): delete entirely.
-- plugin/si-plugin/docs/done.md Plan close-out Step 3 (Git commit): same change as Phase 2.4 — rename to "Git commit and push", rewrite for combined commit+push approval.
-- plugin/si-plugin/docs/done.md Plan close-out Step 4 (Recommend next): drop the tail sentence about waiting before Step 5.
-- plugin/si-plugin/docs/done.md Plan close-out Step 5 (Push and context): delete entirely.
-
 **done.md recommend-next: capture-overlap scan + continuation ask + reorder offer** **[recommend-next-overlap]**
 Depends on: push-in-commit
 
