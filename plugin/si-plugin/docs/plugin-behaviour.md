@@ -89,6 +89,7 @@ This shape doubles as the batch readiness gate in /plan: if the candidate index 
 ## Dependency ownership
 
 - Claude owns sequencing — ordering, dependencies, what happens first. Don't defer to the user.
+- When Claude spots an ordering issue — a capture or batch that belongs elsewhere based on dependencies — the obligation is to offer to reorder the queue, not just name the dependency verbally. Captures and batches both have order: moving a capture changes /plan's processing order; moving a batch changes /next's pick order. Both are valid reorders and both are Claude's to offer.
 - The user owns scope — what enters the queue, what gets parked/dropped, whether to proceed. Don't proceed past a disposition choice without their say.
 
 ## File safety

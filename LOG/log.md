@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Tighten Why-pipeline preserve and retrieve rules
+## [HASH] — Add reorder-offering rule to plugin-behaviour.md Dependency ownership
+
+Dependency ownership already named Claude as the owner of sequencing, but the rule stopped at ownership without naming the action it requires. In practice that left a gap where Claude could spot an ordering issue, narrate the dependency, and stop — ownership in name only. The added bullet closes the gap: when an ordering issue is spotted (a capture or batch belongs elsewhere based on dependencies), the obligation is to offer to reorder the queue, not just name the dependency verbally. Captures and batches both have order — a capture moved up changes /plan's processing order, a batch moved up changes /next's pick order — and both are valid reorders for Claude to offer. The rule lives in plugin-behaviour.md so /plan and /done both inherit it without restating; /next routes reorder intent back to /plan per Step 5.1.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: added one bullet to Dependency ownership covering the offer-to-reorder obligation and that captures and batches are both valid reorder targets.
+
+**Routed to Captures:** none
+
+## 2055d97 — Tighten Why-pipeline preserve and retrieve rules
 
 plugin-behaviour.md's Why-pipeline section already preserved rationale as prose and pointed retrievals at LOG, but two gaps blunted the rules. Preserve named the abstract failure mode ("don't collapse into a structured why-field") without naming the concrete collapse-shapes a future doc or skill designer would actually reach for — one-line summaries, dedicated why-fields, typed taxonomies — so the same mistake stayed easy to remake. The expansion calls each shape out by name with the failure mode woven in as inline prose: a one-line summary truncates the reasoning chain to a label; a dedicated why-field breaks the inline carry the pipeline depends on and trains empty-field habits; a typed taxonomy is never complete and forces nuance into the closest pre-defined slot. The rule modelling what it asks for — prose-with-why, not a labelled field — is itself part of the lesson. Retrieve previously pointed at log.md and log-v*.md as the first read, with index.md mentioned only as "the entry point"; the new shape makes index.md the actual first search since its one-line-per-entry summaries point to candidate entries faster and more accurately than scanning full prose, then full rationale opens from the matched entries. Prior decisions inherits the change through its existing cross-reference.
 

@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Tighten Why-pipeline preserve to name three collapse-shapes and retrieve to start at LOG/index.md
+- [HASH] — plugin-behaviour.md Dependency ownership: added rule that Claude offers to reorder the queue (capture or batch) when an ordering issue is spotted, not just naming it
+- 2055d97 — Tighten Why-pipeline preserve to name three collapse-shapes and retrieve to start at LOG/index.md
 - 6fd7fed — Add between-captures checkpoint to plan.md Step 2
 - f15e8e8 — Scan for downstream revision before recommending promote on structural captures
 - 533fc85 — Require concrete work-product in /plan promote recommendations
