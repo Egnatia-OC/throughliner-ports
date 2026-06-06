@@ -7,12 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Tag the no-test-section decision as [SILENT]**
-When /plan drafts a batch without a Test section, the absence currently gets narrated ("No Test section because the change is verifiable..."). That narration is noise — the user wrote the rationale and knows what kind of change it is. The existing tag system covers this case; using `[SILENT]` rather than prose keeps the procedure doc consistent with how output behaviour is described elsewhere.
-
-Build:
-- plan.md Step 3 Test section: tag the omission case as `[SILENT]` so the decision to skip a test section doesn't get narrated to the user. Use the tag, not a prose substitute.
-
 **Standardise output-type visual treatment across plan.md / next.md / done.md**
 Output types Claude produces during skills (batch drafts shown for approval, recommendations, proposed capture wordings, commit messages, proposed file contents) currently get inconsistent visual treatment — sometimes fenced, sometimes inline markdown, sometimes prose with `---` rails. Within a single session this turn drafted two batch entries one way and a third differently. Inconsistency makes it harder for the user to spot "this is the literal proposed content of an artifact" versus "this is Claude talking about the work." Fix: name the rule once in plugin-behaviour.md (approval-time outputs go in a fenced code block, so the visual signal is uniform), then sweep the three skill procedure docs and standardise. Distinct from the shipped verbatim-copy rule — that one is about Ctrl+C affordance for strings the user pastes elsewhere; this one is about output-type signalling at approval moments, even when the content isn't a copy target.
 

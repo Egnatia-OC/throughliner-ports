@@ -69,7 +69,7 @@ Bold title, prose rationale directly under it, entries under Build and Test subh
 
 **Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what can Claude verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
 
-**Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here.
+**Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here. [SILENT] when omitting: don't narrate the absence of a Test section. The rationale already tells the user what kind of change it is.
 
 Split test entries by who runs them, per the thinking above. Write each so /next knows which kind.
 

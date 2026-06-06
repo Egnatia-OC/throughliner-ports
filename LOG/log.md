@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Add testing-thinking step to plan.md Step 3 batch authoring
+## [HASH] — Tag the no-test-section decision as [SILENT] in plan.md Step 3
+
+plan.md Step 3's Test section paragraph said when to include a Test section but not how to handle the omission case in output. That gap let Claude narrate the absence ("No Test section because the change is verifiable...") as if announcing the decision were part of the procedure. The user already wrote the rationale and knows what kind of change it is — the narration is noise. The tag system covers exactly this kind of output-behaviour rule, so the fix is one tag in the right spot rather than a prose substitute. Pairs with the parked output-tag overhaul audit, which would catch this same prose-where-tag-belongs pattern across the broader procedure docs once promoted.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: appended `[SILENT] when omitting...` clause to the Test section paragraph
+
+**Routed to Captures:** none
+
+## 3661578 — Add testing-thinking step to plan.md Step 3 batch authoring
 
 plan.md Step 3 showed Build + Test subheadings in the template but never instructed Claude to actively think about what testing the batch would need at the moment of drafting. That omission let Test sections get skipped silently when they shouldn't, or get authored thinly because the thinking happened as an afterthought rather than as part of authoring. The fix adds the thinking explicitly, before the Test section paragraph: when drafting a batch, work through what verification the change needs, split Claude-runnable (read files, run commands, trace logic, inspect output) from user-runnable (visual, physical, subjective, separate live session), and populate the Test section with what falls out — or proceed without one when the change is self-verifying from the build entries. Either way the decision to omit gets made consciously, not by inattention. The split that used to live inside the Test section paragraph (Claude-vs-user split) was trimmed to a cross-reference since it's now the substance of the new thinking step. Pairs with the queued [SILENT] batch which governs how the no-test decision narrates rather than how it's reached.
 
