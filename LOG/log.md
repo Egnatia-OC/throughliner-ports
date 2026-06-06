@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Narrow next.md Step 4 add-to-scope to a coherence exception
+## [HASH] — Expand next.md Step 5 "abort and requeue" from a phrase to a procedure
+
+Step 5's "Abort and requeue" option was one line — "close what's done via /done and route the rest back to QUEUE.md for replanning" — which left every concrete question of the abort mechanism unanswered: is _build.md deleted, does the batch return as-was, what happens to captures from the attempt, where does the abort land in the LOG. Because the mechanics were unclear, abort became a path Claude avoided, which meant salvage attempts got pushed past their useful point. The replacement is a 3-step procedure inlined under the bullet: (1) return the batch text to QUEUE.md with placement per plugin-behaviour.md Dependency ownership — original position or top depending on what was learned; (2) captures from the attempt route as normal under Step 4 rules; (3) the user runs /done — _build.md stays in place so /done's mode detection still fires Build close-out, and the only differences from a completed build are that the LOG entry's "what was built" describes the attempt and why it was aborted rather than describing a completion, and the batch returns to QUEUE.md rather than disappearing into the log. The Build close-out shape is reused deliberately so no /done changes are needed — the variant behaviour lives entirely in the LOG entry content and the QUEUE.md re-insertion, both decided at next.md time.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 5 "Abort and requeue" bullet expanded to 3-step inline procedure
+
+**Routed to Captures:** none
+
+## d7745ff — Narrow next.md Step 4 add-to-scope to a coherence exception
 
 next.md Step 4's "Adding to scope instead" paragraph framed mid-/next folding as a user-convenience workaround — confirm with the user, then add the raised item to _build.md as a new entry. The framing was load-bearing on whether the user wanted it in, not on whether the item belonged in the same change, which let out-of-scope ideas leak into the active build's commit and log entry and pollute what should be one coherent change. The replacement keys the exception to why-pipeline coherence: the default (route to Captures) already lives in sub-steps 1–3; the new "Coherence exception" paragraph fires only when the raised item would share the build's log entry and index line per plugin-behaviour.md Index entries and folding it in makes the batch easier to find later rather than harder. Evaluation is against the coherence rules, not user convenience, with "when uncertain, capture" as the tiebreaker. The Index entries cross-reference does the work of stating the criteria once — the paragraph stays short because Index entries already defines what "shares an index line" means.
 

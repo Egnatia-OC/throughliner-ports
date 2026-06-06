@@ -133,7 +133,10 @@ If something goes wrong during the build — an assumption turns out to be false
 2. **State the problem plainly.** What you expected, what actually happened, why the current approach won't work.
 3. **Propose a path forward:**
    - **Adjust scope:** drop an entry, add a prerequisite, change the approach. Update _build.md to match.
-   - **Abort and requeue:** if the whole batch is unsalvageable, close what's done via /done and route the rest back to QUEUE.md for replanning.
+   - **Abort and requeue:** if the whole batch is unsalvageable. Procedure:
+     1. Return the batch text to QUEUE.md under Batches. Placement is Claude's call per plugin-behaviour.md Dependency ownership — original position or top, depending on what makes sense given what was learned.
+     2. Route any captures surfaced during the attempt to Captures as normal (Step 4 rules apply unchanged).
+     3. Tell the user to run /done. _build.md stays in place so /done's mode detection still fires Build close-out — see done.md. The only differences from a completed build: the LOG entry's "what was built" describes the attempt and why it was aborted (not a completion), and the batch returns to QUEUE.md rather than disappearing into the log.
 4. **Wait for the user's call.** Don't pick a path without confirmation.
 
 ## Step 6: Context management

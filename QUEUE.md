@@ -7,13 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Document next.md build-abort mechanics** **[build-abort-mechanics]**
-
-next.md Step 5 mentions "abort and requeue" as one course-correction option but never spells out what that means mechanically. The gap leaves Claude to improvise: is _build.md deleted? Does the batch return to QUEUE.md as-was, or with progress notes? What happens to captures surfaced during the aborted attempt? Where does the abort land in the LOG? Without an answer, abort becomes a path Claude avoids because the mechanics are unclear, which means salvage-attempts get pushed past their useful point. Fix: define the abort procedure inline at Step 5 — delete _build.md, return the batch to QUEUE.md (at its original position or top, Claude's call per Dependency ownership), route any captures surfaced during the attempt as normal, and write a LOG entry capturing what was attempted and why it was aborted so the reasoning carries forward. The abort entry uses the normal Build close-out shape but the "what was built" content describes the attempt rather than a completion.
-
-Build:
-- plugin/si-plugin/docs/next.md Step 5: expand the "abort and requeue" option from a phrase to a small procedure. Specify (1) delete _build.md, (2) return batch to QUEUE.md (placement per Dependency ownership), (3) route any captures surfaced during the attempt to Captures as normal, (4) write a LOG entry describing the attempt and why it was aborted (uses the normal Build close-out shape, "what was built" describes the attempt). Cross-reference done.md so the user invokes /done normally — /done's mode detection still sees _build.md exists, runs Build close-out, the only difference is the LOG entry content and that the batch returns to QUEUE.md rather than getting completed.
-
 **Rewrite next.md Step 7 "keep adjusting" close-out language** **[keep-adjusting-rewrite]**
 
 next.md Step 7's close-out invites the user to "keep adjusting" alongside the /done offer. The phrase is doing useful work — sometimes a build needs a small within-scope tightening pass before /done — but it reads as permission for ad-hoc mid-build ideation, which is exactly what plugin-behaviour.md Scope discipline rules out. The fix narrows the language: adjustments are for tightening within-scope work that's already in _build.md, not for raising new in-scope or out-of-scope items (those route through Captures or Step 4 respectively, both already covered). Small wording change, but it removes a quiet contradiction with the broader scope-discipline rules.
