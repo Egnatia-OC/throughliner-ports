@@ -7,7 +7,8 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 ## Ground rules
 
 - Never build during /plan. Want to write code? Queue it.
-- Never queue thinking work as a batch. Audits, reviews, reconciliations/drift checks, and design exploration are planning work — their output is decisions, not changed files. Test: if the main work is figuring something out rather than executing on a decision, it's planning work. Run it inside /plan; it spawns batches as output.
+- Batches are build work, test work, or audit work, in any combination. Nothing else.
+- Never queue thinking work as a *build* batch. Reviews, reconciliations/drift checks, and design exploration are planning work — their output is decisions, not changed files. Run them inside /plan; they spawn batches as output. Audit work (systematic read of target docs against fixed criteria) is the one exception — it can become an audit batch whose output routes through Captures, preserving the no-direct-edits property that motivated the rule. Test: if the main work is figuring something out rather than executing on a decision or doing a systematic read, it's planning work.
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue contradictions.
 - Process accumulated captures before new planning work.
@@ -65,9 +66,13 @@ Build:
 
 Test:
 - How to verify
+
+Audit:
+- Target: which docs, files, or area to review
+- Criteria: what to look for (repetition, drift, tag misuse, prose-where-tag-belongs, etc.)
 ```
 
-Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
+Bold title, prose rationale directly under it, entries under Build, Test, and/or Audit subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 
 **Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what can Claude verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
 
@@ -78,6 +83,8 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 **E2E tests get their own batch.** User-run E2E tests (separate project, live session) don't go in build batches — they'd block the build flow.
 
 **Readiness gate** (per batch): can you write the candidate index entry now — artifact touched + nature of the change, per plugin-behaviour.md Index entries? If yes, the batch is ready and the entry can be pre-generated for /next to carry into _build.md. If no, the batch isn't coherent enough yet — keep interviewing.
+
+**Audit batch sizing gate:** for audit batches specifically, the readiness check is whether the target and criteria are specific enough that Claude can write the audit prompt without further dialogue. If the target is vague ("the procedure docs") or the criteria are open-ended ("anything off"), keep interviewing until both pin down.
 
 **Ordering:** Dependencies first, then scaffolding, features, polish. Claude determines ordering and reports placement.
 

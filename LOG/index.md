@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Define index-entry shape and reframe sizing as a single readiness gate
+- [HASH] — Audit becomes a third batch type with its own /next procedure
+- 4c9ee70 — Define index-entry shape and reframe sizing as a single readiness gate
 - a0c6a63 — Standardise approval-time outputs as fenced blocks across procedure docs
 - cd574a8 — Tag the no-test-section decision as [SILENT] in plan.md Step 3
 - 3661578 — Add testing-thinking step to plan.md Step 3 batch authoring

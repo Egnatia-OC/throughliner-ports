@@ -19,8 +19,13 @@ Before starting:
    - Are there unconfirmed tests from a previous build? → Surface them. The user can confirm, skip, or defer.
 
 5. **If no blockers:** Present the batch to the user: [BRIEF, PROMPT]
-   - Batch title, a one-line gist synthesized from the rationale, and entry counts (build / test). Don't re-render the full entry text — the user just wrote it in QUEUE.md and can open it anytime; the full text moves into _build.md once they confirm.
+   - Batch title, a one-line gist synthesized from the rationale, and entry counts (build / test / audit). Don't re-render the full entry text — the user just wrote it in QUEUE.md and can open it anytime; the full text moves into _build.md once they confirm.
    - "Ready?" — if the user wants to change scope or reorder, route to /plan
+
+6. **Branch on batch type:** After the user confirms, route by the subheadings present in the batch:
+   - **Build batches** (Build subheading, optionally with Test) → continue to Step 2 below.
+   - **Test-only batches** (Test subheading, no Build) → continue to Step 2 below; Step 3 handles test entries as verification work.
+   - **Audit batches** (Audit subheading) → jump to the **Audit procedure** section at the end of this doc. Audit batches don't edit files; their close shape is different.
 
 ## Step 2: Lock scope [SILENT]
 
@@ -144,6 +149,27 @@ When all entries are ticked:
 3. Say: "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean."
 
 Do NOT delete _build.md yourself. That's /done's job.
+
+## Audit procedure
+
+For audit batches only. Reached from Step 1.6 when the batch carries an Audit subheading. The shape audits actually need is read-many-propose-many — systematic read of the target, then disposition of findings one at a time. No file edits land directly; everything routes through Captures so /plan can convert findings into normal batches with the usual dialogue.
+
+1. **Lock scope** [SILENT] — Create _build.md the same way Step 2 does (entry text + pre-generated index entry candidate), and remove the batch from QUEUE.md. The Progress section tracks findings rather than file edits:
+```
+Progress:
+- [x] Finding description — captured
+- [x] Finding description — dropped
+```
+
+2. **Read the target systematically against the criteria** [SILENT] — Open every file named by the target. Apply the criteria pass by pass — one criterion across the whole target, then the next, rather than mixing criteria per file. Don't skim; the value of an audit is reading what's actually there. Accumulate observations in _build.md's Changes section as you go, with file:line references so the user can verify each one.
+
+3. **Compile findings** [SILENT] — Once the read is complete, group the observations into discrete findings. One finding per actionable change. Phrase each as what was observed + why it matters — the same shape a capture takes, since that's where findings will land.
+
+4. **Present findings one at a time** [SEQUENCE, PROMPT] — State the count upfront ("N findings. First: ..."). For each finding: show the observation, the file:line reference, and why it matters. Wait for the user's call — **capture** or **drop**. Don't preview upcoming findings.
+
+5. **Route approved findings to Captures** — For each "capture" disposition, draft the capture wording in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md's Progress section as `captured` or `dropped`.
+
+6. **Close** [BRIEF, PROMPT] — When all findings are disposed, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing. Run `/clear` first to keep context clean." /done writes the LOG entry (audits get a normal entry — the "files touched" line names the target docs that were read, and the routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
 
 ## Rules
 
