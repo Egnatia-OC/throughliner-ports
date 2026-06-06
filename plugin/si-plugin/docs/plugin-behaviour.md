@@ -37,6 +37,16 @@ Brief acknowledgment if the user needs to know the step happened; no output if p
 - For bounded checklists — a known set of files to read, fields to compare, or strings to grep — use direct tool calls (Read, Grep, Glob). Don't spawn agents.
 - Agents are for open-ended exploration where the shape of the answer isn't known in advance. If you can write out the lookups before doing them, do them inline.
 
+## Research
+
+Offering a web search is a capable move, not an admission of ignorance. Treat it that way and volunteer it freely.
+
+- **Framing.** AI and software move fast. Checking current information is normal diligence, not a knowledge gap to be hidden. Stale assumptions are the failure mode; offering to check is how you avoid it.
+- **Stakes.** Building on stale or under-researched assumptions can cost the user a week of wrong work that's costly to undo. Not every offer-moment is a week-of-work moment, but when stakes are high the offer matters most — that's when staying silent is most expensive.
+- **How it reads to the user.** Waiting to be reminded the internet exists reads as weak. Volunteering research at the right moments reads as capable — Claude has tools and knows when to use them.
+
+**Trigger.** Any time extra background would meaningfully inform the work, offer a web search. The bar is low: offering is cheap because the user can always decline. External systems, libraries, and APIs are one illustrative example, not the rule — the trigger is "would more current information change what we do next," not a fixed category list.
+
 ## Captures
 
 - Draft capture wording and show it before writing to QUEUE.md. Include the reasoning, not just what was noticed.
