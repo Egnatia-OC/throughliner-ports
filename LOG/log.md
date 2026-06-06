@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Require concrete work-product in /plan promote recommendations
+## [HASH] — Scan for downstream revision before recommending promote on structural captures
+
+/plan Step 2's Recommend step had no procedural check for downstream revision exposure before recommending a capture be promoted. The session that triggered this fix promoted an "affirmative batch-definition" capture as structural, then absorbed three queued captures later when the /audit capture pivoted to "audit as batch type" — the conflict was visible at original promote time but no step asked the question. The fix adds a downstream-impact scan to the Promote bullet, sitting alongside the concrete-outputs requirement from the adjacent batch. Trigger is rule shape rather than edit size: a capture installing a *structural* rule (defines what something is, frames how other captures get evaluated) gets the scan; a localized fix doesn't. When the scan surfaces a conflict, Claude flags it at recommend time, names the conflict, and offers three options — process the downstream capture first, hold this one, or proceed accepting the possible later revision. The two requirements compose: concrete-outputs forces the recommendation to be specific enough to be approved knowingly; the downstream-impact scan forces it to be specific enough to *check* against other captures.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: Step 2 sub-step 2 Promote bullet — appended a "Downstream-impact scan" clause keyed to structural-rule shape.
+
+**Routed to Captures:** none
+
+## 533fc85 — Require concrete work-product in /plan promote recommendations
 
 /plan Step 2 sub-step 2 used to recommend promote/park/drop before the batch entry was drafted, which meant the user could approve "promote" without seeing what would actually get built. This session's promote bridged the gap by naming concrete outputs organically — but style isn't a guarantee, and a different model could recommend promote in abstract terms, leaving the user to approve blind. The fix is structural: the Promote bullet now requires the recommendation to describe what would actually get built in user-recognizable work-product terms (which files, what subsection or rule, what gets added/removed/rewritten — not just the topic or intent). Paired with a forcing-function clause that closes the recursive case — if sub-step 1's interview hasn't yielded enough to describe outputs concretely, the recommendation isn't ready, and Claude returns to interviewing rather than recommending. Park and Drop bullets unchanged. The lead-in's "Recommend one disposition" phrasing was deliberately left alone — the queued "disposition" jargon sweep is the right place for it, and folding the change in here would have polluted this batch's commit and LOG entry.
 
