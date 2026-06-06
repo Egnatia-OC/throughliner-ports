@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Fold push offer into commit step; delete standalone Push and context phase
+## [HASH] — done.md recommend-next: overlap scan, continuation ask, reorder offer
+
+done.md's two recommend-next sections (Build close-out Phase 3, Plan close-out Step 4) were collapsing to "Run /next when ready" whenever batches existed, regardless of whether unprocessed captures in the queue contradicted, invalidated, or would benefit the top batch. That shape deferred sequencing to the user — exactly the case Dependency ownership says Claude should own. Three additions tighten the close-out symmetrically across both modes: (1) an upfront overlap scan of unprocessed Captures against the top batch, mirroring next.md Step 1.4's blocker-gate, with /plan recommended if anything hits; (2) when the recommendation lands on /next, an explicit continuation ask, since back-to-back /next runs are the common pattern and the close-out is the right moment to surface it; (3) when continuing and a reorder applies, an offer to reorder the queue first so the next /next picks the right item — leaning on the general reorder-offering rule already in plugin-behaviour.md.
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: Build close-out Phase 3 prepended with overlap-scan paragraph, "More batches" branch rewritten to name the batch then ask about continuation with conditional reorder offer. Plan close-out Step 4 got the same shape — overlap scan up front, "Batches exist" branch with continuation ask and conditional reorder offer.
+
+**Routed to Captures:** none
+
+## 620c1b0 — Fold push offer into commit step; delete standalone Push and context phase
 
 done.md's Build close-out Phase 4 and Plan close-out Step 5 were both routinely skipped — by the time Phase 3 / Step 4 delivered the recap-plus-recommendation, the procedure read as finished and the trailing push prompt fell off the end. Hardening the sequencing wouldn't fix the false ending; the fix is to move the push offer earlier, into the commit step where the user is already deciding what happens to the work. The commit step now asks "Commit and push, or just commit?" in the same approval moment as the commit message, so push is never gated on guessing user intent — they always get to choose, and the choice lives where it's a natural part of the close. Phase 4 and Step 5 then delete entirely, and Phase 3 / Step 4 become the genuine close (no tail sentence priming the user to wait for "what's next"). The two `/clear` reminders sitting in the deleted sections disappear as a side effect — that nudge belongs to the broader sweep-clear-compact batch, but this build removes two of its sites for free.
 

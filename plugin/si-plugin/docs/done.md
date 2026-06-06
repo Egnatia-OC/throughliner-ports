@@ -88,10 +88,12 @@ The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next se
 
 ### Phase 3: Recommend next [BRIEF, PROMPT]
 
-Based on queue state:
-1. Captures routed that affect next batch → recommend /plan, name the blocker.
+Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors next.md Step 1.4). If any are found, recommend /plan first and name the overlap.
+
+Otherwise, based on queue state:
+1. Captures routed this session that affect the next batch → recommend /plan, name the blocker.
 2. Parked items unblocked by this session's work (per plugin-behaviour.md Dependency ownership Unpark watch) → recommend /plan, name the unpark candidate(s).
-3. More batches → "Next up is [batch]. Run /next or /plan when ready."
+3. More batches → name the next batch, then ask whether the user is continuing into another /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
 4. Batches empty → "Queue is clear. Run /plan when you have more."
 
 ---
@@ -139,9 +141,11 @@ The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next se
 
 ### 4. Recommend next [BRIEF, PROMPT]
 
-Based on queue state:
+Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors next.md Step 1.4). If any are found, recommend /plan first and name the overlap.
+
+Otherwise, based on queue state:
 - Parked items unblocked by this session's planning work (per plugin-behaviour.md Dependency ownership Unpark watch) → mention the unpark candidate(s) as part of the recommendation.
-- Batches exist: "Next up is [batch]. Run /next when ready."
+- Batches exist: name the next batch, then ask whether the user is continuing into a /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
 - Batches empty: "Queue is clear. Run /plan when you have more."
 
 ---

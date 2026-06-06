@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — done.md: folded push offer into Build and Plan close-out commit steps; deleted standalone Push and context phase (Phase 4 / Step 5)
+- [HASH] — done.md Build close-out Phase 3 and Plan close-out Step 4: added overlap-scan against top batch, continuation ask, and conditional reorder offer
+- 620c1b0 — done.md: folded push offer into Build and Plan close-out commit steps; deleted standalone Push and context phase (Phase 4 / Step 5)
 - 6c32bba — plugin-behaviour.md / plan.md / next.md / done.md: reconciled queue placement (Claude-directed with oldest-first fallback), added Unpark + Staleness watches and an ordering-narration rule, introduced batch slugs and Depends on/Blocks headers; backfilled across QUEUE.md
 - ac461c4 — plugin-behaviour.md Dependency ownership: added rule that Claude offers to reorder the queue (capture or batch) when an ordering issue is spotted, not just naming it
 - 2055d97 — Tighten Why-pipeline preserve to name three collapse-shapes and retrieve to start at LOG/index.md

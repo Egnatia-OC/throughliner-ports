@@ -7,15 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**done.md recommend-next: capture-overlap scan + continuation ask + reorder offer** **[recommend-next-overlap]**
-Depends on: push-in-commit
-
-done.md's Plan close-out Step 4 and Build close-out Phase 3 currently hard-code "Run /next when ready" whenever batches exist, with no branch for dependency-aware recommendations. That shape silently encourages deferring to the user — the recommendation collapses to /next regardless of unprocessed captures sitting in the queue or how they relate to the top batch. Three additions tighten the close-out: (1) before recommending, mirror next.md Step 1.4's blocker-gate scan — check Captures for items relevant to the top batch (contradict, invalidate, or would benefit) and recommend /plan first if any are found, naming the overlap; (2) ask whether the user is continuing into another /next now, since cranking through batches back-to-back (remote control or similar) makes the next /next imminent; (3) when continuing and a reorder is applicable, offer to reorder the queue now so the next /next picks the right item. The reorder offer follows the general rule added to plugin-behaviour.md Dependency ownership.
-
-Build:
-- plugin/si-plugin/docs/done.md Plan close-out Step 4 (Recommend next): before the recommendation, scan unprocessed captures for overlap with the top batch — mirror next.md Step 1.4 (contradict / invalidate / would benefit). If overlap exists, recommend /plan first and name the overlap. Then ask whether the user is continuing into another /next now; if yes and a reorder is applicable, offer to reorder per plugin-behaviour.md Dependency ownership.
-- plugin/si-plugin/docs/done.md Build close-out Phase 3 (Recommend next): same change.
-
 **Sweep done.md Plan close-out for removed-concept leftovers** **[sweep-removed-concepts]**
 
 done.md Plan close-out Step 1 (Recap) still lists "Questions resolved" as a bullet type — leftover from when OPEN-QUESTIONS existed as a tracked concept. That concept was removed but the recap field wasn't swept. Small fix on its own, but worth doing as a sweep — drift checks were also removed during the V47 OQ-promotion era, and any other Plan close-out field referencing concepts that no longer exist should go on the same pass. Stale field names in a recap template train Claude to fabricate content to fill them.
