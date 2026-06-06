@@ -42,7 +42,7 @@ For each item:
    Stop and wait. The user decides.
 
 3. **Execute the disposition:**
-   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in plugin-behaviour.md. Show in full. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
+   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in plugin-behaviour.md. Show the draft in a fenced code block, per the approval-time outputs rule in plugin-behaviour.md. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
    - **Park** — Move to Parked.
    - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.
 
@@ -56,14 +56,16 @@ If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a 
 
 ## Step 3: Batch structure
 
-    **Batch title**
-    [Prose rationale — one or more sentences. What motivated this work, what's broken or missing, what changes once it lands.]
+```markdown
+**Batch title**
+[Prose rationale — one or more sentences. What motivated this work, what's broken or missing, what changes once it lands.]
 
-    Build:
-    - What to build
+Build:
+- What to build
 
-    Test:
-    - How to verify
+Test:
+- How to verify
+```
 
 Bold title, prose rationale directly under it, entries under Build and Test subheadings. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward through the pipeline — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 

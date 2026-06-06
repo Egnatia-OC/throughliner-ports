@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Tag the no-test-section decision as [SILENT] in plan.md Step 3
+- [HASH] — Standardise approval-time outputs as fenced blocks across procedure docs
+- cd574a8 — Tag the no-test-section decision as [SILENT] in plan.md Step 3
 - 3661578 — Add testing-thinking step to plan.md Step 3 batch authoring
 - d1e9b5f — Add spectrum-options bullet to plugin-behaviour.md Communication
 - 43c6da8 — Reframe research-volunteering as face-saving in plugin-behaviour.md

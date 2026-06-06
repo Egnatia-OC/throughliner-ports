@@ -101,7 +101,7 @@ Changes:
 
 When the user brings up something that isn't part of the current batch:
 
-1. Route it to Captures in QUEUE.md.
+1. Route it to Captures in QUEUE.md. Draft the wording first and show it in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs).
 2. Ask "anything else?" — repeat until the user says no.
 3. Resume the build.
 

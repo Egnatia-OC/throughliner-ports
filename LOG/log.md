@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Tag the no-test-section decision as [SILENT] in plan.md Step 3
+## [HASH] — Standardise approval-time outputs as fenced blocks across procedure docs
+
+Approval-time outputs (batch drafts, capture wordings, proposed file content, recommendations, commit messages) were getting inconsistent visual treatment across plan.md / next.md / done.md — sometimes fenced, sometimes 4-space indented, sometimes inline prose. The shipped verbatim-copy rule already governed paste-target strings, but didn't cover approval outputs that aren't copy targets (a batch draft is read, not pasted). The fix names the rule once in plugin-behaviour.md Communication and sweeps the procedure sites that didn't already comply. done.md was already correct via the LOG-entry templates and verbatim-copy commit-message instructions, so it was left as-is per the batch instruction. The two rules now compose: a commit message is both verbatim-copy and approval-time, satisfied by one fenced block.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: added "Approval-time outputs go in a fenced code block" bullet to Communication, with cross-reference distinguishing it from verbatim-copy
+- plugin/si-plugin/docs/plan.md: Step 2.3 Promote — explicit fenced-block instruction for batch drafts; Step 3 batch template — converted from 4-space indent to fenced markdown block
+- plugin/si-plugin/docs/next.md: Step 4 Captures routing — explicit fenced-block instruction for capture wording
+
+**Routed to Captures:** none
+
+## cd574a8 — Tag the no-test-section decision as [SILENT] in plan.md Step 3
 
 plan.md Step 3's Test section paragraph said when to include a Test section but not how to handle the omission case in output. That gap let Claude narrate the absence ("No Test section because the change is verifiable...") as if announcing the decision were part of the procedure. The user already wrote the rationale and knows what kind of change it is — the narration is noise. The tag system covers exactly this kind of output-behaviour rule, so the fix is one tag in the right spot rather than a prose substitute. Pairs with the parked output-tag overhaul audit, which would catch this same prose-where-tag-belongs pattern across the broader procedure docs once promoted.
 
