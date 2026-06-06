@@ -70,6 +70,10 @@ No code method/
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
+## Session-start dirty-tree check
+
+At session start, if no `_build.md` is present in the project root, run `git status --porcelain plugin/si-plugin/`. If non-empty, warn Alex that the target tree has uncommitted state and list the dirty paths — these may be orphaned sweep edits from a prior push, and a new /next would otherwise layer build edits on top of them.
+
 ## Push-and-rezip (automatic)
 
 When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
@@ -95,7 +99,7 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 5. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
 6. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
 7. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`).
-8. Stage the zip, archive changes, and plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
+8. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 2), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
 9. `git push`.
 10. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 

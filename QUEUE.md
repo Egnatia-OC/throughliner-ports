@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Stage sweep edits at push; warn on dirty plugin tree at session start** **[stage-sweep-dirty-warn]**
-
-push-and-rezip step 8 stages a fixed list (zip, archive, plugin.json, LOG/) that doesn't include whatever the pre-push sweep modified. Sweep edits — prose tightening in plugin/si-plugin/ to keep templates and skill docs aligned with the procedure changes being pushed — fall out of the commit and sit orphaned in the working tree across sessions. The next /next can then layer build edits on top of orphaned sweep changes, mixing unrelated work into one commit. Two complementary fixes addressing the two failure modes: at push, stage every dirty path in plugin/si-plugin/ rather than a named list (catches sweep edits automatically); at session start, when no build is in progress, warn if plugin/si-plugin/ has uncommitted state (catches existing orphans before a new build layers on top). Both edits land in this project's CLAUDE.md — the push-and-rezip workflow lives there, not in the shipped plugin.
-
-Build:
-- CLAUDE.md push-and-rezip step 8: replace the fixed stage list ("zip, archive changes, plugin.json, LOG/ changes") with an instruction to stage every dirty path in `plugin/si-plugin/` (via `git status --porcelain plugin/si-plugin/`) plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, and LOG/ changes. Sweep edits get caught automatically.
-- CLAUDE.md (this project's, root): add a session-start dirty-tree check. When a session starts with no `_build.md` present in the project root, run `git status --porcelain plugin/si-plugin/` and warn the user if non-empty, listing the dirty paths. Surfaces orphaned sweep edits before /next layers build changes on top.
-
 **Fix /clear-before-/done close-out order** **[fix-clear-before-done]**
 Blocks: sweep-clear-compact
 

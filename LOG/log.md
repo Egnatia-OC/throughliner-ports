@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Sweep "Questions resolved" leftover from done.md Plan close-out Step 1 Recap
+## [HASH] — Stage sweep edits at push; warn on dirty plugin tree at session start
+
+push-and-rezip step 8 used to stage a fixed list (zip, archive, plugin.json, LOG/), which didn't include whatever the pre-push Pass-B sweep modified in plugin/si-plugin/. Sweep edits — prose tightening to keep templates and skill docs aligned with the procedure changes being pushed — fell out of the commit and sat orphaned in the working tree across sessions. The next /next would then layer unrelated build edits on top, mixing concerns into one commit. Two complementary edits to this project's CLAUDE.md close both halves: at push, step 8 now stages every dirty path under plugin/si-plugin/ via `git status --porcelain plugin/si-plugin/` (alongside the zip, archive, plugin.json, and LOG/), so sweep edits are caught automatically going forward; at session start, a new dirty-tree check runs the same porcelain command when no _build.md is present and warns Alex if non-empty, surfacing any orphans from prior pushes before a new build layers on top. Both edits land in CLAUDE.md rather than the shipped plugin because the push-and-rezip workflow is self-hosting infrastructure, not consumer behaviour.
+
+**Files touched:**
+- CLAUDE.md: push-and-rezip step 8 stage list replaced with `git status --porcelain plugin/si-plugin/`-driven staging; new "Session-start dirty-tree check" section added between Working conventions and Push-and-rezip.
+
+**Routed to Captures:** none
+
+## 215f431 — Sweep "Questions resolved" leftover from done.md Plan close-out Step 1 Recap
 
 done.md's Plan close-out Step 1 Recap still listed "Questions resolved" as one of the bullet types to populate — a leftover from when OPEN-QUESTIONS existed as a tracked concept and got promoted out during the V47 era. The field name outlived the concept, and stale recap field names train Claude to fabricate content to fill them (a recap with "Questions resolved" as a named bullet pressures the next /done to produce something for that slot even when no questions were resolved, because empty named fields read as omissions rather than as inapplicable). The bullet got dropped. The batch was authored as a sweep rather than a single-bullet edit because drift checks also got removed in the V47-era cleanup and other recap or close-out fields could be carrying the same shape of staleness — but the sweep walked Plan close-out Steps 1–4 plus the LOG-entry template and every remaining field maps to a current concept (Batches, Captures, Spec changes, Queue changes, Parked, unpark watch), so the build collapsed to the one bullet removal.
 
