@@ -7,13 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Tighten Why-pipeline preserve and retrieve rules**
-plugin-behaviour.md's Why-pipeline section already covers preserving rationale as prose and retrieving it from LOG when a user asks why-questions. Two gaps blunt the rule. Preserve doesn't call out the common collapse-shapes (one-line summaries, dedicated why-fields, typed taxonomies) that look reasonable to a future doc or skill designer but lose meaning silently — without naming them, the same mistake gets remade. Retrieve doesn't mention LOG/index.md — so a why-search reads the full log files when the one-line-per-entry index would point to candidates first, faster and more accurately. Both edits serve the same end: when the user asks "why is the app like this?", the answer needs to exist as preserved prose AND be findable.
-
-Build:
-- plugin-behaviour.md Why-pipeline > Preserve: expand the existing rule to explicitly name the three collapse-shapes — one-line summaries, dedicated why-fields, typed taxonomies (e.g. "UX reason / functionality reason"). The expansion must include its own why woven in as inline prose (not a labelled field) so the rule models what it asks for: each shape loses meaning differently — a line truncates the reasoning behind a decision; a taxonomy is never complete and forces nuance into the closest pre-defined slot.
-- plugin-behaviour.md Why-pipeline > Retrieve: update the search instruction to use LOG/index.md first (the one-line-per-entry summary) to find candidate entries, then read the full prose in LOG/log.md or LOG/log-v*.md. The Prior decisions section already references this rule and inherits the change.
-
 **Add reorder-offering to plugin-behaviour.md Dependency ownership**
 plugin-behaviour.md already states "Claude owns sequencing — ordering, dependencies, what happens first." That ownership is hollow if Claude only narrates an ordering issue verbally instead of acting on it. When Claude spots that a capture or batch belongs elsewhere based on dependencies, the obligation is to offer to reorder the queue, not just name the dependency. Captures have order too: moving a capture up changes /plan's processing order; moving a batch up changes /next's pick order — both are valid reorderings and both Claude's call to offer. The rule applies wherever sequencing judgment gets exercised — /plan and /done are the natural homes since /next routes reorder intent back to /plan (next.md Step 5.1).
 

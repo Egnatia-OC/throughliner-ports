@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Add between-captures checkpoint to plan.md Step 2
+## [HASH] — Tighten Why-pipeline preserve and retrieve rules
+
+plugin-behaviour.md's Why-pipeline section already preserved rationale as prose and pointed retrievals at LOG, but two gaps blunted the rules. Preserve named the abstract failure mode ("don't collapse into a structured why-field") without naming the concrete collapse-shapes a future doc or skill designer would actually reach for — one-line summaries, dedicated why-fields, typed taxonomies — so the same mistake stayed easy to remake. The expansion calls each shape out by name with the failure mode woven in as inline prose: a one-line summary truncates the reasoning chain to a label; a dedicated why-field breaks the inline carry the pipeline depends on and trains empty-field habits; a typed taxonomy is never complete and forces nuance into the closest pre-defined slot. The rule modelling what it asks for — prose-with-why, not a labelled field — is itself part of the lesson. Retrieve previously pointed at log.md and log-v*.md as the first read, with index.md mentioned only as "the entry point"; the new shape makes index.md the actual first search since its one-line-per-entry summaries point to candidate entries faster and more accurately than scanning full prose, then full rationale opens from the matched entries. Prior decisions inherits the change through its existing cross-reference.
+
+**Files touched:**
+- plugin/si-plugin/docs/plugin-behaviour.md: Why-pipeline > Preserve expanded with three named collapse-shapes; Retrieve rewritten to route through LOG/index.md first.
+
+**Routed to Captures:** none
+
+## 6fd7fed — Add between-captures checkpoint to plan.md Step 2
 
 plan.md Step 2 sequenced captures back-to-back with no checkpoint between them — the "anything else?" interview check sat *within* a capture but not *between* them, so any mid-sequence intent (wrap up, surface a new capture, close out before the end) forced the user to interrupt the presentation. The fix adds sub-step 5 as a Checkpoint after each capture is routed: three uniform-phrased options every time — continue to the next capture, close out (jump to Step 4), or share something else (loop back into Step 2 with the new item). On the last capture, option 1 drops out naturally without needing different wording — the same pattern Step 1's entry question uses. Codifies behaviour Claude was already inferring this session.
 
