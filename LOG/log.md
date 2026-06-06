@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Sweep stray `/clear` references from setup.md and next.md close-outs
+## [HASH] — Sweep "disposition" jargon from plugin/si-plugin/
+
+"Disposition" was the label used across procedure docs for the promote/park/drop choice and was leaking through into user-facing chat (e.g. /plan Step 2's "Disposition?" prompt). The audience anchor in CLAUDE.md already ruled out the user-facing leak, but keeping the term inside the procedure docs maintains an internal-vs-external vocabulary split with no payoff — the docs read more clearly with the plain phrasing the user already sees. One vocabulary across docs and chat. Six hits swept: two in plan.md Step 2 (recommend + execute sub-steps), three in next.md Audit procedure (intro paragraph, route step, close step), one in plugin-behaviour.md Dependency ownership. Re-grep across plugin/si-plugin/ confirmed zero surviving hits.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: "one disposition" → "one of promote, park, or drop"; "Execute the disposition:" → "Execute promote, park, or drop:"
+- plugin/si-plugin/docs/next.md: three Audit-procedure rewrites — "disposition of findings" → "handling findings (capture or drop)"; '"capture" disposition' → "finding marked capture"; "findings are disposed" → "findings are handled"
+- plugin/si-plugin/docs/plugin-behaviour.md: "disposition choice" → "promote/park/drop choice"
+
+**Routed to Captures:** none
+
+## 8ec72a3 — Sweep stray `/clear` references from setup.md and next.md close-outs
 
 Safety sweep behind the prior two batches (push-in-commit and fix-clear-before-done). Grep across plugin/si-plugin/ for `/clear` and `/compact` turned up two surviving close-out sentences — setup.md's final "Run /plan or /next" sign-off and next.md's audit close-out (Step 6) — both still trailing the misplaced "Run `/clear` first to keep context clean." advice the prior batches had cleared from the more visible close-outs. Reasoning: when to clear or compact is a user judgment about session continuity, not a procedural nudge skill docs should issue routinely. plugin-behaviour.md had zero hits so the case-by-case review there was a no-op. Re-grep confirmed nothing survives in skill or procedure docs. `/compact` had no hits anywhere.
 

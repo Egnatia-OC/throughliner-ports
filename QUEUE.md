@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Sweep "disposition" jargon from plugin/si-plugin/** **[sweep-disposition-jargon]**
-
-Alex flagged she has trouble parsing "disposition" herself — external non-coders will too. The term currently appears in procedure docs as the label for the promote/park/drop choice, and leaks through into user-facing chat during /plan Step 2 ("Disposition?"). The audience anchor in CLAUDE.md already rules out the user-facing leak, but the term should go from the procedure docs as well — the docs read more clearly with plain phrasing, and there's no internal-vs-external split worth maintaining. One vocabulary across docs and chat.
-
-Build:
-- Grep `plugin/si-plugin/` for `disposition` and `dispose` (case-insensitive). Replace each hit with "promote, park, or drop" or equivalent plain phrasing — procedure docs, skill docs, anywhere else. Where the surrounding sentence reads awkwardly after substitution, rewrite locally.
-- Re-grep after edits to confirm no surviving hits.
-
 **Tighten next.md Step 4: drop general add-to-scope offer, keep narrow coherence exception** **[next-step4-coherence]**
 
 next.md Step 4 ("User raises something out of scope") currently has an "Adding to scope instead" sub-section letting Claude offer to fold the raised item into _build.md as a new entry. The framing reads as a user-convenience workaround, but the effect is that out-of-scope ideas leak into the active build's commit and log entry — polluting what should be one coherent change. The new default: anything raised mid-/next that isn't already in the batch routes to Captures, full stop. The exception is narrow and keyed to why-pipeline coherence — the raised item is part of the same change if it would share the build's log entry and index line, and folding it in makes the batch easier to find later, not harder. Evaluated against the why-pipeline and index-entry rules (which the queued batches define), not against whether the user wants it in.

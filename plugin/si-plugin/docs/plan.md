@@ -38,13 +38,13 @@ For each item:
 
 1. **Present and interview** [DISCUSS, PROMPT] — Show the item, engage with its substance. Ask follow-ups to sharpen it or surface missing context. Depth scales with the item. Continue until the picture is clear. Close: "anything else to add?"
 
-2. **Recommend** [PROMPT] — Recommend one disposition and say why:
+2. **Recommend** [PROMPT] — Recommend one of promote, park, or drop and say why:
    - **Promote** — ready to become a batch. The recommendation must describe what would actually get built, in terms the user can recognize as the work product (which files change, what subsection or rule, what gets added/removed/rewritten — not just the topic or intent). Forcing function: if sub-step 1's interview hasn't yielded enough to describe the outputs concretely, the recommendation isn't ready — return to interviewing. **Downstream-impact scan:** if the capture installs a *structural rule* (defines what something is, sets a constraint that frames how other captures get evaluated — as opposed to a localized fix), scan the remaining Captures for items that could revise or invalidate the rule. Trigger is rule shape, not edit size. If any are found, flag at recommend time, name the conflict, and offer three options — process the downstream capture first, hold this one, or proceed accepting the possible later revision.
    - **Park** — not now, keep for later
    - **Drop** — remove it
    Stop and wait. The user decides.
 
-3. **Execute the disposition:**
+3. **Execute promote, park, or drop:**
    - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in plugin-behaviour.md. Show the draft in a fenced code block, per the approval-time outputs rule in plugin-behaviour.md. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
    - **Park** — Move to Parked.
    - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.

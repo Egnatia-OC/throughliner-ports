@@ -95,7 +95,7 @@ This shape doubles as the batch readiness gate in /plan: if the candidate index 
 - **Narrate the ordering work.** Any time Claude exercises ordering judgment — non-default placement, reorder, unpark, staleness flag, or even an explicit "appending here because no dependency applies" — narrate the reasoning briefly at the moment of judgment. Silent ownership reads as no ownership; one short sentence makes the value-add legible. The watches and the placement rule both surface through this narration when exercised.
 - **Depends on / Blocks headers.** Each batch in QUEUE.md carries one-line `Depends on:` and `Blocks:` headers directly under its title, populated at authoring time and updated when the graph changes. Either field may be omitted when empty (no header line rather than `Depends on: none`). References use stable batch slugs (next bullet), never prose descriptors or positional pointers like "the two prior batches."
 - **Stable batch slugs.** Each batch gets a kebab-case slug at authoring time, written as a `**[slug]**` marker at the end of the title line. Slugs are immutable once authored — reorders and renames don't change them — so cross-references stay grep-able across the queue's lifetime. Parked items use slugs the same way when naming the batch they depend on.
-- The user owns scope — what enters the queue, what gets parked/dropped, whether to proceed. Don't proceed past a disposition choice without their say.
+- The user owns scope — what enters the queue, what gets parked/dropped, whether to proceed. Don't proceed past a promote/park/drop choice without their say.
 
 ## File safety
 

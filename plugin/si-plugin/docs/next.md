@@ -154,7 +154,7 @@ Do NOT delete _build.md yourself. That's /done's job.
 
 ## Audit procedure
 
-For audit batches only. Reached from Step 1.6 when the batch carries an Audit subheading. The shape audits actually need is read-many-propose-many — systematic read of the target, then disposition of findings one at a time. No file edits land directly; everything routes through Captures so /plan can convert findings into normal batches with the usual dialogue.
+For audit batches only. Reached from Step 1.6 when the batch carries an Audit subheading. The shape audits actually need is read-many-propose-many — systematic read of the target, then handling findings one at a time (capture or drop). No file edits land directly; everything routes through Captures so /plan can convert findings into normal batches with the usual dialogue.
 
 1. **Lock scope** [SILENT] — Create _build.md the same way Step 2 does (entry text + pre-generated index entry candidate), and remove the batch from QUEUE.md. The Progress section tracks findings rather than file edits:
 ```
@@ -169,9 +169,9 @@ Progress:
 
 4. **Present findings one at a time** [SEQUENCE, PROMPT] — State the count upfront ("N findings. First: ..."). For each finding: show the observation, the file:line reference, and why it matters. Wait for the user's call — **capture** or **drop**. Don't preview upcoming findings.
 
-5. **Route approved findings to Captures** — For each "capture" disposition, draft the capture wording in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md's Progress section as `captured` or `dropped`.
+5. **Route approved findings to Captures** — For each finding marked capture, draft the capture wording in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md's Progress section as `captured` or `dropped`.
 
-6. **Close** [BRIEF, PROMPT] — When all findings are disposed, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing." /done writes the LOG entry (audits get a normal entry — the "files touched" line names the target docs that were read, and the routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
+6. **Close** [BRIEF, PROMPT] — When all findings are handled, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing." /done writes the LOG entry (audits get a normal entry — the "files touched" line names the target docs that were read, and the routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
 
 ## Rules
 
