@@ -98,4 +98,4 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 ## Step 4: Close out [BRIEF, PROMPT]
 
 1. Summarize what changed.
-2. "Run /done to record this and commit, or keep planning. Run `/clear` first to keep context clean."
+2. "Run /done to record this and commit, or keep planning."

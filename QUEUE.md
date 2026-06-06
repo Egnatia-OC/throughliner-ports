@@ -7,15 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Fix /clear-before-/done close-out order** **[fix-clear-before-done]**
-Blocks: sweep-clear-compact
-
-next.md Step 7 and plan.md Step 4 close-outs both tell the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" places /clear *before* /done, but /done reads the conversation to write a faithful LOG entry — clearing first strips exactly what /done draws on. The /clear advice already lives correctly at the end of /done itself, where it recommends clearing before the next skill. Fix is to drop the misplaced sentence from both offering close-outs; the post-/done placement carries the advice in the right spot.
-
-Build:
-- plugin/si-plugin/docs/next.md Step 7 (line 142): remove the "Run `/clear` first to keep context clean." sentence from the close-out. Keep the /done offer.
-- plugin/si-plugin/docs/plan.md Step 4 (line 85): same change — drop the /clear sentence, keep the /done offer.
-
 **Sweep all `/clear` and `/compact` references from skill and procedure docs** **[sweep-clear-compact]**
 Depends on: push-in-commit, fix-clear-before-done
 

@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Stage sweep edits at push; warn on dirty plugin tree at session start
+## [HASH] — Drop misplaced "Run `/clear` first" sentence from next.md and plan.md close-outs
+
+next.md Step 7 and plan.md Step 4 both told the user "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean." The "first" placed /clear before /done, but /done reads the conversation to write a faithful LOG entry — clearing first would strip exactly what /done draws on. The /clear advice already lives correctly at the end of /done itself, where it recommends clearing before the next skill. Fix was a one-sentence drop in each of the two close-outs; the /done offer stays, and the correctly-placed advice at the tail of /done continues to carry the guidance. This batch removes two specific sites; the queued sweep-clear-compact batch is the safety net behind it.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 7 sub-step 3 — dropped trailing "Run `/clear` first to keep context clean." sentence
+- plugin/si-plugin/docs/plan.md: Step 4 sub-step 2 — dropped trailing "Run `/clear` first to keep context clean." sentence
+
+**Routed to Captures:** none
+
+## 710e56e — Stage sweep edits at push; warn on dirty plugin tree at session start
 
 push-and-rezip step 8 used to stage a fixed list (zip, archive, plugin.json, LOG/), which didn't include whatever the pre-push Pass-B sweep modified in plugin/si-plugin/. Sweep edits — prose tightening to keep templates and skill docs aligned with the procedure changes being pushed — fell out of the commit and sat orphaned in the working tree across sessions. The next /next would then layer unrelated build edits on top, mixing concerns into one commit. Two complementary edits to this project's CLAUDE.md close both halves: at push, step 8 now stages every dirty path under plugin/si-plugin/ via `git status --porcelain plugin/si-plugin/` (alongside the zip, archive, plugin.json, and LOG/), so sweep edits are caught automatically going forward; at session start, a new dirty-tree check runs the same porcelain command when no _build.md is present and warns Alex if non-empty, surfacing any orphans from prior pushes before a new build layers on top. Both edits land in CLAUDE.md rather than the shipped plugin because the push-and-rezip workflow is self-hosting infrastructure, not consumer behaviour.
 

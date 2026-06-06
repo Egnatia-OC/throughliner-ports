@@ -148,7 +148,7 @@ If the conversation is getting long and context is running low, prefer these opt
 When all entries are ticked:
 1. Tell the user the build is complete.
 2. Show what was done (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or keep adjusting. Run `/clear` first to keep context clean."
+3. Say: "Run /done to record this and commit, or keep adjusting."
 
 Do NOT delete _build.md yourself. That's /done's job.
 
