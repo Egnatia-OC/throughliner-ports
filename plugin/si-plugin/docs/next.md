@@ -10,7 +10,7 @@ Before starting:
 
 2. **Active build check:** [SILENT] If _build.md exists, a build is already in progress. Offer to resume it (read _build.md for state) rather than starting a new one. If _build.md does not exist, move on — no output either way.
 
-3. **Read QUEUE.md:** Find the top batch under "Batches."
+3. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line under "Batches" is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they need to push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
 
 4. **Blocker gate:** Scan for blockers that would force guessing:
    - Does the batch reference something in SPEC.md that doesn't exist? → Block. Run /plan first.

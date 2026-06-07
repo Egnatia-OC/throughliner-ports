@@ -7,20 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Self-hosting dependency-management discipline** **[self-hosting-dependency-discipline]**
-
-In projects where SI edits itself (or any forked SI), batch ordering in QUEUE.md implicitly assumes the next batch will see the previous batch's effects. That's true for target-file edits Claude can read at author time, but false for host-side effects — hooks, loaded skill procedures, plugin-behaviour.md rules — which only refresh after push + uninstall/reinstall. The concrete bite happened recently: [capture-parking-discipline] was placed before [behaviour-agnosticism-audit] on the assumption that the new parking discipline would govern audit capture routing, but it wouldn't have unless a push happened between them. The fix is two parts: a discipline rule in this project's CLAUDE.md Working conventions distinguishing target-side from host-side dependencies, and a minimal structural form for marking push points in the queue — a `--- Push required before continuing ---` line between batches, paired with a `(host-side)` annotation on the dependent batch's `Depends on:` header. /next halts at the marker until the user has pushed and reinstalled. The parked [self-hosting-support-during-setup] capture also gets a scope addition so that whenever it ships, the scaffolding template carries all of this into forking projects' CLAUDE.md.
-
-Build:
-- This project's CLAUDE.md Working conventions: add a "Self-hosting dependency ordering" subsection stating the target-side vs host-side distinction, what counts as host-side (hooks, skill procedures, plugin-behaviour.md rules), and the ordering rule (place host-side-dependent batches after a push marker; annotate their `Depends on:` line with `(host-side)`). Include the worked example of [capture-parking-discipline] → push marker → [behaviour-agnosticism-audit].
-- This project's CLAUDE.md Working conventions: define the push-marker convention — a line `--- Push required before continuing ---` between batches in QUEUE.md indicates /next must halt until the user has pushed and reinstalled. /plan inserts the marker when placing a host-side-dependent batch.
-- plugin/si-plugin/docs/next.md: add a check at the top of /next's pick-next-batch logic — if the next non-empty line under Batches is a push marker, halt and tell the user to push and reinstall before re-running /next. Skill-level so it works for any self-hosting project, not just this one.
-- QUEUE.md parked capture [self-hosting-support-during-setup]: extend the description to include dependency-management awareness — the forking-project scaffolding template should carry the host-vs-target distinction, the ordering rule, the push-marker convention, and the (host-side) annotation into the new project's CLAUDE.md.
-
-Test:
-- Self-verifying from the doc text.
-- After the batch ships: on the next /next run where the top batch is a push marker, /next halts. (Naturally exercised when this batch ships and the next batch in queue is host-side-dependent.)
-
 **Audit plugin-behaviour.md and setup.md for project-agnostic vs app-building assumptions** **[behaviour-agnosticism-audit]**
 Blocks: ship-freeform-next-type, trickle-up-audit
 
@@ -187,6 +173,8 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ---
 
+- LOG hash backfill feels slow at /next Step 1.1: grep → batch-read → git log → two edits across two files. The hash is unknown at write time but known one second after /done commits. Move the backfill into /done: after the build commit lands, run `git log -n 1 --pretty=%h`, edit the two `[HASH]` placeholders inline, and `git commit --amend --no-edit`. Eliminates /next Step 1.1 entirely. Tradeoff: amend, which global rules discourage — but only against an unpushed local commit made one second ago, the safe case. Safer alternative: a tiny follow-up commit instead of amending, at the cost of doubling commits per /done.
+
 ### Parked
 
 - **[parked]** Decide whether to add an inline marker for internal-only terms in procedure prose. The marker would let procedure docs flag internal terms inline so the translate-or-omit rule fires mechanically rather than relying on Claude matching against the vocabulary list each time.
@@ -213,7 +201,7 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed.
   Parked: depends on stabilizing the skills it would chain — no fixed trigger, conscious revisit only.
 
-- Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
+- **[self-hosting-support-during-setup]** Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping, **and the dependency-management discipline** (host-vs-target distinction as it governs batch ordering, the host-side-after-push-marker rule, the `--- Push required before continuing ---` queue convention, and the `(host-side)` annotation on `Depends on:`). All of this carries into the new project's CLAUDE.md. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
   Parked: scoping unclear — interview question vs separate skill vs scaffolded template.
 
 - /done spec check — after writing the **Why:** field, Claude checks whether any reasoning constitutes a product decision that should update SPEC.md. Retrospective check (at decision time) vs the current /plan pipeline gate (prospective, at planning time).

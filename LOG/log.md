@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan session: tax-folder /setup test surfaced 3 new batches + structural form for self-hosting dependency
+## [HASH] — self-hosting dependency-management discipline: target-vs-host distinction, push-marker queue convention, /next halt
+
+Batch ordering in QUEUE.md implicitly assumed the next batch sees the previous batch's effects — true for target-side edits Claude can read at author time, false for host-side effects (hooks, loaded skill procedures, plugin-behaviour.md rules) that only refresh after push + uninstall/reinstall. The recent bite: [capture-parking-discipline] placed before [behaviour-agnosticism-audit] on the assumption the new parking discipline would govern audit capture routing, but it wouldn't have unless a push happened between them. Fixed in two parts: a discipline rule in this project's CLAUDE.md Working conventions distinguishing target-side from host-side, and a structural form — a `--- Push required before continuing ---` queue line paired with a `(host-side)` annotation on `Depends on:`. /next halts at the marker until the user has pushed and reinstalled. The marker check sits in next.md (skill-level, so it works for any self-hosting fork), the discipline rule sits in this project's CLAUDE.md (host-only, doesn't propagate via plugin update). The parked [self-hosting-support-during-setup] capture was extended so the scaffolding template, whenever it ships, carries all of this — target/host distinction, ordering rule, marker convention, annotation — into forking projects' CLAUDE.md.
+
+**Files touched:**
+- CLAUDE.md: new "Self-hosting dependency ordering" subsection under Working conventions
+- plugin/si-plugin/docs/next.md: push-marker halt added at Step 1.3
+- QUEUE.md: [self-hosting-support-during-setup] parked capture extended; missing slug marker added
+
+**Routed to Captures:** none new this build (one capture filed pre-build: LOG hash backfill optimization — move into /done via amend)
+
+## dedb34a — /plan session: tax-folder /setup test surfaced 3 new batches + structural form for self-hosting dependency
 
 A real /setup run in a tax-prep folder (separate, non-SI project) surfaced gaps in setup.md that ride on Claude's judgement rather than written rules: handling of pre-existing user content in Case B, and Q4's tolerance for parenthesised illustrative examples that bend "in user's words." Promoted [setup-preexisting-content-handling] to make peek-but-don't-pre-answer and leave-untouched explicit, and [setup-q4-no-expansion] to tighten Q4's rule against any expansion (illustrative or otherwise). Same run also exposed app-building framing in setup.md's interview questions, so [behaviour-agnosticism-audit] widened to cover setup.md alongside plugin-behaviour.md. Separately, the previously-captured self-hosting dependency gotcha promoted to [self-hosting-dependency-discipline] — initial draft was discipline-only, revised mid-session after the user pushed back to add a structural form: `--- Push required before continuing ---` queue marker + `(host-side)` annotation on `Depends on:`, with /next halting at the marker. Two parked captures: [freeform-on-demand] revising [ship-freeform-next-type] to be on-demand rather than queue-driven (queueing "I did some manual work" is ceremony), and [user-execution-batch-shape] deferring the question of whether non-coder projects need a new batch type for user-as-executor work until 2-3 such batches have actually run.
 

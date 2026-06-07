@@ -70,6 +70,27 @@ No code method/
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
+### Self-hosting dependency ordering
+
+Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Claude can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, `next.md`, `done.md`), and `docs/plugin-behaviour.md` — which only refresh after push + uninstall/reinstall.
+
+When a batch depends on a previous batch's host-side effects, that dependency does not resolve in-session. /plan must place the dependent batch after a push marker and annotate its `Depends on:` line as `(host-side)`.
+
+**Push-marker convention.** A line `--- Push required before continuing ---` between batches in QUEUE.md indicates /next must halt until the user has pushed and reinstalled. /plan inserts the marker when placing a host-side-dependent batch.
+
+Worked example:
+```
+**[capture-parking-discipline]** ...
+
+--- Push required before continuing ---
+
+**[behaviour-agnosticism-audit]**
+Depends on: capture-parking-discipline (host-side)
+...
+```
+
+[behaviour-agnosticism-audit] reads procedure docs against criteria including capture routing rules. Those rules live in plugin-behaviour.md (host-side). Without the push between them, the audit would read the old rules.
+
 ## Session-start dirty-tree check
 
 At session start, if no `_build.md` is present in the project root, run `git status --porcelain plugin/si-plugin/`. If non-empty, warn Alex that the target tree has uncommitted state and list the dirty paths — these may be orphaned sweep edits from a prior push, and a new /next would otherwise layer build edits on top of them.
