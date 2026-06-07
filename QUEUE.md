@@ -7,6 +7,40 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
+**Capture and parking discipline: structural fields, processed/unprocessed split, routing gate** **[capture-parking-discipline]**
+Blocks: behaviour-agnosticism-audit
+
+Capture dependencies currently live in prose. /plan reads prose at routing time, prose gets missed, and items that should be parked sit live in Captures — two real examples this session (inline-marker capture, freeform /next type capture) both had stated dependencies and both routed live until pushed back. The fix has three coupled pieces and one control rule.
+
+First, structural reason fields on items removed from active flow. Active batches already use slug-based `Depends on:` / `Blocks:`; that pattern extends to two distinct removal states with sharp criteria. `Blocked by:` — slug plus optional behavioural prose tail — when a trigger exists; auto-surfaces when condition fires. `Parked:` — short reason — when there's no trigger and the item is indefinitely shelved; reopens only by conscious revisit. Nothing leaves active flow without a stated reason in one of those two slots. Prose alone isn't structure.
+
+Second, processed/unprocessed split in Captures. Once /plan has applied dependency management to a capture — given it a slug, decided no relationship to other items, or marked it Blocked by — it's processed. Processed captures sit above a divider with slugs so they can be cross-referenced; raw appended captures collect below in append-order. The divider is staging between raw and routed (promote, park, drop), not a final home.
+
+Third, routing gate in /plan Step 2 recommend. Before the promote/park/drop recommendation, scan capture text for named batches/captures or behavioural triggers. If any are found, default to park-with-Blocked-by populated. Mechanical, not prose-judgment.
+
+Fourth, the control rule — make the whole discipline explicit in one place in plan.md, because it's currently mush distributed across implicit conventions.
+
+Build:
+- plugin/si-plugin/docs/plugin-behaviour.md Dependency ownership: extend `Depends on:` / `Blocks:` rule to items removed from active flow. State the two structural slots (`Blocked by:` for trigger-based, `Parked:` for indefinite) and the rule that nothing leaves active flow without a reason in one of them. Cross-link to Unpark watch.
+- plugin/si-plugin/docs/plugin-behaviour.md Captures: when filing a capture, if a blocker is known at filing time, write it as `Blocked by:` inline so /plan picks it up mechanically.
+- plugin/si-plugin/docs/plan.md Step 1 unpark scan: read `Blocked by:` headers as primary surface; behavioural prose tails still need judgment but slug portions fire mechanically.
+- plugin/si-plugin/docs/plan.md Step 2 recommend: add a dependency-scan sub-step before the promote/park/drop recommendation. Default to park-with-Blocked-by populated when any dependency is found.
+- plugin/si-plugin/docs/plan.md Step 2: state the processed/unprocessed split. Processed = /plan has applied dependency management at least once; sits above the divider with a slug. Unprocessed = raw appended; sits below. Routing (promote/park/drop) is a separate act and can happen in any later /plan.
+- plugin/si-plugin/docs/plan.md: add an explicit control-rule section consolidating the discipline into one place so it reads cleanly.
+- QUEUE.md (this project, not the plugin): retrofit Parked items in both Batches Parked and Captures Parked with `Blocked by:` (trigger-based, behavioural prose tail OK) or `Parked:` (indefinite, short reason) — don't invent fake slugs; translate honestly. Add the processed/unprocessed divider in the Captures section.
+
+Test:
+- Self-verifying from the doc edits. Next /plan session should: read Blocked by/Parked: structurally during Step 1 unpark scan, apply the routing gate during Step 2 recommend, and show captures split above and below the divider.
+
+**Audit plugin-behaviour.md for project-agnostic vs app-building assumptions** **[behaviour-agnosticism-audit]**
+Blocks: ship-freeform-next-type, trickle-up-audit
+
+Plugin-behaviour.md is the universal rule layer — anything stated there applies to every skill, every project, every /next type including freeform once it ships. Pointing SI at a non-app project (records-keeping, research, writing) surfaces the question of how many rules in plugin-behaviour.md actually assume the project is an app being built with Claude Code. "One build at a time," "SPEC.md is read-only during builds," references to "code," "files touched," "the active batch's scope" — some of these likely carry app-building framing and would constrain freeform incorrectly. Auditing now, before trickle-up moves more rules up, keeps the universal layer clean by the time freeform's contract gets defined. Findings route through Captures so /plan decides each one — reword to be project-agnostic, demote to per-skill or per-type, or keep with a note on why the assumption is load-bearing.
+
+Audit:
+- Target: plugin/si-plugin/docs/plugin-behaviour.md
+- Criteria: rules or framings that assume the project is an app being built with Claude Code (vs project-agnostic — applies equally to a records-keeping project, a research project, a writing project). For each finding: quote the passage, name the assumption embedded, and propose one of (a) reword project-agnostic, (b) demote to per-skill or per-type rule, (c) keep with a note on why the assumption is load-bearing.
+
 **E2E: install guide drives a fresh Claude chat through SI setup** **[e2e-install-guide]**
 Depends on: install-guide
 
@@ -138,11 +172,15 @@ Test:
 
 Captured outside /plan. Picked up and routed during the next /plan session.
 
-- Decide whether to add an inline marker for internal-only terms in procedure prose. Trigger: if the [narration-vocabulary] rule alone doesn't hold and leakage continues across a /plan or /next run, reopen the marker-mechanism question. The marker would let procedure docs flag internal terms inline so the translate-or-omit rule fires mechanically rather than relying on Claude matching against the vocabulary list each time.
-
-- Consider a fourth /next type — freeform — for sessions that don't fit build/test/audit. Trigger case: user has applied (or is about to apply) handmade changes to their project and wants Claude to wrap up the work — record what happened in LOG and commit. Doesn't fit build (Claude isn't building), test (nothing being verified), or audit (no read-and-route shape; the work is already done). Currently shoehorned into fake build batches or skipped entirely. The risk isn't that audits drain to freeform — well-defined audits have low friction so users won't dodge them — it's /plan-side discipline: freeform existing as an option could let less-disciplined planning skip the work of finding a tighter type. Mitigation lives at /plan: ask "could this be build, test, or audit?" before allowing freeform; require a one-line statement of why none fit.
+- Self-hosting dependency-management gotcha: in projects where SI edits itself (or any forked SI), batch ordering in QUEUE.md implicitly assumes the next batch will see the previous batch's effects. True for target-file edits Claude can read at author time; false for host-side effects (hooks, loaded skill procedures, plugin-behaviour.md rules) which don't refresh until push + uninstall/reinstall. Concrete bite this session: [capture-parking-discipline] was placed before [behaviour-agnosticism-audit] on the assumption that the new parking discipline would be operative during audit capture routing — but it won't be unless we push between them. Implications: (a) cross-batch ordering needs to distinguish target-side dependencies from host-side ones, (b) push points may need to be explicit dependency edges, not implicit, (c) the parked [self-hosting-support-during-setup] capture needs an addition: dependency-management awareness for forking projects' CLAUDE.md. Home for the rule once defined: this project's CLAUDE.md Working conventions + forking-project scaffolding template.
 
 ### Parked
+
+- **[parked]** Decide whether to add an inline marker for internal-only terms in procedure prose. The marker would let procedure docs flag internal terms inline so the translate-or-omit rule fires mechanically rather than relying on Claude matching against the vocabulary list each time.
+  Blocked by: [narration-vocabulary] + observed leakage after it ships
+
+- **[ship-freeform-next-type]** Add a fourth /next type — freeform — for sessions that don't fit build/test/audit. Trigger case: user has applied (or is about to apply) handmade changes to their project and wants Claude to wrap up the work — record what happened in LOG and commit. Doesn't fit build (Claude isn't building), test (nothing being verified), or audit (no read-and-route shape; the work is already done). Currently shoehorned into fake build batches or skipped entirely. The risk isn't that well-defined audits drain to freeform — it's /plan-side discipline: freeform existing as an option could let less-disciplined planning skip the work of finding a tighter type. Mitigation lives at /plan: ask "could this be build, test, or audit?" before allowing freeform; require a one-line statement of why none fit.
+  Blocked by: [behaviour-agnosticism-audit]
 
 - **[parked: behind reader-test-refresh]** FAQ edit: incorporate the four functions of _build.md as an entry for users who wonder what _build.md does. The four functions: (1) carries the active batch's working state out of QUEUE.md, which is read-only during builds; (2) feeds the pre_tool_use scope-lock hook (which files this build may touch); (3) holds crash-recovery tick state so resumed sessions don't re-derive from a partial commit; (4) carries rationale prose forward into /done's LOG entry. Unpark once [reader-test-refresh] has run and its findings have been routed — those findings may shape what belongs in the FAQ and how it's worded.
 
