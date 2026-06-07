@@ -16,13 +16,22 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call.
 - The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
 
+## Capture and parking discipline
+
+The control rule for capture and parking, stated in one place. Pieces of this also appear in the steps and in plugin-behaviour.md; the canonical statement is here.
+
+- **Two structural slots for items removed from active flow.** `Blocked by:` (trigger-based, auto-surfaces — slug plus optional behavioural prose tail) and `Parked:` (indefinite, conscious revisit only — short reason). Nothing leaves active flow without one. See plugin-behaviour.md Dependency ownership for slot semantics. Applies to batches in Batches Parked and captures in Captures Parked alike.
+- **Processed/unprocessed split in Captures.** Captures is divided by `---`. Processed captures (above) have had dependency management applied at least once and carry slugs. Unprocessed captures (below) are raw appended in file order. Routing (promote/park/drop) is a separate act from dependency management — a capture can become processed in one /plan and routed in another. See Step 2 for the loop.
+- **Routing gate before recommendation.** Step 2 sub-step 2 mechanically scans capture text for named items or behavioural triggers before the promote/park/drop recommendation. Any reference found defaults the recommendation to park-with-`Blocked by:`-populated. Not prose-judgment — presence triggers the default, even if Claude reads the reference as incidental.
+- **Filing-time blockers go in the slot, not the prose.** When the user files a capture and the blocker is already known, write `Blocked by: [slug] + condition` inline on the capture. /plan's Step 2 dependency scan picks it up mechanically rather than re-reading the prose. Stated in plugin-behaviour.md Captures.
+
 ## Step 1: Read state and entry question
 
 **Backfill LOG hashes first:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md`. If empty, no output, move on. Otherwise batch-read the matching files. Common case — one placeholder in each, sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/log.md` and use that hash for both. Fallback — multiple placeholders, or the common-case hash doesn't match the entry titles: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit — the working-tree edit folds into whatever commit this session later makes.
 
 Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 
-**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: anything newly unblocked by work that's landed since it was parked? For Batches and Captures: anything stale enough that the surrounding code or rules have moved past it? Surface any findings as part of the read-state phase — name the item, name the trigger, narrate per Dependency ownership. The user decides whether to act now or hold; no silent edits.
+**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip them unless something else flags them. For Batches and Captures: anything stale enough that the surrounding code or rules have moved past it? Surface any findings as part of the read-state phase — name the item, name the trigger, narrate per Dependency ownership. The user decides whether to act now or hold; no silent edits.
 
 Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.)
 
@@ -32,28 +41,32 @@ Ask: "Do you have something to discuss, or ready to process Captures?" (If Captu
 
 ## Step 2: Process captures [SEQUENCE]
 
-One item at a time, oldest first. Never preview upcoming items. State the count upfront ("3 items. First: ...").
+**Captures structure: processed/unprocessed split.** The Captures section is divided by `---` into processed (above) and unprocessed (below). Processed = /plan has applied dependency management at least once (given the capture a slug, set a `Blocked by:` header, or confirmed standalone via Step 2 sub-step 2). Processed captures carry slugs so they can be cross-referenced. Unprocessed = raw appended in file order — no slug, no dependency headers yet. The divider is staging between raw and routed (promote/park/drop), not a final home — captures sit above the divider until routed out of Captures entirely. Routing is a separate act from dependency management and can happen in any later /plan: a capture can become processed in one session and routed in another.
+
+One item at a time, oldest first across both halves (process unprocessed in file order, then continue into processed). Never preview upcoming items. State the count upfront ("3 items. First: ...").
 
 For each item:
 
 1. **Present and interview** [DISCUSS, PROMPT] — Show the item, engage with its substance. Ask follow-ups to sharpen it or surface missing context. Depth scales with the item. Continue until the picture is clear. Close: "anything else to add?"
 
-2. **Recommend** [PROMPT] — Recommend one of promote, park, or drop and say why:
+2. **Dependency scan** [SILENT] — Before recommending, scan the capture text for named batches or captures (slugs in `[brackets]`, bold titles), behavioural triggers ("once X ships," "after Y has run," "depends on Z"), or references to work that hasn't landed yet. If any are found, the default recommendation in sub-step 3 becomes park-with-`Blocked by:`-populated rather than promote. If no dependencies are found, give the capture a kebab-case slug (if unprocessed) — it's now processed and stays above the divider whether or not it gets routed this session. Mechanical scan, not prose-judgment: presence of a reference triggers the default, even if Claude thinks it's incidental.
+
+3. **Recommend** [PROMPT] — Recommend one of promote, park, or drop and say why:
    - **Promote** — ready to become a batch. The recommendation must describe what would actually get built, in terms the user can recognize as the work product (which files change, what subsection or rule, what gets added/removed/rewritten — not just the topic or intent). Forcing function: if sub-step 1's interview hasn't yielded enough to describe the outputs concretely, the recommendation isn't ready — return to interviewing. **Downstream-impact scan:** if the capture installs a *structural rule* (defines what something is, sets a constraint that frames how other captures get evaluated — as opposed to a localized fix), scan the remaining Captures for items that could revise or invalidate the rule. Trigger is rule shape, not edit size. If any are found, flag at recommend time, name the conflict, and offer three options — process the downstream capture first, hold this one, or proceed accepting the possible later revision.
-   - **Park** — not now, keep for later
+   - **Park** — not now, keep for later. If sub-step 2 found a dependency, this is the default and `Blocked by:` is populated from the scan. Otherwise park with a short `Parked:` reason.
    - **Drop** — remove it
    Stop and wait. The user decides.
 
-3. **Execute promote, park, or drop:**
+4. **Execute promote, park, or drop:**
    - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the reasoning from the discussion as inline prose — see Why-pipeline in plugin-behaviour.md. Show the draft in a fenced code block, per the approval-time outputs rule in plugin-behaviour.md. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
-   - **Park** — Move to Parked.
+   - **Park** — Move to Parked with the `Blocked by:` or `Parked:` header populated per sub-step 2 and sub-step 3.
    - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.
 
-4. Remove the item from Captures once routed.
+5. Remove the item from Captures once routed (promote, park, or drop). If only dependency management was applied this turn — slug given or `Blocked by:` set without routing — the capture stays in Captures but moves above the divider as a processed item; don't remove it.
 
-5. **Checkpoint** [PROMPT] — Offer three options every time, in uniform phrasing: (1) continue to the next capture, (2) close out now (go to Step 4), (3) share something else (loop back into Step 2 with the new item). Wait for the user's call. On the last capture, option 1 drops out naturally — the offer collapses to two options without needing different wording.
+6. **Checkpoint** [PROMPT] — Offer three options every time, in uniform phrasing: (1) continue to the next capture, (2) close out now (go to Step 4), (3) share something else (loop back into Step 2 with the new item). Wait for the user's call. On the last capture, option 1 drops out naturally — the offer collapses to two options without needing different wording.
 
-After all items: Captures should be empty (section header and `### Parked` intact).
+After all items: Captures should hold only processed items above the divider (or be empty if everything was routed). Section header, divider, and `### Parked` intact.
 
 New items from conversation follow the same loop — check QUEUE.md for overlap first.
 

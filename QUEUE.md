@@ -7,31 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Capture and parking discipline: structural fields, processed/unprocessed split, routing gate** **[capture-parking-discipline]**
-Blocks: behaviour-agnosticism-audit
-
-Capture dependencies currently live in prose. /plan reads prose at routing time, prose gets missed, and items that should be parked sit live in Captures — two real examples this session (inline-marker capture, freeform /next type capture) both had stated dependencies and both routed live until pushed back. The fix has three coupled pieces and one control rule.
-
-First, structural reason fields on items removed from active flow. Active batches already use slug-based `Depends on:` / `Blocks:`; that pattern extends to two distinct removal states with sharp criteria. `Blocked by:` — slug plus optional behavioural prose tail — when a trigger exists; auto-surfaces when condition fires. `Parked:` — short reason — when there's no trigger and the item is indefinitely shelved; reopens only by conscious revisit. Nothing leaves active flow without a stated reason in one of those two slots. Prose alone isn't structure.
-
-Second, processed/unprocessed split in Captures. Once /plan has applied dependency management to a capture — given it a slug, decided no relationship to other items, or marked it Blocked by — it's processed. Processed captures sit above a divider with slugs so they can be cross-referenced; raw appended captures collect below in append-order. The divider is staging between raw and routed (promote, park, drop), not a final home.
-
-Third, routing gate in /plan Step 2 recommend. Before the promote/park/drop recommendation, scan capture text for named batches/captures or behavioural triggers. If any are found, default to park-with-Blocked-by populated. Mechanical, not prose-judgment.
-
-Fourth, the control rule — make the whole discipline explicit in one place in plan.md, because it's currently mush distributed across implicit conventions.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Dependency ownership: extend `Depends on:` / `Blocks:` rule to items removed from active flow. State the two structural slots (`Blocked by:` for trigger-based, `Parked:` for indefinite) and the rule that nothing leaves active flow without a reason in one of them. Cross-link to Unpark watch.
-- plugin/si-plugin/docs/plugin-behaviour.md Captures: when filing a capture, if a blocker is known at filing time, write it as `Blocked by:` inline so /plan picks it up mechanically.
-- plugin/si-plugin/docs/plan.md Step 1 unpark scan: read `Blocked by:` headers as primary surface; behavioural prose tails still need judgment but slug portions fire mechanically.
-- plugin/si-plugin/docs/plan.md Step 2 recommend: add a dependency-scan sub-step before the promote/park/drop recommendation. Default to park-with-Blocked-by populated when any dependency is found.
-- plugin/si-plugin/docs/plan.md Step 2: state the processed/unprocessed split. Processed = /plan has applied dependency management at least once; sits above the divider with a slug. Unprocessed = raw appended; sits below. Routing (promote/park/drop) is a separate act and can happen in any later /plan.
-- plugin/si-plugin/docs/plan.md: add an explicit control-rule section consolidating the discipline into one place so it reads cleanly.
-- QUEUE.md (this project, not the plugin): retrofit Parked items in both Batches Parked and Captures Parked with `Blocked by:` (trigger-based, behavioural prose tail OK) or `Parked:` (indefinite, short reason) — don't invent fake slugs; translate honestly. Add the processed/unprocessed divider in the Captures section.
-
-Test:
-- Self-verifying from the doc edits. Next /plan session should: read Blocked by/Parked: structurally during Step 1 unpark scan, apply the routing gate during Step 2 recommend, and show captures split above and below the divider.
-
 **Audit plugin-behaviour.md for project-agnostic vs app-building assumptions** **[behaviour-agnosticism-audit]**
 Blocks: ship-freeform-next-type, trickle-up-audit
 
@@ -166,11 +141,15 @@ Test:
 
 ### Parked
 
-- **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md. Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
+- **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md.
+  Parked: further research needed on session-length as a mid-build split indicator before the rework is actionable.
+  Three changes slated: (1) reframe "name concrete outputs" as the readiness gate (what differentiates batch-ready from still-a-capture), (2) remove the 5-test verification-burden rule, (3) replace with coherence test ("can Claude explain the batch in one sentence without multiple 'and's"). Further research needed on session-length as a mid-build split indicator — scroll bar length correlates with quality drop / auto-compact; is this because higher communication quality makes session length mirror cognitive load? Could a simple metric (word count, turn count) work as a split yardstick both mid-build and at planning time when actual session length isn't yet known?
 
 ## Captures
 
-Captured outside /plan. Picked up and routed during the next /plan session.
+Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
+
+---
 
 - Self-hosting dependency-management gotcha: in projects where SI edits itself (or any forked SI), batch ordering in QUEUE.md implicitly assumes the next batch will see the previous batch's effects. True for target-file edits Claude can read at author time; false for host-side effects (hooks, loaded skill procedures, plugin-behaviour.md rules) which don't refresh until push + uninstall/reinstall. Concrete bite this session: [capture-parking-discipline] was placed before [behaviour-agnosticism-audit] on the assumption that the new parking discipline would be operative during audit capture routing — but it won't be unless we push between them. Implications: (a) cross-batch ordering needs to distinguish target-side dependencies from host-side ones, (b) push points may need to be explicit dependency edges, not implicit, (c) the parked [self-hosting-support-during-setup] capture needs an addition: dependency-management awareness for forking projects' CLAUDE.md. Home for the rule once defined: this project's CLAUDE.md Working conventions + forking-project scaffolding template.
 
@@ -182,13 +161,26 @@ Captured outside /plan. Picked up and routed during the next /plan session.
 - **[ship-freeform-next-type]** Add a fourth /next type — freeform — for sessions that don't fit build/test/audit. Trigger case: user has applied (or is about to apply) handmade changes to their project and wants Claude to wrap up the work — record what happened in LOG and commit. Doesn't fit build (Claude isn't building), test (nothing being verified), or audit (no read-and-route shape; the work is already done). Currently shoehorned into fake build batches or skipped entirely. The risk isn't that well-defined audits drain to freeform — it's /plan-side discipline: freeform existing as an option could let less-disciplined planning skip the work of finding a tighter type. Mitigation lives at /plan: ask "could this be build, test, or audit?" before allowing freeform; require a one-line statement of why none fit.
   Blocked by: [behaviour-agnosticism-audit]
 
-- **[parked: behind reader-test-refresh]** FAQ edit: incorporate the four functions of _build.md as an entry for users who wonder what _build.md does. The four functions: (1) carries the active batch's working state out of QUEUE.md, which is read-only during builds; (2) feeds the pre_tool_use scope-lock hook (which files this build may touch); (3) holds crash-recovery tick state so resumed sessions don't re-derive from a partial commit; (4) carries rationale prose forward into /done's LOG entry. Unpark once [reader-test-refresh] has run and its findings have been routed — those findings may shape what belongs in the FAQ and how it's worded.
+- **[parked: behind reader-test-refresh]** FAQ edit: incorporate the four functions of _build.md as an entry for users who wonder what _build.md does. The four functions: (1) carries the active batch's working state out of QUEUE.md, which is read-only during builds; (2) feeds the pre_tool_use scope-lock hook (which files this build may touch); (3) holds crash-recovery tick state so resumed sessions don't re-derive from a partial commit; (4) carries rationale prose forward into /done's LOG entry.
+  Blocked by: [reader-test-refresh] + its findings routed — those findings may shape what belongs in the FAQ and how it's worded.
 
-- Add scenarios to reader-test-workflow.js — after [reader-test-refresh] lands and the refreshed workflow has been run once, evaluate which scenarios are still undertested and worth adding. Known blind spots regardless of refresh outcome: /setup interview (untested), push-and-rezip sweep (untested — lives in this project's CLAUDE.md, not plugin docs, so coverage question is whether it should even be in scope for plugin reader-tests), mid-build resume from a real _build.md (current next.md sim covers fresh /next, not resume), /done plan-mode close-out (current sim only covers build close-out), empty-queue handling, audit-batch flow (planning-as-work). Decision deferred because the refreshed first run may surface blind spots not on this list, or may show that scenario count matters less than scenario specificity. Promote as one or more build batches once scenarios are picked.
+- Add scenarios to reader-test-workflow.js — evaluate which scenarios are still undertested and worth adding. Known blind spots regardless of refresh outcome: /setup interview (untested), push-and-rezip sweep (untested — lives in this project's CLAUDE.md, not plugin docs, so coverage question is whether it should even be in scope for plugin reader-tests), mid-build resume from a real _build.md (current next.md sim covers fresh /next, not resume), /done plan-mode close-out (current sim only covers build close-out), empty-queue handling, audit-batch flow (planning-as-work). Promote as one or more build batches once scenarios are picked.
+  Blocked by: [reader-test-refresh] + refreshed workflow run once — the refreshed first run may surface blind spots not on this list, or may show that scenario count matters less than scenario specificity.
 
-- Batch cohesion ordering heuristic — the build log as decision log creates pressure for discrete builds, and batch ceremony is friction for users. Queue ordering rule: builds touching an area with no related batches yet should sink (absent urgency or dependency), giving time for more captures to accumulate and make the batch worthwhile. Batching also touches context window management, not just coherent logging — Claude needs to think about one area of related concerns at a time. Needs design work to sharpen "no friends" and "related" into a mechanical rule. (The companion /next-time check — recommend switching to /plan if related captures exist for the top batch — shipped as the next.md blocker-gate capture scan.)
-- Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed. Parked: depends on stabilizing the skills it would chain.
+- Batch cohesion ordering heuristic — the build log as decision log creates pressure for discrete builds, and batch ceremony is friction for users. Queue ordering rule: builds touching an area with no related batches yet should sink (absent urgency or dependency), giving time for more captures to accumulate and make the batch worthwhile. Batching also touches context window management, not just coherent logging — Claude needs to think about one area of related concerns at a time. (The companion /next-time check — recommend switching to /plan if related captures exist for the top batch — shipped as the next.md blocker-gate capture scan.)
+  Parked: needs design work to sharpen "no friends" and "related" into a mechanical rule.
+
+- Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed.
+  Parked: depends on stabilizing the skills it would chain — no fixed trigger, conscious revisit only.
+
 - Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
-- /done spec check — after writing the **Why:** field, Claude checks whether any reasoning constitutes a product decision that should update SPEC.md. Retrospective check (at decision time) vs the current /plan pipeline gate (prospective, at planning time). Both mechanisms need more real usage before deciding how they relate.
-- Threshold-based context management — if hooks ever gain token usage fields (e.g. `context_usage_pct`), the plugin could recommend `/compact` or `/clear` based on actual utilization instead of rule-based triggers. Research filed at resources/research/context-window-hook-access.md. Parked: depends on Anthropic adding token data to hook event input.
-- Pre-push sweep could be lighter if /done flagged host-side impacts at build time — accumulate a manifest of "this change affects X in project docs" during /done while context is fresh, then the push sweep checks flagged spots instead of re-reading everything. Sweep stays as safety net but gets cheaper. Design question: cross-build staleness (build 3 invalidates something build 1 touched) still needs the sweep to catch it.
+  Parked: scoping unclear — interview question vs separate skill vs scaffolded template.
+
+- /done spec check — after writing the **Why:** field, Claude checks whether any reasoning constitutes a product decision that should update SPEC.md. Retrospective check (at decision time) vs the current /plan pipeline gate (prospective, at planning time).
+  Parked: both mechanisms need more real usage before deciding how they relate.
+
+- Threshold-based context management — if hooks ever gain token usage fields (e.g. `context_usage_pct`), the plugin could recommend `/compact` or `/clear` based on actual utilization instead of rule-based triggers. Research filed at resources/research/context-window-hook-access.md.
+  Blocked by: Anthropic adding token data to hook event input — external trigger, no slug.
+
+- Pre-push sweep could be lighter if /done flagged host-side impacts at build time — accumulate a manifest of "this change affects X in project docs" during /done while context is fresh, then the push sweep checks flagged spots instead of re-reading everything. Sweep stays as safety net but gets cheaper.
+  Parked: design question about cross-build staleness (build 3 invalidates something build 1 touched) still needs the sweep to catch it — unresolved.
