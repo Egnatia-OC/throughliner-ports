@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Install guide for non-coders + README reframe
+## [HASH] — Queue reader-test-workflow refresh + park scenario expansion
+
+Discussion started from "should we run more automated testing using resources/reader-test-workflow.js." Pushback first: the workflow's fake project has drifted from current SI shape — it includes a DECISIONS.md doc and routes design rationale through it, and queue entries use inline [build]/[test]/[idea]/[question] type tags. Running it as-is mostly measures drift between current docs and a stale fake project, not real reader comprehension, so findings come out noisy. The right move is to refresh the existing workflow before expanding scenarios. The new batch [reader-test-refresh] aligns the fake project with current SI (drop DECISIONS.md, replace with FAKE_LOG in current format; rewrite FAKE_QUEUE with Build/Test subheadings + Captures; mirror current CLAUDE-TEMPLATE.md; re-check session_start hook output strings; audit the 5 stock user questions), keeps the synthesis FAQ/Other split intact (collapsing would lose the user-question-shaped signal that feeds the FAQ template), and defers FAQ template staleness as downstream output of the refreshed first run rather than upfront work. Scenario expansion (setup interview, push-and-rezip sweep, mid-build resume, plan-mode close-out, empty-queue, audit-batch flow) parked as a follow-up — we can't decide which scenarios matter most until the refreshed run shows what the current fake project does and doesn't surface.
+
+**Queue changes:**
+- Added [reader-test-refresh] as batch #2, below [e2e-install-guide]
+- Parked "Add scenarios to reader-test-workflow.js" in Captures > Parked, gated on [reader-test-refresh] landing and being run once
+
+**Captures routed:** one parked (scenario expansion follow-up); /next Step 7 close-out drift capture from prior session not processed, deferred to next /plan
+
+## d4ca58b — Install guide for non-coders + README reframe
 
 The README's Install section sat mid-page and assumed the reader already had Claude Code installed and just needed to upload a zip. That covered the existing-user path but skipped the harder one: non-coders without Claude Code, without a paid plan, who don't want to touch a terminal. Two-part fix. README's Install section moves to position #1 above "Who it's for" and collapses to a one-sentence fast path with the zip link and Customise > Plugins flow inline, then a second paragraph telling non-set-up readers to open a fresh claude.ai chat, paste the raw INSTALL.md URL, and ask Claude to guide them through setup. The new INSTALL.md addresses Claude directly with a framing block (desktop app only, no terminal, web-search for current Claude Code download URLs rather than guessing), opens with a three-question interview (OS / Claude Code installed? / paid plan?) to route the user, then branches: (A) Claude Code desktop app install plus paid plan, where the Pro/Max subscription is recommended for non-coders but API pay-as-you-go is mentioned honestly as an alternative, and (B) plugin install with click-by-click Customise > Plugins > + > Create plugin > Upload plugin walkthrough plus the update procedure. The pacing block from Alex's global CLAUDE.md "conversation style" section is embedded verbatim at the end as a mandatory rule so Claude paces the walkthrough one step at a time and doesn't bundle. Preserves the fast path for already-set-up users while removing the biggest non-coder friction point — not knowing what to install first.
 

@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Install guide for non-coders + README reframe: README Install moved to #1 with fast-path one-liner + bridge to new INSTALL.md; INSTALL.md walks fresh-chat Claude through Code install, paid plan, plugin install with embedded pacing rules
+- [HASH] — Queue reader-test-workflow refresh + park scenario expansion: pushed back on expanding scenarios until existing workflow's stale fake project (DECISIONS.md, type-tagged queue) is refreshed; FAQ/Other split kept
+- d4ca58b — Install guide for non-coders + README reframe: README Install moved to #1 with fast-path one-liner + bridge to new INSTALL.md; INSTALL.md walks fresh-chat Claude through Code install, paid plan, plugin install with embedded pacing rules
 - de30e45 — plan.md Step 1 and next.md Step 1.1: rewrote LOG hash backfill to grep-gate → batch-read → `git log -n 1` common-case → `git log -S` fallback; dropped `--diff-filter=A`/blame
 - 0d209ef — next.md Step 5: new subsection routing Claude-discovered user-runnable testing to Captures as future test-only batch; existing course-correction body kept under "Approach not working"
 - a72667d — next.md Step 7 sub-step 3: narrowed "keep adjusting" close-out to "tighten what's already built before closing" — new work routes through Step 4 / Captures, not the close-out
