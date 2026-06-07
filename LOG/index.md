@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — next.md Step 7 sub-step 3: narrowed "keep adjusting" close-out to "tighten what's already built before closing" — new work routes through Step 4 / Captures, not the close-out
+- [HASH] — next.md Step 5: new subsection routing Claude-discovered user-runnable testing to Captures as future test-only batch; existing course-correction body kept under "Approach not working"
+- a72667d — next.md Step 7 sub-step 3: narrowed "keep adjusting" close-out to "tighten what's already built before closing" — new work routes through Step 4 / Captures, not the close-out
 - 796b842 — next.md Step 5: expanded "Abort and requeue" from one phrase to a 3-step procedure — return batch to QUEUE.md per Dependency ownership, captures route as normal, user runs /done with LOG entry describing the attempt
 - d7745ff — next.md Step 4: replaced "Adding to scope instead" with a coherence exception — default routes to Captures; fold into _build.md only when the raised item would share the build's log entry and index line per plugin-behaviour.md Index entries
 - 307c2c2 — plan.md, next.md, plugin-behaviour.md: swept "disposition" jargon to plain "promote/park/drop" — six hits across recommend/execute steps, Audit procedure, and Dependency ownership

@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Narrow next.md Step 7 "keep adjusting" close-out to within-scope tightening
+## [HASH] — Route Claude-discovered user-runnable testing to Captures (next.md Step 5)
+
+When /next surfaced a need for user-runnable testing mid-build — beyond what the batch's Test section specified — the discovery had no defined home. Inline-prompting broke flow and polluted the commit and log entry, ad-hoc queuing skipped the /plan dialogue batches need, and forgetting lost the discovery. Routing through Captures puts the surfacing in the same path as every other out-of-scope discovery, and a future /plan converts it to a test-only batch with proper specification. Placement: Step 5 (course-correction) over Step 4 (out-of-scope) because the surfacing source is Claude's own discovery — Step 5 already owns "Claude notices something mid-build." Step 5 picked up a subheading structure to fit: new `### Claude discovers user-runnable testing is needed [PROMPT]` at top (route to Captures, ask "anything else?", resume), existing course-correction body moved under `### Approach not working [DISCUSS, PROMPT]`. The new rule explicitly names itself a parallel to the Step 4 out-of-scope rule — same destination, different surfacing source.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 5 restructured into two subheadings — new top section for Claude-discovered user-runnable testing routing to Captures, existing course-correction body moved under "Approach not working"
+
+**Routed to Captures:** none
+
+## a72667d — Narrow next.md Step 7 "keep adjusting" close-out to within-scope tightening
 
 Step 7 sub-step 3 told the user "Run /done to record this and commit, or keep adjusting." The "keep adjusting" half read as open permission for ad-hoc mid-build ideation — exactly what plugin-behaviour.md Scope discipline rules out. The phrase was doing useful work for the case it covered (a small within-scope tightening pass before /done), so the fix narrows rather than removes: "Run /done to record this and commit, or tighten what's already built before closing." A trailing clarifier states that tightening refines already-done entries (not new work) and that anything new routes through the existing paths — Step 4 for out-of-scope items, Captures for thinking work — so the close-out no longer competes with those paths. Paired in the queue with a separate capture covering the larger /done-skip drift (Claude substituting /next for /done at completion); that one stays queued because its fix site is different (plugin-behaviour.md or a [SEQUENCE] tag on Step 7).
 

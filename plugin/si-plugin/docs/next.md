@@ -125,7 +125,19 @@ If Claude discovers during the build that additional work is needed:
 - **Minor addition** (one more file, small prerequisite): ask to add, continue if approved.
 - **Significant growth** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
 
-## Step 5: Mid-build course-correction [DISCUSS, PROMPT]
+## Step 5: Mid-build course-correction
+
+### Claude discovers user-runnable testing is needed [PROMPT]
+
+When during a build Claude notices something will need user-runnable testing beyond what the batch's Test section specifies — visual check, physical-device behaviour, subjective judgment Claude can't verify itself:
+
+1. Route the discovery to Captures in QUEUE.md as a future test-only batch. Draft the wording covering what needs testing and why, show before writing per plugin-behaviour.md Captures.
+2. Ask "anything else?" — repeat until the user says no.
+3. Resume the build.
+
+Don't attempt the test inline. Don't extend the current batch's scope to include it. Same destination as the Step 4 out-of-scope rule, different surfacing source — there the user raises it, here Claude notices it.
+
+### Approach not working [DISCUSS, PROMPT]
 
 If something goes wrong during the build — an assumption turns out to be false, a dependency is missing, or the approach isn't working:
 
