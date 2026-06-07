@@ -46,6 +46,13 @@ Claude stops and asks. It stays within batch scope. If something else needs chan
 
 Items you've decided not to work on now but don't want to lose. During /plan, parking moves an item to the Parked subsection until revisited. Dropping removes it entirely.
 
+Parked items carry one of two reason lines that signal whether they come back automatically:
+
+- `Blocked by: [slug] + condition` — a trigger exists. When the named item ships or the condition fires, Claude offers to unpark it during the next /plan or /next.
+- `Parked: short reason` — no trigger. The item stays parked until you bring it up; Claude won't auto-surface it.
+
+Nothing leaves active flow without one of these — prose alone isn't enough for Claude to track it mechanically.
+
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first). `log.md` has full entries for the current release — files touched, reasoning, captures routed. Older entries in `log-v*.md` files. For design rationale, search the log entries.

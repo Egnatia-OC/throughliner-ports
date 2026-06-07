@@ -113,12 +113,12 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 ## Current state
 
-**Status:** Target v1.8.0. Repo on GitHub, method docs set up (/setup complete).
+**Status:** Target v1.9.0. Repo on GitHub, method docs set up (/setup complete).
 
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures are plain bullets.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
 - **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), `LOG/log.md` for full entries (current release, newest first), `LOG/log-v*.md` for archived per-release entries.
 
