@@ -2,6 +2,12 @@
 
 A Claude Code plugin that lets you build apps without writing code yourself. You describe what you want; Claude builds it — and the plugin keeps the work organised across sessions so nothing drifts or gets lost.
 
+## Install
+
+**Already have Claude Code?** [Download the zip](https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip), then in the desktop app go to **Customise > Plugins > + > Create plugin > Upload plugin** and select `si-plugin.zip`. To update: uninstall the old version first (gear icon > Uninstall), then repeat.
+
+**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience.
+
 ## Who it's for
 
 Non-coders who know what their app should do but need a framework to keep Claude on track through multi-session builds.
@@ -16,14 +22,6 @@ The plugin splits your project into a build queue and walks you through it with 
 - `/done` — record what happened, test, commit
 
 Hooks run automatically in the background to enforce discipline — keeping your spec read-only during builds, locking scope to the current batch, and preventing unsafe git operations.
-
-## Install
-
-1. **[Download the plugin zip](https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip)** (direct download)
-2. Open the Claude Code desktop app
-3. Go to **Customise > Plugins > + > Create plugin > Upload plugin** and select the downloaded `si-plugin.zip`
-
-To update: uninstall the old version first (gear icon > Uninstall), then repeat steps 1–3.
 
 ## Operating conditions
 

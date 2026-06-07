@@ -23,3 +23,4 @@ Components that exist in this project. Updated after each build.
 - `LOG/log.md` — full session entries for the current release, newest first
 - `LOG/log-v*.md` — archived per-release log files (created at push time)
 - `README.md` — public-facing project description, install instructions, operating conditions
+- `INSTALL.md` — guide for non-coders aimed at Claude reading on the user's behalf in a fresh claude.ai chat; walks through Claude Code install, paid plan setup, and plugin install

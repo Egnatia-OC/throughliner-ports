@@ -7,15 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Add install guide for non-coders pointing at fresh Claude chats** **[install-guide]**
-Blocks: e2e-install-guide
-
-The README currently has a 3-step Install section that assumes the reader already has Claude Code installed and just needs to drop the zip in. That covers the existing-user path but skips the harder one: non-coders who don't yet have Claude Code, don't know they need a paid plan, and don't want to touch a terminal. The current install section is also positioned mid-page, so even the fast path requires scrolling. Fix is two-part: rework the README to give the existing-user path a one-liner at the top, then bridge into a pointer aimed at non-coders telling them to open a fresh Claude chat and ask it to guide them through setup. The bridge points at a new INSTALL.md written for Claude reading on the user's behalf — opens with framing (desktop app only, no terminal except where strictly necessary, assume zero terminal experience), interviews the user to figure out where they are (OS, Claude Code installed yet, paid plan?), then branches into Claude Code install + paid plan setup, then plugin install. The guide embeds the one-item-at-a-time guidance block from Alex's global CLAUDE.md so Claude paces the walkthrough properly. The new shape preserves the fast path for already-set-up users while removing the biggest non-coder friction point: not knowing what to install first.
-
-Build:
-- README.md: move Install section to position #1 (above "Who it's for"). Rewrite as two parts. (a) One-line shortcut at top — direct zip link + condensed 3-step Customise > Plugins flow for already-set-up readers. (b) Bridge paragraph for non-set-up readers — "New to Claude Code? Open a fresh Claude chat at claude.ai, paste this link [link to INSTALL.md], and ask it to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience."
-- New INSTALL.md at repo root. Opens with a framing block aimed at Claude (this guide is being read on a user's behalf; desktop app only; don't route to terminal except where strictly necessary; assume zero terminal experience). Then an opening interview: questions Claude asks to determine OS, whether Claude Code is installed, whether they have a paid plan. Then two branches: (A) install Claude Code desktop app, with the paid-plan requirement stated honestly; (B) install the SI plugin (expand the existing 3-step Customise > Plugins flow for someone who's never touched the plugin UI). Embed verbatim the one-item-at-a-time guidance block from C:\Users\Alex\.claude\CLAUDE.md so Claude paces the walkthrough.
-
 **E2E: install guide drives a fresh Claude chat through SI setup** **[e2e-install-guide]**
 Depends on: install-guide
 

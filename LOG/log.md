@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Speed up LOG hash backfill in plan.md and next.md
+## [HASH] — Install guide for non-coders + README reframe
+
+The README's Install section sat mid-page and assumed the reader already had Claude Code installed and just needed to upload a zip. That covered the existing-user path but skipped the harder one: non-coders without Claude Code, without a paid plan, who don't want to touch a terminal. Two-part fix. README's Install section moves to position #1 above "Who it's for" and collapses to a one-sentence fast path with the zip link and Customise > Plugins flow inline, then a second paragraph telling non-set-up readers to open a fresh claude.ai chat, paste the raw INSTALL.md URL, and ask Claude to guide them through setup. The new INSTALL.md addresses Claude directly with a framing block (desktop app only, no terminal, web-search for current Claude Code download URLs rather than guessing), opens with a three-question interview (OS / Claude Code installed? / paid plan?) to route the user, then branches: (A) Claude Code desktop app install plus paid plan, where the Pro/Max subscription is recommended for non-coders but API pay-as-you-go is mentioned honestly as an alternative, and (B) plugin install with click-by-click Customise > Plugins > + > Create plugin > Upload plugin walkthrough plus the update procedure. The pacing block from Alex's global CLAUDE.md "conversation style" section is embedded verbatim at the end as a mandatory rule so Claude paces the walkthrough one step at a time and doesn't bundle. Preserves the fast path for already-set-up users while removing the biggest non-coder friction point — not knowing what to install first.
+
+**Files touched:**
+- README.md: Install section rewritten and moved above "Who it's for"; fast-path one-liner + bridge paragraph to INSTALL.md
+- INSTALL.md: new file at repo root
+- REGISTRY.md: added INSTALL.md entry
+
+**Routed to Captures:** none
+
+## de30e45 — Speed up LOG hash backfill in plan.md and next.md
 
 The backfill instruction in both procedure docs suggested `git log --diff-filter=A` or blame — both return a wide set of commits Claude then has to scan and match to entry titles by eye, often reading the full log files for orientation. The new shape collapses this into a mechanical lookup. A `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md` gate up front makes the step a true no-op with zero reads when there's nothing to backfill, and restricting the grep to the two live files prevents archived log-v*.md files (which contain the literal string `[HASH]` in prose about the placeholder mechanism) from false-positiving. Batch-reading the matching files satisfies Edit's read-first rule in one round-trip. The common case — one new entry, one placeholder in log.md and one in index.md sharing the same hash — handled by a single `git log -n 1 --pretty=%h -- LOG/log.md` without per-placeholder lookups. `git log -S "<entry title>" --pretty=%h -- LOG/` falls back in only when the common case doesn't apply (multiple entries waiting, or hashes don't match). Same rewrite landed in both plan.md Step 1 and next.md Step 1.1.
 
