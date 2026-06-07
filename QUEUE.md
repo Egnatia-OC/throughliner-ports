@@ -7,14 +7,28 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Audit plugin-behaviour.md for project-agnostic vs app-building assumptions** **[behaviour-agnosticism-audit]**
+**Self-hosting dependency-management discipline** **[self-hosting-dependency-discipline]**
+
+In projects where SI edits itself (or any forked SI), batch ordering in QUEUE.md implicitly assumes the next batch will see the previous batch's effects. That's true for target-file edits Claude can read at author time, but false for host-side effects — hooks, loaded skill procedures, plugin-behaviour.md rules — which only refresh after push + uninstall/reinstall. The concrete bite happened recently: [capture-parking-discipline] was placed before [behaviour-agnosticism-audit] on the assumption that the new parking discipline would govern audit capture routing, but it wouldn't have unless a push happened between them. The fix is two parts: a discipline rule in this project's CLAUDE.md Working conventions distinguishing target-side from host-side dependencies, and a minimal structural form for marking push points in the queue — a `--- Push required before continuing ---` line between batches, paired with a `(host-side)` annotation on the dependent batch's `Depends on:` header. /next halts at the marker until the user has pushed and reinstalled. The parked [self-hosting-support-during-setup] capture also gets a scope addition so that whenever it ships, the scaffolding template carries all of this into forking projects' CLAUDE.md.
+
+Build:
+- This project's CLAUDE.md Working conventions: add a "Self-hosting dependency ordering" subsection stating the target-side vs host-side distinction, what counts as host-side (hooks, skill procedures, plugin-behaviour.md rules), and the ordering rule (place host-side-dependent batches after a push marker; annotate their `Depends on:` line with `(host-side)`). Include the worked example of [capture-parking-discipline] → push marker → [behaviour-agnosticism-audit].
+- This project's CLAUDE.md Working conventions: define the push-marker convention — a line `--- Push required before continuing ---` between batches in QUEUE.md indicates /next must halt until the user has pushed and reinstalled. /plan inserts the marker when placing a host-side-dependent batch.
+- plugin/si-plugin/docs/next.md: add a check at the top of /next's pick-next-batch logic — if the next non-empty line under Batches is a push marker, halt and tell the user to push and reinstall before re-running /next. Skill-level so it works for any self-hosting project, not just this one.
+- QUEUE.md parked capture [self-hosting-support-during-setup]: extend the description to include dependency-management awareness — the forking-project scaffolding template should carry the host-vs-target distinction, the ordering rule, the push-marker convention, and the (host-side) annotation into the new project's CLAUDE.md.
+
+Test:
+- Self-verifying from the doc text.
+- After the batch ships: on the next /next run where the top batch is a push marker, /next halts. (Naturally exercised when this batch ships and the next batch in queue is host-side-dependent.)
+
+**Audit plugin-behaviour.md and setup.md for project-agnostic vs app-building assumptions** **[behaviour-agnosticism-audit]**
 Blocks: ship-freeform-next-type, trickle-up-audit
 
-Plugin-behaviour.md is the universal rule layer — anything stated there applies to every skill, every project, every /next type including freeform once it ships. Pointing SI at a non-app project (records-keeping, research, writing) surfaces the question of how many rules in plugin-behaviour.md actually assume the project is an app being built with Claude Code. "One build at a time," "SPEC.md is read-only during builds," references to "code," "files touched," "the active batch's scope" — some of these likely carry app-building framing and would constrain freeform incorrectly. Auditing now, before trickle-up moves more rules up, keeps the universal layer clean by the time freeform's contract gets defined. Findings route through Captures so /plan decides each one — reword to be project-agnostic, demote to per-skill or per-type, or keep with a note on why the assumption is load-bearing.
+Plugin-behaviour.md is the universal rule layer — anything stated there applies to every skill, every project, every /next type including freeform once it ships. Setup.md sits one layer down but matters for the same reason: its 5-question interview framings are how every new project enters the method, and those framings carry app-building assumptions too (Q1 "What are you building," Q2 "What does it actually do," Q3 examples drawn from app development). Pointing SI at a non-app project (records-keeping, research, writing, tax) surfaces the question of how many rules and framings in both docs actually assume the project is an app being built with Claude Code. Auditing now, before trickle-up moves more rules up, keeps the universal layer clean by the time freeform's contract gets defined. Findings route through Captures so /plan decides each one — reword to be project-agnostic, demote to per-skill or per-type, or keep with a note on why the assumption is load-bearing.
 
 Audit:
-- Target: plugin/si-plugin/docs/plugin-behaviour.md
-- Criteria: rules or framings that assume the project is an app being built with Claude Code (vs project-agnostic — applies equally to a records-keeping project, a research project, a writing project). For each finding: quote the passage, name the assumption embedded, and propose one of (a) reword project-agnostic, (b) demote to per-skill or per-type rule, (c) keep with a note on why the assumption is load-bearing.
+- Target: plugin/si-plugin/docs/plugin-behaviour.md and plugin/si-plugin/docs/setup.md (interview questions and their examples specifically).
+- Criteria: rules, framings, or example sets that assume the project is an app being built with Claude Code (vs project-agnostic — applies equally to a records-keeping project, a research project, a writing project, a tax-prep project). For each finding: quote the passage, name the assumption embedded, and propose one of (a) reword project-agnostic, (b) demote to per-skill or per-type rule, (c) keep with a note on why the assumption is load-bearing.
 
 **E2E: install guide drives a fresh Claude chat through SI setup** **[e2e-install-guide]**
 Depends on: install-guide
@@ -139,6 +153,28 @@ Build:
 Test:
 - Self-verifying from the doc text. After the rewrite, the audit-batch wording reads cleanly for any artifact type without requiring "(but adapt to your case)" handwaving.
 
+**Pre-existing content handling in /setup Case B** **[setup-preexisting-content-handling]**
+
+Setup.md is silent on what to do with pre-existing non-method content in a Case B folder (some content present, no method docs). Observed in a real /setup run on a tax-prep folder with one pre-existing brief: Claude judgment-called to peek at the brief before Q1 (used it to frame a clarifier without pre-answering) and to leave it untouched during scaffolding while naming it in the closing message. Both calls landed, but a different run could skip the peek (asking Q1 cold and missing context) or pre-answer Q1 from the brief (bundling, against the rules). The fix is to make both behaviours explicit so they don't ride on judgment.
+
+Build:
+- plugin/si-plugin/docs/setup.md Case B branch: add a rule that Claude peeks at any pre-existing user content before Q1 — use it to frame the question with a parenthetical clarifier if useful, never to pre-answer it. One short example showing the framing-vs-bundling line.
+- plugin/si-plugin/docs/setup.md Case B branch: add a rule that pre-existing user content is left untouched during scaffolding and explicitly named in the closing message as a source doc the user can refer back to.
+
+Test:
+- Self-verifying on the next /setup run in a Case B folder.
+
+**Forbid illustrative expansion in /setup Q4 batch entry** **[setup-q4-no-expansion]**
+
+Setup.md Q4's rule is "one rough Build entry in QUEUE.md, in user's words, no scope splitting." Observed in a real /setup run: Claude wrote the batch with parenthesized examples drawn from a pre-existing source doc ("e.g. overlocker receipt, mortgage interest %"). Parenthesized examples read as illustrations not commitments, but they're still expansion beyond the user's words — and a queue entry with examples looks like the user agreed to those items even when they're in parens. The rule needs tightening: no expansion at all, even illustrative. If examples would clarify what's in scope, the place is a Q4 follow-up question to the user, not a parenthetical in the written entry.
+
+Build:
+- plugin/si-plugin/docs/setup.md Q4 rule: tighten "in user's words, no scope splitting" to "in user's words verbatim — no expansion, no illustrative examples, no parentheticals drawn from visible context. If examples would clarify scope, ask a Q4 follow-up; don't smuggle them into the entry."
+- plugin/si-plugin/docs/setup.md Q4 rule: note that the existing one-follow-up-max rule for vague answers covers the case where examples actually are needed.
+
+Test:
+- Self-verifying on the next /setup run where Q4 is answered and visible source content exists.
+
 ### Parked
 
 - **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md.
@@ -151,12 +187,16 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ---
 
-- Self-hosting dependency-management gotcha: in projects where SI edits itself (or any forked SI), batch ordering in QUEUE.md implicitly assumes the next batch will see the previous batch's effects. True for target-file edits Claude can read at author time; false for host-side effects (hooks, loaded skill procedures, plugin-behaviour.md rules) which don't refresh until push + uninstall/reinstall. Concrete bite this session: [capture-parking-discipline] was placed before [behaviour-agnosticism-audit] on the assumption that the new parking discipline would be operative during audit capture routing — but it won't be unless we push between them. Implications: (a) cross-batch ordering needs to distinguish target-side dependencies from host-side ones, (b) push points may need to be explicit dependency edges, not implicit, (c) the parked [self-hosting-support-during-setup] capture needs an addition: dependency-management awareness for forking projects' CLAUDE.md. Home for the rule once defined: this project's CLAUDE.md Working conventions + forking-project scaffolding template.
-
 ### Parked
 
 - **[parked]** Decide whether to add an inline marker for internal-only terms in procedure prose. The marker would let procedure docs flag internal terms inline so the translate-or-omit rule fires mechanically rather than relying on Claude matching against the vocabulary list each time.
   Blocked by: [narration-vocabulary] + observed leakage after it ships
+
+- **[user-execution-batch-shape]** When the user is the executor of a batch (gather these receipts, identify the lender, call the ATO) rather than Claude, the existing build/test/audit shapes don't quite fit. Build batches assume Claude executes; test batches are about verification; audit batches are read-and-route. A user-execution batch sits closest to a test batch in mechanics (user runs steps, Claude facilitates), but it's not verification — it's the primary work. Observed during /setup on a tax-prep folder: queueing batches that were mostly user-action items felt weird, even though step-by-step communication rules in plugin-behaviour.md would handle the running well. Three possible landings: (a) new `User:` subheading alongside Build/Test/Audit, (b) covered by existing types + freeform once shipped, (c) framing-only — "build" means "user does it" in non-coder projects, no new structure. Decision premature without running several user-execution batches first.
+  Parked: needs experience running 2-3 user-execution batches in the tax project before the right landing is clear.
+
+- **[freeform-on-demand]** Revise [ship-freeform-next-type] to be on-demand rather than queue-driven. Queueing "I did some manual work, wrap it up" is only ceremony — by the time the batch is in the queue, the work is already done and the entry exists solely to justify running /next. On-demand invocation (e.g. `/next freeform` with no batch required) matches the trigger. /plan-side discipline still applies — ask "could this be build, test, or audit?" before allowing freeform, and require a one-line statement of why none fit. Rides alongside [ship-freeform-next-type] rather than replacing it; both unpark together.
+  Blocked by: [ship-freeform-next-type]
 
 - **[ship-freeform-next-type]** Add a fourth /next type — freeform — for sessions that don't fit build/test/audit. Trigger case: user has applied (or is about to apply) handmade changes to their project and wants Claude to wrap up the work — record what happened in LOG and commit. Doesn't fit build (Claude isn't building), test (nothing being verified), or audit (no read-and-route shape; the work is already done). Currently shoehorned into fake build batches or skipped entirely. The risk isn't that well-defined audits drain to freeform — it's /plan-side discipline: freeform existing as an option could let less-disciplined planning skip the work of finding a tighter type. Mitigation lives at /plan: ask "could this be build, test, or audit?" before allowing freeform; require a one-line statement of why none fit.
   Blocked by: [behaviour-agnosticism-audit]
