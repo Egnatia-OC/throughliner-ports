@@ -151,7 +151,7 @@ If the conversation is getting long and context is running low, prefer these opt
 When all entries are ticked:
 1. Tell the user the build is complete.
 2. Show what was done (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or keep adjusting."
+3. Say: "Run /done to record this and commit, or tighten what's already built before closing." Tightening means refining the entries that are already done — not raising new work. Anything new routes through the existing paths: out-of-scope items via Step 4, thinking work via Captures.
 
 Do NOT delete _build.md yourself. That's /done's job.
 

@@ -7,13 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Rewrite next.md Step 7 "keep adjusting" close-out language** **[keep-adjusting-rewrite]**
-
-next.md Step 7's close-out invites the user to "keep adjusting" alongside the /done offer. The phrase is doing useful work — sometimes a build needs a small within-scope tightening pass before /done — but it reads as permission for ad-hoc mid-build ideation, which is exactly what plugin-behaviour.md Scope discipline rules out. The fix narrows the language: adjustments are for tightening within-scope work that's already in _build.md, not for raising new in-scope or out-of-scope items (those route through Captures or Step 4 respectively, both already covered). Small wording change, but it removes a quiet contradiction with the broader scope-discipline rules.
-
-Build:
-- plugin/si-plugin/docs/next.md Step 7 close-out: rewrite the "keep adjusting" framing. New shape: the adjust-or-/done choice is between (a) running /done now, or (b) tightening already-built entries before /done. Anything new — in-scope or out-of-scope — routes through the existing paths (Step 4 for out-of-scope, captures for thinking work), not through the close-out as ad-hoc continuation.
-
 **Route mid-build discoveries of unplanned user testing to Captures** **[route-unplanned-testing]**
 
 When /next surfaces a need for user-runnable testing during a build — beyond what the batch's Test section specifies — the discovery currently has no defined home. Claude might inline-prompt the user, queue it ad hoc, or forget. None of those preserve scope discipline: inline-prompting breaks the build's flow and pollutes the commit and log entry, ad-hoc queuing skips the /plan dialogue that batches need, and forgetting loses the discovery entirely. Routing through Captures puts the surfacing in the same path as every other out-of-scope discovery, and a future /plan converts it to a test-only batch with the dialogue it needs to be specified properly.

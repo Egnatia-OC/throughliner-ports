@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Expand next.md Step 5 "abort and requeue" from a phrase to a procedure
+## [HASH] — Narrow next.md Step 7 "keep adjusting" close-out to within-scope tightening
+
+Step 7 sub-step 3 told the user "Run /done to record this and commit, or keep adjusting." The "keep adjusting" half read as open permission for ad-hoc mid-build ideation — exactly what plugin-behaviour.md Scope discipline rules out. The phrase was doing useful work for the case it covered (a small within-scope tightening pass before /done), so the fix narrows rather than removes: "Run /done to record this and commit, or tighten what's already built before closing." A trailing clarifier states that tightening refines already-done entries (not new work) and that anything new routes through the existing paths — Step 4 for out-of-scope items, Captures for thinking work — so the close-out no longer competes with those paths. Paired in the queue with a separate capture covering the larger /done-skip drift (Claude substituting /next for /done at completion); that one stays queued because its fix site is different (plugin-behaviour.md or a [SEQUENCE] tag on Step 7).
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 7 sub-step 3 — "keep adjusting" replaced with "tighten what's already built before closing", plus inline clarifier routing new work to Step 4 / Captures
+
+**Routed to Captures:** none
+
+## 796b842 — Expand next.md Step 5 "abort and requeue" from a phrase to a procedure
 
 Step 5's "Abort and requeue" option was one line — "close what's done via /done and route the rest back to QUEUE.md for replanning" — which left every concrete question of the abort mechanism unanswered: is _build.md deleted, does the batch return as-was, what happens to captures from the attempt, where does the abort land in the LOG. Because the mechanics were unclear, abort became a path Claude avoided, which meant salvage attempts got pushed past their useful point. The replacement is a 3-step procedure inlined under the bullet: (1) return the batch text to QUEUE.md with placement per plugin-behaviour.md Dependency ownership — original position or top depending on what was learned; (2) captures from the attempt route as normal under Step 4 rules; (3) the user runs /done — _build.md stays in place so /done's mode detection still fires Build close-out, and the only differences from a completed build are that the LOG entry's "what was built" describes the attempt and why it was aborted rather than describing a completion, and the batch returns to QUEUE.md rather than disappearing into the log. The Build close-out shape is reused deliberately so no /done changes are needed — the variant behaviour lives entirely in the LOG entry content and the QUEUE.md re-insertion, both decided at next.md time.
 
