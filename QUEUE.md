@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Speed up LOG hash backfill with `git log -S`** **[hash-backfill-speedup]**
-
-The backfill instruction in plan.md and next.md suggests `git log --diff-filter=A` or blame, both of which return a wider set of commits that Claude has to scan and match to entry titles by eye, plus often reading the full log files for orientation. `git log -S "<entry title>" --pretty=%h -- LOG/` returns the hash mechanically per placeholder — no scanning, no matching, no log reading. Pair it with a batch-read of every file containing `[HASH]` upfront so Edit's read-first rule is satisfied in one round-trip instead of one per placeholder. The instruction lives in two places (plan.md Step 1, next.md Step 1) and gets the same rewrite in both. Three further simplifications tighten the common case. A `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md` gate up front makes the step a true no-op with zero reads when nothing matches. The common case is one new entry — one placeholder in log.md and one in index.md sharing the same hash — so a single `git log -n 1 --pretty=%h -- LOG/log.md` handles both without per-placeholder lookups; `git log -S` falls back in only when the common case doesn't apply (multiple entries waiting, or hashes don't match). Restrict the scan to `LOG/log.md` and `LOG/index.md` specifically (or use the stricter patterns `^## \[HASH\]` and `^- \[HASH\]`) so archived files like log-v1.6.1.md, which contain the literal string `[HASH]` in prose about the placeholder mechanism, don't false-positive.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 1 "Backfill LOG hashes first": rewrite the instruction. New shape: (1) run `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md` first — if empty, return immediately; (2) batch-read the matching files; (3) common case: if there's one placeholder in each, run `git log -n 1 --pretty=%h -- LOG/log.md` and use that hash for both; (4) fallback: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash; (5) replace `[HASH]` in place. Drop the `--diff-filter=A` and blame fallbacks.
-- plugin/si-plugin/docs/next.md Step 1 "Backfill LOG hashes": same rewrite, same shape.
-
 **Add install guide for non-coders pointing at fresh Claude chats** **[install-guide]**
 Blocks: e2e-install-guide
 

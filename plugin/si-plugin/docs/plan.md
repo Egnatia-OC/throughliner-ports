@@ -18,7 +18,7 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 
 ## Step 1: Read state and entry question
 
-**Backfill LOG hashes first:** [BRIEF] Scan `LOG/log.md` and `LOG/index.md` for `[HASH]` placeholders. For each, find the hash of the commit that introduced the entry (e.g. `git log --diff-filter=A --pretty=%h -- LOG/log.md` walked top-down, or by blame) and replace `[HASH]` in place. No separate commit — the working-tree edit folds into whatever commit this session later makes. If nothing to backfill, no output.
+**Backfill LOG hashes first:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md`. If empty, no output, move on. Otherwise batch-read the matching files. Common case — one placeholder in each, sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/log.md` and use that hash for both. Fallback — multiple placeholders, or the common-case hash doesn't match the entry titles: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit — the working-tree edit folds into whatever commit this session later makes.
 
 Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 

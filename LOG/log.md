@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Route Claude-discovered user-runnable testing to Captures (next.md Step 5)
+## [HASH] — Speed up LOG hash backfill in plan.md and next.md
+
+The backfill instruction in both procedure docs suggested `git log --diff-filter=A` or blame — both return a wide set of commits Claude then has to scan and match to entry titles by eye, often reading the full log files for orientation. The new shape collapses this into a mechanical lookup. A `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md` gate up front makes the step a true no-op with zero reads when there's nothing to backfill, and restricting the grep to the two live files prevents archived log-v*.md files (which contain the literal string `[HASH]` in prose about the placeholder mechanism) from false-positiving. Batch-reading the matching files satisfies Edit's read-first rule in one round-trip. The common case — one new entry, one placeholder in log.md and one in index.md sharing the same hash — handled by a single `git log -n 1 --pretty=%h -- LOG/log.md` without per-placeholder lookups. `git log -S "<entry title>" --pretty=%h -- LOG/` falls back in only when the common case doesn't apply (multiple entries waiting, or hashes don't match). Same rewrite landed in both plan.md Step 1 and next.md Step 1.1.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md: Step 1 "Backfill LOG hashes first" rewritten
+- plugin/si-plugin/docs/next.md: Step 1.1 "Backfill LOG hashes" rewritten with the same shape
+
+**Routed to Captures:** none
+
+## 0d209ef — Route Claude-discovered user-runnable testing to Captures (next.md Step 5)
 
 When /next surfaced a need for user-runnable testing mid-build — beyond what the batch's Test section specified — the discovery had no defined home. Inline-prompting broke flow and polluted the commit and log entry, ad-hoc queuing skipped the /plan dialogue batches need, and forgetting lost the discovery. Routing through Captures puts the surfacing in the same path as every other out-of-scope discovery, and a future /plan converts it to a test-only batch with proper specification. Placement: Step 5 (course-correction) over Step 4 (out-of-scope) because the surfacing source is Claude's own discovery — Step 5 already owns "Claude notices something mid-build." Step 5 picked up a subheading structure to fit: new `### Claude discovers user-runnable testing is needed [PROMPT]` at top (route to Captures, ask "anything else?", resume), existing course-correction body moved under `### Approach not working [DISCUSS, PROMPT]`. The new rule explicitly names itself a parallel to the Step 4 out-of-scope rule — same destination, different surfacing source.
 
