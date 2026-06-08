@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — self-hosting dependency-management discipline: target-vs-host distinction, push-marker queue convention, /next halt
+## [HASH] — behaviour-agnosticism audit: 11 findings routed to Captures
+
+plugin-behaviour.md is the universal rule layer and setup.md is the on-ramp every project enters through, so app-building assumptions in either doc leak straight into how SI treats non-app projects (records-keeping, research, writing, tax-prep). The audit read both pass-by-pass against the criterion "what assumes the project is an app being built with Claude Code." 2 findings in plugin-behaviour.md (doc-routing line uses "product"/"components"; spec-entry pipeline uses "features" and external "user"). 9 in setup.md, spread across the Step 1 case wording ("source code"/"source files"), the three scaffolded doc templates (SPEC.md "the app is", QUEUE.md "builds first, then tests" missing Audit and freeform, REGISTRY.md "components"/"after each build"), all five interview questions and examples, and the Step 4 close-out. Two findings surfaced second-order issues worth flagging: REGISTRY.md may want a Q3.5-style interview prompt so the user supplies their own noun for project parts; the Step 4 close-out shouldn't unconditionally offer /next when Q4 may not have produced a usable first batch. Q4 itself got an inclusive-wording approach (keep "build/working" for app projects, add "do/made progress on" for non-app) rather than replacement — dropping "build" would alienate non-coders building with a codebase. All 11 findings live in unprocessed Captures for /plan to decide each (reword project-agnostic / demote per-type / keep with load-bearing reason).
+
+**Files touched:**
+- QUEUE.md: removed [behaviour-agnosticism-audit] batch from Batches; appended 11 captures (one per finding) to unprocessed Captures.
+- _build.md: created at audit start, deleted at close.
+- LOG/log.md and LOG/index.md: HASH backfill for the prior commit (777b4c3) folded in.
+
+**Routed to Captures:** 11 findings (see prose above and QUEUE.md captures from this session).
+
+## 777b4c3 — self-hosting dependency-management discipline: target-vs-host distinction, push-marker queue convention, /next halt
 
 Batch ordering in QUEUE.md implicitly assumed the next batch sees the previous batch's effects — true for target-side edits Claude can read at author time, false for host-side effects (hooks, loaded skill procedures, plugin-behaviour.md rules) that only refresh after push + uninstall/reinstall. The recent bite: [capture-parking-discipline] placed before [behaviour-agnosticism-audit] on the assumption the new parking discipline would govern audit capture routing, but it wouldn't have unless a push happened between them. Fixed in two parts: a discipline rule in this project's CLAUDE.md Working conventions distinguishing target-side from host-side, and a structural form — a `--- Push required before continuing ---` queue line paired with a `(host-side)` annotation on `Depends on:`. /next halts at the marker until the user has pushed and reinstalled. The marker check sits in next.md (skill-level, so it works for any self-hosting fork), the discipline rule sits in this project's CLAUDE.md (host-only, doesn't propagate via plugin update). The parked [self-hosting-support-during-setup] capture was extended so the scaffolding template, whenever it ships, carries all of this — target/host distinction, ordering rule, marker convention, annotation — into forking projects' CLAUDE.md.
 
