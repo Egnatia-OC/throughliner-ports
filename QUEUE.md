@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Trickle-up audit: rules that belong in plugin-behaviour.md** **[trickle-up-audit]**
-
-The four procedure docs (setup.md, plan.md, next.md, done.md) likely repeat rules that aren't skill-specific. Repeated rules cost token budget at every skill load and drift between copies; plugin-behaviour.md exists so cross-skill rules are stated once. This audit finds the candidates and surfaces them as captures for /plan to route — no direct edits, per the audit-batch contract.
-
-Audit:
-- Target: setup.md, plan.md, next.md, done.md
-- Criteria: rules stated in more than one of the four; rules that aren't skill-specific even when they appear in only one; anything reading like communication, captures, why-pipeline, dependency ownership, or file safety guidance (those categories already live in plugin-behaviour.md). For each finding: name the rule, name the doc(s) it appears in, note whether plugin-behaviour.md already has a related rule, and propose a target location.
-
 **Walk plugin-behaviour.md first half line-by-line to decide universal vs per-skill** **[plugin-behaviour-walkthrough-1]**
 Blocks: [plugin-behaviour-walkthrough-2]
 
@@ -272,6 +264,17 @@ Build:
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
+
+- **[trickle-up-next-md-duplicates]** next.md restates 4 rules already in plugin-behaviour.md — SPEC read-only (line 97 = pb:86), don't fix outside scope (line 98 = pb:84), state regressions plainly (line 99 = pb:9), one build at a time (line 192 = pb:87). Wording has already drifted slightly between copies. Remove the 4 duplicates from next.md; the non-duplicated rules in those sections stay (scope expansion ask, REGISTRY not build scope, per-entry ticking, entries are the contract).
+
+- **[trickle-up-done-md-file-safety]** done.md restates 2 file safety rules from plugin-behaviour.md — "Never git add -A or git add ." (lines 83, 135 = pb:104) and "Git push is always a prompt" (line 155 = pb:105). The git-add rule appears twice within done.md (Build close-out 2.4 and Plan close-out 3). Remove the file safety restatements; the commit sections keep their procedural steps (stage, draft message, wait for okay).
+
+- **[trickle-up-setup-md-no-jargon]** setup.md restates "plain language, no jargon" from plugin-behaviour.md — "Use the user's language — don't rephrase into jargon" (line 139 = pb:7). The universal rule already covers the interview case. Remove from setup.md.
+
+- **[trickle-up-hash-backfill-duplication]** LOG hash backfill procedure is duplicated word-for-word in plan.md (line 30) and next.md (line 9). Not a rule — a mechanical procedure — so plugin-behaviour.md isn't the target. Duplication means both docs need updating when the procedure changes.
+  Blocked by: [log-hash-backfill-in-done] — that batch consolidates the backfill into done.md, removing both copies. If it lands as designed, this finding is resolved as a side effect.
+
+- **[trickle-up-ask-when-unsure]** next.md line 195 ("Unsure about an implementation choice? Ask. Don't guess and build wrong.") is universal but has no equivalent in plugin-behaviour.md. Applies to every skill — /plan ordering calls, /setup scaffolding choices, /done routing decisions. Add a generalized version to plugin-behaviour.md Communication ("When uncertain, ask. Don't guess and proceed." or similar), then remove the next.md copy.
 
 - **[setup-registry-template-and-noun]** setup.md REGISTRY.md template (lines 78–82, scaffolded into user's REGISTRY.md) assumes projects have "components" (software-architecture term) and that builds are the only thing that adds to the registry: "Components that exist in this project. Updated after each build." A tax-prep project might register a receipts folder, a lender list, a year-end packet — not components, and entered via audit or freeform work, not builds. Proposal: add a Q3.5-style interview prompt — "what are this project's parts called?" — and use the user's own noun in the scaffolded REGISTRY.md. Decouple the update trigger from "build" too ("Updated as the project grows" or similar). Held out of the project-agnosticism sweep — the Q3.5 proposal adds a new interview question, not just a reword; deserves its own consideration. From [behaviour-agnosticism-audit].
 

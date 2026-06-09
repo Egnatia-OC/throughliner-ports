@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [reader-test-refresh]: reader-test workflow's fake project refreshed to current SI shape
+## [HASH] — /next [trickle-up-audit]: setup.md, plan.md, next.md, done.md audited for rules that belong in plugin-behaviour.md
+
+The four procedure docs were read systematically against plugin-behaviour.md to find cross-skill rules that cost token budget as duplicates and drift between copies. Three docs carried rules already stated in plugin-behaviour.md: next.md repeated 4 (SPEC read-only, don't fix outside scope, state regressions plainly, one build at a time — wording had already drifted on the regressions rule), done.md repeated 2 file safety rules (git add prohibition appearing twice within done.md itself, plus git push prompt), and setup.md repeated the no-jargon communication rule. One cross-doc procedure duplication surfaced: the LOG hash backfill procedure lives word-for-word in both plan.md and next.md — not a rule so plugin-behaviour.md isn't the target, and the existing [log-hash-backfill-in-done] batch already proposes consolidation. One non-skill-specific rule was found only in next.md: "ask when unsure, don't guess" has no equivalent in plugin-behaviour.md despite applying universally. All 5 findings captured. Session also backfilled 4 stale [HASH] placeholders across LOG files (log.md, index.md, log-v1.8.0.md, log-v1.9.0.md).
+
+**Files read (audit targets):**
+- plugin/si-plugin/docs/setup.md, plan.md, next.md, done.md
+- plugin/si-plugin/docs/plugin-behaviour.md (reference)
+
+**Routed to Captures:** [trickle-up-next-md-duplicates], [trickle-up-done-md-file-safety], [trickle-up-setup-md-no-jargon], [trickle-up-hash-backfill-duplication], [trickle-up-ask-when-unsure]
+
+## 2356cb7 — /next [reader-test-refresh]: reader-test workflow's fake project refreshed to current SI shape
 
 The reader-test workflow's fake bookshelf tracker project had drifted from current SI: it carried a DECISIONS.md doc (replaced by the LOG-based why-pipeline months ago), used inline [build]/[test]/[idea]/[question] type tags (replaced by Build/Test subheadings + separate Captures section), and its CLAUDE.md still showed the older template. Running the workflow against that stale fake project measured drift between docs and the fake project rather than drift between docs and real reader comprehension — findings came out noisy. The refresh aligned all five fake-project constants (FAKE_LOG replacing FAKE_DECISIONS, FAKE_QUEUE with current format, FAKE_BUILD with Index entry candidate and entry-description ticks, FAKE_CLAUDE_MD from current template) and fixed two session-start string drifts caught by comparing against session_start.py ("No active build." → "Ready.", removal of stale "The previous session was interrupted mid-build."). The user-questions audit replaced one trivially-answered question (SPEC.md read-only, stated word-for-word in CLAUDE.md Rules) with a scope-discipline question that requires connecting dots across procedure docs. Synthesis FAQ/Other split left intact — the routing split is load-bearing on downstream processing.
 

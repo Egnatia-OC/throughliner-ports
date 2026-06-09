@@ -2,7 +2,7 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — Queue reader-test-workflow refresh + park scenario expansion
+## 3814815 — Queue reader-test-workflow refresh + park scenario expansion
 
 Discussion started from "should we run more automated testing using resources/reader-test-workflow.js." Pushback first: the workflow's fake project has drifted from current SI shape — it includes a DECISIONS.md doc and routes design rationale through it, and queue entries use inline [build]/[test]/[idea]/[question] type tags. Running it as-is mostly measures drift between current docs and a stale fake project, not real reader comprehension, so findings come out noisy. The right move is to refresh the existing workflow before expanding scenarios. The new batch [reader-test-refresh] aligns the fake project with current SI (drop DECISIONS.md, replace with FAKE_LOG in current format; rewrite FAKE_QUEUE with Build/Test subheadings + Captures; mirror current CLAUDE-TEMPLATE.md; re-check session_start hook output strings; audit the 5 stock user questions), keeps the synthesis FAQ/Other split intact (collapsing would lose the user-question-shaped signal that feeds the FAQ template), and defers FAQ template staleness as downstream output of the refreshed first run rather than upfront work. Scenario expansion (setup interview, push-and-rezip sweep, mid-build resume, plan-mode close-out, empty-queue, audit-batch flow) parked as a follow-up — we can't decide which scenarios matter most until the refreshed run shows what the current fake project does and doesn't surface.
 
