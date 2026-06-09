@@ -2,7 +2,22 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next aborted on [plugin-behaviour-walkthrough-1]: thinking work misrouted as audit batch; gap captured
+## [HASH] — /plan: walkthrough batches removed (thinking work); 4 install captures promoted
+
+Session opened with discussion about [plugin-behaviour-walkthrough-1], which /next had aborted the previous session (b08e09a) as thinking work wearing an audit shape. Both walkthrough batches removed from Batches — their output is a routing decision list (decisions, not findings-to-Captures), so the work belongs in /plan as interactive sessions, not as queued batches. The build batch to execute the resulting routing decisions gets queued after those /plan sessions produce them. [next-split-by-type] is now the top of queue.
+
+Captures processing: 5 of 26 processed before close-out. [install-paid-plan-ambush-and-pricing-opacity] promoted as [install-paid-plan-upfront] — surface the Pro-plan requirement before Q1 as an informed-consent gate with pricing pointer; [install-routing-no-plan-vs-free-plan-ambiguity] folded into same batch as a build entry (Step 1 routing language fix). [install-customise-plugins-ui-path-stale-or-wrong] promoted as [install-upload-path-clarity] — confirm the UI path, warn about the misleading "Create a plugin" label, add screenshot. [install-github-raw-url-feels-sketchy-no-provenance] promoted as [install-download-provenance] — add provenance line and download expectation. [install-open-a-project-folder-undefined] promoted as [install-define-open-folder] — replace "open a project folder" with concrete instruction to create an empty folder for the smoke test.
+
+**Queue changes:**
+- Removed [plugin-behaviour-walkthrough-1] and [plugin-behaviour-walkthrough-2] (thinking work, not audit)
+- Promoted [install-paid-plan-upfront] at queue bottom (absorbs [install-routing-no-plan-vs-free-plan-ambiguity])
+- Promoted [install-upload-path-clarity] after [install-paid-plan-upfront]
+- Promoted [install-download-provenance] after [install-upload-path-clarity]
+- Promoted [install-define-open-folder] after [install-download-provenance]
+
+**Captures routed:** 5 promoted (4 as new batches, 1 folded into [install-paid-plan-upfront])
+
+## b08e09a — /next aborted on [plugin-behaviour-walkthrough-1]: thinking work misrouted as audit batch; gap captured
 
 /next picked up [plugin-behaviour-walkthrough-1] and aborted at pre-flight when the user flagged it as thinking work, not audit work. The batch's output is a routing decision list (where each plugin-behaviour.md rule belongs) — decisions, not findings-to-Captures. It passed the audit exception in plan.md's thinking-work rule because it has the surface shape of a systematic read against fixed criteria, but the rule has two gaps: "Never queue thinking work as a *build* batch" only names build batches (implying other types are fine), and framing audit as "the one exception" treats it as thinking work with permission rather than a separate category that was never thinking work in the first place. The user had specifically asked /plan to create the batch, and /plan complied — the procedure didn't give it grounds to push back. Capture filed describing both gaps and the fix shape (drop the "build" qualifier, reframe audit as a separate category). LOG hashes backfilled to 90970cc.
 

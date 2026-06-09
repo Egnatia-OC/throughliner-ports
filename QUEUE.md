@@ -7,26 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Walk plugin-behaviour.md first half line-by-line to decide universal vs per-skill** **[plugin-behaviour-walkthrough-1]**
-Blocks: [plugin-behaviour-walkthrough-2]
-
-The current plugin-behaviour.md is one universal rule book that every skill reads at session start. Some rules genuinely apply to every skill; others only ever matter inside one skill but live in the universal doc because that's where universal-feeling things ended up. The size compounds the issue — every skill pays the read cost for rules it never uses. This batch is the first of two interactive walkthroughs where the user decides, per rule, where it actually belongs. Output is a routing list that feeds a follow-up build batch doing the moves.
-
-Audit:
-- Target: plugin/si-plugin/docs/plugin-behaviour.md, sections Communication, Response-shape tags, Tool use, Research, Captures, Why-pipeline (lines ~5–66).
-- Criteria: for each rule/bullet, decide one of — stays universal (every skill uses it), moves to one specific skill (/setup, /plan, /next, /done), or repeats in some subset of skill docs. Capture the decision plus a one-line reason per rule.
-- Output: a written routing decision list (one entry per rule) that the follow-up build batch will execute. Decisions live in a working file the build batch reads; not written into plugin-behaviour.md or any skill doc during this session.
-
-**Walk plugin-behaviour.md second half line-by-line to decide universal vs per-skill** **[plugin-behaviour-walkthrough-2]**
-Depends on: [plugin-behaviour-walkthrough-1]
-
-Continuation of the first walkthrough. Same method, covering the remaining sections of plugin-behaviour.md.
-
-Audit:
-- Target: plugin/si-plugin/docs/plugin-behaviour.md, sections Index entries, Dependency ownership, File safety, Prior decisions, Context awareness (lines ~68–118).
-- Criteria: same as walkthrough-1 — for each rule/bullet, decide stays universal, moves to one specific skill, or repeats in a subset. Capture the decision plus a one-line reason.
-- Output: appended to the same routing decision list from walkthrough-1. The combined list feeds the follow-up build batch that executes the moves.
-
 **Split next.md into per-session-type docs** **[next-split-by-type]**
 
 next.md is the largest procedure doc (196 lines) because it carries three session flows (build, test, audit) plus abort/resume branches in one file. Every /next session reads the entire doc even though it only runs one flow. Splitting into separate docs — one per session type, plus a shared entry/routing front page — cuts per-session read cost and lets each flow's rules evolve without tangling with the others.
@@ -275,6 +255,41 @@ Build:
 - INSTALL.md: add a brief human-facing introduction at the top — what the guide is, who it's for, what to expect from the walkthrough.
 - Verify the restructured guide still works when pasted into a Claude chat: Claude must still find and follow the AI instructions despite their new position.
 
+**Surface paid-plan requirement before INSTALL.md interview** **[install-paid-plan-upfront]**
+
+The paid-plan requirement (Pro minimum) is introduced at Q3 of the install interview with no preamble. Cold-stranger persona left to google pricing and didn't come back; free-plan persona hit it as a contradiction of lived experience. "Pay-as-you-go API credit" reads as uncapped to non-coders; plan limits aren't stated. Moving the requirement before Q1 turns it into an informed-consent gate — users who can't or won't pay learn that immediately instead of three questions in.
+
+Build:
+- INSTALL.md: add a brief upfront section before Q1 stating that a paid Claude Pro plan is required (not Max — Pro is sufficient), with a pointer to Anthropic's pricing page rather than an embedded dollar figure.
+- INSTALL.md: remove or rewrite Q3's current paid-plan discovery so it doesn't re-ask what the upfront section already established. If Q3 serves a routing purpose beyond the paywall check, keep the routing and drop the discovery.
+- INSTALL.md: clarify what "within plan limits" means in plain language — what happens when you hit the limit, is it a hard stop or a throttle.
+- INSTALL.md Step 1 routing: replace "no paid plan" with "free plan or no plan" (or equivalent unambiguous phrasing) so free-plan users don't self-route past the paywall gate. If the upfront section makes this routing line redundant, remove it.
+
+**Clarify plugin upload path and drop hedge in INSTALL.md** **[install-upload-path-clarity]**
+
+All four test personas stalled at the plugin upload step. The UI path (Customise → + → Create a plugin → browse for .zip) is correct but "Create a plugin" reads as authoring, not installing — three personas hesitated or bailed. The guide's hedge "usually in the top menu or settings area" signals uncertainty and erodes trust. The path is known; the label is counterintuitive. Fix: state the path confidently, warn that "Create a plugin" is the upload path despite the name, add a screenshot, drop the hedge.
+
+Build:
+- INSTALL.md: replace the current breadcrumb with the confirmed path — Customise (top left) → + icon on the left → "Create a plugin" → browse and select the downloaded .zip. Drop "usually in the top menu or settings area."
+- INSTALL.md: add a one-line heads-up before the "Create a plugin" step that the label is misleading — it's the upload/install path, not an authoring tool.
+- INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place.
+
+**Add provenance and download expectation to INSTALL.md GitHub link** **[install-download-provenance]**
+
+The raw GitHub URL for downloading si-plugin.zip triggered suspicion across all four test personas — "FlintCraftTech" doesn't match "Sovereign Implementer," the URL looks like an unknown-sender zip download, and nothing tells the user what happens when they click. Fix: add a one-line provenance statement (FlintCraftTech is the publisher account, Sovereign Implementer is the plugin) and tell the user what to expect (file auto-downloads as si-plugin.zip, or right-click > Save As if it opens in the browser).
+
+Build:
+- INSTALL.md: add a provenance line immediately before or after the download URL explaining the name mismatch and confirming it's the official source.
+- INSTALL.md: add a one-line expectation — what happens when you click (auto-download as si-plugin.zip), and what to do if it doesn't (right-click > Save As).
+
+**Define "open a project folder" action in INSTALL.md smoke test** **[install-define-open-folder]**
+
+The install guide tells the user to "open a project folder in Claude Code" without defining what that means or what the physical action is. CS doesn't know if they need a special folder or what "open" looks like in the app. The install guide's job ends at "plugin works" — the smoke test just needs any folder open, not a real project. Defining project setup belongs in /setup. Fix: replace "open a project folder" with a concrete action for the smoke test context, and defer real project setup to /setup.
+
+Build:
+- INSTALL.md Step B.5 and Step 2: replace "open a project folder in Claude Code" with a concrete instruction — create an empty folder, then open it in Claude Code via File > Open Folder (or whatever the current action is). Frame it as a smoke-test step, not project setup.
+- INSTALL.md: add a one-line note that /setup handles real project setup once the plugin is confirmed working.
+
 ### Parked
 
 - **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md.
@@ -316,15 +331,10 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 <!-- INSTALL.md stranger-Claude cold-read findings ([e2e-install-guide]). Persona key: CS=cold-stranger, DAC=desktop-app-confused, FP=free-plan, AI=already-installed. -->
 
-- **[install-paid-plan-ambush-and-pricing-opacity]** The paid-plan requirement is introduced as Q3 of the opening interview with no preamble warning the user there's a cost. CS hit it as sticker shock and would leave to google pricing without coming back. FP hit it as direct contradiction of lived experience ("I'm using Claude Code on free right now, what?") and would bail to investigate whether they're about to lose existing access. No $/month figure anywhere; "pay-as-you-go API credit" reads as uncapped phone-bill territory to non-coders; "covers Claude Code usage within plan limits" doesn't say what the limits are or what happens past them. Fix shape: surface the paid requirement before Q1 so it's an informed-consent gate, not a buried surprise; include a price range or pointer to current pricing; clarify what overage looks like. Surfaced by CS + FP.
 
-- **[install-routing-no-plan-vs-free-plan-ambiguity]** Step 1's routing logic uses "no paid plan" as a category but a free-plan user reads that as "no plan at all, doesn't apply to me" and risks routing themselves to Branch B as if they were fully set up. Reinforced by FP's lived experience that Claude Code "works" on free for them today. Fix shape: replace "no paid plan" with "free plan or no plan" in the routing line, and have Q3 explicitly distinguish "free Claude account" from "paid Pro/Max" rather than asking the binary "do you have a paid plan." Surfaced by FP.
 
-- **[install-customise-plugins-ui-path-stale-or-wrong]** Every persona stalled at "Customise > Plugins > +  > Create plugin > Upload plugin." AI — who has installed two or three plugins before — does not recognise the path going through "Create plugin" before "Upload plugin" and flags it as the single biggest red flag in the guide; "Create plugin" semantically reads as authoring, not installing. CS got stuck not knowing where "Customise" is. DAC could not find Customise at all (because they're in the wrong app) and would conclude the guide is broken. FP was stuck on no-screenshots + the same "why Create when I'm uploading" confusion. The hedge "usually in the top menu or settings area" tells every reader the author isn't certain, which corrodes trust in the rest. Fix shape: verify the current UI path against a fresh install today (host check), tighten the wording to drop "usually," add a screenshot of the Plugins screen with the + button circled, and rename the breadcrumb step to whatever the UI actually says rather than "Create plugin." Surfaced by CS + DAC + FP + AI.
 
-- **[install-github-raw-url-feels-sketchy-no-provenance]** The `github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip` link triggered "would-quit / suspicious" reactions across personas. CS read it as exactly the kind of unknown-sender zip download their bank warns them about, and noted that "FlintCraftTech" doesn't match the product name "Sovereign Implementer" — looks like a phishing mismatch to a non-technical reader. FP found the raw GitHub URL sketchy with no expectation-setting for what happens when clicked. AI wanted at least a one-line "this is the official repo" reassurance. DAC: stuck/question on what to do with the long URL. Fix shape: add an inline provenance line ("FlintCraftTech is the publisher account; Sovereign Implementer is the plugin name — same author"), tell the user what to expect when they click (the file should auto-download as si-plugin.zip), and consider hosting a more recognisable landing page. Surfaced by CS + DAC + FP + AI.
 
-- **[install-open-a-project-folder-undefined]** Step B.5 and Step 2 both tell the user to "open a project folder in Claude Code" without ever defining what that means. CS doesn't have any folders set up "as projects" and can't tell whether they need to create one, whether any folder works, or what the physical action is in the app. AI flagged a milder version — "what if I don't have a project ready for the smoke test?" Fix shape: either define the action ("create an empty folder anywhere on your computer, then in Claude Code use File > Open Folder and pick it") or move the project-folder concept out of the install guide and into /setup's own introduction. Surfaced by CS + AI.
 
 - **[install-setup-smoke-test-underspecified]** The "type `/setup`" smoke test doesn't say where to type, whether the slash matters, whether to press Enter, what success looks like, or what failure looks like. CS doesn't know if it's the chat box, doesn't know what "if the slash command exists" means visually. FP wants to know what "recognised" looks like and what to do if nothing happens. The current failure path ("remove it and try again") jumps to gear-icon > Uninstall before ruling out anything else. Fix shape: describe the success signal explicitly ("a menu of slash commands should appear as you type, with /setup highlighted; press Enter to run it"), describe the failure signal, and add at least one diagnostic step before recommending uninstall. Surfaced by CS + FP.
 
