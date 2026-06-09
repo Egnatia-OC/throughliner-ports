@@ -2,7 +2,23 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: walkthrough batches removed (thinking work); 4 install captures promoted
+## [HASH] — /next [next-split-by-type]: next.md split into per-type procedure docs
+
+next.md carried three session flows (build, test, audit) plus abort/resume branches in one 196-line file. Every /next session read the entire doc even though it only ran one flow. Splitting into separate docs cuts per-session read cost and lets each flow evolve independently — changes to audit findings presentation no longer risk entangling build scope-management rules.
+
+The shared steps — pre-flight checks (hash backfill, active build detection, blocker gate) and scope lock (_build.md creation) — stayed in next.md as a routing front page. The front page's Step 2 now handles all three Progress formats (build/test/audit) in one place, eliminating the duplication where audit had its own "as Step 2 does" lock scope. After lock, Step 3 routes to the per-type doc based on batch subheadings. Abort branches went into next-build.md and next-test.md (the types where builds can fail); resume stayed in the front page (Step 1.2, shared). The "build and test follow the same procedure" rule was dropped as irrelevant after the split.
+
+Cross-references in done.md, plugin-behaviour.md, and plan.md all point to Step 1 (blocker gate at 1.4, unpark watch at 1.4) which stayed in the front page — no updates needed.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: rewritten from 196 lines to 68-line routing front page
+- plugin/si-plugin/docs/next-build.md: created, 103 lines
+- plugin/si-plugin/docs/next-test.md: created, 70 lines
+- plugin/si-plugin/docs/next-audit.md: created, 23 lines
+
+**Routed to Captures:** none
+
+## 6a00c15 — /plan: walkthrough batches removed (thinking work); 4 install captures promoted
 
 Session opened with discussion about [plugin-behaviour-walkthrough-1], which /next had aborted the previous session (b08e09a) as thinking work wearing an audit shape. Both walkthrough batches removed from Batches — their output is a routing decision list (decisions, not findings-to-Captures), so the work belongs in /plan as interactive sessions, not as queued batches. The build batch to execute the resulting routing decisions gets queued after those /plan sessions produce them. [next-split-by-type] is now the top of queue.
 

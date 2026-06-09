@@ -7,19 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Split next.md into per-session-type docs** **[next-split-by-type]**
-
-next.md is the largest procedure doc (196 lines) because it carries three session flows (build, test, audit) plus abort/resume branches in one file. Every /next session reads the entire doc even though it only runs one flow. Splitting into separate docs — one per session type, plus a shared entry/routing front page — cuts per-session read cost and lets each flow's rules evolve without tangling with the others.
-
-Build:
-- Create plugin/si-plugin/docs/next-build.md, next-test.md, next-audit.md. Each gets the procedure steps for its session type, extracted from current next.md.
-- Reduce next.md to a routing front page: read _build.md (or QUEUE.md top batch) to determine session type, then load the matching per-type doc. Keep the entry steps (batch confirmation, _build.md creation, scope-lock setup) that are shared across all types.
-- Move abort/resume branches into whichever per-type doc(s) they apply to. If abort/resume is truly shared across all types, keep it in the front page.
-- Update any cross-references in plugin-behaviour.md, plan.md, done.md, and session_start.py that point to next.md step numbers or section names.
-
-Test:
-- Self-verifying from the doc structure. Each per-type doc should be readable as a standalone procedure for that session type.
-
 **Extract session close-out into per-skill sections; slim done.md to commit + commitpush** **[done-closeout-extraction]**
 Depends on: [next-split-by-type]
 

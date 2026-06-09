@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: [plugin-behaviour-walkthrough-1] and -2 removed from Batches (thinking work producing routing decisions, not audit findings); 5 install captures promoted to 4 batches ([install-paid-plan-upfront] absorbing routing ambiguity, [install-upload-path-clarity], [install-download-provenance], [install-define-open-folder]). LOG hashes backfilled to b08e09a.
+- [HASH] — /next [next-split-by-type]: next.md split into routing front page (pre-flight + lock scope + route) plus next-build.md, next-test.md, next-audit.md; no cross-reference updates needed (all refs target Step 1 which stayed)
+- 6a00c15 — /plan: [plugin-behaviour-walkthrough-1] and -2 removed from Batches (thinking work producing routing decisions, not audit findings); 5 install captures promoted to 4 batches ([install-paid-plan-upfront] absorbing routing ambiguity, [install-upload-path-clarity], [install-download-provenance], [install-define-open-folder]). LOG hashes backfilled to b08e09a.
 - b08e09a — /next aborted on [plugin-behaviour-walkthrough-1] at pre-flight: batch is thinking work (routing decisions, not findings-to-Captures) wearing an audit shape; plan.md thinking-work rule gap captured (line 11 "build" qualifier + audit-as-exception framing let it through). LOG hashes backfilled to 90970cc.
 - 90970cc — /plan: [drop-log-per-release-split] rewritten from one-growing-log to per-entry slug-named files; 2 install captures promoted ([install-separate-ai-instructions], [install-app-identification-check]); [faq-build-md-functions] unparked; 2 captures filed (rejected-alternative LOG reasoning, draft-without-approval-ask)
 - a36f67f — /next [trickle-up-audit]: plugin/si-plugin/docs/{setup,plan,next,done}.md audited for cross-skill rules that belong in plugin-behaviour.md — duplicated rules, non-skill-specific guidance, and communication/captures/why-pipeline/file-safety overlap identified, findings routed to Captures.
