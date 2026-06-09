@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: [drop-log-per-release-split] rewritten from one-growing-log to per-entry slug-named files; 2 install captures promoted ([install-separate-ai-instructions], [install-app-identification-check]); [faq-build-md-functions] unparked; 2 captures filed (rejected-alternative LOG reasoning, draft-without-approval-ask)
+- [HASH] — /next aborted on [plugin-behaviour-walkthrough-1] at pre-flight: batch is thinking work (routing decisions, not findings-to-Captures) wearing an audit shape; plan.md thinking-work rule gap captured (line 11 "build" qualifier + audit-as-exception framing let it through). LOG hashes backfilled to 90970cc.
+- 90970cc — /plan: [drop-log-per-release-split] rewritten from one-growing-log to per-entry slug-named files; 2 install captures promoted ([install-separate-ai-instructions], [install-app-identification-check]); [faq-build-md-functions] unparked; 2 captures filed (rejected-alternative LOG reasoning, draft-without-approval-ask)
 - a36f67f — /next [trickle-up-audit]: plugin/si-plugin/docs/{setup,plan,next,done}.md audited for cross-skill rules that belong in plugin-behaviour.md — duplicated rules, non-skill-specific guidance, and communication/captures/why-pipeline/file-safety overlap identified, findings routed to Captures.
 - 2356cb7 — /next [reader-test-refresh]: resources/reader-test-workflow.js — fake project refreshed to current SI shape: FAKE_DECISIONS replaced with FAKE_LOG, FAKE_QUEUE rewritten to Build/Test+Captures format, FAKE_CLAUDE_MD mirrored from current template, session-start strings verified, user questions audited.
 - 3e86d06 — /plan: 2 captures promoted — [user-edits-rollup-on-commit] (dirty-path detection at /done commit) and [checkpoint-wording-loosen] (off-ramps available, not identically phrased). LOG hashes backfilled to f756692.

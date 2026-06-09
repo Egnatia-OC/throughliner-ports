@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: [drop-log-per-release-split] rewritten to per-entry files; 2 install captures promoted; [faq-build-md-functions] unparked
+## [HASH] — /next aborted on [plugin-behaviour-walkthrough-1]: thinking work misrouted as audit batch; gap captured
+
+/next picked up [plugin-behaviour-walkthrough-1] and aborted at pre-flight when the user flagged it as thinking work, not audit work. The batch's output is a routing decision list (where each plugin-behaviour.md rule belongs) — decisions, not findings-to-Captures. It passed the audit exception in plan.md's thinking-work rule because it has the surface shape of a systematic read against fixed criteria, but the rule has two gaps: "Never queue thinking work as a *build* batch" only names build batches (implying other types are fine), and framing audit as "the one exception" treats it as thinking work with permission rather than a separate category that was never thinking work in the first place. The user had specifically asked /plan to create the batch, and /plan complied — the procedure didn't give it grounds to push back. Capture filed describing both gaps and the fix shape (drop the "build" qualifier, reframe audit as a separate category). LOG hashes backfilled to 90970cc.
+
+**Queue changes:**
+- None (batch stays in queue as-is pending /plan)
+
+**Captures routed:** 2 filed (thinking-work rule gap — plan.md line 11 "build" qualifier + audit-as-exception framing let it through; /next pre-scope-lock abort has no handoff to /done)
+
+## 90970cc — /plan: [drop-log-per-release-split] rewritten to per-entry files; 2 install captures promoted; [faq-build-md-functions] unparked
 
 Session opened with discussion before captures. First, clarified the processed/unprocessed captures split (first successful why-pipeline retrieve — found e425f92 in LOG via index search). Then [drop-log-per-release-split] rewritten: the f123eed session had decided "drop the split, one growing log.md" but hadn't preserved the rejected-alternative reasoning — two sessions later the user couldn't retrieve why per-release was rejected and second-guessed the decision. Working through it again: the case against per-release is thin (one extra grep per retrieve, two extra push-ceremony steps), and collapsing to one growing file only removes the split without improving retrieve. The right fix is matching the file boundary to the logical boundary — each LOG entry gets its own file, named by slug, so retrieve goes index → hash → direct file open. The per-commit alternative was the decision f123eed should have reached.
 
