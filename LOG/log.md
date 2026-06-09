@@ -2,7 +2,23 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [trickle-up-audit]: setup.md, plan.md, next.md, done.md audited for rules that belong in plugin-behaviour.md
+## [HASH] — /plan: [drop-log-per-release-split] rewritten to per-entry files; 2 install captures promoted; [faq-build-md-functions] unparked
+
+Session opened with discussion before captures. First, clarified the processed/unprocessed captures split (first successful why-pipeline retrieve — found e425f92 in LOG via index search). Then [drop-log-per-release-split] rewritten: the f123eed session had decided "drop the split, one growing log.md" but hadn't preserved the rejected-alternative reasoning — two sessions later the user couldn't retrieve why per-release was rejected and second-guessed the decision. Working through it again: the case against per-release is thin (one extra grep per retrieve, two extra push-ceremony steps), and collapsing to one growing file only removes the split without improving retrieve. The right fix is matching the file boundary to the logical boundary — each LOG entry gets its own file, named by slug, so retrieve goes index → hash → direct file open. The per-commit alternative was the decision f123eed should have reached.
+
+Captures processing: 2 of 25 processed before close-out. [install-note-to-claude-visible-to-user] promoted as [install-separate-ai-instructions] — move AI-facing content (Note to Claude block, pacing rules) out of the human's reading path. [install-claude-code-vs-chat-app-disambiguation] promoted as [install-app-identification-check] — add forced positive identification check before routing, replacing the one-sentence distinction that the desktop-app-confused persona read past and confidently misrouted on. Both placed at queue bottom, no dependencies.
+
+Unpark: [faq-build-md-functions] moved from Captures Parked to processed Captures — [reader-test-refresh] shipped (2356cb7) with no findings, condition vacuously met.
+
+**Queue changes:**
+- Rewrote [drop-log-per-release-split] batch (per-release → per-entry files with slug-based naming)
+- Promoted [install-separate-ai-instructions] at queue bottom
+- Promoted [install-app-identification-check] at queue bottom, after [install-separate-ai-instructions]
+- Unparked [faq-build-md-functions] to processed Captures
+
+**Captures routed:** 2 promoted out ([install-note-to-claude-visible-to-user] → [install-separate-ai-instructions], [install-claude-code-vs-chat-app-disambiguation] → [install-app-identification-check]). 2 new filed (rejected-alternative reasoning in LOG entries, draft-without-approval-ask pattern in procedure docs).
+
+## a36f67f — /next [trickle-up-audit]: setup.md, plan.md, next.md, done.md audited for rules that belong in plugin-behaviour.md
 
 The four procedure docs were read systematically against plugin-behaviour.md to find cross-skill rules that cost token budget as duplicates and drift between copies. Three docs carried rules already stated in plugin-behaviour.md: next.md repeated 4 (SPEC read-only, don't fix outside scope, state regressions plainly, one build at a time — wording had already drifted on the regressions rule), done.md repeated 2 file safety rules (git add prohibition appearing twice within done.md itself, plus git push prompt), and setup.md repeated the no-jargon communication rule. One cross-doc procedure duplication surfaced: the LOG hash backfill procedure lives word-for-word in both plan.md and next.md — not a rule so plugin-behaviour.md isn't the target, and the existing [log-hash-backfill-in-done] batch already proposes consolidation. One non-skill-specific rule was found only in next.md: "ask when unsure, don't guess" has no equivalent in plugin-behaviour.md despite applying universally. All 5 findings captured. Session also backfilled 4 stale [HASH] placeholders across LOG files (log.md, index.md, log-v1.8.0.md, log-v1.9.0.md).
 
