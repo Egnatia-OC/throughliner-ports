@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: 2 captures promoted ([user-edits-rollup-on-commit], [checkpoint-wording-loosen]); LOG hashes backfilled
+## [HASH] — /next [reader-test-refresh]: reader-test workflow's fake project refreshed to current SI shape
+
+The reader-test workflow's fake bookshelf tracker project had drifted from current SI: it carried a DECISIONS.md doc (replaced by the LOG-based why-pipeline months ago), used inline [build]/[test]/[idea]/[question] type tags (replaced by Build/Test subheadings + separate Captures section), and its CLAUDE.md still showed the older template. Running the workflow against that stale fake project measured drift between docs and the fake project rather than drift between docs and real reader comprehension — findings came out noisy. The refresh aligned all five fake-project constants (FAKE_LOG replacing FAKE_DECISIONS, FAKE_QUEUE with current format, FAKE_BUILD with Index entry candidate and entry-description ticks, FAKE_CLAUDE_MD from current template) and fixed two session-start string drifts caught by comparing against session_start.py ("No active build." → "Ready.", removal of stale "The previous session was interrupted mid-build."). The user-questions audit replaced one trivially-answered question (SPEC.md read-only, stated word-for-word in CLAUDE.md Rules) with a scope-discipline question that requires connecting dots across procedure docs. Synthesis FAQ/Other split left intact — the routing split is load-bearing on downstream processing.
+
+**Files touched:**
+- resources/reader-test-workflow.js: 8 edits across FAKE_LOG (new), FAKE_QUEUE, FAKE_BUILD, FAKE_CLAUDE_MD, SESSION_NO_BUILD, SESSION_ACTIVE_BUILD, USER_QUESTIONS[2], verifyPrompt DOC ROUTING criterion
+
+**Routed to Captures:** none
+
+## 3e86d06 — /plan: 2 captures promoted ([user-edits-rollup-on-commit], [checkpoint-wording-loosen]); LOG hashes backfilled
 
 Two captures promoted. [user-edits-rollup-on-commit] addresses a gap where user-made edits to target-tree files sit dirty across sessions because /done's commit only stages build-touched files — the batch adds detection and rollup at commit time. [checkpoint-wording-loosen] loosens plan.md's checkpoint rule so the three off-ramps are required to be available but don't need identical phrasing each time — robotic numbered-list delivery confirmed as recurring across multiple sessions, not a one-off.
 

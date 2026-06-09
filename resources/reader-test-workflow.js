@@ -44,32 +44,40 @@ const FAKE_QUEUE = `# QUEUE
 
 ## Batches
 
-Worked top to bottom. Each batch is one /next session — builds first, then tests.
+Worked top to bottom. Each batch of changes or tests is one /next session of either type:
 
-**Search and filter**
-Files:
-- \`src/search.js\`
-- \`src/bookList.js\`
-- [build] Add search bar that filters by title or author (case-insensitive substring match)
-- [build] Add status filter dropdown (all / want-to-read / reading / read)
-- [test] Verify search narrows the list in real-time as you type
-- [test] Verify status filter works alone and combined with search
+- build session where changes are applied, then claude runs all tests it is able to do itself
+- test session where the user runs any testing only they can do
 
-**Export to CSV**
-Files:
-- \`src/export.js\`
-- [build] Add export button that writes all books to a CSV file (title, author, status, notes, date added)
-- [test] Verify exported CSV has correct headers and all book data
+**Search and filter** **[search-and-filter]**
+
+Build:
+- Add search bar that filters by title or author (case-insensitive substring match)
+- Add status filter dropdown (all / want-to-read / reading / read)
+
+Test:
+- Verify search narrows the list in real-time as you type
+- Verify status filter works alone and combined with search
+
+**Export to CSV** **[export-csv]**
+
+Build:
+- Add export button that writes all books to a CSV file (title, author, status, notes, date added)
+
+Test:
+- Verify exported CSV has correct headers and all book data
 
 ### Parked
 
 ## Captures
 
-Captured outside /plan. Picked up and routed during the next /plan session.
+Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the \`---\` divider; unprocessed raw captures collect below.
 
-- [idea] Could add a "favorites" tag to quickly find top picks
-- [question] Should the JSON file be one big file or split per shelf/category? Currently it's one file but as the list grows it might get slow
-- [idea] The book list doesn't show the date a book was added — would be useful for tracking reading pace
+---
+
+- Could add a "favorites" tag to quickly find top picks
+- The book list doesn't show the date a book was added — would be useful for tracking reading pace
+- Should the JSON file stay as one big file or split per status? Currently it's one file but as the list grows it might get slow
 
 ### Parked`
 
@@ -82,30 +90,47 @@ const FAKE_REGISTRY = `# REGISTRY
 - \`src/styles.css\` — global styles and layout
 - \`data/books.json\` — data store (not committed to git)`
 
-const FAKE_DECISIONS = `# DECISIONS
+const FAKE_LOG = `# LOG
 
-Design decisions made during this project. Each entry maps a decision to the commit where it was made.
+Full session entries, newest first. Each entry is written by /done.
 
-Format: **[decision name]** — [commit hash] — [what was decided and why]
+## b3f4e2a — /next [add-book-form]: book entry form with status field and auto-save
 
-- **Flat JSON over SQLite** — a1b2c3d — JSON is simpler for a single-user offline app with no query complexity
-- **Status field instead of shelves** — d4e5f6a — one flat list with status filtering is simpler than multiple shelf/category structures; keeps the data model flat`
+Added the add-book form as a separate component. Four fields: title (required), author (required), status (dropdown, defaults to want-to-read), and notes (optional textarea). Form validates that title and author are non-empty before saving. On submit, storage.js appends the new book to data/books.json and the list re-renders with the new entry at the top. Kept the form minimal — no edit mode, no delete, no confirmation dialog. Those are future scope if needed.
+
+**Files touched:**
+- src/addBook.js: created form component (title, author, status dropdown, notes textarea), 62 lines
+- src/storage.js: added writeBook() function alongside existing readBooks()
+- src/app.js: added route for add-book view, wired navigation
+
+## e8c1d9f — /next [initial-scaffold]: app shell, book list, and storage layer
+
+First build. Set up the project structure: app shell with a header and two views (list and add), book list rendering from JSON, and the storage layer that reads data/books.json. Books display as cards with title, author, and a coloured status badge. List is sorted newest-first by date added. No filtering or search yet — flat list only.
+
+**Files touched:**
+- src/app.js: created app shell with header and view routing, 40 lines
+- src/bookList.js: created book list component with status badges, 55 lines
+- src/storage.js: created readBooks() with JSON file I/O, 25 lines
+- src/styles.css: global layout, card styles, status badge colours
+- data/books.json: created with 3 seed books for testing`
 
 const FAKE_BUILD = `# Active Build
 
-Entry: **Search and filter**
-- [build] Add search bar that filters by title or author (case-insensitive substring match)
-- [build] Add status filter dropdown (all / want-to-read / reading / read)
-- [test] Verify search narrows the list in real-time as you type
-- [test] Verify status filter works alone and combined with search
+Entry: **Search and filter** **[search-and-filter]**
 
-Files:
-- src/search.js — new search/filter component
-- src/bookList.js — integrate search and filter into list view
+Build:
+- Add search bar that filters by title or author (case-insensitive substring match)
+- Add status filter dropdown (all / want-to-read / reading / read)
+
+Test:
+- Verify search narrows the list in real-time as you type
+- Verify status filter works alone and combined with search
+
+Index entry candidate: src/search.js and src/bookList.js — added search bar (case-insensitive title/author substring match) and status filter dropdown; wired into book list view.
 
 Progress:
-- [x] src/search.js — done
-- [x] src/bookList.js — done
+- [x] Add search bar — done
+- [x] Add status filter dropdown — done
 
 Changes:
 - src/search.js: created search component with text input and status dropdown, 85 lines
@@ -113,24 +138,23 @@ Changes:
 
 const FAKE_CLAUDE_MD = `# CLAUDE.md
 
-<!-- V PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. V -->
+<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
 
 This project uses the Sovereign Implementer method.
 
 ## Project docs
 
-- **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Each entry is type-marked: [build], [test], [idea], [question].
-- **REGISTRY.md** — components that exist. Updated after each build.
-- **DECISIONS.md** — design decisions mapped to the commits where they were made.
-- **LOG/** — per-session records of what was built, tested, and decided.
+- **SPEC.md** — product truth. What it is, who it's for, how it works.
+- **QUEUE.md** — work queue, top-to-bottom. Batches (Build/Test subheadings), Captures (split by \`---\` — processed above with slugs, raw appended below). Items removed from active flow carry \`Blocked by:\` (trigger-based) or \`Parked:\` (indefinite) headers.
+- **REGISTRY.md** — components list. Updated after each build.
+- **LOG/** — session records: what was built, tested, decided.
 
 ## Workflow
 
-- \`/setup\` — initial project scaffolding (already done if you're reading this).
-- \`/plan\` — manage the queue, process captures, resolve questions.
-- \`/next\` — execute the top queue entry (build or test).
-- \`/done\` — close the build, record what happened, commit.
+- \`/setup\` — scaffold project docs (done if you're reading this).
+- \`/plan\` — queue management, captures, design questions.
+- \`/next\` — execute the top batch.
+- \`/done\` — record, update docs, commit.
 
 ## Rules for Claude
 
@@ -144,7 +168,7 @@ This project uses the Sovereign Implementer method.
 
 Language: English
 
-<!-- A PLUGIN-MANAGED — do not edit above this line. A -->
+<!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 
 ## Project rules
 
@@ -159,14 +183,14 @@ const SESSION_NO_BUILD = `[Sovereign Implementer] Project is set up.
   QUEUE.md: found
   REGISTRY.md: found
 
-No active build. Run /plan to manage the queue, or /next to start the top batch.`
+Ready. Run /plan to manage the queue, or /next to start the top batch.`
 
 const SESSION_ACTIVE_BUILD = `[Sovereign Implementer] Project is set up.
   SPEC.md: found
   QUEUE.md: found
   REGISTRY.md: found
 
-ACTIVE BUILD in progress (_build.md exists). The previous session was interrupted mid-build. Run /next to resume, or /done if the work is complete.`
+ACTIVE BUILD in progress (_build.md exists). Run /next to resume, or /done if the work is complete.`
 
 // ── Schemas ──
 
@@ -344,8 +368,8 @@ ${FAKE_QUEUE}
 --- REGISTRY.md ---
 ${FAKE_REGISTRY}
 
---- DECISIONS.md ---
-${FAKE_DECISIONS}`
+--- LOG/log.md ---
+${FAKE_LOG}`
 
   if (includeBuild) {
     state += `
@@ -418,7 +442,7 @@ AUDIT CRITERIA — score each:
 
 1. STEP COMPLIANCE: Did it follow each procedure step in the correct order? Were any steps skipped, reordered, or invented?
 2. TAG COMPLIANCE: Did it respect response-shape tags ([SILENT], [BRIEF], [PROMPT], [SEQUENCE], [DISCUSS])? Check: was [SILENT] work narrated? Were [PROMPT] stops skipped? Were [SEQUENCE] items bundled?
-3. DOC ROUTING: Did it route information to the correct project docs (QUEUE.md, REGISTRY.md, DECISIONS.md, LOG/)?
+3. DOC ROUTING: Did it route information to the correct project docs (QUEUE.md, REGISTRY.md, LOG/)?
 4. RULE ADHERENCE: Did it follow the Rules section at the bottom of the procedure doc?
 5. TONE AND STYLE: Was communication plain, direct, and non-jargon (per behaviour rules)?
 
@@ -436,7 +460,7 @@ Be strict. The goal is to find doc improvements, not to be generous.`
 const USER_QUESTIONS = [
   "What's the difference between the Captures section and the Batches section in QUEUE.md?",
   "I closed the app in the middle of a build. What happens when I reopen it?",
-  "Can I edit SPEC.md while doing a build?",
+  "I noticed a problem in something I built last week, but I'm in the middle of a different build right now. What should I do?",
   "I just had an idea for a feature. How do I record it without losing my train of thought?",
   "The queue is empty. Does that mean the project is done?"
 ]
