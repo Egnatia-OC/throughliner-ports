@@ -2,7 +2,17 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: 6 batches promoted (2 from captures, 4 from docs-size concern); auto-memory staleness researched and cleaned
+## [HASH] — /plan: 2 captures promoted ([user-edits-rollup-on-commit], [checkpoint-wording-loosen]); LOG hashes backfilled
+
+Two captures promoted. [user-edits-rollup-on-commit] addresses a gap where user-made edits to target-tree files sit dirty across sessions because /done's commit only stages build-touched files — the batch adds detection and rollup at commit time. [checkpoint-wording-loosen] loosens plan.md's checkpoint rule so the three off-ramps are required to be available but don't need identical phrasing each time — robotic numbered-list delivery confirmed as recurring across multiple sessions, not a one-off.
+
+**Queue changes:**
+- [user-edits-rollup-on-commit] promoted from capture to batch (appended after [plan-resolves-by-default])
+- [checkpoint-wording-loosen] promoted from capture to batch (appended after [user-edits-rollup-on-commit])
+
+**Captures routed:** 2 promoted
+
+## f756692 — /plan: 6 batches promoted (2 from captures, 4 from docs-size concern); auto-memory staleness researched and cleaned
 
 User raised that plugin-behaviour.md as one big universal doc and next.md as one doc carrying three session flows are both too large for what they're doing. That concern — "docs grow but bug rate doesn't fall" — had been sitting as a capture-and-watch. This session sharpened it into four structural batches: two interactive walkthroughs of plugin-behaviour.md (first half / second half, deciding per rule where it belongs), a next.md split into per-session-type docs, and a done.md extraction moving close-out into per-skill sections while slimming /done to commit mechanics. Two earlier captures (fenced-block "code" label, /plan deferring resolvable work) were also promoted to batches. Separately, research on Claude Code auto-memory staleness confirmed the two project-state memory files were the textbook failure mode — frozen queue snapshots from V47/V51 with no current relevance — and both were deleted.
 

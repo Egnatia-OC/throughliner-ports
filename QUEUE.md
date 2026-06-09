@@ -264,6 +264,20 @@ Build:
 Test:
 - Self-verifying from doc text on the next /plan run where a resolvable-now item surfaces. Claude should do the work in-session instead of filing it as a capture.
 
+**Detect and roll in user edits at /done commit time** **[user-edits-rollup-on-commit]**
+
+User-made edits to target-tree files (plugin/si-plugin/) can happen at any time — mid-session, between sessions — but /done's per-build commit only stages files the build touched. Those edits sit dirty across sessions until the push-and-rezip ritual catches them at push time. Observed: 5 docs files stayed dirty across at least two sessions. The gap is /done's commit, which is the natural moment to detect and offer to include them. The push-and-rezip sweep stays as the safety net; this adds an earlier catch point.
+
+Build:
+- plugin/si-plugin/docs/done.md: at the commit step, add a sub-step — run `git status --porcelain plugin/si-plugin/`, compare against the active build's file list, surface any dirty paths outside scope with a one-line summary, and offer to stage + roll them into the commit.
+
+**Loosen checkpoint wording: off-ramps available, not identically phrased** **[checkpoint-wording-loosen]**
+
+The plan.md Step 2 checkpoint rule ("Offer three options every time, in uniform phrasing") pulls Claude toward rendering a numbered list at every checkpoint, which reads as bureaucratic form-fill. Observed across multiple /plan sessions — not a one-off. The rule's intent is sound (all three off-ramps available after every item), but "uniform phrasing" is being read as "identical wording each time." Loosening the wording so the three options must be available but can be delivered conversationally fixes the robotic delivery without losing the guarantee.
+
+Build:
+- plugin/si-plugin/docs/plan.md Step 2 sub-step 6 (Checkpoint): reword so the three off-ramps (continue to next, close out, share something else) are required to be available after every item, but drop "uniform phrasing" — conversational delivery that covers all three is fine.
+
 ### Parked
 
 - **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md.
@@ -289,9 +303,6 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ---
 
-- **[user-edits-rollup-on-commit]** The user can edit target-tree files at any time (mid-session, between sessions). Those edits should be detected at the next commit moment, surfaced briefly, and rolled into that commit alongside whatever the session produced — not left in the working tree to be discovered later or to layer wrongly under subsequent edits. The push-and-rezip ritual in CLAUDE.md already does this at push time (step 8 stages every dirty path in plugin/si-plugin/). The gap is /done's per-build commit, which only stages files the build touched. Today's case: 5 docs files have been dirty since at least the c5e32d8 session; an earlier session was told about the edits but still didn't commit them. Fix shape: at /done commit time (and possibly at /next start as a detection point), run `git status --porcelain plugin/si-plugin/`, surface any dirty paths outside the active scope with a one-line summary, and offer to stage + roll them in. Should not be complicated — detect, name, roll in.
-
-- The Step 2 checkpoint sub-step in plan.md ("Offer three options every time, in uniform phrasing: (1) continue, (2) close out, (3) share something else") read as bureaucratic form-fill in the 7563bc0+1 /plan, with each checkpoint rendered as a numbered list. The rule has been in place across multiple /plan sessions where the conversation felt easier — so the issue isn't the rule itself getting stricter, it's that this session pulled toward a literal reading of "uniform phrasing" + numbered options when earlier sessions rendered the same intent conversationally. Two possible fixes, not mutually exclusive: (a) loosen the rule's wording so "uniform" doesn't read as "render the same list every time" — keep the requirement that all three off-ramps are available after every item, drop the prescription of how they're presented; (b) note that this pattern also showed up alongside heavier fenced-block use and more formal sub-step narration in the same session, so the pull may be toward overall procedure-literalism, not just this one rule. Worth holding the capture until the pattern is observed in a second session to know whether it's session-specific or a real drift.
 
 <!-- INSTALL.md stranger-Claude cold-read findings ([e2e-install-guide]). Persona key: CS=cold-stranger, DAC=desktop-app-confused, FP=free-plan, AI=already-installed. -->
 
