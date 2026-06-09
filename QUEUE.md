@@ -30,6 +30,53 @@ Audit:
 - Target: setup.md, plan.md, next.md, done.md
 - Criteria: rules stated in more than one of the four; rules that aren't skill-specific even when they appear in only one; anything reading like communication, captures, why-pipeline, dependency ownership, or file safety guidance (those categories already live in plugin-behaviour.md). For each finding: name the rule, name the doc(s) it appears in, note whether plugin-behaviour.md already has a related rule, and propose a target location.
 
+**Walk plugin-behaviour.md first half line-by-line to decide universal vs per-skill** **[plugin-behaviour-walkthrough-1]**
+Blocks: [plugin-behaviour-walkthrough-2]
+
+The current plugin-behaviour.md is one universal rule book that every skill reads at session start. Some rules genuinely apply to every skill; others only ever matter inside one skill but live in the universal doc because that's where universal-feeling things ended up. The size compounds the issue — every skill pays the read cost for rules it never uses. This batch is the first of two interactive walkthroughs where the user decides, per rule, where it actually belongs. Output is a routing list that feeds a follow-up build batch doing the moves.
+
+Audit:
+- Target: plugin/si-plugin/docs/plugin-behaviour.md, sections Communication, Response-shape tags, Tool use, Research, Captures, Why-pipeline (lines ~5–66).
+- Criteria: for each rule/bullet, decide one of — stays universal (every skill uses it), moves to one specific skill (/setup, /plan, /next, /done), or repeats in some subset of skill docs. Capture the decision plus a one-line reason per rule.
+- Output: a written routing decision list (one entry per rule) that the follow-up build batch will execute. Decisions live in a working file the build batch reads; not written into plugin-behaviour.md or any skill doc during this session.
+
+**Walk plugin-behaviour.md second half line-by-line to decide universal vs per-skill** **[plugin-behaviour-walkthrough-2]**
+Depends on: [plugin-behaviour-walkthrough-1]
+
+Continuation of the first walkthrough. Same method, covering the remaining sections of plugin-behaviour.md.
+
+Audit:
+- Target: plugin/si-plugin/docs/plugin-behaviour.md, sections Index entries, Dependency ownership, File safety, Prior decisions, Context awareness (lines ~68–118).
+- Criteria: same as walkthrough-1 — for each rule/bullet, decide stays universal, moves to one specific skill, or repeats in a subset. Capture the decision plus a one-line reason.
+- Output: appended to the same routing decision list from walkthrough-1. The combined list feeds the follow-up build batch that executes the moves.
+
+**Split next.md into per-session-type docs** **[next-split-by-type]**
+
+next.md is the largest procedure doc (196 lines) because it carries three session flows (build, test, audit) plus abort/resume branches in one file. Every /next session reads the entire doc even though it only runs one flow. Splitting into separate docs — one per session type, plus a shared entry/routing front page — cuts per-session read cost and lets each flow's rules evolve without tangling with the others.
+
+Build:
+- Create plugin/si-plugin/docs/next-build.md, next-test.md, next-audit.md. Each gets the procedure steps for its session type, extracted from current next.md.
+- Reduce next.md to a routing front page: read _build.md (or QUEUE.md top batch) to determine session type, then load the matching per-type doc. Keep the entry steps (batch confirmation, _build.md creation, scope-lock setup) that are shared across all types.
+- Move abort/resume branches into whichever per-type doc(s) they apply to. If abort/resume is truly shared across all types, keep it in the front page.
+- Update any cross-references in plugin-behaviour.md, plan.md, done.md, and session_start.py that point to next.md step numbers or section names.
+
+Test:
+- Self-verifying from the doc structure. Each per-type doc should be readable as a standalone procedure for that session type.
+
+**Extract session close-out into per-skill sections; slim done.md to commit + commitpush** **[done-closeout-extraction]**
+Depends on: [next-split-by-type]
+
+done.md currently handles two jobs: (1) session close-out (LOG entry, index entry, _build.md cleanup, recommendations) and (2) commit/push mechanics. The close-out pieces belong at the end of each skill that produces work — /plan, /next, and eventually /setup — because each skill knows what it produced and what the LOG entry should say. done.md shouldn't need to reverse-engineer that from _build.md. What survives as /done is the commit and commitpush mechanics: stage, commit message drafting, and the push-and-rezip ritual.
+
+Build:
+- Add a "Session close-out" section at the end of plan.md covering: write LOG entry for the planning session, write index entry, recommend /done to commit.
+- Add a "Session close-out" section at the end of each per-type next doc (next-build.md, next-test.md, next-audit.md from [next-split-by-type]) covering: write LOG entry, write index entry, clean up _build.md, recommend /done to commit.
+- Slim done.md to commit mechanics: stage files, draft commit message, offer push. Remove LOG-writing, index-writing, and _build.md cleanup — those now live in the skill that produced the work.
+- Update session_start.py and any cross-references that assume /done writes LOG entries.
+
+Test:
+- Self-verifying from doc structure. Each skill's close-out section should read as a complete end-of-session sequence. done.md should read as a pure commit tool.
+
 **Output tag overhaul audit: prose where a response-shape tag belongs** **[output-tag-audit]**
 
 The procedure docs were authored before the response-shape tag system was fully in place, so some steps still describe output behaviour in prose where a tag ([SILENT], [BRIEF], [PROMPT], [DISCUSS], [SEQUENCE]) would compress the intent and apply uniformly. Prose substitutes are easy to misread and drift across docs; tags are the canonical mechanism. One known finding to seed the audit: _build.md entry ticking in next.md should be [SILENT] (crash-recovery bookkeeping, not a status report).
@@ -196,6 +243,27 @@ Build:
 Test:
 - Self-verifying from the doc text on the next /plan run. The entry question and follow-up should read as sequencing, and Claude shouldn't reproduce "if processing" or similar branching framing in narration.
 
+**Use semantic content-type labels on approval-time fenced blocks** **[fenced-block-content-type-label]**
+
+The "approval-time outputs go in a fenced code block" rule in plugin-behaviour.md leaves the fence's language slot unspecified, which causes the desktop app to render every approval-time block with a literal "code" label — semantically wrong over prose (parking reasons, capture wording, batch drafts, LOG entries, commit messages). The fence itself is the right visual device; the label just needs to name the content. Fix is to extend the rule: the language slot carries a short content-type tag (parking-reason, capture-draft, batch-draft, commit-message, log-entry, etc.) so the rendered label says what's actually inside. Confirmed live in the desktop app — a custom tag after the backticks renders verbatim as the block's label.
+
+Build:
+- plugin/si-plugin/docs/plugin-behaviour.md "approval-time outputs go in a fenced code block" rule: extend with the requirement that the language slot carries a short content-type tag matching the approval-time output, and list the canonical tags (parking-reason, capture-draft, batch-draft, commit-message, log-entry, anything else surfaced while drafting).
+- plugin/si-plugin/docs/plan.md and done.md: sweep approval-time references that show example outputs in fences and add the content-type tag where missing.
+
+Test:
+- Self-verifying from doc text on the next /plan or /done run — approval-time blocks render with semantic labels rather than "code."
+
+**/plan resolves what it can; capture is only for what it can't** **[plan-resolves-by-default]**
+
+/plan has twice (observed) deferred work it could have done in-session: once by filing a capture asking /next to re-verify line refs and quoted strings after terseness edits, once by recommending park-with-"research needed" on the fenced-block label question that /plan itself was the right home for. Both were misroutes — /next executes the top batch and doesn't parse captures; "research needed" is the same skill-self-deferral. The pattern: when work is resolvable now and /plan is the home for that kind of work, doing it now is /plan's job. Capture is reserved for things /plan genuinely can't resolve in-session — needs more data than the session has, needs design discussion across sessions, needs user input not yet available, or surfaces a structural question whose answer would gate the work. Adding the rule to plan.md ground rules names it explicitly so the default flips from defer-via-capture to resolve-now.
+
+Build:
+- plugin/si-plugin/docs/plan.md ground rules: add a bullet stating /plan resolves what it can in-session — research, queue-wide cleanup (line-ref drift, quoted-string staleness after sweeps), cross-batch reconciliation, doc verification, anything else within /plan's reach. Capture is for things /plan genuinely can't resolve: needs data, needs design discussion, needs user input, surfaces a structural question that would gate the work. Frame the rule as a default, not an absolute — the test is "can /plan resolve this with what it has right now."
+
+Test:
+- Self-verifying from doc text on the next /plan run where a resolvable-now item surfaces. Claude should do the work in-session instead of filing it as a capture.
+
 ### Parked
 
 - **[sizing-gates-rework]** Sizing gates rework — research filed at resources/research/batch-sizing-research.md.
@@ -220,12 +288,6 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - **[abort-reshape-routing]** /next Step 5 abort-and-requeue handles two things — the batch (return to QUEUE.md) and any captures that surfaced during the attempt (route to Captures as normal). It has no slot for the third thing: the reshape direction or learning that *motivated* the abort. In this session (ada58ef+1) the reshape direction got routed as a capture by judgment call so /plan would pick it up — without that judgment call, the direction would have lived only inside the LOG entry, where /plan doesn't read at planning time, and the batch would have re-presented itself at the next /next unchanged. Possible tightenings: (a) add an explicit sub-step under Step 5 — "if the abort surfaces a reshape direction the queue needs, route it as a capture pointing at the batch slug before recommending /done"; (b) frame the captures sentence more broadly to cover reshape-direction as well as side-findings; (c) accept the judgment-call shape and trust the recap. The (a) tightening is probably right because the trigger is mechanical — abort + batch returned + reshape direction in conversation = capture needed — and the cost of missing it is the same batch re-presenting unchanged.
 
 ---
-
-- **The fenced-code-block default for approval-time outputs is right, but the "code" label is wrong.** plugin-behaviour.md's "approval-time outputs go in a fenced code block" rule is sound — the fence is a useful visual device saying "this is a drafted artifact, not discussion content," and the across-the-board treatment keeps the signal uniform. The problem is the desktop app rendering: fenced blocks now show a "code" label at the top, which is semantically wrong when the content is prose (parking reasons, capture wording, batch drafts, LOG entries). Previously fenced blocks rendered unlabelled. Need to find what fence variant or alternative markdown construct the current Claude desktop app supports that preserves the visual demarcation without the misleading label. Surfaced 1b7d359 /plan.
-
-- /plan tried to pass queue-state work onto /next during 7563bc0+1 session: when terseness edits across procedure docs created staleness in batch line refs and quoted strings, Claude filed a capture asking /next to "re-verify line refs and quoted strings at batch-execute time" rather than doing the verification in-place during /plan. User pushed back — /next executes the top batch, it doesn't parse captures or do queue-wide verification, and capture-routing is /plan's job. The misroute pushed thinking work past its proper home. Pattern to prevent: /plan handles queue-wide fixups (cross-batch staleness, line-ref drift, quoted-string updates) while context is fresh, not by filing them as captures for downstream skills to discover. Possible mechanism — add an explicit rule under plan.md ground rules or plugin-behaviour.md that /plan owns queue-wide cleanup at the moment it surfaces; capture is for things /plan genuinely can't resolve now (needs more data, needs design discussion, needs user input). If the fix is "do it now," doing it now is /plan's job.
-
-- Procedure docs grow with each captured bug but the bug-discovery rate doesn't fall — observed across multiple /plan sessions including 7563bc0+1. User's frame: "we describe these things to no end but more and more problems just keep emerging." Two readings: (a) docs format is wrong and a more structured form (tree-stacked prose, hierarchical bullets, diagrams) would compress without losing meaning and reduce mis-reading; (b) the bug-emergence is the captures-as-tests mechanism working, not the docs failing, and reformatting won't change the rate. User's intuition is (a); Claude pushed back toward (b) but the concern is real either way. Worth holding to see if a real fix shape emerges — maybe partial restructuring of genuinely hierarchical sub-step content, maybe a different way of writing rationale that resists over-literal interpretation, maybe an accepted ceiling on what prose can do and a different mechanism takes over (more aggressive simplification cycles, periodic full rewrites instead of accretion). Don't promote until the shape is clearer; this is a capture-and-watch.
 
 - **[user-edits-rollup-on-commit]** The user can edit target-tree files at any time (mid-session, between sessions). Those edits should be detected at the next commit moment, surfaced briefly, and rolled into that commit alongside whatever the session produced — not left in the working tree to be discovered later or to layer wrongly under subsequent edits. The push-and-rezip ritual in CLAUDE.md already does this at push time (step 8 stages every dirty path in plugin/si-plugin/). The gap is /done's per-build commit, which only stages files the build touched. Today's case: 5 docs files have been dirty since at least the c5e32d8 session; an earlier session was told about the edits but still didn't commit them. Fix shape: at /done commit time (and possibly at /next start as a detection point), run `git status --porcelain plugin/si-plugin/`, surface any dirty paths outside the active scope with a one-line summary, and offer to stage + roll them in. Should not be complicated — detect, name, roll in.
 
@@ -254,6 +316,8 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - **[install-updating-later-section-is-padding]** The "Updating later" section repeats the install steps (uninstall, download, repeat) and reads as filler to a reader who's already gone through the install moments ago. AI registered it as trust-eroding padding. Fix shape: collapse to a one-line "To update: uninstall via the gear icon, download the latest zip from the same URL, and repeat the upload." Surfaced by AI.
 
 - **[install-step2-trailing-ellipsis-reads-as-truncated]** FP read the Step 2 First-run pointer block — which ends "From there, `/plan` to scope your first batch and `/next` to start building." — and was unsure whether the guide had been cut off. The pointer is mid-flow prose with no explicit "end of guide" close. Fix shape: add a one-line close after Step 2 ("That's the end of the install guide — your friend's project is now ready to start") so the reader knows they've reached the bottom. Surfaced by FP.
+
+- **Research isn't being filed unless the user explicitly asks.** plugin-behaviour.md says "File research under `resources/research/`," but observed across sessions: when Claude does a web search or works through external facts mid-conversation, the findings stay in chat and never land as a file. The conclusion gets used in the moment, then evaporates. Next session it's gone, and the next /plan that hits the same question redoes the work (or offers to, like just now on the fenced-block "code" label question — research had been done, but I couldn't find it because it wasn't filed). Fix shape: file research as a `resources/research/<topic>.md` note by default whenever a web search or external lookup yields a non-trivial finding, not only when the user asks. Surfaced 0b77f78+1 /plan.
 
 ### Parked
 

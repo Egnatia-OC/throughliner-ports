@@ -2,7 +2,23 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [e2e-install-guide]: 4 stranger-Claude subagents cold-read INSTALL.md; 11 findings routed to Captures
+## [HASH] — /plan: 6 batches promoted (2 from captures, 4 from docs-size concern); auto-memory staleness researched and cleaned
+
+User raised that plugin-behaviour.md as one big universal doc and next.md as one doc carrying three session flows are both too large for what they're doing. That concern — "docs grow but bug rate doesn't fall" — had been sitting as a capture-and-watch. This session sharpened it into four structural batches: two interactive walkthroughs of plugin-behaviour.md (first half / second half, deciding per rule where it belongs), a next.md split into per-session-type docs, and a done.md extraction moving close-out into per-skill sections while slimming /done to commit mechanics. Two earlier captures (fenced-block "code" label, /plan deferring resolvable work) were also promoted to batches. Separately, research on Claude Code auto-memory staleness confirmed the two project-state memory files were the textbook failure mode — frozen queue snapshots from V47/V51 with no current relevance — and both were deleted.
+
+**Queue changes:**
+- [fenced-block-content-type-label] promoted from capture (semantic labels on approval-time fenced blocks)
+- [plan-resolves-by-default] promoted from capture (/plan resolves in-session, capture only for what it can't)
+- [plugin-behaviour-walkthrough-1] promoted (walk first half of plugin-behaviour.md line-by-line, decide universal vs per-skill)
+- [plugin-behaviour-walkthrough-2] promoted (walk second half, same method)
+- [next-split-by-type] promoted (split next.md into per-session-type docs)
+- [done-closeout-extraction] promoted (extract close-out into per-skill sections, slim done.md to commit)
+
+**Captures routed:** 3 promoted (fenced-block label, /plan misroute, docs-grow-but-bugs-don't-fall)
+
+**Other:** Deleted stale memory files (project_v47-oq-promotion.md, ideation-research-and-build-log.md). Research filed at resources/research/auto-memory-staleness.md.
+
+## 0b77f78 — /next [e2e-install-guide]: 4 stranger-Claude subagents cold-read INSTALL.md; 11 findings routed to Captures
 
 Reshape landed cleanly. Four subagents in parallel, each given persona + INSTALL.md inline + cold-read instructions (don't execute, just report stuck-points). Persona set as scoped: cold-stranger (zero knowledge), desktop-app-confused (has Claude chat app, thinks it's Claude Code), free-plan (has Claude Code on free), already-installed (paid + prior plugin experience). Each returned a numbered friction list with a summary "where I'd give up." Synthesis grouped by guide area, preserved persona tags so cross-persona signal stayed legible, and surfaced one catastrophic failure mode (desktop-app-confused silently misroutes to Branch B then crashes at the Customise menu hunt with no recovery path — assistant would dutifully troubleshoot a missing menu rather than diagnose wrong-app). Cold read worked as predicted: cheap, parallel, structural gaps surfaced without simulating turn-taking. Findings span the full guide — frontmatter visibility, app disambiguation, paywall framing, routing ambiguity (free vs no plan), UI breadcrumb staleness, GitHub URL trust, undefined "project folder," underspecified smoke test, no bypass for experts, padding in Updating-later, truncated-looking close. Eleven captures appended under an HTML comment marker so /plan can find the group; persona key recorded inline.
 
