@@ -26,12 +26,12 @@ Read _build.md. All entries ticked?
 
 For each file created, renamed, deleted, or significantly modified:
 - Add new entries (path + one-line description)
-- Update descriptions if role changed
+- Update descriptions if the role changed
 - Remove entries for deleted files
 
 #### 1.3 Route findings to Captures
 
-Check _build.md and conversation for anything flagged during the build. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
+Check _build.md and the conversation for anything flagged during the build. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
 
 #### 1.4 Build recap [BRIEF]
 
@@ -70,7 +70,7 @@ If _build.md contains an `Index entry candidate:` line and the build ran as plan
 Quick check of QUEUE.md against plugin-behaviour.md Dependency ownership Staleness watch — any staleness from any cause, not just what this build changed:
 - Remaining batches or Captures reference renamed/deleted files?
 - Reference behaviour or rules that this build (or any prior shift the queue hasn't caught up to) has moved past?
-- Items sitting long enough that the surrounding code or rules have drifted away from them?
+- Items sitting long enough that surrounding code or rules have drifted away from them?
 - If so, flag (don't edit without asking). Run the unpark watch on the same pass — anything parked that's now newly unblocked? Flag for /plan.
 
 #### 2.3 Delete _build.md
@@ -84,7 +84,7 @@ Unlocks future builds. Only after everything above is complete.
 3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
 4. Wait for okay, then commit — and push if the user chose to push.
 
-The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
+The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
 
 ### Phase 3: Recommend next [BRIEF, PROMPT]
 
@@ -136,7 +136,7 @@ Prepend to `LOG/index.md`, per plugin-behaviour.md Index entries:
 3. Draft commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
 4. Wait for okay, then commit — and push if the user chose to push.
 
-The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into whatever commit that session makes — no amend, no two-commit flow.
+The LOG entry keeps its `[HASH]` placeholder for now. The next /plan or /next session backfills it as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
 
 ### 4. Recommend next [BRIEF, PROMPT]
 

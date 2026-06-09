@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [e2e-install-guide] aborted at scope-lock; reshape direction captured
+## [HASH] — /plan: [e2e-install-guide] reshaped to 4-subagent stranger sims; [user-edits-rollup-on-commit] filed
+
+Reshape direction from the c5e32d8 abort got worked out. Replaced [e2e-install-guide]'s single user-run live-chat test with Claude-orchestrated stranger-Claude subagent simulations: four parallel personas (cold-stranger, desktop-app confusion, free-plan user, already-installed) each given INSTALL.md inline and asked to read cold and report stuck-points. Cold read picked over interactive walkthrough — cheaper, parallel-friendly, surfaces structural gaps without simulating turn-taking. Findings synthesize cross-scenario (de-dup, group by area, preserve which personas surfaced each) before landing in Captures. Curated four scenarios rather than exhaustive matrix; OS-axis scenario dropped per user call. Slug + position unchanged so cross-references hold. Separately, [user-edits-rollup-on-commit] filed: the user can edit target-tree files at any time, and /done's per-build commit only stages files the build touched, so unrelated edits stay dirty across sessions. Today's case: 5 docs files dirty since at least c5e32d8 despite a prior session being told about them. Fix shape stated inline on the capture (detect, name, roll in); routing left to a later /plan.
+
+**Queue changes:**
+- [e2e-install-guide] rewritten in place at top of Batches (slug + position preserved)
+- [user-edits-rollup-on-commit] appended as unprocessed capture
+- LOG/log.md and LOG/index.md `[HASH]` placeholders backfilled to c5e32d8
+
+**Captures routed:** 1 filed ([user-edits-rollup-on-commit]); 0 promoted/parked/dropped
+
+## c5e32d8 — /next [e2e-install-guide] aborted at scope-lock; reshape direction captured
 
 Started /next on [e2e-install-guide]. The batch as written specified a single user-run live-chat E2E (fresh claude.ai chat, paste SI repo URL, "guide me through setup"). At scope-lock the user stopped execution: a single user-run path through the install guide isn't enough coverage, and routing the test to the user is slow and depends on their session capacity. The reshape direction is Claude-run stranger-Claude subagent simulations playing out multiple scenarios in parallel — different Claude Code install states, OSes, and starting confusions — each subagent given a fresh-stranger persona and the install guide, with findings synthesized back to Captures. Batch returned to top of QUEUE.md unchanged; the reshape itself routed as a processed capture for /plan to design (scenario set, subagent prompt shape, findings synthesis). A second capture surfaced on the abort path itself — /next Step 5 abort-and-requeue has no slot for the reshape direction that motivated the abort; routing it as a capture was a judgment call, not a procedure step, and the tightening should add that step explicitly.
 

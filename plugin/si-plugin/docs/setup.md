@@ -11,19 +11,19 @@ Before anything else, classify this folder:
 - **Case C — Already set up:** SPEC.md exists.
 
 For Case C, check `.si-version`:
-- **Version matches current plugin:** Project is fully up to date. Tell the user and offer to run /plan instead. Stop here.
+- **Version matches current plugin:** Project is fully up to date. Tell the user, offer to run /plan instead, and stop here.
 - **Version missing or outdated:** The plugin has been updated since this project was set up. Go to Step 2C (migration scaffolding).
 
 ## Step 2C: Migration scaffolding [BRIEF]
 
 The plugin version has changed since this project was last set up. Re-scaffold without overwriting user content:
 
-1. **Check each doc/folder** from the Step 2 scaffold list. If it exists, skip it. If it doesn't exist, create it from the standard scaffold (empty structure, not interview-filled).
+1. **Check each doc/folder** from the Step 2 scaffold list. If it exists, skip it. If not, create it from the standard scaffold (empty structure, not interview-filled).
 2. **Update .si-version** to the current plugin version.
 3. **Skip the interview** — the project is already described in SPEC.md.
 4. **Tell the user** what was created or updated, and that they're ready for /plan or /next.
 
-Do NOT overwrite existing files. The goal is to add anything the project is missing from a newer plugin version, not to refresh content.
+Do NOT overwrite existing files. The goal is to add what a newer plugin version introduced, not to refresh content.
 
 ## Step 2: Scaffold the docs
 
@@ -102,13 +102,13 @@ Full session entries, newest first. Each entry is written by /done. This file co
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`
 - `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block to it rather than overwriting.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting.
 
-**.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. This file is used by session_start to detect when the plugin has been updated and the project needs re-scaffolding.
+**.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
 ## Step 3: Interview (5 questions, one at a time) [SEQUENCE, PROMPT]
 
-Ask these questions one per message. Wait for the answer before asking the next. Use the answers to fill SPEC.md and QUEUE.md.
+Ask these one per message. Wait for the answer before the next. Use the answers to fill SPEC.md and QUEUE.md.
 
 **Q1. What are you building and who is it for?**
 → Fills "What this is" and "Who it's for" in SPEC.md.
@@ -117,7 +117,7 @@ Ask these questions one per message. Wait for the answer before asking the next.
 → Fills "How it works" in SPEC.md.
 
 **Q3. Any principles or constraints? (e.g., "must work offline", "no accounts", "mobile-first")**
-→ Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave this section with a note that it can be added later.
+→ Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave the section with a note that it can be added later.
 
 **Q4. What's the first thing to build? What would you want working by the end of today?**
 → Creates one rough build entry in QUEUE.md under a Build subheading. Use the user's words, don't expand or split — scope decisions belong in /plan.
@@ -137,6 +137,6 @@ After all 5 answers:
 
 - One question per message. Do not bundle.
 - Use the user's language — don't rephrase into jargon.
-- If the user gives a vague answer, ask one follow-up for clarity. Don't interrogate.
-- Don't create files until you have at least Q1-Q4 answered (Q5 is optional if skipped).
+- If an answer is vague, ask one follow-up for clarity. Don't interrogate.
+- Don't create files until you have at least Q1–Q4 answered (Q5 is optional if skipped).
 - The "adopt the folder" framing: the method is being applied to their project, not the other way around.
