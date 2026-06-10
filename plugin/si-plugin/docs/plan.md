@@ -110,5 +110,4 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 ## Step 4: Close out [BRIEF, PROMPT]
 
-1. Summarize what changed.
-2. "Run /done to record this and commit, or keep planning."
+"Run /done to record this and commit, or keep planning." No chat summary — the LOG entry /done writes is the single session summary.

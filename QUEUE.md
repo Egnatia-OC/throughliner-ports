@@ -7,22 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Split /done by session type: done.md router + per-type close-out sub-docs** **[done-closeout-extraction]**
-Depends on: [next-split-by-type]
-
-done.md is inflated: it holds close-out for two session shapes (build and plan) plus commit and push mechanics, all loaded regardless of which close is running — and the seam shows as a doubled summary (plan.md Step 4 summarizes in chat, then /done summarizes again into the LOG). The close-out behaviour emerged organically and proved valuable; this batch codifies it. Rejected alternative, considered and dropped this session: extracting close-out into per-skill sections at the end of plan.md and each per-type next doc. It lost on three counts — close-out text would load at skill start and ride in context all session for an end-of-session procedure (against the progressive-disclosure technique in resources/research/model-instruction-compliance.md), it would mint four near-duplicate close-out sections (the duplication shape the trickle-up captures exist to clean), and its one real win (LOG entry written before /done runs) only restates today's existing risk that a session abandoned before /done goes unrecorded — the dirty-tree-check direction covers that mechanically. Chosen design mirrors [next-split-by-type]: done.md becomes a thin router plus the commit core stated once; per-type sub-docs carry the type-specific close-out and load only when close-out actually happens. The LOG entry becomes the single session summary. Folded in from [trickle-up-done-md-file-safety]: done.md restates plugin-behaviour.md's file-safety rules — the git-add prohibition twice (Build close-out 2.4, Plan close-out 3) and push-is-a-prompt once — and the rewrite is the moment to drop them, rather than carrying them into the new structure and cleaning them out in a second pass.
-
-Build:
-- done.md: rewrite as router + commit core. Route by session shape: _build.md present → its type picks done-build.md / done-test.md / done-audit.md; no _build.md → done-plan.md. After the sub-doc's close-out, done.md's commit core runs: stage explicitly, draft the commit message, offer push.
-- Create done-build.md, done-test.md, done-audit.md, done-plan.md: each a complete type-specific close-out — write the LOG entry (per why-pipeline), write the index entry (per Index entries rules), _build.md cleanup where one exists, close-out recommendations.
-- Neither done.md's commit core nor the four sub-docs carry the file-safety restatements (never `git add -A` / `git add .`; push is always a prompt) — plugin-behaviour.md File safety already governs every session. The procedural steps stay: stage explicitly, draft the commit message, offer push. Resolves [trickle-up-done-md-file-safety].
-- plan.md Step 4 and the per-type next docs' Completion sections: trim to a bare /done recommendation — no chat summary; the LOG entry written at /done is the single summary artifact.
-- Sweep cross-references to done.md's structure (done SKILL.md, session_start.py strings, CLAUDE-TEMPLATE.md): most stay valid since /done keeps its responsibilities; update anything describing done.md as one linear procedure.
-
-Test:
-- Self-verifying from doc structure: done.md reads as router + commit core; each sub-doc reads as a complete close-out for its session type.
-- Behavioural check on the first full cycle after landing: one session summary, not two — the skill ends with a bare recommendation, /done produces the LOG entry.
-
 **Fold unpark candidates into the Step 2 capture-processing loop** **[fold-unparks-into-step-2]**
 
 When /plan's Step 1 unpark scan finds Parked items that the surrounding work has unblocked, there's currently no structural home for them — the procedure says to "surface findings" but doesn't route them anywhere, so they get smushed into the entry question alongside the Captures summary. That collides two decision surfaces: the read-state report and the entry question. Folding unpark candidates into Step 2 reuses the loop the user already knows: each unblocked Parked item enters the SEQUENCE as if it were a capture, sourced from Parked instead of Captures. The user gets the same promote / keep-parked / drop choice in the same shape, processed before Captures (Parked items have been waiting longest).

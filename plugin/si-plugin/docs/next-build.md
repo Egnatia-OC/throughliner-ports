@@ -87,7 +87,7 @@ If something goes wrong — a false assumption, a missing dependency, an approac
    - **Abort and requeue:** if the whole batch is unsalvageable:
      1. Return the batch text to QUEUE.md under Batches. Placement is Claude's call per plugin-behaviour.md Dependency ownership — original position or top, by what was learned.
      2. Route any captures surfaced during the attempt to Captures as normal.
-     3. Tell the user to run /done. _build.md stays in place so /done's mode detection still fires close-out — see done.md. Differences from a completed build: the LOG entry describes the attempt and why it was aborted, and the batch returns to QUEUE.md rather than disappearing into the log.
+     3. Tell the user to run /done. _build.md stays in place so /done's router still fires the build close-out — see done.md. Differences from a completed build: the LOG entry describes the attempt and why it was aborted, and the batch returns to QUEUE.md rather than disappearing into the log.
 4. **Wait for the user's call.** Don't pick a path without confirmation.
 
 ## Context management
@@ -102,7 +102,6 @@ If context is running low, prefer in order:
 When all entries are ticked:
 
 1. Tell the user the build is complete.
-2. Show what was done (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or tighten what's already built before closing." Tightening means refining done entries — not raising new work. Anything new routes through the existing paths: out-of-scope via Scope management above, thinking work via Captures.
+2. Say: "Run /done to record this and commit, or tighten what's already built before closing." Tightening means refining done entries — not raising new work. Anything new routes through the existing paths: out-of-scope via Scope management above, thinking work via Captures. No chat summary of the changes — the LOG entry /done writes is the single session summary.
 
 Do NOT delete _build.md yourself. That's /done's job.

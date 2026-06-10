@@ -20,4 +20,4 @@ For each marked capture, draft the wording in a fenced code block for approval, 
 
 ## Close [BRIEF, PROMPT]
 
-When all findings are handled, tell the user the audit is complete and show what was routed. Say: "Run /done to record this and commit, or keep reviewing." /done writes the LOG entry (audits get a normal entry — "files touched" names the target artifacts read, and routed captures get listed) and commits the _build.md deletion plus the QUEUE.md capture additions. No source file edits are staged because the audit produced none.
+When all findings are handled, tell the user the audit is complete with the captured/dropped counts — each finding was already handled one at a time. Say: "Run /done to record this and commit, or keep reviewing." No chat summary of the routed findings — the LOG entry /done writes is the single session summary.

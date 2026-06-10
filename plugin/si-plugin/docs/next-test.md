@@ -72,8 +72,7 @@ If context is running low, prefer in order:
 
 When all tests are ticked:
 
-1. Tell the user testing is complete.
-2. Show results (the Changes section from _build.md).
-3. Say: "Run /done to record this and commit, or review what's already tested before closing."
+1. Tell the user testing is complete, with the pass/fail counts — failures were already stated plainly as they happened.
+2. Say: "Run /done to record this and commit, or review what's already tested before closing." No chat summary of the results — the LOG entry /done writes is the single session summary.
 
 Do NOT delete _build.md yourself. That's /done's job.

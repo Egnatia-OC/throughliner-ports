@@ -2,7 +2,24 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next pre-flight flagged [trickle-up-done-md-file-safety] against the top batch; /plan folded it into [done-closeout-extraction]
+## [HASH] — /next [done-closeout-extraction]: done.md split into router + commit core with four per-type close-out sub-docs
+
+done.md held close-out for two session shapes plus commit and push mechanics, all loading regardless of which close was running, and the seam showed as a doubled session summary — the skill summarized in chat, then /done summarized again into the LOG. The chosen design mirrors [next-split-by-type]: done.md is now a thin router (no _build.md → done-plan.md; otherwise the Entry's subheading picks done-build.md / done-test.md / done-audit.md) plus the commit core stated once, and the four sub-docs each carry a complete type-specific close-out that loads only when close-out actually runs. The rejected per-skill-sections alternative and the three counts it lost on are preserved in the 3526cde entry. Learned during the build: test-only and audit sessions previously had no stated close-out shape at all — the old done.md treated everything with a _build.md as a build close; writing done-test.md and done-audit.md surfaced what's type-specific (every failed test needs a routed fix unless the user drops it; an audit's recommend-next defaults to /plan because its findings sit unprocessed in Captures). One deliberate drop beyond the letter of the contract: the old "Build recap" chat step wasn't carried into done-build.md — a chat recap immediately before the LOG draft is the same doubled-summary shape this batch removes, and the LOG draft shown for approval is the recap moment. File-safety restatements dropped per the folded-in [trickle-up-done-md-file-safety]; grep-verified clean across all five docs, with "stage explicitly" surviving as the procedural step. The behavioural test (one session summary, not two) is host-side — it needs push + reinstall and will surface as an unconfirmed test at a future /next.
+
+**Files touched:**
+- docs/done.md: rewritten 157 → 31 lines — router + commit core + 2 rules
+- docs/done-build.md, done-test.md, done-audit.md, done-plan.md: created — complete per-type close-outs
+- docs/plan.md: Step 4 trimmed to a bare /done recommendation
+- docs/next-build.md: Completion trimmed; abort path's "mode detection" updated to "router"
+- docs/next-test.md: Completion trimmed to pass/fail counts plus the /done line
+- docs/next-audit.md: Close trimmed; stale description of done.md's audit handling removed
+- skills/done/SKILL.md: "current build" → "current session"; description generalized
+- hooks/session_start.py, templates/CLAUDE-TEMPLATE.md: checked, no changes needed
+- REGISTRY.md: four sub-docs added, done.md description updated
+
+**Routed to Captures:** none
+
+## ba28387 — /next pre-flight flagged [trickle-up-done-md-file-safety] against the top batch; /plan folded it into [done-closeout-extraction]
 
 The /next pre-flight's capture scan found [trickle-up-done-md-file-safety] overlapping the top batch [done-closeout-extraction]: the batch rewrites done.md wholesale, and the capture wants done.md's file-safety restatements (the git-add prohibition at lines 83 and 135, push-is-a-prompt at line 155 — all three verified still present) removed as duplicates of plugin-behaviour.md File safety. Building first would have either propagated the restatements into the new commit core and four sub-docs — text a queued cleanup already wanted gone — or forced an unapproved mid-build judgment call to drop them. Folding the capture into the batch as a constraint lands the rewrite clean in one pass. The fold-in also settles what the capture actually decides: the rewrite's commit-core-stated-once design collapses the within-done.md duplication structurally for free, so the open question was whether the single commit core restates the rules at all — it doesn't; the procedural steps stay, with "stage explicitly" surviving as positive instruction rather than restatement. No conflict with the raw capture [git-add-safety-hook-gap] (hook enforcement of the same rules later): removing restatements now is compatible with the hook landing later. Session also backfilled the [HASH] placeholders in LOG/log.md and LOG/index.md to 3526cde at /next pre-flight.
 
