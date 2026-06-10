@@ -1,6 +1,6 @@
 # Audit procedure
 
-Execution procedure for audit batches. Reached from next.md after pre-flight checks and scope lock are complete. Audits don't edit files; everything routes through Captures so /plan can convert findings into normal batches.
+Execution procedure for audit batches. Reached from next.md after pre-flight checks and scope lock are complete. Audits don't edit files; everything routes through Captures so /plan can convert findings into normal batches. The audit _build.md carries a `Files:` section with no entries, so the scope-lock holds the session to the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) — the strictest setting, matching a session that edits no source files.
 
 ## Read the target systematically against the criteria [SILENT]
 

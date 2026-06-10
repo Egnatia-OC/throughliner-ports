@@ -3,12 +3,15 @@
 PreToolUse hook — enforces three rules:
 
 1. SPEC.md is read-only during active builds.
-2. During a build, only files listed in _build.md are editable
-   (plus method docs: QUEUE.md, REGISTRY.md, LOG/, _build.md).
+2. During a build, _build.md's Files: section governs which files are
+   editable (method docs — QUEUE.md, REGISTRY.md, LOG/, _build.md — are
+   always editable). Tri-state: no Files: section = no enforcement;
+   section present but empty = method docs only; entries listed = only
+   those files.
 3. Git safety: block git reset --hard and git push --force.
 
 For Edit/Write/MultiEdit: checks rules 1 and 2.
-For Bash/PowerShell: checks rule 3 plus write-command detection for rules 1-2.
+For Bash/PowerShell: checks rule 3 (git safety) only.
 """
 
 import json
@@ -37,20 +40,27 @@ def _deny(reason: str) -> int:
     return 0
 
 
-def _parse_build_files(build_path: str) -> list[str]:
-    """Extract file paths from _build.md's Files: section."""
+def _parse_build_files(build_path: str) -> list[str] | None:
+    """Extract file paths from _build.md's Files: section.
+
+    Returns None when no Files: section exists (no enforcement),
+    an empty list when the section exists but lists nothing
+    (method docs only), or the listed paths.
+    """
     files = []
     try:
         with open(build_path, "r", encoding="utf-8") as f:
             content = f.read()
     except OSError:
-        return files
+        return None
 
     in_files = False
+    found_section = False
     for line in content.splitlines():
         stripped = line.strip()
         if stripped.lower().startswith("files:"):
             in_files = True
+            found_section = True
             continue
         if in_files:
             if stripped.startswith("- "):
@@ -63,6 +73,8 @@ def _parse_build_files(build_path: str) -> list[str]:
                     files.append(file_entry)
             elif stripped and not stripped.startswith("-"):
                 break  # End of Files section
+    if not found_section:
+        return None
     return files
 
 
@@ -168,19 +180,38 @@ def main() -> int:
                 "continue building."
             )
 
-    # Rule 2: During a build, only batch files + method docs are editable
+    # Rule 2: _build.md's Files: section governs editability. Tri-state:
+    # no section = skip enforcement, present but empty = method docs only,
+    # entries listed = enforce the list.
     if has_active_build:
         build_files = _parse_build_files(build_path)
 
-        if build_files:  # Only enforce if we found a file list
-            if not _is_method_doc(filepath, cwd) and not _is_build_file(filepath, cwd, build_files):
-                return _deny(
-                    "[Sovereign Implementer] BLOCKED: this file is not in the "
-                    f"current build's file list.\n\n"
-                    f"_build.md allows: {', '.join(build_files)}\n\n"
-                    "If this file genuinely needs editing, halt the build and "
-                    "add it to the scope with the user's approval."
-                )
+        if build_files is None:
+            return 0
+
+        if _is_method_doc(filepath, cwd):
+            return 0
+
+        if not build_files:
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: this session's _build.md "
+                "lists no editable files, so only QUEUE.md, REGISTRY.md, "
+                "LOG/, and _build.md can be edited. Audit and test sessions "
+                "don't edit source files — route findings to Captures in "
+                "QUEUE.md instead. If a file genuinely needs editing, halt "
+                "and add it to _build.md's Files: section with the user's "
+                "approval."
+            )
+
+        if not _is_build_file(filepath, cwd, build_files):
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: this file is not in the "
+                f"current build's file list.\n\n"
+                f"_build.md allows: {', '.join(build_files)}\n\n"
+                "If this file genuinely needs editing, halt the build and, "
+                "with the user's approval, add it to _build.md's Files: "
+                "section."
+            )
 
     return 0
 

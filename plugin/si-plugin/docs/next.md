@@ -38,12 +38,17 @@ Entry: [copy the batch title and all entry text]
 
 Index entry candidate: [the pre-generated entry from sub-step 1]
 
+Files:
+- [each file the batch entries name, one per line, path relative to project root]
+
 Progress:
 [empty — ticked as entries complete]
 
 Changes:
 [empty — accumulated as entries complete]
 ```
+
+   The `Files:` section feeds the scope-lock: during the session, the pre_tool_use hook allows edits only to the listed files plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) and denies everything else. Populate it from the files the batch entries name, paths relative to the project root. A batch whose entries name no files to edit (audit batches, test-only batches) gets the `Files:` header with no entries — that locks the session to method docs only.
 
 3. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done deletes _build.md after close.
 

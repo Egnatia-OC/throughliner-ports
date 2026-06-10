@@ -55,13 +55,13 @@ Changes:
 2. Ask "anything else?" — repeat until no.
 3. Resume the build.
 
-**Coherence exception:** Default is capture, per above. The exception is narrow and keyed to why-pipeline coherence: if the item would share the build's log entry and index line — per plugin-behaviour.md Index entries — and folding it in makes the batch easier to find later rather than harder, add it to _build.md as a new entry and continue. Evaluate against the coherence rules, not user convenience. When uncertain, capture.
+**Coherence exception:** Default is capture, per above. The exception is narrow and keyed to why-pipeline coherence: if the item would share the build's log entry and index line — per plugin-behaviour.md Index entries — and folding it in makes the batch easier to find later rather than harder, add it to _build.md as a new entry (appending any files it names to the `Files:` section) and continue. Evaluate against the coherence rules, not user convenience. When uncertain, capture.
 
 ### Scope grows during the build
 
 If Claude discovers additional work is needed:
 
-- **Minor** (one more file, small prerequisite): ask to add, continue if approved.
+- **Minor** (one more file, small prerequisite): ask to add. Once approved, append the file to _build.md's `Files:` section before editing it — the scope-lock denies edits to unlisted files.
 - **Significant** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
 
 ## Mid-build course-correction
