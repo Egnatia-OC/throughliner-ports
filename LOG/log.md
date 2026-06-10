@@ -2,7 +2,19 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [next-split-by-type]: next.md split into per-type procedure docs
+## [HASH] — /plan: model-compliance research filed; 6 queue items updated for post-split staleness
+
+Session opened with staleness scan after [next-split-by-type] shipped (96a7986). Six queue items referenced old next.md line numbers and file locations that the split had moved into next-build.md, next-test.md, and next-audit.md: [output-tag-audit] and [scope-distinction-audit] (audit target lists), [next-done-recommendation] (Step 7 → Completion section), [audit-definition] (two build entries), [trickle-up-next-md-duplicates] (rule distribution across split docs), [trickle-up-ask-when-unsure] (line 195 → 70). All mechanical — file names and line numbers updated, substance unchanged.
+
+User raised concerns about Opus 4.6 degradation and 4.7/4.8 not following the plugin's structured procedures. Research confirmed the 4.6 degradation was real (Anthropic April 23 postmortem — three harness-level changes, not model nerfing). Key finding for 4.8 adaptation: skill docs and CLAUDE.md are delivered at user-message priority, not system-prompt priority — the built-in system prompt outranks them on verbosity and tone, which is the architectural reason response-shape tags don't hold on newer models. Six techniques from Anthropic's docs filed. Research at resources/research/model-instruction-compliance.md.
+
+**Queue changes:**
+- Updated 4 batches for staleness: [output-tag-audit], [scope-distinction-audit], [next-done-recommendation], [audit-definition]
+- Updated 2 captures for staleness: [trickle-up-next-md-duplicates], [trickle-up-ask-when-unsure]
+
+**Captures routed:** 1 filed (priority-architecture finding and 4.8 compliance techniques)
+
+## 96a7986 — /next [next-split-by-type]: next.md split into per-type procedure docs
 
 next.md carried three session flows (build, test, audit) plus abort/resume branches in one 196-line file. Every /next session read the entire doc even though it only ran one flow. Splitting into separate docs cuts per-session read cost and lets each flow evolve independently — changes to audit findings presentation no longer risk entangling build scope-management rules.
 
