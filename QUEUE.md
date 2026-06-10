@@ -7,18 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Rewrite response-shape tag definitions to survive priority conflicts** **[tag-definitions-compliance-rewrite]**
-Blocks: [output-tag-audit]
-
-Skill docs enter the model at user-message priority; the system prompt and its helpfulness training outrank them, which is the architectural reason [SILENT] and [BRIEF] keep losing on 4.7/4.8 (resources/research/model-instruction-compliance.md). The current bare definitions are cheap and ignored — a definition that costs twice the tokens but holds is a good trade. Rewrite all five with the three techniques that survive priority conflicts: a why-clause aligning the tag with helpfulness, positive quantified constraints, explicit scope statements. Placed above [output-tag-audit] deliberately: hardened definitions do the compliance work centrally, so the audit hands out fewer per-spot hardenings and its findings cite definitions that exist. The show-draft-then-ask rule left this batch's scope — [approval-ask-after-draft] now authors that rule pre-hardened at birth.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Response-shape tags section: rewrite the five definitions ([SILENT], [BRIEF], [DISCUSS], [PROMPT], [SEQUENCE]) — each with a why-clause ("this step is internal bookkeeping; narrating it buries what the user needs"), positive quantified constraints ("output zero text," "exactly one item, then stop"), and an explicit scope statement.
-- plugin/si-plugin/docs/plugin-behaviour.md Communication section, sequencing/bundling rule: same three-technique treatment — the other observed most-violated prose rule.
-
-Test:
-- Self-verifying from doc text. Behavioural confirmation accrues across later sessions: tag compliance on the weaker model is the real metric; any observed leakage is a mandatory capture.
-
 **Output tag overhaul audit: prose where a response-shape tag belongs** **[output-tag-audit]**
 Depends on: [tag-definitions-compliance-rewrite]
 
@@ -476,6 +464,8 @@ Test:
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
+
+- SPEC.md doesn't describe the response-shape tag system or the compliance-hardening stance. [tag-definitions-compliance-rewrite] elevated the tags from internal formatting convention to a defined functional element — each tag encodes what helpful means at that step, hardened with why-clauses, quantified constraints, and explicit scope so it survives priority conflicts on newer models. SPEC.md's How-it-works names skills, docs, and hooks but not the behaviour-rules layer the tags live in, and how the plugin keeps Claude aligned on current models is now part of what the product is. Small edit expected: a line or two in How it works, possibly a Principles bullet (hooks enforce mechanically, hardened rules and tags steer behaviourally). Observed at the [tag-definitions-compliance-rewrite] /done.
 
 ### Parked
 
