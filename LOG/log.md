@@ -2,7 +2,24 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: model-compliance research filed; 6 queue items updated for post-split staleness
+## [HASH] — /plan: [done-closeout-extraction] redesigned to /done split; push point set; 5 captures routed
+
+The session's biggest move came from discussion rather than the captures list. The user connected done.md's inflation to the close-out behaviour that had emerged organically across skills and was about to be codified per-skill: the extraction batch was redesigned from per-skill close-out sections to a /done router with per-type sub-docs (done-build.md, done-test.md, done-audit.md, done-plan.md), mirroring [next-split-by-type]. The per-skill-sections alternative lost on three counts: close-out text would load at skill start and ride in context all session for an end-of-session procedure; it would mint four near-duplicate close-out sections (the duplication shape the trickle-up captures exist to clean); and its one win — LOG entry written before /done runs — merely restates today's abandoned-session risk, which the dirty-tree-check direction covers mechanically. The doubled session summary the user observed (skill close-out summarizes in chat, /done summarizes again into the LOG) resolves by making the LOG entry the single summary artifact.
+
+A push point was set so host value lands soon: marker after [done-closeout-extraction], [fold-unparks-into-step-2], [narrate-build-md-purpose] — the session-feel cluster. The three audits and [next-done-recommendation] moved below the marker: audits yield captures, not shippable changes, and [output-tag-audit]'s criteria await the compliance-research captures still unprocessed. The __pycache__ zip fix must land before that rezip; its capture is still in the list.
+
+Capture processing reached 5 of 30. Four INSTALL.md cold-read findings routed: a smoke-test batch (success/failure signals must match what the command menu literally shows — skills render namespaced, e.g. /sovereign-implementer:setup); the experienced-user bypass folded into [install-separate-ai-instructions], worded to route through the identification gate rather than around it; two one-line fixes merged as an endings-polish batch. The rejected-alternative-reasoning gap promoted as [log-rejected-alternative-reasoning] with a trigger boundary so entries don't bloat: discussion-level consideration qualifies, passing mentions don't. LOG hashes backfilled to 628d816 at session start.
+
+**Queue changes:**
+- [done-closeout-extraction] rewritten under its slug: /done router + per-type close-out sub-docs; skill-end chat summaries trimmed to a bare /done recommendation
+- Push marker inserted after [narrate-build-md-purpose]; [output-tag-audit], [scope-distinction-audit], [close-out-audit], [next-done-recommendation] moved below it
+- New batches: [install-setup-smoke-test-underspecified], [install-updating-later-section-is-padding] (endings polish, absorbed the trailing-ellipsis capture), [log-rejected-alternative-reasoning]
+- [install-separate-ai-instructions] amended: bypass build entry + Depends on: [install-app-identification-check]
+- [narrate-build-md-purpose] retargeted at done-build.md, gained Depends on: [done-closeout-extraction]
+
+**Captures routed:** 5 routed (4 install cold-reads promoted/folded, 1 promoted as [log-rejected-alternative-reasoning]); orphaned persona-key comment removed; 25 remain
+
+## 628d816 — /plan: model-compliance research filed; 6 queue items updated for post-split staleness
 
 Session opened with staleness scan after [next-split-by-type] shipped (96a7986). Six queue items referenced old next.md line numbers and file locations that the split had moved into next-build.md, next-test.md, and next-audit.md: [output-tag-audit] and [scope-distinction-audit] (audit target lists), [next-done-recommendation] (Step 7 → Completion section), [audit-definition] (two build entries), [trickle-up-next-md-duplicates] (rule distribution across split docs), [trickle-up-ask-when-unsure] (line 195 → 70). All mechanical — file names and line numbers updated, substance unchanged.
 

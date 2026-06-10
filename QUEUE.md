@@ -7,19 +7,49 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Extract session close-out into per-skill sections; slim done.md to commit + commitpush** **[done-closeout-extraction]**
+**Split /done by session type: done.md router + per-type close-out sub-docs** **[done-closeout-extraction]**
 Depends on: [next-split-by-type]
 
-done.md currently handles two jobs: (1) session close-out (LOG entry, index entry, _build.md cleanup, recommendations) and (2) commit/push mechanics. The close-out pieces belong at the end of each skill that produces work — /plan, /next, and eventually /setup — because each skill knows what it produced and what the LOG entry should say. done.md shouldn't need to reverse-engineer that from _build.md. What survives as /done is the commit and commitpush mechanics: stage, commit message drafting, and the push-and-rezip ritual.
+done.md is inflated: it holds close-out for two session shapes (build and plan) plus commit and push mechanics, all loaded regardless of which close is running — and the seam shows as a doubled summary (plan.md Step 4 summarizes in chat, then /done summarizes again into the LOG). The close-out behaviour emerged organically and proved valuable; this batch codifies it. Rejected alternative, considered and dropped this session: extracting close-out into per-skill sections at the end of plan.md and each per-type next doc. It lost on three counts — close-out text would load at skill start and ride in context all session for an end-of-session procedure (against the progressive-disclosure technique in resources/research/model-instruction-compliance.md), it would mint four near-duplicate close-out sections (the duplication shape the trickle-up captures exist to clean), and its one real win (LOG entry written before /done runs) only restates today's existing risk that a session abandoned before /done goes unrecorded — the dirty-tree-check direction covers that mechanically. Chosen design mirrors [next-split-by-type]: done.md becomes a thin router plus the commit core stated once; per-type sub-docs carry the type-specific close-out and load only when close-out actually happens. The LOG entry becomes the single session summary.
 
 Build:
-- Add a "Session close-out" section at the end of plan.md covering: write LOG entry for the planning session, write index entry, recommend /done to commit.
-- Add a "Session close-out" section at the end of each per-type next doc (next-build.md, next-test.md, next-audit.md from [next-split-by-type]) covering: write LOG entry, write index entry, clean up _build.md, recommend /done to commit.
-- Slim done.md to commit mechanics: stage files, draft commit message, offer push. Remove LOG-writing, index-writing, and _build.md cleanup — those now live in the skill that produced the work.
-- Update session_start.py and any cross-references that assume /done writes LOG entries.
+- done.md: rewrite as router + commit core. Route by session shape: _build.md present → its type picks done-build.md / done-test.md / done-audit.md; no _build.md → done-plan.md. After the sub-doc's close-out, done.md's commit core runs: stage explicitly, draft the commit message, offer push.
+- Create done-build.md, done-test.md, done-audit.md, done-plan.md: each a complete type-specific close-out — write the LOG entry (per why-pipeline), write the index entry (per Index entries rules), _build.md cleanup where one exists, close-out recommendations.
+- plan.md Step 4 and the per-type next docs' Completion sections: trim to a bare /done recommendation — no chat summary; the LOG entry written at /done is the single summary artifact.
+- Sweep cross-references to done.md's structure (done SKILL.md, session_start.py strings, CLAUDE-TEMPLATE.md): most stay valid since /done keeps its responsibilities; update anything describing done.md as one linear procedure.
 
 Test:
-- Self-verifying from doc structure. Each skill's close-out section should read as a complete end-of-session sequence. done.md should read as a pure commit tool.
+- Self-verifying from doc structure: done.md reads as router + commit core; each sub-doc reads as a complete close-out for its session type.
+- Behavioural check on the first full cycle after landing: one session summary, not two — the skill ends with a bare recommendation, /done produces the LOG entry.
+
+**Fold unpark candidates into the Step 2 capture-processing loop** **[fold-unparks-into-step-2]**
+
+When /plan's Step 1 unpark scan finds Parked items that the surrounding work has unblocked, there's currently no structural home for them — the procedure says to "surface findings" but doesn't route them anywhere, so they get smushed into the entry question alongside the Captures summary. That collides two decision surfaces: the read-state report and the entry question. Folding unpark candidates into Step 2 reuses the loop the user already knows: each unblocked Parked item enters the SEQUENCE as if it were a capture, sourced from Parked instead of Captures. The user gets the same promote / keep-parked / drop choice in the same shape, processed before Captures (Parked items have been waiting longest).
+
+Build:
+- plan.md Step 1: keep the unpark + staleness scans, but reframe the output as "candidates feeding Step 2" rather than "findings to narrate before the entry question." Drop the smushed-into-narration shape.
+- plan.md Step 2: add a sub-section above the existing Captures loop stating that unpark candidates from Step 1 are processed first, using the same five-sub-step loop (present + interview, recommend, execute, remove, checkpoint). Recommend wording is the same three options — except "park" means "keep parked" for items already in Parked, and "promote" means "move out of Parked into Batches as a full batch entry." Drop removes the Parked item entirely.
+- plan.md Step 1 entry question: revert to clean "Do you have something to discuss, or ready to process Captures?" — no candidates folded in. Unpark candidates surface only inside Step 2.
+- plan.md Step 2 count statement: include unpark candidates in the upfront count ("5 items. First: ...") so the SEQUENCE rule applies uniformly.
+
+Test:
+- Self-verifying from the procedure text on next /plan run with unpark candidates present. No separate verification entry.
+
+**Narrate _build.md's purpose at the moments it's created and consulted** **[narrate-build-md-purpose]**
+Depends on: [done-closeout-extraction]
+
+_build.md isn't a passive marker; it carries the active batch's working state out of QUEUE.md (which is read-only during builds), feeds the pre_tool_use scope-lock hook, holds crash-recovery tick state, and carries rationale prose forward to /done's LOG entry. None of that is visible in the procedure docs today, so the file reads as bookkeeping or vestigial overhead. Other parts of the system narrate their value as they're invoked (dependency ownership narration, ordering reasoning, unpark surfacing); _build.md should follow the same pattern. All narration here must be [BRIEF] — one short sentence per location, not paragraphs. The point is visibility, not explanation.
+
+Build:
+- next.md: at the step where _build.md is created, add a [BRIEF] narration line stating what _build.md is for, in the user-facing terms above (working surface, scope-lock data, crash-recovery state, rationale carrier into /done).
+- next.md: at the resume path (active _build.md detected at session_start), add a [BRIEF] narration line stating what's being read and why.
+- done-build.md (post-[done-closeout-extraction]): at the step where _build.md is consumed and removed, add a [BRIEF] narration line stating the rationale is being re-authored from _build.md into the LOG entry.
+- All three additions must be [BRIEF]. One sentence each, no paragraphs. The point is visibility, not explanation.
+
+Test:
+- Self-verifying on the next /next + /done cycle. The narration either appears at the right moments or it doesn't.
+
+--- Push required before continuing ---
 
 **Output tag overhaul audit: prose where a response-shape tag belongs** **[output-tag-audit]**
 
@@ -57,32 +87,6 @@ Build:
 
 Test:
 - Self-verifying from the rule text. No separate verification entry.
-
-**Fold unpark candidates into the Step 2 capture-processing loop** **[fold-unparks-into-step-2]**
-
-When /plan's Step 1 unpark scan finds Parked items that the surrounding work has unblocked, there's currently no structural home for them — the procedure says to "surface findings" but doesn't route them anywhere, so they get smushed into the entry question alongside the Captures summary. That collides two decision surfaces: the read-state report and the entry question. Folding unpark candidates into Step 2 reuses the loop the user already knows: each unblocked Parked item enters the SEQUENCE as if it were a capture, sourced from Parked instead of Captures. The user gets the same promote / keep-parked / drop choice in the same shape, processed before Captures (Parked items have been waiting longest).
-
-Build:
-- plan.md Step 1: keep the unpark + staleness scans, but reframe the output as "candidates feeding Step 2" rather than "findings to narrate before the entry question." Drop the smushed-into-narration shape.
-- plan.md Step 2: add a sub-section above the existing Captures loop stating that unpark candidates from Step 1 are processed first, using the same five-sub-step loop (present + interview, recommend, execute, remove, checkpoint). Recommend wording is the same three options — except "park" means "keep parked" for items already in Parked, and "promote" means "move out of Parked into Batches as a full batch entry." Drop removes the Parked item entirely.
-- plan.md Step 1 entry question: revert to clean "Do you have something to discuss, or ready to process Captures?" — no candidates folded in. Unpark candidates surface only inside Step 2.
-- plan.md Step 2 count statement: include unpark candidates in the upfront count ("5 items. First: ...") so the SEQUENCE rule applies uniformly.
-
-Test:
-- Self-verifying from the procedure text on next /plan run with unpark candidates present. No separate verification entry.
-
-**Narrate _build.md's purpose at the moments it's created and consulted** **[narrate-build-md-purpose]**
-
-_build.md isn't a passive marker; it carries the active batch's working state out of QUEUE.md (which is read-only during builds), feeds the pre_tool_use scope-lock hook, holds crash-recovery tick state, and carries rationale prose forward to /done's LOG entry. None of that is visible in the procedure docs today, so the file reads as bookkeeping or vestigial overhead. Other parts of the system narrate their value as they're invoked (dependency ownership narration, ordering reasoning, unpark surfacing); _build.md should follow the same pattern. All narration here must be [BRIEF] — one short sentence per location, not paragraphs. The point is visibility, not explanation.
-
-Build:
-- next.md: at the step where _build.md is created, add a [BRIEF] narration line stating what _build.md is for, in the user-facing terms above (working surface, scope-lock data, crash-recovery state, rationale carrier into /done).
-- next.md: at the resume path (active _build.md detected at session_start), add a [BRIEF] narration line stating what's being read and why.
-- done.md: at the step where _build.md is consumed and removed, add a [BRIEF] narration line stating the rationale is being re-authored from _build.md into the LOG entry.
-- All three additions must be [BRIEF]. One sentence each, no paragraphs. The point is visibility, not explanation.
-
-Test:
-- Self-verifying on the next /next + /done cycle. The narration either appears at the right moments or it doesn't.
 
 **Change LOG file boundary from per-release to per-entry** **[drop-log-per-release-split]**
 
@@ -234,12 +238,14 @@ Build:
 - Remove the "check Applications folder" hint that assumes the user can distinguish two Claude apps by name alone.
 
 **Move AI-facing content out of the human's reading path in INSTALL.md** **[install-separate-ai-instructions]**
+Depends on: [install-app-identification-check]
 
-INSTALL.md opens with a "Note to Claude" block and closes with pacing rules — both AI-facing, both in positions the human reader hits first or last. Four out of four test personas bounced off the opening block. The guide is designed to be pasted into a Claude chat, so both human and AI content must stay in one file — but the AI content should be out of the human's natural reading path. Fix: restructure so human-readable content (what this is, who it's for, what to expect) opens the file; AI-facing instructions move to a clearly-marked section the human can skip.
+INSTALL.md opens with a "Note to Claude" block and closes with pacing rules — both AI-facing, both in positions the human reader hits first or last. Four out of four test personas bounced off the opening block. The guide is designed to be pasted into a Claude chat, so both human and AI content must stay in one file — but the AI content should be out of the human's natural reading path. Fix: restructure so human-readable content (what this is, who it's for, what to expect) opens the file; AI-facing instructions move to a clearly-marked section the human can skip. Folded in from [install-no-bypass-for-experienced-users]: the already-installed persona abandons the walkthrough at Step 1 — the three-question interview is dead weight for someone with Claude Code, a paid plan, and prior plugin experience — so the new introduction also carries an experienced-user bypass.
 
 Build:
 - INSTALL.md: move the "Note to Claude" frontmatter and the pacing rules block into a single clearly-marked AI-facing section (e.g., at the end of the file, or in a collapsed block with a "skip this" label).
 - INSTALL.md: add a brief human-facing introduction at the top — what the guide is, who it's for, what to expect from the walkthrough.
+- INSTALL.md: include an experienced-user bypass line in the introduction — "already have Claude Code and a paid plan?" — pointing via in-page anchor to the identification check, and Branch B beyond it. The bypass skips the interview, never the app-identification check.
 - Verify the restructured guide still works when pasted into a Claude chat: Claude must still find and follow the AI instructions despite their new position.
 
 **Surface paid-plan requirement before INSTALL.md interview** **[install-paid-plan-upfront]**
@@ -276,6 +282,33 @@ The install guide tells the user to "open a project folder in Claude Code" witho
 Build:
 - INSTALL.md Step B.5 and Step 2: replace "open a project folder in Claude Code" with a concrete instruction — create an empty folder, then open it in Claude Code via File > Open Folder (or whatever the current action is). Frame it as a smoke-test step, not project setup.
 - INSTALL.md: add a one-line note that /setup handles real project setup once the plugin is confirmed working.
+
+**Specify the /setup smoke test in INSTALL.md: success signal, failure signal, diagnostics before uninstall** **[install-setup-smoke-test-underspecified]**
+
+The "type /setup" smoke test doesn't say where to type, whether to press Enter, what success looks like, or what failure looks like — the cold-stranger and free-plan personas both stalled there, and the current failure path jumps straight to gear-icon > Uninstall before ruling anything else out. One wrinkle from discussion: plugin skills can render namespaced in the command menu (this project's sessions run /sovereign-implementer:plan, not bare /plan), so a guide that says "/setup should appear" may strand a reader looking at a differently-labelled entry — the success signal must match what the menu literally shows.
+
+Build:
+- INSTALL.md smoke-test step: rewrite the "type /setup" instruction to name where to type (the chat box), that a menu of commands appears as you type, which entry to look for, and that Enter runs it. Before writing the success signal, ask the user to confirm the exact menu rendering in the current desktop app (bare /setup vs namespaced form); write it to match.
+- INSTALL.md smoke-test step: describe the failure signal explicitly — what the reader sees when the plugin isn't registered (no matching entry appears as they type).
+- INSTALL.md failure path: replace the jump-to-uninstall with a diagnostic ladder — (1) check the plugin is present and enabled in the Customise plugin list, (2) start a fresh session, since skills register at session start and a pre-install session won't see them, (3) uninstall and reinstall as the last resort.
+
+**INSTALL.md endings polish: collapse "Updating later", add an end-of-guide close** **[install-updating-later-section-is-padding]**
+Depends on: [install-separate-ai-instructions]
+
+The "Updating later" section repeats the install steps the reader just finished — uninstall, download, repeat — and the already-installed persona registered it as trust-eroding padding. A one-liner that points back at the steps instead of restating them carries the same information without the filler, and stays correct when the download and upload wording changes under the other install batches. Folded in from [install-step2-trailing-ellipsis-reads-as-truncated]: the free-plan persona read the Step 2 First-run pointer's trailing prose and was unsure whether the guide had been cut off — an explicit close line marks the end of the human path, which after [install-separate-ai-instructions] sits just before the skippable AI-facing section rather than at the literal bottom of the file.
+
+Build:
+- INSTALL.md "Updating later" section: collapse to a single line — "To update: uninstall via the gear icon, download the latest zip from the same URL, and repeat the upload."
+- INSTALL.md: add a one-line close at the end of the human reading path — "That's the end of the install guide — your friend's project is now ready to start" — placed just before the AI-facing section once the restructure has moved it to the back.
+
+**Preserve rejected-alternative reasoning in LOG entries** **[log-rejected-alternative-reasoning]**
+Depends on: [done-closeout-extraction]
+
+Observed at f123eed: a /plan discussed and resolved a concern about one growing log.md getting too large to read, but the LOG entry recorded only the conclusion — not the concern or the reasoning that addressed it. Two sessions later the user couldn't retrieve why the alternative was rejected and second-guessed the decision, and the log-split design got relitigated. The why-pipeline's preserve rule carries rationale forward, but "rationale" currently means the reasoning behind the decision made, not the reasoning against the alternatives considered. The trigger needs a boundary so entries don't bloat: discussion-level consideration qualifies — a concern raised and resolved, an alternative seriously weighed — passing mentions don't. The intuitive-but-rejected path is the case that most needs preserving.
+
+Build:
+- plugin-behaviour.md why-pipeline Preserve rule: extend the definition of rationale to include concerns raised and resolved and alternatives seriously weighed, carried with why they lost. State the trigger boundary: discussion-level consideration qualifies, passing mentions don't, and decisions where the rejected path is the intuitive one always qualify.
+- The LOG-entry-writing step in the /done per-type sub-docs (post-[done-closeout-extraction] shape): add one reinforcing check at writing time — does this entry carry any concern that was resolved or alternative that was weighed? Keep it to a single line pointing at the why-pipeline rule; don't restate the rule per sub-doc.
 
 ### Parked
 
@@ -316,22 +349,10 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 ---
 
 
-<!-- INSTALL.md stranger-Claude cold-read findings ([e2e-install-guide]). Persona key: CS=cold-stranger, DAC=desktop-app-confused, FP=free-plan, AI=already-installed. -->
 
 
 
 
-
-
-- **[install-setup-smoke-test-underspecified]** The "type `/setup`" smoke test doesn't say where to type, whether the slash matters, whether to press Enter, what success looks like, or what failure looks like. CS doesn't know if it's the chat box, doesn't know what "if the slash command exists" means visually. FP wants to know what "recognised" looks like and what to do if nothing happens. The current failure path ("remove it and try again") jumps to gear-icon > Uninstall before ruling out anything else. Fix shape: describe the success signal explicitly ("a menu of slash commands should appear as you type, with /setup highlighted; press Enter to run it"), describe the failure signal, and add at least one diagnostic step before recommending uninstall. Surfaced by CS + FP.
-
-- **[install-no-bypass-for-experienced-users]** AI persona would abandon the guided walkthrough at Step 1 (three-question interview is dead weight for someone with Claude Code + paid plan + prior plugin experience) and scroll directly to Branch B. The guide's routing logic exists but is written for the assistant, not surfaced to the human reader. Fix shape: add a TL;DR at the very top — "if you already have Claude Code and a paid Claude plan, jump to Branch B" — with an in-page anchor. Costs nothing for novices; saves the experienced user from giving up on the guide. Surfaced by AI.
-
-- **[install-updating-later-section-is-padding]** The "Updating later" section repeats the install steps (uninstall, download, repeat) and reads as filler to a reader who's already gone through the install moments ago. AI registered it as trust-eroding padding. Fix shape: collapse to a one-line "To update: uninstall via the gear icon, download the latest zip from the same URL, and repeat the upload." Surfaced by AI.
-
-- **[install-step2-trailing-ellipsis-reads-as-truncated]** FP read the Step 2 First-run pointer block — which ends "From there, `/plan` to scope your first batch and `/next` to start building." — and was unsure whether the guide had been cut off. The pointer is mid-flow prose with no explicit "end of guide" close. Fix shape: add a one-line close after Step 2 ("That's the end of the install guide — your friend's project is now ready to start") so the reader knows they've reached the bottom. Surfaced by FP.
-
-- LOG entries should preserve rejected-alternative reasoning, not just the winning decision. Observed: f123eed /plan discussed and resolved a concern about one growing log.md getting too large to read, but the LOG entry only recorded the conclusion ("drop the split, one growing log.md") — not the concern or the reasoning that addressed it. Two sessions later the user couldn't retrieve why the alternative was rejected and second-guessed the decision. The why-pipeline preserve rule carries rationale forward, but "rationale" currently means the reasoning behind the decision that was made, not the reasoning against the alternatives that were considered. Adding rejected-alternative reasoning to LOG entries closes the gap — especially for decisions where the rejected path is the intuitive one.
 
 - Procedure docs don't explicitly require an approval ask after showing a draft. plan.md Step 2 sub-step 4 says "Don't write to QUEUE.md until approved" and the approval-time-outputs rule in plugin-behaviour.md says to show drafts in fenced blocks — but neither says "ask for approval." The ask is implied, not stated. Observed across multiple /plan sessions: Claude shows the draft, then goes silent, leaving the user to figure out what to do. Fix shape: add an explicit instruction (or [PROMPT] tag) at the draft-showing moment requiring a follow-up ask.
 
@@ -342,6 +363,24 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - Skill docs are user-message priority, not system-prompt priority — the built-in system prompt outranks them on verbosity and tone. This is the architectural reason [SILENT], [BRIEF], and the response-shape tag system don't hold on 4.7/4.8: the tags compete with helpfulness training and lose. Six techniques from Anthropic's own docs could close the gap: (1) move mechanical enforcement to hooks (deterministic, can't be skipped), (2) add "why" context to behavioral tags so compliance aligns with helpfulness instead of fighting it, (3) use positive quantified constraints ("output zero text") over abstract ones ("be silent"), (4) explicit scope statements on rules that apply throughout, (5) keep skill docs under 500 lines with progressive disclosure, (6) verify effort level (xhigh recommended for 4.8 agentic work). Research filed at resources/research/model-instruction-compliance.md. Implications for [output-tag-audit] and the response-shape tag system broadly — the audit's criteria should account for the priority architecture, not just tag-vs-prose cleanup.
 
 - plan.md's thinking-work rule (line 11) has two gaps that combined to let a thinking batch through. First, "Never queue thinking work as a *build* batch" — the "build" qualifier implies thinking work as other batch types is fine. Second, the rule frames audit as "the one exception" to the thinking-work prohibition, when audit isn't thinking work at all — audit produces findings (routed to Captures), thinking work produces decisions. Treating audit as an exception to the thinking-work rule muddies the boundary: anything with a systematic-read shape looks like it qualifies for the "exception," even when its output is decisions, not findings. Observed: [plugin-behaviour-walkthrough-1] and [plugin-behaviour-walkthrough-2] promoted as audit batches, but their output is a routing decision list — thinking work wearing an audit shape. Fix: drop the "build" qualifier so the rule covers all batch types, and reframe audit as a separate category rather than an exception — audit produces findings-to-Captures, thinking work produces decisions, and the two don't overlap.
+
+<!-- Plugin-ability audit findings, filed 2026-06-10 (plugin disabled for a free audit session). Goals: shrink always-on doc surface for less-capable models, move mechanical enforcement into hooks per resources/research/model-instruction-compliance.md, spend tokens where they buy compliance depth. -->
+
+- **[scope-lock-files-section]** The pre_tool_use scope-lock (rule 2: during a build, only files in _build.md's `Files:` section are editable) is dead code — no procedure doc ever writes a `Files:` section. next.md Step 2's _build.md template has Entry / Index entry candidate / Progress / Changes only, so the hook's `_parse_build_files` finds nothing and its `if build_files:` guard skips enforcement on every build. The system believes this works: CLAUDE-TEMPLATE.md tells users "Only touch files listed in the active build scope," and [faq-build-md-functions] lists "feeds the pre_tool_use scope-lock hook" as a _build.md function. Fix shape: add a `Files:` section to the _build.md template, populated at scope-lock time from the files the batch entries name; next-build.md's scope-expansion approval appends to it; the hook then enforces for real. Related gap in the same file: the docstring claims Bash/PowerShell write-command detection for rules 1–2, but the code returns after the git checks — either implement minimal detection (redirects, Set-Content/Out-File targeting SPEC.md) or correct the docstring so future sessions don't trust phantom coverage.
+
+- **[hash-backfill-as-hook]** The LOG hash backfill is the most mechanical procedure in the plugin — grep for `[HASH]`, run git log, replace in two files — yet it's specified twice as model-executed procedure (plan.md Step 1, next.md Step 1.1) and queued to move into done.md as more model-executed procedure ([log-hash-backfill-in-done]). Research technique #1 (resources/research/model-instruction-compliance.md): anything that must happen mechanically should be a hook, because hooks are deterministic and can't be skipped. session_start.py could do the entire backfill in Python — find placeholders, resolve hashes, edit in place, report one line via additionalContext — zero model reasoning, zero procedure-doc lines, identical behaviour on weak and strong models. Revises [log-hash-backfill-in-done]: the hook version supersedes the /done+amend design if it lands. Also resolves [trickle-up-hash-backfill-duplication] by deleting both procedure copies rather than consolidating them.
+
+- **[queue-format-lint-hook]** The QUEUE.md format spec (slugs, `Blocked by:`/`Parked:` headers, processed/unprocessed divider, Build/Test/Audit subheadings, `Depends on:` slug references) lives as front-loaded prose in plan.md and plugin-behaviour.md that the model must hold in its head while writing. A less-capable model will drift the format, and today nothing catches drift until a later session trips over it. A PostToolUse hook on Edit/Write to QUEUE.md (and _build.md) could lint structure mechanically — batch missing a slug, parked item missing its removal-state header, divider deleted, `Depends on:` pointing at a nonexistent slug, unknown subheading — and feed warnings straight back, so the model corrects at write time instead of complying from memory. Long-term this inverts the doc burden: enforcement moves to the hook and format prose in the procedure docs can shrink to examples — doc surface down and reliability up at once, per research technique #1. Shares a Python queue-parser with [hash-backfill-as-hook]-style tooling if both land.
+
+- **[git-add-safety-hook-gap]** plugin-behaviour.md File safety forbids `git add -A` / `git add .` (and done.md restates it twice — see [trickle-up-done-md-file-safety]), but pre_tool_use only blocks `reset --hard` and `push --force`. The blanket-add rule is exactly as mechanical as the two that are enforced — a regex on the command — and a weaker model is far more likely to reach for `git add -A` than for `push --force`. Extend the git-safety section to deny `git add -A` / `git add .` / `git add --all` and `git commit -a`/`-am`, with a denial message teaching explicit staging. Once enforced, the doc restatements can shrink to one line — the hook's message does the teaching at the moment it matters.
+
+- **[behaviour-doc-double-load]** plugin-behaviour.md — the largest doc — is injected in full by session_start at every session start, and /plan, /next, and /done each then instruct "Re-read them before continuing," so a normal skill session carries two full copies. The re-read has a purpose (the injected copy ages out of a compacted context), but paying double on every session to insure against occasional compaction is backwards. Options: (a) keep the injection, drop the re-read line from the three SKILL.md files — cheapest, trusts the injected copy; (b) drop the injection, keep the skill-time re-read — rules arrive exactly when a skill needs them, but conversation outside skills loses them; (c) inject a compact always-on core (the rules that govern outside-skill behaviour: captures, communication, file safety) and let skills load the full doc — progressive disclosure, the research-recommended shape, and the smallest standing surface for less-capable models. (c) costs the most restructuring; (a) is a one-line edit per skill available today.
+
+- **[tag-definitions-compliance-rewrite]** Concrete application of the filed compliance research (see the research capture above on skill docs being user-message priority): rewrite the five response-shape tag definitions in plugin-behaviour.md using the three wording techniques that survive priority conflicts — a why-clause aligning the tag with helpfulness ("[SILENT] — this step is internal bookkeeping; narrating it buries what the user actually needs"), positive quantified constraints ("output zero text," "exactly one item, then stop" instead of "don't narrate," "one at a time"), and explicit scope statements ("applies to every output in this skill run"). Then apply the same treatment to the two or three most-violated prose rules — the bundling/SEQUENCE rule and the show-draft-then-ask rule are the observed offenders. Deliberate token bump: a tag definition that costs twice as many tokens but actually holds on 4.7/4.8 is a good trade; the current bare definitions are cheap and ignored. Belongs alongside [output-tag-audit] — that audit finds prose-where-tag-belongs, this rewrites what the tags say once found, and its criteria should assume the rewritten definitions.
+
+- **[session-start-dirty-tree-check]** session_start reports project state but not git state. A consumer project with uncommitted changes at session start almost always means the previous session ended without /done — work sitting unrecorded and uncommitted that a non-coder won't notice for weeks (observed in this project: 5 docs files dirty across two-plus sessions, and the host CLAUDE.md now carries a manual dirty-tree check as compensation). Add `git status --porcelain` to session_start and emit one line when dirty: "N files have uncommitted changes from a previous session — /done will pick them up." Deterministic, zero model reasoning, and it generalizes the host-side check into the plugin so every consumer project gets it. Complements [user-edits-rollup-on-commit], which catches the same orphans later, at /done's commit step.
+
+- **[zip-pycache-hygiene]** si-plugin.zip ships `si-plugin/hooks/__pycache__/session_start.cpython-314.pyc` — confirmed by listing the current zip's entries. __pycache__ is gitignored so the repo stays clean, but push-and-rezip step 7 (Compress-Archive) packs from disk, so every user install carries a stale compiled artifact for a Python version they may not have. Harmless today, but stale bytecode shipped beside its source is the kind of mystery a future debugging session burns an hour on. Fix: delete or exclude `__pycache__` before zipping. Host-side change to this project's CLAUDE.md push ritual, not a target-doc change, so it needs the manual-update path.
 
 ### Parked
 
