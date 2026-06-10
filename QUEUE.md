@@ -7,17 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Keep __pycache__ out of the installable zip** **[zip-pycache-hygiene]**
-
-si-plugin.zip currently ships hooks/__pycache__/session_start.cpython-314.pyc (re-verified at promote time, and the folder is on disk waiting to be re-packed). __pycache__ is gitignored so the repo stays clean, but the push ritual's repackage step packs from disk, so every user install carries stale compiled bytecode for a Python version the user may not have — harmless today, but stale bytecode beside its source is the kind of mystery a future debugging session burns an hour on. The fix is host-side: it lives in this project's CLAUDE.md push-and-rezip procedure, not the plugin docs, so it won't propagate through reinstall and needs the manual-update path. Placed above the push marker so it lands before the next rezip, per the 3526cde decision that this fix precedes the next push.
-
-Build:
-- CLAUDE.md push-and-rezip: insert a step before the repackage step — delete all __pycache__ folders under plugin/si-plugin (disposable; Python regenerates them as needed).
-- CLAUDE.md push-and-rezip repackage step: append a verification — after zipping, list the zip's entries and confirm none contain __pycache__; if any do, stop and fix before pushing.
-
-Test:
-- Self-verifying from the doc text; behavioural proof at the next push (zip entries listed, no __pycache__ present).
-
 --- Push required before continuing ---
 
 **Output tag overhaul audit: prose where a response-shape tag belongs** **[output-tag-audit]**

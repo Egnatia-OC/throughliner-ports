@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: [zip-pycache-hygiene] promoted above the push marker
+## [HASH] — /next [zip-pycache-hygiene]: push ritual now strips __pycache__ before zipping and verifies the zip is clean
+
+The installable zip shipped hooks/__pycache__/session_start.cpython-314.pyc because the push ritual's repackage step packs the target tree straight from disk, and __pycache__ — gitignored, so invisible in the repo — was sitting in it. Stale compiled bytecode for a Python version the user may not have is harmless today but is exactly the mystery a future debugging session burns an hour on. The ritual in this project's CLAUDE.md gains step 7: delete all __pycache__ folders under plugin/si-plugin before repackaging (disposable — Python regenerates them), with the PowerShell one-liner inline so the step runs identically every push. The repackage step (now 8) ends with a self-check: list the zip's entries and confirm none contain __pycache__, stop and fix before pushing if any do — so a regression in this fix fails loudly at push time instead of shipping silently. Later steps renumbered 9–11; no other doc references those numbers ([drop-log-per-release-split] points at steps 3–4, which didn't move). Host-side change only: it lives outside the plugin package and reaches no consumer project. Behavioural proof lands at the imminent push.
+
+**Files touched:**
+- CLAUDE.md: push-and-rezip — new step 7 (delete __pycache__), verification clause on step 8 (repackage), later steps renumbered
+
+**Routed to Captures:** none
+
+## 49b1b20 — /plan: [zip-pycache-hygiene] promoted above the push marker
 
 The session existed to clear the one item the imminent push was waiting on: the 3526cde /plan had decided the __pycache__ zip fix must land before the next rezip, and the queue above the marker had just emptied. The capture's claim was re-verified live — si-plugin.zip ships hooks/__pycache__/session_start.cpython-314.pyc, and the folder sits on disk waiting to be re-packed. Promoted as a two-entry build batch against this project's CLAUDE.md push ritual (host-side, manual-update path — it won't propagate through reinstall): delete __pycache__ folders before the repackage step, and verify after zipping that no __pycache__ entries made it in, so a regression fails loudly at push time instead of shipping. The resolve-it-now-in-/plan alternative was weighed and rejected: the edit is two lines, but planning sessions don't edit files, and keeping that line hard is worth more than the saved ceremony. Placed above the push marker so /next picks it up before the push.
 
