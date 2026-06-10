@@ -14,7 +14,7 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 The procedure docs were authored before the response-shape tag system was fully in place, so some steps still describe output behaviour in prose where a tag ([SILENT], [BRIEF], [PROMPT], [DISCUSS], [SEQUENCE]) would compress the intent and apply uniformly. Prose substitutes are easy to misread and drift across docs; tags are the canonical mechanism. One known finding to seed the audit: _build.md entry ticking in next.md should be [SILENT] (crash-recovery bookkeeping, not a status report).
 
 Audit:
-- Target: setup.md, plan.md, next.md, next-build.md, next-test.md, next-audit.md, done.md
+- Target: setup.md, plan.md, next.md, next-build.md, next-test.md, next-audit.md, done.md, done-build.md, done-test.md, done-audit.md, done-plan.md
 - Criteria: any step whose prose describes verbosity or interaction shape (e.g. "say nothing," "briefly note," "ask the user," "discuss tradeoffs," "one at a time") where the matching tag would carry the same intent more cleanly. Also flag tag misuse — a tag applied where the step's prose contradicts it, or a tag missing where the step's behaviour clearly needs one. For each finding: quote the prose, name the candidate tag, note whether replacement is full (tag alone) or partial (tag + retained prose).
 
 **In-scope / out-of-scope distinction audit** **[scope-distinction-audit]**
@@ -31,7 +31,7 @@ Blocks: [next-done-recommendation]
 Across /setup, /plan, /next, /done, the close-out step recommends what to run next — but the shape varies skill-to-skill and the recommendations may not be consistent. Known incongruences: setup.md Step 4 unconditionally offers /next even when Q4 may not have produced a usable first batch; [next-done-recommendation] tackles /next-recommended-instead-of-/done at build completion, but that's one observed instance, not a full survey. Running the audit first means [next-done-recommendation]'s scope may shrink, expand, or be absorbed entirely — better to know before that batch is built. Findings route to Captures per the audit-batch contract; no direct edits.
 
 Audit:
-- Target: the close-out step in each of setup.md, plan.md, next.md, done.md (the final "tell the user what to run next" block in each).
+- Target: the close-out step in each skill — setup.md Step 4, plan.md Step 4, the Completion sections of next-build.md / next-test.md / next-audit.md, and the recommend-next sections of done-build.md / done-test.md / done-audit.md / done-plan.md.
 - Criteria: (a) what next-skill does the close-out recommend? (b) is the recommendation unconditional, or gated on actual produced state (e.g. "only offer /next if a batch exists")? (c) is the recommendation shape consistent across the four skills, or does each skill recommend differently? (d) does any close-out implicitly recommend re-running itself, or branching to a non-immediate-next skill? (e) does the commit-and-push prompt make sense for every session shape? /plan sessions update local planning state only — pushing them treats planning work as a ship event, which it isn't. /next sessions ship plugin changes (after the push-and-rezip ritual elsewhere). Survey whether the commit-and-push offer fits each skill's actual semantics, and propose tightening (e.g. /done after /plan offers commit only; push is reserved for the rezip flow). For each finding: quote the passage, name the incongruence or gap, propose a tightening (or note that the existing wording is correct and consistent).
 
 **Tighten Claude's completion recommendation: always /done, never /next** **[next-done-recommendation]**
@@ -52,7 +52,7 @@ The per-release log file split (log.md → log-v<VERSION>.md at each push) uses 
 
 Build:
 - Decide naming scheme for per-entry files. Slug-based (LOG/trickle-up-audit.md, LOG/plan-2026-06-09.md for sessions without a batch slug) avoids the hash-not-known-at-write-time problem and keeps filenames readable. Hash stays in file content + index.
-- plugin/si-plugin/docs/done.md (or per-skill close-outs if [done-closeout-extraction] has landed): write each LOG entry as its own file under LOG/ instead of appending to log.md.
+- the /done per-type close-out sub-docs (done-build.md, done-test.md, done-audit.md, done-plan.md): write each LOG entry as its own file under LOG/ instead of appending to log.md.
 - plugin/si-plugin/docs/plugin-behaviour.md: update why-pipeline retrieve rule — "search LOG/index.md, then open the matched entry's file directly."
 - plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: update LOG/ description to reflect per-entry files. Remove "this file covers the current release" framing.
 - plugin/si-plugin/skills/setup/, plan/, next/, done/ procedure docs: grep for log-v*.md, single-log-file, and per-release references; revise to describe per-entry files.

@@ -28,14 +28,14 @@ Host and target are the same plugin at different stages. Ambiguous references to
 
 **4 project docs** (created by `/setup` in consumer projects):
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
-- `QUEUE.md` — work batches (Build/Test subheadings) and captured ideas (plain bullets).
+- `QUEUE.md` — work batches (Build/Test/Audit subheadings) and captured ideas (plain bullets).
 - `REGISTRY.md` — components list. What exists, where it lives.
 - `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), `LOG/log.md` for current release entries, `LOG/log-v*.md` for archived releases.
 
 **4 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
 - `/plan` — all thinking work: queue management, read-back, ideas, questions, drift detection.
-- `/next` — pick the top queue entry, execute it (build or test, type-agnostic).
+- `/next` — pick the top queue entry, execute it (build, test, or audit).
 - `/done` — record what happened, clean up, commit.
 
 **2 hooks:**
@@ -72,7 +72,7 @@ No code method/
 
 ### Self-hosting dependency ordering
 
-Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Claude can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, `next.md`, `done.md`), and `docs/plugin-behaviour.md` — which only refresh after push + uninstall/reinstall.
+Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Claude can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, and the `next*.md` / `done*.md` families), and `docs/plugin-behaviour.md` — which only refresh after push + uninstall/reinstall.
 
 When a batch depends on a previous batch's host-side effects, that dependency does not resolve in-session. /plan must place the dependent batch after a push marker and annotate its `Depends on:` line as `(host-side)`.
 
@@ -135,12 +135,12 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 ## Current state
 
-**Status:** Target v1.9.0. Repo on GitHub, method docs set up (/setup complete).
+**Status:** Target v1.10.0. Repo on GitHub, method docs set up (/setup complete).
 
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test subheadings. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test/Audit subheadings. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
 - **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), `LOG/log.md` for full entries (current release, newest first), `LOG/log-v*.md` for archived per-release entries.
 
@@ -148,8 +148,8 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 - `/setup` — initial project scaffolding (already done).
 - `/plan` — manage the queue, add ideas, resolve questions, check for drift.
-- `/next` — execute the top queue entry (build or test).
-- `/done` — close the build, record what happened, commit.
+- `/next` — execute the top queue entry (build, test, or audit).
+- `/done` — close the session, record what happened, commit.
 
 ## Rules for Claude
 

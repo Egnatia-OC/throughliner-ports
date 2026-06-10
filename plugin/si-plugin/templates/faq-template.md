@@ -12,7 +12,7 @@ They split work into three modes. **/plan** is for thinking — queue management
 
 ## How are entries organized in the queue?
 
-Batches group entries under **Build** and **Test** subheadings. Build entries create or change things. Test entries verify things work. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
+Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
