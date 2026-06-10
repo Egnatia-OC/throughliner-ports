@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [narrate-build-md-purpose]: _build.md's purpose made visible — narration at use moments plus the FAQ answer
+## [HASH] — /plan: [zip-pycache-hygiene] promoted above the push marker
+
+The session existed to clear the one item the imminent push was waiting on: the 3526cde /plan had decided the __pycache__ zip fix must land before the next rezip, and the queue above the marker had just emptied. The capture's claim was re-verified live — si-plugin.zip ships hooks/__pycache__/session_start.cpython-314.pyc, and the folder sits on disk waiting to be re-packed. Promoted as a two-entry build batch against this project's CLAUDE.md push ritual (host-side, manual-update path — it won't propagate through reinstall): delete __pycache__ folders before the repackage step, and verify after zipping that no __pycache__ entries made it in, so a regression fails loudly at push time instead of shipping. The resolve-it-now-in-/plan alternative was weighed and rejected: the edit is two lines, but planning sessions don't edit files, and keeping that line hard is worth more than the saved ceremony. Placed above the push marker so /next picks it up before the push.
+
+**Queue changes:**
+- [zip-pycache-hygiene]: promoted from raw capture to build batch at the top of Batches, above the push marker
+
+**Captures routed:** [zip-pycache-hygiene] promoted
+
+## 5742f65 — /next [narrate-build-md-purpose]: _build.md's purpose made visible — narration at use moments plus the FAQ answer
 
 _build.md does four jobs — carries the active batch's working state out of QUEUE.md (read-only during builds), feeds the scope-lock with the editable-file list, holds crash-recovery tick state, and carries the batch's rationale into /done's LOG entry — and none of them were visible to the user, so the file read as bookkeeping or vestigial overhead. Following the system's pattern of narrating value at the moment it's exercised, next.md now narrates the lock in one sentence after _build.md is created (a new sub-step 4, placed so the existing numbering holds), the resume path opens with a one-line statement of what's being read and why, and done-build.md's LOG-entry step opens with a sentence that the batch's reasoning is being carried from _build.md into the record — the file's last job before deletion. The FAQ rewrite folded in from [faq-build-md-functions] landed in the same pass: the template's existing "What is _build.md? Should I edit it?" answer now walks the same four functions in user-facing language, keeping the reassurances and the question wording so the index anchor stays valid — authored alongside the narration lines so the vocabulary can't drift. One honest fix surfaced by the work: the old resume check tagged the whole sub-step [SILENT] while describing an offer, which is output — the tags are now split per path ([BRIEF] when offering resume, [SILENT] when no build exists). The narration behaviour itself is host-side and joins the single-summary check from [done-closeout-extraction] as a deferred test, surfacing after the next push and reinstall.
 
