@@ -7,19 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Fold unpark candidates into the Step 2 capture-processing loop** **[fold-unparks-into-step-2]**
-
-When /plan's Step 1 unpark scan finds Parked items that the surrounding work has unblocked, there's currently no structural home for them — the procedure says to "surface findings" but doesn't route them anywhere, so they get smushed into the entry question alongside the Captures summary. That collides two decision surfaces: the read-state report and the entry question. Folding unpark candidates into Step 2 reuses the loop the user already knows: each unblocked Parked item enters the SEQUENCE as if it were a capture, sourced from Parked instead of Captures. The user gets the same promote / keep-parked / drop choice in the same shape, processed before Captures (Parked items have been waiting longest).
-
-Build:
-- plan.md Step 1: keep the unpark + staleness scans, but reframe the output as "candidates feeding Step 2" rather than "findings to narrate before the entry question." Drop the smushed-into-narration shape.
-- plan.md Step 2: add a sub-section above the existing Captures loop stating that unpark candidates from Step 1 are processed first, using the same five-sub-step loop (present + interview, recommend, execute, remove, checkpoint). Recommend wording is the same three options — except "park" means "keep parked" for items already in Parked, and "promote" means "move out of Parked into Batches as a full batch entry." Drop removes the Parked item entirely.
-- plan.md Step 1 entry question: revert to clean "Do you have something to discuss, or ready to process Captures?" — no candidates folded in. Unpark candidates surface only inside Step 2.
-- plan.md Step 2 count statement: include unpark candidates in the upfront count ("5 items. First: ...") so the SEQUENCE rule applies uniformly.
-
-Test:
-- Self-verifying from the procedure text on next /plan run with unpark candidates present. No separate verification entry.
-
 **Narrate _build.md's purpose at the moments it's created and consulted** **[narrate-build-md-purpose]**
 Depends on: [done-closeout-extraction]
 

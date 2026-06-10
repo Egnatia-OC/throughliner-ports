@@ -31,9 +31,9 @@ The control rule for capture and parking, in one place. Pieces also appear in th
 
 Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 
-**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip unless something else flags them. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? Surface findings as part of the read-state phase — name the item, name the trigger, narrate per Dependency ownership. The user decides whether to act now or hold; no silent edits.
+**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip unless something else flags them. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? The scans' output is candidates feeding Step 2, not findings to narrate here — collect them silently and carry them into Step 2, where they're processed ahead of Captures (see Unpark candidates first). No silent edits: every candidate goes through the Step 2 loop, where the user decides.
 
-Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.)
+Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.) Keep the question clean — no scan candidates folded in; they surface only inside Step 2.
 
 **If the user has something:** Handle it via the Step 2 loop — present, interview, recommend, wait, execute. Then: "Anything else, or ready for Captures?" Repeat until ready.
 
@@ -43,7 +43,9 @@ Ask: "Do you have something to discuss, or ready to process Captures?" (If Captu
 
 **Captures structure: processed/unprocessed split.** Captures is divided by `---` into processed (above) and unprocessed (below). Processed = /plan has applied dependency management at least once (given a slug, set a `Blocked by:` header, or confirmed standalone via Step 2 sub-step 2). Processed captures carry slugs so they can be cross-referenced. Unprocessed = raw appended in file order — no slug, no dependency headers yet. The divider is staging between raw and routed (promote/park/drop), not a final home — captures sit above it until routed out of Captures entirely. Routing is separate from dependency management and can happen in any later /plan: a capture can become processed in one session and routed in another.
 
-One item at a time, oldest first across both halves (unprocessed in file order, then continue into processed). Never preview upcoming items. State the count upfront ("3 items. First: ...").
+**Unpark candidates first.** Candidates carried in from Step 1's scans are processed before Captures — Parked items have been waiting longest. Each enters the loop below as if it were a capture, sourced from Parked instead of Captures, through the same sub-steps (present + interview, recommend, execute, remove, checkpoint). The recommend options are the same three, reread for items already in Parked: **promote** means move out of Parked into Batches as a full batch entry, **park** means keep parked, **drop** removes the Parked item entirely. Staleness candidates take the same path with the Staleness watch's choice — drop, rewrite, or keep (per plugin-behaviour.md Dependency ownership).
+
+One item at a time — candidates from Step 1 first, then captures oldest first across both halves (unprocessed in file order, then continue into processed). Never preview upcoming items. State the count upfront, counting candidates and captures together ("5 items. First: ...").
 
 For each item:
 
