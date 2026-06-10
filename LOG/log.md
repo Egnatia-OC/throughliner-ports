@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: [done-closeout-extraction] redesigned to /done split; push point set; 5 captures routed
+## [HASH] — /next pre-flight flagged [trickle-up-done-md-file-safety] against the top batch; /plan folded it into [done-closeout-extraction]
+
+The /next pre-flight's capture scan found [trickle-up-done-md-file-safety] overlapping the top batch [done-closeout-extraction]: the batch rewrites done.md wholesale, and the capture wants done.md's file-safety restatements (the git-add prohibition at lines 83 and 135, push-is-a-prompt at line 155 — all three verified still present) removed as duplicates of plugin-behaviour.md File safety. Building first would have either propagated the restatements into the new commit core and four sub-docs — text a queued cleanup already wanted gone — or forced an unapproved mid-build judgment call to drop them. Folding the capture into the batch as a constraint lands the rewrite clean in one pass. The fold-in also settles what the capture actually decides: the rewrite's commit-core-stated-once design collapses the within-done.md duplication structurally for free, so the open question was whether the single commit core restates the rules at all — it doesn't; the procedural steps stay, with "stage explicitly" surviving as positive instruction rather than restatement. No conflict with the raw capture [git-add-safety-hook-gap] (hook enforcement of the same rules later): removing restatements now is compatible with the hook landing later. Session also backfilled the [HASH] placeholders in LOG/log.md and LOG/index.md to 3526cde at /next pre-flight.
+
+**Queue changes:**
+- [done-closeout-extraction]: rationale extended with the fold-in reasoning; third Build entry added — neither done.md's commit core nor the four sub-docs carry the file-safety restatements; resolves [trickle-up-done-md-file-safety].
+
+**Captures routed:** [trickle-up-done-md-file-safety] folded into [done-closeout-extraction] and removed from Captures.
+
+## 3526cde — /plan: [done-closeout-extraction] redesigned to /done split; push point set; 5 captures routed
 
 The session's biggest move came from discussion rather than the captures list. The user connected done.md's inflation to the close-out behaviour that had emerged organically across skills and was about to be codified per-skill: the extraction batch was redesigned from per-skill close-out sections to a /done router with per-type sub-docs (done-build.md, done-test.md, done-audit.md, done-plan.md), mirroring [next-split-by-type]. The per-skill-sections alternative lost on three counts: close-out text would load at skill start and ride in context all session for an end-of-session procedure; it would mint four near-duplicate close-out sections (the duplication shape the trickle-up captures exist to clean); and its one win — LOG entry written before /done runs — merely restates today's abandoned-session risk, which the dirty-tree-check direction covers mechanically. The doubled session summary the user observed (skill close-out summarizes in chat, /done summarizes again into the LOG) resolves by making the LOG entry the single summary artifact.
 
