@@ -2,7 +2,19 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [tag-definitions-compliance-rewrite]: tag definitions and sequencing rule hardened to survive priority conflicts
+## [HASH] — /next [output-tag-audit]: 11 procedure docs read for tag gaps — 9 findings captured, 1 dropped; audit shape itself redesigned mid-session
+
+First systematic pass over the procedure docs since the tag definitions were hardened. The audit applied the batch's criteria — prose-where-a-tag-belongs, tag misuse, missing tags, each with a does-it-need-local-hardening note — across setup.md, plan.md, the next family, and the done family. The headline is the one criterion-B catch: Execute [SILENT] in next-build.md and next-test.md scopes over sub-flows that must speak (failure reports, scope-expansion asks, user-run handoffs); under the hardened literal-scope definition a weak model either violates the tag or suppresses a failure report to honour it, so that spot alone needs local carve-out wording rather than a tag swap. Everything else confirmed the central-hardening bet: the remaining gaps are tag-only fixes (untagged asks and halts across plan/next/done, path-split candidates, post-hardening redundant restatements with the trim-vs-reinforce tension named for /plan), plus one structural catch — setup.md's tags reference definitions that unadopted Case A/B sessions never load, so its prose restatements are load-bearing and setup.md is exempt from any trim. The seeded finding (entry ticking should be [SILENT]) was dropped as already resolved — the [next-split-by-type] restructure added Execute [SILENT] after that capture was filed; the backfill [BRIEF] mismatch went unflagged because [hash-backfill-as-hook] deletes both blocks anyway.
+
+The second thread: four design captures from mid-audit discussion, all one arc — mechanizing judgment out of /next toward an autopilot mode (user-stated goal: next → done → next running unattended until the building is done). Queue-visible plan markers make predictable planning moments a mechanical queue line, sibling to the push marker. The FAQ turns out to have no routine update trigger at all — a trigger rule plus a one-time coverage audit captured. The thinking-work capture records the leak this session observed (a reconciliation check seeded into an audit batch, its drop-reasoning landing where /plan won't look) and names the autopilot goal as the reason the rule matters. And the audit shape itself got redesigned: findings should auto-file as captures with judgment happening once in /plan, killing the double-judgment loop — findings 2–10 were then batch-drafted and batch-approved at the user's direction as a live preview of exactly that flow, one approval pass instead of nine round-trips, with no friction.
+
+**Files touched:**
+- none — audit session; read plugin/si-plugin/docs/: setup.md, plan.md, next.md, next-build.md, next-test.md, next-audit.md, done.md, done-build.md, done-test.md, done-audit.md, done-plan.md
+- QUEUE.md: 13 captures appended
+
+**Routed to Captures:** 13 — 9 audit findings (Execute [SILENT] over-scope, plan.md Step 1 moments, next.md halt/gate, scope-growth asks, routing approval loops, done-family bookkeeping, restatement trims, setup.md structural, setup.md spots) + 4 design captures (queue-visible plan markers, FAQ update trigger + coverage audit, thinking-work/autopilot, audit auto-file redesign)
+
+## 2f23dc6 — /next [tag-definitions-compliance-rewrite]: tag definitions and sequencing rule hardened to survive priority conflicts
 
 Skill docs reach the model at user-message priority, below the system prompt's helpfulness training — the architectural reason [SILENT] and [BRIEF] kept losing on Opus 4.7/4.8 (resources/research/model-instruction-compliance.md). The five response-shape tag definitions were bare one-liners: cheap, and ignored when the helpfulness pull pointed the other way — a definition that costs twice the tokens but holds is a good trade. Each definition now carries the three techniques the research found survive the priority conflict: a why-clause aligning the tag with helpfulness (silence and brevity framed as the helpful behaviour at that step, not withheld effort), positive quantified constraints ("output zero text," "exactly one item per message, then stop"), and an explicit scope statement, since 4.7/4.8 read literally and don't carry implied scope. The section intro gains the umbrella line: each tag encodes what helpful means at that step, and the tag wins over the general pull to elaborate. The Communication sequencing/bundling rule — the other observed most-violated prose rule — got the same treatment, preserving the count-upfront convention and the one inversion (alternatives the user is choosing between stay in one message). Deliberately built ahead of [output-tag-audit] so the audit cites hardened definitions and hands out fewer per-spot fixes. The real test accrues behaviourally across later sessions on the weaker model; any observed tag leakage is a mandatory capture.
 
@@ -10,7 +22,7 @@ Side record: the two v1.10.0 deferred host-side tests got their first live exerc
 
 **Files touched:**
 - plugin/si-plugin/docs/plugin-behaviour.md: five tag definitions rewritten hardened; section intro line added; Communication sequencing bullet given the same three-technique treatment
-- LOG/log.md, LOG/index.md: [HASH] placeholders backfilled to 98cf4a6 at pre-flight
+- LOG/log.md, LOG/index.md: prior entry's hash placeholders backfilled to 98cf4a6 at pre-flight
 
 **Routed to Captures:** SPEC.md gap — response-shape tag system and compliance-hardening stance missing from the product description; small /plan edit expected
 
