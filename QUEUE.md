@@ -7,22 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Make _build.md's purpose visible: narration at the moments it's used, plus the FAQ answer** **[narrate-build-md-purpose]**
-Depends on: [done-closeout-extraction], [scope-lock-files-section]
-
-_build.md isn't a passive marker; it carries the active batch's working state out of QUEUE.md (which is read-only during builds), feeds the pre_tool_use scope-lock hook, holds crash-recovery tick state, and carries rationale prose forward to /done's LOG entry. None of that is visible in the procedure docs today, so the file reads as bookkeeping or vestigial overhead. Other parts of the system narrate their value as they're invoked (dependency ownership narration, ordering reasoning, unpark surfacing); _build.md should follow the same pattern. All narration here must be [BRIEF] — one short sentence per location, not paragraphs. The point is visibility, not explanation. Folded in from [faq-build-md-functions] (unblocked when [scope-lock-files-section] shipped at 8c8f7fe): the FAQ template's existing "What is _build.md?" answer gets rewritten around the same four functions — folding it here means the user-facing vocabulary for those functions is authored once, so the narration lines and the FAQ answer can't drift apart.
-
-Build:
-- next.md: at the step where _build.md is created, add a [BRIEF] narration line stating what _build.md is for, in the user-facing terms above (working surface, scope-lock data, crash-recovery state, rationale carrier into /done).
-- next.md: at the resume path (active _build.md detected at session_start), add a [BRIEF] narration line stating what's being read and why.
-- done-build.md (post-[done-closeout-extraction]): at the step where _build.md is consumed and removed, add a [BRIEF] narration line stating the rationale is being re-authored from _build.md into the LOG entry.
-- All three additions must be [BRIEF]. One sentence each, no paragraphs. The point is visibility, not explanation.
-- templates/faq-template.md: rewrite the "What is _build.md? Should I edit it?" answer around the four functions in user-facing language (working surface for the active batch, the file list the safety check enforces, crash-recovery progress, reasoning carried into the session record). Keep the existing reassurances — Claude manages it, don't edit it, deleted at /done, presence at session start means an interrupted build. Question wording unchanged so faq-index-template.md's anchor stays valid; index template untouched.
-
-Test:
-- Self-verifying on the next /next + /done cycle. The narration either appears at the right moments or it doesn't.
-- FAQ rewrite self-verifying from the template text.
-
 --- Push required before continuing ---
 
 **Output tag overhaul audit: prose where a response-shape tag belongs** **[output-tag-audit]**

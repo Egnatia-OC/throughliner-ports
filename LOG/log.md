@@ -2,7 +2,18 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: [faq-build-md-functions] unparked and folded into [narrate-build-md-purpose]
+## [HASH] — /next [narrate-build-md-purpose]: _build.md's purpose made visible — narration at use moments plus the FAQ answer
+
+_build.md does four jobs — carries the active batch's working state out of QUEUE.md (read-only during builds), feeds the scope-lock with the editable-file list, holds crash-recovery tick state, and carries the batch's rationale into /done's LOG entry — and none of them were visible to the user, so the file read as bookkeeping or vestigial overhead. Following the system's pattern of narrating value at the moment it's exercised, next.md now narrates the lock in one sentence after _build.md is created (a new sub-step 4, placed so the existing numbering holds), the resume path opens with a one-line statement of what's being read and why, and done-build.md's LOG-entry step opens with a sentence that the batch's reasoning is being carried from _build.md into the record — the file's last job before deletion. The FAQ rewrite folded in from [faq-build-md-functions] landed in the same pass: the template's existing "What is _build.md? Should I edit it?" answer now walks the same four functions in user-facing language, keeping the reassurances and the question wording so the index anchor stays valid — authored alongside the narration lines so the vocabulary can't drift. One honest fix surfaced by the work: the old resume check tagged the whole sub-step [SILENT] while describing an offer, which is output — the tags are now split per path ([BRIEF] when offering resume, [SILENT] when no build exists). The narration behaviour itself is host-side and joins the single-summary check from [done-closeout-extraction] as a deferred test, surfacing after the next push and reinstall.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: Step 2 gains sub-step 4 "Narrate the lock" [BRIEF]; Step 1.2 resume offer opens with a [BRIEF] line, no-build path stays [SILENT]
+- plugin/si-plugin/docs/done-build.md: 2.1 opens with the rationale-carry narration sentence
+- plugin/si-plugin/templates/faq-template.md: _build.md answer rewritten around the four functions; reassurances and question wording kept
+
+**Routed to Captures:** none
+
+## 34e31b6 — /plan: [faq-build-md-functions] unparked and folded into [narrate-build-md-purpose]
 
 The /done close of [scope-lock-files-section] flagged [faq-build-md-functions] as newly unblocked — its Blocked by: named that batch, which shipped at 8c8f7fe. This /plan took it ahead of the capture backlog so the FAQ content describing the scope-lock as real can ride the same push as the code that made it real. Reading the FAQ template reshaped the work: the template already carries a "What is _build.md? Should I edit it?" entry, so the capture is a rewrite of that answer around the four functions, not a new entry — question wording stays, the FAQ index anchor holds, and the index template needs no change. Routed as a fold-in to [narrate-build-md-purpose] rather than a standalone batch: both halves describe _build.md's purpose in user-facing terms, and authoring that vocabulary once in one build keeps the narration lines and the FAQ answer from drifting apart; the rejected standalone-batch alternative would have meant a second authoring moment for the same four functions. The batch was retitled to cover both halves (slug unchanged), gained the FAQ build entry with the existing reassurances preserved, and keeps its top position before the push marker.
 

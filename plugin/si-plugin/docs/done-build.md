@@ -27,6 +27,8 @@ Check _build.md and the conversation for anything flagged during the build. Rout
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
+Narrate first [BRIEF]: one sentence noting the batch's reasoning is being carried from _build.md into the LOG entry — the file's last job before /done deletes it.
+
 Draft the entry for `LOG/log.md` using this template (placeholder hash — backfilled at the next /plan or /next session start):
 
 ```markdown

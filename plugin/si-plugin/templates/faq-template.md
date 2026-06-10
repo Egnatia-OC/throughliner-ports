@@ -32,7 +32,7 @@ No — an empty queue is a normal resting state. Run /plan when you have ideas o
 
 ## What is _build.md? Should I edit it?
 
-A temporary file tracking the active build — what's done, what's left, what changed. Claude manages it; deleted on /done. If it exists at session start, a previous build was interrupted.
+The active build's working file. It does four jobs: carries the batch being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the batch's reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
 
 ## What is REGISTRY.md for?
 

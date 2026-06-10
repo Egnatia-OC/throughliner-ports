@@ -8,7 +8,7 @@ Before starting:
 
 1. **Backfill LOG hashes:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md`. If empty: move on, no output. Otherwise batch-read the matching files. Common case — one placeholder in each sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/log.md` and use it for both. Fallback — multiple placeholders, or the common-case hash doesn't match the entry titles: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit; the edit folds into this session's later commit.
 
-2. **Active build check:** [SILENT] If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new. If not, move on (no output either way).
+2. **Active build check:** If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new, opening with a [BRIEF] line naming what's being read and why: _build.md holds the interrupted build's progress and remaining work, so the session picks up where it stopped instead of starting over. If _build.md does not exist: [SILENT] — move on, no output.
 
 3. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
 
@@ -51,6 +51,8 @@ Changes:
    The `Files:` section feeds the scope-lock: during the session, the pre_tool_use hook allows edits only to the listed files plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) and denies everything else. Populate it from the files the batch entries name, paths relative to the project root. A batch whose entries name no files to edit (audit batches, test-only batches) gets the `Files:` header with no entries — that locks the session to method docs only.
 
 3. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done deletes _build.md after close.
+
+4. **Narrate the lock** [BRIEF] — one sentence on what _build.md is for, in user-facing terms: the build's working file — it carries the batch while QUEUE.md stays free, lists the files the safety check allows, tracks progress so an interrupted session can resume, and holds the reasoning /done writes into the session record.
 
 Progress format varies by batch type:
 - **Build entries:** `- [x] entry description — done`
