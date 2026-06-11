@@ -27,7 +27,7 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
 - `resources/reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
 - `LOG/index.md` — one-line summaries of each session, newest first; post-split lines end with the session's entry filename
-- `LOG/<slug or type-date>.md` — per-entry session files written by /done (one per session, named per done.md LOG entry files; first ones appear after the next push + reinstall)
+- `LOG/<slug or type-date>.md` — per-entry session files written by /done (one per session, named per done.md LOG entry files)
 - `LOG/log.md` — pre-split session entries (frozen — new entries are per-entry files; contents findable by hash)
 - `LOG/log-v*.md` — archived per-release log files from before the per-entry split (frozen, findable by hash)
 - `README.md` — public-facing project description, install instructions, operating conditions
