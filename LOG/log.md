@@ -2,7 +2,22 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [scope-distinction-audit]: scope distinction audited across five procedure docs — 6 findings, all captured
+## [HASH] — /plan: all six scope-audit captures promoted into [scope-anchor] and [scope-boundary-rule]
+
+All six captures from the scope-distinction audit were processed and promoted — none parked, none dropped. They collapsed into two batches because the proposals converged on two moves: define build scope once, and define what happens at its boundary. [scope-anchor] installs the single Scope statement in plugin-behaviour.md (the entries' described work is the definition; the Files: list its hook-enforced approximation; passing the hook never by itself makes work in-scope), rewords the Dependency ownership bullet so "scope" loses its project-scope sense, rewords next-build.md's scope-expansion ask from file-shaped to work-shaped — the audit's sharpest concrete finding, noticed in a capture but acted on by none of them — and adds the authoring side to plan.md: build entries name their files, checked at the readiness gate, so scope is decided at planning time rather than ask-by-ask at build time under the tri-state lock. [scope-boundary-rule] replaces the undefined "note them for the queue" with a defined move — Claude-noticed discoveries take the same capture flow user-raised items already get, at the moment of noticing, because who noticed doesn't change the artifact — and states the mid-session decision rule once beside it: needed → ask or split; not needed → capture and continue; premise broken → halt.
+
+Alternatives weighed. At-close routing through a _build.md holding pen lost to the immediate flow — one rule, no new structure; test failures keep their at-close path since interrupting a test run is the one case with a real reason to defer. A two-senses teaching line at the anchor lost to the Dependency ownership reword — the reword dissolves the polysemy, after which the line would teach a distinction that no longer exists. A push marker between the new batches and [trickle-up-next-md-duplicates] was raised by the user and rejected — the dependency is target-side, not host-side, so queue ordering and written headers carry it. One routing-gate override was narrated in-session: the first capture's reference to [trickle-up-next-md-duplicates] is forward-looking in wording but the relationship runs backwards — the anchor must land before that batch deletes the last restatement — so parking behind it would have inverted the graph. Both new batches sit directly above it instead, with the relationship written on both ends.
+
+Also this session: the prior entries' placeholder hashes were backfilled to a319428 at session start.
+
+**Queue changes:**
+- [scope-anchor] added — absorbs four captures (canonical definition, two enforcement layers, scope polysemy, plan.md authoring side); placed directly above [trickle-up-next-md-duplicates]; Blocks: [scope-boundary-rule], [trickle-up-next-md-duplicates].
+- [scope-boundary-rule] added — absorbs two captures (undefined routing move, unstated decision rule); placed between the two; Depends on: [scope-anchor].
+- [trickle-up-next-md-duplicates] gained Depends on: [scope-anchor].
+
+**Captures routed:** all 6 promoted (folded into the two new batches); Captures now empty.
+
+## a319428 — /next [scope-distinction-audit]: scope distinction audited across five procedure docs — 6 findings, all captured
 
 The audit asked whether the in-scope/out-of-scope distinction is stated explicitly enough to be followed mechanically, or rides on Claude's judgment without an anchor — drift being invisible until a build absorbs something it shouldn't have or halts for something it should have just queued. All five target docs were read in full on the target side (plan.md, next.md, next-build.md, next-test.md, plugin-behaviour.md) against the batch's criteria: is the distinction defined where it's used or assumed; is the routing of out-of-scope discoveries consistent across docs; is there a canonical statement of scope or is it scattered.
 
