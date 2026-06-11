@@ -2,7 +2,24 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan full pass: Parked swept to zero, all 21 captures routed, 15 batches added across tag, autopilot, and readability arcs
+## [HASH] — /next [scope-distinction-audit]: scope distinction audited across five procedure docs — 6 findings, all captured
+
+The audit asked whether the in-scope/out-of-scope distinction is stated explicitly enough to be followed mechanically, or rides on Claude's judgment without an anchor — drift being invisible until a build absorbs something it shouldn't have or halts for something it should have just queued. All five target docs were read in full on the target side (plan.md, next.md, next-build.md, next-test.md, plugin-behaviour.md) against the batch's criteria: is the distinction defined where it's used or assumed; is the routing of out-of-scope discoveries consistent across docs; is there a canonical statement of scope or is it scattered.
+
+The read surfaced six findings, all captured. No canonical definition of build scope exists — the working one assembles from three spots, while plugin-behaviour.md uses "current scope" undefined in the one doc injected every session. The two enforcement layers — the entries' described work (judgment) and the Files: list (hook) — are never related to each other, with REGISTRY.md the visible divergence between them. Claude-noticed discoveries get an undefined routing verb ("note them for the queue") sitting next to two fully-defined routing paths. The halt-vs-queue decision axis (needed → ask or split; not needed → capture and continue; premise broken → halt) is real but implicit across five passages. "Scope" is polysemous — build scope in the /next family, project scope in "the user owns scope." And plan.md authors the scope contract without saying so: file-naming in build entries is convention, not rule, so a consumer's lock can come up empty. The proposals converge on one move — a single scope anchor statement in plugin-behaviour.md with the skill docs pointing at it — plus one interaction flag: [trickle-up-next-md-duplicates] will soon make the undefined plugin-behaviour.md statement the don't-fix-outside-scope rule's only copy.
+
+Also this session: the two pending host-side tests from v1.10.0 (the single-summary close-out check and the working-file narration check) were surfaced at pre-flight and deferred again — their structural home arrives with [deferred-tests-structural-home]. The previous session's placeholder hashes in the log and index were backfilled to 228e655.
+
+**Files touched:**
+- plugin/si-plugin/docs/plan.md (read only)
+- plugin/si-plugin/docs/next.md (read only)
+- plugin/si-plugin/docs/next-build.md (read only)
+- plugin/si-plugin/docs/next-test.md (read only)
+- plugin/si-plugin/docs/plugin-behaviour.md (read only)
+
+**Routed to Captures:** 6 — scope-definition anchor; two scope layers unrelated; "note for the queue" undefined routing; halt-vs-queue axis implicit; "scope" polysemy; plan.md authoring-side gap.
+
+## 228e655 — /plan full pass: Parked swept to zero, all 21 captures routed, 15 batches added across tag, autopilot, and readability arcs
 
 The longest planning session yet — three context compactions — and it emptied both backlogs. The Parked sweep ran first: eight Parked: items reviewed, five converted to Blocked by: with honest triggers (narration-drift recurrence, tax-project user-execution experience, the freeform-demand capture, the autopilot prerequisite arc for cruise control, a second self-hosting consumer), and three dropped with reasons worth keeping. [sizing-gates-rework] was superseded — the readiness gate already shipped and the 5-test rule it targeted no longer exists. The batch-cohesion ordering heuristic was tested empirically against the live queue: nothing would sink, so the problem it solves doesn't exist yet. The pre-push-sweep-lighter idea carried its own refutation as its parking reason. Result: zero Parked: occupants; everything outside active flow now carries a trigger and surfaces itself.
 
