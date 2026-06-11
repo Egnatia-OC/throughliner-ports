@@ -12,7 +12,7 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/skills/done/SKILL.md` — /done skill definition
 - `plugin/si-plugin/docs/setup.md` — /setup procedure
 - `plugin/si-plugin/docs/plan.md` — /plan procedure
-- `plugin/si-plugin/docs/next.md` — /next procedure front page (pre-flight, lock scope, route to per-type doc)
+- `plugin/si-plugin/docs/next.md` — /next procedure front page (pre-flight, lock scope, route to per-type doc, ending before scope-lock)
 - `plugin/si-plugin/docs/next-build.md` — build execution procedure (build entries, scope management, course-correction, completion)
 - `plugin/si-plugin/docs/next-test.md` — test execution procedure (test entries, scope management, course-correction, completion)
 - `plugin/si-plugin/docs/next-audit.md` — audit execution procedure (read target, compile findings, present, route captures, close)

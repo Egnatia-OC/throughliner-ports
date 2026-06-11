@@ -69,6 +69,15 @@ Load the procedure doc matching the batch's subheadings:
 - **Test-only batches** (Test subheading, no Build) → read and follow `next-test.md`.
 - **Audit batches** (Audit subheading) → read and follow `next-audit.md`.
 
+## Ending before scope-lock
+
+Any session end before Step 2 locks scope — a push-marker halt, a blocker-gate stop, the user calling it off at "Ready?" — closes through this branch:
+
+1. **Route any reshape direction to Captures.** [PROMPT] The trigger is mechanical: session ending + no batch locked + a reshape direction or learning the queue needs in conversation = capture needed. Route it as a capture pointing at the batch slug — draft the wording, show it for approval, per plugin-behaviour.md Captures. Unrouted, the direction survives only in the LOG entry, which /plan doesn't read at planning time, and the batch re-presents unchanged at the next /next. Nothing reshape-shaped in conversation: skip, no output.
+2. **Name /done as the next step.** [BRIEF] Whatever the session did before stopping — hash backfills, captures filed — gets recorded and committed only by /done. Other recommendations the stop requires (run /plan to resolve a blocker, push and reinstall) ride alongside; they never replace naming /done.
+
+What doesn't happen: no batch returns to the queue, because none left it — scope was never locked, so QUEUE.md already holds the batch.
+
 ## Rules
 
 - One build at a time. Never start a second while _build.md exists.

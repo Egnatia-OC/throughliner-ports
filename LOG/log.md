@@ -2,7 +2,21 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next pre-flight caught stale file refs in [next-pre-scope-lock-abort]; same-session /plan rewrote the entry
+## [HASH] — [next-pre-scope-lock-abort] built: pre-scope-lock close branch in next.md, reshape-direction routing in all three abort paths
+
+/next had three moments where a session could end before a build was locked — the push-marker halt, a blocker-gate stop, the user declining at "Ready?" — and no defined close for any of them. Claude improvised at those ends. The observed case recommended /plan instead of /done, leaving the session's incidental work uncommitted. The batch also folded in a second gap: an abort produces a reshape direction — the learning that motivated calling the work off — and without routing, that direction survives only in the LOG entry, which /plan doesn't read at planning time, so the batch re-presents unchanged at the next /next. Built as planned, no scope shifts. The new close is its own section in next.md, after the per-type routing step, covering all three end-moments. It does two things in order: route any reshape direction to Captures (mechanical trigger — session ending, no batch locked, direction in conversation; silent skip when nothing surfaced), then name /done. One reconciliation line came out of the build: a blocker-gate stop also recommends /plan, so the branch states that other recommendations ride alongside /done and never replace it. It also states what doesn't happen — no batch returns to the queue, because none left it. The same reshape sub-step landed word-for-word in next-build.md's and next-test.md's abort paths, with the trigger reading "batch returned" where the pre-scope-lock form reads "no batch locked." Response-shape tags were authored from birth rather than left to the queued tag sweep. Live confirmation can't run here — the branch only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally — so it went to Captures as a deferred test pointing at the [deferred-tests-structural-home] seed list.
+
+**Files touched:**
+- plugin/si-plugin/docs/next.md: new "Ending before scope-lock" section
+- plugin/si-plugin/docs/next-build.md: reshape-direction sub-step in Abort and requeue; run-/done step renumbered
+- plugin/si-plugin/docs/next-test.md: same sub-step, same renumber
+- REGISTRY.md: next.md description gains the new branch
+- LOG/log.md + LOG/index.md: hash placeholders backfilled to 6a75c9e at pre-flight
+- QUEUE.md: batch moved out at scope-lock; deferred-test capture filed
+
+**Routed to Captures:** deferred host-side test — live confirmation that the next real pre-scope-lock end routes the reshape direction and names /done.
+
+## 6a75c9e — /next pre-flight caught stale file refs in [next-pre-scope-lock-abort]; same-session /plan rewrote the entry
 
 The /next pre-flight's blocker gate flagged the top batch before any scope-lock. Its second build entry pointed the reshape-direction sub-step at next.md's "existing Step 5" abort path, which no longer exists — the per-type split moved the abort path into next-build.md and next-test.md, and "Step 5" is pre-split vocabulary that survived into a post-split batch. Building as written would have forced a guess about which docs get the sub-step. Following the ba28387 precedent, /plan ran in the same session and treated it as a staleness rewrite: the entry now names all three real locations — the new pre-scope-lock branch in next.md, and the "Abort and requeue" steps in next-build.md and next-test.md. Including next-test.md was the one scope call: the observed reshape case (the install persona sims) was test-shaped work, and the trigger is type-agnostic, so covering only next-build.md would recreate the same gap one doc over. The batch never left the queue; no build ran. Pre-flight also backfilled the LOG hash placeholders to 4ae44a5. This session is itself the shape the amended batch fixes — a /next ending before scope-lock — and closes through /done so the pre-flight work gets recorded and committed.
 

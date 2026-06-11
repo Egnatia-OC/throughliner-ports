@@ -7,18 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Complete /next's abort paths: pre-scope-lock branch and reshape-direction routing** **[next-pre-scope-lock-abort]**
-Blocks: [next-done-recommendation]
-
-/next's abort step only covers aborts after scope-lock — return the batch, run /done. Aborts before scope-lock (pre-flight failure, blocker gate, user calls it off before _build.md exists) have no defined path, and Claude improvises: observed with the walkthrough batch caught at pre-flight, where "Run /plan" got recommended instead of /done and the session's real work (hash backfill, captures filed) sat uncommitted. This is the same disease as [next-done-recommendation] — a session end that doesn't name /done — at a third moment. It doesn't wait on [close-out-audit] though: that audit surveys close-out text that exists, and this branch is missing entirely; any consistency rule the audit produces still ends with "name /done so the commit happens." Folded in from [abort-reshape-routing]: aborts produce a third output besides the returned batch and side-findings — the reshape direction that motivated the abort. It was routed once by judgment call, and that capture completed the full intended lifecycle (picked up by /plan, batch reshaped, reran successfully as the install persona sims); without routing, the direction lives only in the LOG entry, which /plan doesn't read at planning time, and the batch re-presents unchanged at the next /next. Folding rather than sequencing separately so the new branch carries the instruction from birth instead of being amended one session later.
-
-Build:
-- plugin/si-plugin/docs/next.md: add a pre-scope-lock abort branch — when /next ends before scope-lock, the close-out names /done as the next step so incidental session work gets recorded and committed. State what doesn't happen: no batch returns to the queue, because none left it.
-- plugin/si-plugin/docs/next.md (the new pre-scope-lock branch from the entry above), plus the existing abort paths in next-build.md and next-test.md (the "Abort and requeue" steps in their course-correction sections): add the reshape-direction sub-step to all three. When an abort surfaces a reshape direction or learning the queue needs, route it as a capture pointing at the batch slug before recommending /done. The trigger is mechanical: abort + batch returned (or never locked) + reshape direction in conversation = capture needed.
-
-Test:
-- Self-verifying from the branch text. Live confirmation rides on the next naturally-occurring pre-flight abort — Claude should name /done, not /plan.
-
 **Tighten Claude's completion recommendation: always /done, never /next** **[next-done-recommendation]**
 
 next-build.md's Completion section says "Run /done to record this and commit, or tighten what's already built before closing" — but Claude has been observed recommending /next instead at completion, while still inside the just-finished /next session. The mechanical safety net catches the worst case (session_start detects _build.md and routes the next /next to resume, not a fresh build) so dual builds don't actually start — but the missed /done still costs a LOG entry and a commit for the batch that just finished. The fix isn't a wording change at Step 7; the doc says the right thing already. It's tightening whatever lets Claude substitute /next for /done at completion — likely an explicit rule near "one build at a time" in plugin-behaviour.md, since that's the same principle in different framing.
@@ -707,6 +695,9 @@ Test:
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
+
+- Deferred test from [next-pre-scope-lock-abort]. The new pre-scope-lock close needs live confirmation. At the next real /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?"), Claude should route any reshape direction to Captures and name /done — not /plan. This can't be confirmed in the build session itself: the new text only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally. When [deferred-tests-structural-home] builds the Deferred tests section, this test belongs in its seed list alongside the two v1.10.0 tests.
+  Blocked by: [next-pre-scope-lock-abort] shipping host-side (push + reinstall); fires at the next naturally-occurring pre-scope-lock end after that.
 
 ### Parked
 

@@ -87,7 +87,8 @@ If something goes wrong — a false assumption, a missing dependency, an approac
    - **Abort and requeue:** if the whole batch is unsalvageable:
      1. Return the batch text to QUEUE.md under Batches. Placement is Claude's call per plugin-behaviour.md Dependency ownership — original position or top, by what was learned.
      2. Route any captures surfaced during the attempt to Captures as normal.
-     3. Tell the user to run /done. _build.md stays in place so /done's router still fires the build close-out — see done.md. Differences from a completed build: the LOG entry describes the attempt and why it was aborted, and the batch returns to QUEUE.md rather than disappearing into the log.
+     3. Route the reshape direction to Captures, pointing at the batch slug. The trigger is mechanical: abort + batch returned + a reshape direction or learning the queue needs in conversation = capture needed. Unrouted, the direction survives only in the LOG entry, which /plan doesn't read at planning time, and the batch re-presents unchanged at the next /next.
+     4. Tell the user to run /done. _build.md stays in place so /done's router still fires the build close-out — see done.md. Differences from a completed build: the LOG entry describes the attempt and why it was aborted, and the batch returns to QUEUE.md rather than disappearing into the log.
 4. **Wait for the user's call.** Don't pick a path without confirmation.
 
 ## Context management

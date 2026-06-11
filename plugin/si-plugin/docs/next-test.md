@@ -58,7 +58,8 @@ If something goes wrong — a test is impossible to run as described, a prerequi
    - **Abort and requeue:** if the whole batch is unsalvageable:
      1. Return the batch text to QUEUE.md under Batches.
      2. Route any captures surfaced during the attempt to Captures as normal.
-     3. Tell the user to run /done.
+     3. Route the reshape direction to Captures, pointing at the batch slug. The trigger is mechanical: abort + batch returned + a reshape direction or learning the queue needs in conversation = capture needed. Unrouted, the direction survives only in the LOG entry, which /plan doesn't read at planning time, and the batch re-presents unchanged at the next /next.
+     4. Tell the user to run /done.
 4. **Wait for the user's call.** Don't pick a path without confirmation.
 
 ## Context management
