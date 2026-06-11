@@ -2,7 +2,7 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — [drop-log-per-release-split] built: LOG entries become per-entry files; /done writes one file per session, retrieve opens it straight from the index line
+## 4c00801 — [drop-log-per-release-split] built: LOG entries become per-entry files; /done writes one file per session, retrieve opens it straight from the index line
 
 The per-release log split capped log.md into log-v<VERSION>.md at each push. That boundary was arbitrary: version groupings carry no weight in any retrieve, and design threads span releases. Collapsing to one growing file was rejected too — it removes the split without improving retrieve, since finding an entry still means searching within the file. The fix matches the file boundary to the logical boundary. Entries are already per-commit; now files are too. Retrieve becomes index → open the named file. The per-commit alternative was weighed in the f123eed discussion but never preserved in the LOG; this is the decision that session should have reached.
 

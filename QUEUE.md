@@ -13,7 +13,9 @@ Blocks: [hash-backfill-as-hook], [queue-format-lint-hook], [git-add-safety-hook-
 /next pre-flight asks "unconfirmed tests from a previous build?" but defines no place to read the answer from — the check ran on conversation memory four pre-flights running during the 2026-06-10 long session, and the two currently-deferred host-side tests are archived in log-v1.10.0.md where a fresh session has no instruction to look. On short weak-model sessions the tests would silently never surface; memory is covering for a missing structure, which the design target forbids. The fix is a mechanical slot: a Deferred tests section in QUEUE.md that /done writes when a test can't run in-session (host-side, needs-user, external event), /next's gate reads and re-presents, and the confirming session removes from. One line per entry — source batch slug, what to verify, what confirms it — so the gate's read needs no judgment. The lint hook tolerates the new section by design (deny-list). The Blocks: header is load-bearing: all four named batches carry host-side tests whose /done needs the slot to exist.
 
 Build:
-- This project's QUEUE.md: add a "## Deferred tests" section between Batches and Captures, seeded with the two pending host-side tests from log-v1.10.0 (done-split single-summary; _build.md narration moments), each with source slug and confirm-by condition.
+- This project's QUEUE.md: add a "## Deferred tests" section between Batches and Captures, seeded with the pending host-side tests — the two from log-v1.10.0 (done-split single-summary; _build.md narration moments) and the two moved-in tests below — each with source slug and confirm-by condition.
+- Seed, moved from Captures: deferred test from [next-pre-scope-lock-abort]. The new pre-scope-lock close needs live confirmation. At the next real /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?"), Claude should route any reshape direction to Captures and name /done — not /plan. This can't be confirmed in the build session itself: the new text only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally. Fires at the next naturally-occurring pre-scope-lock end after push + reinstall.
+- Seed, moved from Captures: deferred test from [drop-log-per-release-split]. After the next push + reinstall, ask Claude a "why did we decide X" question that targets an entry in an old log-v*.md file. Pass condition: the retrieve finds it through the index plus the hash-or-title search fallback, since pre-split entries have no per-entry file to open. It couldn't run in its own session: the rewritten retrieve rule is host-side and only governs sessions after push + reinstall. Fires at the first why-question targeting a pre-split entry, or can be run deliberately any time after reinstall.
 - plugin/si-plugin/docs/done.md and the per-type sub-docs that close out tests (done-build.md, done-test.md): when a planned test can't run in-session, write it to Deferred tests — not as prose in the LOG entry.
 - plugin/si-plugin/docs/next.md pre-flight gate: replace the memory-dependent question with a mechanical read of the Deferred tests section; re-present pending entries; the confirming session removes the entry and records the confirmation in its LOG entry.
 - plugin/si-plugin/templates/CLAUDE-TEMPLATE.md and this project's CLAUDE.md Method docs section: describe the new QUEUE.md section so the format is documented for consumers and future sessions.
@@ -412,15 +414,16 @@ Build:
 Test:
 - Behavioural on later /plan sessions: the next trigger-bearing item filed lands in Blocked by:, and the next scan visibly weighs Parked: items instead of skipping them.
 
-**Present captures verbatim-first: quote before thinking** **[capture-verbatim-first]**
+**Present the working item verbatim-first: quote before thinking** **[capture-verbatim-first]**
 
-After "continue to the next item," Claude reads and thinks first while the user sits with nothing until the full presentation lands. The fix, designed and live-tested across a full /plan session (2026-06-11): the turn opens with a one-line preamble ("here it is, my thoughts to follow" or similar) and the item quoted verbatim, and only then does analysis begin. The live trial surfaced the load-bearing detail: ordering the text on the page isn't enough — the quote must be *sent* before the thinking starts, or it arrives bundled with the analysis and the waiting problem survives. No fresh read is needed; the queue is already loaded from the session's start. Deliberately silent on the rendering device — the approval-time display standard owns that.
+After "continue to the next item," Claude reads and thinks first while the user sits with nothing until the full presentation lands. The fix, designed and live-tested across a full /plan session (2026-06-11): the turn opens with a one-line preamble ("here it is, my thoughts to follow" or similar) and the item quoted verbatim, and only then does analysis begin. The live trial surfaced the load-bearing detail: ordering the text on the page isn't enough — the quote must be *sent* before the thinking starts, or it arrives bundled with the analysis and the waiting problem survives. No fresh read is needed; the queue is already loaded from the session's start. Deliberately silent on the rendering device — the approval-time display standard owns that. /next's pre-flight has the same waiting problem, observed 2026-06-11 in a live /next: hashes backfilled, queue read, blocker gate run, and the batch only appeared after all of it. The same fix lands there in this batch. Because the user now reads batch text at the pre-flight moment, it must read plainly — [human-readable-authoring] owns that standard; this display moment adds a second reason for it.
 
 Build:
 - plugin/si-plugin/docs/plan.md Step 2, present-and-interview sub-step: the turn opens with the one-line preamble and the item's verbatim text, sent before any analysis or file reads begin; engagement and sharpening follow in the same turn. Covers unpark candidates the same way — they enter the same loop.
+- plugin/si-plugin/docs/next.md pre-flight: as soon as QUEUE.md is read, check the queue top for a halt marker (a one-line mechanical read — if one sits there, the halt is what gets sent). Otherwise send the top batch verbatim — one preamble line, then the batch text — before the blocker gate and the rest of pre-flight thinking run. Gate findings arrive as follow-up after the batch is visible.
 
 Test:
-- Host-side (after push + reinstall): in the next /plan, the quote should land as its own beat before the analysis arrives — not bundled with it. Needs the deferred-test discipline — flag at /done if it can't run.
+- Host-side (after push + reinstall): in the next /plan, the quote should land as its own beat before the analysis arrives — not bundled with it; in the next /next, the top batch the same way before pre-flight findings. Needs the deferred-test discipline — flag at /done if it can't run.
 
 **Drop the skill-time re-read of plugin-behaviour.md** **[behaviour-doc-double-load]**
 
@@ -661,6 +664,13 @@ Build:
 Test:
 - Self-verifying from the doc text. The two defined tails should read as the same rule in build and test clothing.
 
+**Push marker: one hard direction, otherwise a ship-by aim** **[push-marker-hard-direction]**
+
+The push-marker convention reads as a solid barrier, but it's only hard in one direction. Decided-but-unshipped standards already shape sessions before any push — in-repo sessions read the queue and the discussion, not just the installed plugin (observed 2026-06-12: blockquote displays, verbatim-first quoting, a why-pipeline judgment call, all applied pre-push). The genuinely hard case is host-side reads: work that reads installed state — an audit reading injected rules, a live test of hook behaviour — gets wrong results before push + reinstall, and the /next halt exists to protect exactly that. Left undistinguished, the risk is a session treating the line as solid and suspending decided reasoning ("not shipped yet"), which breaks the why-pipeline. Decided rationale never waits on a push.
+
+Build:
+- This project's CLAUDE.md (host-only, does not propagate), the push-marker convention in Self-hosting dependency ordering: state the distinction — the marker halts /next because batches past it read host-side state, the one hard direction; it does not suspend decided rules or reasoning in any session, and it is not a wall for planning work. The line marks when we aim to ship by. Decided rules and reasoning apply from the moment they're decided.
+
 ### Parked
 
 ## Captures
@@ -668,14 +678,6 @@ Test:
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
-
-- Deferred test from [next-pre-scope-lock-abort]. The new pre-scope-lock close needs live confirmation. At the next real /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?"), Claude should route any reshape direction to Captures and name /done — not /plan. This can't be confirmed in the build session itself: the new text only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally. When [deferred-tests-structural-home] builds the Deferred tests section, this test belongs in its seed list alongside the two v1.10.0 tests.
-  Blocked by: [next-pre-scope-lock-abort] shipping host-side (push + reinstall); fires at the next naturally-occurring pre-scope-lock end after that.
-
-- Deferred test from [drop-log-per-release-split]. After the next push + reinstall, ask Claude a "why did we decide X" question that targets an entry in an old log-v*.md file. Pass condition: the retrieve finds it through the index plus the hash-or-title search fallback, since pre-split entries have no per-entry file to open. It can't run in this session: the rewritten retrieve rule is host-side and only governs sessions after push + reinstall. When [deferred-tests-structural-home] builds the Deferred tests section, this test belongs in its seed list alongside the two v1.10.0 tests and the pre-scope-lock abort test.
-  Blocked by: [drop-log-per-release-split] shipping host-side (push + reinstall).
-
-- /next's pre-flight has the same waiting problem [capture-verbatim-first] fixed in /plan: the user sits with nothing while Claude backfills hashes, reads the queue, and runs the blocker gate, and the batch only appears after all of it. The same fix applies. As soon as QUEUE.md is read, send the top batch verbatim — one preamble line, then the batch text — before the blocker-gate thinking starts. The detail that made the /plan version work carries over: the text must be *sent* as its own beat, not just placed first in a message that arrives bundled with the analysis. And because the user reads the batch text at this moment, it can't be written only for Claude anymore — it has to read plainly for the user, short sentences, per the [human-readable-authoring] standard. Observed 2026-06-11 in a live /next, where pre-flight ran several checks before the user saw anything.
 
 ### Parked
 
