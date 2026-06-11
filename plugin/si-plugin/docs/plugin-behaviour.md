@@ -69,7 +69,7 @@ Rationale is prose. Carry it forward; don't collapse it into a structured "why" 
 
 The naming matters: the same mistake gets remade when the shapes aren't called out by name.
 
-**Retrieve.** When asked why something exists or why a decision was made, search `LOG/index.md` first — its one-line-per-entry shape (governed by the Index entries section below) points to candidate entries faster and more accurately than scanning full prose. Then open the matched entries in `LOG/log.md` or `LOG/log-v*.md` to read the full rationale. Only fall back to inferring from code if the index and logs have nothing relevant.
+**Retrieve.** When asked why something exists or why a decision was made, search `LOG/index.md` first — its one-line-per-entry shape (governed by the Index entries section below) points to candidate entries faster and more accurately than scanning full prose. Then open the matched entry's file directly — each entry is its own file under `LOG/`, and the index line ends with its filename. Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`; find those by searching `LOG/` for the index line's hash or the entry title. Only fall back to inferring from code if the index and logs have nothing relevant.
 
 ## Index entries
 
@@ -78,6 +78,7 @@ The naming matters: the same mistake gets remade when the shapes aren't called o
 Each entry must contain:
 - **The artifact touched** — which file, doc, section, rule, or area was changed.
 - **The nature of the change** — what kind of change (added, removed, renamed, reframed, tightened, etc.) and enough substance that the retrieve decision can be made without opening the full log entry.
+- **The entry's filename at the end of the line** — the retrieve path opens the named file directly (format per done.md LOG entry files).
 
 No absolute length cap. Length follows from the content requirement — typically one line, sometimes two for sessions that ran multiple threads. An entry too short to support the open/skip decision fails the rule even at one line; an entry at two lines because the session genuinely covered two threads passes.
 

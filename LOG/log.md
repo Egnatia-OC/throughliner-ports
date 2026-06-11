@@ -2,7 +2,29 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — [next-done-recommendation] built: completion-recommendation rule in plugin-behaviour.md; next-build.md tag skipped
+## [HASH] — [drop-log-per-release-split] built: LOG entries become per-entry files; /done writes one file per session, retrieve opens it straight from the index line
+
+The per-release log split capped log.md into log-v<VERSION>.md at each push. That boundary was arbitrary: version groupings carry no weight in any retrieve, and design threads span releases. Collapsing to one growing file was rejected too — it removes the split without improving retrieve, since finding an entry still means searching within the file. The fix matches the file boundary to the logical boundary. Entries are already per-commit; now files are too. Retrieve becomes index → open the named file. The per-commit alternative was weighed in the f123eed discussion but never preserved in the LOG; this is the decision that session should have reached.
+
+Naming scheme, settled at build time: batch sessions name the file by slug (LOG/drop-log-per-release-split.md); slugless sessions by type and date (LOG/plan-2026-06-09.md); collisions take -2, -3. The hash stays in the file heading and index line, never the filename — the commit hash doesn't exist when the file is written, which is why the placeholder pattern exists. One extension beyond the batch text as filed: index lines now end with the entry's filename. Without it, the no-grep promise breaks for slugless sessions — their index lines carry no slug to infer a filename from. The scheme is stated once, in a new "LOG entry files" section in done.md; the four per-type close-out docs point at it.
+
+Ripples handled: setup.md scaffolds LOG/ with index.md only, so new consumer projects are per-entry from birth. The hash-backfill steps in next.md and plan.md now scan all of LOG/; the common case resolves the hash from the last commit touching the entry file — more reliable than the old shared-file version — and the fallback covers pre-split files. [hash-backfill-as-hook] anticipated this restructure and needs no rework. faq-template.md was added to scope mid-build with approval; its "previous session" answer described the per-release shape. This project's CLAUDE.md loses push-ritual steps 3–4 (push marker and cap-and-rename) and gains the legacy note: log.md and log-v*.md freeze in place, findable by hash, so old entries stay retrievable. This entry itself lands in log.md under the old procedure — the installed plugin only refreshes at reinstall — making it the last pre-split entry.
+
+Tests: target-tree grep clean (only deliberate legacy-transition references remain). The live retrieve test against an old log-v*.md entry can only run after push + reinstall — deferred, captured.
+
+**Files touched:**
+- plugin/si-plugin/docs/done.md: new "LOG entry files" section — naming scheme, index-filename rule, legacy note
+- plugin/si-plugin/docs/done-build.md, done-test.md, done-audit.md, done-plan.md: entry steps write a new file under LOG/ instead of prepending to log.md; index-line format gains the filename tail
+- plugin/si-plugin/docs/plugin-behaviour.md: retrieve rule opens the entry file named on the index line, pre-split fallback by hash/title; Index entries section gains the filename requirement
+- plugin/si-plugin/docs/setup.md: LOG/ scaffold is index.md only
+- plugin/si-plugin/docs/next.md, plan.md: backfill steps rewritten for per-entry files
+- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md + faq-template.md: LOG/ descriptions match the per-entry shape
+- CLAUDE.md (host-only): push ritual trimmed, legacy note, LOG/ descriptions updated
+- REGISTRY.md: LOG/ entries reshaped (frozen legacy files, per-entry pattern)
+
+**Routed to Captures:** 2 — verbatim-first batch presentation in /next pre-flight (user-raised); deferred retrieve test for pre-split entries (host-side, after push)
+
+## c5e6a82 — [next-done-recommendation] built: completion-recommendation rule in plugin-behaviour.md; next-build.md tag skipped
 
 The batch closed an observed gap: next-build.md's Completion section already names /done as the close, but Claude was seen recommending /next instead at completion, inside the just-finished session. The mechanical net catches the worst case — session_start detects _build.md and routes the next /next to resume — so dual builds don't start, but the missed /done still costs the finished batch its LOG entry and commit. The fix wasn't a wording change in next-build.md; the doc says the right thing. It's a new rule in plugin-behaviour.md, the doc injected into every session: at build completion the only valid next-step recommendation is /done — never /next, never another build skill. Placed directly under the one-build-at-a-time bullet and framed as its completion counterpart — one guards the start of a build, the other guards the end — with the why carried inline: the finished build isn't recorded until /done writes its LOG entry and commits. The batch's second entry was a consideration, not a fixed change: whether next-build.md's Completion needed a [SEQUENCE] or [BRIEF] tag as reinforcement. Decided skip, on the entry's own condition. The section already carries [BRIEF, PROMPT] at section level, so [BRIEF] would be redundant; [SEQUENCE] doesn't fit a single-message close — there's nothing multi-item to sequence; and the new rule covers the reinforcement from a doc that loads even when next-build.md isn't open.
 

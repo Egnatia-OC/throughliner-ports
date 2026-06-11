@@ -27,7 +27,7 @@ The control rule for capture and parking, in one place. Pieces also appear in th
 
 ## Step 1: Read state and entry question
 
-**Backfill LOG hashes first:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/log.md LOG/index.md`. If empty: move on, no output. Otherwise batch-read the matching files. Common case — one placeholder in each sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/log.md` and use it for both. Fallback — multiple placeholders, or the common-case hash doesn't match the entry titles: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit; the edit folds into this session's later commit.
+**Backfill LOG hashes first:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/`. If empty: move on, no output. Otherwise batch-read the matching files. Common case — one entry file and the matching index line sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/<entry file>` (the last commit touching a per-entry file is the /done commit that wrote it) and use it for both. Fallback — multiple placeholders, or the placeholder sits in a pre-split shared log file: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit; the edit folds into this session's later commit.
 
 Then read QUEUE.md and SPEC.md. Check whether Captures has items.
 

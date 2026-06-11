@@ -82,21 +82,16 @@ Components that exist in this project. Updated after each build.
 [empty until first build completes]
 ```
 
-**LOG/ folder:** Create the directory with two files:
+**LOG/ folder:** Create the directory with one file:
 
 **LOG/index.md:**
 ```markdown
 # LOG Index
 
-One-line summaries of each session. Newest first.
+One-line summaries of each session. Newest first. Each line names the session's full entry file in this folder.
 ```
 
-**LOG/log.md:**
-```markdown
-# LOG
-
-Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
-```
+Session entries are written by /done, each as its own file in LOG/ — nothing else to scaffold.
 
 **FAQ/ folder:** Create the directory with two files scaffolded from templates:
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`

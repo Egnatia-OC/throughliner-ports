@@ -14,6 +14,21 @@ Check for _build.md. The check is automatic — don't ask:
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit core below, then return to the sub-doc for the recommendation.
 
+## LOG entry files
+
+Stated once here; every sub-doc's entry-writing step points at this section.
+
+Each LOG entry is written as its own file under `LOG/` — never appended to a shared log file:
+
+- **Session closing a batch** (build, test, audit): name the file after the batch slug — `LOG/<slug>.md` (e.g. `LOG/drop-log-per-release-split.md`).
+- **Session without a batch slug** (planning, setup): name it by session type and date — `LOG/<type>-<YYYY-MM-DD>.md` (e.g. `LOG/plan-2026-06-09.md`).
+- **Name already taken** (a re-run batch, a second planning session the same day): append `-2`, `-3`, and so on.
+- The matching `LOG/index.md` line ends with the entry's filename, so a later lookup goes straight from the index line to the file.
+
+The hash lives in the entry file's heading and the index line, never in the filename — the commit hash doesn't exist yet when the file is written, which is why the `[HASH]` placeholder pattern exists (see Commit core below).
+
+Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`. Those files stay in place, untouched — their entries are found by hash or title search, not by filename.
+
 ## Commit core [BRIEF, PROMPT]
 
 Stated once here; every sub-doc's Commit step points at this section.

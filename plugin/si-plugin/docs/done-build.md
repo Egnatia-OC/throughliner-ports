@@ -29,10 +29,10 @@ Check _build.md and the conversation for anything flagged during the build. Rout
 
 Narrate first [BRIEF]: one sentence noting the batch's reasoning is being carried from _build.md into the LOG entry — the file's last job before /done deletes it.
 
-Draft the entry for `LOG/log.md` using this template (placeholder hash — backfilled at the next /plan or /next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled at the next /plan or /next session start):
 
 ```markdown
-## [HASH] — [one-line summary]
+# [HASH] — [one-line summary]
 
 [Prose rationale — re-authored from the batch's rationale in _build.md, expanded with what was learned during the build (tradeoffs, constraints, approach changes). Inline prose, no `Why:` label.]
 
@@ -42,12 +42,12 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash — backf
 **Routed to Captures:** [items added, or "none"]
 ```
 
-Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
+Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. After approval, write it to the new entry file.
 
-Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries:
+Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
 ```
-- [HASH] — [index entry]
+- [HASH] — [index entry] → [entry filename]
 ```
 
 If _build.md contains an `Index entry candidate:` line and the build ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.

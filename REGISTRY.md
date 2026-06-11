@@ -16,7 +16,7 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/docs/next-build.md` — build execution procedure (build entries, scope management, course-correction, completion)
 - `plugin/si-plugin/docs/next-test.md` — test execution procedure (test entries, scope management, course-correction, completion)
 - `plugin/si-plugin/docs/next-audit.md` — audit execution procedure (read target, compile findings, present, route captures, close)
-- `plugin/si-plugin/docs/done.md` — /done procedure front page (route by session shape, commit core stated once)
+- `plugin/si-plugin/docs/done.md` — /done procedure front page (route by session shape, LOG entry file naming and commit core each stated once)
 - `plugin/si-plugin/docs/done-build.md` — build close-out (judgment, LOG entry, staleness sweep, _build.md cleanup, recommend next)
 - `plugin/si-plugin/docs/done-test.md` — test close-out (verify ticks, route fixes, LOG entry, cleanup, recommend next)
 - `plugin/si-plugin/docs/done-audit.md` — audit close-out (verify findings handled, LOG entry, cleanup, recommend next)
@@ -26,8 +26,9 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/templates/faq-template.md` — FAQ content template (13 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
 - `resources/reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
-- `LOG/index.md` — one-line summaries of each session, newest first
-- `LOG/log.md` — full session entries for the current release, newest first
-- `LOG/log-v*.md` — archived per-release log files (created at push time)
+- `LOG/index.md` — one-line summaries of each session, newest first; post-split lines end with the session's entry filename
+- `LOG/<slug or type-date>.md` — per-entry session files written by /done (one per session, named per done.md LOG entry files; first ones appear after the next push + reinstall)
+- `LOG/log.md` — pre-split session entries (frozen — new entries are per-entry files; contents findable by hash)
+- `LOG/log-v*.md` — archived per-release log files from before the per-entry split (frozen, findable by hash)
 - `README.md` — public-facing project description, install instructions, operating conditions
 - `INSTALL.md` — guide for non-coders aimed at Claude reading on the user's behalf in a fresh claude.ai chat; walks through Claude Code install, paid plan setup, and plugin install

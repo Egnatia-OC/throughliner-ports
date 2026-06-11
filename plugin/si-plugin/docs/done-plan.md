@@ -4,10 +4,10 @@ Close-out for planning sessions. Reached from done.md's router when no _build.md
 
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
-Draft the entry for `LOG/log.md` using this template (placeholder hash — backfilled at the next /plan or /next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled at the next /plan or /next session start):
 
 ```markdown
-## [HASH] — [one-line summary]
+# [HASH] — [one-line summary]
 
 [Prose rationale — what motivated these queue changes, as inline prose. No `Why:` label.]
 
@@ -17,12 +17,12 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash — backf
 **Captures routed:** [promoted/parked/dropped, or "none"]
 ```
 
-Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries. This entry is the session's summary — there is no separate chat recap.
+Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap.
 
-Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries:
+Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
 ```
-- [HASH] — [index entry]
+- [HASH] — [index entry] → [entry filename]
 ```
 
 There is no pre-generated candidate for planning sessions — author the index entry fresh against the Index entries rule.

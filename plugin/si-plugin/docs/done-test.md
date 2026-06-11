@@ -18,10 +18,10 @@ Check _build.md and the conversation for anything flagged during testing. Route 
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-Draft the entry for `LOG/log.md` using this template (placeholder hash — backfilled at the next /plan or /next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled at the next /plan or /next session start):
 
 ```markdown
-## [HASH] — [one-line summary]
+# [HASH] — [one-line summary]
 
 [Prose rationale — what was tested and why, re-authored from the batch's rationale in _build.md; what the results mean. Inline prose, no `Why:` label.]
 
@@ -31,12 +31,12 @@ Draft the entry for `LOG/log.md` using this template (placeholder hash — backf
 **Routed to Captures:** [items added — including fixes for failures — or "none"]
 ```
 
-Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, prepend to `LOG/log.md` after the header, before existing entries.
+Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, write it to the new entry file.
 
-Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries:
+Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
 ```
-- [HASH] — [index entry]
+- [HASH] — [index entry] → [entry filename]
 ```
 
 If _build.md contains an `Index entry candidate:` line and testing ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.

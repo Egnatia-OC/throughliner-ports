@@ -30,7 +30,7 @@ Host and target are the same plugin at different stages. Ambiguous references to
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches (Build/Test/Audit subheadings) and captured ideas (plain bullets).
 - `REGISTRY.md` — components list. What exists, where it lives.
-- `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), `LOG/log.md` for current release entries, `LOG/log-v*.md` for archived releases.
+- `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), one file per session entry. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`.
 
 **4 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
@@ -60,7 +60,7 @@ No code method/
   SPEC.md                — this project's spec (once /setup has run)
   QUEUE.md               — this project's work queue
   REGISTRY.md            — this project's component registry
-  LOG/                   — this project's session logs (index.md + log.md)
+  LOG/                   — this project's session logs (index.md + per-entry files)
 ```
 
 ## Working conventions
@@ -102,28 +102,21 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 1. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
 2. Pre-push consistency sweep — two passes, run in order:
 
-   **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries in LOG/log.md to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
+   **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
 
    **Pass B — Check for staleness against those changes:**
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
    - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
-3. Add a push marker to the most recent entry in `LOG/log.md` (the first `##` heading — entries are newest-first): `**Pushed:** v<VERSION>` on its own line at the end of that entry's content.
-4. Cap the current log file and start a new one:
-   - Rename `LOG/log.md` to `LOG/log-v<VERSION>.md`
-   - Create a fresh `LOG/log.md`:
-     ```
-     # LOG
+3. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+4. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+5. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+6. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix before pushing.
+7. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 2), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
+8. `git push`.
+9. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 
-     Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
-     ```
-5. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
-6. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-7. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
-8. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix before pushing.
-9. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 2), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
-10. `git push`.
-11. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+LOG entries are per-entry files — no log capping or push markers at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
 ## E2E testing
 
@@ -142,7 +135,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
 - **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test/Audit subheadings. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
 - **REGISTRY.md** — components list. What exists, where it lives.
-- **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), `LOG/log.md` for full entries (current release, newest first), `LOG/log-v*.md` for archived per-release entries.
+- **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), each full entry as its own file named on its index line. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`, findable by hash.
 
 ## Workflow
 

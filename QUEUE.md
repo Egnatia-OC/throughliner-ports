@@ -7,22 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Change LOG file boundary from per-release to per-entry** **[drop-log-per-release-split]**
-
-The per-release log file split (log.md → log-v<VERSION>.md at each push) uses an arbitrary boundary — version groupings aren't load-bearing on any retrieve, and design threads span releases. But collapsing to one growing log.md only removes the split without improving retrieve — you still grep within the file to find an entry. The right fix is matching the file boundary to the logical boundary: each LOG entry gets its own file, so retrieve goes from index → hash → direct file open, no grep step. Entries are already per-commit; files should match. The per-commit alternative was considered in the f123eed discussion but not preserved in the LOG — this is the decision that session should have reached.
-
-Build:
-- Decide naming scheme for per-entry files. Slug-based (LOG/trickle-up-audit.md, LOG/plan-2026-06-09.md for sessions without a batch slug) avoids the hash-not-known-at-write-time problem and keeps filenames readable. Hash stays in file content + index.
-- the /done per-type close-out sub-docs (done-build.md, done-test.md, done-audit.md, done-plan.md): write each LOG entry as its own file under LOG/ instead of appending to log.md.
-- plugin/si-plugin/docs/plugin-behaviour.md: update why-pipeline retrieve rule — "search LOG/index.md, then open the matched entry's file directly."
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: update LOG/ description to reflect per-entry files. Remove "this file covers the current release" framing.
-- plugin/si-plugin/skills/setup/, plan/, next/, done/ procedure docs: grep for log-v*.md, single-log-file, and per-release references; revise to describe per-entry files.
-- This project's CLAUDE.md (host-only): remove steps 3–4 from push-and-rezip (push marker in log entry and cap-and-rename ritual). Add a note that existing log.md and log-v*.md files stay in place — index references work by hash, so old entries remain findable.
-
-Test:
-- Self-verifying from doc edits.
-- After the next push: ask Claude a "why did we decide X" question targeting an entry in an old log-v*.md file. Verify retrieve still works through index + grep fallback for pre-migration entries.
-
 **Give deferred tests a structural home in QUEUE.md** **[deferred-tests-structural-home]**
 Blocks: [hash-backfill-as-hook], [queue-format-lint-hook], [git-add-safety-hook-gap], [session-start-dirty-tree-check]
 
@@ -687,6 +671,11 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 - Deferred test from [next-pre-scope-lock-abort]. The new pre-scope-lock close needs live confirmation. At the next real /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?"), Claude should route any reshape direction to Captures and name /done — not /plan. This can't be confirmed in the build session itself: the new text only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally. When [deferred-tests-structural-home] builds the Deferred tests section, this test belongs in its seed list alongside the two v1.10.0 tests.
   Blocked by: [next-pre-scope-lock-abort] shipping host-side (push + reinstall); fires at the next naturally-occurring pre-scope-lock end after that.
+
+- Deferred test from [drop-log-per-release-split]. After the next push + reinstall, ask Claude a "why did we decide X" question that targets an entry in an old log-v*.md file. Pass condition: the retrieve finds it through the index plus the hash-or-title search fallback, since pre-split entries have no per-entry file to open. It can't run in this session: the rewritten retrieve rule is host-side and only governs sessions after push + reinstall. When [deferred-tests-structural-home] builds the Deferred tests section, this test belongs in its seed list alongside the two v1.10.0 tests and the pre-scope-lock abort test.
+  Blocked by: [drop-log-per-release-split] shipping host-side (push + reinstall).
+
+- /next's pre-flight has the same waiting problem [capture-verbatim-first] fixed in /plan: the user sits with nothing while Claude backfills hashes, reads the queue, and runs the blocker gate, and the batch only appears after all of it. The same fix applies. As soon as QUEUE.md is read, send the top batch verbatim — one preamble line, then the batch text — before the blocker-gate thinking starts. The detail that made the /plan version work carries over: the text must be *sent* as its own beat, not just placed first in a message that arrives bundled with the analysis. And because the user reads the batch text at this moment, it can't be written only for Claude anymore — it has to read plainly for the user, short sentences, per the [human-readable-authoring] standard. Observed 2026-06-11 in a live /next, where pre-flight ran several checks before the user saw anything.
 
 ### Parked
 

@@ -55,4 +55,4 @@ Nothing leaves active flow without one of these — prose alone isn't enough for
 
 ## How do I know what was done in a previous session?
 
-Check LOG/. `index.md` has one-line summaries with commit hashes (newest first). `log.md` has full entries for the current release — files touched, reasoning, captures routed. Older entries in `log-v*.md` files. For design rationale, search the log entries.
+Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file.
