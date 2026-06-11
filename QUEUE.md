@@ -7,17 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Tighten Claude's completion recommendation: always /done, never /next** **[next-done-recommendation]**
-
-next-build.md's Completion section says "Run /done to record this and commit, or tighten what's already built before closing" — but Claude has been observed recommending /next instead at completion, while still inside the just-finished /next session. The mechanical safety net catches the worst case (session_start detects _build.md and routes the next /next to resume, not a fresh build) so dual builds don't actually start — but the missed /done still costs a LOG entry and a commit for the batch that just finished. The fix isn't a wording change at Step 7; the doc says the right thing already. It's tightening whatever lets Claude substitute /next for /done at completion — likely an explicit rule near "one build at a time" in plugin-behaviour.md, since that's the same principle in different framing.
-
-Build:
-- plugin-behaviour.md: add a rule near the "one build at a time" bullet stating that at build completion the only valid next-step recommendation is /done — never /next, never another build skill. Frame as the completion counterpart to "one build at a time."
-- next-build.md Completion section: consider whether the close-out wording needs a [SEQUENCE] or [BRIEF] tag to reinforce that the close-out recommendation is the one place /done must be named explicitly. Apply the tag if it adds clarity; skip if the new plugin-behaviour.md rule covers it.
-
-Test:
-- Self-verifying from the rule text. No separate verification entry.
-
 **Change LOG file boundary from per-release to per-entry** **[drop-log-per-release-split]**
 
 The per-release log file split (log.md → log-v<VERSION>.md at each push) uses an arbitrary boundary — version groupings aren't load-bearing on any retrieve, and design threads span releases. But collapsing to one growing log.md only removes the split without improving retrieve — you still grep within the file to find an entry. The right fix is matching the file boundary to the logical boundary: each LOG entry gets its own file, so retrieve goes from index → hash → direct file open, no grep step. Entries are already per-commit; files should match. The per-commit alternative was considered in the f123eed discussion but not preserved in the LOG — this is the decision that session should have reached.

@@ -93,6 +93,7 @@ This shape doubles as the batch readiness gate in /plan: if the candidate index 
 - Nothing unrouted survives a session. File or drop before close.
 - SPEC.md is read-only during builds. Note spec issues for /plan.
 - One build at a time. Never start /next while _build.md exists.
+- At build completion, the only valid next-step recommendation is /done — never /next, never another build skill. The finished build isn't recorded until /done writes its LOG entry and commits; recommending more building first leaves the batch that just finished without a record. This is the completion counterpart to one-build-at-a-time: that rule guards the start of a build, this one guards the end.
 - Empty Batches is normal — planned work is done. Run /plan to add more.
 
 ## Dependency ownership
