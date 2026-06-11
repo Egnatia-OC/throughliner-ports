@@ -20,7 +20,6 @@ Test:
 - Self-verifying from the branch text. Live confirmation rides on the next naturally-occurring pre-flight abort — Claude should name /done, not /plan.
 
 **Tighten Claude's completion recommendation: always /done, never /next** **[next-done-recommendation]**
-Blocked by: [close-out-audit]
 
 next-build.md's Completion section says "Run /done to record this and commit, or tighten what's already built before closing" — but Claude has been observed recommending /next instead at completion, while still inside the just-finished /next session. The mechanical safety net catches the worst case (session_start detects _build.md and routes the next /next to resume, not a fresh build) so dual builds don't actually start — but the missed /done still costs a LOG entry and a commit for the batch that just finished. The fix isn't a wording change at Step 7; the doc says the right thing already. It's tightening whatever lets Claude substitute /next for /done at completion — likely an explicit rule near "one build at a time" in plugin-behaviour.md, since that's the same principle in different framing.
 
@@ -62,7 +61,10 @@ Build:
 Test:
 - Structural part self-verifying. Behavioural: the next /done that defers a test writes an entry; the next /next pre-flight re-presents it. The four blocked hook batches are the natural first exercises.
 
+--- Push required before continuing ---
+
 **Move the LOG hash backfill into session_start as a hook** **[hash-backfill-as-hook]**
+Depends on: [deferred-tests-structural-home] (host-side)
 
 The backfill is the plugin's most mechanical procedure — grep for [HASH], run git log, replace — yet it's specified twice as model-executed procedure (plan.md Step 1, next.md Step 1.1). Research technique #1 (resources/research/model-instruction-compliance.md): what must happen mechanically belongs in a hook — deterministic, unskippable, identical on weak and strong models, zero procedure-doc lines. Supersedes [log-hash-backfill-in-done], whose /done+amend design also turned out unworkable: amending after writing the hash creates a new commit with a new hash, so the inline hash would dangle — a commit's hash can't be known before the commit is final, which is why the placeholder pattern exists. The hook scans shape-agnostically (all LOG/*.md) so the queued per-entry-file restructure needs no rework here. Known residual gap, closed in this batch: a session that runs /done then pushes in the same session hits push time with an unfilled placeholder — the hook fires at session start only — so the push ritual gains a backfill step of its own (absorbed from the push-ritual-placeholder capture; stale archived placeholders are how log-v1.8.0 and v1.9.0 shipped, healed later by hand). Absorbs [trickle-up-hash-backfill-duplication]: both procedure copies get deleted, not consolidated. Folded in from the prose-corruption capture: the 2f23dc6 backfill's blanket find-replace ate a prose line that mentioned the token literally, so replacement anchors to hash position and LOG prose stops writing the literal token at all.
 
@@ -78,6 +80,7 @@ Test:
 - Host-side (after push + reinstall): first session after a /done shows the hook's one-line report and no placeholder survives. Needs the deferred-test discipline — flag at /done if it can't run.
 
 **PostToolUse lint hook for QUEUE.md structure** **[queue-format-lint-hook]**
+Depends on: [deferred-tests-structural-home] (host-side)
 
 The queue's format spec lives as front-loaded prose in plan.md and plugin-behaviour.md that the model holds in its head while writing — a less-capable model will drift it, and nothing catches drift until a later session trips over it. A PostToolUse hook linting QUEUE.md at write time feeds corrections back the moment an edit lands, per research technique #1 (resources/research/model-instruction-compliance.md): mechanical enforcement belongs in hooks. Deny-list by design — flag known violations, never treat unknown structure as one — so format evolution (new sections, new batch types) doesn't fight the linter. Scoped to QUEUE.md; _build.md linting deferred until its drift modes are enumerated. The long-term payoff (shrinking format prose in the docs to examples) is deliberately not in this batch — it follows once the hook has proven itself. Sibling tooling to [hash-backfill-as-hook].
 
@@ -90,6 +93,7 @@ Test:
 - Host-side (after push + reinstall): live confirmation on a real /plan edit. Needs the deferred-test discipline — flag at /done if it can't run.
 
 **Extend git-safety hook: deny blanket adds and commit -a** **[git-add-safety-hook-gap]**
+Depends on: [deferred-tests-structural-home] (host-side)
 
 plugin-behaviour.md File safety forbids git add -A / git add ., but pre_tool_use only enforces reset --hard and push --force. The blanket-add rule is exactly as mechanical — a regex on the command — and a weaker model is far more likely to reach for git add -A than push --force; today nothing but prose stands in its way. Per research technique #1, enforcement this mechanical belongs in the hook, with the denial message doing the teaching at the moment it matters. plugin-behaviour.md keeps its one-line rule (done.md's restatements were already removed when [done-closeout-extraction] shipped). Sibling to [hash-backfill-as-hook] and [queue-format-lint-hook] in the hook cluster. Folded in: the git-safety false-positive sharp edge — the hook fires on command text, not intent, observed denying a test script that merely contained the patterns as data. Pattern-sharpening to skip quoted contexts was rejected: weakening a safety guard to reduce inexpensive false positives invites bypasses. Instead the deny messages self-document — the denial is the one channel guaranteed to be read at the moment of confusion, so it carries the workaround.
 
@@ -148,19 +152,31 @@ Build:
 Test:
 - Self-verifying on the next /setup run where Q4 is answered and visible source content exists.
 
-**Project-agnosticism sweep: rewrite setup.md to read for non-app projects too** **[setup-project-agnosticism-sweep]**
+**Setup close-outs name /done; scaffolding creates the repo** **[setup-closeout-redesign]**
 
-setup.md is the on-ramp every project enters through, and its current wording assumes the user is building an app: the five interview questions, the Step 4 close-out, the Step 1 folder-state cases, and the three scaffolded doc templates (SPEC.md, QUEUE.md) all use app-building framing ("building," "components," "functionality," "source code," "builds first then tests"). The behaviour-agnosticism audit (fac25ab) surfaced 11 findings; 8 collapse into one sweep of mechanical-or-near-mechanical rewords applied across setup.md and its scaffolded templates. The three more substantive findings — REGISTRY.md noun choice (Q3.5 interview question), the spec-entry-trigger threshold across project types, and plugin-behaviour.md doc-routing — are held in separate captures for their own consideration. This sweep changes wording only; no interview-flow changes, no rule-trigger changes.
+From three [close-out-audit] findings (e120f3d), routed together as one design decision. setup.md is the only skill whose session ends never name /done. Step 4 closes with "/plan or /next" and stops. Step 2C's migration close does the same and reads no project state. So the scaffolded files sit uncommitted, no LOG entry gets written, and the project record starts with a gap — a consumer's first session teaches them to skip the close-out habit. The /next offer also contradicts setup's own Q4 rule: the interview deliberately writes the first entry rough and defers scoping to /plan, yet the close-out sends that unscoped entry toward execution. Two gaps surfaced at routing ride along. A fresh consumer folder has no git repository, so a /done recommendation is only honest once scaffolding creates one. And /done routes by _build.md, so a migration close can't blindly recommend /done when an interrupted build is present — the right pointer there is resuming the build.
 
 Build:
-- plugin/si-plugin/skills/setup/setup.md Q1: reword to "What is this project, and who is it for?" (drop "building"). From [setup-q1-agnostic-wording].
-- plugin/si-plugin/skills/setup/setup.md Q2: reword to "What's the core of it — the main thing it produces, organises, or does?" (drop "functionality / does"). From [setup-q2-agnostic-wording].
-- plugin/si-plugin/skills/setup/setup.md Q3 examples: replace software-only example set with 3–4 examples spanning software + non-software projects. From [setup-q3-agnostic-examples].
-- plugin/si-plugin/skills/setup/setup.md Q4: reword inclusively — "What's the first thing to build or do? What would you want to have working or made progress on by the end of today?" Keeps build-shape framing for app projects, adds do/progress framing for others. From [setup-q4-inclusive-wording].
-- plugin/si-plugin/skills/setup/setup.md Step 4 close-out: reword to "Run /plan to scope your first batch, or /next if you're ready to start the first batch." (drop "ready to build"). From [setup-step4-close-out-wording].
-- plugin/si-plugin/skills/setup/setup.md Step 1 folder-state cases: reword Case A / Case B to "No content" / "Content exists" (or similar project-agnostic phrasing). From [setup-step1-case-wording].
-- plugin/si-plugin/skills/setup/setup.md SPEC.md template (line 48): reword "What the app is" to "What the project is". From [setup-spec-template-agnostic].
-- plugin/si-plugin/skills/setup/setup.md QUEUE.md template (line 63): reword "Each batch is one /next session — builds first, then tests." to "Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit)." From [setup-queue-template-type-complete].
+- plugin/si-plugin/docs/setup.md Step 2 scaffold list: create a git repository when none exists, as part of scaffolding — silent and mechanical, like the rest of the scaffold. This is what makes the /done close work in a fresh consumer folder.
+- plugin/si-plugin/docs/setup.md Step 4 close-out: replace "Run /plan to scope your first batch, or /next if you're ready to build" with a close that recommends /done. The file-list display stays as consent display — it shows what appeared in the folder; the LOG entry /done writes remains the session's single summary. State that relationship in one line.
+- plugin/si-plugin/docs/setup.md Step 2C item 4: make the migration close state-aware — leftover _build.md present: name the interrupted build and recommend resuming it with /next, noting the migration changes get picked up at that build's close; otherwise recommend /done, matching Step 4.
+- plugin/si-plugin/docs/done-plan.md: widen the close-out to setup-shaped sessions — the entry template's framing covers scaffolding sessions (what was set up and why, not "queue changes"), and recommend-next gains a branch: a fresh project whose only batch is the rough Q4 entry recommends /plan, never /next, because that entry is deliberately unscoped.
+
+Test:
+- Doc edits self-verifying. Behavioural, host-side (after push + reinstall): the next real /setup run in a fresh folder — repo created silently, close names /done, /done writes a setup-shaped LOG entry and commits the scaffold. Needs the deferred-test discipline — flag at /done if it can't run.
+
+**Project-agnosticism sweep: rewrite setup.md to read for non-app projects too** **[setup-project-agnosticism-sweep]**
+
+setup.md is the on-ramp every project enters through, and its current wording assumes the user is building an app: the five interview questions, the Step 4 close-out, the Step 1 folder-state cases, and the three scaffolded doc templates (SPEC.md, QUEUE.md) all use app-building framing ("building," "components," "functionality," "source code," "builds first then tests"). The behaviour-agnosticism audit (fac25ab) surfaced 11 findings; seven collapse into one sweep of mechanical-or-near-mechanical rewords applied across setup.md and its scaffolded templates. The Step 4 close-out reword originally counted here moved to [setup-closeout-redesign], which replaces that line entirely. The three more substantive findings — REGISTRY.md noun choice (Q3.5 interview question), the spec-entry-trigger threshold across project types, and plugin-behaviour.md doc-routing — are held in separate captures for their own consideration. This sweep changes wording only; no interview-flow changes, no rule-trigger changes.
+
+Build:
+- plugin/si-plugin/docs/setup.md Q1: reword to "What is this project, and who is it for?" (drop "building"). From [setup-q1-agnostic-wording].
+- plugin/si-plugin/docs/setup.md Q2: reword to "What's the core of it — the main thing it produces, organises, or does?" (drop "functionality / does"). From [setup-q2-agnostic-wording].
+- plugin/si-plugin/docs/setup.md Q3 examples: replace software-only example set with 3–4 examples spanning software + non-software projects. From [setup-q3-agnostic-examples].
+- plugin/si-plugin/docs/setup.md Q4: reword inclusively — "What's the first thing to build or do? What would you want to have working or made progress on by the end of today?" Keeps build-shape framing for app projects, adds do/progress framing for others. From [setup-q4-inclusive-wording].
+- plugin/si-plugin/docs/setup.md Step 1 folder-state cases: reword Case A / Case B to "No content" / "Content exists" (or similar project-agnostic phrasing). From [setup-step1-case-wording].
+- plugin/si-plugin/docs/setup.md SPEC.md template (line 48): reword "What the app is" to "What the project is". From [setup-spec-template-agnostic].
+- plugin/si-plugin/docs/setup.md QUEUE.md template (line 63): reword "Each batch is one /next session — builds first, then tests." to "Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit)." From [setup-queue-template-type-complete].
 
 Test:
 - Self-verifying from the doc text. After the rewrite, setup.md reads cleanly for a tax-prep, records-keeping, research, or writing project as well as for an app project.
@@ -275,7 +291,7 @@ Build:
 - plugin/si-plugin/docs/done.md: at the commit step, add a sub-step — run `git status --porcelain plugin/si-plugin/`, compare against the active build's file list, surface any dirty paths outside scope with a one-line summary, and offer to stage + roll them into the commit.
 
 **Session-start dirty-tree warning** **[session-start-dirty-tree-check]**
-Depends on: [user-edits-rollup-on-commit]
+Depends on: [user-edits-rollup-on-commit], [deferred-tests-structural-home] (host-side)
 
 session_start reports project state but not git state. A consumer project dirty at session start almost always means the previous session ended without /done — work sitting unrecorded that a non-coder won't notice for weeks (observed here: five doc files dirty across two-plus sessions, compensated by a manual check in this project's CLAUDE.md). The hook generalizes that check so every consumer project gets it: git status --porcelain at session start, one line when dirty. The Depends on is real, not thematic: the warning's promise — "/done will pick them up" — only becomes true once [user-edits-rollup-on-commit] teaches /done to offer dirty out-of-scope paths into its commit. Silent when _build.md exists: mid-build dirt is expected, not orphaned. Sibling to the hook cluster ([hash-backfill-as-hook], [queue-format-lint-hook], [git-add-safety-hook-gap]); shares session_start.py with the backfill hook, so whichever builds second sees the other's changes.
 
@@ -583,6 +599,7 @@ The per-finding capture-or-drop loop is the most interactive /next shape there i
 
 Build:
 - plugin/si-plugin/docs/next-audit.md: replace the per-finding route-approved-findings loop with the bulk flow — compile all findings, present them as one numbered set in a single message, ask the user to approve the set or list the numbers they don't accept as-is, cover contested ones one at a time (reword or drop), append the approved set to Captures, report the filed count at close. Tag the bulk ask and the contested-item loop correctly from the start.
+- plugin/si-plugin/docs/next-audit.md, same rewrite: the new close defines its review tail from birth — reviewing means re-examining what was already found, not raising new work; anything new routes through the existing paths (out-of-scope via scope management, thinking work via Captures). From a [close-out-audit] finding (e120f3d): the current "keep reviewing" tail is undefined, leaving open the new-work-smuggling risk next-build.md's tail was hardened against.
 - plugin/si-plugin/docs/plugin-behaviour.md Communication, sequencing rule: add the bulk-approval inversion alongside the existing alternatives inversion, hardened (why-clause, positive constraint, explicit scope) — a deterministic result set produced by user-approved criteria is presented as one numbered message for bulk approval; the ask invites listing contested numbers; contested items then run one at a time. One-item-at-a-time stays the default everywhere else.
 - plugin/si-plugin/docs/done-audit.md: the LOG entry records bulk-step outcomes — findings rejected or reworded at approval, with reasons — so nothing decided at audit time goes unrecorded.
 
@@ -641,6 +658,48 @@ Build:
 Test:
 - Self-verifying from the rule text. Behavioural watch: the next session where an observation or decision surfaces mid-work routes it to the docs, and memory use for preferences continues without hesitation.
 
+**Close the overlap-scan gap in done-audit.md's recommendation** **[done-audit-overlap-scan]**
+
+From a [close-out-audit] finding (e120f3d). done-audit.md is the only /done sub-doc whose recommendation step skips the unprocessed-Captures overlap scan. The default branch is unaffected — after findings route, the recommendation is already /plan. The gap bites when an audit routes nothing: in a project with pre-existing captures overlapping the top batch, the close recommends continuing into /next — the exact case the scan exists to catch. No exemption rationale exists, since an audit that routed nothing does nothing to clear pre-existing captures. The fix is one line, worded identically to the other three sub-docs so the rule reads the same everywhere it appears.
+
+Build:
+- plugin/si-plugin/docs/done-audit.md Phase 3, nothing-routed branch: open it with the overlap scan — "Before recommending, scan unprocessed Captures for overlap with the top batch — if found, recommend /plan first and name the overlap" — matching done-build.md, done-test.md, and done-plan.md verbatim.
+
+Test:
+- Self-verifying from the doc text. Grep the scan phrasing across the four /done sub-docs after the edit — expect four identical statements.
+
+**State the single-summary rule in all four /done sub-docs** **[done-single-summary-line]**
+
+From a [close-out-audit] finding (e120f3d). The single-summary rule is stated at five close-outs, but inside the /done sub-docs only done-plan.md carries it at the entry-writing step — done-build.md, done-test.md, and done-audit.md are silent on it. The pull the rule guards against lives exactly there: just after the commit, the natural move is to recap the session while recommending what's next, and a two-sentence recap satisfies the recommend-next [BRIEF] tag while still duplicating the entry. Grep-confirmed at routing: only done-plan.md has the line. The fix copies its exact wording so the rule reads identically everywhere it appears.
+
+Build:
+- plugin/si-plugin/docs/done-build.md, done-test.md, done-audit.md, entry-writing steps: add done-plan.md's line verbatim — "This entry is the session's summary — there is no separate chat recap." Locate each spot by content (the show-for-approval instruction in each entry step), not line numbers.
+
+Test:
+- Self-verifying. Grep "separate chat recap" across the /done sub-docs after the edit — expect four hits, identical wording.
+
+**Fit the push offer to session shape and remote state** **[push-offer-fit]**
+
+From a [close-out-audit] finding (e120f3d), plus one gap surfaced at routing. done.md's commit core asks "Commit and push, or just commit?" identically for every session shape. The dual ask fits build, test, and audit closes — work shipped or was verified, push is a real choice. It misfits planning closes: the staged paths are local planning state, so the standing offer treats planning work as a ship event. In the self-hosting host the cost is concrete — a push triggers the full push-and-rezip ritual off a commit that changed nothing in the plugin. A non-coder reads offered options as equally sensible defaults, so the ask teaches that pushing planning state is normal when the system reserves push for shipping. The routing-time gap: consumer repos may have no remote at all — nothing in setup or install creates one — so the ask can offer an option that errors when picked. The fix keeps the mechanics canonical in done.md and shapes the ask by context. The override is a default, not a prohibition — for consumers push is often just backup, and that stays available. Setup-shaped sessions inherit the override for free once [setup-closeout-redesign] routes them through done-plan.md.
+
+Build:
+- plugin/si-plugin/docs/done.md commit core: gate the push offer on a remote existing (one git remote check). No remote: ask about committing alone — don't offer what would error.
+- plugin/si-plugin/docs/done.md commit core: add one line stating sub-docs may override the ask's default while the mechanics stay canonical here.
+- plugin/si-plugin/docs/done-plan.md commit step: override the ask — planning sessions offer commit alone by default; push stays available when the user asks or is deliberately backing up. Carry the why: planning state is local bookkeeping, push is reserved for shipping, and in self-hosting projects a push triggers the full push-and-rezip ritual.
+
+Test:
+- Self-verifying from doc text. Behavioural, host-side (after push + reinstall): the next /done after a planning session asks commit-only; a /done after a build still offers the dual ask. Needs the deferred-test discipline — flag at /done if it can't run.
+
+**Define next-test.md's completion review tail** **[next-test-review-tail]**
+
+From a [close-out-audit] finding (e120f3d). The three /next-family completions share one shape — "Run /done to record this and commit, or X before closing" — but only next-build.md defines its X, and that definition exists deliberately to close a new-work-smuggling risk: an undefined tail can absorb fresh work past the batch's contract. next-test.md's "review what's already tested" carries no equivalent definition, so the same risk sits open there. The audit half of this finding rides in [audit-findings-bulk-approval], which rewrites next-audit.md's close; this batch covers the test half, mirroring next-build.md's wording so the rule reads the same in both places.
+
+Build:
+- plugin/si-plugin/docs/next-test.md Completion, after the "Run /done…" say-line: add the definition — reviewing means re-examining what was already tested, not raising new work; anything new routes through the existing paths (out-of-scope via Scope management, thinking work via Captures). Mirror next-build.md's tightening definition in structure and length.
+
+Test:
+- Self-verifying from the doc text. The two defined tails should read as the same rule in build and test clothing.
+
 ### Parked
 
 ## Captures
@@ -648,20 +707,6 @@ Test:
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
-
-- From the [close-out-audit] /next session: setup.md's close-out (Step 4) is the only skill end that never names /done. It recommends "/plan or /next" and stops. The session that scaffolds every doc has no commit step and writes no LOG entry, so the scaffolded files sit uncommitted and the project record starts with a gap. There is also no /done path shaped for setup sessions — done-plan.md's entry template asks "what motivated these queue changes," which doesn't fit a scaffolding session. The design intent the audit batch cited (skill ends are a bare /done recommendation; the LOG entry is the single session summary) exempts setup silently, not deliberately. A consumer's first session currently teaches them to skip the close-out habit. Proposed: either Step 4 recommends /done and done-plan.md gains a line covering setup-shaped sessions, or setup.md states the exemption explicitly and defines who commits the scaffold. Sub-question either way: Step 4's file-list display stays as consent display (showing what appeared in the folder), but its relationship to the single-summary rule needs one stated line if /done follows. Interaction: [setup-project-agnosticism-sweep] rewords the same Step 4 close-out line — decide this before or with that batch so the line isn't written twice.
-
-- From the [close-out-audit] /next session: setup.md Step 4's close-out offers "/next if you're ready to build" ungated, and the offer contradicts setup.md's own Q4 rule. Q4 deliberately writes the first queue entry rough — "Use the user's words, don't expand or split — scope decisions belong in /plan." Step 4 then presents /next as an equal path, sending that deliberately-unscoped entry straight into execution. Nothing has assessed the entry by then: plan.md's readiness gate never ran on it, and /next's blocker gate checks SPEC contradictions, not vagueness. The two lines pull a brand-new user in opposite directions in their first session — the interview defers all scoping to /plan, the close-out implies scoping is optional. Proposed: recommend /plan as the default next step; drop the /next mention or condition it honestly ("if your first batch is already specific enough to execute"). Interaction: [setup-project-agnosticism-sweep] rewords this same close-out line and keeps the unconditional dual offer, and the finding-1 capture from this audit also lands on it — reconcile all three into one rewrite at /plan.
-
-- From the [close-out-audit] /next session: setup.md has a second close-out the audit's target enumeration missed — Step 2C (migration scaffolding) ends at item 4 with "tell the user … they're ready for /plan or /next," and the session stops there; Step 4 never runs on the migration path. The offer is unconditional and reads no project state. A migrated project can have an active _build.md from an interrupted build, captures waiting, or a push marker at the queue top — "ready for /plan or /next" is blind to all of it, and migration happens precisely on established projects where such state is the norm. It also names no /done, same as the finding-1 capture. Proposed: align Step 2C's close with whatever shape Step 4 lands on (the finding-1 and finding-2 captures), and gate the recommendation on actual state — simplest: recommend /plan, which reads state anyway; or name what the close sees (_build.md present → resume with /next, else /plan). Route together with the other two setup close-out captures from this audit so the three land as one design decision.
-
-- From the [close-out-audit] /next session: done-audit.md's recommend-next is the only /done sub-doc without the overlap scan. done-build.md, done-test.md, and done-plan.md all open their recommendation with "Before recommending, scan unprocessed Captures for overlap with the top batch — if found, recommend /plan first and name the overlap." done-audit.md opens with the audit-specific default instead (findings routed → recommend /plan, name the count), and its nothing-routed branch goes straight to queue state. The omission is harmless in the default branch because the recommendation is already /plan. It bites in the nothing-routed branch: an audit that captured zero findings, in a project with pre-existing unprocessed captures overlapping the top batch, recommends continuing into /next — the exact case the scan exists to catch. Proposed: add the scan as one line in the nothing-routed branch, or state explicitly that audits skip it and why.
-
-- From the [close-out-audit] /next session: done.md's commit core asks "Commit and push, or just commit?" identically for every session shape. The survey: the dual ask fits build, test, and audit closes — work shipped or was verified, push is a real choice. It misfits /done after /plan: the staged paths are local planning state only (done-plan.md states "planning sessions touch nothing else"), so the standing push offer treats planning work as a ship event. In the self-hosting host the cost is concrete — a push triggers the full push-and-rezip ritual (version bump, consistency sweep, repackage) off a commit that changed nothing in the plugin. A non-coder reads offered options as equally sensible defaults, so the ask teaches that pushing planning state is a normal close-out move when the system's own semantics reserve push for shipping. Proposed: keep the commit core's mechanics canonical; done-plan.md's commit step overrides the ask — planning sessions offer commit alone by default, push available if the user asks or is deliberately backing up. Build/test/audit sub-docs keep the dual ask unchanged. Caveat to weigh at /plan: for consumers push is often just backup, so the override should read as a default, not a prohibition.
-
-- From the [close-out-audit] /next session: the single-summary rule is stated at five close-outs but missing inside three of the four /done sub-docs. plan.md Step 4, the three /next-family completions, and done-plan.md all carry it (done-plan.md at the entry-writing step: "This entry is the session's summary — there is no separate chat recap"). done-build.md, done-test.md, and done-audit.md don't state it anywhere — their entry-writing steps are silent on it, and only the recommend-next [BRIEF] tag bounds output. The pull the rule guards against lives exactly there: just after the commit, the natural move is to recap the session while recommending what's next, and a two-sentence recap satisfies [BRIEF] while still duplicating the entry. This is criterion (f)'s "close-out left unworded where the default summarizing pull would write one." Proposed: add done-plan.md's one-liner to the entry-writing step of done-build.md, done-test.md, and done-audit.md — same wording in all four, so the rule reads identically everywhere it appears.
-
-- From the [close-out-audit] /next session: the three /next-family completions share one shape — "Run /done to record this and commit, or X before closing" — but only next-build.md defines its X: "Tightening means refining done entries — not raising new work. Anything new routes through the existing paths." next-test.md's "review what's already tested" and next-audit.md's "keep reviewing" carry no equivalent definition, so the new-work-smuggling risk the build tail was explicitly hardened against is open in both siblings — an undefined "keep reviewing" can absorb fresh verification work or findings-hunting past the batch's contract. Proposed: extend the same one-line definition to both — reviewing means re-examining what was already tested or found; anything new routes through scope management or Captures. Interaction: [audit-findings-bulk-approval] replaces next-audit.md's findings flow and may rewrite its Close section — the next-audit.md half of this fix should ride there or be checked after it lands; the next-test.md half has no such dependency.
 
 ### Parked
 

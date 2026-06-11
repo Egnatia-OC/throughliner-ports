@@ -2,7 +2,23 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /next [close-out-audit]: close-out steps of all four skills audited — 7 findings, all captured
+## [HASH] — /plan: all 7 close-out-audit captures routed; push marker placed before the hook cluster
+
+This session processed the close-out audit's seven findings, which all landed on session-end behaviour — setup's close-outs, the /done sub-docs, and the /next completions. One scan candidate came first: the blocker on [next-done-recommendation] had fired when the audit shipped, so its header came off. At the user's request for a near-term push point, placing the marker surfaced that the hook cluster's host-side dependency on [deferred-tests-structural-home] was recorded only on the Blocks: side — no marker, no (host-side) annotations — so the owed convention was applied. The session also backfilled the two outstanding log placeholders with e120f3d at start.
+
+**Queue changes:**
+- [next-done-recommendation]: fired blocker lifted — batch back in active flow.
+- Added [setup-closeout-redesign] above the agnosticism sweep: setup's two close-outs recommend /done, scaffolding gains git init when no repo exists, the migration close reads state, and done-plan.md widens to setup-shaped sessions. Three audit captures routed together, plus two routing-time finds folded in: fresh consumer folders have no repo, and /done routes by _build.md so a migration close can't blindly name /done.
+- [setup-project-agnosticism-sweep]: superseded Step 4 bullet removed (moved to [setup-closeout-redesign]), finding count corrected, and every bullet's path fixed from skills/setup/setup.md (doesn't exist) to docs/setup.md.
+- Added [done-audit-overlap-scan]: the overlap scan added to done-audit.md's nothing-routed branch, matching the other three sub-docs.
+- Added [done-single-summary-line]: done-plan.md's single-summary line copied verbatim into the other three /done sub-docs.
+- Added [push-offer-fit]: push offer gated on a remote existing; done-plan.md overrides the dual ask to commit-only by default. The no-remote gap was found at routing.
+- Added [next-test-review-tail]: next-test.md's completion review tail defined, mirroring next-build.md. The next-audit.md half rides as a new authored-from-birth bullet in [audit-findings-bulk-approval].
+- Push marker inserted after [deferred-tests-structural-home]; `Depends on: [deferred-tests-structural-home] (host-side)` added to the three hook batches and widened on [session-start-dirty-tree-check].
+
+**Captures routed:** 7 promoted — three as one combined batch, one split between a new batch and an existing batch's build list. None parked, none dropped. Captures now empty.
+
+## e120f3d — /next [close-out-audit]: close-out steps of all four skills audited — 7 findings, all captured
 
 The audit asked whether each skill's close-out recommends the right next move, gated on real state, consistently across /setup, /plan, /next, and /done. The motivating incongruences were known: setup.md offers /next unconditionally even though Q4 deliberately writes a rough unscoped first entry, and [next-done-recommendation] tackles one observed /next-instead-of-/done substitution without a full survey — running this audit first means that batch's scope is known before it builds. All nine named close-outs were read in full on the target side, plus done.md for its commit core, against the six criteria: recommendation target, state-gating, cross-skill consistency, self-re-run and branching, commit-and-push fit per session shape, and the single-summary check.
 
