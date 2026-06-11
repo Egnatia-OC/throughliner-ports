@@ -2,7 +2,16 @@
 
 Full session entries, newest first. Each entry is written by /done. This file covers the current release — older entries are in per-release log files (LOG/log-v*.md).
 
-## [HASH] — /plan: all 7 close-out-audit captures routed; push marker placed before the hook cluster
+## [HASH] — /next pre-flight caught stale file refs in [next-pre-scope-lock-abort]; same-session /plan rewrote the entry
+
+The /next pre-flight's blocker gate flagged the top batch before any scope-lock. Its second build entry pointed the reshape-direction sub-step at next.md's "existing Step 5" abort path, which no longer exists — the per-type split moved the abort path into next-build.md and next-test.md, and "Step 5" is pre-split vocabulary that survived into a post-split batch. Building as written would have forced a guess about which docs get the sub-step. Following the ba28387 precedent, /plan ran in the same session and treated it as a staleness rewrite: the entry now names all three real locations — the new pre-scope-lock branch in next.md, and the "Abort and requeue" steps in next-build.md and next-test.md. Including next-test.md was the one scope call: the observed reshape case (the install persona sims) was test-shaped work, and the trigger is type-agnostic, so covering only next-build.md would recreate the same gap one doc over. The batch never left the queue; no build ran. Pre-flight also backfilled the LOG hash placeholders to 4ae44a5. This session is itself the shape the amended batch fixes — a /next ending before scope-lock — and closes through /done so the pre-flight work gets recorded and committed.
+
+**Queue changes:**
+- [next-pre-scope-lock-abort]: second build entry rewritten — stale "next.md Step 5" reference replaced with the three real locations (next.md pre-scope-lock branch, next-build.md and next-test.md abort paths). Substance unchanged.
+
+**Captures routed:** none
+
+## 4ae44a5 — /plan: all 7 close-out-audit captures routed; push marker placed before the hook cluster
 
 This session processed the close-out audit's seven findings, which all landed on session-end behaviour — setup's close-outs, the /done sub-docs, and the /next completions. One scan candidate came first: the blocker on [next-done-recommendation] had fired when the audit shipped, so its header came off. At the user's request for a near-term push point, placing the marker surfaced that the hook cluster's host-side dependency on [deferred-tests-structural-home] was recorded only on the Blocks: side — no marker, no (host-side) annotations — so the owed convention was applied. The session also backfilled the two outstanding log placeholders with e120f3d at start.
 

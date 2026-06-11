@@ -14,7 +14,7 @@ Blocks: [next-done-recommendation]
 
 Build:
 - plugin/si-plugin/docs/next.md: add a pre-scope-lock abort branch — when /next ends before scope-lock, the close-out names /done as the next step so incidental session work gets recorded and committed. State what doesn't happen: no batch returns to the queue, because none left it.
-- plugin/si-plugin/docs/next.md, both abort paths (existing Step 5 and the new pre-scope-lock branch): add the reshape-direction sub-step — when an abort surfaces a reshape direction or learning the queue needs, route it as a capture pointing at the batch slug before recommending /done. The trigger is mechanical: abort + batch returned (or never locked) + reshape direction in conversation = capture needed.
+- plugin/si-plugin/docs/next.md (the new pre-scope-lock branch from the entry above), plus the existing abort paths in next-build.md and next-test.md (the "Abort and requeue" steps in their course-correction sections): add the reshape-direction sub-step to all three. When an abort surfaces a reshape direction or learning the queue needs, route it as a capture pointing at the batch slug before recommending /done. The trigger is mechanical: abort + batch returned (or never locked) + reshape direction in conversation = capture needed.
 
 Test:
 - Self-verifying from the branch text. Live confirmation rides on the next naturally-occurring pre-flight abort — Claude should name /done, not /plan.
