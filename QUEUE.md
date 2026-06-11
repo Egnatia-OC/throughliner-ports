@@ -7,23 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Give deferred tests a structural home in QUEUE.md** **[deferred-tests-structural-home]**
-Blocks: [hash-backfill-as-hook], [queue-format-lint-hook], [git-add-safety-hook-gap], [session-start-dirty-tree-check]
-
-/next pre-flight asks "unconfirmed tests from a previous build?" but defines no place to read the answer from — the check ran on conversation memory four pre-flights running during the 2026-06-10 long session, and the two currently-deferred host-side tests are archived in log-v1.10.0.md where a fresh session has no instruction to look. On short weak-model sessions the tests would silently never surface; memory is covering for a missing structure, which the design target forbids. The fix is a mechanical slot: a Deferred tests section in QUEUE.md that /done writes when a test can't run in-session (host-side, needs-user, external event), /next's gate reads and re-presents, and the confirming session removes from. One line per entry — source batch slug, what to verify, what confirms it — so the gate's read needs no judgment. The lint hook tolerates the new section by design (deny-list). The Blocks: header is load-bearing: all four named batches carry host-side tests whose /done needs the slot to exist.
-
-Build:
-- This project's QUEUE.md: add a "## Deferred tests" section between Batches and Captures, seeded with the pending host-side tests — the two from log-v1.10.0 (done-split single-summary; _build.md narration moments) and the two moved-in tests below — each with source slug and confirm-by condition.
-- Seed, moved from Captures: deferred test from [next-pre-scope-lock-abort]. The new pre-scope-lock close needs live confirmation. At the next real /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?"), Claude should route any reshape direction to Captures and name /done — not /plan. This can't be confirmed in the build session itself: the new text only governs live sessions after push + reinstall, and the trigger is an abort that happens naturally. Fires at the next naturally-occurring pre-scope-lock end after push + reinstall.
-- Seed, moved from Captures: deferred test from [drop-log-per-release-split]. After the next push + reinstall, ask Claude a "why did we decide X" question that targets an entry in an old log-v*.md file. Pass condition: the retrieve finds it through the index plus the hash-or-title search fallback, since pre-split entries have no per-entry file to open. It couldn't run in its own session: the rewritten retrieve rule is host-side and only governs sessions after push + reinstall. Fires at the first why-question targeting a pre-split entry, or can be run deliberately any time after reinstall.
-- plugin/si-plugin/docs/done.md and the per-type sub-docs that close out tests (done-build.md, done-test.md): when a planned test can't run in-session, write it to Deferred tests — not as prose in the LOG entry.
-- plugin/si-plugin/docs/next.md pre-flight gate: replace the memory-dependent question with a mechanical read of the Deferred tests section; re-present pending entries; the confirming session removes the entry and records the confirmation in its LOG entry.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md and this project's CLAUDE.md Method docs section: describe the new QUEUE.md section so the format is documented for consumers and future sessions.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry explaining the Deferred tests section — what it holds, who writes it, when entries leave.
-
-Test:
-- Structural part self-verifying. Behavioural: the next /done that defers a test writes an entry; the next /next pre-flight re-presents it. The four blocked hook batches are the natural first exercises.
-
 --- Push required before continuing ---
 
 **Move the LOG hash backfill into session_start as a hook** **[hash-backfill-as-hook]**
@@ -672,6 +655,16 @@ Build:
 - This project's CLAUDE.md (host-only, does not propagate), the push-marker convention in Self-hosting dependency ordering: state the distinction — the marker halts /next because batches past it read host-side state, the one hard direction; it does not suspend decided rules or reasoning in any session, and it is not a wall for planning work. The line marks when we aim to ship by. Decided rules and reasoning apply from the moment they're decided.
 
 ### Parked
+
+## Deferred tests
+
+Planned tests that couldn't run in their own session (host-side, needs-user, external event). /done writes entries here when a test can't run in-session; /next's pre-flight gate re-presents every pending entry; the session that confirms one removes its line and records the confirmation in its LOG entry.
+
+- [done-closeout-extraction] — verify a /done close produces one session summary (the LOG entry shown for approval), with no separate chat recap. Confirmed by: the first /done after push + reinstall closing with a single summary.
+- [narrate-build-md-purpose] — verify _build.md's purpose is narrated at its use moments: one sentence after the scope lock creates it, a one-line opener when a resume reads it, and the rationale-carry sentence when /done writes the LOG entry from it. Confirmed by: observing those lines in the first live /next and /done after push + reinstall.
+- [next-pre-scope-lock-abort] — verify a /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?") routes any reshape direction to Captures and names /done, not /plan. Confirmed by: the first naturally-occurring pre-scope-lock end after push + reinstall.
+- [drop-log-per-release-split] — verify a "why did we decide X" question targeting a pre-split entry in an old log-v*.md file is answered through the index plus the hash-or-title search fallback (pre-split entries have no per-entry file to open). Confirmed by: the first such why-question after push + reinstall, or a deliberate run any time after reinstall.
+- [deferred-tests-structural-home] — verify the discipline runs from the installed docs: a /done that defers a test writes a Deferred tests line unprompted, and the next /next pre-flight re-presents pending entries. Confirmed by: the first /done + /next pair after push + reinstall — the four blocked hook batches are the natural exercises.
 
 ## Captures
 

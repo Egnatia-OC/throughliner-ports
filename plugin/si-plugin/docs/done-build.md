@@ -23,6 +23,10 @@ For each file created, renamed, deleted, or significantly modified:
 
 Check _build.md and the conversation for anything flagged during the build. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
 
+### 1.4 Write deferred tests
+
+Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone.
+
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]

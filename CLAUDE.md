@@ -133,7 +133,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test/Audit subheadings. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Batches use Build/Test/Audit subheadings. Deferred tests holds tests that couldn't run in their own session, one line each (source batch slug, what to verify, what confirms it) — /done writes entries, /next's pre-flight re-presents them, the confirming session removes them. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
 - **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), each full entry as its own file named on its index line. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`, findable by hash.
 

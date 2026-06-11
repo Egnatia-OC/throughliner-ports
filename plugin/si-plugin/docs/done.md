@@ -29,6 +29,12 @@ The hash lives in the entry file's heading and the index line, never in the file
 
 Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`. Those files stay in place, untouched — their entries are found by hash or title search, not by filename.
 
+## Deferred tests
+
+Stated once here; the build and test sub-docs point at this section.
+
+A planned test that can't run in the closing session — host-side behaviour that only goes live after push + reinstall, a check only the user can run, an external event that hasn't fired — is written to QUEUE.md's "## Deferred tests" section, one line per test: source batch slug, what to verify, and what confirms it. The queue line is the structural record: /next's pre-flight reads that section and re-presents every pending entry, and the session that confirms a test removes its line and records the confirmation in its LOG entry. Don't record the deferral as LOG-entry prose alone — no later session re-reads old log prose, so a test recorded only there never surfaces again.
+
 ## Commit core [BRIEF, PROMPT]
 
 Stated once here; every sub-doc's Commit step points at this section.

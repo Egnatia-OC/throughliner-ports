@@ -14,6 +14,10 @@ Read _build.md. All tests ticked (✓ or ✗ with reason)?
 
 Check _build.md and the conversation for anything flagged during testing. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Every ✗ needs a routed fix unless the user explicitly drops it.
 
+### 1.3 Write deferred tests
+
+Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone.
+
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
