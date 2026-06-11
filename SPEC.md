@@ -15,7 +15,7 @@ Splits changes into a build queue that helps the user harness Claude's skills in
 Four skills drive the workflow:
 - `/setup` — scaffold project docs and run the onboarding interview.
 - `/plan` — manage the queue, add ideas, resolve questions, check for drift.
-- `/next` — pick the top queue entry and execute it.
+- `/next` — pick the top queue entry and execute it. A freeform form (`/next freeform`) runs unqueued work — discussion-first sessions, ad-hoc audits, wrapping up changes made by hand — under the same scope and capture discipline.
 - `/done` — close the build, record what happened, commit.
 
 Four project docs structure each project:
@@ -28,6 +28,11 @@ Two hooks enforce discipline mechanically:
 - `session_start` — detect project state and load behaviour rules.
 - `pre_tool_use` — SPEC.md read-only during builds, scope-lock to file list, git safety.
 
+One behaviour doc steers everything the hooks can't enforce:
+- `plugin-behaviour.md` — loaded at every session start in adopted projects. Carries the cross-skill rules (communication, capture routing, dependency ownership, file safety) and five response-shape tags ([SILENT], [BRIEF], [DISCUSS], [PROMPT], [SEQUENCE]) that procedure docs place on individual steps to control verbosity and interaction. Rule and tag definitions are compliance-hardened: each carries a why-clause, quantified constraints, and an explicit scope statement so it holds against the helpfulness pull of current models.
+
 ## Principles
 
 - Never restrict ideation, just direct it. The user must be able to ideate at any point in the build cycle.
+- Hooks enforce what must never happen; hardened rules and tags steer what should usually happen. Mechanical enforcement is cheap and unskippable; behavioural steering is written to survive priority conflicts on the models users actually run.
+- Execution sessions trend toward pure execution. Ideas and discoveries can be captured anywhere, but deciding their fate is planning work and happens in planning sessions. The end state is an unattended build mode that works through the queue, stopping only for what genuinely needs the user.
