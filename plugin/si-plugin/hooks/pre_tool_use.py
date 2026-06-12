@@ -8,7 +8,8 @@ PreToolUse hook — enforces three rules:
    always editable). Tri-state: no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files.
-3. Git safety: block git reset --hard and git push --force.
+3. Git safety: block git reset --hard, git push --force, blanket
+   staging (git add -A / --all / .), and git commit -a / -am.
 
 For Edit/Write/MultiEdit: checks rules 1 and 2.
 For Bash/PowerShell: checks rule 3 (git safety) only.
@@ -24,6 +25,21 @@ import sys
 
 RESET_HARD = re.compile(r"\bgit\b.*\breset\b.*--hard\b")
 PUSH_FORCE = re.compile(r"\bgit\b.*\bpush\b.*(?:--force(?!-with-lease)\b|-f\b)")
+# Blanket-add boundaries: a bare "." token only (explicit paths like
+# ./scripts/x.py or .gitignore must pass), -A/--all as standalone flags.
+BLANKET_ADD = re.compile(r'\bgit\b.*\badd\b.*(?:\s-A\b|\s--all\b|\s\.(?=\s|$|[;&|"\')]))')
+# Commit boundaries: --amend and --allow-empty must not match -a / --all.
+COMMIT_ALL = re.compile(r"\bgit\b.*\bcommit\b.*\s(?:-a\b|-am\b|--all\b)")
+
+# Appended to every git-safety denial: the patterns match command text,
+# not intent, so a denial can fire on a command that only carries the
+# pattern as data.
+PATTERN_AS_DATA_NOTE = (
+    "\n\nNote: this check matches the command's text, not its intent — a "
+    "command that merely contains the pattern as data (a test string, "
+    "quoting, documentation) is denied too. Assemble such strings at "
+    "runtime instead of writing the pattern out literally."
+)
 
 
 # --- Helpers ---
@@ -149,6 +165,7 @@ def main() -> int:
                 "- `git stash` — saves changes for later.\n"
                 "- `git checkout -- <file>` — discards one file's changes.\n"
                 "- `git reset HEAD~1` — moves HEAD back, keeps working tree."
+                + PATTERN_AS_DATA_NOTE
             )
 
         if PUSH_FORCE.search(command):
@@ -157,6 +174,26 @@ def main() -> int:
                 "overwrite remote commits.\n\n"
                 "Use `git push --force-with-lease` instead — it refuses to "
                 "push if the remote has commits you haven't fetched."
+                + PATTERN_AS_DATA_NOTE
+            )
+
+        if BLANKET_ADD.search(command):
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: blanket adds (`git add -A`, "
+                "`git add --all`, `git add .`) stage everything in the tree, "
+                "including files never meant for the commit.\n\n"
+                "Stage explicitly — name each path: `git add <path> <path>`."
+                + PATTERN_AS_DATA_NOTE
+            )
+
+        if COMMIT_ALL.search(command):
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: `git commit -a` / `-am` "
+                "auto-stages every modified file, including changes never "
+                "meant for the commit.\n\n"
+                "Stage explicitly, then commit: `git add <path> <path>`, "
+                'then `git commit -m "<message>"`.'
+                + PATTERN_AS_DATA_NOTE
             )
 
         return 0
@@ -208,6 +245,11 @@ def main() -> int:
                 "[Sovereign Implementer] BLOCKED: this file is not in the "
                 f"current build's file list.\n\n"
                 f"_build.md allows: {', '.join(build_files)}\n\n"
+                "Files: lines must be bare paths — one path per line, "
+                "nothing else on the line. A note or annotation on a line "
+                "becomes part of the path and silently breaks the match, so "
+                "if this file looks listed above, check its line for "
+                "trailing text.\n\n"
                 "If this file genuinely needs editing, halt the build and, "
                 "with the user's approval, add it to _build.md's Files: "
                 "section."
