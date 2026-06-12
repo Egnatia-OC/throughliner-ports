@@ -1,6 +1,6 @@
 # LOG entry — queue-format-lint-hook
 
-## [HASH] — /next [queue-format-lint-hook]: PostToolUse hook lints QUEUE.md structure after every edit
+## 4a886f0 — /next [queue-format-lint-hook]: PostToolUse hook lints QUEUE.md structure after every edit
 
 The queue's format rules lived only as prose in plan.md and plugin-behaviour.md, held in the model's head while writing — a weaker model drifts them, and nothing catches the drift until a later session trips over it. The new hook (hooks/post_tool_use.py, registered in hooks.json on Edit/Write/MultiEdit) reads QUEUE.md from disk after each edit lands and feeds advisory warnings back beside the tool result: batch titles missing a slug marker, parked items missing their Blocked by:/Parked: header, the Captures processed/unprocessed divider deleted, dependency headers naming slugs defined nowhere in the file, batch subheadings outside Build/Test/Audit, and batch prose naming a still-pending slug its headers don't carry ("dependency or citation?"). Deny-list by design: only known violations flag; novel sections and structures pass silently, so format evolution doesn't fight the linter. Registration was verified against the Claude Code docs before building — the plugins reference's own example is a PostToolUse hook with a Write|Edit matcher in hooks/hooks.json, and additionalContext is the documented advisory channel, shown to Claude without blocking.
 
