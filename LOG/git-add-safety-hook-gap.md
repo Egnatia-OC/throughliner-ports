@@ -1,6 +1,6 @@
 # LOG entry — git-add-safety-hook-gap
 
-## [HASH] — /next [git-add-safety-hook-gap]: pre_tool_use git-safety extended — blanket adds and commit -a denied, every denial teaches the fix
+## 61bfd2f — /next [git-add-safety-hook-gap]: pre_tool_use git-safety extended — blanket adds and commit -a denied, every denial teaches the fix
 
 The File safety rules forbade blanket adds in prose only, while the hook enforced just the two destructive commands — and a weaker model is far likelier to reach for git add -A than a force-push. The gap was exactly hook-shaped: a regex on command text, with the denial message doing the teaching at the moment it matters. pre_tool_use.py gains two patterns — blanket adds (git add -A / --all / a bare-dot token) and blanket commits (git commit -a / -am / --all) — with boundary care so near-misses pass: explicit paths, ./path forms, dotfiles like .gitignore, --amend, --allow-empty. Both new denials teach explicit staging: name each path.
 

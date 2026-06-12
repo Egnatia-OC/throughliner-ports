@@ -7,17 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Procedure docs cross-reference by name, never by step number** **[doc-crossrefs-by-name]**
-
-Observed at the [hash-backfill-as-hook] build (2026-06-12): deleting one pre-flight sub-step renumbered next.md's remaining steps, and step-number cross-references in four other docs silently pointed at the wrong step — three /done sub-docs and plugin-behaviour.md all said "Step 1.4" for a blocker gate that had become Step 1.3. The build caught them only because it chose to grep before renumbering; no procedure requires that, and the break recurs by construction whenever a batch adds, deletes, or reorders steps. The fix is the procedure-doc twin of "locate by content, not line numbers": cross-doc references go by name, which survives renumbering. Two alternatives were weighed and rejected. A grep-before-renumbering process rule guards an empty set once the sweep below lands, and relies on a model recognizing mid-build that its edit renumbers. Lint detection can't work at all: a renumbered pointer doesn't dangle — "Step 1.4" still resolves, to the wrong content — and a lint can check that a reference resolves, not that it resolves to what the author meant. Scope is cross-doc references only: within-doc numbering is visible in the file being edited, so renumbering it isn't silent. The rule is host-only — consumers never edit procedure docs — same precedent as the FAQ-authoring trigger; if the parked self-hosting-scaffolding item ever fires, this rule rides along to future plugin-builders.
-
-Build:
-- This project's CLAUDE.md (host-only, does not propagate via reinstall): add the authoring rule — when editing the docs under plugin/si-plugin/, cross-doc references name their target ("the blocker gate in next.md's pre-flight"), never a step number. Carry the why: step numbers silently retarget when steps renumber; names survive.
-- One-time sweep: grep plugin/si-plugin/docs and plugin/si-plugin/templates for cross-doc step-number references ("Step N", "Step N.N", "Phase N", "sub-step N" naming or implying another doc's step) and convert each to a name-based reference. Within-doc references stay as they are.
-
-Test:
-- Grep after the sweep: zero cross-doc step-number references remain under plugin/si-plugin/. The next renumbering batch is the natural behavioural confirmation — nothing to flag for it.
-
 **Vocabulary rule: name background-only terms; require translate-or-omit when narrating** **[narration-vocabulary]**
 
 plugin-behaviour.md already says internal procedure terms must not appear in user-facing chat, but the rule rides on Claude's judgment of which terms count as internal. Observed leakage in the last /plan session ("the loop," "Step 2") shows the rule is too abstract to catch the actual offenders. The fix is to name them: a short Vocabulary section listing background-only terms (loop, Step N, Phase X, sub-step, pass, gate, batch slug, etc.) and the companion rule — when narrating to the user, translate to user-facing language ("the next item," "moving through them one at a time") or omit the structural reference entirely. Marker-based enforcement (inline tags on internal terms in procedure prose) is deferred to a follow-up capture; ship the rule first, see whether Claude leaks despite the explicit list, then decide.

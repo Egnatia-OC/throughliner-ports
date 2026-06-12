@@ -68,6 +68,7 @@ No code method/
 - **Use absolute paths** for sub-folder lookups. `C:\Users\Alex\Desktop\Taskflow Planning\No code method\plugin\si-plugin\...`
 - **Run commands directly.** Don't ask Alex to run them unless they require the desktop app UI or a separate session.
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
+- **Cross-doc references go by name.** When editing the docs under `plugin/si-plugin/`, a reference to a step in another doc names its target ("the blocker gate in next.md's pre-flight"), never a step number. Step numbers silently retarget when a batch adds, deletes, or reorders steps — the reference still resolves, but to the wrong content; names survive renumbering. Within-doc references are exempt: renumbering is visible in the file being edited.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 
 ### Self-hosting dependency ordering

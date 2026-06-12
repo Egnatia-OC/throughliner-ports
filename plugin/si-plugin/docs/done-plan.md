@@ -33,7 +33,7 @@ Run the commit core in done.md. The staged paths are the changed method docs (QU
 
 ## 3. Recommend next [BRIEF, PROMPT]
 
-Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors next.md Step 1.3). If any are found, recommend /plan first and name the overlap.
+Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). If any are found, recommend /plan first and name the overlap.
 
 Otherwise, based on queue state:
 - Parked items unblocked by this session's planning work (per plugin-behaviour.md Dependency ownership Unpark watch) → mention the unpark candidate(s) as part of the recommendation.
