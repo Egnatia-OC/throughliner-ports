@@ -1,6 +1,6 @@
 # LOG entry — doc-crossrefs-by-name
 
-## [HASH] — /next [doc-crossrefs-by-name]: cross-doc procedure-doc references converted to names; CLAUDE.md gains the authoring rule
+## 9f1b80b — /next [doc-crossrefs-by-name]: cross-doc procedure-doc references converted to names; CLAUDE.md gains the authoring rule
 
 Step-number cross-references between procedure docs break silently: adding, deleting, or reordering a step renumbers the rest, and a reference in another doc still resolves — to the wrong content. Observed at the [hash-backfill-as-hook] build, where deleting one pre-flight sub-step left three /done sub-docs and plugin-behaviour.md saying "Step 1.4" for a blocker gate that had become Step 1.3; that build caught them only because it chose to grep before renumbering, which no procedure requires. Two alternatives were weighed and rejected: a grep-before-renumbering process rule guards an empty set once this sweep lands and relies on a model recognizing mid-build that its edit renumbers; lint detection can't work at all, because a renumbered pointer doesn't dangle — it resolves, to the wrong content, and a lint can check that a reference resolves but not that it resolves to what the author meant. Names survive renumbering, so the rule — the procedure-doc twin of "locate by content, not line numbers" — is that cross-doc references name their target. Host-only: consumers never edit procedure docs, so the rule lives in this project's CLAUDE.md, not shipped docs. Within-doc references are exempt, since renumbering is visible in the file being edited.
 

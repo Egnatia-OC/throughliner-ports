@@ -7,17 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Vocabulary rule: name background-only terms; require translate-or-omit when narrating** **[narration-vocabulary]**
-
-plugin-behaviour.md already says internal procedure terms must not appear in user-facing chat, but the rule rides on Claude's judgment of which terms count as internal. Observed leakage in the last /plan session ("the loop," "Step 2") shows the rule is too abstract to catch the actual offenders. The fix is to name them: a short Vocabulary section listing background-only terms (loop, Step N, Phase X, sub-step, pass, gate, batch slug, etc.) and the companion rule — when narrating to the user, translate to user-facing language ("the next item," "moving through them one at a time") or omit the structural reference entirely. Marker-based enforcement (inline tags on internal terms in procedure prose) is deferred to a follow-up capture; ship the rule first, see whether Claude leaks despite the explicit list, then decide.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md: add a Vocabulary section under Communication listing the background-only terms (loop, Step N, Phase X, sub-step, pass, gate, batch slug, plus any others surfaced while drafting). State the translate-or-omit rule with one or two short examples ("the loop" → "the next item" or omit).
-- plugin/si-plugin/docs/plugin-behaviour.md: cross-link the new section to the existing "no internal terms in user-facing chat" rule so the relationship is explicit — the new section sharpens the old rule by naming the offenders, not replacing it.
-
-Test:
-- Self-verifying on the next /plan or /next run: does Claude still narrate in structural terms, or does the explicit list catch it.
-
 **Generalize audit-batch definition: lead with output contract, drop docs-as-target framing** **[audit-definition]**
 
 The audit-batch type was written from the SI-developing-itself case (Claude reads procedure docs against criteria) and the wording reflects that. plan.md's thinking-work exception names the defining property as "systematic read of target docs against fixed criteria"; the sizing gate's vague-target example is "the procedure docs"; next.md's Audit procedure intro frames the shape as "systematic read of the target"; Step 2 says "Open every file named by the target." All four embed docs-as-target. The real defining property is the output contract — findings to Captures, no direct edits to artifacts — and that's what differentiates audit from build and test. Reader is always Claude; what gets read (procedure docs, the user's spec, code, UI flows, workflow output, any other artifact) is an implementation detail. Generalizing the wording lets audit cover any artifact type without rewriting the definition each time a new audit shape comes up. Doesn't change procedure substance — read-many-propose-many still describes how audits run — just lifts the assumptions out of the type's definition. Folded in from a capture: the same rule's "build" qualifier and exception framing let thinking work through as audit batches (the walkthrough batches promoted with decision-list outputs) — so the rewrite also drops the qualifier and recasts audit as a separate category defined by its output contract, not an exception to the thinking-work rule.
@@ -625,6 +614,7 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [hash-backfill-as-hook] — verify the session-start hook runs the LOG hash backfill live: the first session opening after a /done that left an unfilled placeholder shows the hook's one-line housekeeping report, the placeholder is filled in the working tree, and archived prose mentioning the token survives. Confirmed by: observing that report and the filled hash in the first post-/done session after push + reinstall.
 - [queue-format-lint-hook] — verify the lint hook fires live on a real QUEUE.md edit: advisory warnings appear next to the tool result after the edit lands (the four known dangling-dependency flags are expected on current content), and a clean edit elsewhere stays silent. Confirmed by: the first session editing QUEUE.md after push + reinstall.
 - [git-add-safety-hook-gap] — verify a live denial on a deliberate git add -A in a scratch context, with the teaching message naming explicit staging and the patterns-as-data note. Confirmed by: the first such denial observed after push + reinstall.
+- [narration-vocabulary] — verify user-facing narration stays free of background-only structural terms (loop, Step N, gate, slug names), with the Vocabulary list catching what the abstract rule missed. Confirmed by: narration observed clean against the list in the first /plan or /next session after push + reinstall.
 
 ## Captures
 
