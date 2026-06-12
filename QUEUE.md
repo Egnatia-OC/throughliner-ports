@@ -7,8 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
---- Push required before continuing ---
-
 **Move the LOG hash backfill into session_start as a hook** **[hash-backfill-as-hook]**
 Depends on: [deferred-tests-structural-home] (host-side)
 
