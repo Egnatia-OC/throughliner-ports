@@ -8,7 +8,7 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 
 - Never build during /plan. Want to write code? Queue it.
 - Batches are build, test, or audit work, in any combination. Nothing else.
-- Never queue thinking work as a *build* batch. Reviews, reconciliations/drift checks, and design exploration are planning work — their output is decisions, not changed files. Run them inside /plan; they spawn batches as output. Audit work (systematic read of target docs against fixed criteria) is the one exception — it can become an audit batch whose output routes through Captures, preserving the no-direct-edits property that motivated the rule. Test: if the main work is figuring something out rather than executing on a decision or doing a systematic read, it's planning work.
+- Never queue thinking work as a batch. Reviews, reconciliations/drift checks, and design exploration are planning work — their output is decisions, not changed files. Run them inside /plan; they spawn batches as output. Audit work is a separate category, not an exception: an audit is defined by its output contract — findings routed through Captures, no direct edits to the artifacts it reads. Audits produce findings, thinking work produces decisions; the two don't overlap. Test: output is decisions → planning work, run it in /plan; output is findings from a systematic read, routed to Captures → audit batch. The same test applies per seeded item, not just per batch: an audit's seeded check-items must be finding-shaped; decision-shaped checks (reconciliation, is-this-already-resolved) get resolved at planning time, not queued.
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue contradictions.
 - Process accumulated captures before new planning work.
@@ -104,7 +104,7 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 **Readiness gate** (per batch): can you write the candidate index entry now — artifact touched + nature of the change, per plugin-behaviour.md Index entries? If yes, the batch is ready and the entry can be pre-generated for /next to carry into _build.md. If no, the batch isn't coherent enough yet — keep interviewing.
 
-**Audit batch sizing gate:** for audit batches, the readiness check is whether target and criteria are specific enough that Claude can write the audit prompt without further dialogue. If the target is vague ("the procedure docs") or the criteria open-ended ("anything off"), keep interviewing until both pin down.
+**Audit batch sizing gate:** for audit batches, the readiness check is whether target and criteria are specific enough that Claude can write the audit prompt without further dialogue. If the target is vague ("the docs", "the UI flows") or the criteria open-ended ("anything off"), keep interviewing until both pin down.
 
 **Ordering:** Claude places by dependency where applicable — dependencies first, then scaffolding, features, polish. Oldest-first is the fallback when no dependency applies (per plugin-behaviour.md Captures placement). Either way, Claude reports placement and reasoning per Dependency ownership narration — including the explicit "appending here because no dependency applies" case.
 
