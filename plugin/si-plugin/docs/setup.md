@@ -14,6 +14,14 @@ For Case C, check `.si-version`:
 - **Version matches current plugin:** Project is fully up to date. Tell the user, offer to run /plan instead, and stop here.
 - **Version missing or outdated:** The plugin has been updated since this project was set up. Go to Step 2C (migration scaffolding).
 
+## Case B: pre-existing content rules
+
+Case B folders hold user content that predates the method. Two rules govern how /setup treats it:
+
+1. **Peek before Q1.** Read the pre-existing content before asking the first interview question, and use what you learn to frame that question — a parenthetical clarifier where it helps — never to pre-answer it. The line: a clarifier invites the user's own answer ("I can see a tax brief in this folder — is that what this project is about, or something separate?"); pre-answering proposes the answer for confirmation ("From the brief, this is a tax-prep project for your 2025 return — right?"). The first frames the question; the second bundles an answer into it. Ask cold and you miss context the folder already gave you; pre-answer and the spec fills with your words instead of the user's.
+
+2. **Leave it untouched; name it at close.** Pre-existing user content is not edited, moved, or reorganized during scaffolding — scaffolding only adds the method docs. In the closing message, explicitly name the pre-existing content as source material the user can refer back to.
+
 ## Step 2C: Migration scaffolding [BRIEF]
 
 The plugin version has changed since this project was last set up. Re-scaffold without overwriting user content:

@@ -7,17 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Pre-existing content handling in /setup Case B** **[setup-preexisting-content-handling]**
-
-Setup.md is silent on what to do with pre-existing non-method content in a Case B folder (some content present, no method docs). Observed in a real /setup run on a tax-prep folder with one pre-existing brief: Claude judgment-called to peek at the brief before Q1 (used it to frame a clarifier without pre-answering) and to leave it untouched during scaffolding while naming it in the closing message. Both calls landed, but a different run could skip the peek (asking Q1 cold and missing context) or pre-answer Q1 from the brief (bundling, against the rules). The fix is to make both behaviours explicit so they don't ride on judgment.
-
-Build:
-- plugin/si-plugin/docs/setup.md Case B branch: add a rule that Claude peeks at any pre-existing user content before Q1 — use it to frame the question with a parenthetical clarifier if useful, never to pre-answer it. One short example showing the framing-vs-bundling line.
-- plugin/si-plugin/docs/setup.md Case B branch: add a rule that pre-existing user content is left untouched during scaffolding and explicitly named in the closing message as a source doc the user can refer back to.
-
-Test:
-- Self-verifying on the next /setup run in a Case B folder.
-
 **Forbid illustrative expansion in /setup Q4 batch entry** **[setup-q4-no-expansion]**
 
 Setup.md Q4's rule is currently "Use the user's words, don't expand or split — scope decisions belong in /plan." Observed in a real /setup run: Claude wrote the batch with parenthesized examples drawn from a pre-existing source doc ("e.g. overlocker receipt, mortgage interest %"). Parenthesized examples read as illustrations not commitments, but they're still expansion beyond the user's words — and a queue entry with examples looks like the user agreed to those items even when they're in parens. The rule needs tightening: no expansion at all, even illustrative. If examples would clarify what's in scope, the place is a Q4 follow-up question to the user, not a parenthetical in the written entry.
@@ -52,8 +41,8 @@ Build:
 - plugin/si-plugin/docs/setup.md Q3 examples: replace software-only example set with 3–4 examples spanning software + non-software projects. From [setup-q3-agnostic-examples].
 - plugin/si-plugin/docs/setup.md Q4: reword inclusively — "What's the first thing to build or do? What would you want to have working or made progress on by the end of today?" Keeps build-shape framing for app projects, adds do/progress framing for others. From [setup-q4-inclusive-wording].
 - plugin/si-plugin/docs/setup.md Step 1 folder-state cases: reword Case A / Case B to "No content" / "Content exists" (or similar project-agnostic phrasing). From [setup-step1-case-wording].
-- plugin/si-plugin/docs/setup.md SPEC.md template (line 48): reword "What the app is" to "What the project is". From [setup-spec-template-agnostic].
-- plugin/si-plugin/docs/setup.md QUEUE.md template (line 63): reword "Each batch is one /next session — builds first, then tests." to "Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit)." From [setup-queue-template-type-complete].
+- plugin/si-plugin/docs/setup.md SPEC.md template: reword "What the app is" to "What the project is". From [setup-spec-template-agnostic].
+- plugin/si-plugin/docs/setup.md QUEUE.md template: reword "Each batch is one /next session — builds first, then tests." to "Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit)." From [setup-queue-template-type-complete].
 
 Test:
 - Self-verifying from the doc text. After the rewrite, setup.md reads cleanly for a tax-prep, records-keeping, research, or writing project as well as for an app project.
@@ -655,6 +644,7 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [queue-format-lint-hook] — verify the lint hook fires live on a real QUEUE.md edit: advisory warnings appear next to the tool result after the edit lands (the four known dangling-dependency flags are expected on current content), and a clean edit elsewhere stays silent. Confirmed by: the first session editing QUEUE.md after push + reinstall.
 - [git-add-safety-hook-gap] — verify a live denial on a deliberate git add -A in a scratch context, with the teaching message naming explicit staging and the patterns-as-data note. Confirmed by: the first such denial observed after push + reinstall.
 - [narration-vocabulary] — verify user-facing narration stays free of background-only structural terms (loop, Step N, gate, slug names), with the Vocabulary list catching what the abstract rule missed. Confirmed by: narration observed clean against the list in the first /plan or /next session after push + reinstall.
+- [setup-preexisting-content-handling] — verify a Case B /setup run peeks at pre-existing content before Q1 (framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message. Confirmed by: the first /setup run in a folder with pre-existing content after push + reinstall.
 
 ## Captures
 
@@ -667,6 +657,8 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - Raised by the user at the [doc-crossrefs-by-name] /done (2026-06-12). The /done close-out assessment has been landing well. The recommendation names what's waiting in /plan and says whether a /plan is strictly necessary before the next build, and the tone reads right. Only half of that is codified. The recommend-next step in the /done sub-docs (done-build.md and siblings) runs the capture-overlap scan and speaks only when something blocks: overlap found → recommend /plan and name it. The clean case — captures are waiting but none touch the next batch, so /next can proceed — has no instruction behind it. This session's "the three waiting captures don't touch it, so nothing blocks it" was judgment, not procedure. That is the [short-session-design-target] gap class: behaviour the user values, carried by session finesse rather than files, so a fresh session on a weaker model may not reproduce it. Candidate codification for /plan to weigh: the recommend-next step states the scan's result either way — what's waiting in /plan and whether it blocks the next batch — instead of staying silent when clean. The tone observation rides along: the clean-case line should read as plain assessment ("nothing blocks it"), not a hedge. Exact wording and which sub-docs carry it are /plan's call.
 
 - Observed at the plan-2026-06-12-4 /done commit (e51cf40), in the session tail. The commit body was multiline for the first time under the [closeout-text-collapse] derivation, and the default Windows shell couldn't pass it: PowerShell 5.1 has no heredoc, so the first commit attempt failed on a parser error and the commit was rerun through the Bash tool (Git for Windows) with a heredoc. The collapse makes multiline bodies the norm for every /done commit, so the message-passing mechanism becomes load-bearing on every consumer machine. Mandating Bash for everything is over-broad — single-line commands run fine in the default shell. The narrow fix: done.md's commit core states how the message gets passed — a mechanism that avoids shell quoting entirely, Bash heredoc where available, or writing the message to a temp file and committing with git commit -F as the portable fallback. Natural fold target: [closeout-text-collapse], which already rewrites that step.
+
+- Observed at the [audit-definition] /done commit step (ef3220a), the first live run of the derived commit message. The derivation itself worked — title from the index line, body from the approved entry — but Claude presented the body as a description of the derivation ("the rationale prose as approved, plus one appended line...") instead of stating the identity plainly or showing the text. The user found it very confusing and could not tell what had been done, even though the design's whole point is that there is nothing new to read. The confusion cleared when the identity was restated in plain words: the title is the index line's text word for word, the body is the approved rationale word for word, and the only new text is one appended sentence naming the extra files riding in. The lesson: a meta-description of a derived text reads as a third text existing. When [closeout-text-collapse] writes the commit step into done.md, the presentation should state the identity plainly and show only what is genuinely new (the appended extras line). Natural fold target: [closeout-text-collapse].
 
 ### Parked
 
