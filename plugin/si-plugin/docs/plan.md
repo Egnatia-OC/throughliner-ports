@@ -27,9 +27,7 @@ The control rule for capture and parking, in one place. Pieces also appear in th
 
 ## Step 1: Read state and entry question
 
-**Backfill LOG hashes first:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/`. If empty: move on, no output. Otherwise batch-read the matching files. Common case — one entry file and the matching index line sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/<entry file>` (the last commit touching a per-entry file is the /done commit that wrote it) and use it for both. Fallback — multiple placeholders, or the placeholder sits in a pre-split shared log file: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit; the edit folds into this session's later commit.
-
-Then read QUEUE.md and SPEC.md. Check whether Captures has items.
+Read QUEUE.md and SPEC.md. Check whether Captures has items.
 
 **Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip unless something else flags them. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? The scans' output is candidates feeding Step 2, not findings to narrate here — collect them silently and carry them into Step 2, where they're processed ahead of Captures (see Unpark candidates first). No silent edits: every candidate goes through the Step 2 loop, where the user decides.
 

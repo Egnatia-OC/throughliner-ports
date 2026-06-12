@@ -27,6 +27,8 @@ Each LOG entry is written as its own file under `LOG/` — never appended to a s
 
 The hash lives in the entry file's heading and the index line, never in the filename — the commit hash doesn't exist yet when the file is written, which is why the `[HASH]` placeholder pattern exists (see Commit core below).
 
+One authoring rule: entry prose never writes the literal placeholder token — the token belongs only in hash position (the entry heading and the index line), where the automatic backfill treats any match mechanically. A prose mention is one find-replace away from corrupting the entry. When an entry needs to describe the placeholder mechanism, say it indirectly ("the placeholder", "the unfilled hash").
+
 Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`. Those files stay in place, untouched — their entries are found by hash or title search, not by filename.
 
 ## Deferred tests
@@ -43,7 +45,7 @@ Stated once here; every sub-doc's Commit step points at this section.
 2. Draft the commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
 3. Wait for okay, then commit — and push if the user chose to push.
 
-The LOG entry keeps its `[HASH]` placeholder. The next /plan or /next session backfills it as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
+The LOG entry keeps its `[HASH]` placeholder. The session-start hook backfills it automatically at the next session, as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
 
 ## Rules
 

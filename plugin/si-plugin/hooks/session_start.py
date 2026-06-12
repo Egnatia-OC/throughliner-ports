@@ -10,7 +10,96 @@ Three states:
 
 import json
 import os
+import re
+import subprocess
 import sys
+
+# A placeholder counts only in hash position: an entry heading line
+# ("## [HASH] — title") or the start of an index line ("- [HASH] — text").
+# Body prose may mention the token literally and must never match — the
+# pattern anchors on line shape, not on today's file layout, so the LOG
+# structure can change without reworking this.
+_HASH_POSITION = re.compile(r"^(?P<prefix>#{1,6}\s+|-\s+)\[HASH\](?P<sep>\s+[—–-]\s+)")
+
+
+def _oldest_commit_for(cwd, entry_title):
+    """Hash of the oldest commit that introduced `entry_title` under LOG/.
+
+    Oldest, never newest: later commits (caps, renames, sweeps) also touch
+    entry text, and the newest match would return the wrong hash for
+    archived files.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-S", entry_title, "--pretty=%h", "--", "LOG/"],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    if result.returncode != 0:
+        return ""
+    hashes = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    return hashes[-1] if hashes else ""
+
+
+def backfill_log_hashes(cwd):
+    """Fill hash placeholders across LOG/*.md in place.
+
+    Returns a one-line report for additionalContext, or "" when nothing
+    was filled. Placeholders whose entry isn't committed yet resolve to
+    no commit and stay in place for a later session.
+    """
+    log_dir = os.path.join(cwd, "LOG")
+    if not os.path.isdir(log_dir):
+        return ""
+    try:
+        names = sorted(os.listdir(log_dir))
+    except OSError:
+        return ""
+    filled = 0
+    touched_files = []
+    for name in names:
+        if not name.endswith(".md"):
+            continue
+        path = os.path.join(log_dir, name)
+        try:
+            with open(path, "r", encoding="utf-8", newline="") as f:
+                lines = f.read().splitlines(keepends=True)
+        except (OSError, UnicodeDecodeError):
+            continue
+        changed = False
+        for i, line in enumerate(lines):
+            match = _HASH_POSITION.match(line)
+            if not match:
+                continue
+            entry_title = line[match.end():].strip()
+            if not entry_title:
+                continue
+            commit = _oldest_commit_for(cwd, entry_title)
+            if not commit:
+                continue
+            lines[i] = (
+                match.group("prefix") + commit + match.group("sep") + line[match.end():]
+            )
+            changed = True
+            filled += 1
+        if changed:
+            try:
+                with open(path, "w", encoding="utf-8", newline="") as f:
+                    f.write("".join(lines))
+            except OSError:
+                continue
+            touched_files.append(name)
+    if not filled:
+        return ""
+    return (
+        f"[Sovereign Implementer] Log housekeeping: filled {filled} commit-hash "
+        f"placeholder(s) in {', '.join(touched_files)}. This is an uncommitted "
+        "working-tree edit — fold it into this session's commit."
+    )
 
 
 def main() -> int:
@@ -152,6 +241,11 @@ def main() -> int:
             "Ready. "
             "Run /plan to manage the queue, or /next to start the top batch."
         )
+
+    backfill_report = backfill_log_hashes(cwd)
+    if backfill_report:
+        context_parts.append("")
+        context_parts.append(backfill_report)
 
     if faq_index_content:
         context_parts.append("")

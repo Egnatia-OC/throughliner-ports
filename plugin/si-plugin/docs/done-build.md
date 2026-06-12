@@ -33,7 +33,7 @@ Any planned test from the batch that couldn't run in this session goes to QUEUE.
 
 Narrate first [BRIEF]: one sentence noting the batch's reasoning is being carried from _build.md into the LOG entry — the file's last job before /done deletes it.
 
-Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled at the next /plan or /next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):
 
 ```markdown
 # [HASH] — [one-line summary]
@@ -74,7 +74,7 @@ Run the commit core in done.md.
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
-Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors next.md Step 1.4). If any are found, recommend /plan first and name the overlap.
+Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors next.md Step 1.3). If any are found, recommend /plan first and name the overlap.
 
 Otherwise, based on queue state:
 1. Captures routed this session that affect the next batch → recommend /plan, name the blocker.

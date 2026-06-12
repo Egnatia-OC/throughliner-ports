@@ -6,13 +6,11 @@ You are executing the next piece of work from the queue. One batch at a time, sc
 
 Before starting:
 
-1. **Backfill LOG hashes:** [BRIEF] Run `git grep -l '\[HASH\]' -- LOG/`. If empty: move on, no output. Otherwise batch-read the matching files. Common case — one entry file and the matching index line sharing the same hash: run `git log -n 1 --pretty=%h -- LOG/<entry file>` (the last commit touching a per-entry file is the /done commit that wrote it) and use it for both. Fallback — multiple placeholders, or the placeholder sits in a pre-split shared log file: for each remaining placeholder, run `git log -S "<entry title>" --pretty=%h -- LOG/` and use the returned hash. Replace `[HASH]` in place. No separate commit; the edit folds into this session's later commit.
+1. **Active build check:** If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new, opening with a [BRIEF] line naming what's being read and why: _build.md holds the interrupted build's progress and remaining work, so the session picks up where it stopped instead of starting over. If _build.md does not exist: [SILENT] — move on, no output.
 
-2. **Active build check:** If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new, opening with a [BRIEF] line naming what's being read and why: _build.md holds the interrupted build's progress and remaining work, so the session picks up where it stopped instead of starting over. If _build.md does not exist: [SILENT] — move on, no output.
+2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
 
-3. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
-
-4. **Blocker gate:** Scan for blockers that would force guessing:
+3. **Blocker gate:** Scan for blockers that would force guessing:
    - Batch references something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Unresolved questions in batches above this one, or within the batch? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — /plan processes them — but surface any that clearly affects this batch.
    - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend /plan if found.
@@ -20,7 +18,7 @@ Before starting:
    - Stale-batch scan (per plugin-behaviour.md Dependency ownership Staleness watch). → Any batch or capture stale enough that surrounding code or rules have moved past it? Surface and recommend /plan if found.
    - Deferred tests: read QUEUE.md's "## Deferred tests" section and re-present every entry there — the section is the record; don't rely on remembering past sessions. A test the user confirms (or that this session's own behaviour confirms) gets its line removed, with the confirmation recorded in this session's LOG entry. Unconfirmed entries stay listed for the next pre-flight. Section empty or absent: move on, no output.
 
-5. **If no blockers:** Present the batch: [BRIEF, PROMPT]
+4. **If no blockers:** Present the batch: [BRIEF, PROMPT]
    - Batch title, a one-line gist from the rationale, and entry counts (build / test / audit). Don't re-render full entry text — the user just wrote it in QUEUE.md and can open it anytime; full text moves into _build.md on confirm.
    - "Ready?" — if the user wants to change scope or reorder, route to /plan.
 

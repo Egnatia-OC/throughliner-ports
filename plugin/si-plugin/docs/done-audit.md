@@ -18,7 +18,7 @@ The findings themselves were routed during the audit. Check _build.md and the co
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled at the next /plan or /next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):
 
 ```markdown
 # [HASH] — [one-line summary]

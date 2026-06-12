@@ -99,8 +99,9 @@ At session start, if no `_build.md` is present in the project root, run `git sta
 
 When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
 
-1. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
-2. Pre-push consistency sweep — two passes, run in order:
+1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before proceeding. The session-start hook only fires at session start, so a /done that ran earlier in this same session leaves its placeholder unfilled at push time — this step catches it. Same rules as the hook: replace the token only in hash position (an entry heading line or the start of an index line), never in body prose, which may mention the token literally; resolve each to the **oldest** `git log -S "<entry title>"` match, never the newest commit touching the file.
+2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
+3. Pre-push consistency sweep — two passes, run in order:
 
    **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
 
@@ -108,13 +109,13 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
    - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
-3. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
-4. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-5. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
-6. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix before pushing.
-7. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 2), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes. Commit: "Bump to v<VERSION> and repackage".
-8. `git push`.
-9. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+4. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+6. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+7. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix before pushing.
+8. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 3), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's backfill edits). Commit: "Bump to v<VERSION> and repackage".
+9. `git push`.
+10. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
 
 LOG entries are per-entry files — no log capping or push markers at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
