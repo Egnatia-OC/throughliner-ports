@@ -15,6 +15,34 @@ Audit:
 - Target: plugin/si-plugin/docs/plugin-behaviour.md, every section; plus the queued batches in QUEUE.md whose build entries add or reword rules in plugin-behaviour.md, as planned additions under the same test.
 - Criteria: for each rule, the firing map — can its trigger fire outside any skill, and in which skills' procedure steps does it fire. Classify into three bands: universal (stays injected), single-skill (trickle-down candidate — name the owning skill doc, why the trigger can't fire elsewhere, and roughly how many words leave the injection), middle band (name the skills that fire it — finding only, feeding the restructure decision, no move proposed). For queued additions: flag any whose planned home mismatches its firing map, so /plan can amend the batch before it builds.
 
+**Red flags, part 1: the screen-and-surface rule and the three flag states** **[red-flags-screen-rule]**
+Blocks: [red-flags-structure]
+
+Reintroduces the old plugin's "Red flags — screen and surface" behaviour — the security half of the red-flags feature now described in SPEC.md. Claude actively screens for risks that could expose the user's data or their users' data, or amount to a breach, and surfaces each as a red flag in plain English instead of building past it silently. Flagging, not fixing: Claude names and routes the risk, it doesn't quietly handle it. The rule lives in plugin-behaviour.md so it fires in every session type — including mid-build, where Claude is writing the very code that could expose data. It also defines the three flag states, because the future autopilot gate (designed into cruise control) will read them: only resolved or accepted clear the gate, open blocks it. Accepted is informed consent recorded in the LOG — what the user was warned about and that they chose to proceed — the trail that protects them if a breach surfaces later. Scoped to security, privacy, and breach risk specifically; the mechanism leaves room for other flag types without building them now. Hardened from the start so an eager model doesn't smooth past the warning — firing when it matters is the entire point.
+
+Build:
+- plugin/si-plugin/docs/plugin-behaviour.md: add the red-flags screen-and-surface rule, compliance-hardened from the start (why-clause, positive constraint, explicit scope, per resources/research/model-instruction-compliance.md). Claude screens every session type — capture, plan, build — for anything that could expose the user's or their users' data or amount to a breach, and raises a red flag in plain English naming the risk; it surfaces and routes, never silently fixes or ships past. Scope: security, privacy, and breach risk specifically.
+- plugin/si-plugin/docs/plugin-behaviour.md: define the three flag states — open (raised, not yet addressed), resolved (risk designed out or fixed), accepted (user consciously accepted it, recorded in the LOG as informed consent). State that the future autopilot gate reads these: only resolved or accepted clear it, open blocks.
+
+Test:
+- Self-verifying from the doc text. Behavioural watch after reinstall: a genuine data-exposure risk in later work draws a plain-English red flag rather than silence; any miss is a mandatory capture.
+
+**Red flags, part 2: the section, routing, and consent record** **[red-flags-structure]**
+Depends on: [red-flags-screen-rule]
+
+The structural half of the red-flags feature: where flags live and how they move through their states. Builds on [red-flags-screen-rule], which defines the rule and the three states this batch routes against. A Red flags section is added at the top of QUEUE.md — the first thing seen each session, per SPEC.md — both in the scaffolded template for new projects and in this project's own QUEUE.md. /plan learns to route a red-flag capture into the section and carry its state. /done records an accepted flag's decision in the LOG, the informed-consent trail. A consumer FAQ entry explains what a red flag is and what the three states mean. The autopilot gate is not built here — it's designed into cruise control later and reads the states this batch maintains.
+
+Build:
+- plugin/si-plugin/docs/setup.md QUEUE.md template: add a Red flags section at the top of the scaffolded QUEUE.md, above Batches — empty by default, with a one-line description of what collects there.
+- This project's QUEUE.md: add the same Red flags section at the top, above Batches, empty for now.
+- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md and this project's CLAUDE.md: document the Red flags section in the QUEUE.md format description.
+- plugin/si-plugin/docs/plan.md: route a capture filed as a red flag into the Red flags section, carrying its state; a flag's state can change during planning (open → resolved or accepted).
+- plugin/si-plugin/docs/done.md (or the relevant sub-doc): when a flag is accepted, record the decision in the LOG entry — what the user was warned about and that they chose to proceed.
+- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry — what a red flag is, the three states, and what "accepted" means (a recorded, informed choice).
+
+Test:
+- Self-verifying from doc text for structure. Behavioural, host-side (after reinstall): the next red flag Claude raises lands in the Red flags section with a state; an accepted flag's decision shows up in the LOG. Needs the deferred-test discipline — flag at /done if it can't run.
+
 **Forbid illustrative expansion in /setup Q4 batch entry** **[setup-q4-no-expansion]**
 
 Setup.md Q4's rule is currently "Use the user's words, don't expand or split — scope decisions belong in /plan." Observed in a real /setup run: Claude wrote the batch with parenthesized examples drawn from a pre-existing source doc ("e.g. overlocker receipt, mortgage interest %"). Parenthesized examples read as illustrations not commitments, but they're still expansion beyond the user's words — and a queue entry with examples looks like the user agreed to those items even when they're in parens. The rule needs tightening: no expansion at all, even illustrative. If examples would clarify what's in scope, the place is a Q4 follow-up question to the user, not a parenthetical in the written entry.
@@ -67,19 +95,6 @@ Build:
 
 Test:
 - Self-verifying from the doc text. Behavioural: the next live /setup run should still ask one question per message and wait — now on prose alone.
-
-**REGISTRY.md goes noun-free: drop "components," decouple from builds** **[setup-registry-template-and-noun]**
-
-The scaffolded REGISTRY.md template assumes projects have "components" and that builds are what add to it — wrong on both counts for non-app projects (a tax-prep project registers a receipts folder, a lender list, a year-end packet, entered via audit or freeform work). The filed Q3.5 proposal — ask the user "what are this project's parts called?" and bake their noun in — was rejected twice over: asking a non-coder to do ontology cold is exactly the jargon-shaped interaction the interview avoids, and even deriving the noun from interview answers proved unnecessary once the right question got asked — nothing actually needs the noun. The template header goes noun-free, the update trigger decouples from builds, and conversation already speaks the user's domain words via the use-the-user's-language rule. This decision is the noun strategy [plugin-behaviour-doc-routing-agnostic] was parked waiting on: neutral wording everywhere in plugin-shipped docs, the user's own words in conversation. Sibling to [setup-project-agnosticism-sweep] — same file, held out of it only for the interview-question consideration, which is now settled.
-
-Build:
-- plugin/si-plugin/docs/setup.md REGISTRY.md template: reword the header noun-free — "What exists in this project. Updated as the project grows." (or equivalent) — dropping "Components" and "after each build."
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: reword the REGISTRY.md description ("components list") noun-free to match.
-- plugin/si-plugin/docs/done.md (and per-type sub-docs if they name it): reword the registry-update step's "components" language noun-free — what's new gets registered, regardless of how it entered the project.
-- plugin/si-plugin/docs/plugin-behaviour.md, doc-routing bullet (Routing and discipline): reword agnostic — "what/who/how/why the project exists" for SPEC.md, and "what exists in the project, where it lives" for REGISTRY.md — matching the noun-free registry template. Folded in from [plugin-behaviour-doc-routing-agnostic], which inherited this batch's noun strategy.
-
-Test:
-- Grep "component" across plugin/si-plugin/docs and templates after the edit — remaining hits only where the software meaning is genuinely intended (expected: none in consumer-facing scaffolding).
 
 **Key the spec-entry trigger on SPEC.md itself, not "features"** **[spec-entry-trigger-rethink]**
 
@@ -697,6 +712,52 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
+**Make SPEC a normal doc: spec edits become a planned build batch** **[spec-edit-batch-type]**
+
+Decided 2026-06-13. Today SPEC.md is special: read-only during builds (the pre_tool_use hook), edited directly in /plan. That special case caused confusion this session — a direct SPEC edit during the red-flags promote read as off-script even to the designer. New model: SPEC becomes a normal doc, changed only through a planned build batch (a new spec-edit batch type), like any other doc.
+
+Why dropping the lock is safe: the lock's real job was stopping a build from editing the spec it builds against — grading its own homework. Scope-lock already does that. A feature build doesn't list SPEC.md in its Files, so it can't touch SPEC without the special rule. Spec changes get their own batch, separate from any feature build, so no build edits its own contract. The "decide in planning" split survives: authoring the spec-edit batch in /plan is the decision; /next only does the typing.
+
+Cost accepted: a spec change is now its own build session, separate from the feature build. More ceremony, fine because spec changes should be deliberate.
+
+Absorbs the just-filed capture "plan.md never tells Claude to edit SPEC.md." That finding stands — plan.md has no step for the SPEC stage — but its fix flips: plan.md authors a spec-edit batch, it doesn't edit SPEC directly.
+
+What changes:
+- pre_tool_use.py: remove the SPEC.md read-only-during-builds rule; scope-lock alone governs SPEC. Nail one detail in the build: the empty-Files method-docs fallback must not let a build edit SPEC by default.
+- plan.md: author spec changes as a spec-edit batch; add the type to the Step 3 batch structure alongside Build/Test/Audit (and Freeform once it ships).
+- Pipeline wording (plugin-behaviour.md and plan.md): idea → SPEC.md → QUEUE.md becomes idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch.
+- CLAUDE.md "Edit it only during /plan" → reword to the new model.
+- SPEC.md hooks description ("pre_tool_use — SPEC.md read-only during builds") → reword.
+- done.md / done-build.md: a spec-edit batch closes like any build.
+- The lint hook's allowed batch subheadings: add spec-edit.
+
+Host-side: the hook change must ship and reinstall before spec-edit batches work — the current host hook blocks SPEC edits in builds, so one would be denied until then.
+
+Ripples and links: relates to [scope-anchor] (scope-lock becomes SPEC's sole protector — sequence this after it) and [spec-entry-trigger-rethink] (the trigger that decides when a spec edit is needed). (The red-flags SPEC edit was done directly under the current model before this batch ships, so it isn't reshaped by it.)
+
+**Retire REGISTRY.md: drop the write-only inventory doc** **[retire-registry]**
+
+Decided 2026-06-13. Remove REGISTRY.md as a project doc. The architecture goes from four docs to three: SPEC, QUEUE, LOG.
+
+Why: REGISTRY is write-only. Grep-confirmed — it's scaffolded at setup, updated at every /done, presence-checked at session start, and listed among the editable "method docs" for the scope-lock, but nothing ever reads its content to make a decision. No read-before-edit gate, no procedure step that opens it. The only justification was a human-facing map for a non-coder. The user — the non-coder it serves — never opens it, and never opened the richer old MANIFEST either. The replacement is better: a non-coder who wants to know what their app contains asks Claude in-session, which explores the live code — accurate, contextual, zero maintenance. This is the MANIFEST echo: REGISTRY kept the inventory after the mechanisms that made it load-bearing (the read-before-edit gate, serves-lines, rationale suffixes) were already dropped.
+
+One nuance weighed and rejected: REGISTRY could in theory give Claude a fast orientation map in a large project. But nothing reads it today, and live search beats a hand-maintained list that drifts — so it doesn't save the doc.
+
+Removal arc — what changes (the build does a full grep sweep so no reference is missed):
+- setup.md: stop scaffolding REGISTRY — the template block, the Case B mention, the SKILL.md description line.
+- session_start.py: remove the REGISTRY presence check and its method-doc detection.
+- pre_tool_use.py, next.md, next-audit.md: remove REGISTRY from the "method docs" editable set wherever that set is listed.
+- done.md: drop REGISTRY from staged paths; done-build.md: remove the "Update REGISTRY" step; done-plan.md: drop it from staged paths.
+- next-build.md: remove the "REGISTRY.md is not build scope" line.
+- plugin-behaviour.md: remove REGISTRY from the doc-routing line and the route-to-artifacts list. While editing the doc-routing line, also reword the SPEC.md description project-agnostic — "what/who/how/why the project exists," not "the product exists" — which carries the folded-in [plugin-behaviour-doc-routing-agnostic] decision (otherwise lost when [setup-registry-template-and-noun] is dropped).
+- SPEC.md: remove REGISTRY from the four-docs description (a spec change — rides a spec-edit batch under [spec-edit-batch-type]).
+- CLAUDE-TEMPLATE.md and this project's CLAUDE.md: drop REGISTRY from the architecture and doc descriptions.
+- faq-template.md + faq-index-template.md: remove the "What is REGISTRY.md for?" entry.
+- This project's REGISTRY.md: delete the file.
+- Consumer migration: existing adopted projects (e.g. Taskflowapp) have a REGISTRY.md that becomes orphaned — the adopt/setup re-run path should retire it, not leave it dangling.
+
+Queue interactions: moots [setup-registry-template-and-noun] (it reworked the REGISTRY template — now dropped, with its surviving SPEC-side doc-routing reword folded into this capture's plugin-behaviour.md step). [setup-project-agnosticism-sweep] is unaffected — it deliberately holds no REGISTRY item. Relates to [spec-edit-batch-type] (the SPEC portion rides a spec-edit batch).
+
 ---
 
 ### Parked
@@ -713,7 +774,7 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 - Add scenarios to reader-test-workflow.js — evaluate which scenarios are still undertested and worth adding. Known blind spots regardless of refresh outcome: /setup interview (untested), push-and-rezip sweep (untested — lives in this project's CLAUDE.md, not plugin docs, so coverage question is whether it should even be in scope for plugin reader-tests), mid-build resume from a real _build.md (current next.md sim covers fresh /next, not resume), /done plan-mode close-out (current sim only covers build close-out), empty-queue handling, audit-batch flow (planning-as-work). Promote as one or more build batches once scenarios are picked. The refresh itself shipped at 2356cb7 ([reader-test-refresh]), so only the run remains.
   Blocked by: refreshed workflow run once — behavioural trigger; the first refreshed run may surface blind spots not on this list, or may show that scenario count matters less than scenario specificity.
 
-- Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed.
+- Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed; (4) the red-flags gate — an open red flag in the active scope blocks the unattended run, only resolved or accepted flags let it proceed, and a user who leaves a flag open stays on hand to approve each step (the gate is a hook reading the three flag states defined by [red-flags-screen-rule]).
   Blocked by: the autopilot prerequisite arc shipping — the no-planning-in-execution rule ([no-planning-in-execution]), queue-visible plan markers ([queue-plan-markers]), and audit bulk approval ([audit-findings-bulk-approval]); fires when those have shipped and an unattended next→done→next run is plausible. Full no-approval auto-file of audit findings is in this item's own design scope — interactive audits keep bulk approval. Named as the end-goal in the thinking-work capture, 2026-06-10.
 
 - **[self-hosting-support-during-setup]** Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping, **and the dependency-management discipline** (host-vs-target distinction as it governs batch ordering, the host-side-after-push-marker rule, the `--- Push required before continuing ---` queue convention, and the `(host-side)` annotation on `Depends on:`). All of this carries into the new project's CLAUDE.md. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
