@@ -7,14 +7,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Firing-map audit of behaviour.md: which sessions actually need each rule** **[behaviour-doc-firing-map-audit]**
-
-plugin-behaviour.md is the every-session injection — the most expensive position in the system (~3,074 words at the 2026-06-13 count, currently paid twice per skill session until [behaviour-doc-double-load] ships). The trickle-up arc moved restatements up on the premise that cross-skill rules belong in the doc every session loads. User-challenged at the 2026-06-13 /plan: cross-skill is not every-skill — a rule fired only by /plan and /done still bills every other session for its words. The injection's honest admission criterion is narrower: a rule earns injection only if it fires outside skills (mid-session captures are the standing proof, settled in [behaviour-doc-double-load]'s rationale) or in so many contexts that one injected copy beats the alternatives. So this audit maps firing, rule by rule, instead of testing a binary. Three bands fall out: single-skill rules are trickle-down candidates — they belong in their skill's doc, loaded only when the skill runs; the universal band stays injected; the middle band (two-or-three-skill rules) is recorded as findings, because its mechanism — a shared sub-doc both skills load, or canonical-in-one with a read-on-demand pointer — is the progressive-disclosure restructure decision already waiting in [behaviour-doc-size-watch], and that decision should be made on this audit's data rather than a guess. Tag definitions stay regardless: every skill doc places tags. This is relocation and mapping, not trimming — moved rules carry their rationale per the why-pipeline, so the no-blanket-terseness decision holds. Expedited to the queue top at filing: many queued batches add rules to behaviour.md, and the audit reads their planned additions under the same test, so running it before they build lets /plan fix a misplaced rule at the batch stage instead of moving it after it ships — its value decays the longer it waits. Findings route to Captures per the audit contract; the /plan that processes them authors the move batches.
-
-Audit:
-- Target: plugin/si-plugin/docs/plugin-behaviour.md, every section; plus the queued batches in QUEUE.md whose build entries add or reword rules in plugin-behaviour.md, as planned additions under the same test.
-- Criteria: for each rule, the firing map — can its trigger fire outside any skill, and in which skills' procedure steps does it fire. Classify into three bands: universal (stays injected), single-skill (trickle-down candidate — name the owning skill doc, why the trigger can't fire elsewhere, and roughly how many words leave the injection), middle band (name the skills that fire it — finding only, feeding the restructure decision, no move proposed). For queued additions: flag any whose planned home mismatches its firing map, so /plan can amend the batch before it builds.
-
 **Red flags, part 1: the screen-and-surface rule and the three flag states** **[red-flags-screen-rule]**
 Blocks: [red-flags-structure]
 
@@ -759,6 +751,59 @@ Removal arc — what changes (the build does a full grep sweep so no reference i
 Queue interactions: moots [setup-registry-template-and-noun] (it reworked the REGISTRY template — now dropped, with its surviving SPEC-side doc-routing reword folded into this capture's plugin-behaviour.md step). [setup-project-agnosticism-sweep] is unaffected — it deliberately holds no REGISTRY item. Relates to [spec-edit-batch-type] (the SPEC portion rides a spec-edit batch).
 
 ---
+
+**Trickle four /next-only rules down out of the every-session injection** [audit finding: behaviour-doc-firing-map-audit]
+
+From the firing-map audit (2026-06-13). Four rules live in plugin-behaviour.md — the doc injected into every session — but their triggers only exist during a /next build, so every /plan, /done, and setup session pays for words it can never use:
+- "SPEC.md is read-only during builds" (plugin-behaviour.md:103)
+- "One build at a time. Never start /next while _build.md exists" (plugin-behaviour.md:104)
+- "At build completion, the only valid next-step recommendation is /done" (plugin-behaviour.md:105)
+- "If context is long mid-build, suggest completing the current file and running /done" (plugin-behaviour.md:134)
+
+Each keys to _build.md or build execution, which exist only inside /next — none can fire outside /next, and none fire in /plan, /done, or setup. Owning doc: next.md. Roughly 111 words would leave the injection (the build-completion bullet is ~75 of them).
+
+This contradicts the trickle-up direction for these specific rules: that arc moved rules up on "cross-skill belongs in the injection," but single-skill rules don't earn it. Action for /plan: author a trickle-down batch moving these to next.md as canonical, each carrying its rationale per the why-pipeline.
+
+Two interactions to handle when authoring:
+- [trickle-up-next-md-duplicates] (queued) plans to DELETE next.md's copies of "SPEC read-only" and "one build at a time," leaving the injection as their sole home — the opposite of this finding. Amend that batch (or carve these two out of it) before it builds.
+- [spec-edit-batch-type] (capture) would remove the "SPEC.md read-only during builds" rule entirely (SPEC becomes a normal doc governed by scope-lock). If it promotes, the SPEC-read-only trickle-down is mooted — sequence accordingly.
+
+**Spec-entry pipeline rule is /plan-only — make plan.md canonical, drop the injection copy** [audit finding: behaviour-doc-firing-map-audit]
+
+From the firing-map audit (2026-06-13). The spec-entry pipeline rule at plugin-behaviour.md:100 — "New features need a spec entry before a build entry. Pipeline: idea → question (if unclear) → SPEC.md → QUEUE.md. Threshold: if a user would see or experience the difference, update SPEC.md first" — fires only in /plan. The pipeline (idea→question→SPEC→QUEUE) is /plan's authoring sequence; a feature idea captured elsewhere just gets filed, and nothing runs the pipeline until /plan picks it up. It's already restated in plan.md:17, so the injection and plan.md carry two synced copies. ~33 words sit in the injection.
+
+Single-skill (/plan). Owning doc: plan.md. Action for /plan: make plan.md the single canonical home and drop the behaviour.md copy, rather than maintaining two synced versions.
+
+Two interactions to handle when authoring:
+- [spec-entry-trigger-rethink] (queued) rewords BOTH copies to keep them aligned. If plan.md becomes canonical, that batch should target plan.md alone — fold this decision into it rather than letting it re-sync two copies.
+- [spec-edit-batch-type] (capture) would rewrite the pipeline to "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch," adding a /next stage and pushing the firing map from single-skill to two-skill (plan + next). If it promotes, the home question changes — decide after its disposition is known.
+
+**Middle-band rules (2–3 skills) in plugin-behaviour.md — firing data for the restructure decision** [audit finding: behaviour-doc-firing-map-audit]
+
+From the firing-map audit (2026-06-13). These rules fire in two or three skills but never outside a skill — so they don't earn the every-session injection on the "fires outside skills" test, but they aren't single-skill trickle-down candidates either. Recorded as data for the progressive-disclosure restructure, not moved (the audit proposes no move for this band).
+
+The band:
+- Index entries (plugin-behaviour.md:82-93) — 3 skills: /plan readiness gate (plan.md:105), /next pre-generate (next.md:29), /done writes it (all done sub-docs). The retrieve path reads the index but doesn't apply the authoring rule.
+- Unpark watch (plugin-behaviour.md:112) — 3 skills; self-names its firing sites (/plan read-state + loop, /next pre-flight, /done close-out).
+- Staleness watch (plugin-behaviour.md:113) — 3 skills, "same surfacing moments." [staleness-flag-fix-path] (queued) extends it — same band.
+- Empty Batches → /plan (plugin-behaviour.md:106) — 2 skills (/next pre-flight, /done recommend-next).
+- User owns scope (plugin-behaviour.md:118) — 2 skills (/plan promote-park-drop, /next whether-to-proceed). [scope-anchor] rewords it.
+- Resume reads _build.md (plugin-behaviour.md:135) — 2 skills (/next resume, /done reads it).
+- /plan-for-planning, /next-for-building (plugin-behaviour.md:99) — 2–3 skills; boundary rule.
+- Borderline /plan-only authoring read cross-skill: Depends/Blocks headers (plugin-behaviour.md:115), stable slugs (plugin-behaviour.md:117) — authored in /plan, referenced when read elsewhere.
+
+Why it matters: this band is what the restructure is for — compact core injected with the fuller doc loaded at skill time, or a shared sub-doc the relevant skills load, or canonical-in-one with a read-on-demand pointer. That decision is parked in [behaviour-doc-size-watch]; this record is the firing data it should be decided on, instead of a guess. No move now — fold into that item when it fires.
+
+**Queued plugin-behaviour.md additions whose firing maps are narrower than every-session** [audit finding: behaviour-doc-firing-map-audit]
+
+From the firing-map audit (2026-06-13). The audit checked every queued batch whose build entries add or reword rules in plugin-behaviour.md (the every-session injection). Most plan correct homes — their rules fire outside skills via capture-making, approval moments, or memory-routing ([red-flags-screen-rule], [approval-display-blockquotes], [approval-ask-after-draft], [human-readable-authoring], [memory-rule-boundaries], and the Dependency-ownership trio). Four plan injection homes for rules whose triggers are narrower:
+
+- [scope-anchor] — the Scope statement (build scope = the active batch's entries' work; the Files: list is its mechanical approximation) fires in /plan (entries name files) and /next (scope-lock, expansion asks) = 2 skills, not outside any skill. Planned for the injection.
+- [scope-boundary-rule] — the discovery decision rule (needed→ask/split; not needed→capture; premise broken→halt) is /next execution, planned canonical-in-injection with next-build/next-test pointers. It also rewrites the current "Don't fix things outside current scope" rule (plugin-behaviour.md:101), itself /next-execution — deepening an execution rule's injection footprint.
+- [no-planning-in-execution] — mixed: the prohibition ("no capture-processing in execution skills") fires in /next; the permission ("capture-making is open to every session type") is genuinely universal. The prohibition half is narrower than every-session.
+- [audit-findings-bulk-approval] — the bulk-approval inversion fires only in /next-audit, but is added to the universal sequencing rule as an exception. Borderline: an exception co-located with its universal parent has merit.
+
+Action for /plan: weigh each home against the firing map before these batches build — not to override their own reasoning, but so the injection-vs-skill-doc choice is made deliberately. [scope-anchor] and [scope-boundary-rule] are the clear candidates to reconsider (plan+next / next-only); [no-planning-in-execution] and [audit-findings-bulk-approval] may justify injection anyway. This is the reason the audit was placed above the rule-adding batches.
 
 ### Parked
 
