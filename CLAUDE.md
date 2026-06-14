@@ -17,6 +17,10 @@ Concretely: anything a skill causes Claude to *say to the user* — chat narrati
 
 When editing any skill doc, check the output-facing strings against this audience before saving.
 
+## Model target
+
+Resolved 2026-06-15: this project targets **Opus 4.8** and will not regress to 4.6 or 4.7. We do not work around 4.8's behaviour by reaching for an older model — we focus on getting 4.8 right. When 4.8 behaves in a way the plugin doesn't want (verbosity, instruction-following, bundling), the fix is to steer 4.8 with techniques it actually responds to, recorded in `resources/research/opus-4-8-verbosity-steering.md` and `resources/research/model-instruction-compliance.md`, not to downgrade. Future models are adopted when they arrive; older ones are not a fallback.
+
 ## Host and target
 
 **Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only uninstalling and reinstalling does.

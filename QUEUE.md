@@ -703,6 +703,14 @@ So this is a requirement of the method, not a personal taste. "Be thorough" shou
 
 It is fixable, and the current approach is the weak form. Research in resources/research/opus-4-8-verbosity-steering.md found that abstract, negative brevity instructions (the plugin's [BRIEF]/[SILENT] tags and "don't bundle" rules) are exactly what Opus 4.8 steers on least, while positive, quantified, exemplified instructions — plus an output structure that leads with the decision and gates detail behind an explicit request — do steer it. A Claude Code output style can carry these at system-prompt priority instead of competing at user-message priority. For /plan: redesign the verbosity rules on those lines. This is design input for [output-tag-audit] and [opening-narration-audit], and it corrects the premise in resources/research/model-instruction-compliance.md (the system prompt does not, in fact, mandate thoroughness over brevity).
 
+**Self-hosting build and spec-writing batches should be fulfilled against a strict "4.8-ifying" heuristic**
+
+Going forward, every self-hosting build batch and every spec-writing batch should be carried out against a strict "4.8-ifying" heuristic. As doc, procedure, or SPEC text is authored or edited, it is deliberately shaped to steer Opus 4.8 well — positive and quantified instructions over abstract adjectives, concrete exemplars of the wanted behaviour, explicit scope statements, lead-with-the-decision output structure — so the plugin is written for the model that actually runs it, not against it. This follows the Model target resolution in CLAUDE.md: target 4.8, never downgrade to 4.6/4.7, fix by steering.
+
+The heuristic does not exist yet and must be defined first, before it can be applied. Define it against the two research files — resources/research/opus-4-8-verbosity-steering.md and resources/research/model-instruction-compliance.md — distilling them into a concrete, checkable list that can be run over a batch's output at authoring time (a short "is this 4.8-shaped?" pass). The aim is the best working relationship with 4.8 going forward.
+
+For /plan, this is two steps in order: (1) author the heuristic as its own batch, sourced from the two research files; (2) make it a standing authoring check applied to every build and spec-writing batch. Relates to [output-tag-audit] and [opening-narration-audit], which are the first places the heuristic would bite.
+
 ### Parked
 
 ## Deferred tests
