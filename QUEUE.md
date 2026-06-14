@@ -451,6 +451,27 @@ Build:
 Test:
 - Grep the four rule phrasings across next.md and the per-type docs after the edit — remaining hits should be in plugin-behaviour.md only.
 
+**Make SPEC a normal doc: spec edits become a planned build batch** **[spec-edit-batch-type]**
+Depends on: [scope-anchor]
+
+Decided 2026-06-13. Right now SPEC.md is special. It is read-only during builds (the pre_tool_use hook enforces this) and edited directly in /plan. That special case caused confusion — a direct SPEC edit during a /plan read as off-script even to the designer. This batch makes SPEC a normal doc, changed only through a planned spec-edit build batch, like any other doc.
+
+Dropping the read-only lock is safe because scope-lock already does the lock's real job. The lock existed to stop a build from editing the spec it builds against — grading its own homework. A feature build does not list SPEC.md in its Files, so scope-lock alone keeps it from touching SPEC. Spec changes get their own batch, separate from any feature build, so no build edits its own contract. The "decide in planning" split survives: authoring the spec-edit batch in /plan is the decision, and /next only does the typing. This sequences after [scope-anchor] because that batch hardens scope-lock's definition, and once the read-only lock is gone, scope-lock is SPEC's sole protector.
+
+This batch creates the spec-edit mechanism but cannot use it on itself. Its build runs under the current host, where the read-only lock is still active until reinstall, so the build cannot edit SPEC.md. The one SPEC change this work implies — rewording SPEC's hooks description — is therefore deferred to the first spec-edit batch, authored after this ships and reinstalls.
+
+Build:
+- pre_tool_use.py: remove the SPEC.md read-only-during-builds rule; scope-lock alone governs SPEC. Make sure the empty-Files method-docs fallback does not let a build edit SPEC by default.
+- plan.md: add spec-edit as a batch type in the Step 3 batch structure, alongside Build/Test/Audit (and Freeform once it ships). Add a /plan step that authors spec changes as a spec-edit batch.
+- plugin-behaviour.md and plan.md pipeline wording: change "idea → SPEC.md → QUEUE.md" to "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch".
+- This project's CLAUDE.md: reword "Edit it only during /plan" to the new model.
+- done.md / done-build.md: a spec-edit batch closes like any build.
+- post_tool_use.py lint: add spec-edit to the allowed batch subheadings.
+
+Test:
+- Claude-run: pre_tool_use.py against a fixture — a build with an empty Files list cannot edit SPEC.md by default.
+- Behavioural, host-side (after push + reinstall): a /next spec-edit batch edits SPEC.md without being blocked, and a normal feature build still cannot touch SPEC unless it is in scope. Needs the deferred-test discipline — flag at /done if it can't run.
+
 **Generalize ask-when-unsure into plugin-behaviour.md** **[trickle-up-ask-when-unsure]**
 
 next.md's "Unsure about an implementation choice? Ask. Don't guess and build wrong" is universal — /plan ordering calls, /setup scaffolding choices, /done routing decisions — but lives only in next.md, so every other skill runs without it. Trickle-up: the generalized rule belongs in plugin-behaviour.md Communication, adjacent to the web-search bullet so the two read as one decision rule with two branches — uncertain about an external fact → offer a search; uncertain about a choice the user owns → ask, don't guess and proceed. One deliberate addition beyond the capture as filed: a self-contained line in setup.md, because unadopted sessions get no behaviour-rules injection (confirmed in session_start.py this session) and /setup's scaffolding choices are a named use of the rule — setup.md carries its own copies by design. Same next.md rules area as [trickle-up-next-md-duplicates] touches; no ordering between them, placed adjacent for one-session convenience.
@@ -685,6 +706,31 @@ Test:
 - Claude-run: pre_tool_use.py against a fixture _build.md — a dash-annotated Files: line is denied with the teaching message; a bare path still passes; an empty Files: section still locks to method docs.
 - Host-side (after push + reinstall): a live denial on an annotated line. Needs the deferred-test discipline — flag at /done if it can't run.
 
+**Audit narration volume at skill openings** **[opening-narration-audit]**
+Depends on: [plan-step1-sequencing]
+
+Raised 2026-06-14. Narration has been piling up at the start of skill sessions, and the cause looks structural: a skill's opening is where the most rules fire at once — the read-state step, the unpark and staleness scans, and several behaviour rules that each independently say "narrate" (narrate the ordering work, surface unpark candidates, flag staleness). Each was added for good reason, but nothing bounds the total, so they stack into a wall of opening narration. [output-tag-audit] already checked tag placement across all docs, and its fixes are the queued tag batches; this audit asks a different question it never measured — how much narration accumulates at one opening, and whether the fix is a tag or a rule. It depends on [plan-step1-sequencing] because that batch cleans /plan's opening, the flagship example, so auditing afterward reads the intended state instead of re-finding a queued fix.
+
+Audit:
+- Target: the opening sequences of all four skills as written in the procedure docs — setup.md's entry, plan.md Step 1, the next family's pre-flight opening, the done family's openings — plus the plugin-behaviour.md rules that drive opening narration (narrate the ordering work, the unpark watch, the staleness watch, dependency-ownership narration). If the same pile-up appears at any other high-rule-density moment while reading, report it too.
+- Criteria: at each opening, separate narration the user genuinely needs (the entry question, a real unpark candidate, an actual ordering decision) from accumulated excess (scan and process narration, state restatement, over-explaining). For each excess moment, name the lever — a missing [SILENT] or [BRIEF] tag on the step, a tag that needs changing, or a behaviour rule that fires narration with nothing bounding the total when several stack on one opening. Flag especially where multiple rules pile onto the same opening — the aggregate problem per-step tagging can't catch. Where a queued fix already addresses an opening ([plan-step1-sequencing], [output-tag-audit]'s findings), note it as covered and don't re-file.
+
+**Backfill the FAQ folder this project never scaffolded** **[faq-backfill]**
+
+This project is missing its `FAQ/` folder — the `faq.md` and `index.md` that /setup scaffolds from templates. The cause: the FAQ scaffolding step was added to /setup after this project was first set up (commit `06c24e4`), and /setup was never re-run here, so the folder was never created. Nothing automatically re-scaffolds this project when the plugin gains new scaffolding, so the gap stayed silent.
+
+This batch backfills the FAQ from the current templates, so the dev project has the FAQ that consumers get and can dogfood FAQ edits. It is placed late on purpose: several queued batches add FAQ entries to the templates, so running it after them captures a more current snapshot instead of one that is stale on arrival.
+
+Two caveats are accepted, not solved here. This is a point-in-time copy, not a synced one — it will drift again as later FAQ-template edits land, and there is no detection because `.si-version` is deliberately left to the separate self-hosting design item. And once `FAQ/index.md` exists, the session-start hook injects it into every session start — small and by design, but the narration audit should treat that injection as in-scope here.
+
+Build:
+- Create the `FAQ/` folder in the project root.
+- `FAQ/faq.md` — copy the current content of `plugin/si-plugin/templates/faq-template.md`.
+- `FAQ/index.md` — copy the current content of `plugin/si-plugin/templates/faq-index-template.md`.
+
+Test:
+- Self-verifying: `FAQ/faq.md` and `FAQ/index.md` exist and match the current templates. The next session start will then inject `FAQ/index.md` — observable, minor.
+
 ### Parked
 
 ## Deferred tests
@@ -703,29 +749,6 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
-
-**Make SPEC a normal doc: spec edits become a planned build batch** **[spec-edit-batch-type]**
-
-Decided 2026-06-13. Today SPEC.md is special: read-only during builds (the pre_tool_use hook), edited directly in /plan. That special case caused confusion this session — a direct SPEC edit during the red-flags promote read as off-script even to the designer. New model: SPEC becomes a normal doc, changed only through a planned build batch (a new spec-edit batch type), like any other doc.
-
-Why dropping the lock is safe: the lock's real job was stopping a build from editing the spec it builds against — grading its own homework. Scope-lock already does that. A feature build doesn't list SPEC.md in its Files, so it can't touch SPEC without the special rule. Spec changes get their own batch, separate from any feature build, so no build edits its own contract. The "decide in planning" split survives: authoring the spec-edit batch in /plan is the decision; /next only does the typing.
-
-Cost accepted: a spec change is now its own build session, separate from the feature build. More ceremony, fine because spec changes should be deliberate.
-
-Absorbs the just-filed capture "plan.md never tells Claude to edit SPEC.md." That finding stands — plan.md has no step for the SPEC stage — but its fix flips: plan.md authors a spec-edit batch, it doesn't edit SPEC directly.
-
-What changes:
-- pre_tool_use.py: remove the SPEC.md read-only-during-builds rule; scope-lock alone governs SPEC. Nail one detail in the build: the empty-Files method-docs fallback must not let a build edit SPEC by default.
-- plan.md: author spec changes as a spec-edit batch; add the type to the Step 3 batch structure alongside Build/Test/Audit (and Freeform once it ships).
-- Pipeline wording (plugin-behaviour.md and plan.md): idea → SPEC.md → QUEUE.md becomes idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch.
-- CLAUDE.md "Edit it only during /plan" → reword to the new model.
-- SPEC.md hooks description ("pre_tool_use — SPEC.md read-only during builds") → reword.
-- done.md / done-build.md: a spec-edit batch closes like any build.
-- The lint hook's allowed batch subheadings: add spec-edit.
-
-Host-side: the hook change must ship and reinstall before spec-edit batches work — the current host hook blocks SPEC edits in builds, so one would be denied until then.
-
-Ripples and links: relates to [scope-anchor] (scope-lock becomes SPEC's sole protector — sequence this after it) and [spec-entry-trigger-rethink] (the trigger that decides when a spec edit is needed). (The red-flags SPEC edit was done directly under the current model before this batch ships, so it isn't reshaped by it.)
 
 **Retire REGISTRY.md: drop the write-only inventory doc** **[retire-registry]**
 
@@ -749,6 +772,19 @@ Removal arc — what changes (the build does a full grep sweep so no reference i
 - Consumer migration: existing adopted projects (e.g. Taskflowapp) have a REGISTRY.md that becomes orphaned — the adopt/setup re-run path should retire it, not leave it dangling.
 
 Queue interactions: moots [setup-registry-template-and-noun] (it reworked the REGISTRY template — now dropped, with its surviving SPEC-side doc-routing reword folded into this capture's plugin-behaviour.md step). [setup-project-agnosticism-sweep] is unaffected — it deliberately holds no REGISTRY item. Relates to [spec-edit-batch-type] (the SPEC portion rides a spec-edit batch).
+
+**Keep this project's scaffolding in sync — it silently drifts from /setup** **[scaffolding-resync]**
+
+Raised 2026-06-14, from the FAQ-absence finding. This project's own scaffolding drifts from what /setup now produces, and nothing detects or corrects it. Today's concrete gaps: the FAQ folder (being backfilled one-off by [faq-backfill]) and the missing `.si-version`. The real problem is the missing mechanism — nothing re-syncs this project when the plugin gains new scaffolding, and there's no `.si-version` baseline for the session-start hook to even flag the drift.
+
+`.si-version` is not a simple backfill. This project bumps its version on every push, but only a few bumps add new scaffolding a project must absorb. A static `.si-version` would fire "re-run /setup" every session after the next bump — a false alarm most of the time, and new start-noise of exactly the kind we're trying to reduce.
+
+A fix needs to decide three things:
+- How this project (and any self-hoster) keeps its scaffolding current — re-run /setup on real scaffolding changes, a backfill check in the pre-push sweep or /done, or another mechanism.
+- How `.si-version` is handled so drift is detected without constant false "re-run /setup" nags (auto-update it on push, or change what the mismatch check keys on).
+- Whether the version-mismatch signal should distinguish scaffolding-changing releases from internal-only ones — the coarse-signal flaw behind the false alarms.
+
+Relationships (citations, not blockers): overlaps [self-hosting-support-during-setup] and [self-hosting-notes-audit]. [faq-backfill] handles the immediate FAQ snapshot; this item is about keeping it and the rest current.
 
 ---
 
@@ -842,6 +878,10 @@ Candidate homes (to settle at promote time):
 
 Authoring note: the setup close-out and FAQ are user-facing (external non-coder), so the rhythm must read in plain English with no internal terms, and the cycle wording should stay consistent across the README, the setup close-out, and the FAQ.
 
+**Hook-count descriptions lag the QUEUE.md lint hook**
+
+Found during the v1.12.0 pre-push consistency sweep, 2026-06-14. This project's CLAUDE.md Architecture section enumerates "2 hooks (session_start, pre_tool_use)," but post_tool_use.py — the QUEUE.md structure lint, shipped after v1.11.0 — makes three hook files. SPEC.md's "Two hooks enforce discipline mechanically" is arguably still accurate, because the lint hook advises rather than enforces. So this is a framing decision, not a clear error: update CLAUDE.md's enumeration to three, and decide whether SPEC should mention the advisory lint hook at all. Host-only / this-project docs; nothing consumer-facing was stale (CLAUDE-TEMPLATE.md and faq-template.md don't enumerate hooks).
+
 ### Parked
 
 - **[narration-vs-menu-drift]** Observed during 1b7d359 /plan: Claude defaulted to menu-style options ("file as capture, drop it, or commit to the rule now?") when narrating a recommendation would have been more appropriate. Dependency ownership's narration rule ("narrate the ordering work" — exercise judgment, recommend) is supposed to catch this. The mechanism failed under exploratory back-and-forth tone — the pull toward "lay out the options" was stronger than the pull toward "state the recommendation, let user push back." Worth watching whether this generalizes: when the conversation gets exploratory, does Claude soften from recommendation-narration into menu-listing? If so, the narration rule needs tightening — possibly explicit text that menu-style enumeration of equally-weighted options is *not* narration when Claude actually has a preference, and the recommendation must come first with the menu as fallback.
@@ -873,3 +913,6 @@ Authoring note: the setup close-out and FAQ are user-facing (external non-coder)
 
 - **[behaviour-doc-size-watch]** Filed at the 2026-06-13 /plan, from a doc-size review. plugin-behaviour.md is the largest doc by content (~3,074 words / 135 lines at counting time) and the most expensive position in the system: it is injected at every session start, and skill sessions pay it twice until [behaviour-doc-double-load] ships. Many queued batches add rules to it — the approval rules, authoring standards, scope anchor, memory boundaries, no-planning-in-execution — so it will grow before it settles. Decided at the review: no blanket terseness pass. The rationale-everywhere style is the compliance bet; stripping why-clauses to save tokens buys back the failure mode they were installed to fix. Duplication-targeted trims are already queued ([tag-restatement-trim], [trickle-up-next-md-duplicates], [trickle-up-ask-when-unsure], [behaviour-doc-double-load]). The remaining lever is the progressive-disclosure restructure — compact core injected, full doc loaded at skill time — already noted as a revisit in [behaviour-doc-double-load]'s rationale. This capture is the re-measure trigger: when it fires, re-count plugin-behaviour.md, compare against ~3,074 words, and weigh the restructure on real numbers instead of trimming mid-flux.
   Blocked by: the compliance arc's plugin-behaviour.md additions landing — behavioural trigger, no single slug; fires at the /plan after the queued rule-adding batches have shipped and the doc's contents have settled.
+
+- **[full-tag-placement-recheck]** A fresh full placement re-check of response-shape tags across all procedure docs — setup.md, plan.md, the next and done families, plugin-behaviour.md — to grade the corrected state after [output-tag-audit]'s fixes ship, and to catch any tag drift since that audit (commit 0405315). Distinct from [opening-narration-audit], which measures narration volume at openings; this one re-checks per-step tag placement everywhere, the same lens [output-tag-audit] used, re-run on the post-fix docs. Deferred deliberately: running it before [output-tag-audit]'s findings build would mostly re-discover gaps already sitting in the queue.
+  Blocked by: the queued tag-fix batches from the last full tag audit shipping — chiefly [next-done-tag-sweep], [plan-step1-sequencing], and [setup-self-contained-no-tags]; fires once those findings have landed, so the re-check grades corrected docs, not the pre-fix state.
