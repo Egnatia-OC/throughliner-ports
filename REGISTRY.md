@@ -22,7 +22,7 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/docs/done-test.md` — test close-out (verify ticks, route fixes, LOG entry, cleanup, recommend next)
 - `plugin/si-plugin/docs/done-audit.md` — audit close-out (verify findings handled, LOG entry, cleanup, recommend next)
 - `plugin/si-plugin/docs/done-plan.md` — plan close-out (LOG entry, commit via core, recommend next)
-- `plugin/si-plugin/docs/plugin-behaviour.md` — universal behaviour rules loaded into every adopted session
+- `plugin/si-plugin/docs/plugin-behaviour.md` — universal behaviour rules loaded into every adopted session (includes Red flags screening rule and flag states)
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
 - `plugin/si-plugin/templates/faq-template.md` — FAQ content template (14 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start

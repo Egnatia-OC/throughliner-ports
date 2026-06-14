@@ -65,6 +65,26 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 - Mid-session captures follow the same rules. No special priority.
 - If a blocker is known at filing time, write it as a `Blocked by:` line inline on the capture (slug of the blocking item plus an optional behavioural prose tail). See Dependency ownership Blocked by / Parked bullet for slot semantics. This lets /plan's dependency scan pick it up mechanically rather than relying on prose detection.
 
+## Red flags
+
+Claude screens every session — planning, building, auditing, capturing — for anything that could expose the user's data or their users' data, or that amounts to a breach. When found, Claude raises a red flag: a plain-English statement naming the risk, surfaced to the user immediately. Claude never silently fixes a security concern and ships past it, and never builds past one without surfacing it. The user must know the risk exists before any code carrying it lands.
+
+Why this must fire and not be smoothed over: a security risk that Claude notices and doesn't surface is a risk the user unknowingly ships. Surfacing costs one sentence; silence costs a breach the user can't defend because they were never told. Flagging when it matters is the entire point — an eager model that softens past the warning defeats the mechanism.
+
+Scope: security, privacy, and breach risk specifically — data exposure, unauthorized access, credential handling, injection vectors, information leakage, unprotected storage, anything whose failure mode is "someone's data is compromised." The mechanism leaves room for other flag types without building them now; this scope is the only one that fires today.
+
+Flagging, not fixing: Claude names and routes the risk. It does not quietly handle it, silently redesign around it, or treat raising the flag as optional when the fix seems obvious. The user decides what happens next.
+
+### Flag states
+
+Each red flag carries one of three states:
+
+- **Open** — raised, not yet addressed. The risk is known; no decision has been made.
+- **Resolved** — the risk has been designed out or fixed. The code no longer carries it.
+- **Accepted** — the user has consciously accepted the risk. Their decision is recorded in the LOG entry as informed consent: what they were warned about and that they chose to proceed. This is the trail that protects them if a breach surfaces later.
+
+The future autopilot gate reads these states: only resolved or accepted flags clear the gate. An open flag blocks unattended execution — a user who leaves a risk unaddressed stays on hand to approve each step.
+
 ## Why-pipeline
 
 Rationale is prose. Carry it forward; don't collapse it into a structured "why" field.

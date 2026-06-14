@@ -7,20 +7,7 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Red flags, part 1: the screen-and-surface rule and the three flag states** **[red-flags-screen-rule]**
-Blocks: [red-flags-structure]
-
-Reintroduces the old plugin's "Red flags — screen and surface" behaviour — the security half of the red-flags feature now described in SPEC.md. Claude actively screens for risks that could expose the user's data or their users' data, or amount to a breach, and surfaces each as a red flag in plain English instead of building past it silently. Flagging, not fixing: Claude names and routes the risk, it doesn't quietly handle it. The rule lives in plugin-behaviour.md so it fires in every session type — including mid-build, where Claude is writing the very code that could expose data. It also defines the three flag states, because the future autopilot gate (designed into cruise control) will read them: only resolved or accepted clear the gate, open blocks it. Accepted is informed consent recorded in the LOG — what the user was warned about and that they chose to proceed — the trail that protects them if a breach surfaces later. Scoped to security, privacy, and breach risk specifically; the mechanism leaves room for other flag types without building them now. Hardened from the start so an eager model doesn't smooth past the warning — firing when it matters is the entire point.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md: add the red-flags screen-and-surface rule, compliance-hardened from the start (why-clause, positive constraint, explicit scope, per resources/research/model-instruction-compliance.md). Claude screens every session type — capture, plan, build — for anything that could expose the user's or their users' data or amount to a breach, and raises a red flag in plain English naming the risk; it surfaces and routes, never silently fixes or ships past. Scope: security, privacy, and breach risk specifically.
-- plugin/si-plugin/docs/plugin-behaviour.md: define the three flag states — open (raised, not yet addressed), resolved (risk designed out or fixed), accepted (user consciously accepted it, recorded in the LOG as informed consent). State that the future autopilot gate reads these: only resolved or accepted clear it, open blocks.
-
-Test:
-- Self-verifying from the doc text. Behavioural watch after reinstall: a genuine data-exposure risk in later work draws a plain-English red flag rather than silence; any miss is a mandatory capture.
-
 **Red flags, part 2: the section, routing, and consent record** **[red-flags-structure]**
-Depends on: [red-flags-screen-rule]
 
 The structural half of the red-flags feature: where flags live and how they move through their states. Builds on [red-flags-screen-rule], which defines the rule and the three states this batch routes against. A Red flags section is added at the top of QUEUE.md — the first thing seen each session, per SPEC.md — both in the scaffolded template for new projects and in this project's own QUEUE.md. /plan learns to route a red-flag capture into the section and carry its state. /done records an accepted flag's decision in the LOG, the informed-consent trail. A consumer FAQ entry explains what a red flag is and what the three states mean. The autopilot gate is not built here — it's designed into cruise control later and reads the states this batch maintains.
 
@@ -741,10 +728,10 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [next-pre-scope-lock-abort] — verify a /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?") routes any reshape direction to Captures and names /done, not /plan. Confirmed by: the first naturally-occurring pre-scope-lock end after push + reinstall.
 - [drop-log-per-release-split] — verify a "why did we decide X" question targeting a pre-split entry in an old log-v*.md file is answered through the index plus the hash-or-title search fallback (pre-split entries have no per-entry file to open). Confirmed by: the first such why-question after push + reinstall, or a deliberate run any time after reinstall.
 - [hash-backfill-as-hook] — verify the session-start hook runs the LOG hash backfill live: the first session opening after a /done that left an unfilled placeholder shows the hook's one-line housekeeping report, the placeholder is filled in the working tree, and archived prose mentioning the token survives. Confirmed by: observing that report and the filled hash in the first post-/done session after push + reinstall.
-- [queue-format-lint-hook] — verify the lint hook fires live on a real QUEUE.md edit: advisory warnings appear next to the tool result after the edit lands (the four known dangling-dependency flags are expected on current content), and a clean edit elsewhere stays silent. Confirmed by: the first session editing QUEUE.md after push + reinstall.
 - [git-add-safety-hook-gap] — verify a live denial on a deliberate git add -A in a scratch context, with the teaching message naming explicit staging and the patterns-as-data note. Confirmed by: the first such denial observed after push + reinstall.
 - [narration-vocabulary] — verify user-facing narration stays free of background-only structural terms (loop, Step N, gate, slug names), with the Vocabulary list catching what the abstract rule missed. Confirmed by: narration observed clean against the list in the first /plan or /next session after push + reinstall.
 - [setup-preexisting-content-handling] — verify a Case B /setup run peeks at pre-existing content before Q1 (framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message. Confirmed by: the first /setup run in a folder with pre-existing content after push + reinstall.
+- [red-flags-screen-rule] — verify a genuine data-exposure risk in later work draws a plain-English red flag rather than silence; any miss is a mandatory capture. Confirmed by: the first session where a real data-exposure risk surfaces after push + reinstall.
 
 ## Captures
 
@@ -881,6 +868,18 @@ Authoring note: the setup close-out and FAQ are user-facing (external non-coder)
 **Hook-count descriptions lag the QUEUE.md lint hook**
 
 Found during the v1.12.0 pre-push consistency sweep, 2026-06-14. This project's CLAUDE.md Architecture section enumerates "2 hooks (session_start, pre_tool_use)," but post_tool_use.py — the QUEUE.md structure lint, shipped after v1.11.0 — makes three hook files. SPEC.md's "Two hooks enforce discipline mechanically" is arguably still accurate, because the lint hook advises rather than enforces. So this is a framing decision, not a clear error: update CLAUDE.md's enumeration to three, and decide whether SPEC should mention the advisory lint hook at all. Host-only / this-project docs; nothing consumer-facing was stale (CLAUDE-TEMPLATE.md and faq-template.md don't enumerate hooks).
+
+**Deferred tests vs test batches: do two mechanisms earn their keep?**
+
+Raised by the user, 2026-06-14, during a /next pre-flight. The user didn't follow what the Deferred tests section is for. Her model: all user-run testing gets queued as a Test batch. So a separate floating list of tests read as redundant.
+
+The boundary between the two really is fuzzy. A test batch is a whole /next session of testing only the user can do. A deferred test is a single leftover line from a build batch's Test part that couldn't run at build time — usually because the change is host-side and only goes live after reinstall, or because it waits on an external event. Most deferred tests get confirmed just by watching the next real session. But a few are active user-run actions (e.g. deliberately trying `git add -A` to confirm the denial), and those overlap directly with what a Test batch is for.
+
+The section also looks far larger than it really is because this project is the plugin building itself. Almost every change here is host-side, so almost every test defers. A normal consumer project would barely populate this section — its tests would be "Claude checks now" or a queued Test batch.
+
+For /plan to weigh: is the deferred-test mechanism distinct enough from Test batches to keep as its own section, or should the user-run ones fold into Test batches and the passive-observation ones be reframed? One signal worth carrying: if the section confuses the person who built the plugin, it will confuse external consumers too.
+
+Touches /next's pre-flight (re-presents deferred tests) and /done (writes them). Citation, not a blocker.
 
 ### Parked
 
