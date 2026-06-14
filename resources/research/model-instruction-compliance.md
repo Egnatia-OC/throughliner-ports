@@ -20,6 +20,8 @@ Skill docs and CLAUDE.md are delivered at **user-message priority**, not system-
 
 Source: Support Tools analysis of Claude Code's prompt architecture.
 
+**Correction (2026-06-15):** the premise that the system prompt mandates thoroughness over brevity is partly wrong — Anthropic's consumer system prompt actually instructs conciseness, and Opus 4.8's length is task-complexity calibration, not a thoroughness mandate. Verbosity is steerable with positive, quantified, exemplified instructions and an output style at system-prompt priority. See [opus-4-8-verbosity-steering.md](opus-4-8-verbosity-steering.md).
+
 ## Techniques for 4.7/4.8 compliance (ranked by likely impact)
 
 1. **Move mechanical enforcement to hooks.** Hooks are deterministic — Claude can't skip them. Anything that must happen (scan before recommend, read before edit) should be a hook gate.

@@ -695,6 +695,14 @@ Build:
 Test:
 - Self-verifying: `FAQ/faq.md` and `FAQ/index.md` exist and match the current templates. The next session start will then inject `FAQ/index.md` — observable, minor.
 
+**Brevity is a user-needs requirement, not a style preference: "be thorough" must not mean burying the user in text**
+
+The plugin's users are non-coders who keep Claude on track by reading and approving what it does — drafts, captures, LOG entries, commit decisions, design choices. That control only works if they can actually get through the text. When an exchange runs long, attention can't hold; the user skims, and real problems in their own project slip past unnoticed for many sessions. Thoroughness that buries the signal defeats itself, and defeats the plugin's core job of keeping the user in control. Unreadable output is unapprovable — the human can't catch an error they can't get through.
+
+So this is a requirement of the method, not a personal taste. "Be thorough" should mean "surface every important thing the user must see and act on," never "emit every word." Leading with the one decision the user must make, then stopping, serves thoroughness better than a complete-but-unread wall — the user gets the crucial item instead of wading past it.
+
+It is fixable, and the current approach is the weak form. Research in resources/research/opus-4-8-verbosity-steering.md found that abstract, negative brevity instructions (the plugin's [BRIEF]/[SILENT] tags and "don't bundle" rules) are exactly what Opus 4.8 steers on least, while positive, quantified, exemplified instructions — plus an output structure that leads with the decision and gates detail behind an explicit request — do steer it. A Claude Code output style can carry these at system-prompt priority instead of competing at user-message priority. For /plan: redesign the verbosity rules on those lines. This is design input for [output-tag-audit] and [opening-narration-audit], and it corrects the premise in resources/research/model-instruction-compliance.md (the system prompt does not, in fact, mandate thoroughness over brevity).
+
 ### Parked
 
 ## Deferred tests
