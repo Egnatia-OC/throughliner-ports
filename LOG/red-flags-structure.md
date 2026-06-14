@@ -1,4 +1,4 @@
-# [HASH] — red-flags structure: section atop QUEUE.md, /plan routing with state, /done consent record
+# 607c504 — red-flags structure: section atop QUEUE.md, /plan routing with state, /done consent record
 
 The structural half of the red-flags feature. The screen-and-surface rule and the three flag states already shipped in plugin-behaviour.md ([red-flags-screen-rule]); this batch built where flags live and how they move through their states.
 
