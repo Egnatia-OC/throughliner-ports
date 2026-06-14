@@ -134,6 +134,10 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 
 LOG entries are per-entry files — no log capping or push markers at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
+## Goal sessions (plugin off)
+
+A "goal session" runs with the plugin turned off so Claude can work autonomously through several build batches in one chat, closed by a manual /done. The session-start hook never fires in this mode, so its automatic LOG hash backfill doesn't run. When running /done by hand in a goal session, do the backfill yourself: fill any `[HASH]` placeholders in `LOG/` using the same rule as the Push step — replace the token only in hash position (entry heading or start of an index line), resolve each to the **oldest** `git log -S "<entry title>"` match — and fold the edit into the session's commit. The current session's own entry can't be filled until its commit exists; backfill it in the next goal session's /done, or rely on the Push step, which backfills everything as a backstop. This is interim handling until /goal is formally supported (see the goal-session capture in QUEUE.md).
+
 ## E2E testing
 
 **Taskflowapp** at `C:\Users\Alex\Desktop\Taskflow Planning\Planning in here\Taskflowapp` is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.
