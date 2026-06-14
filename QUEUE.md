@@ -805,6 +805,43 @@ From the firing-map audit (2026-06-13). The audit checked every queued batch who
 
 Action for /plan: weigh each home against the firing map before these batches build — not to override their own reasoning, but so the injection-vs-skill-doc choice is made deliberately. [scope-anchor] and [scope-boundary-rule] are the clear candidates to reconsider (plan+next / next-only); [no-planning-in-execution] and [audit-findings-bulk-approval] may justify injection anyway. This is the reason the audit was placed above the rule-adding batches.
 
+**README: separate the four-commands intro line and add a best-practice usage cycle**
+
+Observed by the user, 2026-06-14. Target is README.md at the repo root — the GitHub landing page, not a file inside the plugin package, so it's edited directly and doesn't propagate through reinstall.
+
+Two changes wanted in the "What it does" section:
+- Reword the intro so the claim and the list are separate sentences. "…walks you through it with four slash commands:" becomes "…walks you through it. It has four slash commands:".
+- Add a best-practice usage section under the command list: /setup once only; then repeat the cycle of /plan → /done → /clear and /next → /done → /clear; with /plan → /done → /clear repeated as many times as needed for long-running planning.
+
+Why it matters: a non-coder reads four one-line command descriptions but can't infer the rhythm. This cycle is how the user will present real-world use demos, and the README should teach the same pattern to anyone who isn't watching them — mirroring what the demos show. It also keeps the repo honest. The four commands look like something you can pick up and use freely, but a fair bit of invisible process sits on top — not a huge amount, but enough that skipping the rhythm gives you a bad time. The load-bearing habit is closing every session with /done before /clear: the design relies on each session being recorded before the context is cleared. Presenting the commands without the cycle oversells how freely they can be used and drifts from how the demos present it.
+
+To settle when this is promoted: the paired-cycle layout can read as strict one-/plan-then-one-/next alternation. In practice /next repeats across many batches between planning sessions, so the final wording should make /next-repeats as visible as /plan-repeats.
+
+**Self-install branch in the guided install: let Claude Code install SI via terminal**
+
+Raised by the user, 2026-06-14, building on the existing guided install (INSTALL.md). For repo visitors who already have Claude Code, add a branch where Claude Code installs the SI plugin itself via the terminal, instead of the human doing the GUI zip-upload (Customise → Create a plugin).
+
+Mechanism is confirmed (research: resources/research/claude-code-plugin-install-mechanisms.md). The desktop app's Code tab is Claude Code with an integrated terminal, and there is a non-interactive `claude plugin install <name>@<marketplace>` command the agent can run. So Claude Code can do the install in both the CLI and the desktop app.
+
+Two things shape how this branch must be written:
+- INSTALL.md is consumed by a claude.ai chat, which has no terminal — it can only instruct the human, not run the install. So this branch is a handoff: the already-has-Claude-Code user is routed to run the install through Claude Code itself, not through the claude.ai guide. This overlaps the experienced-user bypass queued in [install-separate-ai-instructions] and the app-identification check in [install-app-identification-check] — likely the same branch point.
+- Prerequisite: the clean install command installs from a marketplace, and SI's repo has no marketplace manifest today. The repo must publish `.claude-plugin/marketplace.json` pointing at si-plugin before `claude plugin marketplace add FlintCraftTech/sovereign-implementer` + `claude plugin install` will work. The raw-local-zip alternative is the unreliable path (open upstream feature request). So this idea carries a prerequisite build: publish the marketplace manifest.
+
+Ripple for /plan to weigh at promote time: publishing a marketplace manifest makes "add our marketplace and install" the standard, robust install flow, which could simplify or partly moot some queued INSTALL.md batches (all of which assume the GUI zip-upload). Decide the interaction with those batches when this is promoted.
+
+**SI teaches the user the working rhythm in-product, not just in the README**
+
+Raised by the user, 2026-06-14, sibling to the README usage-cycle capture above. That capture puts the /setup-once-then-cycle rhythm on the repo front page for visitors. This one is the in-product counterpart: SI itself should show the user the rhythm during use, so someone who installed SI without reading the README still learns it.
+
+Same content as the README capture (the cycle: /setup once; then repeat /plan → /done → /clear and /next → /done → /clear, planning repeated as needed). Same why: the rhythm is load-bearing and not inferable from the four one-line command descriptions — every session closes with /done before /clear so it's recorded before the context is cleared. Different surface: in-product teaching, not a repo-front-page reference.
+
+Candidate homes (to settle at promote time):
+- The /setup close-out — the natural onboarding moment, right after scaffolding, when the user is about to start the cycle. This interacts directly with [setup-closeout-redesign], which is already rewriting that close to recommend /done; coordinate with or sequence after it.
+- A FAQ entry (faq-template.md + index line) as the durable in-product reference the user can return to.
+- Not session-start: the rhythm is onboarding teaching, and repeating it every session would be noise.
+
+Authoring note: the setup close-out and FAQ are user-facing (external non-coder), so the rhythm must read in plain English with no internal terms, and the cycle wording should stay consistent across the README, the setup close-out, and the FAQ.
+
 ### Parked
 
 - **[narration-vs-menu-drift]** Observed during 1b7d359 /plan: Claude defaulted to menu-style options ("file as capture, drop it, or commit to the rule now?") when narrating a recommendation would have been more appropriate. Dependency ownership's narration rule ("narrate the ordering work" — exercise judgment, recommend) is supposed to catch this. The mechanism failed under exploratory back-and-forth tone — the pull toward "lay out the options" was stronger than the pull toward "state the recommendation, let user push back." Worth watching whether this generalizes: when the conversation gets exploratory, does Claude soften from recommendation-narration into menu-listing? If so, the narration rule needs tightening — possibly explicit text that menu-style enumeration of equally-weighted options is *not* narration when Claude actually has a preference, and the recommendation must come first with the menu as fallback.
