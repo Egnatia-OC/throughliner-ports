@@ -4,7 +4,7 @@ Components that exist in this project. Updated after each build.
 
 - `plugin/si-plugin/.claude-plugin/plugin.json` — plugin manifest (name, version, description)
 - `plugin/si-plugin/hooks/hooks.json` — hook declarations (session_start, pre_tool_use, post_tool_use)
-- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules and FAQ index, checks plugin version against .si-version, backfills unfilled LOG hash placeholders (hash-position-only, oldest-introducing-commit)
+- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules and FAQ index, detects project drift by missing scaffolded files/folders (presence-based) and emits a visible "out of date" warning offering /setup, backfills unfilled LOG hash placeholders (hash-position-only, oldest-introducing-commit). Still computes the version comparison for the separate update-happened signal, but no longer uses it for the user-facing drift warning
 - `plugin/si-plugin/hooks/pre_tool_use.py` — SPEC.md read-only, scope-lock (tri-state on _build.md's Files: section), git safety (denies reset --hard, push --force, blanket adds, commit -a/-am; every denial teaches the fix and the patterns-as-data workaround)
 - `plugin/si-plugin/hooks/post_tool_use.py` — advisory lint of QUEUE.md structure after Edit/Write lands (six deny-list checks; warnings fed back via additionalContext, silent when clean)
 - `plugin/si-plugin/skills/setup/SKILL.md` — /setup skill definition

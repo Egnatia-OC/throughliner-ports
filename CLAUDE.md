@@ -96,12 +96,24 @@ Depends on: capture-parking-discipline (host-side)
 
 At session start, if no `_build.md` is present in the project root, run `git status --porcelain plugin/si-plugin/`. If non-empty, warn Alex that the target tree has uncommitted state and list the dirty paths — these may be orphaned sweep edits from a prior push, and a new /next would otherwise layer build edits on top of them.
 
-## Push-and-rezip (automatic)
+## Rezip (local testing) and Push (release)
+
+These are two separate actions. **Rezip** builds a fresh installable zip so Alex can dogfood the plugin privately — it never publishes. **Push** is the full release ritual that publishes to the public remote. The word "push" (said directly, or chosen at a /done close) always means the full release ritual below. "Rezip" is a separate, explicit request and never publishes — bumps no version, makes no commit, touches no remote. Do whichever Alex actually asked for; don't run a push because she asked to rezip.
+
+### Rezip (local testing)
+
+When Alex says "rezip" (or asks for a fresh local build to test), run this — no version bump, no archive, no commit, no push:
+
+1. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+2. Repackage, overwriting the existing zip: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip" -Force` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix.
+3. Tell Alex: "Zip rebuilt — nothing has been published. Uninstall/reinstall to test the new host privately."
+
+### Push (release)
 
 When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
 
 1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before proceeding. The session-start hook only fires at session start, so a /done that ran earlier in this same session leaves its placeholder unfilled at push time — this step catches it. Same rules as the hook: replace the token only in hash position (an entry heading line or the start of an index line), never in body prose, which may mention the token literally; resolve each to the **oldest** `git log -S "<entry title>"` match, never the newest commit touching the file.
-2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities.
+2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities. (The bump lives here, not in rezip: bumping on every private test build would make Alex's own projects nag "version changed, re-run /setup" each time she tests.)
 3. Pre-push consistency sweep — two passes, run in order:
 
    **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
@@ -117,6 +129,8 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 8. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 3), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's backfill edits). Commit: "Bump to v<VERSION> and repackage".
 9. `git push`.
 10. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+
+**Archive accuracy.** Push keeps archiving the previous zip as above. Git history is the authoritative record of released zips — each push commits `si-plugin.zip`. So if a private rezip overwrote `si-plugin.zip` since the last push, the copy that lands in `plugin/zip-archive/` at the next push is a convenience that may reflect a test build rather than the prior release. This is cosmetic: git holds the true releases.
 
 LOG entries are per-entry files — no log capping or push markers at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
@@ -135,7 +149,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced) sit at the top — the first thing seen each session — each carrying an open, resolved, or accepted state. Batches use Build/Test/Audit subheadings. Deferred tests holds tests that couldn't run in their own session, one line each (source batch slug, what to verify, what confirms it) — /done writes entries, /next's pre-flight re-presents them, the confirming session removes them. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced) sit at the top — the first thing seen each session — each carrying an open, resolved, or accepted state. Batches use Build/Test/Audit subheadings. Deferred tests holds tests that couldn't run in their own session, one line each (source batch slug, what to verify, what confirms it) — /done writes entries here and they sit until a session can confirm them (/plan reads the section each session); the confirming session removes the line. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers.
 - **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), each full entry as its own file named on its index line. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`, findable by hash.
 

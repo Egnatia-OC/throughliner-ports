@@ -121,7 +121,9 @@ This shape doubles as the batch readiness gate in /plan: if the candidate index 
 - Don't fix things outside current scope. Note them for the queue.
 - Nothing unrouted survives a session. File or drop before close.
 - SPEC.md is read-only during builds. Note spec issues for /plan.
-- One build at a time. Never start /next while _build.md exists.
+- One build at a time. Never start a second build while _build.md exists.
+- Parallel sessions are allowed: a planning session in one chat and a build session in another, running at the same time, is permitted. This is fine because "one build at a time" forbids a *second concurrent build* — two builds would collide on the single _build.md file — and says nothing about planning, while "don't cross plan and next" forbids mixing the two modes *inside one session*, not running two separate sessions. Scope: this permits exactly one open build plus any number of planning sessions at once; it still forbids a second concurrent build. Don't refuse a planning chat opened alongside an active build.
+- Safe-concurrency precaution for parallel sessions: when a planning session and a build session run at the same time, avoid having both write QUEUE.md or commit at the same instant. A planning session edits QUEUE.md throughout and a build session appends captures to it, so a simultaneous save can overwrite one side's changes. This is practical guidance, not a ban — stagger the writes when the situation arises.
 - At build completion, the only valid next-step recommendation is /done — never /next, never another build skill. The finished build isn't recorded until /done writes its LOG entry and commits; recommending more building first leaves the batch that just finished without a record. This is the completion counterpart to one-build-at-a-time: that rule guards the start of a build, this one guards the end.
 - Empty Batches is normal — planned work is done. Run /plan to add more.
 

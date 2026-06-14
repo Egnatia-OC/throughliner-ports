@@ -16,7 +16,6 @@ Before starting:
    - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend /plan if found.
    - Unpark-candidate scan (per plugin-behaviour.md Dependency ownership Unpark watch). → Any parked item newly unblocked by work since? Surface and recommend /plan if found.
    - Stale-batch scan (per plugin-behaviour.md Dependency ownership Staleness watch). → Any batch or capture stale enough that surrounding code or rules have moved past it? Surface and recommend /plan if found.
-   - Deferred tests: read QUEUE.md's "## Deferred tests" section and re-present every entry there — the section is the record; don't rely on remembering past sessions. A test the user confirms (or that this session's own behaviour confirms) gets its line removed, with the confirmation recorded in this session's LOG entry. Unconfirmed entries stay listed for the next pre-flight. Section empty or absent: move on, no output.
 
 4. **If no blockers:** Present the batch: [BRIEF, PROMPT]
    - Batch title, a one-line gist from the rationale, and entry counts (build / test / audit). Don't re-render full entry text — the user just wrote it in QUEUE.md and can open it anytime; full text moves into _build.md on confirm.
@@ -78,7 +77,7 @@ What doesn't happen: no batch returns to the queue, because none left it — sco
 
 ## Rules
 
-- One build at a time. Never start a second while _build.md exists.
+- One build at a time. Never start a second build while _build.md exists. (A planning session in a separate chat alongside a build is allowed — see plugin-behaviour.md Routing and discipline.)
 - The entries are the contract. Don't exceed the described work without explicit approval.
 - Per-entry ticking is mandatory — it's the crash-recovery mechanism.
 - Unsure about an implementation choice? Ask. Don't guess and build wrong.

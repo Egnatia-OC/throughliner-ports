@@ -127,7 +127,7 @@ Ask these one per message. Wait for the answer before the next. Use the answers 
 → Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave the section with a note that it can be added later.
 
 **Q4. What's the first thing to build? What would you want working by the end of today?**
-→ Creates one rough build entry in QUEUE.md under a Build subheading. Use the user's words, don't expand or split — scope decisions belong in /plan.
+→ Creates one rough build entry in QUEUE.md under a Build subheading. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan. If examples would clarify what's in scope, ask a Q4 follow-up instead of smuggling them into the entry — the one-follow-up-max rule for vague answers (see Rules) already covers that case.
 
 **Q5. Anything else I should know before we start?**
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.

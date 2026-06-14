@@ -11,76 +11,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Delete the /next pre-flight deferred-tests re-presentation** **[delete-preflight-deferred-tests]**
-
-Raised by Alex on 2026-06-14: every /next pre-flight lists all pending deferred tests before the batch she came to run. Last session that was eight entries, none of them confirmable at that moment. The list burns context and gives nothing back — it just sits between her and the work. The decision to remove it is already made inside [deferred-test-lifecycle], which deletes this step and moves test-surfacing into /plan; but that batch is large and far down the queue, so the noise would persist until it builds. This carve-out does only the deletion, now, so the relief comes fast.
-
-Accepted trade-off (chosen 2026-06-14): once the step is gone, deferred tests still sit recorded in QUEUE.md's Deferred tests section, but nothing actively surfaces them until [deferred-test-lifecycle]'s /plan-rolling ships. The tests aren't lost — /plan reads QUEUE.md every session — and nothing acted on them at pre-flight anyway, so the gap costs nothing. The lines that still say /next re-presents these tests are left to [deferred-test-lifecycle]'s existing description sweep; briefly stale in the gap, accepted.
-
-Build:
-- plugin/si-plugin/docs/next.md: delete the pre-flight step that re-presents the Deferred tests section — the step that lists every pending deferred test before the batch runs. Locate by content, not line number. Remove it entirely; nothing about deferred tests stays in /next's pre-flight.
-
-Test:
-- Self-verifying from the doc text: the deferred-tests step is gone from next.md's pre-flight.
-- Behavioural, host-side (after push + reinstall): the next /next pre-flight shows no deferred-tests list. This is itself a host-side deferred test — flag it at /done if it can't run in-session.
-
-**Allow parallel sessions: a plan chat and a build chat at once** **[allow-parallel-sessions]**
-
-Raised by Alex on 2026-06-14. She has repeatedly tried to run a planning session in one chat and a build session in another, and Claude refused — treating it as forbidden and rejecting it outright when she raised it. It isn't forbidden. A search of the whole plugin finds no rule against running two sessions at once. The rule Claude misapplies — "One build at a time. Never start /next while _build.md exists" — bans a second build while one is open, because two builds would collide on the single _build.md file. It says nothing about planning. The "don't cross plan and next" rule is about mixing the two modes inside one session, not two separate chats. So parallel plan-and-build sessions break neither rule, and they fit SPEC's "each session stays pure" principle — two clean single-job sessions. The block is a misread, and the rules' wording invites it. There is one real hazard, and it is not a reason to forbid the setup: both chats can write the same file. A planning session edits QUEUE.md throughout; a build session appends captures to QUEUE.md and commits at its close. Simultaneous writes or commits can overwrite each other. This batch states plainly that parallel sessions are allowed and writes down the precaution.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md, Routing and discipline: add the canonical statement, compliance-hardened (why-clause, positive constraint, explicit scope per resources/research/model-instruction-compliance.md) — running a planning session and a build session in separate chats at the same time is allowed; "one build at a time" forbids a second concurrent build, not a planning session alongside a build; "don't cross plan and next" forbids mixing modes within one session, not two separate sessions.
-- plugin/si-plugin/docs/plugin-behaviour.md, same spot: add the safe-concurrency precaution — when two sessions run at once, avoid having both write the queue or commit at the same instant; a planning session edits QUEUE.md and a build session appends captures to it, so a simultaneous save can overwrite one. Practical guidance, not a ban.
-- plugin/si-plugin/docs/plugin-behaviour.md, the "one build at a time" line: sharpen to "never start a second build while _build.md exists," so it can't be read as "one session at a time."
-- plugin/si-plugin/docs/next.md and plugin/si-plugin/templates/CLAUDE-TEMPLATE.md, their "one build at a time" lines: align to the same sharpened wording. Locate by content. ([trickle-up-next-md-duplicates] later removes next.md's copy, leaving plugin-behaviour.md canonical — aligning it now keeps the wording correct until then.)
-- plugin/si-plugin/hooks/session_start.py, the "ACTIVE BUILD in progress" message: add one line that a planning session can run alongside the build, so a second chat opened to plan isn't told only to resume or close the build. Shares this file with [session-start-dirty-tree-check], [plan-state-artifact], and [deferred-test-lifecycle] — whichever builds second sees the others' changes.
-
-Test:
-- Self-verifying from doc text: plugin-behaviour.md states parallel sessions are allowed and carries the precaution; the "one build" wording says "second build" in all three places.
-- Claude-run: session_start.py against a fixture with _build.md present — the active-build message includes the parallel-planning note.
-- Behavioural, host-side (after push + reinstall): opening a /plan chat while a build is active is no longer refused. This is a host-side deferred test — flag at /done if it can't run in-session.
-
-**Decouple rezip from push: a light local build, separate from publishing** **[decouple-rezip-from-push]**
-
-Raised by Alex on 2026-06-14. This project's CLAUDE.md couples rezipping and pushing into one ritual triggered by the word "push": it bumps the version, sweeps for consistency, repackages the zip, commits, and pushes to the public remote as a single unit. Because the two are welded together, Alex has been deferring the rezip on the reasoning that she isn't ready to publish — which also denies her a fresh installable zip to dogfood privately. The two acts are different: rezipping builds the testable artifact; pushing publishes it to the world. This batch splits them, so Alex can rezip and install privately, iterate, and push only when the work is actually ready to be seen. Decided alongside: the version bump moves to push, not rezip — bumping on every private test build would make her own projects nag "version changed, re-run /setup" every time she tests, the same start-up noise this session is trying to reduce. The change lives in this project's CLAUDE.md only; it is a self-hosting workflow convention and does not reach consumers. It takes effect as soon as it lands — no reinstall, since CLAUDE.md is read fresh each session.
-
-Build:
-- This project's CLAUDE.md, the "Push-and-rezip (automatic)" section: split it in two. **Rezip (local testing)** — a light, explicit action: delete __pycache__, repackage with Compress-Archive (overwriting si-plugin.zip), verify no __pycache__ in the zip. No version bump, no archive or prune, no commit, no push. Close by telling Alex the zip is rebuilt and she can uninstall/reinstall to test the new host privately — nothing has been published. **Push (release)** — the current full ritual, unchanged: hash backfill, version bump, consistency sweep (Pass A/B), archive the previous zip, prune to three, delete pycache, repackage, stage, commit "Bump to vX and repackage", git push, then the reinstall note.
-- Same section: state plainly that the word "push" (said directly, or chosen at a /done close) means the full release ritual; "rezip" is a separate explicit request and never publishes. This keeps /done's push offer ([push-offer-fit] shapes that offer) pointing at the release path, while rezip stays a private, on-demand step.
-- Same section: resolve the archive-accuracy edge — push keeps archiving as today; add one line that git history is the authoritative record of released zips (each push commits si-plugin.zip), so if a private rezip overwrote si-plugin.zip since the last push, the zip-archive folder's copy is a convenience that may reflect a test build rather than the prior release. Cosmetic, because git holds the true releases.
-- Same section: update the heading and intro so the two actions are named and findable ("Rezip (local testing)" / "Push (release)"), and reword any remaining reference to "push-and-rezip" as a single ritual.
-
-Test:
-- Self-verifying from the CLAUDE.md text: two named actions; rezip carries no version bump and no push; push retains the full ritual; the version-bump-at-push reasoning is recorded. Takes effect next session — no reinstall.
-
-**Make project drift something you actually see — and stop the false alarms** **[make-drift-visible]**
-
-When a project falls behind the plugin — missing a folder or file that newer versions create — the only warning today is a line tucked into Claude's own context at session start. The user never sees it; it depends entirely on Claude choosing to mention it, and in practice Claude hasn't. So projects drift silently. Found 2026-06-14: this project and the Taskflowapp test project are both missing `.si-version` (and here, the FAQ folder), and neither was ever flagged to the user. This hits any project, not just self-hosting ones — a real user whose project drifts would never know.
-
-The fix has two halves. Make the warning visible: when there's a real gap, Claude opens its first reply by telling the user plainly what's out of date and offering to fix it — a message they read, not a note they never see. Stop the false alarms: right now the plugin decides a project is "behind" by comparing version numbers, but the version goes up on every release and most releases add nothing a project needs — so that check cries wolf, worst of all on this project, which bumps on every push. Instead, decide a project is behind by checking whether it is actually missing any of the files and folders the plugin creates. That fires only when there's a real gap and stays quiet otherwise. The catch-up itself already exists — /setup adds the missing pieces — so this is about making the gap impossible to miss and offering to run it, not building a new repair tool. This is the general fix [scaffolding-resync] never landed.
-
-Build:
-- plugin/si-plugin/hooks/session_start.py: change what counts as "behind" — instead of comparing version numbers, check whether the project is missing any of the files/folders the current plugin scaffolds (FAQ folder, .si-version, the expected docs — reuse the presence checks already in the hook). A missing item is the trigger; a higher version number with everything present is not.
-- plugin/si-plugin/hooks/session_start.py: when something's missing, replace the buried note with a clear instruction (compliance-hardened — why-clause, positive constraint, explicit scope, per resources/research/model-instruction-compliance.md) that Claude must, in its first reply, tell the user plainly what's out of date and offer to bring it up to date by running /setup. User-facing wording, no internal terms.
-- plugin/si-plugin/hooks/session_start.py: keep computing the version comparison for the separate "a plugin update just happened" signal that [deferred-test-lifecycle] uses — this batch only changes the user-facing "you're behind" warning to be presence-based, not that update-happened detection. Coordinate when [deferred-test-lifecycle] builds.
-- Scope: covers missing files/folders, the drift actually observed. Content-level drift (a template gains a section but the file still exists) is out of scope here.
-- session_start.py is shared with [session-start-dirty-tree-check], [plan-state-artifact], [deferred-test-lifecycle], and [allow-parallel-sessions] — whichever builds second sees the others' changes.
-
-Test:
-- Claude-run: session_start.py against fixtures — missing FAQ folder (or .si-version) produces the visible "out of date, offer to update" instruction; everything present but a higher version stays silent (no false alarm); fully current stays silent.
-- Behavioural, host-side (after push + reinstall): the next session in a drifted project opens with Claude plainly flagging it and offering to update. Host-side deferred test — flag at /done if it can't run.
-
-**Forbid illustrative expansion in /setup Q4 batch entry** **[setup-q4-no-expansion]**
-
-Setup.md Q4's rule is currently "Use the user's words, don't expand or split — scope decisions belong in /plan." Observed in a real /setup run: Claude wrote the batch with parenthesized examples drawn from a pre-existing source doc ("e.g. overlocker receipt, mortgage interest %"). Parenthesized examples read as illustrations not commitments, but they're still expansion beyond the user's words — and a queue entry with examples looks like the user agreed to those items even when they're in parens. The rule needs tightening: no expansion at all, even illustrative. If examples would clarify what's in scope, the place is a Q4 follow-up question to the user, not a parenthetical in the written entry.
-
-Build:
-- plugin/si-plugin/docs/setup.md Q4 rule: tighten the existing "Use the user's words, don't expand or split" to forbid illustrative expansion explicitly — "Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context. If examples would clarify scope, ask a Q4 follow-up; don't smuggle them into the entry."
-- plugin/si-plugin/docs/setup.md Q4 rule: note that the existing one-follow-up-max rule for vague answers covers the case where examples actually are needed.
-
-Test:
-- Self-verifying on the next /setup run where Q4 is answered and visible source content exists.
-
 **Setup close-outs name /done; scaffolding creates the repo** **[setup-closeout-redesign]**
 
 From three [close-out-audit] findings (e120f3d), routed together as one design decision. setup.md is the only skill whose session ends never name /done. Step 4 closes with "/plan or /next" and stops. Step 2C's migration close does the same and reads no project state. So the scaffolded files sit uncommitted, no LOG entry gets written, and the project record starts with a gap — a consumer's first session teaches them to skip the close-out habit. The /next offer also contradicts setup's own Q4 rule: the interview deliberately writes the first entry rough and defers scoping to /plan, yet the close-out sends that unscoped entry toward execution. Two gaps surfaced at routing ride along. A fresh consumer folder has no git repository, so a /done recommendation is only honest once scaffolding creates one. And /done routes by _build.md, so a migration close can't blindly recommend /done when an interrupted build is present — the right pointer there is resuming the build.
@@ -769,7 +699,7 @@ Test:
 
 ## Deferred tests
 
-Planned tests that couldn't run in their own session (host-side, needs-user, external event). /done writes entries here when a test can't run in-session; /next's pre-flight gate re-presents every pending entry; the session that confirms one removes its line and records the confirmation in its LOG entry.
+Planned tests that couldn't run in their own session (host-side, needs-user, external event). /done writes entries here when a test can't run in-session; entries sit here until a session can confirm them (/plan reads this section each session); the session that confirms one removes its line and records the confirmation in its LOG entry.
 
 - [narrate-build-md-purpose] — verify the remaining unobserved narration moment: a one-line opener when a resume reads _build.md (scope-lock narration and rationale-carry confirmed live 2026-06-12). Confirmed by: the first /next that resumes an interrupted build.
 - [next-pre-scope-lock-abort] — verify a /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?") routes any reshape direction to Captures and names /done, not /plan. Confirmed by: the first naturally-occurring pre-scope-lock end after push + reinstall.
@@ -780,6 +710,9 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [setup-preexisting-content-handling] — verify a Case B /setup run peeks at pre-existing content before Q1 (framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message. Confirmed by: the first /setup run in a folder with pre-existing content after push + reinstall.
 - [red-flags-screen-rule] — verify a genuine data-exposure risk in later work draws a plain-English red flag rather than silence; any miss is a mandatory capture. Confirmed by: the first session where a real data-exposure risk surfaces after push + reinstall.
 - [red-flags-structure] — verify a red flag Claude raises lands in QUEUE.md's Red flags section with a state, and an accepted flag's decision appears in the session LOG. Confirmed by: the first red flag raised, and the first flag accepted, after push + reinstall.
+- [delete-preflight-deferred-tests] — verify the /next pre-flight no longer lists pending deferred tests before the batch runs. Confirmed by: the first /next pre-flight after push + reinstall.
+- [allow-parallel-sessions] — verify opening a /plan chat while a build is active is no longer refused (the active-build session-start message naming planning-alongside was confirmed in-session against a fixture). Confirmed by: the first time a /plan session is opened alongside an active build after push + reinstall.
+- [make-drift-visible] — verify a session in a drifted project (missing a scaffolded file/folder) opens with Claude plainly flagging what's out of date and offering /setup, while a current project on a higher plugin version stays silent (the presence-based logic and no-false-alarm were confirmed in-session against fixtures). Confirmed by: the first session in a drifted project after push + reinstall.
 
 ## Captures
 
@@ -921,6 +854,28 @@ The section also looks far larger than it really is because this project is the 
 For /plan to weigh: is the deferred-test mechanism distinct enough from Test batches to keep as its own section, or should the user-run ones fold into Test batches and the passive-observation ones be reframed? One signal worth carrying: if the section confuses the person who built the plugin, it will confuse external consumers too.
 
 Touches /next's pre-flight (re-presents deferred tests) and /done (writes them). Citation, not a blocker.
+
+**/setup on the dev project: two test outcomes + a cross-session contradiction about what /setup actually fixes**
+
+Observed 2026-06-14, triggered by the user running `/setup` in this project (the self-hosting dev project) root. /setup detected Case C with a missing `.si-version` and routed to migration scaffolding. Two test outcomes, plus a contradiction the user surfaced.
+
+**Outcome 1 — /setup is consumer-framed and an awkward fit on the self-hosting dev project.** The procedure's framing is "the method is being applied to *their* project" — written for a consumer adopting the method, not for the project that *develops* it. Running it here surfaced two frictions: (a) the host/target oddity isn't acknowledged anywhere in the flow, and (b) the migration step would scaffold a `FAQ/` folder this project never adopted, which would immediately make CLAUDE.md's "Where things live" tree (lists only SPEC/QUEUE/REGISTRY/LOG) stale — scaffolding creating a fresh drift. Concrete state found: this project is missing `.si-version` (never created, not gitignored, never committed) and `FAQ/`; CLAUDE.md also carries pre-existing drift ("Target v1.11.0" in two spots vs plugin.json 1.12.0; "2 hooks" vs three hook files — the latter already captured separately in the hook-count item above).
+
+**Outcome 2 — cross-session overpromise: "run /setup to bring everything up to standard" is wrong.** A prior session told the user everything is out of date and the only way to bring things up to standard is to run /setup. That oversells what /setup does. Migration scaffolding (setup.md Step 2C) only backfills *missing* scaffold files and stamps `.si-version` to the current version — it explicitly does NOT overwrite or reconcile existing-doc content, so it does nothing about the actual content drift (stale CLAUDE.md enumerations, etc.). Running /setup would clear the "out of date" *signal* (by writing `.si-version`) without raising the docs to standard — which is exactly the contradiction the user hit ("none of this makes sense"). This is already half-understood in the queue: [scaffolding-resync] records that content-level drift is NOT a job for a /setup re-run (it'd overwrite user content), and [make-drift-visible] is the queued redesign that detects drift by missing files and surfaces a user-readable catch-up offer. For /plan: the catch-up story those two batches describe needs to define what "catch up" actually remediates and what its user-facing message promises, so a future session doesn't again tell the user /setup is a cure-all. Possible follow-on: a self-hosting branch in /setup (relates to parked [self-hosting-support-during-setup]) so the dev project isn't run through consumer framing.
+
+Full verbatim exchange — including Claude's internal reasoning at each step and the rest of the session (reconciliation, the "I don't know what to do" exchange, the `.si-version` fix) — is recorded in [resources/captures/2026-06-14-setup-on-dev-project-session.md](resources/captures/2026-06-14-setup-on-dev-project-session.md). Session outcome: `.si-version` written (1.12.0) to silence the false drift signal; `FAQ/` deliberately not created (deferred to /plan).
+
+**First autonomous `/goal` session saved as a test outcome — decide: formally allow `/goal`, or stop shelving cruise control and build it**
+
+Saved 2026-06-15. The first autonomous `/goal` session ran successfully: the user disabled the plugin, Claude implemented five top-of-queue build batches back-to-back in one chat ([delete-preflight-deferred-tests], [allow-parallel-sessions], [decouple-rezip-from-push], [make-drift-visible], [setup-q4-no-expansion]), and the user re-enabled the plugin and had Claude run `/done` by hand. The full transcript — every user and assistant message, Claude's reasoning, and every action — is recorded in [resources/captures/2026-06-14-goal-session-five-batches.md](resources/captures/2026-06-14-goal-session-five-batches.md). The user judged it successful and intends to repeat the shape several more times.
+
+The session exposed that the method has no explicit "goal session" shape. It assumes one batch per session — one `_build.md`, one slug-named LOG entry, one commit — so the multi-batch run had to improvise an aggregate `_build.md`, a multi-thread LOG entry, and a single commit covering all five batches. The improvised close was clean, but it is improvisation, and it now recurs.
+
+The decision /plan must make is a fork, not a tweak. Either **pivot to formally allowing `/goal`** — define how a goal session represents multiple batches (or skips `_build.md`), how its LOG entry and index line are shaped, and how the deferred-test and staleness sweeps run across several batches at once — **or** treat `/goal` as the working proof of the long-shelved "cruise control" (autopilot / unattended-execution) idea and stop deferring that idea, actually starting to implement toward it. The user's point: `/goal` is cruise control working in practice, and the method keeps putting the formal version off. Pick a direction rather than letting both sit.
+
+**/done should reuse the LOG entry as the commit message, not draft a fresh one**
+
+Surfaced 2026-06-15 by the user during a manual /done. The user assumed /done already builds the commit message from the LOG entry. It doesn't: done.md's commit core says to "draft the commit message title and body" as a separate authoring step, with no link to the LOG entry that done-build.md (and the other close-outs) just wrote. So the commit message and the LOG entry are authored independently and can drift — and a non-coder reasonably expects them to be the same record. Proposal for /plan: have the commit core derive the commit title from the LOG entry's summary line (the `# [HASH] — <summary>` line, which is already short and purpose-built) and the commit body from the entry's prose. Note the index line is deliberately written long for searchability, so it is the wrong source for the title despite being the obvious-seeming one — the entry's summary line is the right source. This session committed that way by hand to demonstrate the coupling. Touches done.md (commit core) and all four close-out sub-docs that point at it.
 
 ### Parked
 

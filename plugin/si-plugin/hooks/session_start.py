@@ -163,6 +163,11 @@ def main() -> int:
         except OSError:
             pass
 
+    # Version comparison is retained only for the separate "a plugin update just
+    # happened" signal (a future consumer). It is NOT the user-facing "your project
+    # is behind" warning anymore — that is now presence-based (see missing_scaffold
+    # below), because the version bumps on every release and most releases add
+    # nothing a project needs, so a version check cries wolf.
     version_mismatch = has_spec and plugin_version and project_version != plugin_version
 
     # State 1: Not adopted
@@ -215,25 +220,45 @@ def main() -> int:
     context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
     context_parts.append(f"  REGISTRY.md: {'found' if has_registry else 'MISSING'}")
 
-    if version_mismatch:
+    # Presence-based drift: a project is "behind" only when it's actually missing
+    # files/folders the current plugin scaffolds. A higher plugin version with
+    # everything present is not drift. Scope: missing files/folders only —
+    # content-level drift (a file exists but lacks a newer section) is out of scope.
+    missing_scaffold = []
+    if not has_queue:
+        missing_scaffold.append("QUEUE.md (your work queue)")
+    if not has_registry:
+        missing_scaffold.append("REGISTRY.md (your components list)")
+    if not os.path.isfile(os.path.join(cwd, "LOG", "index.md")):
+        missing_scaffold.append("the LOG folder (your session records)")
+    if not has_faq_index:
+        missing_scaffold.append("the FAQ folder (workflow help)")
+    if not os.path.isfile(si_version_path):
+        missing_scaffold.append(
+            "the .si-version marker (records which plugin version set the project up)"
+        )
+
+    if missing_scaffold:
         context_parts.append("")
-        if project_version:
-            context_parts.append(
-                f"VERSION MISMATCH: project was set up with v{project_version}, "
-                f"plugin is now v{plugin_version}. "
-                "Run /setup to update project scaffolding."
-            )
-        else:
-            context_parts.append(
-                f"VERSION UNKNOWN: no .si-version file found. Plugin is v{plugin_version}. "
-                "Run /setup to update project scaffolding."
-            )
+        context_parts.append(
+            "PROJECT OUT OF DATE — the current plugin creates files and folders this "
+            "project doesn't have yet: " + "; ".join(missing_scaffold) + ". "
+            "Because there is a real gap, you must open your first reply by telling the "
+            "user plainly, in everyday language, which parts are missing, and offer to "
+            "bring the project up to date by running /setup — it adds what's missing "
+            "without touching their existing work. State this as your own first message "
+            "before doing anything else; don't bury it in other output or wait to be "
+            "asked, because a note the user never reads leaves the project drifting."
+        )
 
     if has_active_build:
         context_parts.append("")
         context_parts.append(
             "ACTIVE BUILD in progress (_build.md exists). "
-            "Run /next to resume, or /done if the work is complete."
+            "Run /next to resume, or /done if the work is complete. "
+            "A planning session (/plan) may run in a separate chat alongside this build — "
+            "if this chat was opened to plan, that is allowed; don't refuse it or insist on "
+            "resuming or closing the build first."
         )
     else:
         context_parts.append("")
