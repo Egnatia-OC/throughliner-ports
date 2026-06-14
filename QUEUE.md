@@ -1,26 +1,15 @@
 ﻿# QUEUE
 
+## Red flags
+
+Security, privacy, and data-exposure risks Claude has surfaced — kept at the top so they're the first thing seen each session. Each carries a state: open, resolved, or accepted. Empty until a risk comes up.
+
 ## Batches
 
 Worked top to bottom. Each batch of changes or tests is one /next session of either type:
 
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
-
-**Red flags, part 2: the section, routing, and consent record** **[red-flags-structure]**
-
-The structural half of the red-flags feature: where flags live and how they move through their states. Builds on [red-flags-screen-rule], which defines the rule and the three states this batch routes against. A Red flags section is added at the top of QUEUE.md — the first thing seen each session, per SPEC.md — both in the scaffolded template for new projects and in this project's own QUEUE.md. /plan learns to route a red-flag capture into the section and carry its state. /done records an accepted flag's decision in the LOG, the informed-consent trail. A consumer FAQ entry explains what a red flag is and what the three states mean. The autopilot gate is not built here — it's designed into cruise control later and reads the states this batch maintains.
-
-Build:
-- plugin/si-plugin/docs/setup.md QUEUE.md template: add a Red flags section at the top of the scaffolded QUEUE.md, above Batches — empty by default, with a one-line description of what collects there.
-- This project's QUEUE.md: add the same Red flags section at the top, above Batches, empty for now.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md and this project's CLAUDE.md: document the Red flags section in the QUEUE.md format description.
-- plugin/si-plugin/docs/plan.md: route a capture filed as a red flag into the Red flags section, carrying its state; a flag's state can change during planning (open → resolved or accepted).
-- plugin/si-plugin/docs/done.md (or the relevant sub-doc): when a flag is accepted, record the decision in the LOG entry — what the user was warned about and that they chose to proceed.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry — what a red flag is, the three states, and what "accepted" means (a recorded, informed choice).
-
-Test:
-- Self-verifying from doc text for structure. Behavioural, host-side (after reinstall): the next red flag Claude raises lands in the Red flags section with a state; an accepted flag's decision shows up in the LOG. Needs the deferred-test discipline — flag at /done if it can't run.
 
 **Forbid illustrative expansion in /setup Q4 batch entry** **[setup-q4-no-expansion]**
 
@@ -732,6 +721,7 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [narration-vocabulary] — verify user-facing narration stays free of background-only structural terms (loop, Step N, gate, slug names), with the Vocabulary list catching what the abstract rule missed. Confirmed by: narration observed clean against the list in the first /plan or /next session after push + reinstall.
 - [setup-preexisting-content-handling] — verify a Case B /setup run peeks at pre-existing content before Q1 (framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message. Confirmed by: the first /setup run in a folder with pre-existing content after push + reinstall.
 - [red-flags-screen-rule] — verify a genuine data-exposure risk in later work draws a plain-English red flag rather than silence; any miss is a mandatory capture. Confirmed by: the first session where a real data-exposure risk surfaces after push + reinstall.
+- [red-flags-structure] — verify a red flag Claude raises lands in QUEUE.md's Red flags section with a state, and an accepted flag's decision appears in the session LOG. Confirmed by: the first red flag raised, and the first flag accepted, after push + reinstall.
 
 ## Captures
 
@@ -880,6 +870,16 @@ The section also looks far larger than it really is because this project is the 
 For /plan to weigh: is the deferred-test mechanism distinct enough from Test batches to keep as its own section, or should the user-run ones fold into Test batches and the passive-observation ones be reframed? One signal worth carrying: if the section confuses the person who built the plugin, it will confuse external consumers too.
 
 Touches /next's pre-flight (re-presents deferred tests) and /done (writes them). Citation, not a blocker.
+
+**Expedite deleting the /next pre-flight deferred-tests re-presentation**
+
+Raised by the user, 2026-06-14, at the red-flags-structure build completion. Every /next pre-flight re-presents all pending deferred tests. This session that was 8 entries, all host-side, none confirmable at pre-flight. The user reports it burns significant context and gives her nothing — it sits between her and the batch she came to run.
+
+This confirms in real use the rationale already recorded in [deferred-test-lifecycle], which deletes the /next pre-flight deferred-tests step outright and moves surfacing to /plan. The direction is decided; the problem is speed. That batch is large (runnability tails, /plan rolling, reinstall flag, fourth tick state) and sits far down the queue, so the noise persists until it builds.
+
+Ask: /plan should weigh carving the pre-flight deletion out of [deferred-test-lifecycle] into a minimal standalone batch at the top of the queue, so the re-presentation goes away fast, ahead of the rest of the lifecycle work. It is host-side — it only stops after that carve-out builds, pushes, and reinstalls.
+
+Caveat for /plan: deleting the pre-flight surfacing before [deferred-test-lifecycle]'s /plan-rolling ships leaves deferred tests recorded in QUEUE.md's section but not surfaced anywhere in the gap. Decide whether that interim gap is acceptable for the speed, or whether the carve-out should also add the /plan surfacing so nothing is dropped.
 
 ### Parked
 

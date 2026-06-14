@@ -1,4 +1,4 @@
-# [HASH] — plugin-behaviour.md: added the red-flags screen-and-surface rule and three flag states
+# c7c6cd5 — plugin-behaviour.md: added the red-flags screen-and-surface rule and three flag states
 
 Reintroduces the old plugin's security screening as a compliance-hardened rule in plugin-behaviour.md. The prior plugin had a "Red flags — screen and surface" behaviour, but it lived as an unstructured convention. This version makes it a written rule with explicit scope (security, privacy, breach risk), a why-clause explaining why it must not be smoothed over, and positive constraints stating what Claude does (names and routes the risk, never silently fixes or ships past it). Placed in plugin-behaviour.md so it fires in every session type, including mid-build — where Claude is writing the code that could expose data.
 

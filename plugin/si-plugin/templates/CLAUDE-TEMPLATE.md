@@ -7,7 +7,7 @@ This project uses the Sovereign Implementer method.
 ## Project docs
 
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
-- **QUEUE.md** — work queue, top-to-bottom. Batches (Build/Test/Audit subheadings), Deferred tests (one line per test that couldn't run in its own session — source batch slug, what to verify, what confirms it; /done writes entries, /next re-presents them, the confirming session removes them), Captures (split by `---` — processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based) or `Parked:` (indefinite) headers.
+- **QUEUE.md** — work queue, top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced, kept at the top so they're seen first — each carries an open, resolved, or accepted state), Batches (Build/Test/Audit subheadings), Deferred tests (one line per test that couldn't run in its own session — source batch slug, what to verify, what confirms it; /done writes entries, /next re-presents them, the confirming session removes them), Captures (split by `---` — processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based) or `Parked:` (indefinite) headers.
 - **REGISTRY.md** — components list. Updated after each build.
 - **LOG/** — session records: what was built, tested, decided. One file per session entry, plus index.md one-line summaries naming each entry file.
 - **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md.

@@ -14,6 +14,18 @@ They split work into three modes. **/plan** is for thinking — queue management
 
 Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
 
+## What is the Red flags section at the top of QUEUE.md?
+
+It's where Claude lists security and privacy risks it has spotted — anything that could expose your data or your users' data, or amount to a breach. It sits at the very top of the queue so it's the first thing you see each session; a risk you should know about shouldn't be buried. The section stays empty until something comes up.
+
+Each red flag carries one of three states:
+
+- **Open** — the risk has been raised but not yet dealt with.
+- **Resolved** — the risk has been fixed or designed out; the work no longer carries it.
+- **Accepted** — you were told the risk plainly and chose to go ahead anyway. That choice is written into the session log: what you were warned about, and that you agreed to proceed. It's a clear record if the risk ever matters later.
+
+Claude raises and updates these — you don't maintain the section. Accepting a risk is a decision only you can make.
+
 ## What is the "Deferred tests" section in QUEUE.md?
 
 A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. Every /next re-shows the pending entries at the start, so nothing rides on anyone remembering. When a test is confirmed, that session removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.

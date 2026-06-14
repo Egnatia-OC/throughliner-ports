@@ -48,6 +48,8 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 
 Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. After approval, write it to the new entry file.
 
+If a red flag was accepted during this session, also record the decision in this entry per done.md Accepted red flags — what the user was warned about, and that they chose to proceed.
+
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
 ```

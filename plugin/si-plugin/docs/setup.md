@@ -66,6 +66,10 @@ Four project docs structure each project:
 ```markdown
 # QUEUE
 
+## Red flags
+
+Security, privacy, and data-exposure risks Claude has surfaced — kept at the top so they're the first thing seen each session. Each carries a state: open, resolved, or accepted. Empty until a risk comes up.
+
 ## Batches
 
 Worked top to bottom. Each batch is one /next session — builds first, then tests.

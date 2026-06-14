@@ -5,6 +5,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What do /plan, /next, and /done each do?](faq.md#what-do-plan-next-and-done-each-do)
 - [What's the difference between Batches and Captures in QUEUE.md?](faq.md#whats-the-difference-between-batches-and-captures-in-queuemd)
 - [How are entries organized in the queue?](faq.md#how-are-entries-organized-in-the-queue)
+- [What is the Red flags section at the top of QUEUE.md?](faq.md#what-is-the-red-flags-section-at-the-top-of-queuemd)
 - [What is the "Deferred tests" section in QUEUE.md?](faq.md#what-is-the-deferred-tests-section-in-queuemd)
 - [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
 - [Can I edit SPEC.md while doing a build?](faq.md#can-i-edit-specmd-while-doing-a-build)

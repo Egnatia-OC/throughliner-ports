@@ -37,6 +37,12 @@ Stated once here; the build and test sub-docs point at this section.
 
 A planned test that can't run in the closing session — host-side behaviour that only goes live after push + reinstall, a check only the user can run, an external event that hasn't fired — is written to QUEUE.md's "## Deferred tests" section, one line per test: source batch slug, what to verify, and what confirms it. The queue line is the structural record: /next's pre-flight reads that section and re-presents every pending entry, and the session that confirms a test removes its line and records the confirmation in its LOG entry. Don't record the deferral as LOG-entry prose alone — no later session re-reads old log prose, so a test recorded only there never surfaces again.
 
+## Accepted red flags
+
+Stated once here; every sub-doc's LOG-entry step points at this section.
+
+If a red flag was accepted this session — the user was told a security, privacy, or breach risk plainly and chose to proceed anyway — record the decision in the session's LOG entry: what the user was warned about, and that they chose to proceed. This is the informed-consent trail defined in plugin-behaviour.md Flag states; the LOG entry is where it lands. Recording is unconditional once a flag is accepted — the consent record never rides only in chat or in QUEUE.md's Red flags section, because no later session re-reads those for consent history. Nothing to record when no flag was accepted this session.
+
 ## Commit core [BRIEF, PROMPT]
 
 Stated once here; every sub-doc's Commit step points at this section.
