@@ -16,7 +16,7 @@ State the count upfront ("N findings. First: ..."). For each: the observation, t
 
 ## Route approved findings to Captures
 
-For each marked capture, draft the wording in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md Progress as `captured` or `dropped`.
+For each marked capture, draft the wording as a blockquote with a content-type lead-in (**Capture draft:**) for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md Progress as `captured` or `dropped`.
 
 ## Close [BRIEF, PROMPT]
 

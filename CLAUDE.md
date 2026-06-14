@@ -96,10 +96,6 @@ Depends on: capture-parking-discipline (host-side)
 
 [behaviour-agnosticism-audit] reads procedure docs against criteria including capture routing rules. Those rules live in plugin-behaviour.md (host-side). Without the push between them, the audit would read the old rules.
 
-## Session-start dirty-tree check
-
-At session start, if no `_build.md` is present in the project root, run `git status --porcelain plugin/si-plugin/`. If non-empty, warn Alex that the target tree has uncommitted state and list the dirty paths — these may be orphaned sweep edits from a prior push, and a new /next would otherwise layer build edits on top of them.
-
 ## Rezip (local testing) and Push (release)
 
 These are two separate actions. **Rezip** builds a fresh installable zip so Alex can dogfood the plugin privately — it never publishes. **Push** is the full release ritual that publishes to the public remote. The word "push" (said directly, or chosen at a /done close) always means the full release ritual below. "Rezip" is a separate, explicit request and never publishes — bumps no version, makes no commit, touches no remote. Do whichever Alex actually asked for; don't run a push because she asked to rezip.

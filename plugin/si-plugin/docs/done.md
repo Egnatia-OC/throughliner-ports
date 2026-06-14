@@ -48,8 +48,9 @@ If a red flag was accepted this session — the user was told a security, privac
 Stated once here; every sub-doc's Commit step points at this section.
 
 1. Stage explicitly — name each path: files this session changed (from _build.md Changes where one existed), method docs updated during the session or close-out (QUEUE.md, SPEC.md, REGISTRY.md, LOG/), and the _build.md deletion where one was removed.
-2. Draft the commit message title and body. Present both in the same message, each in its own fenced code block (see plugin-behaviour.md "Verbatim-copy strings"), and ask in the same approval moment: "Commit and push, or just commit?"
-3. Wait for okay, then commit — and push if the user chose to push.
+2. Detect out-of-scope dirty paths: run `git status --porcelain` and compare what it lists against the active build's file list (from _build.md, where one existed). Any dirty path outside that list is a user edit made between or during sessions that no build staged. Surface them in a one-line summary and offer to stage them into this commit. The reason: otherwise these edits sit dirty across sessions until the push ritual's sweep catches them — this is the earlier catch point, not a replacement for that safety net.
+3. Draft the commit message title and body. Present both in the same message, each as a blockquote under a bold content-type lead-in (**Commit title:**, **Commit body:**), per plugin-behaviour.md approval-time outputs — commit messages aren't paste targets, because Claude runs `git commit` itself, so they wrap as blockquotes rather than sitting in fences. Ask in the same approval moment: "Commit and push, or just commit?"
+4. Wait for okay, then commit — and push if the user chose to push.
 
 The LOG entry keeps its `[HASH]` placeholder. The session-start hook backfills it automatically at the next session, as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
 

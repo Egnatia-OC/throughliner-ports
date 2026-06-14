@@ -51,7 +51,7 @@ Changes:
 
 ### User raises something out of scope [PROMPT]
 
-1. Route it to Captures in QUEUE.md, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Draft the wording first in a fenced code block for approval, per plugin-behaviour.md (Captures + approval-time outputs).
+1. Route it to Captures in QUEUE.md, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Draft the wording first as a blockquote with a content-type lead-in (**Capture draft:**) for approval, per plugin-behaviour.md (Captures + approval-time outputs).
 2. Ask "anything else?" — repeat until no.
 3. Resume the build.
 

@@ -102,6 +102,26 @@ def backfill_log_hashes(cwd):
     )
 
 
+def _dirty_tree_count(cwd):
+    """Count files with uncommitted changes via `git status --porcelain`.
+
+    Returns the count, or 0 on any error or a clean tree.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return 0
+    if result.returncode != 0:
+        return 0
+    return len([line for line in result.stdout.splitlines() if line.strip()])
+
+
 def main() -> int:
     try:
         data = json.load(sys.stdin)
@@ -116,6 +136,7 @@ def main() -> int:
     queue_path = os.path.join(cwd, "QUEUE.md")
     registry_path = os.path.join(cwd, "REGISTRY.md")
     build_path = os.path.join(cwd, "_build.md")
+    plan_state_path = os.path.join(cwd, "_plan.md")
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
     si_version_path = os.path.join(cwd, ".si-version")
 
@@ -123,6 +144,7 @@ def main() -> int:
     has_queue = os.path.isfile(queue_path)
     has_registry = os.path.isfile(registry_path)
     has_active_build = os.path.isfile(build_path)
+    has_plan_state = os.path.isfile(plan_state_path)
     has_faq_index = os.path.isfile(faq_index_path)
 
     faq_index_content = ""
@@ -266,6 +288,27 @@ def main() -> int:
             "Ready. "
             "Run /plan to manage the queue, or /next to start the top batch."
         )
+
+    if has_plan_state:
+        context_parts.append("")
+        context_parts.append(
+            "INTERRUPTED PLANNING SESSION (_plan.md exists). A previous /plan was left "
+            "mid-processing. Run /plan to resume from the recorded item and beat, or "
+            "/done to close out what was already routed."
+        )
+
+    # Dirty-tree warning: uncommitted changes with no active build and no active plan
+    # almost always mean a previous session ended without /done — work sitting
+    # unrecorded that a non-coder won't notice for weeks. Silent during an active build
+    # or an active plan, where dirt is expected mid-session, not orphaned.
+    if not has_active_build and not has_plan_state:
+        dirty_count = _dirty_tree_count(cwd)
+        if dirty_count:
+            context_parts.append("")
+            context_parts.append(
+                f"[Sovereign Implementer] {dirty_count} file(s) have uncommitted "
+                "changes from a previous session — /done will pick them up."
+            )
 
     backfill_report = backfill_log_hashes(cwd)
     if backfill_report:

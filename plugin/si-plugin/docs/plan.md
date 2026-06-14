@@ -12,9 +12,10 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 - One item at a time. Finish one before presenting the next.
 - Read SPEC.md before proposing work. Don't queue contradictions.
 - Process accumulated captures before new planning work.
-- Never write batch entries to QUEUE.md without showing the user the exact text first.
+- Never write batch entries to QUEUE.md without showing the exact text first — and the rule keys to the write, not to where you are in the loop: the message immediately before any QUEUE.md batch write must contain the entry text verbatim. Approval attaches to shown text, never to a described shape, so a recommendation — however concrete — is not a draft, and "I'll add a batch that does X" is not the entry. The reason: loop beats live in conversation memory and a compacted session loses them, but the write action is always visible, so keying the rule to the action holds even with no memory of which beat you're on.
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call.
-- The pipeline: idea → question (if unclear) → spec entry (if it changes the product) → batch entry. No shortcuts.
+- The pipeline: idea → question (if unclear) → spec entry (if landing it would make SPEC.md's description wrong or incomplete) → batch entry. No shortcuts.
+- /plan resolves what it can in-session; capture is only for what it can't. Research, queue-wide cleanup (line-ref drift, quoted-string staleness after a sweep), cross-batch reconciliation, doc verification — anything within /plan's reach — gets done now, not filed for a later session. Reserve a capture for what /plan genuinely can't resolve this session: it needs data the session doesn't have, needs design discussion across sessions, needs user input not yet available, or surfaces a structural question whose answer would gate the work. This is a default, not an absolute — the test is "can /plan resolve this with what it has right now."
 
 ## Capture and parking discipline
 
@@ -30,15 +31,17 @@ The control rule for capture and parking, in one place. Pieces also appear in th
 
 Read QUEUE.md and SPEC.md. Check whether Captures has items.
 
-**Unpark + staleness scans:** before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip unless something else flags them. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? The scans' output is candidates feeding Step 2, not findings to narrate here — collect them silently and carry them into Step 2, where they're processed ahead of Captures (see Unpark candidates first). No silent edits: every candidate goes through the Step 2 loop, where the user decides.
+**Unpark + staleness scans:** [SILENT] before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface; skip unless something else flags them. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? The scans' output is candidates feeding Step 2, not findings to narrate here — collect them silently and carry them into Step 2, where they're processed ahead of Captures (see Unpark candidates first). No silent edits: every candidate goes through the Step 2 loop, where the user decides.
 
-Ask: "Do you have something to discuss, or ready to process Captures?" (If Captures is empty, ask what they'd like to work on.) Keep the question clean — no scan candidates folded in; they surface only inside Step 2.
+Ask [PROMPT]: "Anything to discuss before we process Captures?" (If Captures is empty, ask what they'd like to work on.) Keep the question clean — no scan candidates folded in; they surface only inside Step 2.
 
-**If the user has something:** Handle it via the Step 2 loop — present, interview, recommend, wait, execute. Then: "Anything else, or ready for Captures?" Repeat until ready.
+**If the user has something to discuss:** Handle it via the Step 2 loop — present, interview, recommend, wait, execute. Then ask [PROMPT]: "Anything else before Captures?" Repeat until there's nothing more.
 
-**When ready:** Move to Step 2.
+**Then process Captures:** Move to Step 2. Processing Captures is where every /plan session goes — a discussion item is just an optional first stop, never an alternative to it.
 
 ## Step 2: Process captures [SEQUENCE]
+
+**Planning state file: _plan.md.** When capture processing begins, create `_plan.md` to hold this session's planning state: the carried unpark and staleness candidates, the item list, the current item, and the beat reached. Update it at each beat transition, and append each routed item with its disposition — promoted, parked, or dropped, with slug. One line per item, so updates stay cheap. The reason it exists: the file survives compaction, gives an interrupted /plan a resume path through session start, and hands /done a mechanical record of what was routed where instead of a reconstruction from memory. /done reads it at close and deletes it — same lifecycle as _build.md.
 
 **Captures structure: processed/unprocessed split.** Captures is divided by `---` into processed (above) and unprocessed (below). Processed = /plan has applied dependency management at least once (given a slug, set a `Blocked by:` header, or confirmed standalone via Step 2 sub-step 2). Processed captures carry slugs so they can be cross-referenced. Unprocessed = raw appended in file order — no slug, no dependency headers yet. The divider is staging between raw and routed (promote/park/drop), not a final home — captures sit above it until routed out of Captures entirely. Routing is separate from dependency management and can happen in any later /plan: a capture can become processed in one session and routed in another.
 
@@ -60,14 +63,14 @@ For each item:
    Stop and wait. The user decides.
 
 4. **Execute promote, park, drop, or red-flag routing:**
-   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the discussion's reasoning as inline prose — see Why-pipeline in plugin-behaviour.md. Show the draft in a fenced code block, per the approval-time outputs rule in plugin-behaviour.md. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
+   - **Promote** [DISCUSS, PROMPT] — Draft the batch entry (bold title, prose rationale, Build/Test subheadings). The rationale carries the discussion's reasoning as inline prose — see Why-pipeline in plugin-behaviour.md. Show the draft as a blockquote with a content-type lead-in (**Batch draft:**), per the approval-time outputs rule in plugin-behaviour.md. Don't write to QUEUE.md until approved. Claude places the batch using dependency ordering and reports where it went.
    - **Park** — Move to Parked with the `Blocked by:` or `Parked:` header populated per sub-steps 2 and 3.
    - **Drop** — Remove. If already decided (check LOG/index.md), state the prior decision and commit.
    - **Red flag** — Move the item into QUEUE.md's Red flags section at the top, written with its state (open, resolved, or accepted). When the state is accepted, done.md records the decision in the session LOG at close — what the user was warned about and that they chose to proceed.
 
 5. Remove the item from Captures once routed (promote, park, drop, or moved to the Red flags section). If only dependency management was applied this turn — slug given or `Blocked by:` set without routing — the capture stays in Captures but moves above the divider as a processed item; don't remove it.
 
-6. **Checkpoint** [PROMPT] — Offer three options every time, in uniform phrasing: (1) continue to the next capture, (2) close out now (go to Step 4), (3) share something else (loop back into Step 2 with the new item). Wait for the user's call. On the last capture, option 1 drops out naturally — the offer collapses to two without different wording.
+6. **Checkpoint** [PROMPT] — After every item, all three off-ramps must be available: continue to the next capture, close out now (go to Step 4), or share something else (loop back into Step 2 with the new item). Deliver them conversationally — they don't need identical wording each time, only to all be genuinely on offer, so the checkpoint reads as a natural pause rather than a form to fill in. Wait for the user's call. On the last capture, "continue to the next" drops out naturally — the offer becomes the remaining two.
 
 After all items: Captures should hold only processed items above the divider (or be empty if everything was routed). Section header, divider, and `### Parked` intact.
 

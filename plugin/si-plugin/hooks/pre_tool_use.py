@@ -100,10 +100,10 @@ def _normalise(path: str) -> str:
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """Check if a path is a method doc (QUEUE.md, REGISTRY.md, LOG/, _build.md)."""
+    """Check if a path is a method doc (QUEUE.md, REGISTRY.md, LOG/, _build.md, _plan.md)."""
     norm = _normalise(filepath)
 
-    for doc in ("QUEUE.md", "REGISTRY.md", "_build.md"):
+    for doc in ("QUEUE.md", "REGISTRY.md", "_build.md", "_plan.md"):
         if norm == _normalise(os.path.join(cwd, doc)):
             return True
 

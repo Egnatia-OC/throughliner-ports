@@ -11,179 +11,12 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Setup close-outs name /done; scaffolding creates the repo** **[setup-closeout-redesign]**
-
-From three [close-out-audit] findings (e120f3d), routed together as one design decision. setup.md is the only skill whose session ends never name /done. Step 4 closes with "/plan or /next" and stops. Step 2C's migration close does the same and reads no project state. So the scaffolded files sit uncommitted, no LOG entry gets written, and the project record starts with a gap — a consumer's first session teaches them to skip the close-out habit. The /next offer also contradicts setup's own Q4 rule: the interview deliberately writes the first entry rough and defers scoping to /plan, yet the close-out sends that unscoped entry toward execution. Two gaps surfaced at routing ride along. A fresh consumer folder has no git repository, so a /done recommendation is only honest once scaffolding creates one. And /done routes by _build.md, so a migration close can't blindly recommend /done when an interrupted build is present — the right pointer there is resuming the build.
-
-Build:
-- plugin/si-plugin/docs/setup.md Step 2 scaffold list: create a git repository when none exists, as part of scaffolding — silent and mechanical, like the rest of the scaffold. This is what makes the /done close work in a fresh consumer folder.
-- plugin/si-plugin/docs/setup.md Step 4 close-out: replace "Run /plan to scope your first batch, or /next if you're ready to build" with a close that recommends /done. The file-list display stays as consent display — it shows what appeared in the folder; the LOG entry /done writes remains the session's single summary. State that relationship in one line.
-- plugin/si-plugin/docs/setup.md Step 2C item 4: make the migration close state-aware — leftover _build.md present: name the interrupted build and recommend resuming it with /next, noting the migration changes get picked up at that build's close; otherwise recommend /done, matching Step 4.
-- plugin/si-plugin/docs/done-plan.md: widen the close-out to setup-shaped sessions — the entry template's framing covers scaffolding sessions (what was set up and why, not "queue changes"), and recommend-next gains a branch: a fresh project whose only batch is the rough Q4 entry recommends /plan, never /next, because that entry is deliberately unscoped.
-
-Test:
-- Doc edits self-verifying. Behavioural, host-side (after push + reinstall): the next real /setup run in a fresh folder — repo created silently, close names /done, /done writes a setup-shaped LOG entry and commits the scaffold. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Project-agnosticism sweep: rewrite setup.md to read for non-app projects too** **[setup-project-agnosticism-sweep]**
-
-setup.md is the on-ramp every project enters through, and its current wording assumes the user is building an app: the five interview questions, the Step 4 close-out, the Step 1 folder-state cases, and the three scaffolded doc templates (SPEC.md, QUEUE.md) all use app-building framing ("building," "components," "functionality," "source code," "builds first then tests"). The behaviour-agnosticism audit (fac25ab) surfaced 11 findings; seven collapse into one sweep of mechanical-or-near-mechanical rewords applied across setup.md and its scaffolded templates. The Step 4 close-out reword originally counted here moved to [setup-closeout-redesign], which replaces that line entirely. The three more substantive findings — REGISTRY.md noun choice (Q3.5 interview question), the spec-entry-trigger threshold across project types, and plugin-behaviour.md doc-routing — are held in separate captures for their own consideration. This sweep changes wording only; no interview-flow changes, no rule-trigger changes.
-
-Build:
-- plugin/si-plugin/docs/setup.md Q1: reword to "What is this project, and who is it for?" (drop "building"). From [setup-q1-agnostic-wording].
-- plugin/si-plugin/docs/setup.md Q2: reword to "What's the core of it — the main thing it produces, organises, or does?" (drop "functionality / does"). From [setup-q2-agnostic-wording].
-- plugin/si-plugin/docs/setup.md Q3 examples: replace software-only example set with 3–4 examples spanning software + non-software projects. From [setup-q3-agnostic-examples].
-- plugin/si-plugin/docs/setup.md Q4: reword inclusively — "What's the first thing to build or do? What would you want to have working or made progress on by the end of today?" Keeps build-shape framing for app projects, adds do/progress framing for others. From [setup-q4-inclusive-wording].
-- plugin/si-plugin/docs/setup.md Step 1 folder-state cases: reword Case A / Case B to "No content" / "Content exists" (or similar project-agnostic phrasing). From [setup-step1-case-wording].
-- plugin/si-plugin/docs/setup.md SPEC.md template: reword "What the app is" to "What the project is". From [setup-spec-template-agnostic].
-- plugin/si-plugin/docs/setup.md QUEUE.md template: reword "Each batch is one /next session — builds first, then tests." to "Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit)." From [setup-queue-template-type-complete].
-
-Test:
-- Self-verifying from the doc text. After the rewrite, setup.md reads cleanly for a tax-prep, records-keeping, research, or writing project as well as for an app project.
-- E2E follow-up (user-run, separate live session, queue as separate batch if desired): rerun /setup in a non-app folder and observe whether the questions land cleanly.
-
-**setup.md goes tag-free: self-contained prose carries the behaviour** **[setup-self-contained-no-tags]**
-
-From [output-tag-audit], the structural finding. setup.md's response-shape tags reference definitions that live in plugin-behaviour.md, which is injected only in adopted projects — and /setup's working cases run unadopted, so the tags are undefined tokens there. The prose restatements beside them are the real carriers. Decided at routing: setup.md stays deliberately self-contained in prose, and the tags come out — the alternative (inlining a compact copy of the definitions) creates a second, weaker copy that drifts, which is the duplication this arc keeps removing. Extends the [trickle-up-ask-when-unsure] precedent that setup.md carries its own copies by design. setup.md is exempt from [tag-restatement-trim] for the same reason.
-
-Build:
-- plugin/si-plugin/docs/setup.md: remove the three tag tokens ([BRIEF], [SEQUENCE, PROMPT], [BRIEF, PROMPT]). At each spot, check the adjacent prose carries everything the tag claimed — stop-and-wait, one-per-message, brevity — and write the missing piece where it doesn't. Locate by content, not line numbers.
-- plugin/si-plugin/docs/setup.md, near the top: add one line stating why this doc carries no response-shape tags — its sessions run before the behaviour rules load, so prose carries the behaviour. This guards against a future session "fixing" the inconsistency by re-adding tags.
-- plugin/si-plugin/docs/setup.md, the two untagged interaction spots from the same audit, landed as prose per this batch's decision: in Case C, make the wait explicit — tell the user, offer /plan, stop, and wait for their answer. In the Step 2 scaffolding, add a line that the work runs without narration — the close-out reports the file list, so nothing is lost by staying quiet.
-
-Test:
-- Self-verifying from the doc text. Behavioural: the next live /setup run should still ask one question per message and wait — now on prose alone.
-
-**Key the spec-entry trigger on SPEC.md itself, not "features"** **[spec-entry-trigger-rethink]**
-
-The pipeline rule — "New features need a spec entry before a build entry … Threshold: if a user would see or experience the difference" — assumes the project ships features to external users. Owner-only projects have neither, and the capture feared the rule would have to split per project type. It doesn't: both load-bearing problems dissolve by keying the trigger on the spec rather than a category of change — if landing the change would make SPEC.md's description of the project wrong or incomplete, update SPEC.md first. "Features" disappears (refactors pass untouched because they change no spec sentence; new capabilities, scope changes, and new output types all trip it, any project type); the audience question evaporates rather than getting answered, since noticeability was always a proxy for "the product truth changed" and the new form tests that directly. Mechanically checkable on a weak model: read SPEC.md — /plan already requires that — and ask whether any sentence in it goes wrong or incomplete. The per-type split stays rejected: two rules are double maintenance, one self-referential test covers both shapes. Same noun-free move as [setup-registry-template-and-noun]. From [behaviour-agnosticism-audit].
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Routing and discipline, spec-entry pipeline bullet: replace the features-noun trigger and the noticeability threshold with the self-referential form — if landing this change would make SPEC.md's description wrong or incomplete, update SPEC.md first. Keep the pipeline sequence (idea → question if unclear → SPEC.md → QUEUE.md) unchanged.
-- plugin/si-plugin/docs/plan.md ground rules, the pipeline line: matching reword — "spec entry (if it changes the product)" keyed to SPEC.md truth the same way, so the canonical statement and the restatement can't drift.
-
-Test:
-- Self-verifying from doc text: the rule reads cleanly for an app project and a tax-prep project alike, with no audience named.
-
-**Self-hosting notes audit: inventory every self-hosting rule and judgment, wherever it lives** **[self-hosting-notes-audit]**
-
-Self-hosting misses keep surfacing: designs authored without self-hosting context (the deferred-test close check that only pays in self-hosting, user-caught 2026-06-12), and rules whose halves live in different places — next.md halts on push markers while the convention telling /plan to write them lives only in this project's CLAUDE.md, so shipped plan.md has never heard of them. The cause: self-hosting knowledge accumulated in this project's CLAUDE.md and in session judgment rather than in the method. This audit opens a distribution arc. The inventory routes to Captures per the audit contract; the /plan that processes the findings authors the follow-on batches — those can't be authored today because their content is the findings. Each note then relocates to its right home with its rationale attached, per the why-pipeline. Three candidate homes: shipped procedure docs, generalized, when the note is method behaviour; this project's CLAUDE.md, when purely local workflow; the parked [self-hosting-support-during-setup] design scope, when it's consumer-facing self-hosting convention for /setup to scaffold — the inventory is that item's design input, its trigger unchanged. A CLAUDE.md staging stage (copy everything in first, distribute later) was weighed and dropped: Captures is already a complete, committed inventory, and staging adds write-then-remove churn. In exchange, distribution is relocation, never copying — the new home lands and the CLAUDE.md source comes out in the same batch, so no danglers survive — and the arc ends with a CLAUDE.md sweep for stragglers. Reading QUEUE.md as part of the target means decided-but-unshipped notes ([push-marker-hard-direction]) enter the inventory without waiting to land, which is what frees this audit to be placed by urgency rather than after the queue settles. Why distributed-with-rationale at all: rules hold best stated where they're used with their why attached (resources/research/model-instruction-compliance.md), and the post-June-20 weaker-model sessions need the relevant information in hand in the doc that's loaded when it matters.
-
-Audit:
-- Target: this project's CLAUDE.md; plugin/si-plugin/docs (all procedure docs and plugin-behaviour.md); plugin/si-plugin/hooks (denial and report text); plugin/si-plugin/templates; QUEUE.md (batches, parked items, captures); SPEC.md; resources/research/; LOG/index.md, opening entry files only where an index line signals self-hosting content.
-- Criteria: every rule, convention, or judgment that exists because this project builds the plugin it runs — host/target distinction, push-and-rezip, reinstall gating and host-side effects, push markers, host-side deferred tests, dirty-tree checks, version and zip mechanics, all-use-is-testing — plus judgment calls that only make sense under self-hosting (a session's own behaviour being the thing under test). For each finding: the note, where it lives today, a candidate home (shipped-generalized / this project's CLAUDE.md / the parked /setup-scaffolding scope — candidate only; the decision is /plan's), and whether its rationale is written anywhere.
-
-**Reframe /plan Step 1 entry + follow-up as sequencing, not either/or** **[plan-step1-sequencing]**
-
-plan.md Step 1's entry question ("Do you have something to discuss, or ready to process Captures?") and its follow-up after a discussion item ("Anything else, or ready for Captures?") both use "or" framing that reads as a branch — discuss-vs-process — when /plan always processes Captures and a discussion item is just an optional pre-step. The misreading surfaced twice in the 7563bc0+1 /plan: Claude reproduced the framing in the read-state summary ("if processing...") and bundled an unrelated housekeeping decision onto it as a conditional, the same wording bug surfacing in Claude's own output. Fix the wording so processing reads as the destination and discussion as the optional thing that happens first if there is one. Folded in from an [output-tag-audit] finding: the same two lines are stop-and-wait moments with no [PROMPT], and Step 1's scan block says "collect them silently" with no [SILENT]. Tag-only fixes. They ride along here because this batch rewrites two of the three lines anyway — tagging text another batch rewrites would collide.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 1 entry question: replace "Do you have something to discuss, or ready to process Captures?" with wording that frames processing as the destination — e.g. "Anything to discuss before we process Captures?" Keep the empty-Captures branch ("If Captures is empty, ask what they'd like to work on.") as-is. Tag the question [PROMPT].
-- plugin/si-plugin/docs/plan.md Step 1 follow-up after a discussion item: replace "Anything else, or ready for Captures?" with matching wording — e.g. "Anything else before Captures?" Tag it [PROMPT].
-- plugin/si-plugin/docs/plan.md Step 1 unpark + staleness scan block: tag it [SILENT]. The prose already says "collect them silently" — the tag makes it binding.
-- plugin/si-plugin/docs/plan.md Step 1 branching structure ("If the user has something" / "When ready: Move to Step 2"): adjust so the prose matches the new framing — discussion items run first if present, then Step 2 always runs, no either/or branch.
-
-Test:
-- Self-verifying from the doc text on the next /plan run. The entry question and follow-up should read as sequencing, and Claude shouldn't reproduce "if processing" or similar branching framing in narration.
-
-**Approval-time outputs render as blockquotes with a content-type lead-in** **[approval-display-blockquotes]**
-
-Supersedes [fenced-block-content-type-label], whose label design assumed a fence language slot. User feedback (2026-06-11): the desktop app's fenced blocks don't wrap, so long drafts run off-screen and get read incompletely — defeating the fence's purpose, exact text read and approved. Blockquotes wrap. The standard, live-tested through a full /plan session: approval-time and verbatim displays render as markdown blockquotes, with a bold lead-in line above the quote naming the content type (batch draft, capture draft, commit message, log entry, parking reason). One exception: content whose exact characters are the substance — code, shell commands — keeps a fence, because rendering would corrupt it. Trade-off accepted at routing: a blockquote renders markdown, so syntax slips in a drafted entry are invisible to the approval read. Division of labour recorded: the human approves meaning; [queue-format-lint-hook] checks structure at write time.
-
-Amended after the 2026-06-12 /done close (f05e336): the commit title and body still arrived as fences while the same close used a blockquote for the LOG entry. The cause: done.md's commit core explicitly instructs fenced blocks and points at plugin-behaviour.md's verbatim-copy rule, so the local instruction beat the decided standard. Two consequences carry into the build list — the verbatim-copy rule needs the rewrite too, not just the approval-time rule, and the sweep has a confirmed offender pinned in done.md's commit core. One design input: Claude runs git commit itself, so commit messages were never a real paste target. They move wholly to blockquote. Genuine paste targets — paste-ready prompts, shell commands the user runs in a separate terminal — keep fences under the exact-characters exception.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md, the approval-time outputs rule: rewrite from fence to blockquote-with-lead-in, carrying the why (fences don't wrap; an unread draft defeats approval), the canonical content-type labels, and the code-keeps-fences exception.
-- plugin/si-plugin/docs/plugin-behaviour.md, the verbatim-copy rule: rewrite to the same standard with the sharper boundary — fences remain only for genuine paste targets, strings the user lifts and pastes or runs elsewhere (paste-ready prompts, shell commands for a separate terminal); commit messages are not paste targets because Claude runs git commit itself, so they render as blockquotes under the approval-time rule.
-- Sweep every procedure doc naming "fenced code block" at an approval or display moment — plan.md's promote sub-step, next-build.md's two capture-routing spots, next-test.md's, next-audit.md's (check what remains of it after [audit-findings-bulk-approval]), and the done family — and point each at the new standard. Locate by content, not line numbers. Confirmed offender to hit: done.md's commit core, the commit-message presentation step, whose explicit "each in its own fenced code block" instruction is what overrode the standard at the f05e336 close.
-
-Test:
-- Behavioural, host-side (after push + reinstall): the next /plan or /done approval draft arrives as a labelled blockquote that wraps. Needs the deferred-test discipline — flag at /done if it can't run.
-- Behavioural, host-side, the pinned case: the next /done commit step presents title and body as blockquotes, fences gone. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Require an explicit ask after every approval-time draft** **[approval-ask-after-draft]**
-
-Procedure docs show drafts for approval but never say to ask. plan.md's promote step says "Don't write to QUEUE.md until approved," the approval-time rule says to fence the draft, and the stop-and-wait tag already sits on the promote step — so Claude stops, but stopping silently satisfies all of it. Observed across multiple /plan sessions and confirmed as direct user feedback: the draft appears, then silence, leaving the user to figure out what's wanted. The fix sits one level above any single skill, because /done's LOG entries and commit messages and /setup's drafts can all fail the same way: every approval moment must end with the question.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md "approval-time outputs go in a fenced code block" rule: extend so presenting the block is only half the move — the message must end with an explicit ask naming the decision needed (e.g. "Approve this wording?", "Write it to the queue?"). Silence after a draft fails the rule even when Claude has stopped to wait. Author the rule compliance-hardened from the start — why-clause plus positive constraint per resources/research/model-instruction-compliance.md (e.g. "a draft isn't actionable until the user knows what's being asked; end the message with the question") — rather than hardening it in a later pass.
-
-Test:
-- Self-verifying from doc text on the next /plan or /done run — every draft shown for approval should be followed by an explicit ask.
-
-**Captures and batch entries authored plain: complete, not compressed** **[human-readable-authoring]**
-
-User feedback (2026-06-11), surfaced by the first verbatim-first presentation: captures and batch rationales were written in long clause-chained sentences — dense Claude-for-Claude style that the co-reading human couldn't comfortably read, at filing time, at presentation, and at approval. One batch rationale had to be rewritten live before the user could understand what she was approving; the plain rewrite carried the same content and was approved as the replacement. The load-bearing insight: what Claude needs from these artifacts is completeness — facts, references, conditions preserved — not syntactic compression. Same information, shorter sentences, one idea per sentence; the modest token cost is accepted. Home is plugin-behaviour.md because every skill drafts these — /next routes discoveries to Captures mid-build, /done routes stragglers at close, /plan writes both.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Captures rule: add the authoring standard, compliance-hardened from the start (why-clause, positive constraint, explicit scope per resources/research/model-instruction-compliance.md) — keep everything (facts, references, conditions); write it in short sentences, one idea per sentence; the human co-reads this text and approves it, so unreadable is unapprovable. This is the canonical statement.
-- plugin/si-plugin/docs/plugin-behaviour.md, the why-pipeline's rationale-authoring guidance: one line extending the same standard to batch rationales and pointing at the canonical statement — no duplication.
-
-Test:
-- Behavioural on later sessions of any skill: freshly authored captures and rationales read in plain sentences without losing references or conditions. Already validated live across this session's drafts.
-
-**Show-before-write keyed to the action, not the loop** **[show-before-write]**
-
-plan.md already says never write batch entries without showing the exact text first, but the rule rides on the loop's beats — and the beats live in conversation memory. Observed 2026-06-11, deep in a compacted session: a recommendation concrete enough to read as a draft merged the two approval beats, and an entry was written unshown. The hardened form needs no memory of which beat the item is on, because it keys to the write itself: the message immediately before any QUEUE.md batch write must contain the entry text verbatim, and approval attaches to shown text, never to a described shape. Sibling insurance to [plan-state-artifact], which fixes the structural cause; this rule holds even with no state at all.
-
-Build:
-- plugin/si-plugin/docs/plan.md ground rules: harden the show-first rule to the action-keyed form, compliance-hardened from the start (why-clause, positive constraint, explicit scope per resources/research/model-instruction-compliance.md) — the message immediately before any QUEUE.md batch write contains the entry verbatim; approval attaches to shown text, not to a described shape; a recommendation, however concrete, is not a draft.
-
-Test:
-- Behavioural, host-side (after push + reinstall): later /plan sessions write nothing to the queue without the verbatim entry in the immediately preceding message. The case to watch is late-session, after compaction — where the original slip happened.
-
-**/plan resolves what it can; capture is only for what it can't** **[plan-resolves-by-default]**
-
-/plan has twice (observed) deferred work it could have done in-session: once by filing a capture asking /next to re-verify line refs and quoted strings after terseness edits, once by recommending park-with-"research needed" on the fenced-block label question that /plan itself was the right home for. Both were misroutes — /next executes the top batch and doesn't parse captures; "research needed" is the same skill-self-deferral. The pattern: when work is resolvable now and /plan is the home for that kind of work, doing it now is /plan's job. Capture is reserved for things /plan genuinely can't resolve in-session — needs more data than the session has, needs design discussion across sessions, needs user input not yet available, or surfaces a structural question whose answer would gate the work. Adding the rule to plan.md ground rules names it explicitly so the default flips from defer-via-capture to resolve-now.
-
-Build:
-- plugin/si-plugin/docs/plan.md ground rules: add a bullet stating /plan resolves what it can in-session — research, queue-wide cleanup (line-ref drift, quoted-string staleness after sweeps), cross-batch reconciliation, doc verification, anything else within /plan's reach. Capture is for things /plan genuinely can't resolve: needs data, needs design discussion, needs user input, surfaces a structural question that would gate the work. Frame the rule as a default, not an absolute — the test is "can /plan resolve this with what it has right now."
-
-Test:
-- Self-verifying from doc text on the next /plan run where a resolvable-now item surfaces. Claude should do the work in-session instead of filing it as a capture.
-
 **Detect and roll in user edits at /done commit time** **[user-edits-rollup-on-commit]**
 
 User-made edits to target-tree files (plugin/si-plugin/) can happen at any time — mid-session, between sessions — but /done's per-build commit only stages files the build touched. Those edits sit dirty across sessions until the push-and-rezip ritual catches them at push time. Observed: 5 docs files stayed dirty across at least two sessions. The gap is /done's commit, which is the natural moment to detect and offer to include them. The push-and-rezip sweep stays as the safety net; this adds an earlier catch point.
 
 Build:
 - plugin/si-plugin/docs/done.md: at the commit step, add a sub-step — run `git status --porcelain plugin/si-plugin/`, compare against the active build's file list, surface any dirty paths outside scope with a one-line summary, and offer to stage + roll them into the commit.
-
-**Session-start dirty-tree warning** **[session-start-dirty-tree-check]**
-Depends on: [user-edits-rollup-on-commit]
-
-session_start reports project state but not git state. A consumer project dirty at session start almost always means the previous session ended without /done — work sitting unrecorded that a non-coder won't notice for weeks (observed here: five doc files dirty across two-plus sessions, compensated by a manual check in this project's CLAUDE.md). The hook generalizes that check so every consumer project gets it: git status --porcelain at session start, one line when dirty. The Depends on is real, not thematic: the warning's promise — "/done will pick them up" — only becomes true once [user-edits-rollup-on-commit] teaches /done to offer dirty out-of-scope paths into its commit. Silent when _build.md exists: mid-build dirt is expected, not orphaned. Sibling to the hook cluster ([hash-backfill-as-hook], [queue-format-lint-hook], [git-add-safety-hook-gap]); shares session_start.py with the backfill hook, so whichever builds second sees the other's changes.
-
-Build:
-- plugin/si-plugin/hooks/session_start.py: run git status --porcelain; when non-empty and no _build.md is present, emit one line via additionalContext — "N files have uncommitted changes from a previous session — /done will pick them up."
-- This project's CLAUDE.md (host-only, does not propagate via reinstall): remove the manual "Session-start dirty-tree check" section — the hook supersedes it. Accepted: a brief gap between this edit and the reinstall that activates the hook.
-
-Test:
-- Claude-run: session_start.py against a fixture repo — dirty tree without _build.md warns with the correct count; dirty with _build.md stays silent; clean stays silent.
-- Host-side (after push + reinstall): live one-liner at the next session start with known dirt. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Per-session /plan state artifact: _plan.md** **[plan-state-artifact]**
-Depends on: [session-start-dirty-tree-check]
-
-The capture-processing loop runs several beats per item, and the session's position in it lives only in conversation memory. A long compacted session lost a beat and wrote an entry unshown — the exact failure [short-session-design-target] predicts: memory covering for missing structure. "Planning sessions stay short" was the assumption, and 2026-06-11 disproved it. /next already externalizes execution state to _build.md; planning gets the same treatment. The artifact pays beyond the slip: it survives compaction, gives an interrupted /plan a resume path through session_start the way an interrupted build has one, and hands /done a mechanical record of what was routed where instead of a reconstruction from conversation. Sibling: [show-before-write] is the zero-state insurance at the write action; this batch removes the structural cause. The Depends on is real: one build entry extends the dirty-tree warning that batch installs.
-
-Build:
-- plugin/si-plugin/docs/plan.md: create _plan.md when capture processing begins — carried candidates, the item list, current item, beat reached. Update at each beat transition; append each routed item with its disposition (promoted, parked, dropped — with slug). One line per item so updates stay cheap.
-- plugin/si-plugin/hooks/session_start.py: detect a leftover _plan.md the way _build.md is detected — report an interrupted planning session and point /plan at resuming from the recorded item and beat. Shares this file with the other hook batches; whichever builds second sees the other's changes.
-- plugin/si-plugin/docs/done-plan.md: read _plan.md's routed list when writing the LOG entry; delete the artifact at close — same lifecycle as _build.md.
-- plugin/si-plugin/hooks/pre_tool_use.py: verify _plan.md presence doesn't trip any build-scope behaviour; adjust only if it does.
-- The dirty-tree warning from [session-start-dirty-tree-check]: extend its silence condition — uncommitted changes with _plan.md present are expected mid-plan, same as mid-build dirt with _build.md. Locate by content.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry — what _plan.md is, why it appears in the project, why not to delete it.
-
-Test:
-- Claude-run: session_start.py against a fixture repo — leftover _plan.md detected with the right report line; neither artifact present, silent.
-- Host-side (after push + reinstall): interrupt a /plan mid-processing, open a new session, watch for the resume offer. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Loosen checkpoint wording: off-ramps available, not identically phrased** **[checkpoint-wording-loosen]**
-
-The plan.md Step 2 checkpoint rule ("Offer three options every time, in uniform phrasing") pulls Claude toward rendering a numbered list at every checkpoint, which reads as bureaucratic form-fill. Observed across multiple /plan sessions — not a one-off. The rule's intent is sound (all three off-ramps available after every item), but "uniform phrasing" is being read as "identical wording each time." Loosening the wording so the three options must be available but can be delivered conversationally fixes the robotic delivery without losing the guarantee.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 2 sub-step 6 (Checkpoint): reword so the three off-ramps (continue to next, close out, share something else) are required to be available after every item, but drop "uniform phrasing" — conversational delivery that covers all three is fine.
 
 **Add forced app-identification check to INSTALL.md routing** **[install-app-identification-check]**
 
@@ -729,6 +562,11 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [delete-preflight-deferred-tests] — verify the /next pre-flight no longer lists pending deferred tests before the batch runs. Confirmed by: the first /next pre-flight after push + reinstall.
 - [allow-parallel-sessions] — verify opening a /plan chat while a build is active is no longer refused (the active-build session-start message naming planning-alongside was confirmed in-session against a fixture). Confirmed by: the first time a /plan session is opened alongside an active build after push + reinstall.
 - [make-drift-visible] — verify a session in a drifted project (missing a scaffolded file/folder) opens with Claude plainly flagging what's out of date and offering /setup, while a current project on a higher plugin version stays silent (the presence-based logic and no-false-alarm were confirmed in-session against fixtures). Confirmed by: the first session in a drifted project after push + reinstall.
+- [setup-closeout-redesign] — verify a real /setup run in a fresh folder creates the git repository silently, the close-out names /done, and /done writes a setup-shaped LOG entry and commits the scaffold; a Case C migration close with a leftover _build.md recommends resuming /next instead. Confirmed by: the first /setup run in a fresh folder after push + reinstall. (host-side)
+- [approval-display-blockquotes] — verify the next /plan or /done approval draft arrives as a labelled blockquote that wraps (not a fence), and the /done commit step presents title and body as blockquotes with fences gone. Confirmed by: the first /plan or /done approval draft, and the first /done commit step, after push + reinstall. (host-side)
+- [show-before-write] — verify a later /plan writes nothing to QUEUE.md without the verbatim entry in the immediately preceding message; the case to watch is late-session, after compaction. Confirmed by: the first /plan batch write in a long/compacted session after push + reinstall. (host-side)
+- [session-start-dirty-tree-check] — verify the live one-liner at session start with known dirt and no _build.md (the fixture test — dirty-without-build warns, dirty-with-build silent, clean silent — passed in-session this goal session). Confirmed by: the first session opened with a dirty tree and no active build after push + reinstall. (host-side)
+- [plan-state-artifact] — verify the live resume offer: interrupt a /plan mid-processing, open a new session, watch for the "INTERRUPTED PLANNING SESSION" report (the fixture test — _plan.md detected, dirty-warning suppressed with _plan.md present, silent when absent — passed in-session this goal session). Confirmed by: the first interrupted /plan reopened after push + reinstall. (host-side)
 
 ## Captures
 
@@ -896,6 +734,80 @@ Raised again 2026-06-15, with real frustration: across multiple sessions the use
 The design is not the problem. The fix is already fully specified as the queued batch **[closeout-text-collapse]**, which makes both the commit title and body derive from the one approved LOG text (one approval, nothing new to read at commit time). The problem is that batch is **unbuilt and sits far down the Batches list**, and it is host-side (needs build + push + reinstall), so until it ships every /done re-authors the commit by hand and the user re-lives the broken behaviour. So this is not the user mis-instructing; it is a known fix that has never been prioritized to land.
 
 Asks for /plan (or for a goal session): (1) **move [closeout-text-collapse] to the top of the Batches list** so the next build ships it — it is small and high-pain; until then, (2) manual /done closes derive the commit from the LOG entry by hand (done this session). Compounding cause the user named, and it is real: Claude's over-long discussion at every turn makes it hard for her to catch when /done drifts off-process, so the error slips past unnoticed. This is the documented model-compliance problem in resources/research/model-instruction-compliance.md — brevity instructions in CLAUDE.md and the plugin lose to the system prompt's helpfulness/thoroughness, so adding more or louder instructions does not fix it. The verbosity fix needs a mechanism at a higher priority than instructions, not stronger instructions.
+
+**Self-hosting notes inventory — findings from [self-hosting-notes-audit]**
+
+Audit run 2026-06-15 (goal session). The complete inventory of every self-hosting rule, convention, and judgment in the project, with where each lives, a candidate home, and whether its rationale is written. This is the committed inventory the [self-hosting-notes-audit] design called for: the next /plan authors the follow-on relocation batches from these findings (relocation, never copying — the new home lands and the CLAUDE.md source comes out in the same batch). Candidate homes are candidates only; the decision is /plan's. Homes: (a) shipped-generalized, (b) this project's CLAUDE.md, (c) the parked [self-hosting-support-during-setup] /setup-scaffolding scope.
+
+1. **Note:** The plugin exists as "host" (installed, governs the live session) and "target" (editable source at `plugin/si-plugin/`). Target edits do nothing until packaged and reinstalled. **Lives:** CLAUDE.md "Host and target". **Candidate home:** (c) — host/target is the defining self-hosting concept any plugin-building consumer needs. **Rationale written:** yes.
+
+2. **Note:** Ambiguous references to "the plugin / the hooks / the procedures" must specify host or target; default is target. **Lives:** CLAUDE.md "Host and target". **Candidate home:** (b) — local disambiguation convention for the developer's chat. **Rationale written:** yes (also MEMORY.md).
+
+3. **Note:** Most target changes become host changes on reinstall, but changes outside the plugin package (project doc structure, this CLAUDE.md) don't propagate and need manual updates. **Lives:** CLAUDE.md "Host and target". **Candidate home:** (b) — concerns this repo's own non-propagating files. **Rationale written:** yes.
+
+4. **Note:** Batch ordering assumes the next batch sees the previous batch's effects — true for target-side edits (readable at author time), false for host-side changes (hooks, loaded skill docs, plugin-behaviour.md) that only refresh after push + reinstall. **Lives:** CLAUDE.md "Self-hosting dependency ordering". **Candidate home:** (c) — [self-hosting-support-during-setup] lists this discipline. **Rationale written:** yes (worked example).
+
+5. **Note:** When a batch depends on a previous batch's host-side effects, /plan must place it after a push marker and annotate its `Depends on:` line as `(host-side)`. **Lives:** CLAUDE.md "Self-hosting dependency ordering". **Candidate home:** (a) — /plan authoring behaviour; shipped plan.md has never heard of push markers. **Rationale written:** yes.
+
+6. **Note:** The line `--- Push required before continuing ---` halts /next until the user has pushed and reinstalled. **Lives:** split — convention/authoring side in CLAUDE.md "Push-marker convention"; the halt ships in next.md pre-flight. **Candidate home:** (a) — the /next halt already ships; the authoring half should join it. This split-across-homes is the audit's named trigger case. **Rationale written:** yes.
+
+7. **Note:** The push marker is hard in only one direction — it halts /next because batches past it read host-side state; it does NOT suspend decided rules/reasoning, and is not a wall for planning work. It marks a ship-by aim. **Lives:** queued batch [push-marker-hard-direction], not yet written into CLAUDE.md. **Candidate home:** (b) — the batch routes it to this project's CLAUDE.md. **Rationale written:** yes.
+
+8. **Note:** Rezip and Push are distinct. Rezip builds a fresh zip for private dogfooding (no bump, commit, or remote). Push is the full release ritual that publishes. **Lives:** CLAUDE.md "Rezip and Push". **Candidate home:** (c) — [self-hosting-support-during-setup] lists "push-and-rezip steps". **Rationale written:** yes.
+
+9. **Note:** Rezip procedure: delete `__pycache__` under `plugin/si-plugin/`, repackage overwriting the zip (zip the folder so internal paths start with `si-plugin/`), verify no `__pycache__` entries, tell Alex nothing was published. **Lives:** CLAUDE.md "Rezip" steps. **Candidate home:** (b) — exact commands/paths are this-machine specific; the concept (clean bytecode before zipping) is the scaffolding-level note. **Rationale written:** yes.
+
+10. **Note:** Push ritual: backfill LOG hashes, bump version (patch vs minor), run the two-pass pre-push sweep, archive the old zip, prune to three, clean `__pycache__`, repackage+verify, stage paths+zip+archive+plugin.json+LOG, commit "Bump to v… and repackage", push, tell Alex to reinstall. **Lives:** CLAUDE.md "Push" steps 1–10. **Candidate home:** (b) — full ritual with literal commands is local; the high-level shape is the scaffolding abstraction. **Rationale written:** yes.
+
+11. **Note:** Version bumping lives on push, never rezip — bumping on every test build would make Alex's own projects nag "re-run /setup". **Lives:** CLAUDE.md Push step 2. **Candidate home:** (c) — [self-hosting-support-during-setup] lists "version bumping". **Rationale written:** yes.
+
+12. **Note:** Pre-push consistency sweep — two passes: gather unpushed commits and their LOG entries, then check target internal consistency (templates vs docs), project docs, and CLAUDE.md for staleness. **Lives:** CLAUDE.md Push step 3. **Candidate home:** (c) — [self-hosting-support-during-setup] lists "pre-push consistency sweep". **Rationale written:** yes.
+
+13. **Note:** Zip-archive mechanics — archive the previous zip as `si-plugin-v<OLD>.zip`, prune to three; git history is the authoritative record, so a test-build overwrite in the archive is cosmetic. **Lives:** CLAUDE.md Push steps 4–5 + "Archive accuracy". **Candidate home:** (b) — specific to this repo's packaging layout. **Rationale written:** yes.
+
+14. **Note:** Clean `__pycache__` before any zip so Python bytecode never ships. **Lives:** CLAUDE.md Rezip step 1 + Push step 6. **Candidate home:** (b) — tied to this plugin shipping Python hooks; literal command is local. **Rationale written:** yes.
+
+15. **Note:** At session start with no `_build.md`, run `git status --porcelain plugin/si-plugin/`; if dirty, warn and list paths (possible orphaned sweep edits). **Lives:** CLAUDE.md "Session-start dirty-tree check". **Candidate home:** (a) — queued [session-start-dirty-tree-check] moves this into session_start.py for every consumer and removes the manual section. **Rationale written:** yes.
+
+16. **Note:** A "goal session" runs with the plugin off so Claude works autonomously through several build batches in one chat, closed by manual /done. **Lives:** CLAUDE.md "Goal sessions (plugin off)". **Candidate home:** (b) — the developer's own autonomous-dev workflow; its formalization is an open fork (/goal vs cruise control). **Rationale written:** yes.
+
+17. **Note:** In a goal session the session-start hook never fires, so its LOG-hash backfill doesn't run; manual /done must backfill by hand (oldest-`git log -S` rule), folding the edit into the commit. **Lives:** CLAUDE.md "Goal sessions (plugin off)". **Candidate home:** (b) — interim handling tied to the not-yet-supported /goal mode. **Rationale written:** yes (labelled interim; thin — no permanent home yet).
+
+18. **Note:** The session's own behaviour is the thing under test — all use of the plugin to develop the plugin is testing it; any observed Claude behaviour routes to Captures, not memory. **Lives:** CLAUDE.md "Rules for Claude". **Candidate home:** (b) — defining self-hosting judgment, specific to the developer dogfooding. **Rationale written:** yes.
+
+19. **Note:** Host-side deferred tests (confirmable only after push + reinstall) are the dominant deferred-test flavor in self-hosting; nearly every change here defers, making the section look far larger than a consumer's would. **Lives:** QUEUE.md Deferred tests + [deferred-test-lifecycle] + "Deferred tests vs test batches" capture. **Candidate home:** (a) for the lifecycle / (b) for the "self-hosting inflates the count" observation. **Rationale written:** yes.
+
+20. **Note:** The /done close-out backstop ("did this session's own activity confirm a pending deferred line?") pays mainly in self-hosting but stays universal because no mechanical self-hosting flag exists to condition on. **Lives:** QUEUE.md [deferred-test-lifecycle]. **Candidate home:** (a) — ships into done.md universally, self-hosting reasoning travels as rationale. **Rationale written:** yes.
+
+21. **Note:** `.si-version` records which plugin version set a project up; the hook compares it to the installed version only for the "an update just happened" signal — drift warnings are presence-based, not version-based (version bumps every release, would cry wolf). **Lives:** session_start.py + setup.md; [scaffolding-resync] / dev-project capture. **Candidate home:** (a) — shipped behaviour; the self-hosting friction (missing `.si-version`/`FAQ/`) is a (b) local capture. **Rationale written:** yes.
+
+22. **Note:** The dev project drifts because nothing re-scaffolds it when the plugin gains new scaffolding — `.si-version` and `FAQ/` were missing because /setup was never re-run here. **Lives:** QUEUE.md [faq-backfill] + dev-project capture. **Candidate home:** (b) — self-hosting maintenance gap specific to this repo. **Rationale written:** yes.
+
+23. **Note:** /setup is consumer-framed and fits awkwardly on the dev project — the host/target oddity isn't acknowledged, and migration scaffolding would create fresh drift. **Lives:** QUEUE.md "/setup on the dev project" capture. **Candidate home:** (c) — the capture proposes a self-hosting branch in /setup. **Rationale written:** yes.
+
+24. **Note:** Telling the user "run /setup to bring everything up to standard" is an overpromise — migration only backfills missing files and stamps `.si-version`; it does nothing about content drift. **Lives:** QUEUE.md "/setup on the dev project" Outcome 2. **Candidate home:** (a) — bears on what the [make-drift-visible] / [scaffolding-resync] catch-up message promises any consumer. **Rationale written:** yes.
+
+25. **Note:** [self-hosting-support-during-setup] — if a user builds a plugin with the plugin, /setup should scaffold the self-hosting workflow into their CLAUDE.md (push-and-rezip, host/target, pre-push sweep, version bumping, dependency-management discipline). **Lives:** QUEUE.md Parked. **Candidate home:** (c) — this *is* that scope; the destination for most consumer-facing notes here. **Rationale written:** yes.
+
+26. **Note:** The first /goal session exposed that the method has no explicit goal-session shape — it assumes one batch per session, so a multi-batch run improvised an aggregate `_build.md`, multi-thread LOG entry, and single commit. **Lives:** QUEUE.md "First autonomous /goal" capture + LOG 018152a. **Candidate home:** (b) — developer's autonomous-mode workflow, not yet shipped. **Rationale written:** yes.
+
+27. **Note:** Pushing planning state in self-hosting is costly — a push off a no-plugin-change commit triggers the full push-and-rezip ritual, so /done's push offer should default to commit-only for planning closes. **Lives:** QUEUE.md [push-offer-fit]. **Candidate home:** (a) — ships the commit-only default into done-plan.md; self-hosting is the sharpest motivating case. **Rationale written:** yes.
+
+28. **Note:** Cross-doc references in `plugin/si-plugin/` docs name their target ("the blocker gate in next.md's pre-flight"), never a step number, because step numbers silently retarget on renumbering. **Lives:** CLAUDE.md "Working conventions" + LOG 9f1b80b. **Candidate home:** (b) — host-only authoring rule for editing the plugin's own source. **Rationale written:** yes.
+
+29. **Note:** post_tool_use.py's `ALLOWED_SUBHEADINGS` must grow when new batch types ship — a maintenance coupling between the lint hook and the queue format the plugin defines for itself. **Lives:** post_tool_use.py docstring + denial text; echoed in [spec-edit-batch-type], [ship-freeform-next-type]. **Candidate home:** (b) — code-maintenance note for whoever edits this hook. **Rationale written:** yes (only as code comment — thin; not a stated convention).
+
+30. **Note:** git-safety denials match command text, not intent, so a denial can fire on a command that carries the pattern only as data; the note tells Claude to assemble such strings at runtime. **Lives:** pre_tool_use.py `PATTERN_AS_DATA_NOTE` + LOG 61bfd2f. **Candidate home:** (a) — shipped in the hook; the surfacing case (writing the pattern as a test string) is a plugin-dev scenario. **Rationale written:** yes.
+
+31. **Note:** This project's "Where things live" tree and Architecture enumerations describe the self-hosting repo layout (plugin/, zip-archive/, target source) that no consumer has. **Lives:** CLAUDE.md "Where things live" + "Architecture". **Candidate home:** (b) — describes this repo's dev layout. **Rationale written:** n/a (descriptive). Note: stale counts already captured separately ("2 hooks" vs three, "Target v1.11.0" vs 1.12.0).
+
+32. **Note:** Taskflowapp is the E2E test consumer; Alex runs E2E in a separate session and observations come back as queue items — the self-hosting project uses a real external consumer to test what it can't test on itself. **Lives:** CLAUDE.md "E2E testing". **Candidate home:** (b) — names a specific external project and cross-session workflow. **Rationale written:** yes.
+
+33. **Note:** Reading QUEUE.md as audit target means decided-but-unshipped notes enter the inventory without waiting to land — the queue itself is treated as authoritative target state. **Lives:** QUEUE.md [self-hosting-notes-audit] rationale. **Candidate home:** (b) — meta-judgment about this audit/distribution arc. **Rationale written:** yes.
+
+34. **Note:** Distribution discipline — each relocated note lands in its new home AND its CLAUDE.md source comes out in the same batch (relocation, never copying), so no danglers survive; the arc ends with a CLAUDE.md sweep for stragglers. **Lives:** QUEUE.md [self-hosting-notes-audit] rationale. **Candidate home:** (b) — process discipline for this arc. **Rationale written:** yes.
+
+Coverage note: the shipped procedure docs and templates carry essentially no self-hosting content — the single exception is next.md's push-marker halt (finding 6). That absence is the audit's thesis: self-hosting knowledge lives in CLAUDE.md and session judgment, not in the method. Two rationales are thin: finding 29 (lives only as a code comment) and finding 17 (labelled interim, no permanent home). Factual confirmation, not new findings: CLAUDE.md still reads "Target v1.11.0" and "2 hooks" while plugin.json/`.si-version` are 1.12.0 and three hook files exist — both already captured.
 
 ### Parked
 
