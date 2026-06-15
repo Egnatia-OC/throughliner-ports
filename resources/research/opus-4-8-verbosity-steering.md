@@ -26,12 +26,21 @@ So verbosity is not an immovable system-prompt wall. The model goes long because
 5. **Name the specific verbosity patterns to kill.** "Don't restate what you just showed." "Don't narrate internal steps." "Don't write a meta-description of what you did — show only what's genuinely new." Concrete offenders, with the positive replacement stated.
 6. **Describe user-facing updates explicitly, with examples.** Official guidance for progress updates: *"explicitly describe what these updates should look like in the prompt and provide examples."*
 
-## The strongest lever: an output style (system-prompt priority)
+## The strongest lever: an output style shipped in the plugin (system-prompt priority — CONFIRMED)
 
-Claude Code supports **output styles** — *persistent, file-based configurations that modify Claude's system prompt.* Setting `"outputStyle": "Concise"` enables a built-in concise mode. This matters because it operates **at system-prompt priority**, i.e. the level the old file worried we couldn't reach from a skill doc. A custom output style can encode the positive/quantified/exemplified rules above so they ride at the highest-priority level rather than at user-message priority where CLAUDE.md and plugin docs sit.
+Verified 2026-06-15 against the official docs ([code.claude.com/docs/en/output-styles](https://code.claude.com/docs/en/output-styles)). Claude Code **output styles** modify the system prompt directly: *"Output styles directly modify Claude Code's system prompt,"* with custom instructions *"added to the end of the system prompt"* — versus CLAUDE.md, which *"adds a user message after the system prompt."* So an output style reaches the system-prompt priority level the plugin's skill docs and CLAUDE.md cannot. The research premise here is confirmed, not assumed.
 
-- Desktop app: settings are reached via the standard OS settings shortcut; the exact path to set an output style in the current desktop build needs confirmation in-app (the search evidence describes the setting key, not the desktop click-path).
-- An output style is project/host-level config, not part of the plugin package — so it would steer the *developer's* sessions, and for consumers it would need to be part of what /setup or the install guide recommends.
+Mechanism (verified):
+- A custom output style is a markdown file (frontmatter + instructions) at user (`~/.claude/output-styles`), project (`.claude/output-styles`), or **plugin** (`output-styles/` directory in the plugin package) level.
+- `keep-coding-instructions: true` keeps Claude Code's built-in software-engineering instructions and layers the custom instructions on top — what we want (stay coding, add concision).
+- `force-for-plugin: true` (plugin output styles only) applies the style automatically whenever the plugin is enabled, overriding the user's own `outputStyle` setting and requiring no user selection.
+- The standalone `/output-style` command was deprecated (v2.1.73) and removed (v2.1.91); a style is now chosen via `/config` → Output style, or by editing the `outputStyle` field in a settings file. Changes take effect at session start (after `/clear` or a new session). The style also triggers ongoing reminders to adhere to it during the conversation.
+
+This resolves both prior open questions. **Distribution:** the plugin ships the style in `output-styles/` and `force-for-plugin: true` auto-applies it to every consumer — no /setup scaffolding, no desktop click-path needed. **Tradeoff:** `force-for-plugin` overrides a user's own chosen output style while the plugin is enabled.
+
+Caution on the lookalike: a SessionStart hook can inject instructions and is sometimes described as an output-style "replacement," but that is **CLAUDE.md-equivalent (user-message priority)** — NOT a substitute for the real system-prompt-priority lever. The plugin already injects plugin-behaviour.md at that weaker level; the output style is what reaches higher.
+
+Sources for this section: [Output styles — Claude Code Docs](https://code.claude.com/docs/en/output-styles).
 
 ## Effort parameter — not the lever for prose brevity
 
