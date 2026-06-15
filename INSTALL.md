@@ -1,26 +1,44 @@
 # Install guide — Sovereign Implementer
 
-> **Note to Claude:** You are reading this guide on a user's behalf. They have opened a fresh chat at claude.ai and pasted this link because they want to install the Sovereign Implementer plugin for Claude Code. Follow the instructions in this file to walk them through it.
->
-> **Ground rules:**
-> - Assume the user has zero terminal experience and is mildly allergic to terminals. Use the Claude Code **desktop app** at all times. Do not suggest CLI commands, `claude --version`, `/config` in a terminal, or any terminal-based workflow except where this guide explicitly says one is needed.
-> - You don't have access to their machine from this chat. You're giving them instructions to follow in their own desktop app and browser. Wait for them to report back at each step.
-> - If you need a current download URL or up-to-date install instructions for Claude Code itself, do a web search rather than guessing — official pages change.
-> - The pacing rules at the end of this file are mandatory. Read them before you start the walkthrough.
+**What this is.** A step-by-step guide to installing the Sovereign Implementer plugin for Claude Code. You paste this guide into a chat at claude.ai, and Claude reads it and walks you through the install one step at a time — you don't have to figure anything out on your own.
+
+**Who it's for.** Anyone who wants to use Sovereign Implementer and is new to this. No coding or terminal experience is needed. Everything happens in apps you click through, not a command line.
+
+**What to expect.** Claude will ask you a couple of quick questions to find out where you're starting from, then guide you through getting Claude Code (if you don't have it), making sure you're on a paid plan, and adding the plugin. It goes one step at a time and waits for you at each one.
+
+**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin).
+
+**For Claude (the assistant reading this):** your operating instructions are at the end of this file, in the "Instructions for Claude" section. Read that section before you start walking the user through anything.
+
+## Before you start — you'll need a paid Claude plan
+
+Claude Code only runs on a paid Claude plan. **A Claude Pro subscription is enough — you do not need Max.** (Pay-as-you-go API credit also works, but for most people a Pro subscription is the simpler path.)
+
+There's no fixed dollar figure here on purpose, because prices change — check Anthropic's current pricing, which you'll find at claude.ai under **Settings > Plans & Billing**.
+
+What "within plan limits" means in plain terms: a Pro subscription includes a set amount of Claude Code usage in each period. If you reach that limit, Claude Code pauses until your usage resets — it's a wait, not a surprise charge. (Only pay-as-you-go API credit can run up an open-ended bill, which is why a subscription is the easier choice to start with.)
+
+If a paid plan isn't something you can do right now, this is the moment to stop — the rest of the guide needs one.
 
 ## Step 1 — Opening interview
 
-Before recommending anything, find out where the user is. Ask these three questions **one at a time** (see pacing rules below — do not bundle them). Wait for an answer before the next.
+Before recommending anything, find out where the user is. Ask these questions **one at a time** (see the pacing rules in the Instructions for Claude section — do not bundle them). Wait for an answer before the next.
 
 1. **Which operating system are you on?** Windows, macOS, or Linux?
-2. **Do you already have the Claude Code desktop app installed?** If they're not sure, ask them to check their Applications folder (macOS) or Start menu (Windows). Claude Code is a separate app from the Claude chat app at claude.ai.
-3. **Do you have a paid Claude plan?** Claude Code needs a paid plan to run — either a Claude subscription (Pro or Max) or pay-as-you-go API credit. The free tier at claude.ai does not include Claude Code access.
+
+2. **Let's confirm which app you have open.** There are two different Anthropic apps and they're easy to mix up: **Claude Code** (what we need) and the **Claude chat app** at claude.ai (not what we need for this). So that we route you correctly, tell me what you actually see:
+   - What does the title bar or window say?
+   - Does the window have a **Code** area / a place that looks like a developer workspace, or is it just a **chat box** where you type messages?
+
+   Use the answer to decide:
+   - **They describe Claude Code** (a developer/Code workspace, "Claude Code" in the title) → they have the right app. Continue.
+   - **They describe the Claude chat app** (just a chat interface, claude.ai) → they don't have Claude Code yet. Tell them plainly: Claude Code is a separate desktop app from the Claude chat app — it's the one that can build projects on their computer, and it's what this plugin runs inside. Then route them to **Branch A** to install it.
+   - **They're not sure / haven't installed anything** → treat it as "no Claude Code" and route to **Branch A**.
 
 Based on the answers, route them:
 
-- **No Claude Code installed** → Branch A, then Branch B.
-- **Claude Code installed but no paid plan** → handle the paid-plan piece (see Branch A, paid-plan section), then Branch B.
-- **Claude Code installed and on a paid plan** → Branch B only.
+- **No Claude Code installed (or wrong app)** → Branch A, then Branch B.
+- **Claude Code installed** → Branch B. (The paid-plan requirement was already covered above — confirm they're set rather than re-asking it as a fresh question.)
 
 ## Branch A — Install Claude Code (desktop app) and set up a paid plan
 
@@ -32,9 +50,9 @@ After install: have them open the app once and sign in with their Anthropic / Cl
 
 ### A.2 — Paid plan
 
-Claude Code requires a paid plan. Be honest about this — don't soften it. The options are:
+Claude Code requires a paid plan (covered in "Before you start" above). Be honest about this — don't soften it. The options are:
 
-- **Claude Pro or Max subscription** (monthly) — covers Claude Code usage within plan limits. Manage at claude.ai under Settings > Plans & Billing.
+- **Claude Pro or Max subscription** (monthly) — covers Claude Code usage within plan limits. Manage at claude.ai under Settings > Plans & Billing. Pro is enough.
 - **API pay-as-you-go** — top up credit at console.anthropic.com. Used when subscription limits are exceeded or for usage outside a subscription.
 
 Recommend the subscription path for a non-coder unless they already have API credit set up. Walk them through upgrading at claude.ai if needed, then return to the desktop app and confirm it recognises the plan (they should be able to start a session without a billing error).
@@ -43,42 +61,63 @@ Recommend the subscription path for a non-coder unless they already have API cre
 
 Once Claude Code is installed and the user is on a paid plan:
 
-1. **Download the plugin zip.** Direct link: `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip`. Tell them to click and save it somewhere they'll find it (Downloads folder is fine). Note the file name — it should be `si-plugin.zip`.
+1. **Download the plugin zip.** Direct link: `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip`
+
+   A quick note so the link doesn't look suspicious: **FlintCraftTech** is the account that publishes this plugin, and **Sovereign Implementer** is the plugin's name — the names differ, but this is the official source. When they click the link, the file should download on its own as `si-plugin.zip`. If instead it opens in the browser as a page of text, have them right-click the link and choose **Save link as…** (or **Save As…**) to save it. Tell them to save it somewhere easy to find, like the Downloads folder.
 
 2. **Open the Claude Code desktop app.**
 
-3. **Navigate to the plugin upload screen.** The path is **Customise > Plugins > +  > Create plugin > Upload plugin**. Walk them through each click — they have never used this part of the UI before:
-   - In the desktop app, click **Customise** (usually in the top menu or settings area).
-   - Click **Plugins**.
-   - Click the **+** button to add a new one.
-   - Choose **Create plugin**.
-   - Choose **Upload plugin**.
+3. **Open the plugin upload screen.** The path is **Customise (top left) → the + icon on the left → "Create a plugin" → browse and select the downloaded .zip**. Walk them through each click — they have never used this part of the UI before:
+   - Click **Customise** in the top left.
+   - Click the **+** icon on the left.
+   - Choose **Create a plugin**. (Heads-up: that label sounds like it's for *building* a plugin from scratch, but it's actually the right way to *install* one from a file — don't let the wording throw you.)
+   - A file picker opens — browse to where the `si-plugin.zip` was saved and select it. The app installs it.
 
-4. **Select the zip.** A file picker opens. Have them navigate to where they saved `si-plugin.zip` and select it. The app installs it.
+4. **Run the smoke test — confirm the plugin works.** This is just a quick check that the install took. It doesn't need a real project.
+   - Have them make a new empty folder anywhere (e.g. on the Desktop, call it `si-test`).
+   - In Claude Code, open that folder via **File > Open Folder** (or the app's equivalent "open folder" action) so there's a folder open to work in.
+   - Click into the **chat box** (where you'd normally type a message) and start typing `/setup`. As they type, a menu of available commands appears.
+   - **Success looks like:** a command for setup shows up in that menu. It may appear as `/setup`, or namespaced as `/sovereign-implementer:setup` — either form means the plugin is installed. Have them select it and press **Enter** to run it. (For the smoke test, seeing the command appear is already enough; they don't have to finish a real setup here.)
+   - **Failure looks like:** they type `/setup` and **no matching command appears** in the menu at all. That means the plugin isn't registered yet.
 
-5. **Confirm install.** Have them open any project folder in Claude Code and type `/setup`. If the slash command exists, the plugin is installed. If `/setup` is not recognised, the install didn't take — walk them through removing it (gear icon > Uninstall) and trying again.
+   If it fails, work through these in order — don't jump straight to reinstalling:
+   1. Check the plugin is actually there and turned on: go to **Customise > Plugins** and confirm Sovereign Implementer is listed and enabled.
+   2. Start a **fresh session** and try again — plugin commands register when a session starts, so a session that was already open before installing won't see them.
+   3. Only if both of those check out, remove the plugin (gear icon > **Uninstall**) and repeat the upload steps.
+
+   A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.
+
+   *(A screenshot of the Plugins screen — showing the + icon and the "Create a plugin" option — would help here; see the queue item to add one.)*
 
 ### Updating later
 
-When a new version ships:
-
-1. In the desktop app, go to **Customise > Plugins**, find Sovereign Implementer, click the gear icon, choose **Uninstall**.
-2. Download the new `si-plugin.zip` from the same URL above (it always points at the current version).
-3. Repeat the upload steps.
+To update: uninstall via the gear icon, download the latest zip from the same URL above, and repeat the upload.
 
 ## Step 2 — First-run pointer
 
-Once the plugin is installed and `/setup` is recognised, tell the user:
+Once the plugin is installed and the `/setup` command is recognised, tell the user:
 
-> You're set up. Open a project folder in Claude Code and run `/setup` to scaffold the method docs. From there, `/plan` to scope your first batch and `/next` to start building.
+> You're set up. To start a real project, open its folder in Claude Code (**File > Open Folder**, or create a new empty folder for it first) and run `/setup` to scaffold the method docs. From there, `/plan` to scope your first batch and `/next` to start building.
 
-End the walkthrough there. Do not run /setup for them in this chat — they need to do it in their own desktop app, in their own project folder.
+Do not run /setup for them in this chat — they need to do it in their own desktop app, in their own project folder.
+
+That's the end of the install guide — Sovereign Implementer is installed and your project is ready to start.
 
 ---
 
-## Pacing rules (mandatory)
+## Instructions for Claude (you can skip this section)
 
-These are the user's own communication preferences, embedded verbatim. Follow them for the entire walkthrough.
+This section is for the assistant reading the guide, not for the human installer. If you're the person installing, you can stop above — everything you need is in the steps.
+
+**Note to Claude:** You are reading this guide on a user's behalf. They have opened a fresh chat at claude.ai and pasted this link because they want to install the Sovereign Implementer plugin for Claude Code. Follow the instructions in this file to walk them through it.
+
+**Ground rules:**
+- Assume the user has zero terminal experience and is mildly allergic to terminals. Use the Claude Code **desktop app** at all times. Do not suggest CLI commands, `claude --version`, `/config` in a terminal, or any terminal-based workflow except where this guide explicitly says one is needed.
+- You don't have access to their machine from this chat. You're giving them instructions to follow in their own desktop app and browser. Wait for them to report back at each step.
+- If you need a current download URL or up-to-date install instructions for Claude Code itself, do a web search rather than guessing — official pages change.
+- The pacing rules below are mandatory. Read them before you start the walkthrough.
+
+**Pacing rules (mandatory).** These are the user's own communication preferences, embedded verbatim. Follow them for the entire walkthrough.
 
 > One item at a time. Any time my next action depends on you finishing the previous one, give me only one item per message. This covers — not exhaustively — questions needing my answer, items needing my approval, steps in a procedure I have to execute, and tests I have to run sequentially. The test is not "is this a question?" — it is "does what I do next depend on the result of this one?" If yes, separate.
 >

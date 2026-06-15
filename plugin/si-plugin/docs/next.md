@@ -10,16 +10,16 @@ Before starting:
 
 2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
 
-3. **Blocker gate:** Scan for blockers that would force guessing:
+3. **Send the top batch verbatim:** [BRIEF] As soon as QUEUE.md is read and no halt marker sits at the top, send the top batch as its own beat — one preamble line (e.g. "here's the top batch, checks to follow"), then the batch text verbatim — before the blocker gate and the rest of pre-flight run. The batch is visible first; the gate's findings arrive as follow-up after it. The send is what puts the batch in front of the user before any thinking; don't fold it into the gate output.
+
+4. **Blocker gate:** Scan for blockers that would force guessing. Findings arrive as follow-up after the batch is already visible (sub-step 3):
    - Batch references something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Unresolved questions in batches above this one, or within the batch? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — /plan processes them — but surface any that clearly affects this batch.
    - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend /plan if found.
    - Unpark-candidate scan (per plugin-behaviour.md Dependency ownership Unpark watch). → Any parked item newly unblocked by work since? Surface and recommend /plan if found.
    - Stale-batch scan (per plugin-behaviour.md Dependency ownership Staleness watch). → Any batch or capture stale enough that surrounding code or rules have moved past it? Surface and recommend /plan if found.
 
-4. **If no blockers:** Present the batch: [BRIEF, PROMPT]
-   - Batch title, a one-line gist from the rationale, and entry counts (build / test / audit). Don't re-render full entry text — the user just wrote it in QUEUE.md and can open it anytime; full text moves into _build.md on confirm.
-   - "Ready?" — if the user wants to change scope or reorder, route to /plan.
+5. **If no blockers:** [BRIEF, PROMPT] Ask "Ready?" — the batch text is already visible from sub-step 3, so this is just the go-ahead. If the user wants to change scope or reorder, route to /plan. On confirm, the full batch text moves into _build.md.
 
 ## Step 2: Lock scope [SILENT]
 

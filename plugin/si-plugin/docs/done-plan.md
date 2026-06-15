@@ -17,7 +17,7 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 **Captures routed:** [promoted/parked/dropped, or "none"]
 ```
 
-Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap.
+Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap.
 
 If a red flag was accepted during this session, also record the decision in this entry per done.md Accepted red flags — what the user was warned about, and that they chose to proceed.
 

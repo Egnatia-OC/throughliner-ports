@@ -11,146 +11,12 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Detect and roll in user edits at /done commit time** **[user-edits-rollup-on-commit]**
+**Add a screenshot of the plugin upload screen to INSTALL.md** **[install-upload-path-clarity]**
 
-User-made edits to target-tree files (plugin/si-plugin/) can happen at any time — mid-session, between sessions — but /done's per-build commit only stages files the build touched. Those edits sit dirty across sessions until the push-and-rezip ritual catches them at push time. Observed: 5 docs files stayed dirty across at least two sessions. The gap is /done's commit, which is the natural moment to detect and offer to include them. The push-and-rezip sweep stays as the safety net; this adds an earlier catch point.
-
-Build:
-- plugin/si-plugin/docs/done.md: at the commit step, add a sub-step — run `git status --porcelain plugin/si-plugin/`, compare against the active build's file list, surface any dirty paths outside scope with a one-line summary, and offer to stage + roll them into the commit.
-
-**Add forced app-identification check to INSTALL.md routing** **[install-app-identification-check]**
-
-The Claude Code / Claude chat app distinction is load-bearing for install routing but stated in one sentence inside Q2 that the desktop-app-confused persona read straight past. Result: confident misroute to Branch B, crash at a Customise menu hunt with no recovery path — the helping Claude would troubleshoot the missing menu rather than diagnose wrong-app. A screenshot or icon comparison goes stale; a forced positive identification check ("what does the title bar say?" or "does the window have a terminal-style input or a chat interface?") is self-correcting and version-independent. The check must happen before routing, not after — catching wrong-app after Branch B starts is too late.
+The prose half of this batch landed in a goal session (2026-06-15): INSTALL.md now states the confirmed upload path (Customise top left → + icon on the left → "Create a plugin" → browse and select the .zip), drops the hedge "usually in the top menu or settings area," and adds a heads-up that the "Create a plugin" label is the install path despite sounding like an authoring tool. Only the screenshot remains, and a goal session can't produce it — it needs a real capture of the desktop app's Plugins screen.
 
 Build:
-- INSTALL.md Q2 section: replace or augment the current one-sentence distinction with a forced identification step — the user must report what they see (title bar text, interface description, or similar) before the guide routes them to Branch A or B.
-- Add a wrong-app recovery path: if the identification check reveals the chat app, tell the user what Claude Code is and where to get it, then route to Branch A.
-- Remove the "check Applications folder" hint that assumes the user can distinguish two Claude apps by name alone.
-
-**Move AI-facing content out of the human's reading path in INSTALL.md** **[install-separate-ai-instructions]**
-Depends on: [install-app-identification-check]
-
-INSTALL.md opens with a "Note to Claude" block and closes with pacing rules — both AI-facing, both in positions the human reader hits first or last. Four out of four test personas bounced off the opening block. The guide is designed to be pasted into a Claude chat, so both human and AI content must stay in one file — but the AI content should be out of the human's natural reading path. Fix: restructure so human-readable content (what this is, who it's for, what to expect) opens the file; AI-facing instructions move to a clearly-marked section the human can skip. Folded in from [install-no-bypass-for-experienced-users]: the already-installed persona abandons the walkthrough at Step 1 — the three-question interview is dead weight for someone with Claude Code, a paid plan, and prior plugin experience — so the new introduction also carries an experienced-user bypass.
-
-Build:
-- INSTALL.md: move the "Note to Claude" frontmatter and the pacing rules block into a single clearly-marked AI-facing section (e.g., at the end of the file, or in a collapsed block with a "skip this" label).
-- INSTALL.md: add a brief human-facing introduction at the top — what the guide is, who it's for, what to expect from the walkthrough.
-- INSTALL.md: include an experienced-user bypass line in the introduction — "already have Claude Code and a paid plan?" — pointing via in-page anchor to the identification check, and Branch B beyond it. The bypass skips the interview, never the app-identification check.
-- Verify the restructured guide still works when pasted into a Claude chat: Claude must still find and follow the AI instructions despite their new position.
-
-**Surface paid-plan requirement before INSTALL.md interview** **[install-paid-plan-upfront]**
-
-The paid-plan requirement (Pro minimum) is introduced at Q3 of the install interview with no preamble. Cold-stranger persona left to google pricing and didn't come back; free-plan persona hit it as a contradiction of lived experience. "Pay-as-you-go API credit" reads as uncapped to non-coders; plan limits aren't stated. Moving the requirement before Q1 turns it into an informed-consent gate — users who can't or won't pay learn that immediately instead of three questions in.
-
-Build:
-- INSTALL.md: add a brief upfront section before Q1 stating that a paid Claude Pro plan is required (not Max — Pro is sufficient), with a pointer to Anthropic's pricing page rather than an embedded dollar figure.
-- INSTALL.md: remove or rewrite Q3's current paid-plan discovery so it doesn't re-ask what the upfront section already established. If Q3 serves a routing purpose beyond the paywall check, keep the routing and drop the discovery.
-- INSTALL.md: clarify what "within plan limits" means in plain language — what happens when you hit the limit, is it a hard stop or a throttle.
-- INSTALL.md Step 1 routing: replace "no paid plan" with "free plan or no plan" (or equivalent unambiguous phrasing) so free-plan users don't self-route past the paywall gate. If the upfront section makes this routing line redundant, remove it.
-
-**Clarify plugin upload path and drop hedge in INSTALL.md** **[install-upload-path-clarity]**
-
-All four test personas stalled at the plugin upload step. The UI path (Customise → + → Create a plugin → browse for .zip) is correct but "Create a plugin" reads as authoring, not installing — three personas hesitated or bailed. The guide's hedge "usually in the top menu or settings area" signals uncertainty and erodes trust. The path is known; the label is counterintuitive. Fix: state the path confidently, warn that "Create a plugin" is the upload path despite the name, add a screenshot, drop the hedge.
-
-Build:
-- INSTALL.md: replace the current breadcrumb with the confirmed path — Customise (top left) → + icon on the left → "Create a plugin" → browse and select the downloaded .zip. Drop "usually in the top menu or settings area."
-- INSTALL.md: add a one-line heads-up before the "Create a plugin" step that the label is misleading — it's the upload/install path, not an authoring tool.
-- INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place.
-
-**Add provenance and download expectation to INSTALL.md GitHub link** **[install-download-provenance]**
-
-The raw GitHub URL for downloading si-plugin.zip triggered suspicion across all four test personas — "FlintCraftTech" doesn't match "Sovereign Implementer," the URL looks like an unknown-sender zip download, and nothing tells the user what happens when they click. Fix: add a one-line provenance statement (FlintCraftTech is the publisher account, Sovereign Implementer is the plugin) and tell the user what to expect (file auto-downloads as si-plugin.zip, or right-click > Save As if it opens in the browser).
-
-Build:
-- INSTALL.md: add a provenance line immediately before or after the download URL explaining the name mismatch and confirming it's the official source.
-- INSTALL.md: add a one-line expectation — what happens when you click (auto-download as si-plugin.zip), and what to do if it doesn't (right-click > Save As).
-
-**Define "open a project folder" action in INSTALL.md smoke test** **[install-define-open-folder]**
-
-The install guide tells the user to "open a project folder in Claude Code" without defining what that means or what the physical action is. CS doesn't know if they need a special folder or what "open" looks like in the app. The install guide's job ends at "plugin works" — the smoke test just needs any folder open, not a real project. Defining project setup belongs in /setup. Fix: replace "open a project folder" with a concrete action for the smoke test context, and defer real project setup to /setup.
-
-Build:
-- INSTALL.md Step B.5 and Step 2: replace "open a project folder in Claude Code" with a concrete instruction — create an empty folder, then open it in Claude Code via File > Open Folder (or whatever the current action is). Frame it as a smoke-test step, not project setup.
-- INSTALL.md: add a one-line note that /setup handles real project setup once the plugin is confirmed working.
-
-**Specify the /setup smoke test in INSTALL.md: success signal, failure signal, diagnostics before uninstall** **[install-setup-smoke-test-underspecified]**
-
-The "type /setup" smoke test doesn't say where to type, whether to press Enter, what success looks like, or what failure looks like — the cold-stranger and free-plan personas both stalled there, and the current failure path jumps straight to gear-icon > Uninstall before ruling anything else out. One wrinkle from discussion: plugin skills can render namespaced in the command menu (this project's sessions run /sovereign-implementer:plan, not bare /plan), so a guide that says "/setup should appear" may strand a reader looking at a differently-labelled entry — the success signal must match what the menu literally shows.
-
-Build:
-- INSTALL.md smoke-test step: rewrite the "type /setup" instruction to name where to type (the chat box), that a menu of commands appears as you type, which entry to look for, and that Enter runs it. Before writing the success signal, ask the user to confirm the exact menu rendering in the current desktop app (bare /setup vs namespaced form); write it to match.
-- INSTALL.md smoke-test step: describe the failure signal explicitly — what the reader sees when the plugin isn't registered (no matching entry appears as they type).
-- INSTALL.md failure path: replace the jump-to-uninstall with a diagnostic ladder — (1) check the plugin is present and enabled in the Customise plugin list, (2) start a fresh session, since skills register at session start and a pre-install session won't see them, (3) uninstall and reinstall as the last resort.
-
-**INSTALL.md endings polish: collapse "Updating later", add an end-of-guide close** **[install-updating-later-section-is-padding]**
-Depends on: [install-separate-ai-instructions]
-
-The "Updating later" section repeats the install steps the reader just finished — uninstall, download, repeat — and the already-installed persona registered it as trust-eroding padding. A one-liner that points back at the steps instead of restating them carries the same information without the filler, and stays correct when the download and upload wording changes under the other install batches. Folded in from [install-step2-trailing-ellipsis-reads-as-truncated]: the free-plan persona read the Step 2 First-run pointer's trailing prose and was unsure whether the guide had been cut off — an explicit close line marks the end of the human path, which after [install-separate-ai-instructions] sits just before the skippable AI-facing section rather than at the literal bottom of the file.
-
-Build:
-- INSTALL.md "Updating later" section: collapse to a single line — "To update: uninstall via the gear icon, download the latest zip from the same URL, and repeat the upload."
-- INSTALL.md: add a one-line close at the end of the human reading path — "That's the end of the install guide — your friend's project is now ready to start" — placed just before the AI-facing section once the restructure has moved it to the back.
-
-**Preserve rejected-alternative reasoning in LOG entries** **[log-rejected-alternative-reasoning]**
-
-Observed at f123eed: a /plan discussed and resolved a concern about one growing log.md getting too large to read, but the LOG entry recorded only the conclusion — not the concern or the reasoning that addressed it. Two sessions later the user couldn't retrieve why the alternative was rejected and second-guessed the decision, and the log-split design got relitigated. The why-pipeline's preserve rule carries rationale forward, but "rationale" currently means the reasoning behind the decision made, not the reasoning against the alternatives considered. The trigger needs a boundary so entries don't bloat: discussion-level consideration qualifies — a concern raised and resolved, an alternative seriously weighed — passing mentions don't. The intuitive-but-rejected path is the case that most needs preserving.
-
-Build:
-- plugin-behaviour.md why-pipeline Preserve rule: extend the definition of rationale to include concerns raised and resolved and alternatives seriously weighed, carried with why they lost. State the trigger boundary: discussion-level consideration qualifies, passing mentions don't, and decisions where the rejected path is the intuitive one always qualify.
-- The LOG-entry-writing step in the /done per-type sub-docs (post-[done-closeout-extraction] shape): add one reinforcing check at writing time — does this entry carry any concern that was resolved or alternative that was weighed? Keep it to a single line pointing at the why-pipeline rule; don't restate the rule per sub-doc.
-
-**File research by default when findings are non-trivial** **[research-filing-default]**
-
-plugin-behaviour.md says where research goes (resources/research/) but never when — so filing only happens when the user asks, and findings from mid-conversation web searches stay in chat and evaporate. Observed across sessions; the trigger case was the fenced-block label question, where research had been done but couldn't be retrieved later because it never became a file, and the next /plan offered to redo the search. The fix flips the default: filing is part of using a finding, not a separate request. Visibility matters too — a silent rule can't be checked, so the file gets named in chat when it lands. A /done close-out backstop ("did research happen this session that isn't filed?") was considered and held in reserve in case leakage continues after the rule lands.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Research section: add the default-filing rule — when a web search or external lookup yields a non-trivial finding, file it under resources/research/<topic>.md as part of using it, not only on request. Threshold: a finding that informed a decision or would have to be redone if lost gets filed; a fact checked once and discarded doesn't. Claude names the file in chat when it lands.
-- plugin/si-plugin/docs/plugin-behaviour.md Communication section: fold the existing "File research under resources/research/" line into the Research section so one canonical statement remains.
-
-Test:
-- Self-verifying on the next session where a web search yields a real finding — the file should land and be named in chat without the user asking.
-
-**Relationships exist only if written: position never encodes** **[relationships-must-be-written]**
-
-Caught live this session: Claude stripped a Blocks: header from a batch draft, reasoning that adjacency in the queue already carried the relationship — exactly the positional encoding the slug convention exists to prevent, one step earlier than the convention reaches. The existing rule governs how references are written (slugs, never positional pointers) but not the decision of whether to write one, so "placement carries it" passes the current wording while losing the relationship to the next reorder. The user caught it; the rule should have.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Dependency ownership: add the missing half to the slug-reference bullet — relationships between queue items exist only if written, in a header or as a slug reference in prose; queue position never encodes a relationship; placement is a convenience layered on top, never the carrier. Carry the why: queue order changes every session, so anything encoded as position is one promote or reorder away from silently vanishing.
-
-Test:
-- Self-verifying from doc text. Behavioural confirmation on the next /plan that places related batches — the relationship should land in a header even when the batches end up adjacent.
-
-**Name the Blocked-by trigger flavors; non-default triggers must be written** **[blocked-by-trigger-flavors]**
-
-The Blocked by: convention reads "the named slug shipped" as the firing condition, but dependencies carry at least three trigger flavors — landing (B needs A's changes in the tree), findings (B was generated by A's findings), clarity (B needs what A clarified, satisfied the moment the question resolves). The flavor difference is operational, not taxonomic: the unpark watch reads headers mechanically, and a clarity-shaped item under a ships-the-slug reading stays parked past its real readiness — observed live in the 2026-06-10 /plan, where a capture's blocker fired at decision time while the blocking batch remained unshipped, and earlier at 1b7d359. The fix adds no syntax and no flavor field (a closed taxonomy would force nuance into slots — the why-pipeline's own warning): the bare slug form keeps its landing-shaped default, and whenever the real trigger is anything else, the prose tail must state the firing condition. The flavors get named as illustrations of when that's needed, not as a classification to fill in.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Dependency ownership, the Blocked by / Parked bullet: add the note — bare slug fires when the named item's changes ship (landing, the default); any other trigger (findings-generated, satisfied-at-decision, external event) must be written in the prose tail ("Blocked by: [slug] — satisfied once X is decided"). Name the three flavors with one example each, including that clarity-shaped triggers can fire at /plan-decision time before anything ships.
-
-Test:
-- Self-verifying from doc text. Behavioural on future unpark scans: items with non-landing tails fire at their stated condition, not at slug-ship.
-
-**Force the Parked: choice and end its staleness exemption** **[parked-slot-discipline]**
-
-Two accumulation risks share the Parked: slot. Filing: items with nameable behavioural triggers were twice filed Parked: even though the rule says trigger-means-Blocked-by — the slot choice rides on judgment with no forcing question. Review: plan.md's opening scan reads Parked: items only to skip them, so nothing ever asks whether the project has evolved past one; meaningless accumulation is the failure mode. A hand-run sweep already converted the backlog (2026-06-10 /plan, zero Parked: items left); this batch makes the discipline structural so the sweep never needs repeating. Placed after [blocked-by-trigger-flavors] — both shape the same slot-choice rule area.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md, the Blocked by / Parked bullet: filing as Parked: requires first affirming that no nameable trigger exists. State plainly that a behavioural trigger with no slug is a valid Blocked by: tail — the observed misfilings treated slug-less triggers as unparkable.
-- plugin/si-plugin/docs/plan.md Step 1 scan: include Parked: items in the staleness watch (drop, rewrite, or keep), replacing "skip unless something else flags them."
-
-Test:
-- Behavioural on later /plan sessions: the next trigger-bearing item filed lands in Blocked by:, and the next scan visibly weighs Parked: items instead of skipping them.
-
-**Present the working item verbatim-first: quote before thinking** **[capture-verbatim-first]**
-
-After "continue to the next item," Claude reads and thinks first while the user sits with nothing until the full presentation lands. The fix, designed and live-tested across a full /plan session (2026-06-11): the turn opens with a one-line preamble ("here it is, my thoughts to follow" or similar) and the item quoted verbatim, and only then does analysis begin. The live trial surfaced the load-bearing detail: ordering the text on the page isn't enough — the quote must be *sent* before the thinking starts, or it arrives bundled with the analysis and the waiting problem survives. No fresh read is needed; the queue is already loaded from the session's start. Deliberately silent on the rendering device — the approval-time display standard owns that. /next's pre-flight has the same waiting problem, observed 2026-06-11 in a live /next: hashes backfilled, queue read, blocker gate run, and the batch only appeared after all of it. The same fix lands there in this batch. Because the user now reads batch text at the pre-flight moment, it must read plainly — [human-readable-authoring] owns that standard; this display moment adds a second reason for it. A second /next-side instance landed 2026-06-12, after the standard was decided: the batch again arrived bundled with the gate findings and the Ready ask, with nothing blocking an immediate send — confirming on the /next side that the quote must be sent as its own beat, not just placed first. The backfill-first wait seen in both instances has since dissolved on its own: [hash-backfill-as-hook] shipped and deleted the backfill from /next's pre-flight, so nothing precedes the queue read and the build entry below stands as written. A third instance landed 2026-06-12, in the /plan session processing these very captures: the working item again arrived bundled with its analysis, and the user caught it. The standard could not have been more salient — this batch had been amended minutes earlier in the same session. That settles the mechanism question: session awareness doesn't carry the behaviour; only the installed procedure text does. A fourth instance followed one item later, straight past an explicit in-session promise to send separately: the item needed no file reads, so quote and analysis were composed as one message and bundled by construction — in this harness, only tool work or a message end separates sends. The fix therefore can't be stated as intent ("send first"); the procedure must name what sits between the quote and the analysis.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 2, present-and-interview sub-step: the turn opens with the one-line preamble and the item's verbatim text, sent before any analysis or file reads begin; engagement and sharpening follow in the same turn. Covers unpark candidates the same way — they enter the same loop. Name the separator: after the quote is sent, re-read the item from QUEUE.md to confirm the quoted text matches the file — this read is what makes the quote a send rather than a paragraph, and it catches context-drifted quotes before they're discussed (corrections follow immediately if the file differs).
-- plugin/si-plugin/docs/next.md pre-flight: as soon as QUEUE.md is read, check the queue top for a halt marker (a one-line mechanical read — if one sits there, the halt is what gets sent). Otherwise send the top batch verbatim — one preamble line, then the batch text — before the blocker gate and the rest of pre-flight thinking run. Gate findings arrive as follow-up after the batch is visible.
-
-Test:
-- Host-side (after push + reinstall): in the next /plan, the quote should land as its own beat before the analysis arrives — not bundled with it; in the next /next, the top batch the same way before pre-flight findings. Needs the deferred-test discipline — flag at /done if it can't run.
+- INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place. (User-only — needs a real desktop-app screen capture; a placeholder pointer sits in INSTALL.md's smoke-test step until the image lands.)
 
 **Deferred-test lifecycle: tick state at determination, runnability tails, /plan batch-rolling, reinstall flag** **[deferred-test-lifecycle]**
 
@@ -567,6 +433,7 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [show-before-write] — verify a later /plan writes nothing to QUEUE.md without the verbatim entry in the immediately preceding message; the case to watch is late-session, after compaction. Confirmed by: the first /plan batch write in a long/compacted session after push + reinstall. (host-side)
 - [session-start-dirty-tree-check] — verify the live one-liner at session start with known dirt and no _build.md (the fixture test — dirty-without-build warns, dirty-with-build silent, clean silent — passed in-session this goal session). Confirmed by: the first session opened with a dirty tree and no active build after push + reinstall. (host-side)
 - [plan-state-artifact] — verify the live resume offer: interrupt a /plan mid-processing, open a new session, watch for the "INTERRUPTED PLANNING SESSION" report (the fixture test — _plan.md detected, dirty-warning suppressed with _plan.md present, silent when absent — passed in-session this goal session). Confirmed by: the first interrupted /plan reopened after push + reinstall. (host-side)
+- [capture-verbatim-first] — verify that /plan's present-and-interview sends the one-line preamble plus the verbatim item before any analysis (with the post-quote re-read separator), and /next's pre-flight sends the top batch verbatim before the blocker-gate findings. Confirmed by: the first /plan capture turn and the first /next pre-flight after push + reinstall. (host-side)
 
 ## Captures
 
@@ -808,6 +675,10 @@ Audit run 2026-06-15 (goal session). The complete inventory of every self-hostin
 34. **Note:** Distribution discipline — each relocated note lands in its new home AND its CLAUDE.md source comes out in the same batch (relocation, never copying), so no danglers survive; the arc ends with a CLAUDE.md sweep for stragglers. **Lives:** QUEUE.md [self-hosting-notes-audit] rationale. **Candidate home:** (b) — process discipline for this arc. **Rationale written:** yes.
 
 Coverage note: the shipped procedure docs and templates carry essentially no self-hosting content — the single exception is next.md's push-marker halt (finding 6). That absence is the audit's thesis: self-hosting knowledge lives in CLAUDE.md and session judgment, not in the method. Two rationales are thin: finding 29 (lives only as a code comment) and finding 17 (labelled interim, no permanent home). Factual confirmation, not new findings: CLAUDE.md still reads "Target v1.11.0" and "2 hooks" while plugin.json/`.si-version` are 1.12.0 and three hook files exist — both already captured.
+
+**Goal session removed 13 of 14 batches it recorded removing — [user-edits-rollup-on-commit] survived in the queue**
+
+Observed 2026-06-15 (goal session). The previous goal session (215f96e, LOG goal-2026-06-15.md) built [user-edits-rollup-on-commit] and its LOG entry said it removed 14 build batches plus 1 audit from QUEUE.md. But [user-edits-rollup-on-commit] was still at the top of the Batches list this session. done.md already carried its implementation — the dirty-path rollup sub-step in the commit core — so the batch was genuinely built; only its queue removal was missed. The other 13 batches were removed correctly. So this is a single-batch slip, not a systemic failure. This session removed the stale batch as queue hygiene and built on from there. Why it matters: a goal session closes by hand, and removing every shipped batch is a manual loop with no mechanical check that each shipped slug actually left the queue. A built-but-not-removed batch re-presents at the next session as if unbuilt, so the session's first move is wasted rediscovering that it is already done. Possible fix for /plan to weigh: at goal-session /done, cross-check the shipped-batch list in the LOG entry against QUEUE.md and confirm each slug is gone before committing. Relates to the open /goal-vs-cruise-control fork (the "First autonomous /goal session" capture above).
 
 ### Parked
 
