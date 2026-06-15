@@ -24,9 +24,10 @@ Four project docs structure each project:
 - `REGISTRY.md` — components list. What exists, where it lives.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
-Two hooks enforce discipline mechanically:
+Two hooks enforce discipline mechanically, and a third advises:
 - `session_start` — detect project state and load behaviour rules.
 - `pre_tool_use` — SPEC.md read-only during builds, scope-lock to file list, git safety.
+- `post_tool_use` — advisory QUEUE.md structure lint; flags format drift, never blocks.
 
 One behaviour doc steers everything the hooks can't enforce:
 - `plugin-behaviour.md` — loaded at every session start in adopted projects. Carries the cross-skill rules (communication, capture routing, dependency ownership, file safety) and five response-shape tags ([SILENT], [BRIEF], [DISCUSS], [PROMPT], [SEQUENCE]) that procedure docs place on individual steps to control verbosity and interaction. Rule and tag definitions are compliance-hardened: each carries a why-clause, quantified constraints, and an explicit scope statement so it holds against the helpfulness pull of current models.

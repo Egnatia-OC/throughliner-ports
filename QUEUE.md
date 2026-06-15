@@ -76,7 +76,8 @@ This batch creates the spec-edit mechanism but cannot use it on itself. Its buil
 Build:
 - pre_tool_use.py: remove the SPEC.md read-only-during-builds rule; scope-lock alone governs SPEC. Make sure the empty-Files method-docs fallback does not let a build edit SPEC by default.
 - plan.md: add spec-edit as a batch type in the Step 3 batch structure, alongside Build/Test/Audit (and Freeform once it ships). Add a /plan step that authors spec changes as a spec-edit batch.
-- plugin-behaviour.md and plan.md pipeline wording: change "idea → SPEC.md → QUEUE.md" to "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch".
+- plugin/si-plugin/docs/plan.md pipeline wording (make this the canonical home): reword the "idea → … → spec entry … → batch entry" line to the new 5-stage form — "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch".
+- plugin/si-plugin/docs/plugin-behaviour.md: remove the spec-entry pipeline rule entirely (the "A change needs a spec entry before a build entry … Pipeline: idea → SPEC.md → QUEUE.md …" bullet) rather than rewording it. The rule is /plan authoring work and fires only there, so plan.md is its single home; the injection copy was a synced duplicate that had already drifted. (Folds in the [spec-entry pipeline rule is /plan-only] capture, 2026-06-16.) When this builds, point [done-spec-sync-check]'s trigger-test reference at plan.md alone, since the injection copy is gone.
 - This project's CLAUDE.md: reword "Edit it only during /plan" to the new model.
 - done.md / done-build.md: a spec-edit batch closes like any build.
 - post_tool_use.py lint: add spec-edit to the allowed batch subheadings.
@@ -96,6 +97,19 @@ Build:
 
 Test:
 - Grep the rule phrasing after the edit: present in plugin-behaviour.md and setup.md, gone from next.md.
+
+**Trickle the two /next-only /done-recommendation rules down to next.md** **[trickle-down-next-only-rules]**
+
+From the firing-map audit (2026-06-13). Two rules sit in plugin-behaviour.md — the doc injected into every session — but only ever fire during a /next build, so every /plan, /done, and /setup session pays for words it can never use: "At build completion, the only valid next-step recommendation is /done" and "If context is long mid-build, suggest completing the current file and running /done." Both key to build execution, which exists only inside /next. Moving them to next.md as their canonical home takes roughly 85 words off the most expensive doc in the system without losing the rule — next.md is loaded before any build work runs, so the rules still fire where they're needed.
+
+The audit named four such rules; the other two are handled elsewhere and stay out of this batch. "SPEC.md is read-only during builds" is deleted entirely by [spec-edit-batch-type], so there's nothing to trickle. "One build at a time" stays in the injection on purpose: the session that needs it is one where the user opens /next without remembering a build is already open, and only the injection is guaranteed loaded before /next's own doc — trickling it down would make it arrive too late to stop a second build.
+
+Build:
+- plugin/si-plugin/docs/plugin-behaviour.md: remove the "At build completion, the only valid next-step recommendation is /done" bullet and the "If context is long mid-build, suggest completing the current file and running /done" bullet. Locate by rule text, not line number.
+- plugin/si-plugin/docs/next.md: add both rules as their canonical home, each with its rationale inline — why /done (not /next or another build) is the only valid recommendation at completion, and why the long-context nudge points at /done.
+
+Test:
+- Grep both rule phrasings across the procedure docs after the edit: present in next.md only, gone from plugin-behaviour.md.
 
 **Queue-visible plan markers: write predictable planning moments into the queue** **[queue-plan-markers]**
 
@@ -340,6 +354,51 @@ Test:
 - Self-verifying from doc text: the step exists, applies the trigger, files-not-edits.
 - Behavioural, host-side (after push + reinstall): a build that lands a spec-affecting change without a prior /plan spec entry draws a filed capture at /done close; a build with no spec impact stays silent. Needs the deferred-test discipline — flag at /done if it can't run.
 
+**Reconcile this project's CLAUDE.md: hook enumeration (2→3) plus a handoff-verification interim rule** **[hook-count-reconcile]**
+
+Found during the v1.12.0 pre-push sweep (2026-06-14). This project's CLAUDE.md enumerates "2 hooks" in Architecture and lists only session_start + pre_tool_use in the "Where things live" tree, but post_tool_use.py — the advisory QUEUE.md structure lint, shipped after v1.11.0 — makes three hook files. Host-only doc, so it doesn't propagate. SPEC's "two hooks enforce" was reconciled separately in the 2026-06-16 /plan by adding the advisory third hook as its own line. Nothing consumer-facing was stale (CLAUDE-TEMPLATE.md and faq-template.md don't enumerate hooks). A second, unrelated touch-up to the same file rides along (no dependency): an interim rule for goal/handoff sessions, folded in from the 2026-06-16 /plan.
+
+Build:
+- This project's CLAUDE.md, Architecture section: change "2 hooks" to "3 hooks" and add a `post_tool_use` bullet (advisory QUEUE.md structure lint, flags format drift, never blocks). Frame the three as two enforcing — session_start, pre_tool_use — plus one advisory — post_tool_use. Locate by content (the "2 hooks" heading), not line number, since [retire-registry] also edits this section.
+- This project's CLAUDE.md, "Where things live" tree: add post_tool_use to the `hooks/` line.
+- This project's CLAUDE.md, "Goal sessions (plugin off)" section: add the interim rule that when a session opens from a Claude-authored handoff or context prompt, its claims are treated as unverified until the user confirms them — Claude-written content is not read in the user's voice. Carry the why: a handoff Claude authored is not a user-vouched fact, and a fresh or weaker session can't tell which claims the user stood behind.
+
+Test:
+- Grep this project's CLAUDE.md after the edit: "2 hooks" gone; post_tool_use present in both the Architecture list and the Where-things-live tree; the Goal sessions section names the unverified-until-confirmed handoff rule.
+
+**Document the full-restart reinstall requirement** **[reinstall-needs-full-restart]**
+
+Observed 2026-06-15 while testing a rezipped build: after a clean uninstall and reinstall, the plugin appeared in the Plugins list but its slash commands didn't register in a new chat — a fresh session and a normal app close both failed; only fully quitting the desktop app (ending the process via Task Manager, since a normal quit left it running on Windows) and relaunching made the commands appear. Plugin skills register at app launch, and the Windows desktop app can keep running after a window close, so "open a new session" is not sufficient. Two docs under-specify this and need correcting.
+
+Build:
+- INSTALL.md, smoke-test diagnostic ladder: replace the "start a fresh session, since skills register at session start" guidance with a full quit-and-relaunch instruction — fully quit and reopen the app, and on Windows confirm the process actually exited (via Task Manager if a normal quit leaves it running). This corrects a line written in the same 2026-06-15 goal session. Locate by content.
+- This project's CLAUDE.md, Rezip step (the "Uninstall/reinstall to test the new host privately" line): add that a full app restart — not just a new session — is required for the new host's skills to load. Locate by content; this Rezip section is also edited by [rezip-test-version-scheme], so locate by content there too.
+
+Test:
+- Grep INSTALL.md and this project's CLAUDE.md after the edit: INSTALL.md's smoke-test ladder names the full quit-and-relaunch (with the Windows process-exit check); CLAUDE.md's Rezip step names the full restart requirement.
+
+**Document the `-testN` test-build version scheme** **[rezip-test-version-scheme]**
+
+Raised 2026-06-15 and trialled the same session. A rezip rebuilds the zip without bumping the version (bumping every test build would nag the user's own projects to re-run /setup), so test builds need a way to be distinct, clearly-labeled, and never confused with a release. The scheme: a test build carries a `<base>-testN` version — the release-line base plus `-test` and a number incremented each rezip-for-testing (e.g. 1.12.0-test1, -test2). A push resets to a clean patch/minor with no suffix. Honest framing carried in the docs: what actually makes a reinstalled host load is the full app restart (see [reinstall-needs-full-restart]); `-testN`'s job is to keep each test build a distinct, unmistakably-test version, not to be the thing that forces reinstall. The `+build`-metadata alternative was rejected (semver treats it as equal-precedence, so it wouldn't force a distinct version) and a throwaway patch bump was rejected (it muddies the real release line). Confirmed 2026-06-15: the `1.12.0-test1` build installed and registered its skills fine, so the pre-release format is not a blocker.
+
+Build:
+- This project's CLAUDE.md, Rezip section: document the `-testN` scheme — the `<base>-testN` format, what it's for (a distinct, clearly-labeled private test build), and the caveat that the suffix lives in the working tree's plugin.json only and must be reset to a clean version before any push. Add an auto-increment step to the rezip procedure: read the current version and bump N (or start at -test1 if the base has no suffix). Frame it honestly — the full restart is what loads the new host; `-testN` keeps test builds distinct and labeled. Locate the Rezip section by content; it is also edited by [reinstall-needs-full-restart].
+- This project's CLAUDE.md, Push step 2 (bump version): note that the clean patch/minor bump drops any `-testN` suffix, so a test suffix never ships in a release.
+
+Test:
+- Grep this project's CLAUDE.md after the edit: the Rezip section documents the `-testN` format and auto-increment; Push step 2 names dropping the suffix.
+
+**Add the user-engagement rationale to plan.md's verbatim-first instruction** **[verbatim-first-rationale]**
+
+Observed 2026-06-16: in a /plan capture session, Claude bundled the verbatim item with its analysis four items in a row, despite plan.md's present-and-interview step requiring the verbatim item to land first as its own beat. The rule was loaded and still lost to the pull to deliver everything in one pass — the model-instruction-compliance pattern of a rule without its why-clause losing to the helpfulness pull (resources/research/model-instruction-compliance.md). The instruction states the mechanism (re-read as separator) and the drift-catching purpose, but not why the quote lands first: user engagement. The user processes more easily when they can take in the raw item before Claude's framing arrives, rather than digesting Claude's whole reaction the moment it all lands bundled. The fix adds that rationale, compliance-hardened, and names both failure modes so a future session steers between them.
+
+Build:
+- plugin/si-plugin/docs/plan.md, the Step 2 present-and-interview step (the verbatim-first instruction): add the user-engagement rationale in the compliance-hardened shape (why-clause, positive constraint, explicit scope) — the raw item lands first so the user has the *option* to process it before Claude's framing arrives; it is availability, not obligation. Name both failure modes to steer between them: bundling (quote tangled with analysis in one paragraph, so the user can't take the raw item in first) and forced-wait (stopping after the quote and gating analysis behind the user's reply, which blocks the user). State the correct shape: quote first as its own beat, analysis following in the same flow, the user free to pre-empt with a disposition or to read on. Locate by content.
+
+Test:
+- Self-verifying from doc text: the instruction now carries the why and names both failure modes.
+- Behavioural, host-side (after push + reinstall): a later /plan capture turn lands the verbatim item first without bundling or forced-wait. Ties to the [capture-verbatim-first] deferred test — flag at /done if it can't run.
+
 ### Parked
 
 ## Deferred tests
@@ -359,7 +418,7 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [allow-parallel-sessions] — verify opening a /plan chat while a build is active is no longer refused (the active-build session-start message naming planning-alongside was confirmed in-session against a fixture). Confirmed by: the first time a /plan session is opened alongside an active build after push + reinstall.
 - [make-drift-visible] — verify a session in a drifted project (missing a scaffolded file/folder) opens with Claude plainly flagging what's out of date and offering /setup, while a current project on a higher plugin version stays silent (the presence-based logic and no-false-alarm were confirmed in-session against fixtures). Confirmed by: the first session in a drifted project after push + reinstall.
 - [setup-closeout-redesign] — verify a real /setup run in a fresh folder creates the git repository silently, the close-out names /done, and /done writes a setup-shaped LOG entry and commits the scaffold; a Case C migration close with a leftover _build.md recommends resuming /next instead. Confirmed by: the first /setup run in a fresh folder after push + reinstall. (host-side)
-- [approval-display-blockquotes] — verify the next /plan or /done approval draft arrives as a labelled blockquote that wraps (not a fence), and the /done commit step presents title and body as blockquotes with fences gone. Confirmed by: the first /plan or /done approval draft, and the first /done commit step, after push + reinstall. (host-side)
+- [approval-display-blockquotes] — verify the next /plan or /done approval draft (LOG entry, capture, or batch) arrives as a labelled blockquote that wraps, not a fence. Confirmed by: the first /plan or /done approval draft after push + reinstall. (host-side) [Commit-step clause dropped 2026-06-16: superseded by [closeout-text-collapse], whose own deferred test now covers the collapsed commit step.]
 - [show-before-write] — verify a later /plan writes nothing to QUEUE.md without the verbatim entry in the immediately preceding message; the case to watch is late-session, after compaction. Confirmed by: the first /plan batch write in a long/compacted session after push + reinstall. (host-side)
 - [session-start-dirty-tree-check] — verify the live one-liner at session start with known dirt and no _build.md (the fixture test — dirty-without-build warns, dirty-with-build silent, clean silent — passed in-session this goal session). Confirmed by: the first session opened with a dirty tree and no active build after push + reinstall. (host-side)
 - [plan-state-artifact] — verify the live resume offer: interrupt a /plan mid-processing, open a new session, watch for the "INTERRUPTED PLANNING SESSION" report (the fixture test — _plan.md detected, dirty-warning suppressed with _plan.md present, silent when absent — passed in-session this goal session). Confirmed by: the first interrupted /plan reopened after push + reinstall. (host-side)
@@ -397,66 +456,7 @@ Removal arc — what changes (the build does a full grep sweep so no reference i
 
 Queue interactions: moots [setup-registry-template-and-noun] (it reworked the REGISTRY template — now dropped, with its surviving SPEC-side doc-routing reword folded into this capture's plugin-behaviour.md step). [setup-project-agnosticism-sweep] is unaffected — it deliberately holds no REGISTRY item. Relates to [spec-edit-batch-type] (the SPEC portion rides a spec-edit batch).
 
-**Content-level scaffold drift: templates that change after a project is set up** **[scaffolding-resync]**
-
-When a scaffolded file already exists but its template changed later — e.g. a doc template gains a new section — a project that has the file won't pick up the change. [make-drift-visible] catches *missing* files and folders, but not this content-level drift, because the file is present. Open question if this ever bites: how to detect that a present file is behind its template, without a full /setup re-run that would overwrite user content. Lower priority — no instance observed yet; the missing-file case (the one that actually hurt) is handled by [make-drift-visible].
-
-The old framing of this item was wrong and has been dropped: it treated the drift as a self-hosting housekeeping problem tangled up with version-bump noise. The drift is general, not self-hosting (Taskflowapp, a plain consumer project, had the same missing file), and the version-bump false-alarm worry is mooted by [make-drift-visible]'s presence-based check.
-
 ---
-
-**Trickle four /next-only rules down out of the every-session injection** [audit finding: behaviour-doc-firing-map-audit]
-
-From the firing-map audit (2026-06-13). Four rules live in plugin-behaviour.md — the doc injected into every session — but their triggers only exist during a /next build, so every /plan, /done, and setup session pays for words it can never use:
-- "SPEC.md is read-only during builds" (plugin-behaviour.md:103)
-- "One build at a time. Never start /next while _build.md exists" (plugin-behaviour.md:104)
-- "At build completion, the only valid next-step recommendation is /done" (plugin-behaviour.md:105)
-- "If context is long mid-build, suggest completing the current file and running /done" (plugin-behaviour.md:134)
-
-Each keys to _build.md or build execution, which exist only inside /next — none can fire outside /next, and none fire in /plan, /done, or setup. Owning doc: next.md. Roughly 111 words would leave the injection (the build-completion bullet is ~75 of them).
-
-This contradicts the trickle-up direction for these specific rules: that arc moved rules up on "cross-skill belongs in the injection," but single-skill rules don't earn it. Action for /plan: author a trickle-down batch moving these to next.md as canonical, each carrying its rationale per the why-pipeline.
-
-Two interactions to handle when authoring:
-- [trickle-up-next-md-duplicates] (queued) plans to DELETE next.md's copies of "SPEC read-only" and "one build at a time," leaving the injection as their sole home — the opposite of this finding. Amend that batch (or carve these two out of it) before it builds.
-- [spec-edit-batch-type] (capture) would remove the "SPEC.md read-only during builds" rule entirely (SPEC becomes a normal doc governed by scope-lock). If it promotes, the SPEC-read-only trickle-down is mooted — sequence accordingly.
-
-**Spec-entry pipeline rule is /plan-only — make plan.md canonical, drop the injection copy** [audit finding: behaviour-doc-firing-map-audit]
-
-From the firing-map audit (2026-06-13). The spec-entry pipeline rule at plugin-behaviour.md:100 — "New features need a spec entry before a build entry. Pipeline: idea → question (if unclear) → SPEC.md → QUEUE.md. Threshold: if a user would see or experience the difference, update SPEC.md first" — fires only in /plan. The pipeline (idea→question→SPEC→QUEUE) is /plan's authoring sequence; a feature idea captured elsewhere just gets filed, and nothing runs the pipeline until /plan picks it up. It's already restated in plan.md:17, so the injection and plan.md carry two synced copies. ~33 words sit in the injection.
-
-Single-skill (/plan). Owning doc: plan.md. Action for /plan: make plan.md the single canonical home and drop the behaviour.md copy, rather than maintaining two synced versions.
-
-Two interactions to handle when authoring:
-- [spec-entry-trigger-rethink] (queued) rewords BOTH copies to keep them aligned. If plan.md becomes canonical, that batch should target plan.md alone — fold this decision into it rather than letting it re-sync two copies.
-- [spec-edit-batch-type] (capture) would rewrite the pipeline to "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch," adding a /next stage and pushing the firing map from single-skill to two-skill (plan + next). If it promotes, the home question changes — decide after its disposition is known.
-
-**Middle-band rules (2–3 skills) in plugin-behaviour.md — firing data for the restructure decision** [audit finding: behaviour-doc-firing-map-audit]
-
-From the firing-map audit (2026-06-13). These rules fire in two or three skills but never outside a skill — so they don't earn the every-session injection on the "fires outside skills" test, but they aren't single-skill trickle-down candidates either. Recorded as data for the progressive-disclosure restructure, not moved (the audit proposes no move for this band).
-
-The band:
-- Index entries (plugin-behaviour.md:82-93) — 3 skills: /plan readiness gate (plan.md:105), /next pre-generate (next.md:29), /done writes it (all done sub-docs). The retrieve path reads the index but doesn't apply the authoring rule.
-- Unpark watch (plugin-behaviour.md:112) — 3 skills; self-names its firing sites (/plan read-state + loop, /next pre-flight, /done close-out).
-- Staleness watch (plugin-behaviour.md:113) — 3 skills, "same surfacing moments." [staleness-flag-fix-path] (queued) extends it — same band.
-- Empty Batches → /plan (plugin-behaviour.md:106) — 2 skills (/next pre-flight, /done recommend-next).
-- User owns scope (plugin-behaviour.md:118) — 2 skills (/plan promote-park-drop, /next whether-to-proceed). [scope-anchor] rewords it.
-- Resume reads _build.md (plugin-behaviour.md:135) — 2 skills (/next resume, /done reads it).
-- /plan-for-planning, /next-for-building (plugin-behaviour.md:99) — 2–3 skills; boundary rule.
-- Borderline /plan-only authoring read cross-skill: Depends/Blocks headers (plugin-behaviour.md:115), stable slugs (plugin-behaviour.md:117) — authored in /plan, referenced when read elsewhere.
-
-Why it matters: this band is what the restructure is for — compact core injected with the fuller doc loaded at skill time, or a shared sub-doc the relevant skills load, or canonical-in-one with a read-on-demand pointer. That decision is parked in [behaviour-doc-size-watch]; this record is the firing data it should be decided on, instead of a guess. No move now — fold into that item when it fires.
-
-**Queued plugin-behaviour.md additions whose firing maps are narrower than every-session** [audit finding: behaviour-doc-firing-map-audit]
-
-From the firing-map audit (2026-06-13). The audit checked every queued batch whose build entries add or reword rules in plugin-behaviour.md (the every-session injection). Most plan correct homes — their rules fire outside skills via capture-making, approval moments, or memory-routing ([red-flags-screen-rule], [approval-display-blockquotes], [approval-ask-after-draft], [human-readable-authoring], [memory-rule-boundaries], and the Dependency-ownership trio). Four plan injection homes for rules whose triggers are narrower:
-
-- [scope-anchor] — the Scope statement (build scope = the active batch's entries' work; the Files: list is its mechanical approximation) fires in /plan (entries name files) and /next (scope-lock, expansion asks) = 2 skills, not outside any skill. Planned for the injection.
-- [scope-boundary-rule] — the discovery decision rule (needed→ask/split; not needed→capture; premise broken→halt) is /next execution, planned canonical-in-injection with next-build/next-test pointers. It also rewrites the current "Don't fix things outside current scope" rule (plugin-behaviour.md:101), itself /next-execution — deepening an execution rule's injection footprint.
-- [no-planning-in-execution] — mixed: the prohibition ("no capture-processing in execution skills") fires in /next; the permission ("capture-making is open to every session type") is genuinely universal. The prohibition half is narrower than every-session.
-- [audit-findings-bulk-approval] — the bulk-approval inversion fires only in /next-audit, but is added to the universal sequencing rule as an exception. Borderline: an exception co-located with its universal parent has merit.
-
-Action for /plan: weigh each home against the firing map before these batches build — not to override their own reasoning, but so the injection-vs-skill-doc choice is made deliberately. [scope-anchor] and [scope-boundary-rule] are the clear candidates to reconsider (plan+next / next-only); [no-planning-in-execution] and [audit-findings-bulk-approval] may justify injection anyway. This is the reason the audit was placed above the rule-adding batches.
 
 **README: separate the four-commands intro line and add a best-practice usage cycle**
 
@@ -495,10 +495,6 @@ Candidate homes (to settle at promote time):
 
 Authoring note: the setup close-out and FAQ are user-facing (external non-coder), so the rhythm must read in plain English with no internal terms, and the cycle wording should stay consistent across the README, the setup close-out, and the FAQ.
 
-**Hook-count descriptions lag the QUEUE.md lint hook**
-
-Found during the v1.12.0 pre-push consistency sweep, 2026-06-14. This project's CLAUDE.md Architecture section enumerates "2 hooks (session_start, pre_tool_use)," but post_tool_use.py — the QUEUE.md structure lint, shipped after v1.11.0 — makes three hook files. SPEC.md's "Two hooks enforce discipline mechanically" is arguably still accurate, because the lint hook advises rather than enforces. So this is a framing decision, not a clear error: update CLAUDE.md's enumeration to three, and decide whether SPEC should mention the advisory lint hook at all. Host-only / this-project docs; nothing consumer-facing was stale (CLAUDE-TEMPLATE.md and faq-template.md don't enumerate hooks).
-
 **Deferred tests vs test batches: do two mechanisms earn their keep?**
 
 Raised by the user, 2026-06-14, during a /next pre-flight. The user didn't follow what the Deferred tests section is for. Her model: all user-run testing gets queued as a Test batch. So a separate floating list of tests read as redundant.
@@ -529,13 +525,9 @@ The session exposed that the method has no explicit "goal session" shape. It ass
 
 The decision /plan must make is a fork, not a tweak. Either **pivot to formally allowing `/goal`** — define how a goal session represents multiple batches (or skips `_build.md`), how its LOG entry and index line are shaped, and how the deferred-test and staleness sweeps run across several batches at once — **or** treat `/goal` as the working proof of the long-shelved "cruise control" (autopilot / unattended-execution) idea and stop deferring that idea, actually starting to implement toward it. The user's point: `/goal` is cruise control working in practice, and the method keeps putting the formal version off. Pick a direction rather than letting both sit.
 
-**/done's commit message STILL isn't derived from the LOG entry — repeatedly asked for, fix designed but never shipped**
-
-Raised again 2026-06-15, with real frustration: across multiple sessions the user has asked that /done's commit message come straight from the LOG record — the entry's summary line as the commit title, the entry's body as the commit body — instead of /done authoring a separate message. It keeps not happening.
-
-The design is not the problem. The fix is already fully specified as the queued batch **[closeout-text-collapse]**, which makes both the commit title and body derive from the one approved LOG text (one approval, nothing new to read at commit time). The problem is that batch is **unbuilt and sits far down the Batches list**, and it is host-side (needs build + push + reinstall), so until it ships every /done re-authors the commit by hand and the user re-lives the broken behaviour. So this is not the user mis-instructing; it is a known fix that has never been prioritized to land.
-
-Asks for /plan (or for a goal session): (1) **move [closeout-text-collapse] to the top of the Batches list** so the next build ships it — it is small and high-pain; until then, (2) manual /done closes derive the commit from the LOG entry by hand (done this session). Compounding cause the user named, and it is real: Claude's over-long discussion at every turn makes it hard for her to catch when /done drifts off-process, so the error slips past unnoticed. This is the documented model-compliance problem in resources/research/model-instruction-compliance.md — brevity instructions in CLAUDE.md and the plugin lose to the system prompt's helpfulness/thoroughness, so adding more or louder instructions does not fix it. The verbosity fix needs a mechanism at a higher priority than instructions, not stronger instructions.
+Design requirements folded in for whichever direction wins (gathered at the 2026-06-16 /plan):
+- **Shipped-slug cross-check at close.** A goal/autonomous multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue. Observed 2026-06-15: the prior goal session recorded removing 14 batches but left [user-edits-rollup-on-commit] in the queue (genuinely built — done.md carried its implementation — only the queue removal was missed), so it re-presented next session as if unbuilt, wasting the first move rediscovering it was done. Whatever close mechanism results must cross-check the LOG entry's shipped-batch list against QUEUE.md and confirm each slug is gone before committing. (Folds in the "Goal session removed 13 of 14 batches" capture.)
+- **Handoff claim provenance.** When a session opens from a Claude-authored handoff or context prompt, the next session reads it in the user's voice and can give Claude-written claims the weight of a user statement (observed 2026-06-15: a Claude-authored "the QUEUE.md lint keeps flagging" line was treated as the user's report and used as evidence a trigger had fired). The formalized handoff format must settle whether handoff prompts mark which claims are user-vouched versus Claude-authored, or whether the standing rule is simply that Claude-authored handoff content is unverified until the user confirms it. An interim form of that rule ships now into this project's CLAUDE.md via [hook-count-reconcile]; the format-design decision belongs to this fork. The [short-session-design-target] gap class makes this sharper — a fresh or weaker session can't tell which claims the user stood behind. (Folds in the "Claude-authored handoff prompt" capture.)
 
 **Self-hosting notes inventory — findings from [self-hosting-notes-audit]**
 
@@ -611,32 +603,6 @@ Audit run 2026-06-15 (goal session). The complete inventory of every self-hostin
 
 Coverage note: the shipped procedure docs and templates carry essentially no self-hosting content — the single exception is next.md's push-marker halt (finding 6). That absence is the audit's thesis: self-hosting knowledge lives in CLAUDE.md and session judgment, not in the method. Two rationales are thin: finding 29 (lives only as a code comment) and finding 17 (labelled interim, no permanent home). Factual confirmation, not new findings: CLAUDE.md still reads "Target v1.11.0" and "2 hooks" while plugin.json/`.si-version` are 1.12.0 and three hook files exist — both already captured.
 
-**Goal session removed 13 of 14 batches it recorded removing — [user-edits-rollup-on-commit] survived in the queue**
-
-Observed 2026-06-15 (goal session). The previous goal session (215f96e, LOG goal-2026-06-15.md) built [user-edits-rollup-on-commit] and its LOG entry said it removed 14 build batches plus 1 audit from QUEUE.md. But [user-edits-rollup-on-commit] was still at the top of the Batches list this session. done.md already carried its implementation — the dirty-path rollup sub-step in the commit core — so the batch was genuinely built; only its queue removal was missed. The other 13 batches were removed correctly. So this is a single-batch slip, not a systemic failure. This session removed the stale batch as queue hygiene and built on from there. Why it matters: a goal session closes by hand, and removing every shipped batch is a manual loop with no mechanical check that each shipped slug actually left the queue. A built-but-not-removed batch re-presents at the next session as if unbuilt, so the session's first move is wasted rediscovering that it is already done. Possible fix for /plan to weigh: at goal-session /done, cross-check the shipped-batch list in the LOG entry against QUEUE.md and confirm each slug is gone before committing. Relates to the open /goal-vs-cruise-control fork (the "First autonomous /goal session" capture above).
-
-**Test-build version labelling so rezips reinstall cleanly** **[rezip-test-version-scheme]**
-
-Raised 2026-06-15. A rezip rebuilds the zip but deliberately doesn't bump the version (CLAUDE.md: bumping on every test build would nag the user's own projects to re-run /setup). So a rezipped build carries the same version string as the build it replaces. Observed this session: after a full uninstall and reinstall of a same-version rezip, the new host didn't take — the desktop app appears not to register a reinstall when the version string is unchanged, even after a clean uninstall. That breaks the whole point of rezip, which is private dogfooding of an unpushed build.
-
-Proposed scheme (applied this session as a first trial): test builds carry a `<base>-testN` version — the release-line base version, plus `-test` and a number that increments each rezip-for-testing. This build was set to `1.12.0-test1`. The next test rezip would be `1.12.0-test2`, and so on. A real push resets to a clean number with no suffix (the push "bump version" step sets a clean patch/minor and the `-testN` is dropped); test numbering restarts under the new base after a push.
-
-Why this shape: a distinct version string per test build is what forces the app to treat each upload as a genuinely new install; the `-test` label makes it unmistakable the build is a private test, not a release; keeping the base version shows which release line the test is based on. Note the interaction with the session-start hook: a test version differs from the project's `.si-version` (1.12.0), so the hook's "an update just happened" signal will fire — that's tolerable, even a useful confirmation the new build loaded, and the drift warning stays quiet because [make-drift-visible] made drift detection presence-based, not version-based.
-
-For /plan to decide and formalize: whether `-testN` is the right format (vs a build-metadata `+` suffix, which semver treats as equal-precedence and so would not help here; or bumping a throwaway patch); where the scheme is documented (CLAUDE.md Rezip section); and whether the rezip procedure should auto-increment the suffix. Open question to confirm by testing: does `1.12.0-test1` actually make the reinstall take where bare `1.12.0` did not — this trial is the test. Caveat carried: the test suffix lives in the working tree's plugin.json only and must be reset to a clean version before any push.
-
-Confirmed 2026-06-15: the `1.12.0-test1` build installed and its skills registered correctly once the app was fully restarted — so the `-testN` pre-release format loads fine and is not a blocker. The reinstall failure that prompted this was not the version string at all; it was the app-restart requirement, captured separately in [reinstall-needs-full-restart]. The remaining open question for /plan is therefore just formatting and where to document the scheme, not whether it works.
-
-**Reinstalling the plugin needs a full app restart, not just a new session** **[reinstall-needs-full-restart]**
-
-Observed 2026-06-15 while testing a rezipped build. After a clean uninstall and reinstall of the local zip, the plugin appeared in the Customise → Plugins list, but its slash commands (/setup, /plan, /next, /done) did not appear when typing "/" in a new chat. A new chat alone did not fix it, and a normal close of the app did not fix it. What fixed it: fully quitting the desktop app — the user had to end it via Task Manager because a normal quit left the process running — then relaunching. After the full restart the commands registered. So plugin skills register at app launch, and on Windows the desktop app can keep running after a window close, which means "open a new session" is not sufficient — the app process must actually be killed and restarted.
-
-Two doc implications for /plan:
-- Consumer-facing INSTALL.md: the smoke-test diagnostic ladder currently says "start a fresh session, since skills register at session start." That under-specifies the fix — a fresh chat was not enough here. It should say to fully quit and relaunch the app, and on Windows to confirm the process has actually exited (via Task Manager if a normal quit leaves it running). This corrects a line written in this same goal session.
-- This project's CLAUDE.md Rezip step ("Uninstall/reinstall to test the new host privately") should add that a full app restart is needed for the new host's skills to load.
-
-Relates to [rezip-test-version-scheme] — the same test session confirmed both that the `-testN` version loads and that the restart, not the version, was the blocker.
-
 **Explicit "_plan.md offload" as a pressure-release for the bundling pull**
 
 Raised by the user 2026-06-15 during the verbosity-arc /plan. Idea: add an explicit instruction that Claude may record the rest of a multi-step plan in _plan.md (or _build.md) and then release only the next item — turning the working file the plugin already maintains into a deliberate pressure-release against the pull to dump everything for completeness.
@@ -645,26 +611,13 @@ Filed as a candidate, not a redirect, because this session's analysis concluded 
 
 What the idea might still add: a humane reframe — if the rules explicitly tell Claude "the rest is safely recorded, release just the next item", that could lower completeness anxiety at generation time. Speculative. To weigh later: whether it earns its words, whether it belongs as a line in the sequencing rule, and whether it is redundant once [verbosity-output-style] lifts the chunking rules to system-prompt priority. Relates to [tag-definition-redesign] and [verbosity-output-style].
 
-**A session opening from a Claude-authored handoff prompt can treat its claims as verified ground truth**
-
-Observed 2026-06-15 during the verbosity-arc /plan. The session opened from a /plan handoff prompt partly authored by Claude in a prior session (the goal-session / handoff workflow). One line in it stated that "the QUEUE.md lint keeps flagging" cruft. This session treated that as the user's own report and used it as evidence that [lint-citation-refire]'s noisy-vs-tolerable trigger had fired, recommending a route partly on that basis. The user corrected it: that line was Claude-authored and they cannot verify it.
-
-Why it matters: a handoff or context prompt authored by Claude is not a user-verified fact, but the next session reads it in the user's voice and can give it the weight of a user statement. That risk grows in the /goal-session and autonomous workflows, where Claude authors more of the handoff and the next session is fresh — possibly a weaker model — and has no way to tell which handoff claims the user vouched for and which Claude wrote. The [short-session-design-target] gap class makes this sharper.
-
-For /plan to weigh: whether handoff prompts should mark which claims are user-stated versus Claude-authored, or whether the rule is simply that Claude-authored handoff content is treated as unverified until the user confirms it. Relates to the /goal-vs-cruise-control fork. Filed as a behaviour observation, not yet a fix.
-
-**[approval-display-blockquotes] deferred test's commit-step clause is superseded by [closeout-text-collapse]**
-
-Observed at the 2026-06-15 goal-session close, while building [closeout-text-collapse]. The [approval-display-blockquotes] line in Deferred tests has two clauses: (1) the next /plan or /done approval draft arrives as a labelled blockquote that wraps (not a fence), and (2) the /done commit step presents title and body as blockquotes with fences gone. Clause (2) is now stale. [closeout-text-collapse] reshaped the commit core so the commit step no longer presents a freshly-drafted title and body for approval. It states the identity instead — title is the approved entry's one-liner, body is the approved rationale, both already approved at the entry step — and surfaces only genuinely-new text. So there is no fresh blockquote draft at the commit step to confirm. Clause (1) still holds for LOG entry, capture, and batch drafts. For /plan: reconcile the [approval-display-blockquotes] deferred test — keep clause (1), drop or rewrite clause (2) to match the collapsed commit step, which [closeout-text-collapse]'s own deferred test now covers. This is a fate decision about the test's validity, so it belongs in /plan, not an in-session edit.
-
-**Lifecycle-description sweeps can omit the canonical doc they derive from**
-
-Observed at the 2026-06-15 goal session, while building [deferred-test-lifecycle]. That batch's lifecycle-description sweep entry named four places that said "/next re-presents the deferred-tests section" and needed updating to the new lifecycle: QUEUE.md's intro, this project's CLAUDE.md, CLAUDE-TEMPLATE.md, and faq-template.md. But done.md's own Deferred tests section — the canonical statement the other four describe — carried the same stale "/next's pre-flight reads that section and re-presents every pending entry" wording and was not on the list. It was fixed in-session only because the same batch rewrote that section for other reasons, so the omission did not bite this time. The improvable pattern: a build entry shaped as "update these N places," derived from a canonical doc, can leave the canonical doc itself off the list, because the author is thinking of the downstream copies. For /plan to weigh: whether sweep-style entries should carry a standing reminder to include the canonical or source doc, or whether this is a one-off. Low priority — no harm occurred this time.
-
 ### Parked
 
 - **[narration-vs-menu-drift]** Observed during 1b7d359 /plan: Claude defaulted to menu-style options ("file as capture, drop it, or commit to the rule now?") when narrating a recommendation would have been more appropriate. Dependency ownership's narration rule ("narrate the ordering work" — exercise judgment, recommend) is supposed to catch this. The mechanism failed under exploratory back-and-forth tone — the pull toward "lay out the options" was stronger than the pull toward "state the recommendation, let user push back." Worth watching whether this generalizes: when the conversation gets exploratory, does Claude soften from recommendation-narration into menu-listing? If so, the narration rule needs tightening — possibly explicit text that menu-style enumeration of equally-weighted options is *not* narration when Claude actually has a preference, and the recommendation must come first with the menu as fallback.
   Blocked by: a second observed instance of menu-style enumeration where a recommendation was due — behavioural trigger, no slug; fires at the /plan that processes such a capture.
+
+- **[sweep-include-canonical-doc]** Observed at the 2026-06-15 goal session, building [deferred-test-lifecycle]: that batch's lifecycle-description sweep entry named four downstream places to update but omitted done.md's own Deferred tests section — the canonical statement the other four describe — which carried the same stale wording. It was fixed in-session only because the same batch happened to rewrite that section for other reasons, so the omission did not bite. The pattern: a build entry shaped as "update these N places," derived from a canonical doc, can leave the canonical doc itself off the list because the author is focused on the downstream copies. Candidate fix if it recurs: a one-line reminder in plan.md's batch-authoring guidance to include the source/canonical doc in any such sweep. Low priority — no harm this time.
+  Blocked by: a second observed instance of a sweep entry omitting its canonical source doc — behavioural trigger, no slug; fires at the /plan that processes such a capture.
 
 - **[inline-internal-term-marker]** Decide whether to add an inline marker for internal-only terms in procedure prose. The marker would let procedure docs flag internal terms inline so the translate-or-omit rule fires mechanically rather than relying on Claude matching against the vocabulary list each time.
   Blocked by: [narration-vocabulary] + observed leakage after it ships
@@ -690,5 +643,11 @@ Observed at the 2026-06-15 goal session, while building [deferred-test-lifecycle
 - **[behaviour-doc-size-watch]** Filed at the 2026-06-13 /plan, from a doc-size review. plugin-behaviour.md is the largest doc by content (~3,074 words / 135 lines at counting time) and the most expensive position in the system: it is injected at every session start, and skill sessions pay it twice until [behaviour-doc-double-load] ships. Many queued batches add rules to it — the approval rules, authoring standards, scope anchor, memory boundaries, no-planning-in-execution — so it will grow before it settles. Decided at the review: no blanket terseness pass. The rationale-everywhere style is the compliance bet; stripping why-clauses to save tokens buys back the failure mode they were installed to fix. Duplication-targeted trims are already queued ([tag-restatement-trim], [trickle-up-next-md-duplicates], [trickle-up-ask-when-unsure], [behaviour-doc-double-load]). The remaining lever is the progressive-disclosure restructure — compact core injected, full doc loaded at skill time — already noted as a revisit in [behaviour-doc-double-load]'s rationale. This capture is the re-measure trigger: when it fires, re-count plugin-behaviour.md, compare against ~3,074 words, and weigh the restructure on real numbers instead of trimming mid-flux.
   Blocked by: the compliance arc's plugin-behaviour.md additions landing — behavioural trigger, no single slug; fires at the /plan after the queued rule-adding batches have shipped and the doc's contents have settled.
 
+- **[firing-map-middle-band]** Firing data for the progressive-disclosure restructure, from the firing-map audit (2026-06-13). These rules fire in two or three skills but never outside a skill — so they don't earn the every-session injection on the "fires outside skills" test, but they aren't single-skill trickle-down candidates either. The band (skill counts as of 2026-06-13): Index entries (3 skills — /plan readiness gate, /next pre-generate, /done writes it; the retrieve path reads the index but doesn't apply the authoring rule); Unpark watch (3 — /plan read-state + loop, /next pre-flight, /done close-out); Staleness watch (3, same surfacing moments — [staleness-flag-fix-path] extends it); Empty Batches → /plan (2 — /next pre-flight, /done recommend-next); User owns scope (2 — /plan promote-park-drop, /next whether-to-proceed; [scope-anchor] rewords it); Resume reads _build.md (2 — /next resume, /done reads it); /plan-for-planning vs /next-for-building (2–3, boundary rule); and borderline cross-skill reads — Depends/Blocks headers and stable slugs, authored in /plan but referenced elsewhere. Why it matters: this band is what the restructure is for — compact core injected with the fuller doc loaded at skill time, or a shared sub-doc the relevant skills load, or canonical-in-one with a read-on-demand pointer. This record is the firing data the decision should rest on, instead of a guess. Queued additions weighed 2026-06-16: [scope-anchor], [scope-boundary-rule], [no-planning-in-execution], and [audit-findings-bulk-approval] were all kept in the injection for now (scope discipline already lives there; the no-planning permission half and the bulk-approval exception are genuinely injection-shaped) — reconsider localizing the two scope rules ([scope-anchor], [scope-boundary-rule]) into next.md/plan.md as part of this restructure.
+  Blocked by: [behaviour-doc-size-watch] — surfaces when the progressive-disclosure restructure is taken up; fold this in then. The line numbers and band membership are a 2026-06-13 snapshot to re-derive at that point, not apply (the band shifts as [scope-anchor], the trickle batches, and the compliance-arc additions land).
+
 - **[full-tag-placement-recheck]** A fresh full placement re-check of response-shape tags across all procedure docs — setup.md, plan.md, the next and done families, plugin-behaviour.md — to grade the corrected state after [output-tag-audit]'s fixes ship, and to catch any tag drift since that audit (commit 0405315). Distinct from [opening-narration-audit], which measures narration volume at openings; this one re-checks per-step tag placement everywhere, the same lens [output-tag-audit] used, re-run on the post-fix docs. Deferred deliberately: running it before [output-tag-audit]'s findings build would mostly re-discover gaps already sitting in the queue.
   Blocked by: the queued tag-fix batches from the last full tag audit shipping — chiefly [next-done-tag-sweep], [plan-step1-sequencing], and [setup-self-contained-no-tags]; fires once those findings have landed, so the re-check grades corrected docs, not the pre-fix state.
+
+- **[scaffolding-resync]** Content-level scaffold drift: when a scaffolded file already exists but its template changed later (e.g. a doc template gains a new section), a project that has the file won't pick up the change. [make-drift-visible] catches *missing* files and folders, but not this content-level drift, because the file is present. Open question: how to detect that a present file is behind its template, without a full /setup re-run that would overwrite user content. The drift is general, not self-hosting (Taskflowapp, a plain consumer project, had the same missing file); the version-bump false-alarm worry is mooted by [make-drift-visible]'s presence-based check. Lower priority — the missing-file case (the one that actually hurt) is handled by [make-drift-visible].
+  Blocked by: first observed instance of content-level scaffold drift biting — a present scaffolded file falls behind its template and causes a problem; behavioural trigger, no slug; fires at the /plan that processes such a report.
