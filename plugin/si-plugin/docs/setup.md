@@ -150,4 +150,5 @@ After all 5 answers, write the docs, then close in a sentence or two — show wh
 - Use the user's language — don't rephrase into jargon.
 - If an answer is vague, ask one follow-up for clarity. Don't interrogate.
 - Don't create files until you have at least Q1–Q4 answered (Q5 is optional if skipped).
+- Unsure about a scaffolding choice the user owns — which folder to adopt, whether existing content is a doc to leave alone, how to read an ambiguous answer? Ask before acting; don't guess and scaffold wrong. The question costs one turn; a wrong guess makes the user undo a scaffold.
 - The "adopt the folder" framing: the method is being applied to their project, not the other way around.

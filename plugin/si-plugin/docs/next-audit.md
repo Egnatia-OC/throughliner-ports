@@ -10,14 +10,20 @@ Read every artifact named by the target. Apply the criteria pass by pass — one
 
 Once the read is complete, group observations into discrete findings. One finding per actionable change. Phrase each as observed + why it matters — the shape a capture takes, since that's where they'll land.
 
-## Present findings one at a time [SEQUENCE, PROMPT]
+## Present findings as one numbered set [BRIEF, PROMPT]
 
-State the count upfront ("N findings. First: ..."). For each: the observation, the file:line reference, why it matters. Wait for the user's call — **capture** or **drop**. Don't preview upcoming findings.
+Compile every finding into one numbered set and present it in a single message. State the count upfront, then list all findings — for each: the number, the observation, the file:line reference, why it matters. Ask the user to approve the whole set, or to list the numbers they don't accept as-is. Then wait.
 
-## Route approved findings to Captures
+This is the one inversion of one-at-a-time (see plugin-behaviour.md Communication, sequencing rule): the findings are a deterministic result set produced by criteria the user already approved when they queued the audit, so approving each separately costs round-trips without adding judgment the bulk view doesn't already give. Bulk approval keeps the Captures always-show rule fully intact — the user reads every finding's exact wording before any of it is filed.
 
-For each marked capture, draft the wording as a blockquote with a content-type lead-in (**Capture draft:**) for approval, per plugin-behaviour.md (Captures + approval-time outputs). Once approved, append to Captures in QUEUE.md. Tick the finding in _build.md Progress as `captured` or `dropped`.
+## Handle contested findings one at a time [SEQUENCE, PROMPT]
+
+If the user lists numbers they don't accept as-is, take those one at a time — state how many, then the first. For each, the choice is reword or drop: reword means redraft and show the new wording for approval; drop means remove it. Wait for the user's call on each before presenting the next. Every finding the user didn't contest is approved as-is.
+
+## Route the approved set to Captures
+
+Append the approved findings to Captures in QUEUE.md, each placed per plugin-behaviour.md Captures placement, each written to the capture-authoring standard (plugin-behaviour.md Captures). Tick each finding in _build.md Progress as `captured` or `dropped`.
 
 ## Close [BRIEF, PROMPT]
 
-When all findings are handled, tell the user the audit is complete with the captured/dropped counts — each finding was already handled one at a time. Say: "Run /done to record this and commit, or keep reviewing." No chat summary of the routed findings — the LOG entry /done writes is the single session summary.
+Tell the user the audit is complete with the captured/dropped counts. Say: "Run /done to record this and commit, or keep reviewing." Reviewing means re-examining what was already found — not raising new work. Anything new routes through the existing paths: a discovery outside the audit's target follows the discovery rule (plugin-behaviour.md Routing and discipline), and thinking work goes to Captures. No chat summary of the routed findings — the LOG entry /done writes is the single session summary.

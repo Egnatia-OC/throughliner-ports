@@ -18,154 +18,6 @@ The prose half of this batch landed in a goal session (2026-06-15): INSTALL.md n
 Build:
 - INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place. (User-only — needs a real desktop-app screen capture; a placeholder pointer sits in INSTALL.md's smoke-test step until the image lands.)
 
-**Install the scope anchor: one definition of build scope, wired through the docs** **[scope-anchor]**
-Blocks: [scope-boundary-rule], [trickle-up-next-md-duplicates]
-
-From [scope-distinction-audit]. Build scope has no canonical definition. The working definition assembles from three places, and plugin-behaviour.md — the only doc injected into every session — says "don't fix things outside current scope" without defining current scope. This batch installs one Scope statement in plugin-behaviour.md and points the skill docs at it. The statement also connects the two enforcement layers no doc currently relates: the entries' described work is the definition, enforced by judgment; the Files: list is its mechanical approximation, enforced by the hook as a backstop. A build can stay within listed files and still exceed the described work, so passing the hook never by itself makes work in-scope. The word "scope" also loses its second sense — the Dependency ownership bullet stops using it for project scope, leaving build scope as the word's only meaning. plan.md gains the authoring side: entries feed the lock, so build entries name their files, and scope gets decided at planning time instead of ask-by-ask at build time. Must land before [trickle-up-next-md-duplicates] deletes next-build.md's restatement — otherwise the rule's only remaining statement uses a term no doc defines.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md: add the Scope statement — build scope is the active batch's entries' described work; the Files: list in _build.md is its mechanical approximation, enforced by the pre_tool_use hook as a backstop; passing the hook never by itself makes work in-scope; work outside scope routes to Captures.
-- plugin/si-plugin/docs/plugin-behaviour.md, Dependency ownership: reword "The user owns scope" to "The user owns what enters the queue, what gets parked or dropped, and whether a build expands."
-- Grep "scope" across the procedure docs for other project-scope-sense uses; reword those the same way. Build scope becomes the word's only remaining meaning.
-- plugin/si-plugin/docs/next.md and next-build.md: point their scope-definition statements at the anchor instead of restating it; keep the skill-specific rules. Locate by content, not line numbers.
-- plugin/si-plugin/docs/next-build.md, Scope management: reword the scope-expansion ask from file-shaped to work-shaped — name the work, then the files it needs, listed or not — so work growing inside an already-listed file triggers the same ask a new file would.
-- plugin/si-plugin/docs/plan.md Step 3, near the batch structure: build entries name the files they touch; the scope-lock is populated from them; an entry naming no files leaves the lock at method-docs-only. Files that don't exist yet count as named when the entry says what gets created and where.
-- plugin/si-plugin/docs/plan.md, readiness gate: add the matching check — can the Files: list be populated from these entries?
-
-Test:
-- Grep the definition phrasing across the docs after the edit: one canonical statement in plugin-behaviour.md, pointers elsewhere.
-- Grep "scope" for surviving project-scope-sense uses — expect none.
-
-**Define the boundary moves: the discovery decision rule and routing move, stated once** **[scope-boundary-rule]**
-Depends on: [scope-anchor]
-
-From [scope-distinction-audit], two findings that are one thought. First: Claude-noticed out-of-scope discoveries have no defined routing move — "note them for the queue" names no destination, no mechanics, no timing, so a weak model can hold them in conversation memory, the exact failure the short-session design target forbids. The fix collapses the three-way split by noticer: who noticed doesn't change the artifact, so Claude-noticed discoveries take the same capture flow user-raised items already get — draft, show, "anything else?", resume — at the moment of noticing. Test failures keep their at-close path; interrupting a test run is the one case with a real reason to defer. Second: the decision rule for mid-session discoveries is real but never stated — needed → ask or split; not needed → capture and continue; premise broken → halt — visible only across five separate passages. It gets stated once, in plugin-behaviour.md beside the routing move, because "not needed → capture and continue" is that move; duplicating it per skill doc recreates the drift the trickle-up arc is removing. The skill docs' sections then read as elaborations of one rule.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md, Routing and discipline: replace "note them for the queue" wording with the defined move — Claude-noticed discoveries route to Captures at the moment of noticing, per the same capture flow as user-raised items (draft, show, "anything else?", resume).
-- plugin/si-plugin/docs/plugin-behaviour.md, same spot: state the decision rule once — needed to complete the batch's entries → ask to add (minor) or propose splitting (significant); not needed → capture and continue; premise broken → halt and course-correct.
-- plugin/si-plugin/docs/next-build.md (Rules during build) and next-test.md (Rules during test): replace their "note them for the queue" wording with a pointer to the defined move. Locate by content, not line numbers.
-- plugin/si-plugin/docs/next-build.md and next-test.md, Scope management: open each section with a pointer to the decision rule so the existing passages read as its elaborations.
-
-Test:
-- Grep "note them for the queue" (and close variants) across the procedure docs after the edit — expect zero hits.
-- Behavioural: the next /next session that meets a Claude-noticed discovery routes it at the moment of noticing, not "for the queue" at an undefined later.
-
-**Remove rule duplicates from next.md and the per-type docs** **[trickle-up-next-md-duplicates]**
-Depends on: [scope-anchor]
-
-next.md and the per-type docs restate four rules that plugin-behaviour.md already carries: SPEC read-only (next-build.md, next-test.md), don't fix outside scope (next-build.md), state regressions plainly (next-build.md, next-test.md), one build at a time (next.md). Wording has already drifted slightly between copies — the cost of duplication made visible. Trickle-up discipline: plugin-behaviour.md is the canonical home; skill docs carry only what's skill-specific. This extends the same bet as [behaviour-doc-double-load]: post-dedup, these rules live in the session-start injection alone — the consistent direction, not a new exposure. Locate every removal by rule text, not the capture's line refs — the docs have been edited since filing.
-
-Build:
-- plugin/si-plugin/docs/next-build.md: remove the SPEC read-only, don't-fix-outside-scope, and state-regressions-plainly restatements. Keep the section's skill-specific rules (scope-expansion ask, REGISTRY not build scope).
-- plugin/si-plugin/docs/next-test.md: remove the SPEC read-only and state-regressions-plainly restatements.
-- plugin/si-plugin/docs/next.md: remove the one-build-at-a-time restatement. Keep entries-are-the-contract and per-entry ticking.
-
-Test:
-- Grep the four rule phrasings across next.md and the per-type docs after the edit — remaining hits should be in plugin-behaviour.md only.
-
-**Make SPEC a normal doc: spec edits become a planned build batch** **[spec-edit-batch-type]**
-Depends on: [scope-anchor]
-
-Decided 2026-06-13. Right now SPEC.md is special. It is read-only during builds (the pre_tool_use hook enforces this) and edited directly in /plan. That special case caused confusion — a direct SPEC edit during a /plan read as off-script even to the designer. This batch makes SPEC a normal doc, changed only through a planned spec-edit build batch, like any other doc.
-
-Dropping the read-only lock is safe because scope-lock already does the lock's real job. The lock existed to stop a build from editing the spec it builds against — grading its own homework. A feature build does not list SPEC.md in its Files, so scope-lock alone keeps it from touching SPEC. Spec changes get their own batch, separate from any feature build, so no build edits its own contract. The "decide in planning" split survives: authoring the spec-edit batch in /plan is the decision, and /next only does the typing. This sequences after [scope-anchor] because that batch hardens scope-lock's definition, and once the read-only lock is gone, scope-lock is SPEC's sole protector.
-
-This batch creates the spec-edit mechanism but cannot use it on itself. Its build runs under the current host, where the read-only lock is still active until reinstall, so the build cannot edit SPEC.md. The one SPEC change this work implies — rewording SPEC's hooks description — is therefore deferred to the first spec-edit batch, authored after this ships and reinstalls.
-
-Build:
-- pre_tool_use.py: remove the SPEC.md read-only-during-builds rule; scope-lock alone governs SPEC. Make sure the empty-Files method-docs fallback does not let a build edit SPEC by default.
-- plan.md: add spec-edit as a batch type in the Step 3 batch structure, alongside Build/Test/Audit (and Freeform once it ships). Add a /plan step that authors spec changes as a spec-edit batch.
-- plugin/si-plugin/docs/plan.md pipeline wording (make this the canonical home): reword the "idea → … → spec entry … → batch entry" line to the new 5-stage form — "idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch".
-- plugin/si-plugin/docs/plugin-behaviour.md: remove the spec-entry pipeline rule entirely (the "A change needs a spec entry before a build entry … Pipeline: idea → SPEC.md → QUEUE.md …" bullet) rather than rewording it. The rule is /plan authoring work and fires only there, so plan.md is its single home; the injection copy was a synced duplicate that had already drifted. (Folds in the [spec-entry pipeline rule is /plan-only] capture, 2026-06-16.) When this builds, point [done-spec-sync-check]'s trigger-test reference at plan.md alone, since the injection copy is gone.
-- This project's CLAUDE.md: reword "Edit it only during /plan" to the new model.
-- done.md / done-build.md: a spec-edit batch closes like any build.
-- post_tool_use.py lint: add spec-edit to the allowed batch subheadings.
-
-Test:
-- Claude-run: pre_tool_use.py against a fixture — a build with an empty Files list cannot edit SPEC.md by default.
-- Behavioural, host-side (after push + reinstall): a /next spec-edit batch edits SPEC.md without being blocked, and a normal feature build still cannot touch SPEC unless it is in scope. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Generalize ask-when-unsure into plugin-behaviour.md** **[trickle-up-ask-when-unsure]**
-
-next.md's "Unsure about an implementation choice? Ask. Don't guess and build wrong" is universal — /plan ordering calls, /setup scaffolding choices, /done routing decisions — but lives only in next.md, so every other skill runs without it. Trickle-up: the generalized rule belongs in plugin-behaviour.md Communication, adjacent to the web-search bullet so the two read as one decision rule with two branches — uncertain about an external fact → offer a search; uncertain about a choice the user owns → ask, don't guess and proceed. One deliberate addition beyond the capture as filed: a self-contained line in setup.md, because unadopted sessions get no behaviour-rules injection (confirmed in session_start.py this session) and /setup's scaffolding choices are a named use of the rule — setup.md carries its own copies by design. Same next.md rules area as [trickle-up-next-md-duplicates] touches; no ordering between them, placed adjacent for one-session convenience.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md Communication, next to the web-search bullet: add the generalized rule — when uncertain about a choice the user owns (implementation, scaffolding, routing), ask; don't guess and proceed.
-- plugin/si-plugin/docs/next.md: remove the local copy (locate by rule text, not line ref).
-- plugin/si-plugin/docs/setup.md: add one self-contained ask-when-unsure line where scaffolding choices are made.
-
-Test:
-- Grep the rule phrasing after the edit: present in plugin-behaviour.md and setup.md, gone from next.md.
-
-**Trickle the two /next-only /done-recommendation rules down to next.md** **[trickle-down-next-only-rules]**
-
-From the firing-map audit (2026-06-13). Two rules sit in plugin-behaviour.md — the doc injected into every session — but only ever fire during a /next build, so every /plan, /done, and /setup session pays for words it can never use: "At build completion, the only valid next-step recommendation is /done" and "If context is long mid-build, suggest completing the current file and running /done." Both key to build execution, which exists only inside /next. Moving them to next.md as their canonical home takes roughly 85 words off the most expensive doc in the system without losing the rule — next.md is loaded before any build work runs, so the rules still fire where they're needed.
-
-The audit named four such rules; the other two are handled elsewhere and stay out of this batch. "SPEC.md is read-only during builds" is deleted entirely by [spec-edit-batch-type], so there's nothing to trickle. "One build at a time" stays in the injection on purpose: the session that needs it is one where the user opens /next without remembering a build is already open, and only the injection is guaranteed loaded before /next's own doc — trickling it down would make it arrive too late to stop a second build.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md: remove the "At build completion, the only valid next-step recommendation is /done" bullet and the "If context is long mid-build, suggest completing the current file and running /done" bullet. Locate by rule text, not line number.
-- plugin/si-plugin/docs/next.md: add both rules as their canonical home, each with its rationale inline — why /done (not /next or another build) is the only valid recommendation at completion, and why the long-context nudge points at /done.
-
-Test:
-- Grep both rule phrasings across the procedure docs after the edit: present in next.md only, gone from plugin-behaviour.md.
-
-**Queue-visible plan markers: write predictable planning moments into the queue** **[queue-plan-markers]**
-
-Claude keeps recommending "run /plan first" at moments that feel unexpected to the user, but a subset of those moments is predictable when the queue is authored — an audit batch will file findings the next batch depends on; a batch's dependencies can only be estimated after a design decision a planning session has yet to make. Writing those moments into the queue converts a judgment-based session-end recommendation into a mechanical gate (weak-model friendly, the same bet as the push marker), makes the planning rhythm visible before it's hit, and carries the reason inline. Floor, not ceiling: planning must happen here at minimum, for the stated reason; ad-hoc /plan elsewhere stays unrestricted. Part of the autopilot prerequisite arc named in the cruise-control trigger. The FAQ entry for the marker is deliberately not in this batch — it rides with the FAQ-trigger capture's routing.
-
-Build:
-- plugin/si-plugin/docs/plan.md Step 3 (ordering/placement work): add the authoring rule — when placement puts an audit batch ahead of batches that depend on its findings, or queues a batch whose dependencies wait on an undecided design question, insert "--- Plan session here: <reason> ---" between batches at that spot. Name the two cases as illustrations, not a closed list.
-- plugin/si-plugin/docs/plan.md Step 1: when the marker sits at the queue top, addressing its stated reason is part of this session's work; remove the marker once addressed.
-- plugin/si-plugin/docs/next.md pre-flight: halt on a plan marker at the queue top, sibling to the push-marker halt — tell the user a planning session is needed and name the marker's reason.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md and this project's CLAUDE.md (QUEUE.md format descriptions): document the marker line so it's recognizable in consumer projects.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry explaining the plan-marker line a consumer may meet in their queue — what it means, what to do (run /plan).
-
-Test:
-- Self-verifying from doc text. Behavioural confirmation arrives naturally: the next /plan that authors an audit batch with dependent work should insert a marker; the next /next that meets one should halt and name the reason.
-
-**FAQ entries become part of batch authoring** **[faq-authoring-trigger]**
-
-The FAQ ships as faq-template.md, authored in this project and scaffolded to consumers at /setup — yet nothing routinely updates it: entries happen only when a batch explicitly includes one (observed once, [narrate-build-md-purpose]), and the pre-push sweep drift-checks existing answers without ever asking whether new concepts lack coverage. This is the FAQ twin of the spec-entry trigger, keyed at the same prospective moment — batch authoring. It's a host-project rule, not shipped plan.md: consumers never author FAQ entries, so the rule would misfire in their /plan sessions. The push-sweep coverage backstop was considered and held — the observed failure is no-trigger-at-all, not a leaking trigger; the sweep is already heavy; ship the rule and watch, add the backstop only if entries still slip through. The existing backlog is [faq-coverage-audit]'s job; already-queued batches introducing consumer-visible concepts ([queue-plan-markers], [deferred-tests-structural-home]) got FAQ entries added at routing time.
-
-Build:
-- This project's CLAUDE.md (host-only, does not propagate), with the self-hosting conventions: add the rule — when /plan authors a batch that introduces something a consumer would see or ask about (a new queue line, a new doc section, a new narration moment), the batch carries a faq-template.md entry (plus its index line) in its build list. The test mirrors the spec-entry trigger: would a non-coder meeting this change have a question the FAQ doesn't answer?
-
-Test:
-- Self-verifying from the rule text. Behavioural: the next /plan authoring a consumer-visible batch should include the FAQ entry without prompting.
-
-**One-time FAQ coverage audit against the current plugin** **[faq-coverage-audit]**
-
-[faq-authoring-trigger] only fixes the future. The FAQ's 13 Q&A pairs date from its original authoring; concepts shipped since have never been coverage-checked — the pre-push sweep only checks existing answers for drift. One sweep catches the backlog; findings route to Captures per the audit contract.
-
-Audit:
-- Target: plugin/si-plugin/templates/faq-template.md and faq-index-template.md, read against the consumer-visible concept surface of the current procedure docs (setup.md, plan.md, the next and done families, plugin-behaviour.md) and the scaffolded doc formats.
-- Criteria: every shipped concept a non-coder consumer would meet and ask about, checked for an answer; and the reverse gap — existing answers naming concepts that no longer ship. For each finding: the concept, why a non-coder would ask, and whether the entry is missing or stale.
-
-**No planning work in execution skills** **[no-planning-in-execution]**
-
-The boundary between /plan and the execution skills rode on "no thinking work," which was the wrong axis — Claude thinks plenty while executing, and the audit auto-file direction deliberately leans on Claude's thinking. The real boundary is planning work: processing captures — routing, promoting, parking, deciding their fate — and the human decision-making that entails. Capture-making stays open to every session type (the never-restrict-ideation principle); capture-processing is /plan's monopoly. Observed leak: [output-tag-audit] seeded a reconciliation item whose resolution was a planning decision made mid-/next, its reasoning landing where no planning session looks. Part of the autopilot prerequisite arc named in the cruise-control trigger: unattended next→done→next is only safe if no decision the user must own can arise mid-run. plan.md's thinking-work ground rule stays as the /plan-side gate on what gets queued ([audit-definition] is rewriting it); this rule is its execution-side counterpart, living where execution sessions actually load rules.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md: add the rule, compliance-hardened from the start (why-clause, positive constraint, explicit scope, per resources/research/model-instruction-compliance.md): no planning work in any execution skill — planning work is processing captures (routing, promoting, parking, deciding their fate); making and approving captures is open to every session type; processing them happens only in /plan. Scope: all execution session types, including any added later. One clarifying line for test sessions: the user's involvement in running tests and judging outcomes is the work itself, not planning; filing those outcomes is capture-making.
-
-Test:
-- Self-verifying from the rule text. Behavioural: the next /next session that meets a routable discovery should append it to Captures and move on — no routing discussion mid-execution.
-
-**Audit findings: one numbered set, bulk approval, contested items one at a time** **[audit-findings-bulk-approval]**
-
-The per-finding capture-or-drop loop is the most interactive /next shape there is, and it duplicates /plan — every surviving finding judged twice. The original capture proposed removing approval entirely (mechanical auto-file); revised at routing: the [output-tag-audit] live preview validated bulk approval, not zero approval — findings 2–10 were batch-drafted and batch-approved in one pass, so the friction was the round-trips, and a session whose output the user never sees gives no reason to run it interactively. Bulk approval keeps the Captures always-show rule fully intact (no approval exemption needed — the caveat lands in the sequencing rule instead) and stays within [no-planning-in-execution]'s "making and approving captures." Full no-approval auto-file moves to cruise control's design scope: straight-to-Captures is autopilot behaviour. Double judgment still dies: one bulk ask in /next, full per-finding judgment once, in /plan. Absorbs the next-audit.md half of the [output-tag-audit] routing-loops tag finding — the new flow is authored with its tags correct from the start.
-
-Build:
-- plugin/si-plugin/docs/next-audit.md: replace the per-finding route-approved-findings loop with the bulk flow — compile all findings, present them as one numbered set in a single message, ask the user to approve the set or list the numbers they don't accept as-is, cover contested ones one at a time (reword or drop), append the approved set to Captures, report the filed count at close. Tag the bulk ask and the contested-item loop correctly from the start.
-- plugin/si-plugin/docs/next-audit.md, same rewrite: the new close defines its review tail from birth — reviewing means re-examining what was already found, not raising new work; anything new routes through the existing paths (out-of-scope via scope management, thinking work via Captures). From a [close-out-audit] finding (e120f3d): the current "keep reviewing" tail is undefined, leaving open the new-work-smuggling risk next-build.md's tail was hardened against.
-- plugin/si-plugin/docs/plugin-behaviour.md Communication, sequencing rule: add the bulk-approval inversion alongside the existing alternatives inversion, hardened (why-clause, positive constraint, explicit scope) — a deterministic result set produced by user-approved criteria is presented as one numbered message for bulk approval; the ask invites listing contested numbers; contested items then run one at a time. One-item-at-a-time stays the default everywhere else.
-- plugin/si-plugin/docs/done-audit.md: the LOG entry records bulk-step outcomes — findings rejected or reworded at approval, with reasons — so nothing decided at audit time goes unrecorded.
-
-Test:
-- Self-verifying from doc text. Host-side behavioural (after push + reinstall): the next audit session presents one numbered set — [faq-coverage-audit] is queued as the natural first exercise. Needs the deferred-test discipline — flag at /done if it can't run.
-
 **Tag application across the next and done families** **[next-done-tag-sweep]**
 
 From [output-tag-audit], its headline finding. The procedure docs use response-shape tags to control when Claude speaks. In next-build.md and next-test.md, the whole Execute step — where Claude does the build work — is tagged [SILENT]. But that step contains moments that must speak: reporting a failure, asking before scope grows, handing a user-run test over. A literal-minded weak model gets two contradictory instructions at those moments. It either breaks the silence tag, or honours it by suppressing a failure report — the dangerous case. The fix has two parts. Each speaking moment gets its own tag, because a tag on the specific moment overrides the tag on the surrounding step. And Execute gets one clarifying line: silence covers routine bookkeeping when things go fine; failures, asks, and handoffs always speak. This was the only audit finding needing new wording — every other finding is plain tag placement. Sibling tag findings from the same audit fold into this batch as they route. Locate every edit by content, not by the audit's line numbers — the docs shift under other queued batches.
@@ -345,10 +197,10 @@ Test:
 
 **/done detects spec drift at build close and files a capture** **[done-spec-sync-check]**
 
-Decided 2026-06-10. The spec-entry trigger is a prospective /plan gate: when planning a change that would make SPEC's description wrong or incomplete, update SPEC first. But the gate leaked once — at [tag-definitions-compliance-rewrite] no spec entry preceded the build, and the gap was caught only because the /done session happened to notice by judgment and file a capture. This batch makes that lucky catch structural. At the close of a /next build (not test or audit), /done reads SPEC.md against the just-landed changes and applies the spec-entry trigger test in its shipped form — would these changes make SPEC's description wrong or incomplete? If yes, /done files a mandatory capture naming the gap. It never edits SPEC.md: product-truth edits stay in /plan, so the backstop detects and files, it does not author. The trigger wording it applies shipped in plan.md and plugin-behaviour.md, so the check quotes the current test rather than restating it. Scope is build closes only — test and audit sessions land no product changes to check.
+Decided 2026-06-10. The spec-entry trigger is a prospective /plan gate: when planning a change that would make SPEC's description wrong or incomplete, update SPEC first. But the gate leaked once — at [tag-definitions-compliance-rewrite] no spec entry preceded the build, and the gap was caught only because the /done session happened to notice by judgment and file a capture. This batch makes that lucky catch structural. At the close of a /next build (not test or audit), /done reads SPEC.md against the just-landed changes and applies the spec-entry trigger test in its shipped form — would these changes make SPEC's description wrong or incomplete? If yes, /done files a mandatory capture naming the gap. It never edits SPEC.md: product-truth edits stay in /plan and ship through a spec-edit batch, so the backstop detects and files, it does not author. The trigger wording it applies now lives in plan.md alone (the plugin-behaviour.md injection copy was removed by [spec-edit-batch-type]), so the check quotes plan.md's current test rather than restating it. Scope is build closes only — test and audit sessions land no product changes to check.
 
 Build:
-- plugin/si-plugin/docs/done-build.md: add a build-close step — read SPEC.md against the changes this build landed and apply the spec-entry trigger test (the shipped form in plugin-behaviour.md / plan.md). If yes, file a mandatory capture naming the gap; never edit SPEC.md. Point at the canonical trigger wording rather than restating it, so the two do not drift. Tag [SILENT] when nothing drifts, [BRIEF] when filing — mirror the staleness-sweep path-split.
+- plugin/si-plugin/docs/done-build.md: add a build-close step — read SPEC.md against the changes this build landed and apply the spec-entry trigger test (the shipped form in plan.md). If yes, file a mandatory capture naming the gap; never edit SPEC.md. Point at plan.md's canonical trigger wording rather than restating it, so the two do not drift. Tag [SILENT] when nothing drifts, [BRIEF] when filing — mirror the staleness-sweep path-split.
 
 Test:
 - Self-verifying from doc text: the step exists, applies the trigger, files-not-edits.
@@ -428,6 +280,10 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [verbosity-output-style] — verify sessions visibly lead with the decision and chunk one item at a time while staying plain English (not terser/jargon-y), and the concise output style shows as forced-active (which also confirms plugin output-styles/ auto-discovery). Confirmed by: the first session after push + reinstall. (host-side)
 - [deferred-test-lifecycle] — verify the first session after the update shows the hook deferred-tests line; the next /plan proposes rolling the runnable backlog into a test batch; a later /next pre-flight shows no deferred-tests listing. Confirmed by: the first session + /plan + /next after push + reinstall. (host-side)
 - [dependency-scan-reference-roles] — verify the next /plan over a citation-bearing capture routes the evidence citation without false parking and names the classification at recommend time. Confirmed by: the first /plan over a citation-bearing capture after push + reinstall. (host-side)
+- [scope-boundary-rule] — verify the next /next session that meets a Claude-noticed discovery routes it to Captures at the moment of noticing (draft, show, "anything else?", resume), not "for the queue" at an undefined later. Confirmed by: the first /next that meets a Claude-noticed discovery after push + reinstall. (host-side)
+- [spec-edit-batch-type] — verify a /next spec-edit batch edits SPEC.md without being blocked, and a normal feature build still cannot touch SPEC unless it lists SPEC.md in Files. Confirmed by: the first /next spec-edit batch run after push + reinstall. (host-side)
+- [queue-plan-markers] — verify the next /plan that authors an audit batch with dependent work inserts a "--- Plan session here: <reason> ---" marker, and the next /next that meets one halts and names the reason. Confirmed by: the first such /plan and /next after push + reinstall. (host-side)
+- [audit-findings-bulk-approval] — verify the next audit session presents findings as one numbered set for bulk approval, takes only contested items one at a time, and done-audit.md's LOG entry records approval outcomes. Confirmed by: the first audit session run after push + reinstall. (host-side)
 
 ## Captures
 
@@ -610,6 +466,30 @@ Raised by the user 2026-06-15 during the verbosity-arc /plan. Idea: add an expli
 Filed as a candidate, not a redirect, because this session's analysis concluded bundling is mostly a disposition problem, not a memory-capacity one. Within a session Claude has the whole transcript as working memory, so it does not forget later steps between turns; the research attributes bundling to trained thoroughness and "task completion over process compliance", not memory scarcity. The highest-leverage fix is therefore priority (the output style) plus structure (lead-with-decision, one-item chunking), not more memory. The one genuine memory seam is compaction, which _plan.md and _build.md already cover.
 
 What the idea might still add: a humane reframe — if the rules explicitly tell Claude "the rest is safely recorded, release just the next item", that could lower completeness anxiety at generation time. Speculative. To weigh later: whether it earns its words, whether it belongs as a line in the sequencing rule, and whether it is redundant once [verbosity-output-style] lifts the chunking rules to system-prompt priority. Relates to [tag-definition-redesign] and [verbosity-output-style].
+
+**Author a spec-edit batch to reword SPEC.md's pre_tool_use description**
+
+From the [spec-edit-batch-type] build (goal session, 2026-06-16). That batch removed the "SPEC.md read-only during builds" rule — SPEC is now a normal doc governed only by the scope-lock. SPEC.md line 29 still reads "`pre_tool_use` — SPEC.md read-only during builds, scope-lock to file list, git safety," which is now wrong on the first clause. The batch deliberately deferred this one SPEC change: its own build ran under the current host where the read-only lock was still active, and SPEC is out of a feature build's scope anyway, so the reword can't be made inside that batch. Author a spec-edit batch (Files: SPEC.md) that rewords line 29 to drop "SPEC.md read-only during builds" and state that pre_tool_use enforces the scope-lock (which governs SPEC like any other file) and git safety. The behaviour-doc and CLAUDE.md sides already landed in [spec-edit-batch-type]; only the SPEC sentence remains. Relates to [spec-edit-batch-type].
+
+**Consumer-facing SPEC model is stale after [spec-edit-batch-type] — reword CLAUDE-TEMPLATE.md and the FAQ**
+
+Spotted building [queue-plan-markers] (goal session, 2026-06-16). [spec-edit-batch-type] made SPEC a normal doc changed only through a spec-edit batch, and removed the "SPEC read-only during builds" rule — but it only updated this project's host-only CLAUDE.md. Two consumer-facing surfaces still teach the old model: CLAUDE-TEMPLATE.md "Rules for Claude" still says "SPEC.md is read-only during builds. Edit it only during /plan," and faq-template.md's "Can I edit SPEC.md while doing a build?" answer still says "No. SPEC.md is read-only during builds ... Spec issues get noted for /plan." Author a batch that rewords both to the new consumer model: SPEC is a normal doc, changed only through a planned spec-edit batch that /next runs; a feature build can't touch SPEC because the scope-lock denies any file the batch doesn't list. Keep the wording plain-English for a non-coder. This is the consumer-template counterpart [spec-edit-batch-type] deferred; the pre-push consistency sweep (templates-vs-docs) would also catch it, but capturing it now means it doesn't depend on the sweep noticing. Relates to [spec-edit-batch-type].
+
+**Adding a new batch type needs both routers, not just done's — plugin behaviour observation**
+
+Observed building [spec-edit-batch-type] (goal session, 2026-06-16). The batch's build list named done.md / done-build.md for spec-edit routing ("a spec-edit batch closes like any build") but omitted next.md's router — the parallel /next router that picks a batch and routes it to the per-type doc. Without the next.md branch, /next could not execute a Spec-edit batch at all, so the mechanism the batch ships would be half-wired. The goal session added the next.md Spec-edit branch as a needed minor scope extension. The general lesson for /plan: a batch that introduces a new batch type has to touch four places — next.md (execution routing), done.md (close routing), post_tool_use.py's ALLOWED_SUBHEADINGS (the lint), and plan.md's Step 3 structure. Candidate fix if it recurs: a one-line reminder in plan.md's batch-authoring guidance naming those four touch-points for a new batch type. Low cost; flagged here so the omission pattern is visible.
+
+**FAQ coverage gap: no entry explains /setup** — from [faq-coverage-audit]
+
+Audit finding (goal session, 2026-06-16). The FAQ explains /plan, /next, and /done, but never /setup — yet /setup is a consumer's very first contact with the method (it adopts their folder and asks five questions to fill SPEC.md). A non-coder running /setup for the first time has no FAQ answer to "what is this doing, and why is it asking me these questions?" Add an entry (faq-template.md + index line): what /setup does (adopts the folder, scaffolds the method docs, interviews five questions to seed SPEC.md), that it runs once per project, and that re-running it later only backfills missing scaffold files — it does not overwrite content already written.
+
+**FAQ coverage gap: no entry explains the commit-and-push ask** — from [faq-coverage-audit]
+
+Audit finding (goal session, 2026-06-16). At every /done close the user is asked "Commit and push, or just commit?" — but the FAQ never explains what that choice means. A non-coder would ask "what's the difference, and which should I pick?" Add an entry: committing saves a snapshot locally; pushing also sends it to a remote backup (e.g. GitHub) if the project has one; if there's no remote, just commit. Coordinate with [push-offer-fit], which is already reshaping that ask by session shape and remote state — the FAQ wording should match whatever that batch settles, so sequence this after it or fold it in.
+
+**FAQ coverage gap: no entry explains the "project out of date / run /setup" drift signal** — from [faq-coverage-audit]
+
+Audit finding (goal session, 2026-06-16). After a plugin update, a session can open telling the user their project is behind and offering to bring it up to date (the [make-drift-visible] catch-up surface). The FAQ never explains this, so a non-coder meeting it would ask "what's out of date, and is it safe to run /setup?" Add an entry once the catch-up message wording is settled: what the signal means (the plugin gained scaffolding this project doesn't have yet), what running /setup will and won't do (backfills missing files; does not overwrite existing content). Tie the wording to [make-drift-visible] / [scaffolding-resync] so the FAQ and the in-product message agree — note the dependency, since promising more than the catch-up actually does is the exact overpromise the dev-project capture warns against.
 
 ### Parked
 

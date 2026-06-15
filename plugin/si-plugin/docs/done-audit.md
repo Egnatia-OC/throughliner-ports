@@ -29,7 +29,11 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 - [the target artifacts that were read — the audit edited nothing]
 
 **Routed to Captures:** [findings captured, or "none"]
+
+**Approval outcomes:** [what happened at bulk approval — findings dropped or reworded, each with the user's reason; or "all findings approved as-is"]
 ```
+
+The Approval outcomes line records what the bulk-approval step decided: a finding the user dropped, or reworded, with the reason they gave. Recording it means a decision made at audit time doesn't vanish — without it, the only trace of a dropped or reworded finding is its absence. When every finding was approved as-is, say so in one phrase rather than omitting the line.
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
 

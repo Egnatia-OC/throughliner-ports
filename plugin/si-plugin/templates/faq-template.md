@@ -73,6 +73,10 @@ Parked items carry one of two reason lines that signal whether they come back au
 
 Nothing leaves active flow without one of these — prose alone isn't enough for Claude to track it mechanically.
 
+## What does a "Plan session here" line in the queue mean?
+
+It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
+
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file.

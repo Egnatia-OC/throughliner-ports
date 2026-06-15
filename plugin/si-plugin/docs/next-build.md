@@ -34,11 +34,8 @@ When the batch contains test entries (under a Test subheading), execution is ver
 
 Absolute regardless of entry type:
 
-- Stay within the entries' described work. To touch something unrelated, say so first: "I need to also edit [file] because [reason]. Add to scope?" Wait for approval.
+- Stay within the active batch's described work — that's build scope (see plugin-behaviour.md Scope). Growing past it needs approval first (see Scope management below).
 - REGISTRY.md is not build scope. /done handles registry updates after close.
-- SPEC.md is read-only. Found a spec issue? Note it for /plan; don't fix now.
-- Don't fix unrelated problems you notice. Note them for the queue.
-- State regressions plainly. If something breaks, say so immediately. Don't silently fix or apologize — state the facts.
 
 **Accumulate close notes** as you go — jot what changed in _build.md so /done needn't re-explore:
 ```
@@ -50,6 +47,8 @@ Changes:
 
 ## Scope management
 
+These sections elaborate the discovery decision rule in plugin-behaviour.md (Routing and discipline): work needed to complete the batch is added or split; work not needed is captured and the session continues. The cases below are how that rule plays out during a build.
+
 ### User raises something out of scope [PROMPT]
 
 1. Route it to Captures in QUEUE.md, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Draft the wording first as a blockquote with a content-type lead-in (**Capture draft:**) for approval, per plugin-behaviour.md (Captures + approval-time outputs).
@@ -60,9 +59,9 @@ Changes:
 
 ### Scope grows during the build
 
-If Claude discovers additional work is needed:
+If the work needs to grow past what the entries describe — whether that means a new file or more change inside a file already listed — the trigger is the same: growth is measured against the described work, not the Files: list. Name the new work and the files it needs, then:
 
-- **Minor** (one more file, small prerequisite): ask to add. Once approved, append the file to _build.md's `Files:` section before editing it — the scope-lock denies edits to unlisted files.
+- **Minor** (a small prerequisite, one or two files): ask to add, naming the work and the files: "This needs [work], which means editing [file] — add it to scope?" Once approved, append any not-yet-listed file to _build.md's `Files:` section before editing it — the scope-lock denies edits to unlisted files.
 - **Significant** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
 
 ## Mid-build course-correction

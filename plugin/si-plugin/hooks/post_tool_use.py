@@ -10,8 +10,9 @@ the file from disk and flags known format violations:
   3. The Captures processed/unprocessed divider (a bare ---) deleted.
   4. A Depends on:/Blocks:/Blocked by: header naming a slug defined
      nowhere in the file.
-  5. A subheading inside a batch that isn't Build/Test/Audit — catches
-     typos; ALLOWED_SUBHEADINGS must grow when new batch types ship.
+  5. A subheading inside a batch that isn't Build/Spec-edit/Test/Audit
+     — catches typos; ALLOWED_SUBHEADINGS must grow when new batch
+     types ship.
   6. Batch prose naming a slug that is still defined in the file but
      not carried by the batch's own headers — "dependency or
      citation?", advisory precisely because evidence citations are
@@ -51,16 +52,17 @@ SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\](?!\()")
 # Dependency headers, matched on the stripped line.
 DEP_HEADER = re.compile(r"^(Depends on|Blocks|Blocked by):")
 
-# A batch subheading: a single capitalised word and a colon, alone on
-# the line. Multi-word lines with colons (e.g. "Depends on: x") and
-# lines with text after the colon never match.
-SUBHEADING = re.compile(r"^([A-Z][A-Za-z]*):$")
+# A batch subheading: a single capitalised word (hyphens allowed, e.g.
+# "Spec-edit") and a colon, alone on the line. Multi-word lines with
+# colons (e.g. "Depends on: x") and lines with text after the colon
+# never match.
+SUBHEADING = re.compile(r"^([A-Z][A-Za-z-]*):$")
 
 # Marker lines between batches ("--- Push required before continuing ---",
 # plan markers). They separate batch blocks and are never violations.
 MARKER_LINE = re.compile(r"^---.+---$")
 
-ALLOWED_SUBHEADINGS = {"Build", "Test", "Audit"}
+ALLOWED_SUBHEADINGS = {"Build", "Spec-edit", "Test", "Audit"}
 
 
 def _normalise(path: str) -> str:
@@ -172,7 +174,7 @@ def _check_subheadings(annotated, warnings):
         if match and match.group(1) not in ALLOWED_SUBHEADINGS:
             warnings.append(
                 f"line {i + 1}: subheading '{line}' isn't one of "
-                "Build:/Test:/Audit: — a typo, or a new batch type this "
+                "Build:/Spec-edit:/Test:/Audit: — a typo, or a new batch type this "
                 "lint doesn't know yet? (New types must be added to "
                 "ALLOWED_SUBHEADINGS in post_tool_use.py.)"
             )

@@ -20,9 +20,7 @@ For each test entry:
 
 ### Rules during test
 
-- Stay within the test entries' described scope. If a test reveals something unrelated, note it for the queue.
-- SPEC.md is read-only.
-- State regressions plainly. If something fails, say so immediately.
+- Stay within the test entries' described scope. If a test reveals something unrelated, route it per the discovery rule in plugin-behaviour.md (Routing and discipline): capture at the moment of noticing, then continue.
 
 **Accumulate close notes** as you go:
 ```
@@ -32,6 +30,8 @@ Changes:
 ```
 
 ## Scope management
+
+These sections elaborate the discovery decision rule in plugin-behaviour.md (Routing and discipline): work needed to complete the batch is added or split; work not needed is captured and the session continues. The cases below are how that rule plays out during testing.
 
 ### User raises something out of scope [PROMPT]
 
@@ -44,7 +44,7 @@ Changes:
 If a test reveals additional verification is needed beyond the batch's entries:
 
 - **Minor** (one related check): ask to add, continue if approved.
-- **Significant** (new test area, design uncertainty): note for the queue. Finish the scoped tests first.
+- **Significant** (new test area, design uncertainty): capture it as a future test need and finish the scoped tests first.
 
 ## Course-correction
 

@@ -14,7 +14,7 @@ Claude owns dependency management — ordering, grouping, dependencies — throu
 - Process accumulated captures before new planning work.
 - Never write batch entries to QUEUE.md without showing the exact text first — and the rule keys to the write, not to where you are in the loop: the message immediately before any QUEUE.md batch write must contain the entry text verbatim. Approval attaches to shown text, never to a described shape, so a recommendation — however concrete — is not a draft, and "I'll add a batch that does X" is not the entry. The reason: loop beats live in conversation memory and a compacted session loses them, but the write action is always visible, so keying the rule to the action holds even with no memory of which beat you're on.
 - A recommendation is not a decision. A draft is not a written entry. Both need the user's call.
-- The pipeline: idea → question (if unclear) → spec entry (if landing it would make SPEC.md's description wrong or incomplete) → batch entry. No shortcuts.
+- The pipeline, when a change would make SPEC.md's description wrong or incomplete: idea → decide in /plan → spec-edit batch → /next edits SPEC → feature batch. SPEC is a normal doc now — changed only by a planned spec-edit batch that /next executes, never edited inline during /plan and never touched by a feature build. When the change touches no SPEC sentence (a refactor, a localized fix), the spec-edit stages drop out: idea → decide in /plan → feature batch. No shortcuts.
 - /plan resolves what it can in-session; capture is only for what it can't. Research, queue-wide cleanup (line-ref drift, quoted-string staleness after a sweep), cross-batch reconciliation, doc verification — anything within /plan's reach — gets done now, not filed for a later session. Reserve a capture for what /plan genuinely can't resolve this session: it needs data the session doesn't have, needs design discussion across sessions, needs user input not yet available, or surfaces a structural question whose answer would gate the work. This is a default, not an absolute — the test is "can /plan resolve this with what it has right now."
 
 ## Capture and parking discipline
@@ -30,6 +30,8 @@ The control rule for capture and parking, in one place. Pieces also appear in th
 ## Step 1: Read state and entry question
 
 Read QUEUE.md and SPEC.md. Check whether Captures has items.
+
+**Plan marker at the queue top.** If the top of Batches carries a `--- Plan session here: <reason> ---` marker, addressing its stated reason is part of this session's work — that's the planning the marker was placed to force. Handle it, then remove the marker once its reason is addressed so /next is no longer halted there.
 
 **Unpark + staleness scans:** [SILENT] before the entry question, walk Parked and the active queue against plugin-behaviour.md Dependency ownership (Unpark watch + Staleness watch). For Parked: read `Blocked by:` headers as the primary surface — slug portions fire mechanically (if the named slug has shipped, the item is a candidate; verify against LOG/index.md), behavioural prose tails still need judgment. Items marked `Parked:` (no trigger) don't auto-surface mechanically, but include them in the staleness watch on this pass — read each against whether the project has evolved past it, and carry it into Step 2 with the drop / rewrite / keep choice when it has. Meaningless accumulation is the failure mode: nothing else ever asks whether a `Parked:` item still earns its place, so this scan is where that question gets asked. For Batches and Captures: anything stale enough that surrounding code or rules have moved past it? The scans' output is candidates feeding Step 2, not findings to narrate here — collect them silently and carry them into Step 2, where they're processed ahead of Captures (see Unpark candidates first). No silent edits: every candidate goes through the Step 2 loop, where the user decides.
 
@@ -96,6 +98,9 @@ Blocks: [other-slug]
 Build:
 - What to build
 
+Spec-edit:
+- Which SPEC.md section or sentence changes, and to what
+
 Test:
 - How to verify
 
@@ -105,6 +110,10 @@ Audit:
 ```
 
 Bold title with a stable kebab-case slug appended as a `**[slug]**` marker, then optional `Depends on:` / `Blocks:` header lines (omit either when empty — no `Depends on: none` placeholders), then the prose rationale, then entries under Build, Test, and/or Audit subheadings. See plugin-behaviour.md Dependency ownership for the slug and header rules. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
+
+**Spec-edit batches.** SPEC.md is a normal doc, changed only through a spec-edit batch — never edited inline during /plan, never touched by a feature build. When a planned change would make SPEC.md's description wrong or incomplete — a new capability, a scope change, a new output type, with the test being whether any sentence in SPEC goes wrong — author a spec-edit batch first: its `Files:` list names SPEC.md, and its Spec-edit entries say which sentences change and to what. /next executes it like any build (the scope-lock allows SPEC because the batch lists it), and /done closes it like any build. Queue the dependent feature batch after it. A refactor or localized fix that changes no SPEC sentence needs no spec-edit batch.
+
+**Build entries name their files.** A build entry names the files it touches — the scope-lock's `Files:` list in _build.md is populated from those names, so build scope gets decided here at planning time instead of ask-by-ask during the build (see plugin-behaviour.md Scope). A file that doesn't exist yet counts as named when the entry says what gets created and where. A batch whose entries name no files to edit (audit batches, test-only batches) leaves the lock at method-docs-only.
 
 **Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what Claude can verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
 
@@ -116,11 +125,13 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 **E2E tests get their own batch.** User-run E2E tests (separate project, live session) don't go in build batches — they'd block the build flow.
 
-**Readiness gate** (per batch): can you write the candidate index entry now — artifact touched + nature of the change, per plugin-behaviour.md Index entries? If yes, the batch is ready and the entry can be pre-generated for /next to carry into _build.md. If no, the batch isn't coherent enough yet — keep interviewing.
+**Readiness gate** (per batch): can you write the candidate index entry now — artifact touched + nature of the change, per plugin-behaviour.md Index entries? If yes, the batch is ready and the entry can be pre-generated for /next to carry into _build.md. If no, the batch isn't coherent enough yet — keep interviewing. Matching scope check: can the `Files:` list be populated from these entries — does each build entry name the files it touches, or consciously name none (audit and test-only batches)? If the files can't be named yet, the entries aren't concrete enough — keep interviewing.
 
 **Audit batch sizing gate:** for audit batches, the readiness check is whether target and criteria are specific enough that Claude can write the audit prompt without further dialogue. If the target is vague ("the docs", "the UI flows") or the criteria open-ended ("anything off"), keep interviewing until both pin down.
 
 **Ordering:** Claude places by dependency where applicable — dependencies first, then scaffolding, features, polish. Oldest-first is the fallback when no dependency applies (per plugin-behaviour.md Captures placement). Either way, Claude reports placement and reasoning per Dependency ownership narration — including the explicit "appending here because no dependency applies" case.
+
+**Plan markers — write predictable planning moments into the queue.** When placement creates a spot where a planning session must happen before /next can continue, insert a marker line between the batches at that spot: `--- Plan session here: <reason> ---`, with the reason stated inline. Two cases illustrate when (not a closed list): an audit batch sits ahead of batches that depend on its findings, so those findings must be processed in /plan before the dependent work can be scoped; or a batch's dependencies wait on a design question no planning session has answered yet, so /plan must settle it first. The marker converts a judgment-based "you should run /plan around here" into a mechanical gate /next halts on — the same shape as the push marker. It's a floor, not a ceiling: planning must happen here at minimum, for the stated reason; ad-hoc /plan anywhere else stays unrestricted.
 
 ## Step 4: Close out [BRIEF, PROMPT]
 

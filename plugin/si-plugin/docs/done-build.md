@@ -1,6 +1,6 @@
 # Build close-out
 
-Close-out for build batches (including their test entries). Reached from done.md's router when _build.md's Entry carries a Build subheading.
+Close-out for build batches (including their test entries). Reached from done.md's router when _build.md's Entry carries a Build subheading — or a Spec-edit subheading, since a spec-edit batch closes like any build through these same steps.
 
 ## Phase 1: Judgment (while context is fresh)
 

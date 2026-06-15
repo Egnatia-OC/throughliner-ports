@@ -7,7 +7,7 @@ Close the current session — record what happened, update docs, commit. This do
 Check for _build.md. The check is automatic — don't ask:
 
 - **_build.md exists** → read it, then route by the subheadings in its Entry (same routing as /next):
-  - **Build** subheading (optionally with Test) → read and follow `done-build.md`.
+  - **Build** or **Spec-edit** subheading (optionally with Test) → read and follow `done-build.md`. A spec-edit batch closes like any build — same steps, same commit core.
   - **Test** subheading only → read and follow `done-test.md`.
   - **Audit** subheading → read and follow `done-audit.md`.
 - **No _build.md** → planning session. Read and follow `done-plan.md`.

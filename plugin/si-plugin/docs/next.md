@@ -8,7 +8,7 @@ Before starting:
 
 1. **Active build check:** If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new, opening with a [BRIEF] line naming what's being read and why: _build.md holds the interrupted build's progress and remaining work, so the session picks up where it stopped instead of starting over. If _build.md does not exist: [SILENT] — move on, no output.
 
-2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker.
+2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker. [BRIEF] If instead the first non-empty line is `--- Plan session here: <reason> ---`, halt the same way: tell the user a planning session is needed before the next batch, and name the reason the marker carries. Don't read further; don't pick a batch past the marker.
 
 3. **Send the top batch verbatim:** [BRIEF] As soon as QUEUE.md is read and no halt marker sits at the top, send the top batch as its own beat — one preamble line (e.g. "here's the top batch, checks to follow"), then the batch text verbatim — before the blocker gate and the rest of pre-flight run. The batch is visible first; the gate's findings arrive as follow-up after it. The send is what puts the batch in front of the user before any thinking; don't fold it into the gate output.
 
@@ -45,7 +45,7 @@ Changes:
 [empty — accumulated as entries complete]
 ```
 
-   The `Files:` section feeds the scope-lock: during the session, the pre_tool_use hook allows edits only to the listed files plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) and denies everything else. Populate it from the files the batch entries name, paths relative to the project root. Files: lines must be bare paths — one path per line, nothing else on the line: the hook matches each line as an exact path, so any annotation on the line becomes part of the path and silently breaks the match (the file stays denied despite being listed). A batch whose entries name no files to edit (audit batches, test-only batches) gets the `Files:` header with no entries — that locks the session to method docs only.
+   The `Files:` section feeds the scope-lock — build scope's mechanical approximation (see plugin-behaviour.md Scope): during the session, the pre_tool_use hook allows edits only to the listed files plus the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) and denies everything else. Populate it from the files the batch entries name, paths relative to the project root. Files: lines must be bare paths — one path per line, nothing else on the line: the hook matches each line as an exact path, so any annotation on the line becomes part of the path and silently breaks the match (the file stays denied despite being listed). A batch whose entries name no files to edit (audit batches, test-only batches) gets the `Files:` header with no entries — that locks the session to method docs only.
 
 3. **Remove the batch from QUEUE.md** (move it to _build.md — the queue is now free for other sessions). /done deletes _build.md after close.
 
@@ -62,7 +62,7 @@ _build.md is the crash-recovery mechanism. If the session dies, the next session
 
 Load the procedure doc matching the batch's subheadings:
 
-- **Build batches** (Build subheading, optionally with Test) → read and follow `next-build.md`.
+- **Build batches** (Build subheading, optionally with Test) → read and follow `next-build.md`. A **Spec-edit** batch (Spec-edit subheading, the batch that edits SPEC.md) routes here too — it executes like any build.
 - **Test-only batches** (Test subheading, no Build) → read and follow `next-test.md`.
 - **Audit batches** (Audit subheading) → read and follow `next-audit.md`.
 
@@ -77,7 +77,7 @@ What doesn't happen: no batch returns to the queue, because none left it — sco
 
 ## Rules
 
-- One build at a time. Never start a second build while _build.md exists. (A planning session in a separate chat alongside a build is allowed — see plugin-behaviour.md Routing and discipline.)
 - The entries are the contract. Don't exceed the described work without explicit approval.
 - Per-entry ticking is mandatory — it's the crash-recovery mechanism.
-- Unsure about an implementation choice? Ask. Don't guess and build wrong.
+- At build completion, the only valid next-step recommendation is /done — never /next, never another build. The finished build isn't recorded until /done writes its LOG entry and commits, so recommending more building first leaves the just-finished batch without a record. (Completion counterpart to one-build-at-a-time in plugin-behaviour.md: that rule guards a build's start, this one guards its end.)
+- If context runs long mid-build, suggest finishing the current file and running /done. A clean close beats pushing into a context squeeze — the next session resumes cleanly from _build.md.

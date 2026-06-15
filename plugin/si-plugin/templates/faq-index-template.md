@@ -16,4 +16,5 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What is REGISTRY.md for?](faq.md#what-is-registrymd-for)
 - [What happens if Claude needs to touch something outside the current batch?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-batch)
 - [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
+- [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)

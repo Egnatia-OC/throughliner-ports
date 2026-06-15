@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """
-PreToolUse hook — enforces three rules:
+PreToolUse hook — enforces two rules:
 
-1. SPEC.md is read-only during active builds.
-2. During a build, _build.md's Files: section governs which files are
+1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, REGISTRY.md, LOG/, _build.md — are
    always editable). Tri-state: no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
-   those files.
-3. Git safety: block git reset --hard, git push --force, blanket
+   those files. SPEC.md is not a method doc, so a build can edit it only
+   when it's explicitly listed in Files: — a spec-edit batch lists it;
+   a feature build does not, so scope-lock alone keeps SPEC read-only
+   for any build that doesn't name it.
+2. Git safety: block git reset --hard, git push --force, blanket
    staging (git add -A / --all / .), and git commit -a / -am.
 
-For Edit/Write/MultiEdit: checks rules 1 and 2.
-For Bash/PowerShell: checks rule 3 (git safety) only.
+For Edit/Write/MultiEdit: checks rule 1.
+For Bash/PowerShell: checks rule 2 (git safety) only.
 """
 
 import json
@@ -206,18 +208,7 @@ def main() -> int:
     if not filepath:
         return 0
 
-    # Rule 1: SPEC.md is read-only during active builds
-    if has_active_build:
-        if _normalise(filepath) == _normalise(spec_path):
-            return _deny(
-                "[Sovereign Implementer] BLOCKED: SPEC.md is read-only during "
-                "an active build.\n\n"
-                "Finish the current build with /done first, then edit SPEC.md "
-                "in a /plan session. If this is urgent, note it for /plan and "
-                "continue building."
-            )
-
-    # Rule 2: _build.md's Files: section governs editability. Tri-state:
+    # Rule 1: _build.md's Files: section governs editability. Tri-state:
     # no section = skip enforcement, present but empty = method docs only,
     # entries listed = enforce the list.
     if has_active_build:
