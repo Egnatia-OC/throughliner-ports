@@ -4,7 +4,7 @@ Components that exist in this project. Updated after each build.
 
 - `plugin/si-plugin/.claude-plugin/plugin.json` — plugin manifest (name, version, description)
 - `plugin/si-plugin/hooks/hooks.json` — hook declarations (session_start, pre_tool_use, post_tool_use)
-- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules and FAQ index, detects project drift by missing scaffolded files/folders (presence-based) and emits a visible "out of date" warning offering /setup, backfills unfilled LOG hash placeholders (hash-position-only, oldest-introducing-commit). Still computes the version comparison for the separate update-happened signal, but no longer uses it for the user-facing drift warning
+- `plugin/si-plugin/hooks/session_start.py` — detects project state, loads behaviour rules and FAQ index, detects project drift by missing scaffolded files/folders (presence-based) and emits a visible "out of date" warning offering /setup, backfills unfilled LOG hash placeholders (hash-position-only, oldest-introducing-commit). Uses the version comparison for the separate update-happened signal — emits a version-change report on mismatch, with a deferred-tests line pointing /plan at the now-live-testable backlog when QUEUE.md's Deferred tests section is non-empty
 - `plugin/si-plugin/hooks/pre_tool_use.py` — SPEC.md read-only, scope-lock (tri-state on _build.md's Files: section), git safety (denies reset --hard, push --force, blanket adds, commit -a/-am; every denial teaches the fix and the patterns-as-data workaround)
 - `plugin/si-plugin/hooks/post_tool_use.py` — advisory lint of QUEUE.md structure after Edit/Write lands (six deny-list checks; warnings fed back via additionalContext, silent when clean)
 - `plugin/si-plugin/skills/setup/SKILL.md` — /setup skill definition
@@ -26,6 +26,8 @@ Components that exist in this project. Updated after each build.
 - `plugin/si-plugin/templates/CLAUDE-TEMPLATE.md` — CLAUDE.md template scaffolded into consumer projects
 - `plugin/si-plugin/templates/faq-template.md` — FAQ content template (14 Q&A pairs) scaffolded into consumer projects as FAQ/faq.md
 - `plugin/si-plugin/templates/faq-index-template.md` — FAQ index template scaffolded into consumer projects as FAQ/index.md, loaded at session start
+- `plugin/si-plugin/output-styles/concise-sovereign.md` — forced concise output style shipped in the plugin package (force-for-plugin, keep-coding-instructions); elevates the lead-with-the-decision / one-item-at-a-time / gate-the-detail rules to system-prompt priority, with an explicit no-terseness/plain-English standard
+- `resources/4-8-authoring-heuristic.md` — host-only authoring checklist (7 positive, exemplified checks) distilling the Opus 4.8 verbosity-steering research into a runnable pass; run over any authored doc/procedure/SPEC text before it ships
 - `resources/reader-test-workflow.js` — multi-agent workflow script for testing plugin doc comprehension via simulated project
 - `LOG/index.md` — one-line summaries of each session, newest first; post-split lines end with the session's entry filename
 - `LOG/<slug or type-date>.md` — per-entry session files written by /done (one per session, named per done.md LOG entry files)

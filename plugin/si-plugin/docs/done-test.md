@@ -6,8 +6,8 @@ Close-out for test-only batches. Reached from done.md's router when _build.md's 
 
 ### 1.1 Verify completion
 
-Read _build.md. All tests ticked (✓ or ✗ with reason)?
-- **Yes:** Proceed.
+Read _build.md. All tests ticked (✓, ✗ with reason, or `deferred` with reason)?
+- **Yes:** Proceed. A test ticked `deferred (reason)` counts as closed, not unfinished — it ran as far as this session could take it, and step 1.3 turns it into a queue line.
 - **Some unticked:** Ask — finish (/next) or close partial (defer unticked, route back to QUEUE.md).
 
 ### 1.2 Route findings to Captures
@@ -16,7 +16,7 @@ Check _build.md and the conversation for anything flagged during testing. Route 
 
 ### 1.3 Write deferred tests
 
-Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone.
+Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, and what confirms it with its runnability tail (Claude-runnable, user-run, or external).
 
 ## Phase 2: Record
 
@@ -35,7 +35,7 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 **Routed to Captures:** [items added — including fixes for failures — or "none"]
 ```
 
-Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
+Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
 
 If a red flag was accepted during this session, also record the decision in this entry per done.md Accepted red flags — what the user was warned about, and that they chose to proceed.
 

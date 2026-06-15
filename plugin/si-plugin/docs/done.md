@@ -18,6 +18,8 @@ The sub-doc runs the close-out. When it reaches its Commit step, run the commit 
 
 Stated once here; every sub-doc's entry-writing step points at this section.
 
+**One text, several positions.** The session authors two texts, not four. The one-liner is the same authored text in three positions: the entry heading's summary, the index line's body, and the commit title. The rationale prose is the same authored text in two positions: the entry body and the commit body. The user approves both once — at the entry-writing step — and the commit step (commit core above) reuses them verbatim, with nothing new to read.
+
 Each LOG entry is written as its own file under `LOG/` — never appended to a shared log file:
 
 - **Session closing a batch** (build, test, audit): name the file after the batch slug — `LOG/<slug>.md` (e.g. `LOG/drop-log-per-release-split.md`).
@@ -35,7 +37,13 @@ Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`
 
 Stated once here; the build and test sub-docs point at this section.
 
-A planned test that can't run in the closing session — host-side behaviour that only goes live after push + reinstall, a check only the user can run, an external event that hasn't fired — is written to QUEUE.md's "## Deferred tests" section, one line per test: source batch slug, what to verify, and what confirms it. The queue line is the structural record: /next's pre-flight reads that section and re-presents every pending entry, and the session that confirms a test removes its line and records the confirmation in its LOG entry. Don't record the deferral as LOG-entry prose alone — no later session re-reads old log prose, so a test recorded only there never surfaces again.
+**Scope.** This section holds only verification for shipped work. A test that fails, or a new test need that emerges mid-session, is not a deferred test — it routes to Captures, where /plan owns it as new work. Deferred tests are planned tests that simply couldn't run in their session yet.
+
+A planned test that can't run in the closing session — host-side behaviour that only goes live after push + reinstall, a check only the user can run, an external event that hasn't fired — is written to QUEUE.md's "## Deferred tests" section, one line per test: source batch slug, what to verify, and what confirms it. The "Confirmed by:" clause carries a runnability tail naming who or what produces the confirming event: Claude can deliberately produce it (Claude-runnable), the user must (user-run), or an external event must fire (external).
+
+Lifecycle: /done writes the line; /plan reads the section each session and rolls the Claude-runnable and user-run lines into a test batch (external-event lines wait for their event); the session that confirms a test removes its line and records the confirmation in its LOG entry. The queue line is the structural record — don't record the deferral as LOG-entry prose alone, because no later session re-reads old log prose, so a test recorded only there never surfaces again.
+
+**Close-out backstop (every /done).** Read this section at close. If this session's own activity already produced the confirming event for a pending line, remove that line and record the confirmation in the LOG entry. This pays mainly in self-hosting, where the session's own behaviour is often the thing under test; it costs one section read when nothing fires.
 
 ## Accepted red flags
 
@@ -49,8 +57,14 @@ Stated once here; every sub-doc's Commit step points at this section.
 
 1. Stage explicitly — name each path: files this session changed (from _build.md Changes where one existed), method docs updated during the session or close-out (QUEUE.md, SPEC.md, REGISTRY.md, LOG/), and the _build.md deletion where one was removed.
 2. Detect out-of-scope dirty paths: run `git status --porcelain` and compare what it lists against the active build's file list (from _build.md, where one existed). Any dirty path outside that list is a user edit made between or during sessions that no build staged. Surface them in a one-line summary and offer to stage them into this commit. The reason: otherwise these edits sit dirty across sessions until the push ritual's sweep catches them — this is the earlier catch point, not a replacement for that safety net.
-3. Draft the commit message title and body. Present both in the same message, each as a blockquote under a bold content-type lead-in (**Commit title:**, **Commit body:**), per plugin-behaviour.md approval-time outputs — commit messages aren't paste targets, because Claude runs `git commit` itself, so they wrap as blockquotes rather than sitting in fences. Ask in the same approval moment: "Commit and push, or just commit?"
-4. Wait for okay, then commit — and push if the user chose to push.
+3. The commit message is not drafted fresh — it is the LOG entry already approved at this session's entry step (see LOG entry files below for the one-text identity), in two positions:
+   - **Title:** the index line's one-liner, verbatim.
+   - **Body:** the approved rationale prose from the entry, verbatim.
+   Both were approved when the user approved the LOG entry, so the commit step reviews nothing new. Present it by stating that identity plainly — "the commit title is the entry's summary line and the body is the approved rationale, both already approved above" — and surface only what is genuinely new. Never write a meta-description of the derivation (e.g. "the rationale as approved, plus an appended line naming the backfill…"); a meta-description reads as a third text the user has to check, which defeats the nothing-new-to-read point.
+   - **Allowance for staged extras:** when the commit stages work beyond the session story — hash backfills, staleness-sweep edits, rolled-in user edits (step 2 above) — the body appends one line naming them. That appended line is the only genuinely-new text, so it is the one thing the presentation surfaces.
+4. Ask the one decision the commit step still carries: "Commit and push, or just commit?"
+5. Pass the message shell-agnostically. Write it to a file in the project root (e.g. `COMMIT_MSG.tmp`) and commit with `git commit -F COMMIT_MSG.tmp`, then delete the file. One mechanism on every machine — it sidesteps inline-quoting fragility (a multiline body passed with `-m` is brittle to generate: embedded newlines vary by shell, and a PowerShell here-string needs its closing token at column 0). The message file is writable at this step because the sub-doc deletes _build.md before reaching Commit (build/test/audit closes) or no _build.md ever existed (plan/setup closes), so the scope-lock isn't active on the project root here.
+6. Wait for okay, then commit with `git commit -F` — and push if the user chose to push.
 
 The LOG entry keeps its `[HASH]` placeholder. The session-start hook backfills it automatically at the next session, as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
 

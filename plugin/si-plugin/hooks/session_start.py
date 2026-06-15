@@ -122,6 +122,32 @@ def _dirty_tree_count(cwd):
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
+def _deferred_tests_present(queue_path):
+    """True when QUEUE.md has at least one entry under its '## Deferred tests' section.
+
+    Reads the section between its heading and the next top-level heading, and
+    looks for any list item. Used only to decide whether the version-change
+    report should mention that deferred tests may now be live-testable.
+    """
+    try:
+        with open(queue_path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return False
+    marker = "## Deferred tests"
+    idx = text.find(marker)
+    if idx == -1:
+        return False
+    section = text[idx + len(marker):]
+    next_heading = section.find("\n## ")
+    if next_heading != -1:
+        section = section[:next_heading]
+    for line in section.splitlines():
+        if line.lstrip().startswith("- "):
+            return True
+    return False
+
+
 def main() -> int:
     try:
         data = json.load(sys.stdin)
@@ -272,6 +298,24 @@ def main() -> int:
             "before doing anything else; don't bury it in other output or wait to be "
             "asked, because a note the user never reads leaves the project drifting."
         )
+
+    # Version-change report: the retained "a plugin update just happened" signal
+    # (see version_mismatch above). This is NOT the drift warning — that is
+    # presence-based above. When deferred tests are waiting, the update may have
+    # made some of them live-testable, so the report names that path to /plan.
+    if version_mismatch:
+        update_msg = (
+            "[Sovereign Implementer] Plugin version changed since this project was "
+            f"last set up ({project_version} → {plugin_version}) — an update has been "
+            "installed."
+        )
+        if _deferred_tests_present(queue_path):
+            update_msg += (
+                " Deferred tests in QUEUE.md may now be live-testable — /plan can roll "
+                "the runnable ones into a test batch."
+            )
+        context_parts.append("")
+        context_parts.append(update_msg)
 
     if has_active_build:
         context_parts.append("")

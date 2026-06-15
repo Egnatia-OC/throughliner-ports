@@ -28,7 +28,7 @@ Claude raises and updates these — you don't maintain the section. Accepting a 
 
 ## What is the "Deferred tests" section in QUEUE.md?
 
-A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. Every /next re-shows the pending entries at the start, so nothing rides on anyone remembering. When a test is confirmed, that session removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.
+A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. /plan reads this list each session and folds the ones that can now run into a test batch; and when a later session happens to confirm one along the way, /done removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 

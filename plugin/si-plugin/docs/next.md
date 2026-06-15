@@ -53,7 +53,7 @@ Changes:
 
 Progress format varies by batch type:
 - **Build entries:** `- [x] entry description — done`
-- **Test entries:** `- [x] Test description — ✓` or `- [x] Test description — ✗ (reason)`
+- **Test entries:** `- [x] Test description — ✓` or `- [x] Test description — ✗ (reason)` or, when the test can't run in this session, `- [x] Test description — deferred (reason)`
 - **Audit findings:** `- [x] Finding description — captured` or `- [x] Finding description — dropped`
 
 _build.md is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.

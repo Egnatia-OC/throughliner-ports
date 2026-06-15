@@ -23,6 +23,7 @@ When the batch contains test entries (under a Test subheading), execution is ver
 3. Tick each in _build.md Progress, pass/fail:
    - `- [x] Test description — ✓`
    - `- [x] Test description — ✗ (reason)`
+   - `- [x] Test description — deferred (reason)` — written the moment a test is determined unrunnable in this session (host-side, needs the user, waiting on an external event). Records the determination in the file so a post-/clear /done doesn't misread the entry as unfinished work.
 4. Accumulate results in Changes: what was checked, what passed, what failed.
 
 **On test failure:**
