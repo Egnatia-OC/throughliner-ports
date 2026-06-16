@@ -11,16 +11,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Audit the Taskflow first-spec-edit transcript** **[audit-taskflow-first-spec-edit]**
-
-The first real-world spec-edit in Taskflowapp, flowing from the /setup session that [audit-taskflow-setup-transcript] covers — the first live exercise of the spec-edit mechanism. Captured at `resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl` (146 records). Audit how spec-editing actually behaved and route findings to Captures. Sibling to the /setup audit — process their findings together in /plan. Host may be behind target, so check each finding against current target before filing.
-
-Audit:
-- Target: `resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl`.
-- Criteria (a lens, not a closed list — file anything else noteworthy to Captures too): (1) spec-edit mechanism in practice — did /next route the Spec-edit batch, did the scope-lock allow SPEC.md because the batch listed it, did SPEC edit without being blocked (first live test of [spec-edit-batch-type]); (2) host-vs-target reality — how SPEC actually got edited under whatever host ran this, and whether it matches current target intent (if the host predates the mechanism, that's the finding); (3) procedure adherence — batch picked/executed, /done closed it like a build; (4) communication quality; (5) friction & confusion; (6) output correctness — SPEC got the intended change, nothing unintended touched; (7) gaps the docs should have prevented, + red-flag screening.
-- Before filing each finding, check against current target; if already fixed, note it and don't re-file.
-- Output: findings to Captures only — no direct doc edits.
-
 --- Plan session here: process the two Taskflow audit findings before building the /setup- and SPEC-related batches; findings may reshape them ---
 
 **Retire REGISTRY.md — remove the write-only inventory doc** **[retire-registry]**
@@ -344,6 +334,22 @@ Observed in the same audit. Claude first planned to keep the docs inside no-code
 **/setup narration leaked internal and technical terms an external non-coder would not follow (mild)**
 
 Observed in the same audit. Setup narration used hook filenames (session_start.py, pre_tool_use.py), "_build.md," "scope-lock," "method docs," and "Case-B" framing (records 70, 75). setup.md deliberately carries no response-shape tags and runs before the behaviour rules — and their plain-language Vocabulary translate-or-omit rule — load, so nothing guards the audience rule during /setup. Checked against current target: still no plain-language guard for /setup narration. Why it matters: the plugin's audience is external non-coders, and a real foreign-system migration would surface the same terms. Lowest-confidence of the set: this was the developer's own migration and the content was genuinely technical, which softens it. It may be acceptable for migration specifically — flagged for /plan to judge rather than asserted as a defect.
+
+**Finding from [audit-taskflow-first-spec-edit] — the Taskflow first-spec-edit audit (2026-06-16)**
+
+Routing note: the first-spec-edit audit was largely a clean pass — the spec-edit mechanism worked live (the batch routed, scope locked to SPEC.md, all seven decisions landed, /done closed it like a build). This single mild finding is the only thing surfaced. Process it with the sibling /setup-audit findings above, per the QUEUE plan-marker. The session also confirmed the first half of [spec-edit-batch-type]'s deferred test live (a /next spec-edit edited SPEC unblocked because it listed SPEC.md); the second half (a normal feature build still cannot touch SPEC) was not exercised. Transcript: `resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl`.
+
+**Spec-edit silently removed a stale doc footer not in the batch's described work (mild)**
+
+Observed auditing the Taskflow first-spec-edit. While writing the no-notifications scope note at the end of SPEC.md, the same edit also removed the leftover "No-code method — Version 55." footer (record 71). The footer wasn't named in the batch's described work. Checked against current target: this is a session-behaviour observation about scope discipline, not a target-doc defect. Why it matters: even a sensible cleanup outside the batch's described work should be captured or asked, not bundled silently — the scope rule holds regardless of how minor the change is. Counter-reading worth weighing: the footer was stale migration residue and sat exactly where the new section landed, so removing it was arguably incidental and correct. Low confidence — for /plan to judge whether this is a real scope-discipline lapse worth a guard, or acceptable incidental cleanup. Relates to the sibling /setup-audit migration findings (the footer was migration residue those findings trace to).
+
+**Scope-lock blocks Claude memory-directory writes during scoped sessions**
+
+Observed during /done closing [audit-taskflow-first-spec-edit] (2026-06-17). The user gave communication feedback mid-session, and saving it to Claude's memory directory (outside the project) was blocked by the pre_tool_use scope-lock — an audit session's _build.md lists no editable files, and the memory directory isn't in the editable set. This is not audit-specific: the memory directory is never in a batch's Files list, so the scope-lock blocks memory writes during any scoped /next or /done execution (build, test, audit). The memory-boundary rules say writing memory — user preferences, working style, communication feedback — is allowed at any time, so the scope-lock blocking it is a false positive. Candidate fix for /plan: exempt the Claude memory directory from the scope-lock the way the method docs are exempt, or otherwise permit memory writes during scoped sessions. Workaround used this session: the memory write was deferred until after /done deletes _build.md, which lifts the lock. Mild to moderate — it silently prevents capturing user feedback at the moment it is given, which is exactly when it is most reliably captured.
+
+**Always render the user-facing ask in bold, for findability when brevity isn't possible**
+
+Raised by the user 2026-06-17. The lead-with-the-decision and end-with-an-explicit-ask rules make the ask exist and come first, but they do not guarantee it is findable in a long message — and a response cannot always be brief. Bolding the ask always can. Proposal: a standing rule that the single user-facing ask is rendered in bold and phrased as a question, so a reader who struggles to locate it in a wall of text can always find it, even when the message is necessarily long. This generalizes beyond one user — it is an accessibility improvement for anyone with visual-processing difficulty. When this rule is authored, it must carry its rationale inline — why bolding the ask matters, namely findability and accessibility when brevity is not available — because Opus 4.8 follows a rule far more reliably when the why travels with it; a bare "bold the ask" directive with no reason gives the model no purchase to actually apply it. This matches the project's rationale-everywhere compliance bet. Lands in plugin-behaviour.md alongside the lead-with-the-decision and approval-time-ask rules; relates to the personal memory note on ask placement.
 
 ### Parked
 
