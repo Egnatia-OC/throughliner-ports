@@ -8,14 +8,14 @@ Before starting:
 
 1. **Active build check:** If _build.md exists, a build is in progress — offer to resume it (read _build.md for state) rather than start new, opening with a [BRIEF] line naming what's being read and why: _build.md holds the interrupted build's progress and remaining work, so the session picks up where it stopped instead of starting over. If _build.md does not exist: [SILENT] — move on, no output.
 
-2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker. [BRIEF] If instead the first non-empty line is `--- Plan session here: <reason> ---`, halt the same way: tell the user a planning session is needed before the next batch, and name the reason the marker carries. Don't read further; don't pick a batch past the marker.
+2. **Read QUEUE.md:** Find the top batch under "Batches." If the first non-empty line there is `--- Push required before continuing ---`, halt: tell the user the next batch depends on host-side effects (hooks or skill procedures that only refresh after push + uninstall/reinstall) and that they must push and reinstall before re-running /next. Don't read further; don't pick a batch past the marker. [BRIEF] If instead the first non-empty line is `--- Plan session here: <reason> ---`, halt the same way: tell the user a planning session is needed before the next batch, and name the reason the marker carries. Don't read further; don't pick a batch past the marker. [BRIEF]
 
 3. **Send the top batch verbatim:** [BRIEF] As soon as QUEUE.md is read and no halt marker sits at the top, send the top batch as its own beat — one preamble line (e.g. "here's the top batch, checks to follow"), then the batch text verbatim — before the blocker gate and the rest of pre-flight run. The batch is visible first; the gate's findings arrive as follow-up after it. The send is what puts the batch in front of the user before any thinking; don't fold it into the gate output.
 
-4. **Blocker gate:** Scan for blockers that would force guessing. Findings arrive as follow-up after the batch is already visible (sub-step 3):
+4. **Blocker gate:** [BRIEF] Scan for blockers that would force guessing. Surfacing each finding is brief — the batch is already visible from sub-step 3, so these arrive as a short follow-up:
    - Batch references something in SPEC.md that doesn't exist? → Block. Run /plan first.
    - Unresolved questions in batches above this one, or within the batch? → Surface them. Resolve or confirm they're independent. Captures-section questions don't block — /plan processes them — but surface any that clearly affects this batch.
-   - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. Recommend /plan if found.
+   - Scan Captures for items (ideas or questions) relevant to the top batch. → Flag any that contradict, invalidate, or would benefit the batch if incorporated first. [PROMPT] If found, recommend /plan and wait — incorporating it first is the user's call to make before the build locks.
    - Unpark-candidate scan (per plugin-behaviour.md Dependency ownership Unpark watch). → Any parked item newly unblocked by work since? Surface and recommend /plan if found.
    - Stale-batch scan (per plugin-behaviour.md Dependency ownership Staleness watch). → Any batch or capture stale enough that surrounding code or rules have moved past it? Surface and recommend /plan if found.
 
@@ -65,6 +65,11 @@ Load the procedure doc matching the batch's subheadings:
 - **Build batches** (Build subheading, optionally with Test) → read and follow `next-build.md`. A **Spec-edit** batch (Spec-edit subheading, the batch that edits SPEC.md) routes here too — it executes like any build.
 - **Test-only batches** (Test subheading, no Build) → read and follow `next-test.md`.
 - **Audit batches** (Audit subheading) → read and follow `next-audit.md`.
+- **Freeform batches** (Freeform subheading) → read and follow `next-freeform.md`. Freeform is unqueued or loosely-scoped work that isn't a build, a test, or an audit — somewhere to make changes and talk them through when none of the other three fit. See next-freeform.md for what it's for and what it won't do.
+
+### On-demand freeform: `/next freeform` with no queued batch
+
+When the user runs `/next freeform` and no Freeform batch sits at the top of the queue, this is on-demand freeform work. Run the gate first [PROMPT]: ask whether the work could instead be a build, a test, or an audit — those three have homes already, and freeform is the refuge only for work that fits none of them. Require a one-line answer naming why none fit before proceeding; don't start until that's stated. Once it is, follow `next-freeform.md` directly — there's no queued batch to read or lock, so the Step 1 batch-pick and the Step 2 batch-move don't apply; next-freeform.md creates _build.md with an empty Files list and grows scope ask-by-ask.
 
 ## Ending before scope-lock
 

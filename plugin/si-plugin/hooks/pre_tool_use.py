@@ -82,11 +82,13 @@ def _parse_build_files(build_path: str) -> list[str] | None:
             continue
         if in_files:
             if stripped.startswith("- "):
+                # Entries are taken whole after the leading "- " marker.
+                # No annotation stripping: a Files: line is a bare path,
+                # nothing else, so any trailing text becomes part of the
+                # path and breaks the match — which is what the denial
+                # message teaches. A genuine path containing " - " is no
+                # longer truncated.
                 file_entry = stripped[2:].strip()
-                # Strip any trailing description after " — " or " - "
-                for sep in (" — ", " - ", " – "):
-                    if sep in file_entry:
-                        file_entry = file_entry[:file_entry.index(sep)].strip()
                 if file_entry:
                     files.append(file_entry)
             elif stripped and not stripped.startswith("-"):

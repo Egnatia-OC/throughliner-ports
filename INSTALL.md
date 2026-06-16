@@ -82,7 +82,7 @@ Once Claude Code is installed and the user is on a paid plan:
 
    If it fails, work through these in order — don't jump straight to reinstalling:
    1. Check the plugin is actually there and turned on: go to **Customise > Plugins** and confirm Sovereign Implementer is listed and enabled.
-   2. Start a **fresh session** and try again — plugin commands register when a session starts, so a session that was already open before installing won't see them.
+   2. **Fully quit and reopen the app** — not just a new session. Plugin commands register when the app launches, and on Windows a normal "quit" can leave the app running in the background, so a new chat or even a normal close-and-reopen may not pick them up. Quit the app, then on Windows confirm the process has actually exited (check Task Manager and end it if it's still there) before reopening. Then try `/setup` again.
    3. Only if both of those check out, remove the plugin (gear icon > **Uninstall**) and repeat the upload steps.
 
    A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.

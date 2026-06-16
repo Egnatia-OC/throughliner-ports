@@ -2,14 +2,17 @@
 
 Close the current session — record what happened, update docs, commit. This doc routes to a per-type close-out and states the commit core once; the sub-docs carry the type-specific steps.
 
-## Route by session shape
+## Route by session shape [SILENT]
 
-Check for _build.md. The check is automatic — don't ask:
+Check for _build.md. The check is automatic — don't ask, and don't narrate the routing; just route:
+
+**The _build.md read is unconditional.** When _build.md exists, read it in full before the close-out runs — regardless of how much of the session you remember. Conversation memory enriches the LOG entry (tradeoffs, learnings, colour the file doesn't capture) but never substitutes for the read. The why: a "read it only if you don't remember the session" condition hangs on Claude assessing its own memory, which fails exactly post-/clear and post-compaction — when the session feels remembered but the details are gone. Stated once here; the sub-docs route through this rule rather than restating it.
 
 - **_build.md exists** → read it, then route by the subheadings in its Entry (same routing as /next):
   - **Build** or **Spec-edit** subheading (optionally with Test) → read and follow `done-build.md`. A spec-edit batch closes like any build — same steps, same commit core.
   - **Test** subheading only → read and follow `done-test.md`.
   - **Audit** subheading → read and follow `done-audit.md`.
+  - **Freeform** subheading (or a _build.md from on-demand `/next freeform`) → read and follow `done-freeform.md`.
 - **No _build.md** → planning session. Read and follow `done-plan.md`.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit core below, then return to the sub-doc for the recommendation.
@@ -32,6 +35,8 @@ The hash lives in the entry file's heading and the index line, never in the file
 One authoring rule: entry prose never writes the literal placeholder token — the token belongs only in hash position (the entry heading and the index line), where the automatic backfill treats any match mechanically. A prose mention is one find-replace away from corrupting the entry. When an entry needs to describe the placeholder mechanism, say it indirectly ("the placeholder", "the unfilled hash").
 
 Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`. Those files stay in place, untouched — their entries are found by hash or title search, not by filename.
+
+**Captures filed after the commit.** A capture sometimes comes up in the session's post-commit tail, after the LOG entry's "Routed to Captures:" line is already written and committed saying "none" or listing only what existed then. When that happens, the same move that appends the capture to QUEUE.md also updates this session's just-written entry — edit its "Routed to Captures:" line to include the new capture, as a working-tree edit with no separate commit. The edit rides into the next session's commit, exactly as the hash backfill does. The why: the entry is the session's record, and a capture belongs to the session it came up in, so the entry should converge to the truth of what that session produced. (The committed copy keeps the as-of-commit wording; the entry file — the canonical record — carries the correction, and git shows it landing in the next commit.)
 
 ## Deferred tests
 
@@ -62,7 +67,7 @@ Stated once here; every sub-doc's Commit step points at this section.
    - **Body:** the approved rationale prose from the entry, verbatim.
    Both were approved when the user approved the LOG entry, so the commit step reviews nothing new. Present it by stating that identity plainly — "the commit title is the entry's summary line and the body is the approved rationale, both already approved above" — and surface only what is genuinely new. Never write a meta-description of the derivation (e.g. "the rationale as approved, plus an appended line naming the backfill…"); a meta-description reads as a third text the user has to check, which defeats the nothing-new-to-read point.
    - **Allowance for staged extras:** when the commit stages work beyond the session story — hash backfills, staleness-sweep edits, rolled-in user edits (step 2 above) — the body appends one line naming them. That appended line is the only genuinely-new text, so it is the one thing the presentation surfaces.
-4. Ask the one decision the commit step still carries: "Commit and push, or just commit?"
+4. Ask the one decision the commit step still carries, gated on whether a remote exists (one `git remote` check): with a remote, "Commit and push, or just commit?"; with no remote, ask only about committing — don't offer a push that would error with nowhere to send. A sub-doc may override this ask's default to fit its session shape (see done-plan.md); the mechanics here stay canonical regardless.
 5. Pass the message shell-agnostically. Write it to a file in the project root (e.g. `COMMIT_MSG.tmp`) and commit with `git commit -F COMMIT_MSG.tmp`, then delete the file. One mechanism on every machine — it sidesteps inline-quoting fragility (a multiline body passed with `-m` is brittle to generate: embedded newlines vary by shell, and a PowerShell here-string needs its closing token at column 0). The message file is writable at this step because the sub-doc deletes _build.md before reaching Commit (build/test/audit closes) or no _build.md ever existed (plan/setup closes), so the scope-lock isn't active on the project root here.
 6. Wait for okay, then commit with `git commit -F` — and push if the user chose to push.
 

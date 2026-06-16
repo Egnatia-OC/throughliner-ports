@@ -42,9 +42,10 @@ Host and target are the same plugin at different stages. Ambiguous references to
 - `/next` — pick the top queue entry, execute it (build, test, or audit).
 - `/done` — record what happened, clean up, commit.
 
-**2 hooks:**
-- `session_start` — detect project state (unadopted / adopted / active build), load behaviour rules, check plugin version against .si-version.
-- `pre_tool_use` — SPEC.md read-only during builds, scope-lock, git safety.
+**3 hooks** — two enforcing, one advisory:
+- `session_start` (enforcing) — detect project state (unadopted / adopted / active build), load behaviour rules, check plugin version against .si-version.
+- `pre_tool_use` (enforcing) — scope-lock to the active batch's file list (which governs SPEC.md like any other file — SPEC is editable only by a batch that lists it), git safety.
+- `post_tool_use` (advisory) — QUEUE.md structure lint; flags format drift after a QUEUE.md edit, never blocks.
 
 ## Where things live
 
@@ -55,7 +56,7 @@ No code method/
   plugin/                — plugin packaging
     si-plugin/           — target source
       .claude-plugin/    — plugin manifest
-      hooks/             — session_start, pre_tool_use
+      hooks/             — session_start, pre_tool_use, post_tool_use
       skills/            — setup, plan, next, done
       templates/         — CLAUDE-TEMPLATE.md
       docs/              — procedure docs loaded by skills
@@ -85,6 +86,8 @@ When a batch depends on a previous batch's host-side effects, that dependency do
 
 **Push-marker convention.** A line `--- Push required before continuing ---` between batches in QUEUE.md indicates /next must halt until the user has pushed and reinstalled. /plan inserts the marker when placing a host-side-dependent batch.
 
+The marker is hard in only one direction. It halts /next because batches past it read host-side state — an audit reading injected rules, a live test of hook behaviour — which gives wrong results before push + reinstall; protecting that read is the one hard thing the marker does. It does **not** suspend decided rules or reasoning in any session, and it is not a wall for planning work: in-repo sessions read the queue and the discussion, not just the installed plugin, so decided-but-unshipped standards already shape sessions before any push. Treating the line as a blanket "not shipped yet, so don't apply it" suspends decided reasoning and breaks the why-pipeline. The line marks when we aim to ship by — decided rules and reasoning apply from the moment they're decided.
+
 Worked example:
 ```
 **[capture-parking-discipline]** ...
@@ -104,18 +107,21 @@ These are two separate actions. **Rezip** builds a fresh installable zip so Alex
 
 ### Rezip (local testing)
 
-When Alex says "rezip" (or asks for a fresh local build to test), run this — no version bump, no archive, no commit, no push:
+When Alex says "rezip" (or asks for a fresh local build to test), run this — no release version bump, no archive, no commit, no push. (The one version change is the test suffix in step 1; the release version is never bumped here.)
 
-1. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
-2. Repackage, overwriting the existing zip: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip" -Force` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix.
-3. Tell Alex: "Zip rebuilt — nothing has been published. Uninstall/reinstall to test the new host privately."
+**The `-testN` test-build scheme.** A rezip rebuilds the zip without a release bump, because bumping the release version on every private test build would nag Alex's own projects to re-run /setup each time. But test builds still need to be distinct and unmistakably-test, so each carries a `<base>-testN` version — the release-line base plus `-test` and a number incremented each rezip-for-testing (e.g. `1.12.0-test1`, then `-test2`). Honest framing: the suffix is not what makes a reinstalled host load — the full app restart is (see the relaunch step below). `-testN`'s only job is to keep each test build a distinct, clearly-labeled version that's never mistaken for a release. The suffix lives in the working tree's `plugin.json` only and must be reset to a clean version before any push; the Push step's bump does exactly that (Push step 2), so a test suffix never ships in a release.
+
+1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the current version and increment N (`-test1` → `-test2`), or start at `-test1` if the base carries no suffix (`1.12.0` → `1.12.0-test1`).
+2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+3. Repackage, overwriting the existing zip: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip" -Force` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix.
+4. Tell Alex: "Zip rebuilt — nothing has been published. Uninstall/reinstall to test the new host privately." Note that loading the new host needs a **full app restart, not just a new session** — plugin skills register at app launch, and on Windows a normal quit can leave the app running, so fully quit (confirm the process exited via Task Manager if needed) and relaunch before testing.
 
 ### Push (release)
 
 When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
 
 1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before proceeding. The session-start hook only fires at session start, so a /done that ran earlier in this same session leaves its placeholder unfilled at push time — this step catches it. Same rules as the hook: replace the token only in hash position (an entry heading line or the start of an index line), never in body prose, which may mention the token literally; resolve each to the **oldest** `git log -S "<entry title>"` match, never the newest commit touching the file.
-2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json`. Patch for fixes/incremental, minor for new capabilities. (The bump lives here, not in rezip: bumping on every private test build would make Alex's own projects nag "version changed, re-run /setup" each time she tests.)
+2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json` to a clean patch/minor — patch for fixes/incremental, minor for new capabilities — and in doing so **drop any `-testN` suffix** the working tree carries from rezip testing (`1.12.0-test3` → `1.12.1` or `1.13.0`), so a test suffix never ships in a release. (The release bump lives here, not in rezip — rezip only ever touches the `-testN` test suffix, never the release line: bumping the release version on every private test build would make Alex's own projects nag "version changed, re-run /setup" each time she tests.)
 3. Pre-push consistency sweep — two passes, run in order:
 
    **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
@@ -139,6 +145,8 @@ LOG entries are per-entry files — no log capping or push markers at push time.
 ## Goal sessions (plugin off)
 
 A "goal session" runs with the plugin turned off so Claude can work autonomously through several build batches in one chat, closed by a manual /done. The session-start hook never fires in this mode, so its automatic LOG hash backfill doesn't run. When running /done by hand in a goal session, do the backfill yourself: fill any `[HASH]` placeholders in `LOG/` using the same rule as the Push step — replace the token only in hash position (entry heading or start of an index line), resolve each to the **oldest** `git log -S "<entry title>"` match — and fold the edit into the session's commit. The current session's own entry can't be filled until its commit exists; backfill it in the next goal session's /done, or rely on the Push step, which backfills everything as a backstop. This is interim handling until /goal is formally supported (see the goal-session capture in QUEUE.md).
+
+Handoff-claim provenance (interim rule). When a session opens from a Claude-authored handoff or context prompt — a goal directive, a resume note, a "here's where we left off" summary — treat its claims as unverified until the user confirms them. Claude-written content is not read in the user's voice. The why: a handoff Claude authored is not a user-vouched fact, and a fresh or weaker session can't tell which claims the user stood behind versus which Claude wrote — so a Claude-authored line ("the lint keeps flagging X") must not be used as evidence that the user reported X. Confirm before relying on it. (The formal handoff-format decision — whether handoffs mark user-vouched vs Claude-authored claims — belongs to the /goal-vs-cruise-control fork in QUEUE.md; this is the standing rule until then.)
 
 ## E2E testing
 
@@ -174,4 +182,5 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - State problems plainly. Don't hide them or silently fix unrelated things.
 - Design for fresh, short sessions. The system must work for a fresh, short session that carries none of a prior session's memory: the files (SPEC, QUEUE, REGISTRY, LOG, _build.md) must suffice on their own, and conversation memory is a convenience, never a dependency. Short sessions on the weaker post-Fable development model (from ~2026-06-20) are the design target — and every consumer is already in this case. A long session that remembers everything is the exception, never the case to design for. (This is about robustness to session-memory loss; it does not change the Model target above — 4.8 stays the model the plugin is tuned for.)
 - Route discoveries to QUEUE.md rather than acting on them immediately.
-- All use of the plugin to develop the plugin is testing the plugin. Any observation of Claude's behaviour — wrong, unexpected, or improvable — is a testing outcome and must be routed to Captures. Not to memory, not discussed and dropped. Captures. In particular: any moment you notice session memory covering for something the docs or files should carry — a step that worked only because you remembered the conversation — is itself a mandatory capture. That gap stops hurting under a model with strong session memory, so it stops being found, while fresh short sessions and consumers still hit it.
+- All use of the plugin to develop the plugin is testing the plugin. Any observation of Claude's behaviour — wrong, unexpected, or improvable — is a testing outcome and must be routed to Captures, not discussed and dropped. In particular: any moment you notice session memory covering for something the docs or files should carry — a step that worked only because you remembered the conversation — is itself a mandatory capture. That gap stops hurting under a model with strong session memory, so it stops being found, while fresh short sessions and consumers still hit it.
+- Memory boundaries — what memory must never hold, and what it's free for. Memory must never hold the project's records, because the system docs own them: behaviour observations and testing outcomes (Captures), design decisions and their reasoning (QUEUE, SPEC, LOG), project state and constraints (the method docs), and procedure gaps noticed mid-session (Captures). The why: memory doesn't travel with the project and you can't read it, so a project record saved there is a record the project has lost. Memory is free — and a good home — for everything no project doc owns: user preferences, working style, communication feedback, cross-project facts. The old blanket "not to memory" was both too strong (it read as forbidding memory outright) and too weak (it named nothing to check against); this is the boundary that replaces it.

@@ -51,11 +51,11 @@ Ask [PROMPT]: "Anything to discuss before we process Captures?" (If Captures is 
 
 **Unpark candidates first.** Candidates carried in from Step 1's scans are processed before Captures — Parked items have been waiting longest. Each enters the loop below as if it were a capture, sourced from Parked instead of Captures, through the same sub-steps (present + interview, recommend, execute, remove, checkpoint). The recommend options are the same three, reread for items already in Parked: **promote** means move out of Parked into Batches as a full batch entry, **park** means keep parked, **drop** removes the Parked item entirely. Staleness candidates take the same path with the Staleness watch's choice — drop, rewrite, or keep (per plugin-behaviour.md Dependency ownership).
 
-One item at a time — candidates from Step 1 first, then captures oldest first across both halves (unprocessed in file order, then continue into processed). Never preview upcoming items. State the count upfront, counting candidates and captures together ("5 items. First: ...").
+Candidates from Step 1 first, then captures in file order, top to bottom across both halves — unprocessed below the divider, then continuing into processed above it. State the count upfront, counting candidates and captures together ("5 items. First: ..."). (Processing follows the file as placed, not strict age: a capture placed next to its relatives jumps the age queue by design. Oldest-first is only the append fallback at filing time.)
 
 For each item:
 
-1. **Present and interview** [DISCUSS, PROMPT] — Open the turn with a one-line preamble (e.g. "here's the next item, my thoughts to follow") and the item's verbatim text, sent before any analysis or file reads begin. The separator that makes this a send rather than a paragraph: after the quote goes out, re-read the item from QUEUE.md to confirm the quoted text matches the file — this read forces the quote out as its own beat, and it catches a context-drifted quote before it's discussed (if the file differs, correct it immediately). Only then engage with the item's substance: ask follow-ups to sharpen it or surface missing context, depth scaling with the item, until the picture is clear. Close: "anything else to add?" Unpark candidates enter this loop the same way.
+1. **Present and interview** [DISCUSS, PROMPT] — Open the turn with a one-line preamble (e.g. "here's the next item, my thoughts to follow") and the item's verbatim text, sent before any analysis or file reads begin. Why the quote lands first, and on its own: the user processes the item more easily when they can take in the raw text before Claude's framing arrives, rather than digesting Claude's whole reaction the moment it all lands bundled. It's availability, not obligation — the quote-first beat gives the user the *option* to read and react before the analysis, and they stay free to pre-empt with a disposition or to read straight on. Steer between two failure modes: **bundling** (the quote tangled with analysis in one paragraph, so the user can't take the raw item in first) and **forced-wait** (stopping after the quote and gating the analysis behind the user's reply, which blocks a user who'd rather read on). The correct shape is the quote first as its own beat, the analysis following in the same flow. The separator that makes this a send rather than a paragraph: after the quote goes out, re-read the item from QUEUE.md to confirm the quoted text matches the file — this read forces the quote out as its own beat, and it catches a context-drifted quote before it's discussed (if the file differs, correct it immediately). Only then engage with the item's substance: ask follow-ups to sharpen it or surface missing context, depth scaling with the item, until the picture is clear. Close: "anything else to add?" Unpark candidates enter this loop the same way.
 
 2. **Dependency scan** [SILENT] — Before recommending, scan the capture text for references to other items (slugs in `[brackets]`, bold titles, named work) and classify each by the language that frames it, not by guessing intent:
    - **Forward-looking** ("once X ships," "after Y has run," "depends on Z," "needs W") — a dependency. The default recommendation in sub-step 3 becomes park-with-`Blocked by:`-populated.
@@ -84,7 +84,7 @@ After all items: Captures should hold only processed items above the divider (or
 
 New items from conversation follow the same loop — check QUEUE.md for overlap first.
 
-If Claude notices a gap: "I notice [X] — want to hear a suggestion?" One at a time.
+If Claude notices a gap: "I notice [X] — want to hear a suggestion?"
 
 ## Step 3: Batch structure
 
@@ -107,17 +107,22 @@ Test:
 Audit:
 - Target: which docs, files, or area to review
 - Criteria: what to look for (repetition, drift, tag misuse, prose-where-tag-belongs, etc.)
+
+Freeform:
+- What the work is, and one line on why it's not a build, a test, or an audit
 ```
 
 Bold title with a stable kebab-case slug appended as a `**[slug]**` marker, then optional `Depends on:` / `Blocks:` header lines (omit either when empty — no `Depends on: none` placeholders), then the prose rationale, then entries under Build, Test, and/or Audit subheadings. See plugin-behaviour.md Dependency ownership for the slug and header rules. Each entry names its own target. The rationale is inline prose (no `Why:` label, no separate field) and carries the reasoning forward — /next copies it to _build.md, /done re-authors it into the LOG entry. See Why-pipeline in plugin-behaviour.md.
 
 **Spec-edit batches.** SPEC.md is a normal doc, changed only through a spec-edit batch — never edited inline during /plan, never touched by a feature build. When a planned change would make SPEC.md's description wrong or incomplete — a new capability, a scope change, a new output type, with the test being whether any sentence in SPEC goes wrong — author a spec-edit batch first: its `Files:` list names SPEC.md, and its Spec-edit entries say which sentences change and to what. /next executes it like any build (the scope-lock allows SPEC because the batch lists it), and /done closes it like any build. Queue the dependent feature batch after it. A refactor or localized fix that changes no SPEC sentence needs no spec-edit batch.
 
+**Freeform batches.** Freeform is the home for planned work that isn't a build, a test, or an audit — an ad-hoc change, a discussion of edits already made, something to surface without the pressure of processing it. When scoping a Freeform batch, run the same gate the on-demand `/next freeform` runs: could this work be a build, a test, or an audit instead? Those three have homes already, so freeform is only for what fits none of them. The entry carries one line naming why none fit — that line is the gate's answer, written into the batch so /next inherits it. Freeform scope is granted ask-by-ask during the build, so its entries needn't name files; the lock starts at method-docs-only.
+
 **Build entries name their files.** A build entry names the files it touches — the scope-lock's `Files:` list in _build.md is populated from those names, so build scope gets decided here at planning time instead of ask-by-ask during the build (see plugin-behaviour.md Scope). A file that doesn't exist yet counts as named when the entry says what gets created and where. A batch whose entries name no files to edit (audit batches, test-only batches) leaves the lock at method-docs-only.
 
 **Think through testing when drafting.** Before authoring the Test section (or deciding to omit it), work through what verification this batch needs. Split the question two ways: what Claude can verify itself (read files, run commands, trace logic, inspect output), and what needs the user (visual, physical, subjective, separate live session). Populate Test with what you find — or proceed without one when the change is self-verifying from the build entries. The decision to omit gets made consciously, not by inattention.
 
-**Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here. [SILENT] when omitting: don't narrate the absence. The rationale already tells the user what kind of change it is.
+**Test section:** Only when there's a behaviour to verify that isn't self-evident from build entries. Not every batch needs one — but /done doesn't generate tests, so anything needing verification must be planned here. [SILENT] when omitting — the rationale already tells the user what kind of change it is.
 
 Split test entries by who runs them, per the thinking above. Write each so /next knows which kind.
 

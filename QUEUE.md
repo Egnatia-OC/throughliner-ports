@@ -18,239 +18,6 @@ The prose half of this batch landed in a goal session (2026-06-15): INSTALL.md n
 Build:
 - INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place. (User-only — needs a real desktop-app screen capture; a placeholder pointer sits in INSTALL.md's smoke-test step until the image lands.)
 
-**Tag application across the next and done families** **[next-done-tag-sweep]**
-
-From [output-tag-audit], its headline finding. The procedure docs use response-shape tags to control when Claude speaks. In next-build.md and next-test.md, the whole Execute step — where Claude does the build work — is tagged [SILENT]. But that step contains moments that must speak: reporting a failure, asking before scope grows, handing a user-run test over. A literal-minded weak model gets two contradictory instructions at those moments. It either breaks the silence tag, or honours it by suppressing a failure report — the dangerous case. The fix has two parts. Each speaking moment gets its own tag, because a tag on the specific moment overrides the tag on the surrounding step. And Execute gets one clarifying line: silence covers routine bookkeeping when things go fine; failures, asks, and handoffs always speak. This was the only audit finding needing new wording — every other finding is plain tag placement. Sibling tag findings from the same audit fold into this batch as they route. Locate every edit by content, not by the audit's line numbers — the docs shift under other queued batches.
-
-Build:
-- plugin/si-plugin/docs/next-build.md and next-test.md, Execute step: add the clarifying line — silence governs success-path bookkeeping; failures, asks, and handoffs speak.
-- Same two docs, inside Execute: tag the scope-expansion ask and the user-run test handoff [PROMPT]; tag failure noting [BRIEF].
-- Same two docs, Scope management: tag the scope-growth asks [PROMPT]. In next-build.md, "Scope grows during the build" takes the tag at section level — both its paths ask and wait. In next-test.md, "Test surfaces unexpected scope" takes it on the minor-case ask only — the significant case notes for the queue and continues, so a section-level tag would force a wait that shouldn't happen. Restores symmetry with the already-tagged "User raises something out of scope" sibling.
-- plugin/si-plugin/docs/next.md pre-flight: tag the push-marker halt [BRIEF]. Tag the blocker gate's surfacing moments [BRIEF]. Tag [PROMPT] where a user decision gates proceeding — the deferred-tests check and the capture-overlap recommendation. By the time this batch runs, [deferred-tests-structural-home] and [queue-plan-markers] may have reshaped this gate; tag the text as it stands then.
-- done-build.md, done-test.md, done-audit.md: tag the route-to-Captures approval loops [PROMPT] — the close-out steps where leftover findings are drafted into Captures for the user's approval. The routing prose stays; only the tag is added. The matching next-audit.md loop is not in this batch — [audit-findings-bulk-approval] replaces it wholesale, tagged from birth.
-- done.md and the three sub-docs, close-out moments: tag the unticked-entries ask (finish or close partial) [PROMPT] in done-build.md, done-test.md, done-audit.md. Give the staleness sweep in all three the path-split treatment next.md's pre-flight already models — [SILENT] when clean, [BRIEF] when flagging. Tag done.md's router [SILENT] to match its own "don't ask" prose. Tag the minor bookkeeping moments [SILENT]: the registry update in done-build.md, the _build.md deletion in all three.
-
-Test:
-- Self-verifying from doc text. Watch later /next sessions: failure reports and scope asks speak; success-path bookkeeping stays silent.
-
-**Trim tag-definition restatements from plan.md** **[tag-restatement-trim]**
-
-From [output-tag-audit]. Four spots in plan.md restate in prose what the response-shape tag definitions already say — "one item at a time" beside [SEQUENCE], "don't narrate the absence" beside [SILENT]. The audit flagged a tension: trimming prevents the copies drifting apart, but local restatement also props up weak models. Resolved at routing: the propping has already been paid for centrally — the hardened definitions carry their own why-clauses and constraints — so keeping the restatements buys the same insurance twice while leaving wording to drift. The line to apply: trim where the hardened definition fully covers the content; keep prose that adds step-specific substance. The audit also flagged next-audit.md's "Don't preview upcoming findings," but that line lives in the section [audit-findings-bulk-approval] replaces wholesale, so it dissolves on its own and stays out of this batch. setup.md is excluded entirely — its restatements are load-bearing because its sessions may never load the definitions (separate finding). Locate every spot by content, not the audit's line numbers. Folded in at the 2026-06-12 /plan, user-caught: the same Step 2 ordering line names the processing order "oldest first," but Claude-directed placement means file order and age order diverge — an item placed next to its relatives jumps the age queue by design, so the name promises an order the file no longer guarantees. The rename rides here because this batch already edits that line.
-
-Build:
-- plugin/si-plugin/docs/plan.md, four restatement spots: the ground-rules "One item at a time" line, Step 2's one-at-a-time/never-preview restatement (keep the ordering content — candidates first, file order, count scope — it's step-specific), the gap-noticing "One at a time," and "don't narrate the absence" after the Test-section [SILENT]. Apply the line above to each. Treat the ground-rules spot with care: no tag sits on the ground rules or Step 1, so the line may be covering territory the [SEQUENCE] definition doesn't reach there — if so, it stays.
-- plugin/si-plugin/docs/plan.md Step 2, same ordering line: rename the processing order from "oldest first" to file order, top to bottom. Age order is only the append fallback at filing time (plugin-behaviour.md Captures placement); processing follows the file as placed. Sweep plan.md for other "oldest first" uses describing processing order and rename those too — filing-fallback uses ("oldest-first as the fallback") are correct and stay.
-
-Test:
-- Self-verifying from the doc text. Behavioural watch on later /plan sessions: one-at-a-time discipline holds without the trimmed prose; any leakage is a mandatory capture.
-
-**Ship freeform: a fourth /next type for unqueued work** **[ship-freeform-next-type]**
-
-Demand is observed, not speculative: twice in one day the work had no plugin path — an ad-hoc audit run with the plugin switched off, and a session that wanted captures surfaced without processing pressure — plus a general need for somewhere to discuss changes already made. Freeform is the fourth /next type for that work. Two forms ship together. Queue-driven: /plan scopes planned freeform work as a batch and /next picks it up. On-demand: `/next freeform` with no queued batch. Both pass the same gate first — could this be build, test, or audit? — with a one-line answer for why none fit; the gate runs in /plan for queue-driven and at session start for on-demand. Freeform is a refuge from ceremony, not from discipline. The scope lock holds, with files granted ask-by-ask by the user. Captures may be made but never processed — [no-planning-in-execution] already covers freeform through its written scope, no amendment needed. Freeform has no completion signal — nothing to tick — so it gets no Completion section: the session closes when the user runs /done, and the context-running-long nudge is the only close prompt Claude initiates. Expectation over time: recurring freeform shapes surface real new types, the way the audit type emerged. SPEC.md was updated at routing. Absorbs [freeform-on-demand]; both items leave Parked into this batch.
-
-Build:
-- plugin/si-plugin/docs/next.md router: add the freeform branch — a queued freeform batch at the top, or `/next freeform` with none. For on-demand, run the gate: ask whether the work could be build, test, or audit; require the one-line why-none-fit before proceeding.
-- New doc plugin/si-plugin/docs/next-freeform.md: the procedure. Scope lock ask-by-ask — _build.md's Files list starts empty, and each file the work needs is requested and appended once the user grants it. The captures-append constraint: when the session yields captures, warn that /next can only append them, not process them, and offer the choice — move this to /plan now, or continue and process later. No Completion section. Authored with its response-shape tags correct from birth.
-- plugin/si-plugin/docs/done.md router plus new done-freeform.md: record a freeform session — LOG entry describing what happened and what changed, registry check, commit. No batch to return, nothing to tick. Authored with tags from birth.
-- plugin/si-plugin/docs/plan.md Step 3: the queue-driven shape — a Freeform subheading for planned freeform work, with the authoring-time gate (one line on why build, test, and audit don't fit).
-- plugin/si-plugin/hooks/ lint hook (ships earlier in the queue): add Freeform to the allowed batch subheadings — its own batch notes this list must grow when new types ship.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: describe the freeform form in the workflow section.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry — what a freeform session is, when to reach for it, and what it won't do (process captures).
-
-Test:
-- Self-verifying from the doc text for structure. Behavioural: the next real freeform need runs through `/next freeform` instead of switching the plugin off — the originally observed case is the natural live test. Host-side (after push + reinstall) — flag at /done if it can't run; needs the deferred-test discipline.
-
-**Memory gets boundaries: enumerate what it must never hold, free the rest** **[memory-rule-boundaries]**
-
-User direction, 2026-06-11. The route-observations rule's memory clause ("Not to memory, not discussed and dropped") is a blanket veto with no boundary, which makes it both too strong and too weak: it reads as forbidding memory entirely, while giving a weak model no list to check against. The tightened form enumerates what memory must never hold — project records that system docs own — and explicitly frees memory for everything else. Must-not-hold: behaviour observations and testing outcomes (Captures), design decisions and their reasoning (QUEUE, SPEC, LOG), project state and constraints (the method docs), procedure gaps noticed mid-session (Captures). Free: user preferences, working style, communication feedback, cross-project facts. Resolved at routing: consumers get their own version — their Claude has the same memory feature and a worse misroute risk, since memory is invisible to them, unversioned, and machine-local; a design decision saved there never reaches their project docs. Files over memory, in consumer clothes.
-
-Build:
-- This project's CLAUDE.md (host-only, does not propagate), the route-observations rule: replace the blanket "Not to memory" with the enumerated must-not-hold list and the explicit freed remainder, as above.
-- plugin/si-plugin/docs/plugin-behaviour.md: add the consumer-facing version, compliance-hardened from the start (why-clause, positive constraint, explicit scope per resources/research/model-instruction-compliance.md) — project records belong in the project's docs, never in Claude's memory: ideas and discoveries to Captures, design decisions to QUEUE and SPEC, project state to the method docs. Memory stays free for what no project doc owns: user preferences, working style, communication feedback, cross-project facts. The why: memory doesn't travel with the project and the user can't read it; the method docs are the project's record.
-
-Test:
-- Self-verifying from the rule text. Behavioural watch: the next session where an observation or decision surfaces mid-work routes it to the docs, and memory use for preferences continues without hesitation.
-
-**/done reads _build.md unconditionally; memory enriches, never substitutes** **[done-unconditional-read]**
-Depends on: [scope-boundary-rule]
-
-Raised by the user (2026-06-12): people may /clear between a skill's work and /done, even if advised not to. /clear can't be hooked before it happens, and blocking it isn't the design anyway — the files must suffice at that seam. The observed slip: the last /done skipped the mandated _build.md read, plausibly a judgment call because the whole build session was in memory. That call works same-session and breaks exactly when it matters — post-/clear and post-compaction, when the session feels remembered but the details are gone. A "read it if you don't remember the session" condition was considered and rejected: it hangs on Claude assessing its own memory, which fails in the post-compaction case. The decided form inverts it: the read is unconditional, and conversation memory enriches the record but never substitutes for the read. Side benefit: a same-session /done that reads the file while still remembering the build notices when ticks or Changes notes don't match what happened — the only routine check _build.md's quality ever gets before a fresh session needs it. The findings steps in all three sub-docs name "the conversation" as a source, which institutionalizes the memory dependence; they get reworded so files are the record. The dependency is real: [scope-boundary-rule] is what routes Claude-noticed discoveries to Captures at the moment of noticing, making "flagged items are already in files" true for the reworded findings steps.
-
-Build:
-- plugin/si-plugin/docs/done.md, the router's "_build.md exists → read it" line: harden into the canonical rule, compliance-hardened from the start (why-clause, positive constraint, explicit scope per resources/research/model-instruction-compliance.md) — the read is unconditional regardless of what the session remembers; conversation memory enriches the LOG entry (tradeoffs, learnings, colour) but never substitutes for the read; a memory-state condition fails post-compaction, when the session feels remembered but isn't. Stated once here; the sub-docs route through it.
-- plugin/si-plugin/docs/done-build.md, verify-completion step: add the reconcile line — where the file and session memory disagree (work done but unticked, Changes notes missing something memory knows happened), the mismatch is itself a finding about build discipline and routes to Captures.
-- plugin/si-plugin/docs/done-build.md findings step, done-test.md findings step, done-audit.md stragglers step: reword "Check _build.md and the conversation" — the record is _build.md's notes plus Captures already routed at noticing; conversation, when present, is a same-session bonus sweep, never a source the step depends on. Locate by content, not line numbers.
-- plugin/si-plugin/templates/faq-template.md (+ index line): FAQ entry — "Is it safe to clear the conversation or start a new session between steps?" After /done, yes: everything is recorded and committed. Before /done, the plugin recovers from its working file, but closing with /done first is the clean habit.
-
-Test:
-- Self-verifying from doc text for the rewording. Grep "and the conversation" across the /done sub-docs after the edit — expect zero hits in findings steps.
-- Behavioural, host-side (after push + reinstall): the next /done that runs in the same session as its build visibly reads _build.md before Phase 1. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Post-close captures update the entry's routed line as a working-tree edit** **[post-close-capture-record]**
-
-From a capture raised at the [doc-crossrefs-by-name] /done close (2026-06-12). Captures filed in a session's post-commit tail have no session record: the LOG entry's "Routed to Captures:" line is approved and committed before they exist — that session's entry said "none" while two captures originated in its tail. The fix reuses an existing pattern. When a capture is filed after the commit, the same move that appends it to QUEUE.md also updates the just-written entry's "Routed to Captures:" line as a working-tree edit, with no separate commit — the edit rides into the next session's commit, exactly as hash-backfill edits do. The entry converges to truth and attribution stays with the session the capture came up in. Checked at routing: the hash backfill resolves the entry's commit from committed history, so the uncommitted edit doesn't disturb it. Weighed and rejected: recording tail captures in the next session's entry — cross-entry attribution relies on the next session noticing, a judgment step on the path weak sessions fumble, and the log records captures by when they came up; a dedicated follow-up commit per tail capture — truth-preserving but adds ceremony exactly where the session is winding down, and tail captures arrive in clusters; accepting the gap — the capture's inline origin makes QUEUE.md a sufficient record, but it leaves the session entry knowingly false on one line. Interaction accepted: with [closeout-text-collapse], the committed copy of the entry (and commit body) permanently says what was routed as of commit time, while the entry file — the canonical record — carries the correction; git shows the correction landing in the next commit. No dependency header: the design works whether or not the collapse has shipped — adjacency, not a gate.
-
-Build:
-- plugin/si-plugin/docs/done.md, beside the LOG entry files section: add the post-close captures rule — a capture filed after this session's commit also updates the just-written entry's "Routed to Captures:" line, as a working-tree edit with no separate commit; the edit rides into the next session's commit, same pattern as the hash backfill. Carry the why: the entry is the session's record, and captures belong to the session they came up in.
-
-Test:
-- Behavioural, host-side (after push + reinstall): the next post-close tail capture updates the entry's routed line uncommitted; the next session's commit carries both; the hash backfill still resolves the entry to its /done commit. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Recommend-next states the scan result both ways: clean case codified, audit gap absorbed** **[done-recommend-next-both-ways]**
-
-Raised by the user at the [doc-crossrefs-by-name] /done (2026-06-12): the close-out assessment has been landing well, but only half of it is codified. The recommend-next step in the /done sub-docs runs the unprocessed-Captures overlap scan and speaks only when something blocks — overlap found → recommend /plan and name it. The clean case (captures waiting, none touching the next batch, /next can proceed) has no instruction behind it: "the three waiting captures don't touch it, so nothing blocks it" was judgment, not procedure. That's the [short-session-design-target] gap class — behaviour the user values, carried by session finesse, which a fresh weak-model session may not reproduce. The fix states the scan's result in all three states: Captures empty (nothing waiting for /plan), waiting but clean (what's waiting, with the plain verdict that nothing blocks), overlap found (the existing rule). The clean-case line reads as plain assessment, not a hedge. Absorbed: [done-audit-overlap-scan], from a [close-out-audit] finding (e120f3d) — done-audit.md is the only sub-doc whose recommendation skips the scan entirely; the gap bites when an audit routes nothing, since pre-existing captures overlapping the top batch would go unflagged and the close would recommend /next, the exact case the scan exists to catch. Folding it here lands the scan and the both-ways rule in done-audit.md in one pass and keeps the wording identical across all four sub-docs.
-
-Build:
-- plugin/si-plugin/docs/done-build.md, done-test.md, done-plan.md, recommend-next steps: extend the overlap-scan instruction to state the result either way — what's waiting for /plan (empty, or the waiting items) and whether it blocks the next batch. The clean case is a plain assessment; include one good/bad example pair pinning the tone ("Three captures are waiting; none touches the next batch — nothing blocks it," not a hedge about overlap possibly being worth checking). Identical wording in all three. Locate by content, not line numbers.
-- plugin/si-plugin/docs/done-audit.md Phase 3, nothing-routed branch: add the overlap scan with the same both-ways rule and wording — the scan and the result statement land together in one edit, absorbing [done-audit-overlap-scan].
-
-Test:
-- Self-verifying from doc text. Grep the scan phrasing across the four /done sub-docs after the edit — expect four identical statements including the both-ways result line.
-- Behavioural, host-side (after push + reinstall): the next /done close states the waiting-captures verdict in the clean case without prompting. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Define the staleness-flag fix path: pointer drift fixable at close, fate decisions to /plan** **[staleness-flag-fix-path]**
-
-Observed at the [setup-preexisting-content-handling] /done close (dc4bfee): the staleness sweep flagged two drifted line references in [setup-project-agnosticism-sweep] — the build's new Case B section had pushed setup.md's line numbers down — and Claude offered to fix them in-session with approval, the edit riding into the commit. The flag is codified (done sub-docs' §2.2 sweep says "flag, don't edit without asking"; plugin-behaviour.md's staleness watch defines the review as drop/rewrite/keep). The fix path is not: nothing says whether a flagged item is fixed at /done with approval or waits for /plan, so the move was ad hoc judgment inside the "without asking" parenthetical. The resolving distinction is sharper than mechanical-vs-judgment: the drop/rewrite/keep review is a fate decision about whether the item is still valid, and fate decisions are /plan's, always. But a drifted pointer on an otherwise-valid item — a line or location reference whose target content is unchanged — is not a fate decision; it's maintenance, and may be fixed at the flagging moment with approval, riding the current commit, the same ride-along /done already does for hash backfills and rolled-in user edits. A content change in the referenced material (the quoted wording itself moved, signalling the item's premise may have shifted) is not mechanical and goes to /plan. The location-vs-content line is written in deliberately: leaving it out just relocates the ad-hoc judgment to the next quoted-string flag. Scope note: this fix-at-close path is for skills that commit (/done) and /plan; /next's pre-flight stale scan stays surface-and-recommend-/plan, since /next doesn't edit the queue's other batches. Sibling to [plan-resolves-by-default], which states the /plan-side resolve-now rule — complementary, neither gates the other.
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md, Dependency ownership Staleness watch bullet: extend the canonical rule. The drop/rewrite/keep review is /plan's (a fate decision about the item's validity). A drifted pointer on an otherwise-valid item — a line or location reference whose target content is unchanged — is mechanical maintenance and may be corrected at the flagging moment with approval, riding the current commit, the same ride-along as hash backfills and rolled-in user edits; a content change in the referenced material is not mechanical and goes to /plan. Carry the why: the fate decision needs planning, a moved pointer doesn't.
-- plugin/si-plugin/docs/done-build.md, done-test.md, done-audit.md, §2.2 staleness sweep ("If so, flag (don't edit without asking)"): align all three to the fix path — flag fate-decision staleness for /plan; offer to fix a drifted pointer here with approval. Point at the plugin-behaviour.md statement rather than restating it. Locate by content, not line numbers (the same line is also tagged by [next-done-tag-sweep]; no ordering between them — locate by content).
-
-Test:
-- Self-verifying from doc text. Grep the sweep wording across the three done sub-docs after the edit — expect three aligned statements.
-- Behavioural, host-side (after push + reinstall): the next /done staleness flag of a pure pointer drift offers an in-session fix with approval; a fate-decision flag defers to /plan. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**State the single-summary rule in all four /done sub-docs** **[done-single-summary-line]**
-
-From a [close-out-audit] finding (e120f3d). The single-summary rule is stated at five close-outs, but inside the /done sub-docs only done-plan.md carries it at the entry-writing step — done-build.md, done-test.md, and done-audit.md are silent on it. The pull the rule guards against lives exactly there: just after the commit, the natural move is to recap the session while recommending what's next, and a two-sentence recap satisfies the recommend-next [BRIEF] tag while still duplicating the entry. Grep-confirmed at routing: only done-plan.md has the line. The fix copies its exact wording so the rule reads identically everywhere it appears.
-
-Build:
-- plugin/si-plugin/docs/done-build.md, done-test.md, done-audit.md, entry-writing steps: add done-plan.md's line verbatim — "This entry is the session's summary — there is no separate chat recap." Locate each spot by content (the show-for-approval instruction in each entry step), not line numbers.
-
-Test:
-- Self-verifying. Grep "separate chat recap" across the /done sub-docs after the edit — expect four hits, identical wording.
-
-**Fit the push offer to session shape and remote state** **[push-offer-fit]**
-
-From a [close-out-audit] finding (e120f3d), plus one gap surfaced at routing. done.md's commit core asks "Commit and push, or just commit?" identically for every session shape. The dual ask fits build, test, and audit closes — work shipped or was verified, push is a real choice. It misfits planning closes: the staged paths are local planning state, so the standing offer treats planning work as a ship event. In the self-hosting host the cost is concrete — a push triggers the full push-and-rezip ritual off a commit that changed nothing in the plugin. A non-coder reads offered options as equally sensible defaults, so the ask teaches that pushing planning state is normal when the system reserves push for shipping. The routing-time gap: consumer repos may have no remote at all — nothing in setup or install creates one — so the ask can offer an option that errors when picked. The fix keeps the mechanics canonical in done.md and shapes the ask by context. The override is a default, not a prohibition — for consumers push is often just backup, and that stays available. Setup-shaped sessions inherit the override for free once [setup-closeout-redesign] routes them through done-plan.md.
-
-Build:
-- plugin/si-plugin/docs/done.md commit core: gate the push offer on a remote existing (one git remote check). No remote: ask about committing alone — don't offer what would error.
-- plugin/si-plugin/docs/done.md commit core: add one line stating sub-docs may override the ask's default while the mechanics stay canonical here.
-- plugin/si-plugin/docs/done-plan.md commit step: override the ask — planning sessions offer commit alone by default; push stays available when the user asks or is deliberately backing up. Carry the why: planning state is local bookkeeping, push is reserved for shipping, and in self-hosting projects a push triggers the full push-and-rezip ritual.
-
-Test:
-- Self-verifying from doc text. Behavioural, host-side (after push + reinstall): the next /done after a planning session asks commit-only; a /done after a build still offers the dual ask. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Define next-test.md's completion review tail** **[next-test-review-tail]**
-
-From a [close-out-audit] finding (e120f3d). The three /next-family completions share one shape — "Run /done to record this and commit, or X before closing" — but only next-build.md defines its X, and that definition exists deliberately to close a new-work-smuggling risk: an undefined tail can absorb fresh work past the batch's contract. next-test.md's "review what's already tested" carries no equivalent definition, so the same risk sits open there. The audit half of this finding rides in [audit-findings-bulk-approval], which rewrites next-audit.md's close; this batch covers the test half, mirroring next-build.md's wording so the rule reads the same in both places.
-
-Build:
-- plugin/si-plugin/docs/next-test.md Completion, after the "Run /done…" say-line: add the definition — reviewing means re-examining what was already tested, not raising new work; anything new routes through the existing paths (out-of-scope via Scope management, thinking work via Captures). Mirror next-build.md's tightening definition in structure and length.
-
-Test:
-- Self-verifying from the doc text. The two defined tails should read as the same rule in build and test clothing.
-
-**Push marker: one hard direction, otherwise a ship-by aim** **[push-marker-hard-direction]**
-
-The push-marker convention reads as a solid barrier, but it's only hard in one direction. Decided-but-unshipped standards already shape sessions before any push — in-repo sessions read the queue and the discussion, not just the installed plugin (observed 2026-06-12: blockquote displays, verbatim-first quoting, a why-pipeline judgment call, all applied pre-push). The genuinely hard case is host-side reads: work that reads installed state — an audit reading injected rules, a live test of hook behaviour — gets wrong results before push + reinstall, and the /next halt exists to protect exactly that. Left undistinguished, the risk is a session treating the line as solid and suspending decided reasoning ("not shipped yet"), which breaks the why-pipeline. Decided rationale never waits on a push.
-
-Build:
-- This project's CLAUDE.md (host-only, does not propagate), the push-marker convention in Self-hosting dependency ordering: state the distinction — the marker halts /next because batches past it read host-side state, the one hard direction; it does not suspend decided rules or reasoning in any session, and it is not a wall for planning work. The line marks when we aim to ship by. Decided rules and reasoning apply from the moment they're decided.
-
-**Remove dash-stripping from the scope-lock parser: bare paths become the single truth** **[scope-lock-drop-dash-stripping]**
-
-The scope-lock parser strips trailing annotations from Files: lines when a dash separator is used (" — ", " - ", " – "), but not parenthetical ones. The code is partially tolerant while the decided rule says bare paths, nothing else on the line. The split is the worst spot: a dash-annotated line works silently, so the annotating habit never gets corrected, then a parenthetical one breaks scope mid-build. The denial message shipped by [git-add-safety-hook-gap] teaches that any annotation breaks the match — the dash-stripping makes that false for one annotation style. Removing the stripping makes the rule, the denial message, and the parser agree. The teaching denial is the recovery path for anyone who annotates a line. Side benefit: a genuine path containing " - " no longer gets truncated by the stripper. _build.md is ephemeral — each build writes a fresh one — so nothing needs migrating.
-
-Build:
-- plugin/si-plugin/hooks/pre_tool_use.py: remove the dash-stripping loop from the Files: parser — entries are taken whole after the leading "- " marker. No other parser behaviour changes.
-- Verify, no edits expected: the scope-lock denial text and next.md's _build.md format section already state the bare-path rule and stay accurate once the stripping is gone.
-
-Test:
-- Claude-run: pre_tool_use.py against a fixture _build.md — a dash-annotated Files: line is denied with the teaching message; a bare path still passes; an empty Files: section still locks to method docs.
-- Host-side (after push + reinstall): a live denial on an annotated line. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Audit narration volume at skill openings** **[opening-narration-audit]**
-
-Raised 2026-06-14. Narration has been piling up at the start of skill sessions, and the cause looks structural: a skill's opening is where the most rules fire at once — the read-state step, the unpark and staleness scans, and several behaviour rules that each independently say "narrate" (narrate the ordering work, surface unpark candidates, flag staleness). Each was added for good reason, but nothing bounds the total, so they stack into a wall of opening narration. [output-tag-audit] already checked tag placement across all docs, and its fixes are the queued tag batches; this audit asks a different question it never measured — how much narration accumulates at one opening, and whether the fix is a tag or a rule. It depends on [plan-step1-sequencing] because that batch cleans /plan's opening, the flagship example, so auditing afterward reads the intended state instead of re-finding a queued fix.
-
-Audit:
-- Target: the opening sequences of all four skills as written in the procedure docs — setup.md's entry, plan.md Step 1, the next family's pre-flight opening, the done family's openings — plus the plugin-behaviour.md rules that drive opening narration (narrate the ordering work, the unpark watch, the staleness watch, dependency-ownership narration). If the same pile-up appears at any other high-rule-density moment while reading, report it too.
-- Criteria: at each opening, separate narration the user genuinely needs (the entry question, a real unpark candidate, an actual ordering decision) from accumulated excess (scan and process narration, state restatement, over-explaining). For each excess moment, name the lever — a missing [SILENT] or [BRIEF] tag on the step, a tag that needs changing, or a behaviour rule that fires narration with nothing bounding the total when several stack on one opening. Flag especially where multiple rules pile onto the same opening — the aggregate problem per-step tagging can't catch. Where a queued fix already addresses an opening ([plan-step1-sequencing], [output-tag-audit]'s findings), note it as covered and don't re-file.
-
-**Backfill the FAQ folder this project never scaffolded** **[faq-backfill]**
-
-This project is missing its `FAQ/` folder — the `faq.md` and `index.md` that /setup scaffolds from templates. The cause: the FAQ scaffolding step was added to /setup after this project was first set up (commit `06c24e4`), and /setup was never re-run here, so the folder was never created. Nothing automatically re-scaffolds this project when the plugin gains new scaffolding, so the gap stayed silent.
-
-This batch backfills the FAQ from the current templates, so the dev project has the FAQ that consumers get and can dogfood FAQ edits. It is placed late on purpose: several queued batches add FAQ entries to the templates, so running it after them captures a more current snapshot instead of one that is stale on arrival.
-
-Two caveats are accepted, not solved here. This is a point-in-time copy, not a synced one — it will drift again as later FAQ-template edits land, and there is no detection because `.si-version` is deliberately left to the separate self-hosting design item. And once `FAQ/index.md` exists, the session-start hook injects it into every session start — small and by design, but the narration audit should treat that injection as in-scope here.
-
-Build:
-- Create the `FAQ/` folder in the project root.
-- `FAQ/faq.md` — copy the current content of `plugin/si-plugin/templates/faq-template.md`.
-- `FAQ/index.md` — copy the current content of `plugin/si-plugin/templates/faq-index-template.md`.
-
-Test:
-- Self-verifying: `FAQ/faq.md` and `FAQ/index.md` exist and match the current templates. The next session start will then inject `FAQ/index.md` — observable, minor.
-
-**/done detects spec drift at build close and files a capture** **[done-spec-sync-check]**
-
-Decided 2026-06-10. The spec-entry trigger is a prospective /plan gate: when planning a change that would make SPEC's description wrong or incomplete, update SPEC first. But the gate leaked once — at [tag-definitions-compliance-rewrite] no spec entry preceded the build, and the gap was caught only because the /done session happened to notice by judgment and file a capture. This batch makes that lucky catch structural. At the close of a /next build (not test or audit), /done reads SPEC.md against the just-landed changes and applies the spec-entry trigger test in its shipped form — would these changes make SPEC's description wrong or incomplete? If yes, /done files a mandatory capture naming the gap. It never edits SPEC.md: product-truth edits stay in /plan and ship through a spec-edit batch, so the backstop detects and files, it does not author. The trigger wording it applies now lives in plan.md alone (the plugin-behaviour.md injection copy was removed by [spec-edit-batch-type]), so the check quotes plan.md's current test rather than restating it. Scope is build closes only — test and audit sessions land no product changes to check.
-
-Build:
-- plugin/si-plugin/docs/done-build.md: add a build-close step — read SPEC.md against the changes this build landed and apply the spec-entry trigger test (the shipped form in plan.md). If yes, file a mandatory capture naming the gap; never edit SPEC.md. Point at plan.md's canonical trigger wording rather than restating it, so the two do not drift. Tag [SILENT] when nothing drifts, [BRIEF] when filing — mirror the staleness-sweep path-split.
-
-Test:
-- Self-verifying from doc text: the step exists, applies the trigger, files-not-edits.
-- Behavioural, host-side (after push + reinstall): a build that lands a spec-affecting change without a prior /plan spec entry draws a filed capture at /done close; a build with no spec impact stays silent. Needs the deferred-test discipline — flag at /done if it can't run.
-
-**Reconcile this project's CLAUDE.md: hook enumeration (2→3) plus a handoff-verification interim rule** **[hook-count-reconcile]**
-
-Found during the v1.12.0 pre-push sweep (2026-06-14). This project's CLAUDE.md enumerates "2 hooks" in Architecture and lists only session_start + pre_tool_use in the "Where things live" tree, but post_tool_use.py — the advisory QUEUE.md structure lint, shipped after v1.11.0 — makes three hook files. Host-only doc, so it doesn't propagate. SPEC's "two hooks enforce" was reconciled separately in the 2026-06-16 /plan by adding the advisory third hook as its own line. Nothing consumer-facing was stale (CLAUDE-TEMPLATE.md and faq-template.md don't enumerate hooks). A second, unrelated touch-up to the same file rides along (no dependency): an interim rule for goal/handoff sessions, folded in from the 2026-06-16 /plan.
-
-Build:
-- This project's CLAUDE.md, Architecture section: change "2 hooks" to "3 hooks" and add a `post_tool_use` bullet (advisory QUEUE.md structure lint, flags format drift, never blocks). Frame the three as two enforcing — session_start, pre_tool_use — plus one advisory — post_tool_use. Locate by content (the "2 hooks" heading), not line number, since [retire-registry] also edits this section.
-- This project's CLAUDE.md, "Where things live" tree: add post_tool_use to the `hooks/` line.
-- This project's CLAUDE.md, "Goal sessions (plugin off)" section: add the interim rule that when a session opens from a Claude-authored handoff or context prompt, its claims are treated as unverified until the user confirms them — Claude-written content is not read in the user's voice. Carry the why: a handoff Claude authored is not a user-vouched fact, and a fresh or weaker session can't tell which claims the user stood behind.
-
-Test:
-- Grep this project's CLAUDE.md after the edit: "2 hooks" gone; post_tool_use present in both the Architecture list and the Where-things-live tree; the Goal sessions section names the unverified-until-confirmed handoff rule.
-
-**Document the full-restart reinstall requirement** **[reinstall-needs-full-restart]**
-
-Observed 2026-06-15 while testing a rezipped build: after a clean uninstall and reinstall, the plugin appeared in the Plugins list but its slash commands didn't register in a new chat — a fresh session and a normal app close both failed; only fully quitting the desktop app (ending the process via Task Manager, since a normal quit left it running on Windows) and relaunching made the commands appear. Plugin skills register at app launch, and the Windows desktop app can keep running after a window close, so "open a new session" is not sufficient. Two docs under-specify this and need correcting.
-
-Build:
-- INSTALL.md, smoke-test diagnostic ladder: replace the "start a fresh session, since skills register at session start" guidance with a full quit-and-relaunch instruction — fully quit and reopen the app, and on Windows confirm the process actually exited (via Task Manager if a normal quit leaves it running). This corrects a line written in the same 2026-06-15 goal session. Locate by content.
-- This project's CLAUDE.md, Rezip step (the "Uninstall/reinstall to test the new host privately" line): add that a full app restart — not just a new session — is required for the new host's skills to load. Locate by content; this Rezip section is also edited by [rezip-test-version-scheme], so locate by content there too.
-
-Test:
-- Grep INSTALL.md and this project's CLAUDE.md after the edit: INSTALL.md's smoke-test ladder names the full quit-and-relaunch (with the Windows process-exit check); CLAUDE.md's Rezip step names the full restart requirement.
-
-**Document the `-testN` test-build version scheme** **[rezip-test-version-scheme]**
-
-Raised 2026-06-15 and trialled the same session. A rezip rebuilds the zip without bumping the version (bumping every test build would nag the user's own projects to re-run /setup), so test builds need a way to be distinct, clearly-labeled, and never confused with a release. The scheme: a test build carries a `<base>-testN` version — the release-line base plus `-test` and a number incremented each rezip-for-testing (e.g. 1.12.0-test1, -test2). A push resets to a clean patch/minor with no suffix. Honest framing carried in the docs: what actually makes a reinstalled host load is the full app restart (see [reinstall-needs-full-restart]); `-testN`'s job is to keep each test build a distinct, unmistakably-test version, not to be the thing that forces reinstall. The `+build`-metadata alternative was rejected (semver treats it as equal-precedence, so it wouldn't force a distinct version) and a throwaway patch bump was rejected (it muddies the real release line). Confirmed 2026-06-15: the `1.12.0-test1` build installed and registered its skills fine, so the pre-release format is not a blocker.
-
-Build:
-- This project's CLAUDE.md, Rezip section: document the `-testN` scheme — the `<base>-testN` format, what it's for (a distinct, clearly-labeled private test build), and the caveat that the suffix lives in the working tree's plugin.json only and must be reset to a clean version before any push. Add an auto-increment step to the rezip procedure: read the current version and bump N (or start at -test1 if the base has no suffix). Frame it honestly — the full restart is what loads the new host; `-testN` keeps test builds distinct and labeled. Locate the Rezip section by content; it is also edited by [reinstall-needs-full-restart].
-- This project's CLAUDE.md, Push step 2 (bump version): note that the clean patch/minor bump drops any `-testN` suffix, so a test suffix never ships in a release.
-
-Test:
-- Grep this project's CLAUDE.md after the edit: the Rezip section documents the `-testN` format and auto-increment; Push step 2 names dropping the suffix.
-
-**Add the user-engagement rationale to plan.md's verbatim-first instruction** **[verbatim-first-rationale]**
-
-Observed 2026-06-16: in a /plan capture session, Claude bundled the verbatim item with its analysis four items in a row, despite plan.md's present-and-interview step requiring the verbatim item to land first as its own beat. The rule was loaded and still lost to the pull to deliver everything in one pass — the model-instruction-compliance pattern of a rule without its why-clause losing to the helpfulness pull (resources/research/model-instruction-compliance.md). The instruction states the mechanism (re-read as separator) and the drift-catching purpose, but not why the quote lands first: user engagement. The user processes more easily when they can take in the raw item before Claude's framing arrives, rather than digesting Claude's whole reaction the moment it all lands bundled. The fix adds that rationale, compliance-hardened, and names both failure modes so a future session steers between them.
-
-Build:
-- plugin/si-plugin/docs/plan.md, the Step 2 present-and-interview step (the verbatim-first instruction): add the user-engagement rationale in the compliance-hardened shape (why-clause, positive constraint, explicit scope) — the raw item lands first so the user has the *option* to process it before Claude's framing arrives; it is availability, not obligation. Name both failure modes to steer between them: bundling (quote tangled with analysis in one paragraph, so the user can't take the raw item in first) and forced-wait (stopping after the quote and gating analysis behind the user's reply, which blocks the user). State the correct shape: quote first as its own beat, analysis following in the same flow, the user free to pre-empt with a disposition or to read on. Locate by content.
-
-Test:
-- Self-verifying from doc text: the instruction now carries the why and names both failure modes.
-- Behavioural, host-side (after push + reinstall): a later /plan capture turn lands the verbatim item first without bundling or forced-wait. Ties to the [capture-verbatim-first] deferred test — flag at /done if it can't run.
-
 ### Parked
 
 ## Deferred tests
@@ -284,6 +51,15 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [spec-edit-batch-type] — verify a /next spec-edit batch edits SPEC.md without being blocked, and a normal feature build still cannot touch SPEC unless it lists SPEC.md in Files. Confirmed by: the first /next spec-edit batch run after push + reinstall. (host-side)
 - [queue-plan-markers] — verify the next /plan that authors an audit batch with dependent work inserts a "--- Plan session here: <reason> ---" marker, and the next /next that meets one halts and names the reason. Confirmed by: the first such /plan and /next after push + reinstall. (host-side)
 - [audit-findings-bulk-approval] — verify the next audit session presents findings as one numbered set for bulk approval, takes only contested items one at a time, and done-audit.md's LOG entry records approval outcomes. Confirmed by: the first audit session run after push + reinstall. (host-side)
+- [ship-freeform-next-type] — verify the next real freeform need runs through `/next freeform` (or a queued Freeform batch): the gate asks build/test/audit-first and requires a why-none-fit; scope grows ask-by-ask; captures are filed but a warning offers /plan; /done routes to done-freeform.md. Confirmed by: the first freeform session after push + reinstall. (host-side)
+- [done-unconditional-read] — verify the next /done in the same session as its build visibly reads _build.md in full before Phase 1, regardless of session memory. Confirmed by: the first same-session /done after push + reinstall. (host-side)
+- [post-close-capture-record] — verify the next post-close tail capture updates the entry's Routed-to-Captures line uncommitted; the next session's commit carries both; the hash backfill still resolves the entry to its /done commit. Confirmed by: the first post-close tail capture after push + reinstall. (host-side)
+- [done-recommend-next-both-ways] — verify the next /done close states the waiting-captures verdict in the clean case without prompting (not only when something blocks). Confirmed by: the first /done close with captures waiting but none overlapping, after push + reinstall. (host-side)
+- [staleness-flag-fix-path] — verify the next /done staleness flag of a pure pointer drift offers an in-session fix with approval; a fate-decision flag defers to /plan. Confirmed by: the first /done staleness flag after push + reinstall. (host-side)
+- [push-offer-fit] — verify the next /done after a planning session asks commit-only by default; a /done after a build still offers the dual ask; a repo with no remote is never offered a push. Confirmed by: the first planning-session /done and the first no-remote /done after push + reinstall. (host-side)
+- [scope-lock-drop-dash-stripping] — verify a live denial on a dash-annotated Files: line in the installed host (the parser change was Claude-tested in-session via module import; the live hook path defers). Confirmed by: the first such denial after push + reinstall. (host-side)
+- [done-spec-sync-check] — verify a build that lands a spec-affecting change without a prior /plan spec entry draws a filed capture at /done close; a build with no spec impact stays silent. Confirmed by: the first spec-affecting build /done after push + reinstall. (host-side)
+- [verbatim-first-rationale] — verify a later /plan capture turn lands the verbatim item first without bundling or forced-wait (ties to the existing [capture-verbatim-first] line). Confirmed by: the first /plan capture turn after push + reinstall. (host-side)
 
 ## Captures
 
@@ -490,6 +266,20 @@ Audit finding (goal session, 2026-06-16). At every /done close the user is asked
 **FAQ coverage gap: no entry explains the "project out of date / run /setup" drift signal** — from [faq-coverage-audit]
 
 Audit finding (goal session, 2026-06-16). After a plugin update, a session can open telling the user their project is behind and offering to bring it up to date (the [make-drift-visible] catch-up surface). The FAQ never explains this, so a non-coder meeting it would ask "what's out of date, and is it safe to run /setup?" Add an entry once the catch-up message wording is settled: what the signal means (the plugin gained scaffolding this project doesn't have yet), what running /setup will and won't do (backfills missing files; does not overwrite existing content). Tie the wording to [make-drift-visible] / [scaffolding-resync] so the FAQ and the in-product message agree — note the dependency, since promising more than the catch-up actually does is the exact overpromise the dev-project capture warns against.
+
+**Bound the aggregate of opening narration, not just each step** — from [opening-narration-audit]
+
+Audit finding (goal session, 2026-06-16). The audit asked how much narration accumulates at a single skill opening, and whether the fix is a tag or a rule. The answer is a rule: per-step tags bound each surfacing but nothing bounds the total when several rules fire on the same opening.
+
+Two concrete sites carry the pile-up.
+
+First, the /next pre-flight blocker gate (next.md). It runs five independent scan bullets in sequence — SPEC-existence check, unresolved-questions surfacing, capture-overlap scan, unpark-candidate scan, stale-batch scan. The [next-done-tag-sweep] batch just tagged the gate [BRIEF], which bounds each surfacing to a sentence or two. But a pre-flight that trips three or four of these emits three or four brief surfacings back to back, and the [BRIEF] tag can't see the aggregate — it governs one step, not the stack.
+
+Second, the dependency-ownership narration rules in plugin-behaviour.md. "Narrate the ordering work," the Unpark watch, and the Staleness watch each independently instruct narration at the same surfacing moments (/plan read-state, /next pre-flight, /done close-out). Each is individually bounded ("briefly," "one short sentence"). Nothing bounds the total when several fire at one opening — a /plan open with an unpark candidate plus a staleness flag plus a non-default placement stacks three separate narrations.
+
+The lever for both is the same: a rule that bounds the aggregate, not another per-step tag. Candidate shape (for /plan to decide): consolidate the gate's findings and the ordering/unpark/staleness surfacing into one combined narration per opening — "here's what the pre-flight turned up: ..." as a single message — rather than bullet-by-bullet or rule-by-rule. This is the aggregate problem the audit was run to name; per-step tagging cannot reach it.
+
+Coverage checked and not re-filed: plan.md Step 1 reads clean (scans [SILENT], entry question kept candidate-free) — covered by [plan-step1-sequencing]; setup.md's opening carries brevity in prose by design — covered by [setup-self-contained-no-tags]; the done-family openings read bounded after [next-done-tag-sweep]'s tags, no standalone excess.
 
 ### Parked
 

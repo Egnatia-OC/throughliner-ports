@@ -16,7 +16,7 @@ This project uses the Sovereign Implementer method.
 
 - `/setup` — scaffold project docs (done if you're reading this).
 - `/plan` — queue management, captures, design questions.
-- `/next` — execute the top batch.
+- `/next` — execute the top batch (build, test, or audit). `/next freeform` does loosely-scoped work that isn't any of those — an ad-hoc change or a discussion of edits already made.
 - `/done` — record, update docs, commit.
 
 ## Rules for Claude

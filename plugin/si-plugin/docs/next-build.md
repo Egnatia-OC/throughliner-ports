@@ -6,6 +6,8 @@ Execution procedure for build batches. Reached from next.md after pre-flight che
 
 Execute entry by entry.
 
+The silence here governs the success path — the routine bookkeeping of making changes and ticking entries when things go fine. It is not a gag on the moments that must speak: reporting a failure, asking before scope grows, and handing a test to the user all speak. A response-shape tag on one of those specific moments overrides this step's silence — that's the precedence rule working as intended, not a conflict.
+
 ### Build entries
 
 For each:
@@ -19,7 +21,7 @@ For each:
 When the batch contains test entries (under a Test subheading), execution is verification, not file editing:
 
 1. Read the test description to understand what's checked.
-2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests needing real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user.
+2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests needing real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user — handing one over is a speaking moment: [PROMPT] state what you need the user to check and wait.
 3. Tick each in _build.md Progress, pass/fail:
    - `- [x] Test description — ✓`
    - `- [x] Test description — ✗ (reason)`
@@ -27,7 +29,7 @@ When the batch contains test entries (under a Test subheading), execution is ver
 4. Accumulate results in Changes: what was checked, what passed, what failed.
 
 **On test failure:**
-- Isolated (one test, rest unaffected): note it, continue, route the fix to Captures at close.
+- Isolated (one test, rest unaffected): [BRIEF] note it, continue, route the fix to Captures at close.
 - Fundamental (invalidates the batch premise or blocks remaining tests): stop, go to Course-correction below.
 
 ### Rules during build
@@ -57,9 +59,9 @@ These sections elaborate the discovery decision rule in plugin-behaviour.md (Rou
 
 **Coherence exception:** Default is capture, per above. The exception is narrow and keyed to why-pipeline coherence: if the item would share the build's log entry and index line — per plugin-behaviour.md Index entries — and folding it in makes the batch easier to find later rather than harder, add it to _build.md as a new entry (appending any files it names to the `Files:` section) and continue. Evaluate against the coherence rules, not user convenience. When uncertain, capture.
 
-### Scope grows during the build
+### Scope grows during the build [PROMPT]
 
-If the work needs to grow past what the entries describe — whether that means a new file or more change inside a file already listed — the trigger is the same: growth is measured against the described work, not the Files: list. Name the new work and the files it needs, then:
+Both paths below ask and wait, so the tag sits on the whole section. If the work needs to grow past what the entries describe — whether that means a new file or more change inside a file already listed — the trigger is the same: growth is measured against the described work, not the Files: list. Name the new work and the files it needs, then:
 
 - **Minor** (a small prerequisite, one or two files): ask to add, naming the work and the files: "This needs [work], which means editing [file] — add it to scope?" Once approved, append any not-yet-listed file to _build.md's `Files:` section before editing it — the scope-lock denies edits to unlisted files.
 - **Significant** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.

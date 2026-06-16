@@ -4,10 +4,12 @@ Execution procedure for test-only batches. Reached from next.md after pre-flight
 
 ## Execute [SILENT]
 
+The silence here governs the success path — the routine bookkeeping of running checks and ticking entries when things go fine. It is not a gag on the moments that must speak: reporting a failure, asking before scope grows, and handing a test to the user all speak. A response-shape tag on one of those specific moments overrides this step's silence — that's the precedence rule working as intended, not a conflict.
+
 For each test entry:
 
 1. Read the test description to understand what's checked.
-2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests needing real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user.
+2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests needing real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user — handing one over is a speaking moment: [PROMPT] state what you need the user to check and wait.
 3. Tick each in _build.md Progress, pass/fail:
    - `- [x] Test description — ✓`
    - `- [x] Test description — ✗ (reason)`
@@ -15,7 +17,7 @@ For each test entry:
 4. Accumulate results in Changes: what was checked, what passed, what failed.
 
 **On test failure:**
-- Isolated (one test, rest unaffected): note it, continue, route the fix to Captures at close.
+- Isolated (one test, rest unaffected): [BRIEF] note it, continue, route the fix to Captures at close.
 - Fundamental (invalidates the batch premise or blocks remaining tests): stop, go to Course-correction below.
 
 ### Rules during test
@@ -43,8 +45,8 @@ These sections elaborate the discovery decision rule in plugin-behaviour.md (Rou
 
 If a test reveals additional verification is needed beyond the batch's entries:
 
-- **Minor** (one related check): ask to add, continue if approved.
-- **Significant** (new test area, design uncertainty): capture it as a future test need and finish the scoped tests first.
+- **Minor** (one related check): [PROMPT] ask to add, continue if approved.
+- **Significant** (new test area, design uncertainty): capture it as a future test need and finish the scoped tests first. (No wait — this notes for the queue and continues, so the tag stays off the significant path.)
 
 ## Course-correction
 
@@ -75,6 +77,6 @@ If context is running low, prefer in order:
 When all tests are ticked:
 
 1. Tell the user testing is complete, with the pass/fail counts — failures were already stated plainly as they happened.
-2. Say: "Run /done to record this and commit, or review what's already tested before closing." No chat summary of the results — the LOG entry /done writes is the single session summary.
+2. Say: "Run /done to record this and commit, or review what's already tested before closing." Reviewing means re-examining what was already tested — not raising new work. Anything new routes through the existing paths: out-of-scope via Scope management above, thinking work via Captures. No chat summary of the results — the LOG entry /done writes is the single session summary.
 
 Do NOT delete _build.md yourself. That's /done's job.
