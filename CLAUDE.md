@@ -158,7 +158,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 ## Current state
 
-**Status:** Target v1.11.0. Repo on GitHub, method docs set up (/setup complete).
+**Status:** Target v1.12.0. Repo on GitHub, method docs set up (/setup complete).
 
 ## Method docs
 

@@ -11,6 +11,184 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
+**Audit the Taskflow /setup re-run transcript** **[audit-taskflow-setup-transcript]**
+
+The user ran /setup in the already-adopted Taskflowapp using the currently-installed host — a re-run / migration, captured in full at `resources/captures/2026-06-16-taskflow-setup-session.jsonl` (904 records). Audit it for how the live host's /setup behaved and route findings to Captures. This is E2E testing of the installed host; the host is behind several shipped-but-unreinstalled /setup changes, so findings must be checked against current target before filing. Sibling to [audit-taskflow-first-spec-edit] — process their findings together.
+
+Audit:
+- Target: `resources/captures/2026-06-16-taskflow-setup-session.jsonl` (the full session transcript).
+- Criteria (a lens, not a closed list — file anything else noteworthy to Captures too): (1) procedure adherence — the defined /setup flow, and for a re-run, migration backfill not overwrite; (2) communication quality — one-item-at-a-time, plain English, no internal/structural terms leaking, leads with the decision; (3) friction & confusion — user corrections, awkward consumer-framing on an already-adopted project; (4) output correctness — right docs scaffolded, sensible SPEC seeding; (5) red-flag screening — data-exposure handled or missed; (6) gaps the docs should have prevented.
+- Before filing each finding, check it against current target state; if already fixed in target, note that and don't re-file.
+- Output: findings routed to Captures only — no direct edits to any doc.
+
+**Audit the Taskflow first-spec-edit transcript** **[audit-taskflow-first-spec-edit]**
+
+The first real-world spec-edit in Taskflowapp, flowing from the /setup session that [audit-taskflow-setup-transcript] covers — the first live exercise of the spec-edit mechanism. Captured at `resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl` (146 records). Audit how spec-editing actually behaved and route findings to Captures. Sibling to the /setup audit — process their findings together in /plan. Host may be behind target, so check each finding against current target before filing.
+
+Audit:
+- Target: `resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl`.
+- Criteria (a lens, not a closed list — file anything else noteworthy to Captures too): (1) spec-edit mechanism in practice — did /next route the Spec-edit batch, did the scope-lock allow SPEC.md because the batch listed it, did SPEC edit without being blocked (first live test of [spec-edit-batch-type]); (2) host-vs-target reality — how SPEC actually got edited under whatever host ran this, and whether it matches current target intent (if the host predates the mechanism, that's the finding); (3) procedure adherence — batch picked/executed, /done closed it like a build; (4) communication quality; (5) friction & confusion; (6) output correctness — SPEC got the intended change, nothing unintended touched; (7) gaps the docs should have prevented, + red-flag screening.
+- Before filing each finding, check against current target; if already fixed, note it and don't re-file.
+- Output: findings to Captures only — no direct doc edits.
+
+--- Plan session here: process the two Taskflow audit findings before building the /setup- and SPEC-related batches; findings may reshape them ---
+
+**Retire REGISTRY.md — remove the write-only inventory doc** **[retire-registry]**
+Blocks: the consolidated spec-edit batch (carries the SPEC.md four-docs sentence; slug assigned when authored at items 12–13)
+
+Decided 2026-06-13. REGISTRY is write-only — grep-confirmed scaffolded at setup, updated at every /done, presence-checked at session start, and listed in the scope-lock's editable "method docs," but nothing ever reads its content to make a decision. Its only justification was a human-facing map, and the non-coder it serves never opens it (nor the richer old MANIFEST). The better replacement: a user who wants to know what their app contains asks Claude in-session, which explores the live code — accurate, contextual, zero maintenance. Architecture goes from four docs to three: SPEC, QUEUE, LOG. One nuance rejected: REGISTRY could be a fast orientation map in a large project, but nothing reads it today and live search beats a hand-maintained list that drifts. The SPEC.md sentence is deliberately excluded here — it rides the consolidated spec-edit batch.
+
+Build:
+- setup.md: stop scaffolding REGISTRY (template block, Case B mention, SKILL.md description line); and make the migration / adopt re-run path retire an existing REGISTRY.md in an already-adopted project rather than leaving it orphaned.
+- session_start.py: remove the REGISTRY presence check and its method-doc detection.
+- pre_tool_use.py, next.md, next-audit.md: remove REGISTRY from the "method docs" editable set wherever listed.
+- done.md: drop REGISTRY from staged paths; done-build.md: remove the "Update REGISTRY" step; done-plan.md: drop it from staged paths.
+- next-build.md: remove the "REGISTRY.md is not build scope" line.
+- plugin-behaviour.md: remove REGISTRY from the doc-routing line and the route-to-artifacts list; while there, reword the SPEC.md description project-agnostic ("what/who/how/why the project exists," not "the product exists") — folding in the [plugin-behaviour-doc-routing-agnostic] decision.
+- CLAUDE-TEMPLATE.md and this project's CLAUDE.md: drop REGISTRY from the architecture and doc descriptions.
+- faq-template.md + faq-index-template.md: remove the "What is REGISTRY.md for?" entry.
+- Delete this project's REGISTRY.md.
+- Full grep sweep across the repo to catch any remaining REGISTRY reference.
+
+Test:
+- Claude-runnable (at build): grep the whole repo for "REGISTRY" and confirm no dangling references remain (LOG history excepted).
+- Host-side (deferred): the first /setup after push + reinstall scaffolds three docs (SPEC/QUEUE/LOG), not four, and session start no longer flags a missing REGISTRY.
+
+**Spec-edit: sync SPEC.md after REGISTRY retirement and the read-only-rule removal** **[spec-sync-registry-and-lock]**
+Depends on: [retire-registry]
+
+Two SPEC.md sentences went stale and both are carved-out SPEC changes from earlier decisions. [retire-registry] removes REGISTRY as a doc (architecture → three docs), and [spec-edit-batch-type] removed the "SPEC read-only during builds" rule — but neither could touch SPEC.md in its own build (SPEC is out of a feature build's scope; the scope-lock only allows a batch that lists SPEC.md). This spec-edit batch makes both edits. Depends on [retire-registry] for ordering — sync SPEC after the removal lands so the two don't briefly contradict.
+
+Spec-edit (Files: SPEC.md):
+- "How it works": change "Four project docs structure each project:" → "Three project docs structure each project:", and remove the `REGISTRY.md — components list` bullet. (Leaves SPEC, QUEUE, LOG.)
+- The hooks list: reword `pre_tool_use` from "SPEC.md read-only during builds, scope-lock to file list, git safety" to drop the read-only clause — state it enforces the scope-lock (which governs SPEC.md like any other file) and git safety.
+
+(No test — self-evident from reading SPEC.md after the edit.)
+
+**Update the consumer-facing SPEC model in the templates** **[consumer-spec-model-sync]**
+
+Spotted building [queue-plan-markers] (2026-06-16). [spec-edit-batch-type] made SPEC a normal doc changed only through a spec-edit batch and removed "SPEC read-only during builds," but only updated this project's host-only CLAUDE.md. Two consumer-facing surfaces still teach the old model. Reword both to match, in plain English for a non-coder.
+
+Build:
+- CLAUDE-TEMPLATE.md "Rules for Claude": replace "SPEC.md is read-only during builds. Edit it only during /plan" with the new model — SPEC is a normal doc, changed only through a planned spec-edit batch that /next runs; a feature build can't touch SPEC because the scope-lock denies any file the batch doesn't list.
+- faq-template.md: reword the "Can I edit SPEC.md while doing a build?" answer (currently "No. SPEC.md is read-only during builds…") to the new model. If the question wording changes, update the matching faq-index-template.md line; if only the answer changes, the index stays.
+
+(No test — self-evident from reading the templates after the edit.)
+
+**README: split the four-commands intro and add the usage-cycle section** **[readme-usage-cycle]**
+
+Observed by the user 2026-06-14. README.md is the repo-root landing page — edited directly, doesn't propagate through reinstall. A non-coder reads four one-line command descriptions but can't infer the rhythm, and the four commands look more pick-up-and-use than they are; the load-bearing habit is closing every session with /done before /clear so it's recorded before context resets. This batch establishes the canonical cycle wording that the in-product teaching and FAQ captures will reuse, so the rhythm reads identically everywhere.
+
+Build:
+- README.md "What it does": split the intro so claim and list are separate sentences — "…walks you through it. It has four slash commands:".
+- README.md: add a "How to use it" section under the command list, with this canonical cycle wording (final phrasing tunable at build time, but it must keep both repeats visible — planning repeats for long stretches, building repeats across many batches — so it never reads as strict one-/plan-then-one-/next alternation):
+  > Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.
+  > - **/plan** — think and organise: manage the queue, add ideas, resolve questions. Run it as often as planning needs; a long planning stretch is just /plan → /done → /clear, repeated.
+  > - **/next** — build: it picks the top item and does it. You'll run /next many times, once per item, working down the queue.
+  >
+  > The habit that matters: always /done before /clear, so each session is saved before the context resets.
+
+**Teach the working rhythm in-product — /setup close-out + FAQ** **[in-product-rhythm-teaching]**
+Depends on: [readme-usage-cycle]
+
+Raised by the user 2026-06-14, the in-product counterpart to [readme-usage-cycle]. The working rhythm is load-bearing but not inferable from the four command descriptions — and someone who installed SI without reading the README never sees it. This teaches it inside the product at the natural onboarding moment, and gives a durable reference to return to. Reuses the canonical cycle wording from [readme-usage-cycle] so the rhythm reads identically across the README, the setup close-out, and the FAQ.
+
+Build:
+- setup.md: at the close-out (already reshaped by [setup-closeout-redesign] to recommend /done), add a brief plain-English teaching of the rhythm — /setup once; then /plan and /next sessions, each closed by /done then /clear; planning repeats as needed, building repeats across batches. Reuse the canonical wording.
+- faq-template.md + faq-index-template.md: add TWO adjacent, consistent FAQ entries (each with its index line): (1) how the four commands work together day-to-day (the working cycle); (2) what /setup does — it adopts the folder, scaffolds the method docs, and interviews five questions to seed SPEC.md; it runs once per project; re-running it later only backfills missing scaffold files and does NOT overwrite content already written (this backfill-not-overwrite line must match item 17's drift-signal FAQ).
+- Not session-start — repeating the rhythm every session would be noise.
+
+Test:
+- Host-side (deferred): the first /setup close-out after push + reinstall shows the rhythm teaching in plain English. The FAQ entry's presence is verifiable at build by reading the file.
+
+**Publish the marketplace manifest so `claude plugin install` works** **[publish-marketplace-manifest]**
+Blocks: [install-self-install-branch]
+
+Raised by the user 2026-06-14. The clean, robust install path is `claude plugin marketplace add FlintCraftTech/sovereign-implementer` then `claude plugin install` — but that needs a `.claude-plugin/marketplace.json` at the repo root pointing at the plugin, and SI has none today, so the command can't work. Publishing it enables marketplace install for everyone and is the prerequisite for the self-install branch. Mechanism confirmed in resources/research/claude-code-plugin-install-mechanisms.md.
+
+Build:
+- Create `.claude-plugin/marketplace.json` at the repo root, registering the si-plugin plugin (name, source path `plugin/si-plugin`, description). Confirm the current marketplace.json schema against Claude Code's plugin docs or the research file before writing — the format is external and may have shifted.
+
+Test:
+- Deferred (needs remote): after the manifest is pushed, `claude plugin marketplace add FlintCraftTech/sovereign-implementer` then `claude plugin install` succeed from a terminal. (Claude-runnable / user-run in a terminal session after push.)
+
+**INSTALL.md: add a terminal self-install branch for users who already have Claude Code** **[install-self-install-branch]**
+Depends on: [publish-marketplace-manifest]
+
+Raised by the user 2026-06-14. For repo visitors who already have Claude Code, the GUI zip-upload (Branch B) is the slow path — Claude Code can install the plugin itself via the non-interactive `claude plugin install` command. INSTALL.md is read by a claude.ai chat with no terminal, so this branch is a handoff: the experienced user is routed to run the install inside Claude Code, not through the claude.ai guide. Additive — it doesn't replace the GUI-upload flow, which still serves users without Claude Code. Mechanism confirmed in resources/research/claude-code-plugin-install-mechanisms.md.
+
+Build:
+- INSTALL.md: add a terminal install option (alternative to Branch B's GUI zip-upload) for users who already have Claude Code. It hands off — the guide tells the user to run, inside Claude Code, `claude plugin marketplace add FlintCraftTech/sovereign-implementer` then `claude plugin install <plugin>@<marketplace>` (confirm the exact command and marketplace name against [publish-marketplace-manifest]'s manifest and the research file). Either they type these in Claude Code's integrated terminal or ask the Claude Code agent to run them.
+- Update the "Already have Claude Code and a paid plan?" note and the Branch B intro to offer this terminal option as the faster path for experienced users, keeping the GUI zip-upload as the no-terminal fallback.
+- This branch may name terminal commands (its audience is terminal-comfortable), but it still hands off — it never pretends the claude.ai chat can run the install itself.
+
+Test:
+- Deferred (needs remote + the manifest pushed): the terminal commands install SI in a real Claude Code session. (user-run, after push.)
+
+**Fix the deferred-test seams: reframe the section, fix the roll, add the prompt** **[deferred-test-seams-fix]**
+
+From items 6 + 7 (2026-06-16). Decision: keep both the deferred-tests section and test batches — they aren't redundant. Deferred tests are a staging pen for verification that can't run yet (host-side until reinstall, or waiting on an external event); test batches are the execution home for user-run verification that can run now; the roll mechanism is the bridge. The user's confusion is real but driven by self-hosting inflation (almost everything here is host-side, so the section looks like a parallel test queue; a consumer's would be near-empty). The fix is to clarify the framing and close two seams: the roll scan keys on a runnability tag the lines don't carry, and nothing actively offers the roll, so runnable tests can quietly accumulate.
+
+Build:
+- done.md: when writing a deferred-test line, record two axes — the deferral reason (host-side / needs-user / external) and the runnability the test will have once unblocked (Claude-runnable / user-run) — so a later session knows what kind of check each line becomes.
+- plan.md: turn the silent roll scan into an active surface-and-ask. Each /plan reads the Deferred tests section, asks the user which deferrals have cleared (host-side: has a push + reinstall happened since? external: did the event occur?), and for the cleared lines, offers to roll the user-run ones into a test batch while noting the passive/Claude-runnable ones will be confirmed by observation. Don't silently skip lines tagged host-side.
+- Reframe the Deferred tests section's purpose text — in setup.md's scaffolded QUEUE template and this project's QUEUE.md — to read as "verification waiting on an event," not a parallel test queue, and document the two-axis tagging. Grep for the canonical lifecycle statement (done.md / plan.md) and update it to match.
+
+Test:
+- Host-side (deferred): the first /plan after a push + reinstall actively surfaces the now-runnable host-side deferred tests and offers to roll the user-run ones into a test batch, rather than silently producing nothing.
+
+**Shipped-slug cross-check at close** **[close-shipped-slug-crosscheck]**
+Blocks: [formalize-goal-session]
+
+From the /goal fork (item 9, 2026-06-16). A multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue — the prior goal session recorded shipping 14 batches but left [user-edits-rollup-on-commit] in QUEUE.md (genuinely built, only the removal missed), so it re-presented next session as unbuilt and wasted the first move rediscovering it was done. This adds the safety net, and ships it into done.md so cruise control inherits it.
+
+Build:
+- done.md: add a close step — after the LOG entry is written (it names the shipped batch slugs) and before the commit, cross-check each named slug against QUEUE.md's Batches section and confirm it's been removed. If any remain, surface them and remove (or halt and ask) before committing. Trivial for a one-batch close; the net is for multi-batch / goal / cruise-control closes.
+
+Test:
+- Host-side (deferred): the first multi-batch close after push + reinstall cross-checks the shipped slugs against QUEUE.md and catches any not removed. (One-batch closes pass self-evidently.)
+
+**Formalize the goal-session shape** **[formalize-goal-session]**
+Depends on: [close-shipped-slug-crosscheck]
+
+From the /goal fork (item 9, 2026-06-16). `/goal` works in practice but the method has no defined goal-session shape — it assumes one batch per session, so the run improvised an aggregate `_build.md`, a multi-thread LOG entry, and one commit. This formalizes the shape in this project's CLAUDE.md (it stays the dev workflow; cruise control is the consumer-facing version), so it's defined rather than re-improvised each time. Step 1 of the cruise-control arc.
+
+Build:
+- CLAUDE.md "Goal sessions (plugin off)": rewrite from interim to defined. Specify: (1) a goal session runs several build batches back-to-back in one chat, plugin off, Claude autonomous; (2) it uses a single aggregate `_build.md` listing the batches it will work through, purely as a working-state / resume record — with the plugin off the scope-lock is inactive, so `_build.md` here is for state, not enforcement; (3) the close is one multi-thread LOG entry (one thread per batch) with its index line, and a single commit; (4) the manual /done uses the shipped-slug cross-check from [close-shipped-slug-crosscheck]; (5) the deferred-test and staleness sweeps run once across all the batches at close, not per-batch. Keep the existing handoff-claim provenance rule; note the claim-marking format decision belongs to the cruise-control build.
+
+Test:
+- Deferred (next goal session, observed): the first goal session run after this lands follows the defined shape — aggregate `_build.md`, multi-thread LOG entry, cross-checked close.
+
+**Note the new-batch-type touch-points in CLAUDE.md** **[new-batch-type-touchpoints]**
+
+From item 14 (2026-06-16). When a batch introduces a new batch type it must wire four places or ship half-working — [spec-edit-batch-type] omitted next.md's router and was half-wired until a goal session caught it. Encode the touch-points as a working-conventions reminder. Host-only: consumers never add batch types, so this goes in this project's CLAUDE.md, not shipped plan.md.
+
+Build:
+- CLAUDE.md "Working conventions": add a short reminder that adding a new batch type touches four places — next.md (execution routing), done.md (close routing), post_tool_use.py's `ALLOWED_SUBHEADINGS` (the lint), and plan.md's Step 3 batch structure — and that it's a host-only concern (consumers don't author batch types).
+
+(No test — self-evident from reading CLAUDE.md after the edit.)
+
+**FAQ coverage backfill: commit-and-push ask + drift signal** **[faq-coverage-backfill]**
+
+From [faq-coverage-audit] (items 16 + 17, 2026-06-16). Two consumer-facing moments have no FAQ answer. Both source batches have landed, so the wording can match them now.
+
+Build:
+- faq-template.md + faq-index-template.md: add a FAQ entry on the commit-and-push ask — committing saves a snapshot locally; pushing also sends it to a remote backup (e.g. GitHub) if the project has one; with no remote, just commit. Match what [push-offer-fit] settled (commit-only default for planning closes; the dual ask after a build; never offered a push when there's no remote).
+- faq-template.md + faq-index-template.md: add a FAQ entry on the "project out of date / run /setup" drift signal — what it means (the plugin gained scaffolding this project doesn't have yet) and what running /setup will and won't do (backfills missing files; does NOT reconcile or overwrite existing content). Match [make-drift-visible]'s catch-up message so the two agree; this is where item 8's overpromise warning lands — don't sell /setup as a cure-all.
+
+(No test — entries verifiable at build by reading the templates.)
+
+**Bound aggregate opening narration** **[bound-opening-narration-aggregate]**
+
+From [opening-narration-audit] (item 18, 2026-06-16). Per-step tags bound each surfacing, but nothing bounds the total when several scans, watches, or ordering-narration rules fire at one skill opening — the /next pre-flight gate (five scans) and the dependency-ownership narration rules both pile up. The fix is a rule that bounds the aggregate, which per-step tagging can't reach.
+
+Build:
+- plugin-behaviour.md: add an aggregate-narration rule — when multiple scans / watches / ordering-narration rules fire at a single skill opening (/plan read-state, /next pre-flight, /done close-out), consolidate them into ONE combined narration ("here's what came up: …") rather than bullet-by-bullet or rule-by-rule. State that it governs the dependency-ownership narration rules ("narrate the ordering work," the Unpark watch, the Staleness watch), which each independently instruct narration at the same moments. Carry the why: per-step tags bound each surfacing but can't see the stack.
+- next.md: at the pre-flight blocker gate, apply the rule — consolidate whatever the scans turn up into one combined surfacing instead of emitting each brief one back to back.
+
+Test:
+- Host-side (deferred): the first /next pre-flight (or /plan read-state) that trips multiple scans emits one consolidated narration, not several back-to-back.
+
 **Add a screenshot of the plugin upload screen to INSTALL.md** **[install-upload-path-clarity]**
 
 The prose half of this batch landed in a goal session (2026-06-15): INSTALL.md now states the confirmed upload path (Customise top left → + icon on the left → "Create a plugin" → browse and select the .zip), drops the hedge "usually in the top menu or settings area," and adds a heads-up that the "Create a plugin" label is the install path despite sounding like an authoring tool. Only the screenshot remains, and a goal session can't produce it — it needs a real capture of the desktop app's Plugins screen.
@@ -65,103 +243,11 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
-**Retire REGISTRY.md: drop the write-only inventory doc** **[retire-registry]**
-
-Decided 2026-06-13. Remove REGISTRY.md as a project doc. The architecture goes from four docs to three: SPEC, QUEUE, LOG.
-
-Why: REGISTRY is write-only. Grep-confirmed — it's scaffolded at setup, updated at every /done, presence-checked at session start, and listed among the editable "method docs" for the scope-lock, but nothing ever reads its content to make a decision. No read-before-edit gate, no procedure step that opens it. The only justification was a human-facing map for a non-coder. The user — the non-coder it serves — never opens it, and never opened the richer old MANIFEST either. The replacement is better: a non-coder who wants to know what their app contains asks Claude in-session, which explores the live code — accurate, contextual, zero maintenance. This is the MANIFEST echo: REGISTRY kept the inventory after the mechanisms that made it load-bearing (the read-before-edit gate, serves-lines, rationale suffixes) were already dropped.
-
-One nuance weighed and rejected: REGISTRY could in theory give Claude a fast orientation map in a large project. But nothing reads it today, and live search beats a hand-maintained list that drifts — so it doesn't save the doc.
-
-Removal arc — what changes (the build does a full grep sweep so no reference is missed):
-- setup.md: stop scaffolding REGISTRY — the template block, the Case B mention, the SKILL.md description line.
-- session_start.py: remove the REGISTRY presence check and its method-doc detection.
-- pre_tool_use.py, next.md, next-audit.md: remove REGISTRY from the "method docs" editable set wherever that set is listed.
-- done.md: drop REGISTRY from staged paths; done-build.md: remove the "Update REGISTRY" step; done-plan.md: drop it from staged paths.
-- next-build.md: remove the "REGISTRY.md is not build scope" line.
-- plugin-behaviour.md: remove REGISTRY from the doc-routing line and the route-to-artifacts list. While editing the doc-routing line, also reword the SPEC.md description project-agnostic — "what/who/how/why the project exists," not "the product exists" — which carries the folded-in [plugin-behaviour-doc-routing-agnostic] decision (otherwise lost when [setup-registry-template-and-noun] is dropped).
-- SPEC.md: remove REGISTRY from the four-docs description (a spec change — rides a spec-edit batch under [spec-edit-batch-type]).
-- CLAUDE-TEMPLATE.md and this project's CLAUDE.md: drop REGISTRY from the architecture and doc descriptions.
-- faq-template.md + faq-index-template.md: remove the "What is REGISTRY.md for?" entry.
-- This project's REGISTRY.md: delete the file.
-- Consumer migration: existing adopted projects (e.g. Taskflowapp) have a REGISTRY.md that becomes orphaned — the adopt/setup re-run path should retire it, not leave it dangling.
-
-Queue interactions: moots [setup-registry-template-and-noun] (it reworked the REGISTRY template — now dropped, with its surviving SPEC-side doc-routing reword folded into this capture's plugin-behaviour.md step). [setup-project-agnosticism-sweep] is unaffected — it deliberately holds no REGISTRY item. Relates to [spec-edit-batch-type] (the SPEC portion rides a spec-edit batch).
-
 ---
 
-**README: separate the four-commands intro line and add a best-practice usage cycle**
-
-Observed by the user, 2026-06-14. Target is README.md at the repo root — the GitHub landing page, not a file inside the plugin package, so it's edited directly and doesn't propagate through reinstall.
-
-Two changes wanted in the "What it does" section:
-- Reword the intro so the claim and the list are separate sentences. "…walks you through it with four slash commands:" becomes "…walks you through it. It has four slash commands:".
-- Add a best-practice usage section under the command list: /setup once only; then repeat the cycle of /plan → /done → /clear and /next → /done → /clear; with /plan → /done → /clear repeated as many times as needed for long-running planning.
-
-Why it matters: a non-coder reads four one-line command descriptions but can't infer the rhythm. This cycle is how the user will present real-world use demos, and the README should teach the same pattern to anyone who isn't watching them — mirroring what the demos show. It also keeps the repo honest. The four commands look like something you can pick up and use freely, but a fair bit of invisible process sits on top — not a huge amount, but enough that skipping the rhythm gives you a bad time. The load-bearing habit is closing every session with /done before /clear: the design relies on each session being recorded before the context is cleared. Presenting the commands without the cycle oversells how freely they can be used and drifts from how the demos present it.
-
-To settle when this is promoted: the paired-cycle layout can read as strict one-/plan-then-one-/next alternation. In practice /next repeats across many batches between planning sessions, so the final wording should make /next-repeats as visible as /plan-repeats.
-
-**Self-install branch in the guided install: let Claude Code install SI via terminal**
-
-Raised by the user, 2026-06-14, building on the existing guided install (INSTALL.md). For repo visitors who already have Claude Code, add a branch where Claude Code installs the SI plugin itself via the terminal, instead of the human doing the GUI zip-upload (Customise → Create a plugin).
-
-Mechanism is confirmed (research: resources/research/claude-code-plugin-install-mechanisms.md). The desktop app's Code tab is Claude Code with an integrated terminal, and there is a non-interactive `claude plugin install <name>@<marketplace>` command the agent can run. So Claude Code can do the install in both the CLI and the desktop app.
-
-Two things shape how this branch must be written:
-- INSTALL.md is consumed by a claude.ai chat, which has no terminal — it can only instruct the human, not run the install. So this branch is a handoff: the already-has-Claude-Code user is routed to run the install through Claude Code itself, not through the claude.ai guide. This overlaps the experienced-user bypass queued in [install-separate-ai-instructions] and the app-identification check in [install-app-identification-check] — likely the same branch point.
-- Prerequisite: the clean install command installs from a marketplace, and SI's repo has no marketplace manifest today. The repo must publish `.claude-plugin/marketplace.json` pointing at si-plugin before `claude plugin marketplace add FlintCraftTech/sovereign-implementer` + `claude plugin install` will work. The raw-local-zip alternative is the unreliable path (open upstream feature request). So this idea carries a prerequisite build: publish the marketplace manifest.
-
-Ripple for /plan to weigh at promote time: publishing a marketplace manifest makes "add our marketplace and install" the standard, robust install flow, which could simplify or partly moot some queued INSTALL.md batches (all of which assume the GUI zip-upload). Decide the interaction with those batches when this is promoted.
-
-**SI teaches the user the working rhythm in-product, not just in the README**
-
-Raised by the user, 2026-06-14, sibling to the README usage-cycle capture above. That capture puts the /setup-once-then-cycle rhythm on the repo front page for visitors. This one is the in-product counterpart: SI itself should show the user the rhythm during use, so someone who installed SI without reading the README still learns it.
-
-Same content as the README capture (the cycle: /setup once; then repeat /plan → /done → /clear and /next → /done → /clear, planning repeated as needed). Same why: the rhythm is load-bearing and not inferable from the four one-line command descriptions — every session closes with /done before /clear so it's recorded before the context is cleared. Different surface: in-product teaching, not a repo-front-page reference.
-
-Candidate homes (to settle at promote time):
-- The /setup close-out — the natural onboarding moment, right after scaffolding, when the user is about to start the cycle. This interacts directly with [setup-closeout-redesign], which is already rewriting that close to recommend /done; coordinate with or sequence after it.
-- A FAQ entry (faq-template.md + index line) as the durable in-product reference the user can return to.
-- Not session-start: the rhythm is onboarding teaching, and repeating it every session would be noise.
-
-Authoring note: the setup close-out and FAQ are user-facing (external non-coder), so the rhythm must read in plain English with no internal terms, and the cycle wording should stay consistent across the README, the setup close-out, and the FAQ.
-
-**Deferred tests vs test batches: do two mechanisms earn their keep?**
-
-Raised by the user, 2026-06-14, during a /next pre-flight. The user didn't follow what the Deferred tests section is for. Her model: all user-run testing gets queued as a Test batch. So a separate floating list of tests read as redundant.
-
-The boundary between the two really is fuzzy. A test batch is a whole /next session of testing only the user can do. A deferred test is a single leftover line from a build batch's Test part that couldn't run at build time — usually because the change is host-side and only goes live after reinstall, or because it waits on an external event. Most deferred tests get confirmed just by watching the next real session. But a few are active user-run actions (e.g. deliberately trying `git add -A` to confirm the denial), and those overlap directly with what a Test batch is for.
-
-The section also looks far larger than it really is because this project is the plugin building itself. Almost every change here is host-side, so almost every test defers. A normal consumer project would barely populate this section — its tests would be "Claude checks now" or a queued Test batch.
-
-For /plan to weigh: is the deferred-test mechanism distinct enough from Test batches to keep as its own section, or should the user-run ones fold into Test batches and the passive-observation ones be reframed? One signal worth carrying: if the section confuses the person who built the plugin, it will confuse external consumers too.
-
-Touches /next's pre-flight (re-presents deferred tests) and /done (writes them). Citation, not a blocker.
-
-**/setup on the dev project: two test outcomes + a cross-session contradiction about what /setup actually fixes**
-
-Observed 2026-06-14, triggered by the user running `/setup` in this project (the self-hosting dev project) root. /setup detected Case C with a missing `.si-version` and routed to migration scaffolding. Two test outcomes, plus a contradiction the user surfaced.
-
-**Outcome 1 — /setup is consumer-framed and an awkward fit on the self-hosting dev project.** The procedure's framing is "the method is being applied to *their* project" — written for a consumer adopting the method, not for the project that *develops* it. Running it here surfaced two frictions: (a) the host/target oddity isn't acknowledged anywhere in the flow, and (b) the migration step would scaffold a `FAQ/` folder this project never adopted, which would immediately make CLAUDE.md's "Where things live" tree (lists only SPEC/QUEUE/REGISTRY/LOG) stale — scaffolding creating a fresh drift. Concrete state found: this project is missing `.si-version` (never created, not gitignored, never committed) and `FAQ/`; CLAUDE.md also carries pre-existing drift ("Target v1.11.0" in two spots vs plugin.json 1.12.0; "2 hooks" vs three hook files — the latter already captured separately in the hook-count item above).
-
-**Outcome 2 — cross-session overpromise: "run /setup to bring everything up to standard" is wrong.** A prior session told the user everything is out of date and the only way to bring things up to standard is to run /setup. That oversells what /setup does. Migration scaffolding (setup.md Step 2C) only backfills *missing* scaffold files and stamps `.si-version` to the current version — it explicitly does NOT overwrite or reconcile existing-doc content, so it does nothing about the actual content drift (stale CLAUDE.md enumerations, etc.). Running /setup would clear the "out of date" *signal* (by writing `.si-version`) without raising the docs to standard — which is exactly the contradiction the user hit ("none of this makes sense"). This is already half-understood in the queue: [scaffolding-resync] records that content-level drift is NOT a job for a /setup re-run (it'd overwrite user content), and [make-drift-visible] is the queued redesign that detects drift by missing files and surfaces a user-readable catch-up offer. For /plan: the catch-up story those two batches describe needs to define what "catch up" actually remediates and what its user-facing message promises, so a future session doesn't again tell the user /setup is a cure-all. Possible follow-on: a self-hosting branch in /setup (relates to parked [self-hosting-support-during-setup]) so the dev project isn't run through consumer framing.
-
-Full verbatim exchange — including Claude's internal reasoning at each step and the rest of the session (reconciliation, the "I don't know what to do" exchange, the `.si-version` fix) — is recorded in [resources/captures/2026-06-14-setup-on-dev-project-session.md](resources/captures/2026-06-14-setup-on-dev-project-session.md). Session outcome: `.si-version` written (1.12.0) to silence the false drift signal; `FAQ/` deliberately not created (deferred to /plan).
-
-**First autonomous `/goal` session saved as a test outcome — decide: formally allow `/goal`, or stop shelving cruise control and build it**
-
-Saved 2026-06-15. The first autonomous `/goal` session ran successfully: the user disabled the plugin, Claude implemented five top-of-queue build batches back-to-back in one chat ([delete-preflight-deferred-tests], [allow-parallel-sessions], [decouple-rezip-from-push], [make-drift-visible], [setup-q4-no-expansion]), and the user re-enabled the plugin and had Claude run `/done` by hand. The full transcript — every user and assistant message, Claude's reasoning, and every action — is recorded in [resources/captures/2026-06-14-goal-session-five-batches.md](resources/captures/2026-06-14-goal-session-five-batches.md). The user judged it successful and intends to repeat the shape several more times.
-
-The session exposed that the method has no explicit "goal session" shape. It assumes one batch per session — one `_build.md`, one slug-named LOG entry, one commit — so the multi-batch run had to improvise an aggregate `_build.md`, a multi-thread LOG entry, and a single commit covering all five batches. The improvised close was clean, but it is improvisation, and it now recurs.
-
-The decision /plan must make is a fork, not a tweak. Either **pivot to formally allowing `/goal`** — define how a goal session represents multiple batches (or skips `_build.md`), how its LOG entry and index line are shaped, and how the deferred-test and staleness sweeps run across several batches at once — **or** treat `/goal` as the working proof of the long-shelved "cruise control" (autopilot / unattended-execution) idea and stop deferring that idea, actually starting to implement toward it. The user's point: `/goal` is cruise control working in practice, and the method keeps putting the formal version off. Pick a direction rather than letting both sit.
-
-Design requirements folded in for whichever direction wins (gathered at the 2026-06-16 /plan):
-- **Shipped-slug cross-check at close.** A goal/autonomous multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue. Observed 2026-06-15: the prior goal session recorded removing 14 batches but left [user-edits-rollup-on-commit] in the queue (genuinely built — done.md carried its implementation — only the queue removal was missed), so it re-presented next session as if unbuilt, wasting the first move rediscovering it was done. Whatever close mechanism results must cross-check the LOG entry's shipped-batch list against QUEUE.md and confirm each slug is gone before committing. (Folds in the "Goal session removed 13 of 14 batches" capture.)
-- **Handoff claim provenance.** When a session opens from a Claude-authored handoff or context prompt, the next session reads it in the user's voice and can give Claude-written claims the weight of a user statement (observed 2026-06-15: a Claude-authored "the QUEUE.md lint keeps flagging" line was treated as the user's report and used as evidence a trigger had fired). The formalized handoff format must settle whether handoff prompts mark which claims are user-vouched versus Claude-authored, or whether the standing rule is simply that Claude-authored handoff content is unverified until the user confirms it. An interim form of that rule ships now into this project's CLAUDE.md via [hook-count-reconcile]; the format-design decision belongs to this fork. The [short-session-design-target] gap class makes this sharper — a fresh or weaker session can't tell which claims the user stood behind. (Folds in the "Claude-authored handoff prompt" capture.)
-
 **Self-hosting notes inventory — findings from [self-hosting-notes-audit]**
+
+> Routing consciously deferred at the 2026-06-16 /plan to a dedicated session. Reason: this is a 34-finding distribution arc needing per-finding home decisions — too judgment-heavy for the tail of a long session. Most findings are (b) stay-in-CLAUDE.md (no work) or (c) funnel into the parked, blocked [self-hosting-support-during-setup] (premature). Only the ~7 (a) generalize-and-ship findings are genuine relocation work, and several of those are already shipped (pure CLAUDE.md cleanup). Process this in a focused /plan.
 
 Audit run 2026-06-15 (goal session). The complete inventory of every self-hosting rule, convention, and judgment in the project, with where each lives, a candidate home, and whether its rationale is written. This is the committed inventory the [self-hosting-notes-audit] design called for: the next /plan authors the follow-on relocation batches from these findings (relocation, never copying — the new home lands and the CLAUDE.md source comes out in the same batch). Candidate homes are candidates only; the decision is /plan's. Homes: (a) shipped-generalized, (b) this project's CLAUDE.md, (c) the parked [self-hosting-support-during-setup] /setup-scaffolding scope.
 
@@ -235,51 +321,17 @@ Audit run 2026-06-15 (goal session). The complete inventory of every self-hostin
 
 Coverage note: the shipped procedure docs and templates carry essentially no self-hosting content — the single exception is next.md's push-marker halt (finding 6). That absence is the audit's thesis: self-hosting knowledge lives in CLAUDE.md and session judgment, not in the method. Two rationales are thin: finding 29 (lives only as a code comment) and finding 17 (labelled interim, no permanent home). Factual confirmation, not new findings: CLAUDE.md still reads "Target v1.11.0" and "2 hooks" while plugin.json/`.si-version` are 1.12.0 and three hook files exist — both already captured.
 
-**Explicit "_plan.md offload" as a pressure-release for the bundling pull**
+**Present-and-interview forced-wait: analysis must follow the verbatim quote in the same flow, not after a user reply**
 
-Raised by the user 2026-06-15 during the verbosity-arc /plan. Idea: add an explicit instruction that Claude may record the rest of a multi-step plan in _plan.md (or _build.md) and then release only the next item — turning the working file the plugin already maintains into a deliberate pressure-release against the pull to dump everything for completeness.
+Observed 2026-06-16 processing [retire-registry]. Claude quoted the capture verbatim, then stopped and asked "anything to add first?" before giving any analysis. This defeats verbatim-first: the quote exists so the user can read while Claude composes the analysis, so the analysis should arrive right behind the quote in the same flow. Stopping after the quote makes the user wait twice — once for the quote, then again after they reply — cancelling the benefit. plan.md's present-and-interview rule already names this exact failure mode ("forced-wait — stopping after the quote and gating the analysis behind the user's reply") and says the correct shape is quote-first, analysis-in-the-same-flow. So this is the rule not holding in practice, not a missing rule. For /plan to weigh: whether the rule needs strengthening despite being clearly written — a sharper tag, or a worked exemplar at the step — or whether this is a one-off to note. Relates to [capture-verbatim-first] and [verbatim-first-rationale].
 
-Filed as a candidate, not a redirect, because this session's analysis concluded bundling is mostly a disposition problem, not a memory-capacity one. Within a session Claude has the whole transcript as working memory, so it does not forget later steps between turns; the research attributes bundling to trained thoroughness and "task completion over process compliance", not memory scarcity. The highest-leverage fix is therefore priority (the output style) plus structure (lead-with-decision, one-item chunking), not more memory. The one genuine memory seam is compaction, which _plan.md and _build.md already cover.
+**Pull test-session transcripts from the raw .jsonl session logs (self-hosting workflow)**
 
-What the idea might still add: a humane reframe — if the rules explicitly tell Claude "the rest is safely recorded, release just the next item", that could lower completeness anxiety at generation time. Speculative. To weigh later: whether it earns its words, whether it belongs as a line in the sequencing rule, and whether it is redundant once [verbosity-output-style] lifts the chunking rules to system-prompt priority. Relates to [tag-definition-redesign] and [verbosity-output-style].
+Raised by the user 2026-06-16. Claude Code keeps a raw log of every session as a `.jsonl` file (one record per line, can include thinking steps), stored under the `.claude` projects folder (per project: `.claude/projects/<project-slug>/`). This is the authoritative, unedited session record. In future, self-hosting testing should pull a testing session's transcript from this location rather than asking Claude to regenerate or recall it. Why: a Claude-generated transcript is a reconstruction — lossy, and it hits the handoff-provenance problem (Claude-authored content treated as fact), whereas the raw `.jsonl` is the real evidence. Applies to E2E sessions in the consumer project (Taskflowapp) and to goal/dev sessions here — when an audit or review needs a session transcript, source it from the `.jsonl` log. Relates to the self-hosting testing workflow and [self-hosting-support-during-setup]. Filed while scoping the Taskflow /setup audit, which needs exactly this transcript.
 
-**Author a spec-edit batch to reword SPEC.md's pre_tool_use description**
+**plugin.json description says "two hooks" — should be three**
 
-From the [spec-edit-batch-type] build (goal session, 2026-06-16). That batch removed the "SPEC.md read-only during builds" rule — SPEC is now a normal doc governed only by the scope-lock. SPEC.md line 29 still reads "`pre_tool_use` — SPEC.md read-only during builds, scope-lock to file list, git safety," which is now wrong on the first clause. The batch deliberately deferred this one SPEC change: its own build ran under the current host where the read-only lock was still active, and SPEC is out of a feature build's scope anyway, so the reword can't be made inside that batch. Author a spec-edit batch (Files: SPEC.md) that rewords line 29 to drop "SPEC.md read-only during builds" and state that pre_tool_use enforces the scope-lock (which governs SPEC like any other file) and git safety. The behaviour-doc and CLAUDE.md sides already landed in [spec-edit-batch-type]; only the SPEC sentence remains. Relates to [spec-edit-batch-type].
-
-**Consumer-facing SPEC model is stale after [spec-edit-batch-type] — reword CLAUDE-TEMPLATE.md and the FAQ**
-
-Spotted building [queue-plan-markers] (goal session, 2026-06-16). [spec-edit-batch-type] made SPEC a normal doc changed only through a spec-edit batch, and removed the "SPEC read-only during builds" rule — but it only updated this project's host-only CLAUDE.md. Two consumer-facing surfaces still teach the old model: CLAUDE-TEMPLATE.md "Rules for Claude" still says "SPEC.md is read-only during builds. Edit it only during /plan," and faq-template.md's "Can I edit SPEC.md while doing a build?" answer still says "No. SPEC.md is read-only during builds ... Spec issues get noted for /plan." Author a batch that rewords both to the new consumer model: SPEC is a normal doc, changed only through a planned spec-edit batch that /next runs; a feature build can't touch SPEC because the scope-lock denies any file the batch doesn't list. Keep the wording plain-English for a non-coder. This is the consumer-template counterpart [spec-edit-batch-type] deferred; the pre-push consistency sweep (templates-vs-docs) would also catch it, but capturing it now means it doesn't depend on the sweep noticing. Relates to [spec-edit-batch-type].
-
-**Adding a new batch type needs both routers, not just done's — plugin behaviour observation**
-
-Observed building [spec-edit-batch-type] (goal session, 2026-06-16). The batch's build list named done.md / done-build.md for spec-edit routing ("a spec-edit batch closes like any build") but omitted next.md's router — the parallel /next router that picks a batch and routes it to the per-type doc. Without the next.md branch, /next could not execute a Spec-edit batch at all, so the mechanism the batch ships would be half-wired. The goal session added the next.md Spec-edit branch as a needed minor scope extension. The general lesson for /plan: a batch that introduces a new batch type has to touch four places — next.md (execution routing), done.md (close routing), post_tool_use.py's ALLOWED_SUBHEADINGS (the lint), and plan.md's Step 3 structure. Candidate fix if it recurs: a one-line reminder in plan.md's batch-authoring guidance naming those four touch-points for a new batch type. Low cost; flagged here so the omission pattern is visible.
-
-**FAQ coverage gap: no entry explains /setup** — from [faq-coverage-audit]
-
-Audit finding (goal session, 2026-06-16). The FAQ explains /plan, /next, and /done, but never /setup — yet /setup is a consumer's very first contact with the method (it adopts their folder and asks five questions to fill SPEC.md). A non-coder running /setup for the first time has no FAQ answer to "what is this doing, and why is it asking me these questions?" Add an entry (faq-template.md + index line): what /setup does (adopts the folder, scaffolds the method docs, interviews five questions to seed SPEC.md), that it runs once per project, and that re-running it later only backfills missing scaffold files — it does not overwrite content already written.
-
-**FAQ coverage gap: no entry explains the commit-and-push ask** — from [faq-coverage-audit]
-
-Audit finding (goal session, 2026-06-16). At every /done close the user is asked "Commit and push, or just commit?" — but the FAQ never explains what that choice means. A non-coder would ask "what's the difference, and which should I pick?" Add an entry: committing saves a snapshot locally; pushing also sends it to a remote backup (e.g. GitHub) if the project has one; if there's no remote, just commit. Coordinate with [push-offer-fit], which is already reshaping that ask by session shape and remote state — the FAQ wording should match whatever that batch settles, so sequence this after it or fold it in.
-
-**FAQ coverage gap: no entry explains the "project out of date / run /setup" drift signal** — from [faq-coverage-audit]
-
-Audit finding (goal session, 2026-06-16). After a plugin update, a session can open telling the user their project is behind and offering to bring it up to date (the [make-drift-visible] catch-up surface). The FAQ never explains this, so a non-coder meeting it would ask "what's out of date, and is it safe to run /setup?" Add an entry once the catch-up message wording is settled: what the signal means (the plugin gained scaffolding this project doesn't have yet), what running /setup will and won't do (backfills missing files; does not overwrite existing content). Tie the wording to [make-drift-visible] / [scaffolding-resync] so the FAQ and the in-product message agree — note the dependency, since promising more than the catch-up actually does is the exact overpromise the dev-project capture warns against.
-
-**Bound the aggregate of opening narration, not just each step** — from [opening-narration-audit]
-
-Audit finding (goal session, 2026-06-16). The audit asked how much narration accumulates at a single skill opening, and whether the fix is a tag or a rule. The answer is a rule: per-step tags bound each surfacing but nothing bounds the total when several rules fire on the same opening.
-
-Two concrete sites carry the pile-up.
-
-First, the /next pre-flight blocker gate (next.md). It runs five independent scan bullets in sequence — SPEC-existence check, unresolved-questions surfacing, capture-overlap scan, unpark-candidate scan, stale-batch scan. The [next-done-tag-sweep] batch just tagged the gate [BRIEF], which bounds each surfacing to a sentence or two. But a pre-flight that trips three or four of these emits three or four brief surfacings back to back, and the [BRIEF] tag can't see the aggregate — it governs one step, not the stack.
-
-Second, the dependency-ownership narration rules in plugin-behaviour.md. "Narrate the ordering work," the Unpark watch, and the Staleness watch each independently instruct narration at the same surfacing moments (/plan read-state, /next pre-flight, /done close-out). Each is individually bounded ("briefly," "one short sentence"). Nothing bounds the total when several fire at one opening — a /plan open with an unpark candidate plus a staleness flag plus a non-default placement stacks three separate narrations.
-
-The lever for both is the same: a rule that bounds the aggregate, not another per-step tag. Candidate shape (for /plan to decide): consolidate the gate's findings and the ordering/unpark/staleness surfacing into one combined narration per opening — "here's what the pre-flight turned up: ..." as a single message — rather than bullet-by-bullet or rule-by-rule. This is the aggregate problem the audit was run to name; per-step tagging cannot reach it.
-
-Coverage checked and not re-filed: plan.md Step 1 reads clean (scans [SILENT], entry question kept candidate-free) — covered by [plan-step1-sequencing]; setup.md's opening carries brevity in prose by design — covered by [setup-self-contained-no-tags]; the done-family openings read bounded after [next-done-tag-sweep]'s tags, no standalone excess.
+Noticed 2026-06-16 while applying the CLAUDE.md version close-fix. `plugin/si-plugin/.claude-plugin/plugin.json`'s description reads "Four skills (/setup, /plan, /next, /done) and two hooks for scope enforcement," but there are three hooks (session_start + pre_tool_use enforcing, post_tool_use advisory). It's consumer-facing (shows in the marketplace / install screen). Fix the count to three and ideally note two enforce, one advises. Low priority.
 
 ### Parked
 
@@ -298,10 +350,11 @@ Coverage checked and not re-filed: plan.md Step 1 reads clean (scans [SILENT], e
 - Add scenarios to reader-test-workflow.js — evaluate which scenarios are still undertested and worth adding. Known blind spots regardless of refresh outcome: /setup interview (untested), push-and-rezip sweep (untested — lives in this project's CLAUDE.md, not plugin docs, so coverage question is whether it should even be in scope for plugin reader-tests), mid-build resume from a real _build.md (current next.md sim covers fresh /next, not resume), /done plan-mode close-out (current sim only covers build close-out), empty-queue handling, audit-batch flow (planning-as-work). Promote as one or more build batches once scenarios are picked. The refresh itself shipped at 2356cb7 ([reader-test-refresh]), so only the run remains.
   Blocked by: refreshed workflow run once — behavioural trigger; the first refreshed run may surface blind spots not on this list, or may show that scenario count matters less than scenario specificity.
 
-- Cruise control skill — a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed; (4) the red-flags gate — an open red flag in the active scope blocks the unattended run, only resolved or accepted flags let it proceed, and a user who leaves a flag open stays on hand to approve each step (the gate is a hook reading the three flag states defined by [red-flags-screen-rule]).
-  Blocked by: the autopilot prerequisite arc shipping — the no-planning-in-execution rule ([no-planning-in-execution]), queue-visible plan markers ([queue-plan-markers]), and audit bulk approval ([audit-findings-bulk-approval]); fires when those have shipped and an unattended next→done→next run is plausible. Full no-approval auto-file of audit findings is in this item's own design scope — interactive audits keep bulk approval. Named as the end-goal in the thinking-work capture, 2026-06-10.
+- Cruise control skill — the consumer-facing end-goal: a skill that runs build→commit→build→commit through a batch (or multiple batches) unattended, stopping only when it hits something requiring user input. The /goal-formalization arc ([close-shipped-slug-crosscheck] + [formalize-goal-session]) is step 1 of this — it builds the multi-batch close mechanics (shipped-slug cross-check, multi-thread LOG) that cruise control inherits, while a human still bookends the run; cruise control then adds the autonomy, the gate, and the unskippable judgment on top. Key design concerns: (1) wording that doesn't pressure Claude to push through uncertainty, (2) dependency management when Claude decides when to wrap a batch, (3) /done judgment steps can't get skipped for speed; (4) the red-flags gate — an open red flag in the active scope blocks the unattended run, only resolved or accepted flags let it proceed, and a user who leaves a flag open stays on hand to approve each step (the gate is a hook reading the three flag states defined by [red-flags-screen-rule]); (5) the handoff-claim-marking format — whether a handoff / context prompt marks which claims are user-vouched versus Claude-authored, or whether the standing "Claude-authored handoff content is unverified until the user confirms it" rule (already in CLAUDE.md) suffices (folded in from the /goal fork, item 9, 2026-06-16).
+  Blocked by: the /goal-formalization arc landing ([close-shipped-slug-crosscheck] + [formalize-goal-session]) AND a few formalized goal sessions run, so the multi-batch close mechanics are proven before the human is removed from the loop — behavioural trigger. The original autopilot prerequisites ([no-planning-in-execution], [queue-plan-markers], [audit-findings-bulk-approval]) have all shipped. Full no-approval auto-file of audit findings is in this item's own design scope — interactive audits keep bulk approval. Named as the end-goal in the thinking-work capture, 2026-06-10.
 
 - **[self-hosting-support-during-setup]** Self-hosting support during /setup — if the user says they're rebuilding SI with SI (or building any Claude Code plugin with the plugin), scaffold the self-hosting workflow into their CLAUDE.md: push-and-rezip steps, host/target distinction, pre-push consistency sweep, version bumping, **and the dependency-management discipline** (host-vs-target distinction as it governs batch ordering, the host-side-after-push-marker rule, the `--- Push required before continuing ---` queue convention, and the `(host-side)` annotation on `Depends on:`). All of this carries into the new project's CLAUDE.md. Could be an additional /setup question ("Are you building a Claude Code plugin?" → yes triggers self-hosting scaffolding).
+  Evidence (folded in from the "/setup on the dev project" capture, 2026-06-14): running /setup on this self-hosting dev project surfaced the consumer-framing friction directly — the host/target oddity isn't acknowledged in the flow, and migration would scaffold a `FAQ/` folder this project never adopted (fresh drift). This strengthens the case for a self-hosting branch in /setup (e.g. the "are you building a plugin?" question), and adds an open sub-question: do self-hosting dev projects adopt consumer scaffolding like `FAQ/` at all, or opt out? Full session record: resources/captures/2026-06-14-setup-on-dev-project-session.md. Still parked — the design waits for the trigger below.
   Blocked by: a second self-hosting consumer appearing — a user reports building a plugin (or any project that ships itself) with the plugin, or Alex starts one; external behavioural trigger, no slug. The scoping decision (interview question vs skill vs template) waits for that real case to design against.
 
 - Threshold-based context management — if hooks ever gain token usage fields (e.g. `context_usage_pct`), the plugin could recommend `/compact` or `/clear` based on actual utilization instead of rule-based triggers. Research filed at resources/research/context-window-hook-access.md.
@@ -317,7 +370,10 @@ Coverage checked and not re-filed: plan.md Step 1 reads clean (scans [SILENT], e
   Blocked by: [behaviour-doc-size-watch] — surfaces when the progressive-disclosure restructure is taken up; fold this in then. The line numbers and band membership are a 2026-06-13 snapshot to re-derive at that point, not apply (the band shifts as [scope-anchor], the trickle batches, and the compliance-arc additions land).
 
 - **[full-tag-placement-recheck]** A fresh full placement re-check of response-shape tags across all procedure docs — setup.md, plan.md, the next and done families, plugin-behaviour.md — to grade the corrected state after [output-tag-audit]'s fixes ship, and to catch any tag drift since that audit (commit 0405315). Distinct from [opening-narration-audit], which measures narration volume at openings; this one re-checks per-step tag placement everywhere, the same lens [output-tag-audit] used, re-run on the post-fix docs. Deferred deliberately: running it before [output-tag-audit]'s findings build would mostly re-discover gaps already sitting in the queue.
-  Blocked by: the queued tag-fix batches from the last full tag audit shipping — chiefly [next-done-tag-sweep], [plan-step1-sequencing], and [setup-self-contained-no-tags]; fires once those findings have landed, so the re-check grades corrected docs, not the pre-fix state.
+  Blocked by: this 2026-06-16 /plan round's tag/narration batches shipping — behavioural trigger, no slug. The original blockers ([next-done-tag-sweep], [plan-step1-sequencing], [setup-self-contained-no-tags]) have landed, but the 2026-06-16 /plan adds further tag/narration work (e.g. the bound-aggregate-opening-narration finding), so promoting the re-check now would grade docs still in flux. Fires once this round's tag/narration batches have shipped, so the re-check grades settled docs — same deliberate-deferral logic that parked it originally.
 
 - **[scaffolding-resync]** Content-level scaffold drift: when a scaffolded file already exists but its template changed later (e.g. a doc template gains a new section), a project that has the file won't pick up the change. [make-drift-visible] catches *missing* files and folders, but not this content-level drift, because the file is present. Open question: how to detect that a present file is behind its template, without a full /setup re-run that would overwrite user content. The drift is general, not self-hosting (Taskflowapp, a plain consumer project, had the same missing file); the version-bump false-alarm worry is mooted by [make-drift-visible]'s presence-based check. Lower priority — the missing-file case (the one that actually hurt) is handled by [make-drift-visible].
   Blocked by: first observed instance of content-level scaffold drift biting — a present scaffolded file falls behind its template and causes a problem; behavioural trigger, no slug; fires at the /plan that processes such a report.
+
+- **[plan-md-offload-reframe]** Add an explicit instruction that Claude may record the rest of a multi-step plan in _plan.md (or _build.md) and release only the next item — turning the working file into a deliberate pressure-release against the pull to dump everything for completeness. Filed as a candidate, not a redirect: this session's analysis concluded bundling is mostly a disposition problem, not memory-capacity (within a session Claude has the whole transcript; the research attributes bundling to trained thoroughness / "task completion over process compliance"), so the highest-leverage fix is priority (the output style) plus structure (lead-with-decision, one-item chunking). The reframe might still add a humane "the rest is safely recorded, release just the next item" that lowers completeness anxiety — speculative, and possibly redundant once [verbosity-output-style] is live. Relates to [tag-definition-redesign] and [verbosity-output-style].
+  Blocked by: observing whether [verbosity-output-style] (shipped, awaiting reinstall) closes the bundling pull on its own — behavioural trigger, no slug; fires at the /plan after the output style has been live long enough to judge whether bundling persists. If it persists, the reframe earns its words; if not, it's redundant.
