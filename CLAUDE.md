@@ -30,10 +30,9 @@ Host and target are the same plugin at different stages. Ambiguous references to
 
 ## Architecture
 
-**4 project docs** (created by `/setup` in consumer projects):
+**3 project docs** (created by `/setup` in consumer projects):
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — red flags (security/privacy/breach risks Claude surfaced, kept at the top, each with an open/resolved/accepted state), work batches (Build/Test/Audit subheadings), and captured ideas (plain bullets).
-- `REGISTRY.md` — components list. What exists, where it lives.
 - `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), one file per session entry. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`.
 
 **4 skills:**
@@ -64,7 +63,6 @@ No code method/
     zip-archive/         — versioned archive of past zips
   SPEC.md                — this project's spec (once /setup has run)
   QUEUE.md               — this project's work queue
-  REGISTRY.md            — this project's component registry
   LOG/                   — this project's session logs (index.md + per-entry files)
 ```
 
@@ -128,7 +126,7 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 
    **Pass B — Check for staleness against those changes:**
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
-   - **Project docs:** Check QUEUE.md, SPEC.md, REGISTRY.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
+   - **Project docs:** Check QUEUE.md, SPEC.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
 4. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
 5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
@@ -172,7 +170,6 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
 - **QUEUE.md** — work to be done, ordered top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced) sit at the top — the first thing seen each session — each carrying an open, resolved, or accepted state. Batches use Build/Test/Audit subheadings. Deferred tests holds verification for shipped work that couldn't run in its own session, one line each (source batch slug, what to verify, what confirms it with a runnability tail) — /done writes entries here; /plan reads the section each session and rolls the runnable ones into test batches; /done's close-out backstops by removing any line this session's activity already confirmed; the confirming session removes the line and records it in its LOG entry. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers. A `--- Plan session here: <reason> ---` marker between batches is a planning gate: /next halts there until a /plan session addresses the named reason, sibling to the push marker but for planning rather than host-side state.
-- **REGISTRY.md** — components list. What exists, where it lives.
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), each full entry as its own file named on its index line. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`, findable by hash.
 
 ## Workflow
@@ -188,7 +185,7 @@ Alex is a non-coder using the Claude Code desktop app. Explain things in plain E
 - Only touch files listed in the active build scope. Halt and ask if you need more.
 - One build at a time. Finish and /done before starting another.
 - State problems plainly. Don't hide them or silently fix unrelated things.
-- Design for fresh, short sessions. The system must work for a fresh, short session that carries none of a prior session's memory: the files (SPEC, QUEUE, REGISTRY, LOG, _build.md) must suffice on their own, and conversation memory is a convenience, never a dependency. Short sessions on the weaker post-Fable development model (from ~2026-06-20) are the design target — and every consumer is already in this case. A long session that remembers everything is the exception, never the case to design for. (This is about robustness to session-memory loss; it does not change the Model target above — 4.8 stays the model the plugin is tuned for.)
+- Design for fresh, short sessions. The system must work for a fresh, short session that carries none of a prior session's memory: the files (SPEC, QUEUE, LOG, _build.md) must suffice on their own, and conversation memory is a convenience, never a dependency. Short sessions on the weaker post-Fable development model (from ~2026-06-20) are the design target — and every consumer is already in this case. A long session that remembers everything is the exception, never the case to design for. (This is about robustness to session-memory loss; it does not change the Model target above — 4.8 stays the model the plugin is tuned for.)
 - Route discoveries to QUEUE.md rather than acting on them immediately.
 - All use of the plugin to develop the plugin is testing the plugin. Any observation of Claude's behaviour — wrong, unexpected, or improvable — is a testing outcome and must be routed to Captures, not discussed and dropped. In particular: any moment you notice session memory covering for something the docs or files should carry — a step that worked only because you remembered the conversation — is itself a mandatory capture. That gap stops hurting under a model with strong session memory, so it stops being found, while fresh short sessions and consumers still hit it.
 - Memory boundaries — what memory must never hold, and what it's free for. Memory must never hold the project's records, because the system docs own them: behaviour observations and testing outcomes (Captures), design decisions and their reasoning (QUEUE, SPEC, LOG), project state and constraints (the method docs), and procedure gaps noticed mid-session (Captures). The why: memory doesn't travel with the project and you can't read it, so a project record saved there is a record the project has lost. Memory is free — and a good home — for everything no project doc owns: user preferences, working style, communication feedback, cross-project facts. The old blanket "not to memory" was both too strong (it read as forbidding memory outright) and too weak (it named nothing to check against); this is the boundary that replaces it.

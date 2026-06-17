@@ -15,7 +15,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
 - [What is _build.md? Should I edit it?](faq.md#what-is-_buildmd-should-i-edit-it)
 - [What is _plan.md? Should I edit it?](faq.md#what-is-_planmd-should-i-edit-it)
-- [What is REGISTRY.md for?](faq.md#what-is-registrymd-for)
+- [What if my project already has planning docs from another tool or an older version?](faq.md#what-if-my-project-already-has-planning-docs-from-another-tool-or-an-older-version)
 - [What happens if Claude needs to touch something outside the current batch?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-batch)
 - [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)

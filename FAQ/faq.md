@@ -44,7 +44,7 @@ After /done, yes — everything is recorded in the session log and committed, so
 
 ## Can I edit SPEC.md while doing a build?
 
-No. SPEC.md is read-only during builds to prevent the spec from shifting under active work. Spec issues get noted for /plan. Edit freely during /plan.
+Not during an ordinary build. SPEC.md is your project's source of truth, so it's kept from shifting under active work — the safety check blocks a build from editing any file its batch doesn't list, and ordinary builds don't list SPEC.md. Changing SPEC takes a planned spec-edit batch: /plan queues it, and /next runs it like any other build. So if you spot a spec issue mid-build, note it for /plan, which turns it into a spec-edit batch.
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
@@ -62,9 +62,9 @@ The active build's working file. It does four jobs: carries the batch being buil
 
 A planning session's working file — the planning counterpart to _build.md. When /plan starts working through your captures, it creates `_plan.md` to track where it is: which items it's processing, the current one, and what it has routed so far (promoted, parked, or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
 
-## What is REGISTRY.md for?
+## What if my project already has planning docs from another tool or an older version?
 
-A list of every component — what files exist and what each does. Claude updates it after every build. You don't need to maintain it.
+/setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the method doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
 
 ## What happens if Claude needs to touch something outside the current batch?
 

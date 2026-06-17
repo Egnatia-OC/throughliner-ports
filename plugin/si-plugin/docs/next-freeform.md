@@ -8,7 +8,7 @@ Freeform is the fourth /next type: a place for unqueued or loosely-scoped work �
 
 A queued build batch names its files at planning time; freeform usually can't, because the work is discovered as it goes. So the scope lock grows by asking:
 
-1. **Create _build.md** with an empty `Files:` section — the same structure next.md Step 2 uses, but with no files listed. An empty `Files:` locks the session to the method docs only (QUEUE.md, REGISTRY.md, LOG/, _build.md), exactly as an audit's empty list does.
+1. **Create _build.md** with an empty `Files:` section — the same structure next.md Step 2 uses, but with no files listed. An empty `Files:` locks the session to the method docs only (QUEUE.md, LOG/, _build.md), exactly as an audit's empty list does.
 2. **Each file the work needs is requested and added before it's edited** [PROMPT]: name the file and why it's needed, and on the user's okay, append its bare path to _build.md's `Files:` section — then edit it. The scope lock denies any file not yet listed, so the ask comes before the edit, never after. This is the build's "scope grows" ask made the normal rhythm rather than the exception.
 
 For a queued Freeform batch, copy its text into _build.md's Entry as next.md Step 2 does, but still start `Files:` empty unless the batch named specific files — freeform scope is granted ask-by-ask regardless.

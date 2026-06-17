@@ -37,7 +37,6 @@ When the batch contains test entries (under a Test subheading), execution is ver
 Absolute regardless of entry type:
 
 - Stay within the active batch's described work — that's build scope (see plugin-behaviour.md Scope). Growing past it needs approval first (see Scope management below).
-- REGISTRY.md is not build scope. /done handles registry updates after close.
 
 **Accumulate close notes** as you go — jot what changed in _build.md so /done needn't re-explore:
 ```

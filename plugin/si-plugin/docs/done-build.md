@@ -9,27 +9,20 @@ Captures meaning that would be lost after compaction.
 ### 1.1 Verify completion
 
 Read _build.md. All entries ticked?
-- **Yes:** Proceed. A test ticked `deferred (reason)` counts as closed, not unfinished — it ran as far as this session could take it, and step 1.4 turns it into a queue line.
+- **Yes:** Proceed. A test ticked `deferred (reason)` counts as closed, not unfinished — it ran as far as this session could take it, and step 1.3 turns it into a queue line.
 - **Some unticked:** [PROMPT] Ask — finish (/next) or close partial (defer unticked, route back to QUEUE.md). Wait for the user's call.
 
-Reconcile the file against memory where the session is still remembered: if _build.md and what you recall disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Captures (per 1.3). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it.
+Reconcile the file against memory where the session is still remembered: if _build.md and what you recall disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Captures (per 1.2). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it.
 
-### 1.2 Update REGISTRY.md [SILENT]
-
-Routine bookkeeping — update the file, no narration. For each file created, renamed, deleted, or significantly modified:
-- Add new entries (path + one-line description)
-- Update descriptions if the role changed
-- Remove entries for deleted files
-
-### 1.3 Route findings to Captures [PROMPT]
+### 1.2 Route findings to Captures [PROMPT]
 
 Each routed finding is drafted, shown, and approved before it's written, so this step waits on the user. The record of what was flagged is _build.md's notes plus any captures already routed at the moment of noticing — sweep those. Conversation memory, when present, is a same-session bonus pass, never a source this step depends on. Route each finding to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
 
-### 1.4 Write deferred tests
+### 1.3 Write deferred tests
 
 Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, and what confirms it with its runnability tail (Claude-runnable, user-run, or external).
 
-### 1.5 Spec-drift check [SILENT] when nothing drifts, [BRIEF] when filing
+### 1.4 Spec-drift check [SILENT] when nothing drifts, [BRIEF] when filing
 
 Build closes only (test and audit land no product changes). Read SPEC.md against the changes this build landed and apply the spec-entry trigger test in its canonical form — the Spec-edit batches rule in plan.md (Step 3), whose test is whether any sentence in SPEC goes wrong or incomplete given these changes. Quote plan.md's wording rather than restating it, so the two don't drift. If the test fires, file a mandatory capture naming the gap — which SPEC sentence the build made wrong or incomplete. Never edit SPEC.md here: product-truth edits stay in /plan and ship through a spec-edit batch, so this is a detect-and-file backstop, not an author. The trigger exists because the prospective /plan gate has leaked before — a build landed a spec-affecting change with no prior spec entry, caught only by luck at /done. Path-split like the staleness sweep: silent when nothing drifts, one or two sentences when filing.
 

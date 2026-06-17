@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Set up a project folder with the Sovereign Implementer method. Scaffolds SPEC.md, QUEUE.md, REGISTRY.md, and LOG/ then interviews the user to populate them.
+description: Set up a project folder with the Sovereign Implementer method. Scaffolds SPEC.md, QUEUE.md, and LOG/ then interviews the user to populate them.
 disable-model-invocation: true
 user-invocable: true
 ---

@@ -33,7 +33,7 @@ If a `_plan.md` exists, read its routed list — promoted, parked, and dropped i
 
 ## 2. Commit
 
-Run the commit core in done.md. The staged paths are the changed method docs (QUEUE.md, SPEC.md, REGISTRY.md, LOG/) — planning sessions touch nothing else.
+Run the commit core in done.md. The staged paths are the changed method docs (QUEUE.md, SPEC.md, LOG/) — planning sessions touch nothing else.
 
 Override the commit core's push ask: a planning session offers commit alone by default. The why: planning state is local bookkeeping, and push is reserved for shipping — in a self-hosting project a push fires the full push-and-rezip ritual off a commit that shipped nothing. Push stays available when the user asks for it or is deliberately backing up; it's a default, not a prohibition.
 

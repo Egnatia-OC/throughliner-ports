@@ -18,15 +18,14 @@ Four skills drive the workflow:
 - `/next` — pick the top queue entry and execute it. A freeform form (`/next freeform`) runs unqueued work — discussion-first sessions, ad-hoc audits, wrapping up changes made by hand — under the same scope and capture discipline.
 - `/done` — close the build, record what happened, commit.
 
-Four project docs structure each project:
+Three project docs structure each project:
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
 - `QUEUE.md` — work batches, captured ideas, and red flags (security, privacy, and breach risks Claude has surfaced).
-- `REGISTRY.md` — components list. What exists, where it lives.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 Two hooks enforce discipline mechanically, and a third advises:
 - `session_start` — detect project state and load behaviour rules.
-- `pre_tool_use` — SPEC.md read-only during builds, scope-lock to file list, git safety.
+- `pre_tool_use` — enforces the scope-lock (which governs SPEC.md like any other file) and git safety.
 - `post_tool_use` — advisory QUEUE.md structure lint; flags format drift, never blocks.
 
 One behaviour doc steers everything the hooks can't enforce:

@@ -8,10 +8,6 @@ Close-out for freeform sessions. Reached from done.md's router when _build.md's 
 
 Each routed finding is drafted, shown, and approved before it's written, so this step waits on the user. The record of what was flagged — ideas raised, observations, follow-up work — is _build.md's notes plus any captures already routed at the moment of noticing; sweep those. Conversation memory, when present, is a same-session bonus pass, never a source this step depends on. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Freeform files captures but never processes them; processing waits for /plan.
 
-### 1.2 Update REGISTRY.md [SILENT]
-
-Routine bookkeeping — update the file, no narration. For each file the session created, renamed, deleted, or significantly modified: add or update entries (path + one-line description), remove entries for deleted files.
-
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]

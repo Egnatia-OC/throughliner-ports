@@ -1,6 +1,6 @@
 # Audit procedure
 
-Execution procedure for audit batches. Reached from next.md after pre-flight checks and scope lock are complete. The output contract defines an audit: findings route through Captures so /plan can convert them into normal batches — no direct edits to the artifacts the audit reads. What gets read varies — procedure docs, the user's spec, code, UI flows, workflow output, any other artifact; the procedure shape is the same regardless: read many, propose many. The audit _build.md carries a `Files:` section with no entries, so the scope-lock holds the session to the method docs (QUEUE.md, REGISTRY.md, LOG/, _build.md) — the strictest setting, matching a session that edits no source files.
+Execution procedure for audit batches. Reached from next.md after pre-flight checks and scope lock are complete. The output contract defines an audit: findings route through Captures so /plan can convert them into normal batches — no direct edits to the artifacts the audit reads. What gets read varies — procedure docs, the user's spec, code, UI flows, workflow output, any other artifact; the procedure shape is the same regardless: read many, propose many. The audit _build.md carries a `Files:` section with no entries, so the scope-lock holds the session to the method docs (QUEUE.md, LOG/, _build.md) — the strictest setting, matching a session that edits no source files.
 
 ## Read the target systematically against the criteria [SILENT]
 

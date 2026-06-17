@@ -3,7 +3,7 @@
 PreToolUse hook — enforces two rules:
 
 1. During a build, _build.md's Files: section governs which files are
-   editable (method docs — QUEUE.md, REGISTRY.md, LOG/, _build.md — are
+   editable (method docs — QUEUE.md, LOG/, _build.md — are
    always editable). Tri-state: no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
@@ -104,10 +104,10 @@ def _normalise(path: str) -> str:
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """Check if a path is a method doc (QUEUE.md, REGISTRY.md, LOG/, _build.md, _plan.md)."""
+    """Check if a path is a method doc (QUEUE.md, LOG/, _build.md, _plan.md)."""
     norm = _normalise(filepath)
 
-    for doc in ("QUEUE.md", "REGISTRY.md", "_build.md", "_plan.md"):
+    for doc in ("QUEUE.md", "_build.md", "_plan.md"):
         if norm == _normalise(os.path.join(cwd, doc)):
             return True
 
@@ -225,8 +225,8 @@ def main() -> int:
         if not build_files:
             return _deny(
                 "[Sovereign Implementer] BLOCKED: this session's _build.md "
-                "lists no editable files, so only QUEUE.md, REGISTRY.md, "
-                "LOG/, and _build.md can be edited. Audit and test sessions "
+                "lists no editable files, so only QUEUE.md, LOG/, and "
+                "_build.md can be edited. Audit and test sessions "
                 "don't edit source files — route findings to Captures in "
                 "QUEUE.md instead. If a file genuinely needs editing, halt "
                 "and add it to _build.md's Files: section with the user's "

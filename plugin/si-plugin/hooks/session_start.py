@@ -160,7 +160,6 @@ def main() -> int:
 
     spec_path = os.path.join(cwd, "SPEC.md")
     queue_path = os.path.join(cwd, "QUEUE.md")
-    registry_path = os.path.join(cwd, "REGISTRY.md")
     build_path = os.path.join(cwd, "_build.md")
     plan_state_path = os.path.join(cwd, "_plan.md")
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
@@ -168,7 +167,6 @@ def main() -> int:
 
     has_spec = os.path.isfile(spec_path)
     has_queue = os.path.isfile(queue_path)
-    has_registry = os.path.isfile(registry_path)
     has_active_build = os.path.isfile(build_path)
     has_plan_state = os.path.isfile(plan_state_path)
     has_faq_index = os.path.isfile(faq_index_path)
@@ -237,9 +235,11 @@ def main() -> int:
 
         if has_work:
             msg = (
-                "[Sovereign Implementer] This folder has files but no SPEC.md — "
-                "it hasn't been set up with the method yet. "
-                "Run /setup to get started."
+                "[Sovereign Implementer] This folder has files but no SI docs yet. "
+                "If it's a fresh project, run /setup to get started. If it already "
+                "has planning or spec docs under other names — from another tool or "
+                "an older version — /setup can treat it as a migration and map them "
+                "into the method's docs."
             )
         else:
             msg = (
@@ -266,7 +266,6 @@ def main() -> int:
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
     context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
-    context_parts.append(f"  REGISTRY.md: {'found' if has_registry else 'MISSING'}")
 
     # Presence-based drift: a project is "behind" only when it's actually missing
     # files/folders the current plugin scaffolds. A higher plugin version with
@@ -275,8 +274,6 @@ def main() -> int:
     missing_scaffold = []
     if not has_queue:
         missing_scaffold.append("QUEUE.md (your work queue)")
-    if not has_registry:
-        missing_scaffold.append("REGISTRY.md (your components list)")
     if not os.path.isfile(os.path.join(cwd, "LOG", "index.md")):
         missing_scaffold.append("the LOG folder (your session records)")
     if not has_faq_index:
