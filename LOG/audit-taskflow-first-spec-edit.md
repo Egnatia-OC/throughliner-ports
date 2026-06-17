@@ -1,4 +1,4 @@
-# [HASH] — Audited the Taskflow first-spec-edit transcript — a clean pass confirming the spec-edit mechanism works live; routed 1 mild finding plus 2 session-tail captures to Captures
+# caa85f7 — Audited the Taskflow first-spec-edit transcript — a clean pass confirming the spec-edit mechanism works live; routed 1 mild finding plus 2 session-tail captures to Captures
 
 Audited the captured transcript of the first real-world spec-edit in Taskflowapp (`resources/captures/2026-06-16-taskflow-first-spec-edit-session.jsonl`, 146 records) against the batch's seven criteria. The headline is a pass: this first live exercise of the spec-edit mechanism worked correctly — /next routed the Spec-edit batch, scope locked to SPEC.md, all seven planning decisions landed (eight edits, since the Strategy-doc decision touched two passages), and /done closed it like a build with a commit-only close. Communication was clean, notably better than the sibling /setup session — it translated "_build.md" into plain English. No host-vs-target gap: the host edits SPEC via the Files list, matching current target intent.
 

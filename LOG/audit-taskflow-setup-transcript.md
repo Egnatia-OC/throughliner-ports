@@ -1,4 +1,4 @@
-# [HASH] — Audited the Taskflow /setup re-run transcript against the six criteria; routed 5 findings to Captures (all checked against current target, none already fixed), the throughline being that /setup has no migration path for an older-vocabulary or foreign source
+# 68c924d — Audited the Taskflow /setup re-run transcript against the six criteria; routed 5 findings to Captures (all checked against current target, none already fixed), the throughline being that /setup has no migration path for an older-vocabulary or foreign source
 
 Audited the captured transcript of the Taskflow /setup re-run (`resources/captures/2026-06-16-taskflow-setup-session.jsonl`, 904 records) against the batch's six criteria: procedure adherence, communication quality, friction, output correctness, red-flag screening, and gaps the docs should have prevented. The session was a migration from the method's *older* doc vocabulary (UX.md / BACKLOG/ / MANIFEST.md / build-log/) on host 1.12.0-test4 — and that framed the whole audit, since the user explicitly treated it as the closest available test of migrating from a foreign system.
 
