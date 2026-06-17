@@ -11,15 +11,54 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
---- Plan session here: process the two Taskflow audit findings AND harvest [taskflow-spec-audit-harvest] (the bungled-SPEC audit) before building the /setup- and SPEC-related batches; findings may reshape them ---
+**Audit the Taskflow first-spec-write session for method-bearing testing observations** **[taskflow-spec-write-audit]**
+
+Raised by the user 2026-06-17, who shared the raw transcript of Taskflow's first spec-write session as E2E testing data: `C:\Users\Alex\.claude\projects\C--Users-Alex-Desktop-Taskflow-Planning-Planning-in-here-Taskflowapp\532ea359-f157-49c9-9764-bc109f132f85.jsonl`. All use of the plugin — including the consumer E2E project — is testing it, so this session's behaviour is test data: where SI behaved wrongly, unexpectedly, or improvably, and where it worked. This audit reads the transcript and routes method-bearing findings to Captures; a follow-on /plan processes them. One finding is already captured (the "no unprocessed captures remaining" leak); this is the full pass.
+
+Audit:
+- Target: the 532ea359 transcript. Read it via the preprocess-then-read workflow ([transcript-reading-workflow]) — a short Python pass strips the .jsonl to conversation text, then read the slim file.
+- First step: confirm this isn't the same session already audited at `caa85f7` (the first-spec-edit session); if it is, note and stop.
+- Criteria — route each finding as method-bearing (→ SI Captures) or Taskflow-product (→ stays in Taskflow):
+  - SI behaviour wrong/unexpected/improvable during the spec-write — internal-vocabulary leaks into user-facing narration, bundling / one-at-a-time misses, and any moment session memory covered for what the docs/files should carry.
+  - Red-flag screening: any data-exposure / privacy / breach risk that should have drawn a flag and didn't.
+  - Positive confirmations: which Deferred-tests lines this session's behaviour confirms (so /plan can tick them), noting the host version if visible.
+  - Bearing on pending batches: flag anything that reshapes [migration-aware-setup] or the other setup/SPEC batches.
+- Output: a structured findings list routed to Captures. No edits to the transcript or to SI docs. Scope stays method-docs-only.
+
+(No Test — audit output is findings, verified when /plan processes them.)
+
+**Shipped-slug cross-check at close** **[close-shipped-slug-crosscheck]**
+Blocks: [formalize-goal-session]
+
+From the /goal fork (item 9, 2026-06-16). A multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue — the prior goal session recorded shipping 14 batches but left [user-edits-rollup-on-commit] in QUEUE.md (genuinely built, only the removal missed), so it re-presented next session as unbuilt and wasted the first move rediscovering it was done. This adds the safety net, and ships it into done.md so cruise control inherits it.
+
+Build:
+- done.md: add a close step — after the LOG entry is written (it names the shipped batch slugs) and before the commit, cross-check each named slug against QUEUE.md's Batches section and confirm it's been removed. If any remain, surface them and remove (or halt and ask) before committing. Trivial for a one-batch close; the net is for multi-batch / goal / cruise-control closes.
+
+Test:
+- Host-side (deferred): the first multi-batch close after push + reinstall cross-checks the shipped slugs against QUEUE.md and catches any not removed. (One-batch closes pass self-evidently.)
+
+**Formalize the goal-session shape** **[formalize-goal-session]**
+Depends on: [close-shipped-slug-crosscheck]
+
+From the /goal fork (item 9, 2026-06-16). `/goal` works in practice but the method has no defined goal-session shape — it assumes one batch per session, so the run improvised an aggregate `_build.md`, a multi-thread LOG entry, and one commit. This formalizes the shape in this project's CLAUDE.md (it stays the dev workflow; cruise control is the consumer-facing version), so it's defined rather than re-improvised each time. Step 1 of the cruise-control arc. Logging shape decided 2026-06-17: a separate LOG entry per batch (not one multi-thread entry), all in the single close commit — consistent with the one-batch-one-entry norm and better for why-pipeline retrieval.
+
+Build:
+- CLAUDE.md "Goal sessions (plugin off)": rewrite from interim to defined. Specify: (1) a goal session runs several build batches back-to-back in one chat, plugin off, Claude autonomous; (2) it uses a single aggregate `_build.md` listing the batches it will work through, purely as a working-state / resume record — with the plugin off the scope-lock is inactive, so `_build.md` here is for state, not enforcement; (3) the close writes a separate LOG entry per batch — one entry file and one index line each — all landing in a single end-of-run commit (per-batch entries keep the history granular and retrievable, consistent with the one-batch-one-entry norm; the single commit keeps the autonomous run atomic); (4) the manual /done uses the shipped-slug cross-check from [close-shipped-slug-crosscheck]; (5) the deferred-test and staleness sweeps run once across all the batches at close, not per-batch. Keep the existing handoff-claim provenance rule; note the claim-marking format decision belongs to the cruise-control build.
+
+Test:
+- Deferred (next goal session, observed): the first goal session run after this lands follows the defined shape — aggregate `_build.md`, a separate LOG entry per batch in one close commit, cross-checked close.
+
+--- Plan session here: process [taskflow-spec-write-audit]'s findings before the /setup- and SPEC-related batches; findings may reshape them ---
 
 **Retire REGISTRY.md — remove the write-only inventory doc** **[retire-registry]**
 Blocks: the consolidated spec-edit batch (carries the SPEC.md four-docs sentence; slug assigned when authored at items 12–13)
 
-Decided 2026-06-13. REGISTRY is write-only — grep-confirmed scaffolded at setup, updated at every /done, presence-checked at session start, and listed in the scope-lock's editable "method docs," but nothing ever reads its content to make a decision. Its only justification was a human-facing map, and the non-coder it serves never opens it (nor the richer old MANIFEST). The better replacement: a user who wants to know what their app contains asks Claude in-session, which explores the live code — accurate, contextual, zero maintenance. Architecture goes from four docs to three: SPEC, QUEUE, LOG. One nuance rejected: REGISTRY could be a fast orientation map in a large project, but nothing reads it today and live search beats a hand-maintained list that drifts. The SPEC.md sentence is deliberately excluded here — it rides the consolidated spec-edit batch.
+Decided 2026-06-13. REGISTRY is write-only — grep-confirmed scaffolded at setup, updated at every /done, presence-checked at session start, and listed in the scope-lock's editable "method docs," but nothing ever reads its content to make a decision. Its only justification was a human-facing map, and the non-coder it serves never opens it (nor the richer old MANIFEST). The better replacement: a user who wants to know what their app contains asks Claude in-session, which explores the live code — accurate, contextual, zero maintenance. Architecture goes from four docs to three: SPEC, QUEUE, LOG. One nuance rejected: REGISTRY could be a fast orientation map in a large project, but nothing reads it today and live search beats a hand-maintained list that drifts. The SPEC.md sentence is deliberately excluded here — it rides the consolidated spec-edit batch. Guard added 2026-06-17 from the Taskflow audit harvest: Taskflow's spec-trim audit named REGISTRY as the relocation home for a component detail, so blind retirement on adopt re-run would delete content a consumer actually used.
 
 Build:
 - setup.md: stop scaffolding REGISTRY (template block, Case B mention, SKILL.md description line); and make the migration / adopt re-run path retire an existing REGISTRY.md in an already-adopted project rather than leaving it orphaned.
+- setup.md (REGISTRY retirement safety): when the adopt re-run retires an existing REGISTRY.md, don't delete it blind — a consumer may have put real content there. Check whether the file holds more than the scaffolded template; if it does, surface it to the user and let them decide where the content goes rather than silently removing it.
 - session_start.py: remove the REGISTRY presence check and its method-doc detection.
 - pre_tool_use.py, next.md, next-audit.md: remove REGISTRY from the "method docs" editable set wherever listed.
 - done.md: drop REGISTRY from staged paths; done-build.md: remove the "Update REGISTRY" step; done-plan.md: drop it from staged paths.
@@ -57,13 +96,15 @@ Build:
 
 **Migration-aware /setup — detect and frame, don't misread as a fresh start** **[migration-aware-setup]**
 
-From the Taskflow /setup re-run audit (findings F1–F4, 2026-06-16). /setup has no concept of a project already set up under other names — Step 1 keys "already set up" on SPEC.md existing, so a project with content but no SPEC.md (an older-vocabulary or foreign source) is misclassified as a fresh start, and Claude improvises the whole source-to-SI mapping with no guidance. The session-start hook makes the same misread first ("files but no SPEC.md — it hasn't been set up"). Two further symptoms followed: a blind UX.md→SPEC.md rename imported a role mismatch the user had to schedule cleanup for, and the dead path-block sent the migration down a trial-and-error detour. Decided 2026-06-17: detect-and-frame only. /setup and the hook recognize "content but no SPEC" as a possible migration and say so, then hand the actual mapping to Claude's judgment — no guided mapping table. Detection is generic softening (reword, don't hardcode an old-vocabulary marker list), so it covers any source, old-SI or foreign. The handoff carries two guardrails distilled from the symptoms: check each old doc's role fits its SI counterpart before mapping (don't blind-rename), and state up front that SI docs live at the project root with no path indirection (a source's path-block or doc-location config doesn't carry over). Folded in F5 (2026-06-17): /setup narration leaked internal terms because, in the unadopted state, the session-start hook returns before loading plugin-behaviour.md — so the plain-language Vocabulary rule isn't in context during a first-run /setup, and setup.md needs its own plain-language guard.
+From the Taskflow /setup re-run audit (findings F1–F4, 2026-06-16). /setup has no concept of a project already set up under other names — Step 1 keys "already set up" on SPEC.md existing, so a project with content but no SPEC.md (an older-vocabulary or foreign source) is misclassified as a fresh start, and Claude improvises the whole source-to-SI mapping with no guidance. The session-start hook makes the same misread first ("files but no SPEC.md — it hasn't been set up"). Two further symptoms followed: a blind UX.md→SPEC.md rename imported a role mismatch the user had to schedule cleanup for, and the dead path-block sent the migration down a trial-and-error detour. Decided 2026-06-17: detect-and-frame only. /setup and the hook recognize "content but no SPEC" as a possible migration and say so, then hand the actual mapping to Claude's judgment — no guided mapping table. Detection is generic softening (reword, don't hardcode an old-vocabulary marker list), so it covers any source, old-SI or foreign. The handoff carries two guardrails distilled from the symptoms: check each old doc's role fits its SI counterpart before mapping (don't blind-rename), and state up front that SI docs live at the project root with no path indirection (a source's path-block or doc-location config doesn't carry over). Folded in F5 (2026-06-17): /setup narration leaked internal terms because, in the unadopted state, the session-start hook returns before loading plugin-behaviour.md — so the plain-language Vocabulary rule isn't in context during a first-run /setup, and setup.md needs its own plain-language guard. Sharpened 2026-06-17 by the Taskflow bungled-SPEC audit harvest: Taskflow's migrated SPEC.md still carried the old UX.md's self-description ("describes every functionality and UI element as the user experiences it"), which directly licensed the exhaustive detail the trim wants out — concrete proof that a blind rename imports the source's frame inside the content, not just the filename.
 
 Files: setup.md, session_start.py, faq-template.md, faq-index-template.md
 
 Build:
 - setup.md, Step 1 detection: soften the no-SPEC classification so a project with content but no SPEC.md is framed as a possible migration rather than asserted to be not-set-up / a fresh start. Generic wording — no hardcoded old-vocabulary marker list.
 - setup.md, migration framing: add a role-fit guardrail — when mapping a source doc to an SI doc, check the old doc's role fits its SI counterpart and flag a mismatch (old doc broader or narrower) for the user to decide before renaming; don't blind-rename.
+- setup.md, migration framing: extend the role-fit guardrail to the content, not just the doc — when mapping a source doc into a SPEC, scrub or rewrite any purpose / intro / self-description sentence that re-asserts the source's role (e.g. an old UX doc's "describes every functionality and UI element as the user experiences it"), because such a line silently re-mandates the exhaustive detail SPEC is meant to leave out. Renaming the file isn't enough — the old frame hides inside the content.
+- setup.md, migration framing: have /setup state SPEC's purpose crisply at the start of a migration — SPEC is product truth (what the app is, who it's for, how it works, and why), not a UX or implementation manual — so Claude maps source content into that frame instead of importing the source's framing.
 - setup.md, migration framing: state up front that SI docs live at the project root — no path indirection; a source's path-block or doc-location config doesn't carry over.
 - setup.md: add a brief, self-contained plain-language guard for setup narration — everything said during /setup is read by a non-coder who may be brand new, so use everyday words and avoid internal/technical terms (hook filenames, `_build.md`, "scope-lock," "method docs," Case labels). State inline why it's needed: the behaviour rules' plain-language guidance isn't loaded during /setup in an unadopted project, so this reminder stands in for it.
 - session_start.py: soften the `if not has_spec:` State 1 message so "content but no SPEC.md" reads as "no SI docs found — if this project already has planning docs under other names, /setup can treat it as a migration," instead of "it hasn't been set up." Generic, no marker list.
@@ -134,28 +175,6 @@ Build:
 Test:
 - Host-side (deferred): the first /plan after a push + reinstall actively surfaces the now-runnable host-side deferred tests and offers to roll the user-run ones into a test batch, rather than silently producing nothing.
 
-**Shipped-slug cross-check at close** **[close-shipped-slug-crosscheck]**
-Blocks: [formalize-goal-session]
-
-From the /goal fork (item 9, 2026-06-16). A multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue — the prior goal session recorded shipping 14 batches but left [user-edits-rollup-on-commit] in QUEUE.md (genuinely built, only the removal missed), so it re-presented next session as unbuilt and wasted the first move rediscovering it was done. This adds the safety net, and ships it into done.md so cruise control inherits it.
-
-Build:
-- done.md: add a close step — after the LOG entry is written (it names the shipped batch slugs) and before the commit, cross-check each named slug against QUEUE.md's Batches section and confirm it's been removed. If any remain, surface them and remove (or halt and ask) before committing. Trivial for a one-batch close; the net is for multi-batch / goal / cruise-control closes.
-
-Test:
-- Host-side (deferred): the first multi-batch close after push + reinstall cross-checks the shipped slugs against QUEUE.md and catches any not removed. (One-batch closes pass self-evidently.)
-
-**Formalize the goal-session shape** **[formalize-goal-session]**
-Depends on: [close-shipped-slug-crosscheck]
-
-From the /goal fork (item 9, 2026-06-16). `/goal` works in practice but the method has no defined goal-session shape — it assumes one batch per session, so the run improvised an aggregate `_build.md`, a multi-thread LOG entry, and one commit. This formalizes the shape in this project's CLAUDE.md (it stays the dev workflow; cruise control is the consumer-facing version), so it's defined rather than re-improvised each time. Step 1 of the cruise-control arc.
-
-Build:
-- CLAUDE.md "Goal sessions (plugin off)": rewrite from interim to defined. Specify: (1) a goal session runs several build batches back-to-back in one chat, plugin off, Claude autonomous; (2) it uses a single aggregate `_build.md` listing the batches it will work through, purely as a working-state / resume record — with the plugin off the scope-lock is inactive, so `_build.md` here is for state, not enforcement; (3) the close is one multi-thread LOG entry (one thread per batch) with its index line, and a single commit; (4) the manual /done uses the shipped-slug cross-check from [close-shipped-slug-crosscheck]; (5) the deferred-test and staleness sweeps run once across all the batches at close, not per-batch. Keep the existing handoff-claim provenance rule; note the claim-marking format decision belongs to the cruise-control build.
-
-Test:
-- Deferred (next goal session, observed): the first goal session run after this lands follows the defined shape — aggregate `_build.md`, multi-thread LOG entry, cross-checked close.
-
 **Note the new-batch-type touch-points in CLAUDE.md** **[new-batch-type-touchpoints]**
 
 From item 14 (2026-06-16). When a batch introduces a new batch type it must wire four places or ship half-working — [spec-edit-batch-type] omitted next.md's router and was half-wired until a goal session caught it. Encode the touch-points as a working-conventions reminder. Host-only: consumers never add batch types, so this goes in this project's CLAUDE.md, not shipped plan.md.
@@ -192,6 +211,17 @@ The prose half of this batch landed in a goal session (2026-06-15): INSTALL.md n
 
 Build:
 - INSTALL.md: add a screenshot of the Plugins screen showing the + icon and the "Create a plugin" option, so users can visually confirm they're in the right place. (User-only — needs a real desktop-app screen capture; a placeholder pointer sits in INSTALL.md's smoke-test step until the image lands.)
+
+**Record the session-transcript reading workflow in CLAUDE.md** **[transcript-reading-workflow]**
+
+Raised by the user across 2026-06-16/17 and proven end-to-end this session (sourced the Taskflow audit .jsonl, preprocessed 611 KB → 12.6 KB, read it). Self-hosting and E2E testing increasingly evaluate Claude's behaviour from the raw session transcript, but the method has no written guidance on getting or consuming one — so each session re-derives it. This records the workflow: where the authoritative transcript lives (the raw .jsonl), and how to read a large one without swamping context (Python preprocess-then-read). Host-only — it's the developer/E2E testing workflow, nothing a consumer building their own app performs — so it lands in this project's CLAUDE.md and ships no FAQ. Relates to [self-hosting-support-during-setup], which may later carry a generalized form to plugin-building consumers.
+
+Files: CLAUDE.md
+
+Build:
+- CLAUDE.md: add a short subsection (near "E2E testing") on reading session transcripts. (1) Source the raw transcript from `.claude/projects/<project-slug>/*.jsonl` — the authoritative, unedited record — rather than asking Claude to regenerate or recall it; a regenerated transcript is a lossy reconstruction and hits the handoff-provenance problem (Claude-authored content treated as fact). (2) When the .jsonl is large enough to swamp context, preprocess it with a short Python pass that strips it to just the conversation text — drop tool_use / tool_result blocks, thinking, and metadata — write a slim file, then read that.
+- Carry the why inline: reading the raw file in chunks does NOT save context (the same bytes accumulate across turns); a subagent keeps Claude's context clean but adds a reconstruction layer one step from the evidence; preprocess-then-read keeps Claude on the primary evidence at moderate cost; targeted grep is lighter still but risks missing findings phrased without the search term.
+- Note it applies both to the consumer E2E project (Taskflowapp) and to goal/dev sessions here.
 
 ### Parked
 
@@ -237,10 +267,6 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
-
-**A Taskflow audit of the bungled SPEC has dropped — findings need harvesting** **[taskflow-spec-audit-harvest]**
-
-Raised by the user 2026-06-17. A Taskflow desktop-app session was run — not E2E testing, but an audit into the bungled SPEC (the over-broad one the UX.md→SPEC.md rename produced): what needs to move, change, or be cut. Its raw transcript is at `C:\Users\Alex\.claude\projects\C--Users-Alex-Desktop-Taskflow-Planning-Planning-in-here-Taskflowapp\9e5553cf-736f-4de4-b77c-ebc020a760bf.jsonl` (~600 KB, dropped 2026-06-17 09:40). Some findings may bear on the upcoming setup-related batches (e.g. [migration-aware-setup], [spec-sync-registry-and-lock], [consumer-spec-model-sync]), or on how /setup explains to Claude what a SPEC is for, or on something else — or none may. A future /plan reads the transcript and routes any method-bearing findings to Captures; findings about Taskflow's own product spec stay in Taskflow. Source the transcript from this .jsonl path directly, per the raw-transcript-sourcing capture above, rather than regenerating it. The QUEUE plan-marker above the setup/SPEC batches gates them on this harvest.
 
 ---
 
@@ -320,13 +346,17 @@ Audit run 2026-06-15 (goal session). The complete inventory of every self-hostin
 
 Coverage note: the shipped procedure docs and templates carry essentially no self-hosting content — the single exception is next.md's push-marker halt (finding 6). That absence is the audit's thesis: self-hosting knowledge lives in CLAUDE.md and session judgment, not in the method. Two rationales are thin: finding 29 (lives only as a code comment) and finding 17 (labelled interim, no permanent home). Factual confirmation, not new findings: CLAUDE.md still reads "Target v1.11.0" and "2 hooks" while plugin.json/`.si-version` are 1.12.0 and three hook files exist — both already captured.
 
-**Present-and-interview forced-wait: analysis must follow the verbatim quote in the same flow, not after a user reply**
-
-Observed 2026-06-16 processing [retire-registry]. Claude quoted the capture verbatim, then stopped and asked "anything to add first?" before giving any analysis. This defeats verbatim-first: the quote exists so the user can read while Claude composes the analysis, so the analysis should arrive right behind the quote in the same flow. Stopping after the quote makes the user wait twice — once for the quote, then again after they reply — cancelling the benefit. plan.md's present-and-interview rule already names this exact failure mode ("forced-wait — stopping after the quote and gating the analysis behind the user's reply") and says the correct shape is quote-first, analysis-in-the-same-flow. So this is the rule not holding in practice, not a missing rule. For /plan to weigh: whether the rule needs strengthening despite being clearly written — a sharper tag, or a worked exemplar at the step — or whether this is a one-off to note. Relates to [capture-verbatim-first] and [verbatim-first-rationale].
-
 **Pull test-session transcripts from the raw .jsonl session logs (self-hosting workflow)**
 
 Raised by the user 2026-06-16. Claude Code keeps a raw log of every session as a `.jsonl` file (one record per line, can include thinking steps), stored under the `.claude` projects folder (per project: `.claude/projects/<project-slug>/`). This is the authoritative, unedited session record. In future, self-hosting testing should pull a testing session's transcript from this location rather than asking Claude to regenerate or recall it. Why: a Claude-generated transcript is a reconstruction — lossy, and it hits the handoff-provenance problem (Claude-authored content treated as fact), whereas the raw `.jsonl` is the real evidence. Applies to E2E sessions in the consumer project (Taskflowapp) and to goal/dev sessions here — when an audit or review needs a session transcript, source it from the `.jsonl` log. Relates to the self-hosting testing workflow and [self-hosting-support-during-setup]. Filed while scoping the Taskflow /setup audit, which needs exactly this transcript.
+
+**Preprocess a large .jsonl transcript with Python before reading it — self-hosting/E2E testing workflow**
+
+Raised by the user 2026-06-17, while harvesting the Taskflow bungled-SPEC audit (a ~600 KB .jsonl). When a session transcript is too large to read directly without swamping context, consume it this way: run a short Python pass over the raw .jsonl that strips it down to just the conversation text — drop the tool-call plumbing (tool_use / tool_result), thinking blocks, and metadata — write a slim file, then read that.
+
+Why this over the alternatives. Reading the raw file in chunks does NOT save context — the same bytes still accumulate across turns; pagination only spreads them out. A subagent keeps Claude's own context clean but adds a reconstruction layer: its findings are Claude-authored claims one step removed from the evidence, which matters when the read is judgment work like routing findings. Preprocess-then-read keeps Claude on the primary evidence at a moderate context cost. Targeted grep is lighter still but risks missing findings phrased without the search keyword.
+
+This is becoming the main way self-hosting testing is evaluated — both one-off audits and E2E sessions, where the evidence is the raw session transcript. Pairs with the raw-.jsonl-sourcing capture above (where to get the transcript); the two are complementary and likely share a home (CLAUDE.md self-hosting / E2E testing guidance).
 
 **plugin.json description says "two hooks" — should be three**
 
@@ -339,6 +369,34 @@ Observed during /done closing [audit-taskflow-first-spec-edit] (2026-06-17). The
 **Always render the user-facing ask in bold, for findability when brevity isn't possible**
 
 Raised by the user 2026-06-17. The lead-with-the-decision and end-with-an-explicit-ask rules make the ask exist and come first, but they do not guarantee it is findable in a long message — and a response cannot always be brief. Bolding the ask always can. Proposal: a standing rule that the single user-facing ask is rendered in bold and phrased as a question, so a reader who struggles to locate it in a wall of text can always find it, even when the message is necessarily long. This generalizes beyond one user — it is an accessibility improvement for anyone with visual-processing difficulty. When this rule is authored, it must carry its rationale inline — why bolding the ask matters, namely findability and accessibility when brevity is not available — because Opus 4.8 follows a rule far more reliably when the why travels with it; a bare "bold the ask" directive with no reason gives the model no purchase to actually apply it. This matches the project's rationale-everywhere compliance bet. Lands in plugin-behaviour.md alongside the lead-with-the-decision and approval-time-ask rules; relates to the personal memory note on ask placement.
+
+**"No unprocessed captures remaining" — internal vocabulary leak in the /done close-out, and a misleading message**
+
+Noticed by the user 2026-06-17, reviewing her first Taskflow spec-write session (raw transcript: `C:\Users\Alex\.claude\projects\C--Users-Alex-Desktop-Taskflow-Planning-Planning-in-here-Taskflowapp\532ea359-f157-49c9-9764-bc109f132f85.jsonl`). At the close-out, the narration said "no unprocessed captures remaining."
+
+Two problems. First, "processed / unprocessed captures" is background-only structural vocabulary — it names the Captures divider mechanic (processed = a /plan session has applied dependency management at least once; unprocessed = raw, not yet picked up by any /plan), which a user never sees. It's exactly what the narration plain-language / Vocabulary rule should translate or omit, and the Vocabulary list in plugin-behaviour.md doesn't currently name it. Second, the message is meaningless-to-misleading even decoded: it does NOT mean "no captures left" — processed captures can still be sitting above the divider — so the user reads "queue clear" when it isn't. The developer couldn't readily recall the term's meaning, which proves it fails as user communication.
+
+Source: the /done recommend-next step (done-build.md / done-test.md / done-audit.md / done-plan.md). The doc already models the correct plain output ("Three captures are waiting; none touches the next batch, so nothing blocks it"), but the same instruction also contains the words "unprocessed Captures," and Claude grabbed the structural term instead. So this is both a Vocabulary-list gap and a compliance miss.
+
+Candidate fix: (a) add "processed / unprocessed captures" to plugin-behaviour.md's Vocabulary list so the translate-or-omit rule catches it; (b) optionally sharpen the /done recommend-next clean-case wording so the plain phrasing is unmissable and the structural term isn't emitted verbatim. Relates to [done-recommend-next-both-ways] and the narration-vocabulary work.
+
+**Make QUEUE.md easier to handle — design thread (the LOG-index principle), from an external review**
+
+Raised by the user 2026-06-17, from an external critique (an AI-produced analysis the user received; saved as `ideas.md`). The critique argues QUEUE.md is overextended — execution queue, backlog, dependency graph, deferred-test ledger, capture inbox, parking lot, and rationale/history store in one file (875 lines / ~23.7k words at review time) — and recommends splitting by role: a small live QUEUE.md (capped ~5–12 items), BACKLOG.md, CAPTURES.md, DEFERRED-TESTS.md, plans/<slug>.md (per-batch design detail), LOG/; plus status fields over prose, links over copied rationale, and a size lint.
+
+The real principle, drawn from the user's own track record: per-entry splitting SUCCEEDED for the LOG and the FAQ and FAILED for the queue when the user tried it. The difference is what gets read individually vs reasoned-across. LOG/FAQ entries are read one at a time with an index carrying the cross-references; the queue split failed because it scattered the thing that must be reasoned across as a whole — the dependency graph, ordering, overlap — leaving no consolidated index, so Claude lost the thread. Rule for any future change: keep the cross-referenced graph consolidated (like the LOG index); only per-entry detail that's read alone can safely move to per-entry files.
+
+Hard constraint the user named (2026-06-17): captures AND deferred tests can both block batches (a capture can carry a Blocked-by trigger; deferred tests are tied to their source batches). So they're part of the cross-item blocking evaluation and can't be split into separate files without making that evaluation impossible. This kills the "split captures / deferred-tests out" option — those sections are graph, not standalone archive.
+
+Viable directions, lightest to heaviest: (1) Behaviour tweak only — /next deep-reads the top batch but skims non-top batches for headers/dependencies only; no file changes; addresses the critique's strongest real point (non-top rationale is dead weight during /next) at near-zero risk. (2) Split self-contained sections — largely ruled out by the blocking constraint above. (3) The LOG-index model — keep the execution GRAPH (slugs, type, Depends/Blocks, Blocked-by, status, files) consolidated in QUEUE.md, move only per-batch RATIONALE/design prose to plans/<slug>.md, read when that batch is active; same shape that worked for the LOG, applied to batch detail; the rationale is the one part that isn't cross-referenced, so it's the one part that can move.
+
+Constraints option 3 must clear: the why-pipeline (rationale is inline partly so the user co-reads/approves it at each stage — moving it to a side file must reconcile the approval flow, not break it); and proof that /plan's cross-batch reasoning doesn't need the prose (it needs intent + dependencies, which stay in the queue) — checked, not assumed.
+
+Standing caveat: most of QUEUE.md's bulk is self-hosting inflation — this dev project carries dozens of method batches; a consumer's queue is a handful. The critique measures the workshop, not the product. And the every-session context cost is plugin-behaviour.md (injected every session), not QUEUE.md (read on demand) — already queued for reduction via the progressive-disclosure restructure ([behaviour-doc-size-watch], [firing-map-middle-band]), a more surgical approach — so "split the queue before adding rules" (the critique's priority) is arguably backwards.
+
+Corroboration, not new work: the critique independently rediscovered cleanups already in flight — [retire-registry], the plugin.json "two hooks" fix (captured), the CLAUDE.md version (already fixed), the project-agnostic language sweep (partly done), the reader-test hardcoded path / stale fixture (parked). Nothing new to action there.
+
+Recommended handling: a dedicated design session, not bolted onto other work; consider a small reversible experiment (convert 2–3 batches to the index+detail shape, see if /next and /plan hold the thread) before any wholesale migration; a web search on current "index + detail" doc-architecture patterns for agents could inform it. Source critique: the user's ideas.md (external).
 
 ### Parked
 
@@ -387,3 +445,6 @@ Raised by the user 2026-06-17. The lead-with-the-decision and end-with-an-explic
 
 - **[plan-md-offload-reframe]** Add an explicit instruction that Claude may record the rest of a multi-step plan in _plan.md (or _build.md) and release only the next item — turning the working file into a deliberate pressure-release against the pull to dump everything for completeness. Filed as a candidate, not a redirect: this session's analysis concluded bundling is mostly a disposition problem, not memory-capacity (within a session Claude has the whole transcript; the research attributes bundling to trained thoroughness / "task completion over process compliance"), so the highest-leverage fix is priority (the output style) plus structure (lead-with-decision, one-item chunking). The reframe might still add a humane "the rest is safely recorded, release just the next item" that lowers completeness anxiety — speculative, and possibly redundant once [verbosity-output-style] is live. Relates to [tag-definition-redesign] and [verbosity-output-style].
   Blocked by: observing whether [verbosity-output-style] (shipped, awaiting reinstall) closes the bundling pull on its own — behavioural trigger, no slug; fires at the /plan after the output style has been live long enough to judge whether bundling persists. If it persists, the reframe earns its words; if not, it's redundant.
+
+- **[present-interview-forced-wait]** Observed 2026-06-16 processing [retire-registry]: Claude quoted the capture verbatim, then stopped and asked "anything to add first?" before giving any analysis — the forced-wait failure mode plan.md's present-and-interview rule already names and forbids (the correct shape is quote-first, analysis-in-the-same-flow). So this is the rule not holding in practice, not a missing rule. /plan weighed it 2026-06-17 and parked rather than strengthening, for two reasons: the rule is already clearly written and one instance doesn't justify tightening a clear rule (matching the project's second-instance-watch pattern); and the 2026-06-16 instance may predate the sharpened rule being live — [capture-verbatim-first] and [verbatim-first-rationale] are still in Deferred tests awaiting push + reinstall, so the live baseline isn't measured yet, and strengthening now would tune against an unconfirmed baseline. If forced-wait recurs after the fix is confirmed live, the rule needs a sharper tag or a worked exemplar at the step.
+  Blocked by: a forced-wait instance observed after the sharpened present-and-interview rule is confirmed live (deferred tests [capture-verbatim-first] / [verbatim-first-rationale]) — behavioural trigger, no slug; fires at the /plan that processes such a report.
