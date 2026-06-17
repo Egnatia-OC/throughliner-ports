@@ -11,44 +11,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Audit the Taskflow first-spec-write session for method-bearing testing observations** **[taskflow-spec-write-audit]**
-
-Raised by the user 2026-06-17, who shared the raw transcript of Taskflow's first spec-write session as E2E testing data: `C:\Users\Alex\.claude\projects\C--Users-Alex-Desktop-Taskflow-Planning-Planning-in-here-Taskflowapp\532ea359-f157-49c9-9764-bc109f132f85.jsonl`. All use of the plugin — including the consumer E2E project — is testing it, so this session's behaviour is test data: where SI behaved wrongly, unexpectedly, or improvably, and where it worked. This audit reads the transcript and routes method-bearing findings to Captures; a follow-on /plan processes them. One finding is already captured (the "no unprocessed captures remaining" leak); this is the full pass.
-
-Audit:
-- Target: the 532ea359 transcript. Read it via the preprocess-then-read workflow ([transcript-reading-workflow]) — a short Python pass strips the .jsonl to conversation text, then read the slim file.
-- First step: confirm this isn't the same session already audited at `caa85f7` (the first-spec-edit session); if it is, note and stop.
-- Criteria — route each finding as method-bearing (→ SI Captures) or Taskflow-product (→ stays in Taskflow):
-  - SI behaviour wrong/unexpected/improvable during the spec-write — internal-vocabulary leaks into user-facing narration, bundling / one-at-a-time misses, and any moment session memory covered for what the docs/files should carry.
-  - Red-flag screening: any data-exposure / privacy / breach risk that should have drawn a flag and didn't.
-  - Positive confirmations: which Deferred-tests lines this session's behaviour confirms (so /plan can tick them), noting the host version if visible.
-  - Bearing on pending batches: flag anything that reshapes [migration-aware-setup] or the other setup/SPEC batches.
-- Output: a structured findings list routed to Captures. No edits to the transcript or to SI docs. Scope stays method-docs-only.
-
-(No Test — audit output is findings, verified when /plan processes them.)
-
-**Shipped-slug cross-check at close** **[close-shipped-slug-crosscheck]**
-Blocks: [formalize-goal-session]
-
-From the /goal fork (item 9, 2026-06-16). A multi-batch close removes many batches in a manual loop with no mechanical check that each shipped slug actually left the queue — the prior goal session recorded shipping 14 batches but left [user-edits-rollup-on-commit] in QUEUE.md (genuinely built, only the removal missed), so it re-presented next session as unbuilt and wasted the first move rediscovering it was done. This adds the safety net, and ships it into done.md so cruise control inherits it.
-
-Build:
-- done.md: add a close step — after the LOG entry is written (it names the shipped batch slugs) and before the commit, cross-check each named slug against QUEUE.md's Batches section and confirm it's been removed. If any remain, surface them and remove (or halt and ask) before committing. Trivial for a one-batch close; the net is for multi-batch / goal / cruise-control closes.
-
-Test:
-- Host-side (deferred): the first multi-batch close after push + reinstall cross-checks the shipped slugs against QUEUE.md and catches any not removed. (One-batch closes pass self-evidently.)
-
-**Formalize the goal-session shape** **[formalize-goal-session]**
-Depends on: [close-shipped-slug-crosscheck]
-
-From the /goal fork (item 9, 2026-06-16). `/goal` works in practice but the method has no defined goal-session shape — it assumes one batch per session, so the run improvised an aggregate `_build.md`, a multi-thread LOG entry, and one commit. This formalizes the shape in this project's CLAUDE.md (it stays the dev workflow; cruise control is the consumer-facing version), so it's defined rather than re-improvised each time. Step 1 of the cruise-control arc. Logging shape decided 2026-06-17: a separate LOG entry per batch (not one multi-thread entry), all in the single close commit — consistent with the one-batch-one-entry norm and better for why-pipeline retrieval.
-
-Build:
-- CLAUDE.md "Goal sessions (plugin off)": rewrite from interim to defined. Specify: (1) a goal session runs several build batches back-to-back in one chat, plugin off, Claude autonomous; (2) it uses a single aggregate `_build.md` listing the batches it will work through, purely as a working-state / resume record — with the plugin off the scope-lock is inactive, so `_build.md` here is for state, not enforcement; (3) the close writes a separate LOG entry per batch — one entry file and one index line each — all landing in a single end-of-run commit (per-batch entries keep the history granular and retrievable, consistent with the one-batch-one-entry norm; the single commit keeps the autonomous run atomic); (4) the manual /done uses the shipped-slug cross-check from [close-shipped-slug-crosscheck]; (5) the deferred-test and staleness sweeps run once across all the batches at close, not per-batch. Keep the existing handoff-claim provenance rule; note the claim-marking format decision belongs to the cruise-control build.
-
-Test:
-- Deferred (next goal session, observed): the first goal session run after this lands follows the defined shape — aggregate `_build.md`, a separate LOG entry per batch in one close commit, cross-checked close.
-
 --- Plan session here: process [taskflow-spec-write-audit]'s findings before the /setup- and SPEC-related batches; findings may reshape them ---
 
 **Retire REGISTRY.md — remove the write-only inventory doc** **[retire-registry]**
@@ -263,6 +225,8 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [scope-lock-drop-dash-stripping] — verify a live denial on a dash-annotated Files: line in the installed host (the parser change was Claude-tested in-session via module import; the live hook path defers). Confirmed by: the first such denial after push + reinstall. (host-side)
 - [done-spec-sync-check] — verify a build that lands a spec-affecting change without a prior /plan spec entry draws a filed capture at /done close; a build with no spec impact stays silent. Confirmed by: the first spec-affecting build /done after push + reinstall. (host-side)
 - [verbatim-first-rationale] — verify a later /plan capture turn lands the verbatim item first without bundling or forced-wait (ties to the existing [capture-verbatim-first] line). Confirmed by: the first /plan capture turn after push + reinstall. (host-side)
+- [close-shipped-slug-crosscheck] — verify the installed host's multi-batch /done cross-checks each shipped slug named in the LOG entries against QUEUE.md's Batches and catches any not removed (one-batch closes pass self-evidently). The logic was exercised live this goal session — a plugin-off three-batch close, reading target done.md — and worked; this line is the installed-host confirmation. Confirmed by: the first multi-batch /done close after push + reinstall (user-run / observed). (host-side)
+- [formalize-goal-session] — verify the next goal session run follows the defined CLAUDE.md shape: an aggregate _build.md held as state, a separate LOG entry per batch in one close commit, and a cross-checked close. Not host-side — CLAUDE.md is auto-loaded in this project, so the next goal session here reads the new shape directly. Confirmed by: the next goal session run (observed / Claude-runnable).
 
 ## Captures
 
@@ -401,6 +365,46 @@ Second external input — a full repo rebuild (2026-06-17, `sov.zip`). A second 
 But it also live-demonstrates the two traps this capture names. It splits captures and deferred-tests into their own files (CAPTURES.md, DEFERRED-TESTS.md) — the exact move the hard constraint above rules out, since both can block batches. And it barely touched plugin-behaviour.md (3,074 → 3,000 words, a 2% cut) while cutting plan.md by 66% — so it aimed at QUEUE.md, the read-on-demand file, and left the every-session injection cost almost untouched. That confirms the standing caveat: it measures the workshop, not the product. Net for the design session: take the per-batch `plans/` shape as a proven reference for direction (3); reject the capture/deferred-tests split, and reject the plan.md terseness pass (it strips the why-clauses [behaviour-doc-size-watch] decided to keep). The rebuild sits at `sov.zip` in the project root if the session wants to read it.
 
 Recommended handling: a dedicated design session, not bolted onto other work; consider a small reversible experiment (convert 2–3 batches to the index+detail shape, see if /next and /plan hold the thread) before any wholesale migration; a web search on current "index + detail" doc-architecture patterns for agents could inform it. Source critique: the user's ideas.md (external).
+
+**Vocabulary leaks were systemic across the Taskflow spec-trim session — compliance miss plus list gaps**
+
+From the [taskflow-spec-write-audit] full pass (goal session, 2026-06-17), auditing the 532ea359 Taskflow /next+/done spec-trim session. Slim transcript: `resources/captures/532ea359-spec-write-slim.txt`.
+
+This extends the already-filed "no unprocessed captures remaining" capture (above), which named one leaked term. The full audit shows the leak runs through the whole session, in two distinct flavours.
+
+Terms already ON the Vocabulary list that still leaked into user-facing narration — a compliance miss, not a list gap: "pre-flight checks" ("Running pre-flight checks now"), "blocker gate" ("Now running the blocker gate" / "Blocker gate — clean"), and "Phase 1" / "Phase 1 done" (twice, in the /done close-out). The list names "gate," "pre-flight," and "Phase X" already, so the translate-or-omit rule had the terms and did not fire.
+
+Terms NOT on the Vocabulary list that also leaked — genuine list gaps to add: "Staleness sweep," "hash backfill" / "the placeholder," "queue-lint flag," and "newly unblocked" / "unparked." Adding these lets the rule catch them.
+
+Why it matters: the leak is not one stray term to patch; it is the Vocabulary rule under-firing across a whole live session. The list-gap fix (add the four-or-five unlisted terms) stands regardless of host version — the target Vocabulary list genuinely omits them, checkable by reading the file. The compliance-miss read carries a host caveat: the host version was not visible in this transcript, so /plan should confirm the Vocabulary rule was live on the Taskflow host at session time before treating the listed-term leaks as live misses. It was likely live — the caa85f7 first-spec-edit audit confirmed Taskflow runs test builds carrying unreleased target work (host 1.12.0-test4) — but confirm rather than assume. Relates to [narration-vocabulary] (still in Deferred tests) and the "no unprocessed captures" capture above.
+
+**The build's [SILENT] success path was narrated step-by-step in the Taskflow spec-trim session**
+
+From the [taskflow-spec-write-audit] full pass (goal session, 2026-06-17). Same 532ea359 session.
+
+The build Execute step is tagged [SILENT] for the routine path — making the changes and ticking entries when things go fine. In this session that path spoke repeatedly: "Build is a spec-edit. Executing the SPEC.md trims now, finding by finding," "All SPEC edits are in," "All edits complete. Updating the build's working file with progress and close notes," plus a per-finding verification table.
+
+The one genuine decision in the build — a real gap in archived spec 0006, and the judgment whether to also backfill 0005/0016 — was worth surfacing and should speak. The blow-by-blow bookkeeping around it was not. Why it matters: [SILENT] exists so routine bookkeeping does not bury what the user must act on; narrating each sub-step is exactly the verbosity the tag suppresses.
+
+Host caveat: [SILENT] is long-standing, so this is likely a genuine miss rather than an old-host artifact, but the output-shape work ([verbosity-output-style]) is not yet confirmed live — /plan weighs it against the host version. Secondary, milder observation: the scope-lock step narrated _build.md's purpose in a dense four-clause sentence; this may be the intended working-file teaching (see the [narrate-build-md-purpose] deferred test), so it is noted here, not flagged.
+
+**Positive confirmations from the Taskflow spec-trim session — candidates for /plan to tick (host-version-dependent)**
+
+From the [taskflow-spec-write-audit] full pass (goal session, 2026-06-17). Same 532ea359 session. One shared caveat on all of these: the host version was not visible in the transcript, so each confirmation depends on the relevant fix being live on the Taskflow host at session time. The caa85f7 precedent (Taskflow runs test builds with unreleased target work) makes that likely but not certain — confirm before ticking the matching Deferred-tests line.
+
+- [spec-edit-batch-type], first half — re-confirmed. A spec-edit batch ([spec-edit-trim]) that listed SPEC.md in Files edited SPEC.md with no scope-lock denial. The remaining half (a feature build that does NOT list SPEC is blocked) is still unconfirmed — this was a spec-edit, not a feature build — so that deferred line stays.
+- [closeout-text-collapse] — matched. The /done ran one entry approval, then a commit step stating the title is the entry's summary line and the body is the approved rationale ("both already approved above"), surfacing only the one genuinely new line (the folded-in hash backfill), with just the commit-and-push ask.
+- [push-offer-fit], build half — matched. A /done after a build offered the dual "Commit and push, or just commit?" ask. The no-remote path was not exercised (a remote exists).
+- [capture-verbatim-first] / [verbatim-first-rationale] — matched on the /next side. The pre-flight sent the top batch verbatim before the blocker-gate findings.
+- [done-unconditional-read] — candidate only. The same-session /done referenced the working file before the close-out, but the narration ("file matches memory") does not by itself prove a full read independent of memory — /plan decides if it counts.
+
+**The Taskflow spec-trim session is downstream proof of [migration-aware-setup]'s imported-self-description trap**
+
+From the [taskflow-spec-write-audit] full pass (goal session, 2026-06-17). Same 532ea359 session.
+
+The trim reworded SPEC's intro, which "mandated the very detail being trimmed" — the imported "every UI element" self-description. Undoing the drift took a full batch: an intro reword, ten section trims, a thrice-stated-rule dedup, and a jargon fix. This corroborates [migration-aware-setup]'s content-scrub guardrail (scrub a source's self-description sentence at mapping time, because it re-mandates the exhaustive detail SPEC should leave out). It is concrete evidence of the cost of NOT scrubbing at setup: the drift had to be remediated later, by hand, as its own batch.
+
+Likely already covered: [migration-aware-setup] already folded in the bungled-SPEC harvest naming this same trap. This adds the remediation-cost angle. /plan decides whether it sharpens the guardrail or is redundant corroboration (no new work). Positive note, no action: the trim correctly preserved the OS-clipboard risk-accepted paragraph rather than removing it as "mechanics," so no red flag was warranted and none was missed — red-flag screening was clean for this session.
 
 ### Parked
 
