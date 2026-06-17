@@ -1,4 +1,4 @@
-# [HASH] — Audited the Taskflow spec-trim session (532ea359) — routed 4 method-bearing findings to Captures [taskflow-spec-write-audit]
+# efeb5d7 — Audited the Taskflow spec-trim session (532ea359) — routed 4 method-bearing findings to Captures [taskflow-spec-write-audit]
 
 This audit read the 532ea359 Taskflow /next+/done session — the one the user shared as E2E testing data, calling it the "first spec-write session." It is in fact a spec-edit *trim* ([spec-edit-trim]), not a from-scratch spec write; same transcript, slightly off label. Confirmed distinct from the first-spec-edit session audited at caa85f7 (a different 2026-06-16 transcript about a no-notifications scope note). The transcript was read via the preprocess-then-read workflow: a Python pass stripped the 842 KB .jsonl to a 16 KB conversation-text file at resources/captures/532ea359-spec-write-slim.txt, which was then read in full.
 

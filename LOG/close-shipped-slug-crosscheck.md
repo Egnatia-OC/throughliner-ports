@@ -1,4 +1,4 @@
-# [HASH] — Added the shipped-slug cross-check to done.md's commit core [close-shipped-slug-crosscheck]
+# efeb5d7 — Added the shipped-slug cross-check to done.md's commit core [close-shipped-slug-crosscheck]
 
 From the /goal fork. A multi-batch close removes many batches in a loop with no mechanical check that each shipped slug actually left the queue — a prior goal session shipped fourteen batches but left one in QUEUE.md, so it re-presented the next session as unbuilt and wasted the first move rediscovering it was done. This adds the safety net.
 

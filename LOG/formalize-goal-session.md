@@ -1,4 +1,4 @@
-# [HASH] — Rewrote CLAUDE.md's goal-session shape from interim to defined [formalize-goal-session]
+# efeb5d7 — Rewrote CLAUDE.md's goal-session shape from interim to defined [formalize-goal-session]
 
 From the /goal fork. /goal works in practice but the method had no defined goal-session shape — it assumed one batch per session, so earlier runs improvised the aggregate _build.md, the LOG entries, and the single commit. This rewrites CLAUDE.md's "Goal sessions (plugin off)" section from interim handling into a defined shape, structured as "The run" and "The close."
 
