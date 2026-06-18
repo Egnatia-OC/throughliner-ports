@@ -81,15 +81,6 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ### Parked`
 
-const FAKE_REGISTRY = `# REGISTRY
-
-- \`src/app.js\` — main entry point, renders the app shell and routes
-- \`src/bookList.js\` — renders the list of all books with status badges
-- \`src/addBook.js\` — form component for adding a new book (title, author, status, notes)
-- \`src/storage.js\` — reads and writes data/books.json, handles file I/O
-- \`src/styles.css\` — global styles and layout
-- \`data/books.json\` — data store (not committed to git)`
-
 const FAKE_LOG = `# LOG
 
 Full session entries, newest first. Each entry is written by /done.
@@ -146,7 +137,6 @@ This project uses the Sovereign Implementer method.
 
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
 - **QUEUE.md** — work queue, top-to-bottom. Batches (Build/Test subheadings), Captures (split by \`---\` — processed above with slugs, raw appended below). Items removed from active flow carry \`Blocked by:\` (trigger-based) or \`Parked:\` (indefinite) headers.
-- **REGISTRY.md** — components list. Updated after each build.
 - **LOG/** — session records: what was built, tested, decided.
 
 ## Workflow
@@ -181,14 +171,12 @@ Language: English
 const SESSION_NO_BUILD = `[Sovereign Implementer] Project is set up.
   SPEC.md: found
   QUEUE.md: found
-  REGISTRY.md: found
 
 Ready. Run /plan to manage the queue, or /next to start the top batch.`
 
 const SESSION_ACTIVE_BUILD = `[Sovereign Implementer] Project is set up.
   SPEC.md: found
   QUEUE.md: found
-  REGISTRY.md: found
 
 ACTIVE BUILD in progress (_build.md exists). Run /next to resume, or /done if the work is complete.`
 
@@ -365,9 +353,6 @@ ${FAKE_SPEC}
 --- QUEUE.md ---
 ${FAKE_QUEUE}
 
---- REGISTRY.md ---
-${FAKE_REGISTRY}
-
 --- LOG/log.md ---
 ${FAKE_LOG}`
 
@@ -442,7 +427,7 @@ AUDIT CRITERIA — score each:
 
 1. STEP COMPLIANCE: Did it follow each procedure step in the correct order? Were any steps skipped, reordered, or invented?
 2. TAG COMPLIANCE: Did it respect response-shape tags ([SILENT], [BRIEF], [PROMPT], [SEQUENCE], [DISCUSS])? Check: was [SILENT] work narrated? Were [PROMPT] stops skipped? Were [SEQUENCE] items bundled?
-3. DOC ROUTING: Did it route information to the correct project docs (QUEUE.md, REGISTRY.md, LOG/)?
+3. DOC ROUTING: Did it route information to the correct project docs (SPEC.md, QUEUE.md, LOG/)?
 4. RULE ADHERENCE: Did it follow the Rules section at the bottom of the procedure doc?
 5. TONE AND STYLE: Was communication plain, direct, and non-jargon (per behaviour rules)?
 
@@ -561,7 +546,7 @@ const SKILL_PHASES = [
     procedureFile: DONE_DOC,
     sessionStart: SESSION_ACTIVE_BUILD,
     projectState: projectState(true),
-    scenario: 'The user invokes /done. The "Search and filter" build just completed — all items in _build.md are ticked. Walk through the full build close-out: tests, registry update, log entry, commit flow, and handoff.'
+    scenario: 'The user invokes /done. The "Search and filter" build just completed — all items in _build.md are ticked. Walk through the full build close-out: tests, log entry, commit flow, and handoff.'
   }
 ]
 

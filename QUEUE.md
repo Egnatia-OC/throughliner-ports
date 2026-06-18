@@ -16,18 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Update reader-test-workflow.js to the three-doc model** **[reader-test-registry-update]**
-
-Found during the [retire-registry] grep sweep (2026-06-18 goal session). resources/reader-test-workflow.js — the dev-only multi-agent harness that tests plugin-doc comprehension against a simulated project — still builds a FAKE_REGISTRY fixture, prints REGISTRY.md in its simulated session-start output, and lists REGISTRY.md in its doc-routing test criteria. Since REGISTRY was retired, running the harness would grade comprehension against a stale four-doc world. The harness is kept (a parked item plans to add scenarios to it), so the fix is to update it, not retire it. Host-only — a dev fixture in resources/, never shipped to consumers. Placed above the push gate because it isn't host-side and is REGISTRY-retirement cleanup, so it ships in the same push that releases the retirement.
-
-Files: resources/reader-test-workflow.js
-
-Build:
-- reader-test-workflow.js: remove the FAKE_REGISTRY fixture, drop REGISTRY.md from the simulated session-start output, and update the doc-routing test criteria to the three-doc model (SPEC/QUEUE/LOG). Grep the file for any other REGISTRY references and bring them to three docs.
-
-Test:
-- Claude-runnable (at build): read/grep reader-test-workflow.js confirms no FAKE_REGISTRY or REGISTRY.md references remain and the fixture and doc-routing criteria model SPEC/QUEUE/LOG consistently. (Running the full harness stays with the parked add-scenarios item — it spawns agents and isn't needed to confirm this text fix.)
-
 --- Push required before continuing: release the REGISTRY-retirement + SPEC-model + migration-aware-setup cluster (batches [retire-registry] → [migration-aware-setup]) and reinstall, so its host-side deferred tests can be confirmed before more host-side change is stacked on top ---
 
 **Ask permission before using a connected device to verify** **[ask-before-device-use]**
@@ -327,6 +315,8 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
+
+- While doing the REGISTRY cleanup in resources/reader-test-workflow.js ([reader-test-registry-update]), found a second staleness in the same file, outside that batch's scope. The fixture's fake-project CLAUDE.md (the `FAKE_CLAUDE_MD` block) still carries the rule "SPEC.md is read-only during builds. Edit it only during /plan." That rule was replaced by the spec-edit-batch model — SPEC.md is a normal doc, edited only through a planned spec-edit batch that lists it. [consumer-spec-model-sync] made that change (shipped b5c5337) in the real CLAUDE-TEMPLATE.md and faq-template.md, but it missed this dev fixture. A fresh Claude simulating a session against this fixture would learn the old SPEC rule, so the harness would grade doc-comprehension against a stale model — the same failure mode the REGISTRY staleness caused, just on a different rule. Fix: update `FAKE_CLAUDE_MD`'s "Rules for Claude" to state the spec-edit-batch model. Host-only — a dev fixture in resources/, never shipped to consumers. Relates to [consumer-spec-model-sync] (the missed sweep) and [reader-test-registry-update] (same file).
 
 ### Parked
 

@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: processed 7 Taskflow E2E captures + 3 close-out design threads → 7 batches, [device-access-consent] red flag (open), 3 parked → plan-2026-06-18-2.md
+- [HASH] — reader-test-workflow.js: removed the FAKE_REGISTRY fixture, dropped REGISTRY.md from the simulated session-start output, and updated the doc-routing test criteria to the three-doc model (SPEC/QUEUE/LOG); grep-confirmed no REGISTRY references remain — REGISTRY-retirement cleanup of the dev reader-test harness. → reader-test-registry-update.md
+- 83e604f — /plan: processed 7 Taskflow E2E captures + 3 close-out design threads → 7 batches, [device-access-consent] red flag (open), 3 parked → plan-2026-06-18-2.md
 - b5c5337 — Retired REGISTRY.md across the plugin and this project (architecture 4 docs → 3): stopped scaffolding it, removed it from both hooks, all next-/done- procedure docs, plugin-behaviour routing (SPEC desc "product"→"project"), the CLAUDE + FAQ templates, and this project's CLAUDE.md + dogfood FAQ; deleted REGISTRY.md; added a re-run retirement step with a content-safety check; grep sweep clean; filed a capture on the stale reader-test fixture. Goal-session batch 1 of 4. → retire-registry.md
 - b5c5337 — Spec-edit: synced SPEC.md to the three-doc architecture (removed the REGISTRY bullet, "Four"→"Three") and reworded the pre_tool_use line to drop the stale "SPEC read-only during builds" clause. Goal-session batch 2 of 4. → spec-sync-registry-and-lock.md
 - b5c5337 — Updated the consumer SPEC model in CLAUDE-TEMPLATE.md + faq-template.md (and the dogfood FAQ) from "SPEC read-only during builds" to the spec-edit-batch model; FAQ question unchanged so the index stayed. Goal-session batch 3 of 4. → consumer-spec-model-sync.md
