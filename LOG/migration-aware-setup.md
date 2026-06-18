@@ -1,4 +1,4 @@
-# [HASH] — Migration-aware /setup: detect a content-but-no-SPEC project as a possible migration and frame it, with guardrails
+# b5c5337 — Migration-aware /setup: detect a content-but-no-SPEC project as a possible migration and frame it, with guardrails
 
 From the Taskflow /setup re-run audit (findings F1–F5). /setup had no concept of a project already set up under other names: Step 1 keyed "already set up" on SPEC.md existing, so a folder with real content but no SPEC.md — an older-vocabulary or foreign source — was misread as a fresh start, and the session-start hook said the same ("files but no SPEC.md — it hasn't been set up"). The decision was detect-and-frame only: recognise the possibility and hand the actual mapping to Claude's judgment, with no guided mapping table. Detection stays generic — soften the wording, don't hardcode a list of old doc names — so it covers any source, old-SI or foreign.
 

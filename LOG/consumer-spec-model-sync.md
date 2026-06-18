@@ -1,4 +1,4 @@
-# [HASH] — Updated the consumer-facing SPEC model in the templates (read-only-during-builds → spec-edit-batch)
+# b5c5337 — Updated the consumer-facing SPEC model in the templates (read-only-during-builds → spec-edit-batch)
 
 [spec-edit-batch-type] made SPEC a normal doc, changed only through a planned spec-edit batch, and removed the old "SPEC read-only during builds" rule — but it only updated this project's host-only CLAUDE.md. Two consumer-facing surfaces still taught the old model, so a new user would learn a rule the plugin no longer follows. This batch reworded both, in plain English for a non-coder.
 

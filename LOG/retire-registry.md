@@ -1,4 +1,4 @@
-# [HASH] — Retired REGISTRY.md — the write-only inventory doc removed across the plugin and this project (architecture 4 docs → 3)
+# b5c5337 — Retired REGISTRY.md — the write-only inventory doc removed across the plugin and this project (architecture 4 docs → 3)
 
 REGISTRY.md was write-only: scaffolded at setup, rewritten at every /done, presence-checked at session start, and listed in the scope-lock's editable method docs — but nothing ever read its content to make a decision. Its only justification was a human-facing component map, and the non-coder it serves never opened it. The better replacement is live: a user who wants to know what their app contains asks Claude in-session, which explores the actual code — accurate, contextual, zero maintenance. So the architecture drops from four project docs to three: SPEC, QUEUE, LOG.
 

@@ -1,4 +1,4 @@
-# [HASH] — Spec-edit: synced SPEC.md to the three-doc architecture and dropped the stale "SPEC read-only during builds" clause
+# b5c5337 — Spec-edit: synced SPEC.md to the three-doc architecture and dropped the stale "SPEC read-only during builds" clause
 
 Two sentences in this project's SPEC.md had gone stale, and both were carved-out SPEC changes deferred from earlier decisions — neither could be made in its originating build, because SPEC is out of a feature build's scope (the scope-lock only lets a batch that lists SPEC.md edit it). This planned spec-edit batch (which lists SPEC.md) made both edits, ordered after [retire-registry] so the architecture and the spec didn't briefly contradict.
 
