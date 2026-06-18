@@ -2,6 +2,11 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — Added device/hardware access consent — confirm before touching a connected device (plugin-behaviour.md), ask-before-using step at the verification point (next-build.md), + FAQ; red flag [device-access-consent] fix built, kept open pending reinstall. Goal-session batch 1 of 5. → ask-before-device-use.md
+- [HASH] — Reframed Deferred tests as "verification waiting on an event" with two axes (deferral reason × runnability): done.md + plan.md (active-ask roll) + setup.md scaffold + QUEUE.md, done-build/done-test echoes aligned. Goal-session batch 2 of 5. → deferred-test-seams-fix.md
+- [HASH] — Named the three test-routing categories (run-now default / user-must-run / environment-or-host-side-deferred) in plan.md + next-build.md, aligned to batch 2's two-axis tags, + FAQ. Goal-session batch 3 of 5. → test-routing-rule.md
+- [HASH] — done-test.md commit step overrides the push-ask to commit-only (mirrors done-plan.md) — a test close records, doesn't release, still commits. Goal-session batch 4 of 5. → test-close-commit-only.md
+- [HASH] — Mid-close scope rule: a new directive at /done routes out, only a build-completing verification fix folds in — plugin-behaviour.md + done-build.md + FAQ. Goal-session batch 5 of 5. → done-midclose-scope.md
 - b3bdf46 — reader-test-workflow.js: removed the FAKE_REGISTRY fixture, dropped REGISTRY.md from the simulated session-start output, and updated the doc-routing test criteria to the three-doc model (SPEC/QUEUE/LOG); grep-confirmed no REGISTRY references remain — REGISTRY-retirement cleanup of the dev reader-test harness. → reader-test-registry-update.md
 - 83e604f — /plan: processed 7 Taskflow E2E captures + 3 close-out design threads → 7 batches, [device-access-consent] red flag (open), 3 parked → plan-2026-06-18-2.md
 - b5c5337 — Retired REGISTRY.md across the plugin and this project (architecture 4 docs → 3): stopped scaffolding it, removed it from both hooks, all next-/done- procedure docs, plugin-behaviour routing (SPEC desc "product"→"project"), the CLAUDE + FAQ templates, and this project's CLAUDE.md + dogfood FAQ; deleted REGISTRY.md; added a re-run retirement step with a content-safety check; grep sweep clean; filed a capture on the stale reader-test fixture. Goal-session batch 1 of 4. → retire-registry.md

@@ -7,7 +7,7 @@ Security, privacy, and data-exposure risks Claude has surfaced — kept at the t
 **Claude accessed the user's connected device without asking permission** **[device-access-consent]**
 State: open
 
-Observed in the 2026-06-17 Taskflow /next + /done session (E2E): the build needed on-device verification, a Pixel 6 was reachable over wireless adb, and Claude connected and installed/tested onto it without first asking. adb is a powerful access channel — far beyond installing one app — so taking it silently is a privacy and consent surprise; a user would not expect Claude to reach into their phone unprompted. The installed host still behaves this way until the fix lands. Fix queued as [ask-before-device-use]: verification planning must ask "may I use your connected device to test this?" before touching it. This flag moves to resolved once that ships and is confirmed live.
+Observed in the 2026-06-17 Taskflow /next + /done session (E2E): the build needed on-device verification, a Pixel 6 was reachable over wireless adb, and Claude connected and installed/tested onto it without first asking. adb is a powerful access channel — far beyond installing one app — so taking it silently is a privacy and consent surprise; a user would not expect Claude to reach into their phone unprompted. Fix built in [ask-before-device-use] (2026-06-18 goal run): a Device and hardware access consent rule in plugin-behaviour.md, an ask-before-using-a-device step at the verification point in next-build.md, and an FAQ entry. The installed host still behaves the old way until this is reinstalled — so the flag stays open. It moves to resolved only once the fix is confirmed live (its deferred test: the first build needing on-device verification asks permission before connecting, rather than connecting silently).
 
 ## Batches
 
@@ -15,37 +15,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
-
---- Push required before continuing: release the REGISTRY-retirement + SPEC-model + migration-aware-setup cluster (batches [retire-registry] → [migration-aware-setup]) and reinstall, so its host-side deferred tests can be confirmed before more host-side change is stacked on top ---
-
-**Ask permission before using a connected device to verify** **[ask-before-device-use]**
-Resolves red flag: [device-access-consent]
-
-During the 2026-06-17 Taskflow build, Claude needed on-device verification, found a phone reachable over wireless adb, and connected and installed onto it without asking — surfaced as red flag [device-access-consent]. Two gaps fed it. First, the build deferred the on-device checks on an untested assumption that no device was available, instead of asking. Second, when a device was there, Claude used it silently. adb — and any device or hardware channel — is powerful, and silent access surprises users, so the fix is consent: ask before touching the user's device. This batch adds a general consent rule, applies it at the build's verification step, and ships an FAQ entry so a consumer who sees the permission ask understands it. Shipping it moves [device-access-consent] to resolved.
-
-Files: plugin/si-plugin/docs/plugin-behaviour.md, plugin/si-plugin/docs/next-build.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
-
-Build:
-- plugin-behaviour.md: add a consent rule (near File safety) — confirm with the user before connecting to or acting on their physical device or external hardware (e.g. adb to a phone). Carry the why inline: such access is powerful and silent use surprises users; ask first, the same way outward-facing or hard-to-reverse actions are confirmed.
-- next-build.md, test-execution step: when verification would otherwise be deferred because a device/emulator "isn't available here," don't assume it's absent — ask the user whether one is available; and before using any connected device, ask permission ("may I use your connected device to test this?"). Point to the general consent rule.
-- faq-template.md + faq-index-template.md: add an FAQ entry (with its index line) — "Will Claude use my phone or other device?" — Claude asks permission before connecting to or testing on any attached device, and won't access your hardware silently.
-
-Test:
-- Host-side (deferred): after push + reinstall, the first build needing on-device verification asks whether a device is available and asks permission before using one, rather than silently connecting. Confirms [device-access-consent] resolved. Runnability: observed, after push + reinstall.
-
-**Route new scope out of /done; fold in only build-completing fixes** **[done-midclose-scope]**
-
-From the 2026-06-17 Taskflow session (the same one behind [ask-before-device-use]): a header redesign — new design work — got built during /done because a device appeared mid-close and verification was running there. No rule governed whether /done should take on a new directive that arises during close-out, so Claude improvised. The line this batch draws: a fix that completes the just-built work's own verification (a genuine bug in what the build was meant to deliver) folds in, because it's finishing the build; but new scope — a redesign, a new feature, a change to something that already worked — routes out to a fresh /next, or a capture if it isn't urgent, even when the user raises it mid-close and even if it looks small. /done records and commits; it doesn't take on new build scope. The strong counter-reading is kept: verification naturally lands near the close and shipping known-broken work would be worse — which is exactly why build-completing fixes are the fold-in exception.
-
-Files: plugin/si-plugin/docs/plugin-behaviour.md, plugin/si-plugin/docs/done-build.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
-
-Build:
-- plugin-behaviour.md (Routing and discipline): add the rule — a new build/design directive arising during a close routes out (fresh /next, or capture if not urgent); the one exception is a fix completing the in-progress build's own verification, which folds in because it finishes the build rather than adding scope. Carry the why inline (records-not-builds; the counter-reading that makes verification fixes the exception).
-- done-build.md: at close-out, govern a directive that arises mid-close — distinguish a build-completing fix (fold in) from new scope (route out), pointing to the general rule.
-- faq-template.md + faq-index-template.md: add an FAQ entry (with index line) — "Why did Claude say my new change has to wait for a fresh session?" — at the close Claude records and commits the finished work; a brand-new change is its own work, so it goes to a new build session (or gets captured), while fixes to what was just built are finished at the close.
-
-Test:
-- Host-side (deferred): the first /done where a new directive arises mid-close routes new scope out and folds in only build-completing fixes. Runnability: observed, after push + reinstall.
 
 **README: split the four-commands intro and add the usage-cycle section** **[readme-usage-cycle]**
 
@@ -96,46 +65,6 @@ Build:
 
 Test:
 - Deferred (needs remote + the manifest pushed): the terminal commands install SI in a real Claude Code session. (user-run, after push.)
-
-**Fix the deferred-test seams: reframe the section, fix the roll, add the prompt** **[deferred-test-seams-fix]**
-
-From items 6 + 7 (2026-06-16). Decision: keep both the deferred-tests section and test batches — they aren't redundant. Deferred tests are a staging pen for verification that can't run yet (host-side until reinstall, or waiting on an external event); test batches are the execution home for user-run verification that can run now; the roll mechanism is the bridge. The user's confusion is real but driven by self-hosting inflation (almost everything here is host-side, so the section looks like a parallel test queue; a consumer's would be near-empty). The fix is to clarify the framing and close two seams: the roll scan keys on a runnability tag the lines don't carry, and nothing actively offers the roll, so runnable tests can quietly accumulate.
-
-Build:
-- done.md: when writing a deferred-test line, record two axes — the deferral reason (host-side / needs-user / external) and the runnability the test will have once unblocked (Claude-runnable / user-run) — so a later session knows what kind of check each line becomes.
-- plan.md: turn the silent roll scan into an active surface-and-ask. Each /plan reads the Deferred tests section, asks the user which deferrals have cleared (host-side: has a push + reinstall happened since? external: did the event occur?), and for the cleared lines, offers to roll the user-run ones into a test batch while noting the passive/Claude-runnable ones will be confirmed by observation. Don't silently skip lines tagged host-side.
-- Reframe the Deferred tests section's purpose text — in setup.md's scaffolded QUEUE template and this project's QUEUE.md — to read as "verification waiting on an event," not a parallel test queue, and document the two-axis tagging. Grep for the canonical lifecycle statement (done.md / plan.md) and update it to match.
-
-Test:
-- Host-side (deferred): the first /plan after a push + reinstall actively surfaces the now-runnable host-side deferred tests and offers to roll the user-run ones into a test batch, rather than silently producing nothing.
-
-**Name the three-way test-routing rule: run inline by default, defer only user-must-run or environment-absent tests** **[test-routing-rule]**
-Depends on: [deferred-test-seams-fix]
-
-Across the Taskflow E2E sessions, Claude-runnable tests kept getting batched instead of run. The ten batch-0001 TaskDao instrumented tests sat deferred from 2026-05-24 to 2026-06-18 — about 3.5 weeks — and ran only once a Pixel 6 turned out to be connected (discovered 2026-06-17, long after they were deferred). Root cause: deferral was treated as a catch-all for "can't run this second," and the environment was assumed absent rather than checked. The method already says run-what-you-can-now and defer only the un-runnable, but it never names the category that actually causes the confusion — tests Claude runs but that need a device, emulator, or environment not present this session (instrumented tests are the case). That's a third category sitting between "run inline" and "user-must-run point-and-click." Naming all three makes defer a justified exception, not a default, and pairs with the ask-first fix in [ask-before-device-use] (don't assume the environment is absent). It reuses the two-axis vocabulary [deferred-test-seams-fix] establishes (deferral reason × runnability) — this rule is the routing front-end of that same taxonomy, which is why it depends on it. Deliberately kept out of plugin-behaviour.md: it fires only in /next and /plan, not every session, so per the doc-size watch it lives in the skill docs, not the injected behaviour doc.
-
-Files: plugin/si-plugin/docs/plan.md, plugin/si-plugin/docs/next-build.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
-
-Build:
-- plan.md "Think through testing when drafting": state the three categories as the canonical home — (1) run-now/inline: any test Claude can run this session, the default, including environment-dependent tests when the environment is available; (2) user-must-run: visual / point-and-click / physical / subjective → user-run; (3) Claude-run-but-environment-dependent or host-side: needs a device/emulator/environment absent this session, or awaits reinstall → defer until runnable. Spine: defer is the exception justified only by (2) or (3), never a catch-all for "can't run right now." Before assigning a test to (3) on environment-absence, confirm the environment really is absent (point to [ask-before-device-use]); don't assume.
-- next-build.md test-execution step: apply the three categories at build time — run-now the default, defer the justified exception. State it self-contained (a /next session doesn't load plan.md) but consistent with plan.md's wording.
-- Align the category vocabulary with [deferred-test-seams-fix]'s two-axis tags so the two don't drift, and note the source-batch-slug-per-line convention already preserves the why-pipeline trace when a later session runs a deferred test.
-- faq-template.md + faq-index-template.md: add an FAQ entry (with index line) — "Why do some tests run straight away and others wait?" — Claude runs what it can in the session it builds in; a test waits only if a person has to run it (a visual or tap-through check) or it needs a device or setup that isn't connected yet.
-
-Test:
-- Host-side (deferred): the first build after reinstall runs every test it can in-session and defers only user-must-run or environment-absent ones, not as a catch-all. Runnability: observed, after push + reinstall.
-
-**Test closes default to commit-only — done-test.md overrides the push-ask** **[test-close-commit-only]**
-
-A test batch forces a /done close, but its commit core currently offers the full build-style "commit and push?" dual ask — disproportionate, because a test session changes no product code, only records: the LOG entry and queue updates (batch marked done, captures, confirmed deferred-test lines removed). The commit core already lets a sub-doc override the push-ask default — done-plan.md does this for planning closes — but done-test.md doesn't, so test closes still get the dual ask. This batch has done-test.md override to commit-only, matching planning closes. It still commits (the records must persist, or the next session opens on a dirty tree and warns) — only the push offer drops, since a test session produces nothing to release. Extends the planning/build push-offer split that [push-offer-fit] established to the third close type.
-
-Files: plugin/si-plugin/docs/done-test.md
-
-Build:
-- done-test.md Phase 2.4 (Commit): override the commit core's push-ask to default to commit-only — no push offer — mirroring done-plan.md's override. Carry the why inline: a test session records results, not a shippable change, so there's nothing to release; the records still commit so the next session doesn't inherit a dirty tree. Keep it a default, not a lock — it changes the default ask the same way done-plan.md does.
-
-Test:
-- Host-side (deferred): the first /done closing a test-only batch defaults to commit-only (no push offer), and the records still commit. Runnability: observed, after push + reinstall.
 
 **Note the new-batch-type touch-points in CLAUDE.md** **[new-batch-type-touchpoints]**
 
@@ -271,7 +200,7 @@ Test:
 
 ## Deferred tests
 
-Planned tests that couldn't run in their own session (host-side, needs-user, external event), one line each: source batch slug, what to verify, and what confirms it with a runnability tail (Claude-runnable, user-run, or external). The section holds only verification for shipped work — failures and new test needs route to Captures. Lifecycle: /done writes entries here; /plan reads the section each session and rolls the Claude-runnable and user-run lines into a test batch (external-event lines wait for their event); /done's close-out backstops by removing any line whose confirming event this session's own activity produced. The session that confirms a test removes its line and records the confirmation in its LOG entry.
+Verification waiting on an event — not a parallel test queue. A planned test lands here when it can't run in the session that planned it: host-side behaviour that only goes live after push + reinstall, a check that needs the user, or an external event that hasn't fired. Each line records what to verify, what confirms it, and two separate axes — the deferral reason (why it waits: host-side / needs-user / external) and the runnability it will have once unblocked (who runs it then: Claude-runnable / user-run). The two answer different questions: the deferral reason says when the line becomes checkable, the runnability says who checks it. The section holds only verification for shipped work — failures and new test needs route to Captures. Lifecycle: /done writes entries here; /plan reads the section each session, asks which deferrals have cleared, and rolls the now-runnable user-run lines into a test batch while noting the Claude-runnable ones get confirmed by observation (external-event lines wait for their event); /done's close-out backstops by removing any line whose confirming event this session's own activity produced. The session that confirms a test removes its line and records the confirmation in its LOG entry.
 
 - [narrate-build-md-purpose] — verify the remaining unobserved narration moment: a one-line opener when a resume reads _build.md (scope-lock narration and rationale-carry confirmed live 2026-06-12). Confirmed by: the first /next that resumes an interrupted build.
 - [next-pre-scope-lock-abort] — verify a /next that ends before a build is locked (push-marker halt, blocker-gate stop, or the user calling it off at "Ready?") routes any reshape direction to Captures and names /done, not /plan. Confirmed by: the first naturally-occurring pre-scope-lock end after push + reinstall.
@@ -309,6 +238,11 @@ Planned tests that couldn't run in their own session (host-side, needs-user, ext
 - [close-shipped-slug-crosscheck] — verify the installed host's multi-batch /done cross-checks each shipped slug named in the LOG entries against QUEUE.md's Batches and catches any not removed (one-batch closes pass self-evidently). The logic was exercised live this goal session — a plugin-off three-batch close, reading target done.md — and worked; this line is the installed-host confirmation. Confirmed by: the first multi-batch /done close after push + reinstall (user-run / observed). (host-side)
 - [retire-registry] — verify the first /setup after push + reinstall scaffolds three docs (SPEC/QUEUE/LOG), not four, and session start no longer flags a missing REGISTRY; and that a /setup re-run in an already-adopted project still holding a REGISTRY.md retires it, with the content-safety check surfacing any non-scaffold content before removal rather than deleting blind. Confirmed by: the first /setup (fresh) and the first /setup re-run over a leftover REGISTRY.md, after push + reinstall. Runnability: user-run, after push + reinstall. (host-side)
 - [migration-aware-setup] — verify that opening a session in a content-bearing folder with no SPEC.md shows the softened hook message (possible-migration framing, not "it hasn't been set up"), and that a /setup run there frames it as a possible migration and applies the role-fit and project-root guardrails when mapping, in plain language. Confirmed by: the first such session + /setup run after push + reinstall, in a real folder with foreign or older content. Runnability: user-run, after push + reinstall. (host-side)
+- [ask-before-device-use] — verify the first build needing on-device verification asks whether a device is available and asks permission before connecting, rather than connecting silently; this is the confirmation that resolves red flag [device-access-consent]. Confirmed by: observed in the first such build after push + reinstall. Deferral: host-side. Runnability: user-run.
+- [deferred-test-seams-fix] — verify the first /plan after reinstall actively surfaces the host-side deferred-test lines and asks which deferrals have cleared, offering to roll the now-runnable user-run ones into a test batch, rather than silently producing nothing. Confirmed by: observed in the first /plan after push + reinstall. Deferral: host-side. Runnability: user-run.
+- [test-routing-rule] — verify the first build after reinstall runs every test it can in-session and defers only user-must-run or environment-absent ones, not as a catch-all "can't run now." Confirmed by: observed in the first build after push + reinstall. Deferral: host-side. Runnability: user-run.
+- [test-close-commit-only] — verify the first /done closing a test-only batch defaults to commit-only (no push offer) while still committing the records. Confirmed by: observed in the first test-batch /done after push + reinstall. Deferral: host-side. Runnability: user-run.
+- [done-midclose-scope] — verify the first /done where a new directive arises mid-close routes new scope out (fresh /next, or capture) and folds in only a fix completing the just-built work's own verification. Confirmed by: observed in the first such /done after push + reinstall. Deferral: host-side. Runnability: user-run.
 
 ## Captures
 
@@ -317,6 +251,10 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 ---
 
 - While doing the REGISTRY cleanup in resources/reader-test-workflow.js ([reader-test-registry-update]), found a second staleness in the same file, outside that batch's scope. The fixture's fake-project CLAUDE.md (the `FAKE_CLAUDE_MD` block) still carries the rule "SPEC.md is read-only during builds. Edit it only during /plan." That rule was replaced by the spec-edit-batch model — SPEC.md is a normal doc, edited only through a planned spec-edit batch that lists it. [consumer-spec-model-sync] made that change (shipped b5c5337) in the real CLAUDE-TEMPLATE.md and faq-template.md, but it missed this dev fixture. A fresh Claude simulating a session against this fixture would learn the old SPEC rule, so the harness would grade doc-comprehension against a stale model — the same failure mode the REGISTRY staleness caused, just on a different rule. Fix: update `FAKE_CLAUDE_MD`'s "Rules for Claude" to state the spec-edit-batch model. Host-only — a dev fixture in resources/, never shipped to consumers. Relates to [consumer-spec-model-sync] (the missed sweep) and [reader-test-registry-update] (same file).
+
+- Two Deferred-tests descriptions now lag the [deferred-test-seams-fix] reframe (2026-06-18 goal run). That batch split each Deferred tests line into two axes (deferral reason × runnability) and turned the silent roll into an active "which deferrals have cleared?" ask. Two summaries of the section still describe the old single-axis shape and the old passive roll. First: CLAUDE-TEMPLATE.md's QUEUE.md bullet says lines carry "what confirms it with a runnability tail" and that "/plan rolls the runnable ones into test batches" — no deferral-reason axis, no active ask. Second: this project's CLAUDE.md ("Method docs" QUEUE.md bullet) carries the same single-axis "runnability tail" wording and "rolls the runnable ones." Both were outside [deferred-test-seams-fix]'s Files list (done.md, plan.md, setup.md, this QUEUE.md), so the build correctly left them. Fix: update both to the two-axis format and the active-ask roll, matching the reframed done.md / plan.md / QUEUE.md wording. Low urgency — the next push's pre-push consistency sweep (Pass B: templates and CLAUDE.md against procedure docs) is the natural catcher; the risk is a rezip-and-test before then shipping the stale CLAUDE-TEMPLATE.md into a new consumer /setup. Relates to [deferred-test-seams-fix].
+
+- This 2026-06-18 goal session ran with the installed SI plugin's hooks active, not off. The CLAUDE.md "Goal sessions (plugin off)" model assumes the plugin is turned off: it states the scope-lock does not fire, and that the session-start hook never fires so /done must hand-backfill LOG hashes. Both assumptions were false this session. The post_tool_use QUEUE.md lint fired on every QUEUE.md edit, which proves the plugin is active — so session_start almost certainly fired too and auto-backfilled, and the close's hand-backfill step found nothing to do. The active scope-lock was a latent risk: an aggregate _build.md with a Files list could have denied edits to files not on it. This run pre-empted that by listing every file across all five batches in the aggregate _build.md, and no denial occurred. Impact this session was mild (lint re-fire noise on each QUEUE.md edit; a pre-empted scope-lock), but the documented goal-session procedure did not match how the session actually ran. Decision for /plan: either have the goal-session doc tell the user to disable the plugin first, or make the procedure robust to the plugin being left on — e.g. state that the aggregate _build.md must list every file when the plugin is active, and that the hand-backfill is a backstop that may correctly find nothing if the hook already ran. Observed because /goal sets a Stop hook but does not itself disable the plugin, and it was not disabled manually this session.
 
 ### Parked
 

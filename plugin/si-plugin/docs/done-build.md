@@ -6,6 +6,10 @@ Close-out for build batches (including their test entries). Reached from done.md
 
 Captures meaning that would be lost after compaction.
 
+### Mid-close directive — new scope vs build-completing fix [PROMPT]
+
+If a new directive arises during the close — the user raises a change, or verification turns one up — decide where it goes by one line: does it complete the just-built work's own verification, or is it new scope? A fix to a genuine bug in what this build was meant to deliver folds in (finish it, tick it — it's part of the build). New scope — a redesign, a new feature, a change to something that already worked — routes out: a fresh /next, or a capture if it isn't urgent, even if it looks small and even if the user raises it here. /done records and commits; it doesn't take on new build scope. This applies the general mid-close rule in plugin-behaviour.md (Routing and discipline) at the build close.
+
 ### 1.1 Verify completion
 
 Read _build.md. All entries ticked?
@@ -20,7 +24,7 @@ Each routed finding is drafted, shown, and approved before it's written, so this
 
 ### 1.3 Write deferred tests
 
-Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, and what confirms it with its runnability tail (Claude-runnable, user-run, or external).
+Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, what confirms it, and both axes done.md defines — the deferral reason (host-side / needs-user / external) and the runnability once unblocked (Claude-runnable / user-run).
 
 ### 1.4 Spec-drift check [SILENT] when nothing drifts, [BRIEF] when filing
 

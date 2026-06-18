@@ -34,6 +34,10 @@ Claude raises and updates these — you don't maintain the section. Accepting a 
 
 A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. /plan reads this list each session and folds the ones that can now run into a test batch; and when a later session happens to confirm one along the way, /done removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.
 
+## Why do some tests run straight away and others wait?
+
+Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
+
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
 Nothing is lost. `_build.md` tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
@@ -41,6 +45,10 @@ Nothing is lost. `_build.md` tracks progress. When you reopen, session start det
 ## Is it safe to clear the conversation or start a new session between steps?
 
 After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads its working file (`_build.md` or `_plan.md`) rather than relying on the conversation, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
+
+## Why did Claude say my new change has to wait for a fresh session?
+
+Because the close (/done) is for recording and saving the work that was just finished — not for starting new work. If you ask for something brand-new while Claude is closing a session — a redesign, a new feature, a change to something that already worked — Claude finishes the close first, then that new change becomes its own build session (or gets noted for later if it isn't urgent). The one thing Claude will fix on the spot is a genuine bug in what was just built — that's finishing the job, not starting a new one. Keeping new work to its own session means it gets planned and built properly instead of squeezed into the close.
 
 ## Can I edit SPEC.md while doing a build?
 
@@ -69,6 +77,10 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 ## What happens if Claude needs to touch something outside the current batch?
 
 Claude stops and asks. It stays within batch scope. If something else needs changing: "I need to edit [file] because [reason]. Add to scope?"
+
+## Will Claude use my phone or another device to test my app?
+
+Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
 
 ## What does "Parked" mean in the queue?
 

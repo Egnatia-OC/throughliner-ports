@@ -91,6 +91,10 @@ Worked top to bottom. Each batch is one /next session. Subheadings name the kind
 
 ### Parked
 
+## Deferred tests
+
+Verification waiting on an event — not a parallel to-do list. A planned test lands here when it can't run in the session that planned it: the behaviour only goes live after the plugin updates, a person has to do something first, or an outside event hasn't happened yet. Each line records what to verify, what will confirm it, and two things about the wait — the deferral reason (why it waits: host-side / needs-user / external) and the runnability once the wait clears (who runs it then: Claude-runnable / user-run). Claude writes lines here and clears them; each /plan asks which waits have cleared and rolls the now-runnable ones into a test batch. You don't maintain this section.
+
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session.

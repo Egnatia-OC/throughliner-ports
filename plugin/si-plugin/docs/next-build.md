@@ -18,19 +18,29 @@ For each:
 
 ### Test entries
 
-When the batch contains test entries (under a Test subheading), execution is verification, not file editing:
+When the batch contains test entries (under a Test subheading), execution is verification, not file editing. Route each test into one of three categories — this mirrors plan.md's testing categories, restated here because a /next session doesn't load plan.md:
+
+- **Run-now (inline)** — any test you can run this session (read code, run commands, inspect output, check file content), including environment-dependent tests when the environment is available. The default.
+- **User-must-run** — a visual, point-and-click, physical, or subjective check only the user can make. Hand it over: [PROMPT] state what you need checked and wait.
+- **Environment-dependent or host-side** — a test you'd run yourself but that needs a device, emulator, or environment absent this session, or that awaits a push + reinstall. Defer it.
+
+Run-now is the default; defer is the exception, justified only by user-must-run or environment-absent, never a catch-all for "can't run this second."
+
+For each:
 
 1. Read the test description to understand what's checked.
-2. Run every test you can verify yourself: read code, run commands, inspect output, check file content. Only tests needing real human interaction (visual appearance, physical device behaviour, subjective judgment) go to the user — handing one over is a speaking moment: [PROMPT] state what you need the user to check and wait.
+2. Route it by the categories above — run every run-now test yourself; hand user-must-run tests to the user; defer the environment-dependent or host-side ones.
 3. Tick each in _build.md Progress, pass/fail:
    - `- [x] Test description — ✓`
    - `- [x] Test description — ✗ (reason)`
-   - `- [x] Test description — deferred (reason)` — written the moment a test is determined unrunnable in this session (host-side, needs the user, waiting on an external event). Records the determination in the file so a post-/clear /done doesn't misread the entry as unfinished work.
+   - `- [x] Test description — deferred (reason)` — written the moment a test is determined unrunnable in this session (host-side, needs the user, waiting on an external event). Records the determination in the file so a post-/clear /done doesn't misread the entry as unfinished work; it becomes a Deferred tests line at /done carrying its deferral reason and runnability.
 4. Accumulate results in Changes: what was checked, what passed, what failed.
 
 **On test failure:**
 - Isolated (one test, rest unaffected): [BRIEF] note it, continue, route the fix to Captures at close.
 - Fundamental (invalidates the batch premise or blocks remaining tests): stop, go to Course-correction below.
+
+**Before deferring a test for a missing device or environment, don't assume it's absent — check.** When a test would otherwise be deferred because a device, emulator, or environment "isn't available here," ask the user whether one is available rather than assuming none is. And before using any connected device, ask permission first: "May I use your connected device to test this?" — then wait for a yes. This applies the Device and hardware access rule in plugin-behaviour.md at the verification step. The why: a connected device the user didn't expect Claude to touch is a consent surprise, and a test wrongly deferred on a guess that no device was present sits unrun for weeks.
 
 ### Rules during build
 

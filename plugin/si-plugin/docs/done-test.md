@@ -16,7 +16,7 @@ Each routed finding is drafted, shown, and approved before it's written, so this
 
 ### 1.3 Write deferred tests
 
-Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, and what confirms it with its runnability tail (Claude-runnable, user-run, or external).
+Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, what confirms it, and both axes done.md defines — the deferral reason (host-side / needs-user / external) and the runnability once unblocked (Claude-runnable / user-run).
 
 ## Phase 2: Record
 
@@ -62,6 +62,8 @@ Routine bookkeeping — delete the file, no narration. Unlocks future builds. On
 ### 2.4 Commit
 
 Run the commit core in done.md. Test sessions usually change no source files — the staged paths are typically the method docs and the _build.md deletion.
+
+Override the commit core's push ask: a test close offers commit alone by default — no push offer — mirroring done-plan.md's planning-close override. The why: a test session records results, not a shippable change, so there's nothing to release; the records still commit (the LOG entry, the batch marked done, captures, confirmed deferred-test lines removed), because leaving them uncommitted means the next session opens on a dirty tree and warns. Push stays available when the user asks for it — it's a default, not a lock.
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
