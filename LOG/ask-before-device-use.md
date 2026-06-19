@@ -1,4 +1,4 @@
-# [HASH] — Added device/hardware access consent — confirm before touching a connected device (plugin-behaviour.md), ask-before-using step at the verification point (next-build.md), + FAQ; red flag [device-access-consent] fix built, kept open pending reinstall. Goal-session batch 1 of 5.
+# 5c31b52 — Added device/hardware access consent — confirm before touching a connected device (plugin-behaviour.md), ask-before-using step at the verification point (next-build.md), + FAQ; red flag [device-access-consent] fix built, kept open pending reinstall. Goal-session batch 1 of 5.
 
 Builds the fix for the open red flag [device-access-consent], which arose when a 2026-06-17 Taskflow build connected to a reachable Pixel 6 over wireless adb and tested on it without asking. Two gaps fed that: the build deferred its on-device checks on an untested assumption that no device was available, and when a device was in fact there it was used silently.
 

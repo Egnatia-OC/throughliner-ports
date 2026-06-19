@@ -1,4 +1,4 @@
-# [HASH] — Mid-close scope rule: a new build/design directive arising at /done routes out, only a fix completing the just-built work's own verification folds in — plugin-behaviour.md Routing and discipline + done-build.md Phase 1 + FAQ. Goal-session batch 5 of 5.
+# 5c31b52 — Mid-close scope rule: a new build/design directive arising at /done routes out, only a fix completing the just-built work's own verification folds in — plugin-behaviour.md Routing and discipline + done-build.md Phase 1 + FAQ. Goal-session batch 5 of 5.
 
 From the 2026-06-17 Taskflow session (the same one behind batch 1): a header redesign — new design work — got built during /done because a device appeared mid-close and verification was running there. No rule governed whether /done should take on a new directive that arises during close-out, so Claude improvised.
 

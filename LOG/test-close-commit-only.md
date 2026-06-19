@@ -1,4 +1,4 @@
-# [HASH] — done-test.md commit step now overrides the commit core's push-ask to commit-only (mirrors done-plan.md): a test close records, doesn't release, but still commits. Goal-session batch 4 of 5.
+# 5c31b52 — done-test.md commit step now overrides the commit core's push-ask to commit-only (mirrors done-plan.md): a test close records, doesn't release, but still commits. Goal-session batch 4 of 5.
 
 A test batch forces a /done close, but its commit step ran the full build-style "commit and push?" dual ask — disproportionate, because a test session changes no product code, only records (the LOG entry and queue updates: batch marked done, captures, confirmed deferred-test lines removed). The commit core already lets a sub-doc override the push-ask default — done-plan.md does this for planning closes — but done-test.md didn't, so test closes still got the dual ask.
 

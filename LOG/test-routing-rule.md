@@ -1,4 +1,4 @@
-# [HASH] — Named the three test-routing categories (run-now default / user-must-run / environment-or-host-side-deferred) as the canonical statement in plan.md, applied self-contained in next-build.md, aligned to batch 2's two-axis tags, + FAQ. Goal-session batch 3 of 5.
+# 5c31b52 — Named the three test-routing categories (run-now default / user-must-run / environment-or-host-side-deferred) as the canonical statement in plan.md, applied self-contained in next-build.md, aligned to batch 2's two-axis tags, + FAQ. Goal-session batch 3 of 5.
 
 Across the Taskflow E2E sessions, Claude-runnable tests kept getting batched instead of run — the ten batch-0001 TaskDao instrumented tests sat deferred ~3.5 weeks and ran only once a Pixel 6 turned out to be connected. Root cause: deferral was treated as a catch-all for "can't run this second," and the environment was assumed absent rather than checked. The method said run-what-you-can-now and defer the un-runnable, but never named the category that actually causes the confusion — tests Claude runs but that need a device, emulator, or environment not present this session.
 
