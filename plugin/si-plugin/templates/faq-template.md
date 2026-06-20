@@ -97,6 +97,17 @@ Nothing leaves active flow without one of these — prose alone isn't enough for
 
 It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
+## What does it mean when Claude says a dependency is "out of order" or "dangling"?
+
+Some pieces of work depend on others — one batch needs another finished first. Claude tracks those links in the queue. Now and then a link breaks: a batch is lined up *before* the thing it depends on (out of order), or it points to a piece of work that's no longer in the queue (dangling). Either way, building in that order would trip up.
+
+Claude checks the links when a planning session wraps up, and checks them again at /done. If it finds a break, it won't quietly carry on:
+
+- For a simple ordering mix-up, it offers to reorder the queue right then, with your okay.
+- For anything needing more thought, it sends you back to /plan to sort out before any building starts.
+
+You don't track these links yourself — Claude does, and it fixes or flags them before they reach a build.
+
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file.

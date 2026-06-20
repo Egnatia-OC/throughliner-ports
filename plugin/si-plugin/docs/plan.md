@@ -152,4 +152,13 @@ Split test entries by who runs them, per the thinking above. Write each so /next
 
 ## Step 4: Close out [BRIEF, PROMPT]
 
+**Check the dependency graph before closing.** [SILENT] when it's coherent; surface and wait [PROMPT] when it isn't. Re-read QUEUE.md and walk the graph once, confirming three things:
+- **Ordering:** every `Depends on:` slug sits *above* its own batch in Batches — or has already shipped (check LOG/index.md) or is otherwise satisfied. A batch ordered ahead of something it depends on is the out-of-order break /next trips on.
+- **Resolution:** every slug named in any `Depends on:`, `Blocks:`, or `Blocked by:` header resolves to a real item — a batch in Batches, a parked item, or a shipped slug in LOG. A header pointing at nothing is a dangling reference.
+- **No dependency on an unprocessed capture:** no batch depends on a capture still sitting raw below the Captures divider. A `Depends on:` slug that resolves only to an unprocessed capture is dangling until that capture is processed and promoted — the missed-capture case (clearing every capture is the user's discipline, and a miss leaves the link hanging).
+
+Coherent graph: say nothing, go straight to the close line below. Broken graph: don't close clean. Name what's broken in plain words, fix it in-session with the user's approval — reorder the out-of-order batch, or return to processing the missed capture (the Step 2 loop) — and narrate what was caught. Example: "One thing before we close — [batch-a] depends on [batch-b], but [batch-b] sits below it, so /next would reach [batch-a] first. Move [batch-b] above it?"
+
+The why: /done is the first skill that actually walks this graph today, so a break sails through /plan untouched and only bites at /done — forcing a /plan re-run. Checking it here, in the skill that owns ordering, closes the gap before the handoff. The mechanical lint [plan-close-dep-lint] is the sibling net. Scope: every /plan close.
+
 "Run /done to record this and commit, or keep planning." No chat summary — the LOG entry /done writes is the single session summary.

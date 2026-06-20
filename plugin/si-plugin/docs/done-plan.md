@@ -2,6 +2,17 @@
 
 Close-out for planning sessions. Reached from done.md's router when no _build.md exists — /plan sessions, /setup sessions (scaffolding only adds the method docs), and any other session that changed only the method docs.
 
+## Coherence backstop (run first) [SILENT] when clean; [PROMPT] when broken
+
+Before drafting the LOG entry, re-read QUEUE.md and walk the dependency graph once. /plan's own close-out already checks this ([plan-close-dep-check]); this is the second pair of eyes in case a break slipped through. The same three checks /plan runs:
+- every `Depends on:` slug sits above its own batch in Batches (or has shipped per LOG/index.md, or is otherwise satisfied);
+- every slug named in any `Depends on:`, `Blocks:`, or `Blocked by:` header resolves to a real item — a batch, a parked item, or a shipped slug in LOG;
+- no batch depends on a capture still sitting unprocessed below the Captures divider.
+
+Coherent graph: continue to the LOG entry below, say nothing. Broken graph: stop the close — don't fix it, don't commit. Surface what's broken in plain words and send the user to /plan to sort it. Example: "Before I record this — [batch-a] depends on [batch-b], which sits below it in the queue. That's a planning fix, so run /plan to reorder; I won't commit a queue /next would trip on."
+
+The why this bounces to /plan rather than fixing it here: reordering the queue is planning work, and /done fixing it would cross the build/plan skill line — /done records and commits, it doesn't re-plan. Committing a broken graph ships a queue /next trips on, so surfacing and routing back is the safe move. A fresh /done is a second pair of eyes on the graph, not a second planner. Scope: every plan-type /done close (plan, setup, and method-doc-only sessions).
+
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
 Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):

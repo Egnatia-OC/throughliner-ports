@@ -22,4 +22,5 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Will Claude use my phone or another device to test my app?](faq.md#will-claude-use-my-phone-or-another-device-to-test-my-app)
 - [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
+- [What does it mean when Claude says a dependency is "out of order" or "dangling"?](faq.md#what-does-it-mean-when-claude-says-a-dependency-is-out-of-order-or-dangling)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
