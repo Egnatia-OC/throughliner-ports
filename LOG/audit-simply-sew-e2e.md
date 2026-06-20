@@ -1,4 +1,4 @@
-# [HASH] — Audited the Simply Sew E2E transcript: confirmed all three user-named observations + ran open/red-flag scans → 3 captures filed, 3 confirmations logged
+# ef369d6 — Audited the Simply Sew E2E transcript: confirmed all three user-named observations + ran open/red-flag scans → 3 captures filed, 3 confirmations logged
 
 Audited the Simply Sew Clothing Design Marketplace E2E session transcript (`a901a4ca`), preprocessed from the 1.57 MB raw `.jsonl` to slim conversation text per the transcript-reading workflow. The session was a consumer planning arc — /plan (redirected) → /setup → /done → /plan → /done; no build ran. Read against the batch's three user-named criteria plus the open scan and the red-flag screen.
 
