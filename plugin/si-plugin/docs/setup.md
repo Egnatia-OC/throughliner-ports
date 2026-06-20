@@ -149,6 +149,10 @@ After all 5 answers, write the docs, then close in a sentence or two — show wh
 2. Write one build entry in QUEUE.md from Q4 — under a Build subheading, in the user's words, not multiple scoped entries.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
+5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:
+   - **/setup** you've now run once; you won't run it again for this project.
+   - From here, two commands carry the work: **/plan** to think and organise (manage the queue, add ideas, resolve questions), and **/next** to build the next thing on the list. Run /plan whenever planning is needed, and /next once per item as you work down the queue — planning repeats for long stretches, building repeats across many items.
+   - However a session goes, end it the same way: **/done** to record what happened, then **/clear** to start fresh. The habit that matters: always /done before /clear, so each session is saved before the context resets.
 
 ## Rules
 

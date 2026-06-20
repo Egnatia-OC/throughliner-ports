@@ -65,6 +65,8 @@ Run the commit core in done.md. No source file edits are staged because the audi
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
+Plain-language guard: narrate the captures situation in everyday words — never the background term "processed / unprocessed captures" (see plugin-behaviour.md Vocabulary). Keep the plain statement accurate: don't say the queue is clear when captures are still waiting to be sorted. The scan instruction's "unprocessed Captures" wording below stays as-is — this guard governs only what's said to the user.
+
 Findings routed this session sit unprocessed in Captures — the default recommendation after an audit is /plan, to process them into batches. Name the count.
 
 If nothing was routed, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). State the scan's result either way, not only when it blocks: Captures empty — say nothing's waiting for /plan; Captures waiting but none overlap the next batch — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three captures are waiting; none touches the next batch, so nothing blocks it," never "there may be overlap worth checking." Then, if nothing blocks, recommend by queue state:

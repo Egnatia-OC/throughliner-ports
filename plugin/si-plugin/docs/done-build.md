@@ -18,6 +18,8 @@ Read _build.md. All entries ticked?
 
 Reconcile the file against memory where the session is still remembered: if _build.md and what you recall disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Captures (per 1.2). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it.
 
+When an entry's verification was a user-review of generated output (the user eyeballing a doc, copy, or draft) rather than a pass/fail test, it's closed by asking the user to read it in plain language, not by a test tick — see 1.3.
+
 ### 1.2 Route findings to Captures [PROMPT]
 
 Each routed finding is drafted, shown, and approved before it's written, so this step waits on the user. The record of what was flagged is _build.md's notes plus any captures already routed at the moment of noticing — sweep those. Conversation memory, when present, is a same-session bonus pass, never a source this step depends on. Route each finding to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Route test failure fixes too.
@@ -25,6 +27,8 @@ Each routed finding is drafted, shown, and approved before it's written, so this
 ### 1.3 Write deferred tests
 
 Any planned test from the batch that couldn't run in this session goes to QUEUE.md's "## Deferred tests" section, per done.md Deferred tests — never as LOG-entry prose alone. Each entry ticked `deferred (reason)` in Progress converts mechanically into one queue line: source batch slug, what to verify, what confirms it, and both axes done.md defines — the deferral reason (host-side / needs-user / external) and the runnability once unblocked (Claude-runnable / user-run).
+
+**A user-review of generated output is not a deferred test.** When the batch's verification was the user eyeballing generated output (a doc, copy, a draft) rather than a behaviour check, don't write it as a Deferred-tests line and don't frame it as "mark the test passed" or "defer it to a queue line." Frame the close as a plain request — "have a read of X and tell me if anything's off." If the user hasn't read it yet, hold that as a plain reminder in the recommend-next step, not a Deferred-tests test line. The obligation to look is kept; only the test framing goes (see done.md Deferred tests).
 
 ### 1.4 Spec-drift check [SILENT] when nothing drifts, [BRIEF] when filing
 
@@ -78,6 +82,8 @@ Routine bookkeeping — delete the file, no narration. Unlocks future builds. On
 Run the commit core in done.md.
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
+
+Plain-language guard: narrate the captures situation in everyday words — never the background term "processed / unprocessed captures" (see plugin-behaviour.md Vocabulary). Keep the plain statement accurate: don't say the queue is clear when captures are still waiting to be sorted. The scan instruction's "unprocessed Captures" wording below stays as-is — this guard governs only what's said to the user.
 
 Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). State the scan's result either way, not only when it blocks: Captures empty — say nothing's waiting for /plan; Captures waiting but none overlap the next batch — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three captures are waiting; none touches the next batch, so nothing blocks it," never "there may be overlap worth checking."
 

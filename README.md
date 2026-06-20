@@ -14,7 +14,7 @@ Non-coders who know what their app should do but need a framework to keep Claude
 
 ## What it does
 
-The plugin splits your project into a build queue and walks you through it with four slash commands:
+The plugin splits your project into a build queue and walks you through it. It has four slash commands:
 
 - `/setup` — answers five questions about your project and scaffolds everything
 - `/plan` — organise the queue, capture ideas, resolve design questions
@@ -22,6 +22,15 @@ The plugin splits your project into a build queue and walks you through it with 
 - `/done` — record what happened, test, commit
 
 Hooks run automatically in the background to enforce discipline — keeping your spec read-only during builds, locking scope to the current batch, and preventing unsafe git operations.
+
+## How to use it
+
+Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.
+
+- **/plan** — think and organise: manage the queue, add ideas, resolve questions. Run it as often as planning needs; a long planning stretch is just /plan → /done → /clear, repeated.
+- **/next** — build: it picks the top item and does it. You'll run /next many times, once per item, working down the queue.
+
+The habit that matters: always /done before /clear, so each session is saved before the context resets.
 
 ## Operating conditions
 

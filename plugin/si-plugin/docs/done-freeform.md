@@ -55,6 +55,8 @@ Run the commit core in done.md. Freeform sessions may or may not change source f
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
+Plain-language guard: narrate the captures situation in everyday words — never the background term "processed / unprocessed captures" (see plugin-behaviour.md Vocabulary). Keep the plain statement accurate: don't say the queue is clear when captures are still waiting to be sorted. The scan instruction's "unprocessed Captures" wording below stays as-is — this guard governs only what's said to the user.
+
 Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). If any are found, recommend /plan first and name the overlap.
 
 Otherwise, based on queue state:

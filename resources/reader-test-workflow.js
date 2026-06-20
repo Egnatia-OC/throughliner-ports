@@ -148,7 +148,7 @@ This project uses the Sovereign Implementer method.
 
 ## Rules for Claude
 
-- SPEC.md is read-only during builds. Edit it only during /plan.
+- SPEC.md is a normal doc, changed only through a planned spec-edit batch that /next executes and that lists SPEC.md in its Files — not edited inline during /plan, and not touched by a feature build.
 - Only touch files listed in the active build scope. Halt and ask if you need more.
 - One build at a time. Finish and /done before starting another.
 - State problems plainly. Don't hide them or silently fix unrelated things.

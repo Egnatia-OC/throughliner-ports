@@ -6,6 +6,14 @@ Answers to common questions about how this project's workflow operates.
 
 They split work into three modes. **/plan** is for thinking — queue management, captures, design questions. **/next** is for doing — picks the top batch and builds it. **/done** is for closing — records, updates docs, commits. Always in order: plan, do, close.
 
+## How do the four commands fit together day-to-day?
+
+You run **/setup** once, right at the start of a project. After that, every working session is either **/plan** (thinking and organising — managing the queue, adding ideas, resolving questions) or **/next** (building — it picks the top item and does it). You'll run /plan as often as planning needs, and /next once per item as you work down the queue: planning repeats for long stretches, building repeats across many items. However a session goes, it ends the same way — **/done** to record what happened, then **/clear** to start fresh. The one habit that matters: always /done before /clear, so each session is saved before the context resets.
+
+## What does /setup do, and do I run it more than once?
+
+/setup adopts your project folder into the method: it scaffolds the working docs (SPEC.md, QUEUE.md, the LOG folder, and this FAQ) and interviews you with five short questions to fill in SPEC.md — what the project is, who it's for, how it works. You run it once per project. If you run it again later — for instance after a plugin update — it only backfills scaffolding that's missing; it does not overwrite or reconcile content you've already written. So re-running it is safe, but it won't refresh or rewrite your existing docs.
+
 ## What's the difference between Batches and Captures in QUEUE.md?
 
 **Batches** are ready-to-build work — entries under Build/Test subheadings, worked top to bottom. One batch per /next session. **Captures** is an inbox — ideas, questions, and observations from builds or between sessions. Not actionable yet — during /plan, each gets discussed and either promoted, parked, or dropped.
@@ -25,7 +33,7 @@ It's where Claude lists security and privacy risks it has spotted — anything t
 Each red flag carries one of three states:
 
 - **Open** — the risk has been raised but not yet dealt with.
-- **Resolved** — the risk has been fixed or designed out; the work no longer carries it.
+- **Resolved** — the risk has been fixed or designed out; the work no longer carries it. This includes a risk Claude designs out during planning, before any code is written — it's still recorded here as resolved, with a note on how.
 - **Accepted** — you were told the risk plainly and chose to go ahead anyway. That choice is written into the session log: what you were warned about, and that you agreed to proceed. It's a clear record if the risk ever matters later.
 
 Claude raises and updates these — you don't maintain the section. Accepting a risk is a decision only you can make.
@@ -38,6 +46,10 @@ A waiting list for tests that couldn't run in the session that planned them — 
 
 Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
 
+## I just updated the plugin — how do I check it still works?
+
+Run a quick session and confirm the new behaviour works the way you expect — that check is itself a testing session. The method saves up exactly these checks for after an update: when something could only be confirmed once the update was installed, it's set aside, and the first session after you reinstall is when it becomes checkable. So when you open a session right after updating, Claude may point out that now's a good moment to confirm the update — run /plan and it'll line up what's worth checking into a quick test session.
+
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
 Nothing is lost. `_build.md` tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
@@ -45,6 +57,10 @@ Nothing is lost. `_build.md` tracks progress. When you reopen, session start det
 ## Is it safe to clear the conversation or start a new session between steps?
 
 After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads its working file (`_build.md` or `_plan.md`) rather than relying on the conversation, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
+
+## What's the difference between committing and pushing, and why does Claude only ask about pushing?
+
+Two different saves. **Committing** saves a snapshot of your work to your project's history on your own computer. It always happens when you close a build session, and you don't have to approve it — the snapshot's description is the session summary you already approved. **Pushing** additionally sends that snapshot to a remote backup, like GitHub, if your project has one set up. So at the end of a build, Claude commits first (the safe, local save), then asks whether to also push (the part that sends your work somewhere external). If your project has no remote set up, there's nothing to push to, so Claude just commits and doesn't ask. Planning and test sessions commit too, but never offer a push — they record bookkeeping, not a change to release.
 
 ## Why did Claude say my new change has to wait for a fresh session?
 
@@ -54,9 +70,17 @@ Because the close (/done) is for recording and saving the work that was just fin
 
 Not during an ordinary build. SPEC.md is your project's source of truth, so it's kept from shifting under active work — the safety check blocks a build from editing any file its batch doesn't list, and ordinary builds don't list SPEC.md. Changing SPEC takes a planned spec-edit batch: /plan queues it, and /next runs it like any other build. So if you spot a spec issue mid-build, note it for /plan, which turns it into a spec-edit batch.
 
+## Why won't the method let a spec change ride inside a build?
+
+Your SPEC.md is the project's source of truth, so the method keeps it from being changed quietly as a side effect of building a feature. A spec change always gets its own dedicated job — a spec-edit batch — rather than being folded into a feature build. So if a build would also need to change the spec, Claude will ask to split it into its own spec-edit batch. That way the source of truth only ever changes through a deliberate, visible step you approve, never as a hidden part of something else.
+
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
 Tell Claude. It gets added to Captures without derailing current work. Next /plan session picks it up for discussion and routing.
+
+## Why does Claude sometimes re-read our conversation at the end of a planning session?
+
+Before wrapping up a planning session, Claude takes a pass back over the conversation and points out things you mentioned in passing but never asked to save. It's a safety net: when you think out loud, good ideas and concerns slip by without being formally captured, and this catches them before the session closes. It's best-effort — Claude can only re-read what's still in view, so in a long session some earlier discussion may already be out of reach. That means "I didn't find anything" means nothing jumped out in what Claude could still see, not a guarantee nothing was missed. Whatever it surfaces, you approve (or wave off), and approved items get sorted into the queue like any other captured idea.
 
 ## The queue is empty. Does that mean the project is done?
 
@@ -73,6 +97,10 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 ## What if my project already has planning docs from another tool or an older version?
 
 /setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the method doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
+
+## Claude says my project is "out of date" and offers to run /setup. What does that do?
+
+It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
 
 ## What happens if Claude needs to touch something outside the current batch?
 
@@ -107,6 +135,10 @@ Claude checks the links when a planning session wraps up, and checks them again 
 - For anything needing more thought, it sends you back to /plan to sort out before any building starts.
 
 You don't track these links yourself — Claude does, and it fixes or flags them before they reach a build.
+
+## What does Claude mean by a "circular dependency"?
+
+Sometimes a piece of work would be better if you added something first — but that something can't be finished until the very work you're about to do is done. That's a circular dependency: each side waits on the other, so "do the other thing first" never actually finishes. When Claude spots this, it won't send you round in a loop. It builds a first version of the work now to break the circle, and keeps the missing piece on the queue (parked, or marked as blocked) to add once this work exists. Nothing is lost — the gap is tracked, just filled later instead of first.
 
 ## How do I know what was done in a previous session?
 

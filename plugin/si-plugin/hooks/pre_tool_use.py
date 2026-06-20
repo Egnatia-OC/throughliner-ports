@@ -118,6 +118,25 @@ def _is_method_doc(filepath: str, cwd: str) -> bool:
     return False
 
 
+def _is_memory_dir(filepath: str) -> bool:
+    """Check if a path is under the user's Claude memory directory.
+
+    Claude's memory lives at a path shaped like `.../.claude/.../memory/...`
+    — a `memory` directory somewhere beneath a `.claude` directory. Matched
+    by path shape, never a hardcoded machine path, so it holds for every
+    consumer regardless of where their home or project lives. Memory writes
+    (user preferences, working style, communication feedback) are allowed at
+    any time per the memory-boundary rules, so the scope-lock must not block
+    them — this exemption mirrors the method-docs one.
+    """
+    norm = _normalise(filepath)
+    parts = norm.split(os.sep)
+    if ".claude" not in parts:
+        return False
+    claude_idx = parts.index(".claude")
+    return "memory" in parts[claude_idx + 1:]
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -220,6 +239,9 @@ def main() -> int:
             return 0
 
         if _is_method_doc(filepath, cwd):
+            return 0
+
+        if _is_memory_dir(filepath):
             return 0
 
         if not build_files:

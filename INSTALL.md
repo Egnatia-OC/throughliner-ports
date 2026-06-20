@@ -6,7 +6,7 @@
 
 **What to expect.** Claude will ask you a couple of quick questions to find out where you're starting from, then guide you through getting Claude Code (if you don't have it), making sure you're on a paid plan, and adding the plugin. It goes one step at a time and waits for you at each one.
 
-**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin).
+**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin). If you're comfortable in Claude Code, Branch B opens with a faster terminal install — two commands you run (or ask the Claude Code agent to run) inside Claude Code itself; the click-through zip upload is there as the no-terminal fallback.
 
 **For Claude (the assistant reading this):** your operating instructions are at the end of this file, in the "Instructions for Claude" section. Read that section before you start walking the user through anything.
 
@@ -59,7 +59,29 @@ Recommend the subscription path for a non-coder unless they already have API cre
 
 ## Branch B — Install the Sovereign Implementer plugin
 
-Once Claude Code is installed and the user is on a paid plan:
+Once Claude Code is installed and the user is on a paid plan, there are two ways to install. Offer the terminal path first to anyone comfortable in Claude Code — it's faster — and fall back to the click-through zip upload for anyone who'd rather not touch a terminal.
+
+**This still hands off.** You (Claude, in the claude.ai chat) cannot run the install from here — you have no access to the user's machine. Whichever path they pick, they do it inside Claude Code, and you wait for them to report back. Never pretend this chat can run the install itself.
+
+### B.1 — Terminal install (faster, for users comfortable with Claude Code)
+
+This path uses Claude Code's plugin marketplace. The user runs two commands **inside Claude Code** — either typed into Claude Code's integrated terminal, or by asking the Claude Code agent (in its own chat) to run them. They do NOT run in this claude.ai chat.
+
+First, register the marketplace:
+
+```
+claude plugin marketplace add FlintCraftTech/sovereign-implementer
+```
+
+Then install the plugin from it:
+
+```
+claude plugin install sovereign-implementer@flintcraft
+```
+
+After both succeed, the plugin activates on a `/reload-plugins` or a full restart of Claude Code. Then run the smoke test (step 4 of B.2 below) to confirm it took. If either command errors — for example, the marketplace can't be found — fall back to the zip upload in B.2.
+
+### B.2 — Zip upload (no terminal needed)
 
 1. **Download the plugin zip.** Direct link: `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip`
 

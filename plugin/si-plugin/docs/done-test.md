@@ -63,9 +63,11 @@ Routine bookkeeping — delete the file, no narration. Unlocks future builds. On
 
 Run the commit core in done.md. Test sessions usually change no source files — the staged paths are typically the method docs and the _build.md deletion.
 
-Override the commit core's push ask: a test close offers commit alone by default — no push offer — mirroring done-plan.md's planning-close override. The why: a test session records results, not a shippable change, so there's nothing to release; the records still commit (the LOG entry, the batch marked done, captures, confirmed deferred-test lines removed), because leaving them uncommitted means the next session opens on a dirty tree and warns. Push stays available when the user asks for it — it's a default, not a lock.
+Override the commit core's push offer: a test close commits and doesn't offer push — mirroring done-plan.md's planning-close override. The why: a test session records results, not a shippable change, so there's nothing to release; the records still commit (the LOG entry, the batch marked done, captures, confirmed deferred-test lines removed), because leaving them uncommitted means the next session opens on a dirty tree and warns. Push stays available when the user asks for it — it's a default, not a lock.
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
+
+Plain-language guard: narrate the captures situation in everyday words — never the background term "processed / unprocessed captures" (see plugin-behaviour.md Vocabulary). Keep the plain statement accurate: don't say the queue is clear when captures are still waiting to be sorted. The scan instruction's "unprocessed Captures" wording below stays as-is — this guard governs only what's said to the user.
 
 Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). State the scan's result either way, not only when it blocks: Captures empty — say nothing's waiting for /plan; Captures waiting but none overlap the next batch — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three captures are waiting; none touches the next batch, so nothing blocks it," never "there may be overlap worth checking."
 

@@ -21,6 +21,13 @@ the file from disk and flags known format violations:
      can only be a citation (a dry run against the real queue showed
      those make up the bulk of prose references — flagging them buried
      the real signals under ~2.5KB of noise per edit).
+  7. A batch whose Depends on: names another active batch positioned
+     below it in Batches — an out-of-order dependency /next would trip
+     on. Deps that resolve to a Deferred-tests slug (staged) or to
+     nothing (shipped) are not ordering errors and aren't flagged.
+  8. A batch carrying both a Build and a Spec-edit subheading — a spec
+     change gets its own batch; the scope-lock can't catch a folded one
+     because listing SPEC.md satisfies it.
 
 Deny-list by design: only known violations are flagged; unknown or
 novel structure passes in silence, so the format can evolve (new
@@ -70,25 +77,30 @@ def _normalise(path: str) -> str:
 
 
 def _annotate(content: str):
-    """Yield (index, stripped line, h2, h3, is_heading) per line."""
+    """Yield (index, stripped line, h2, h3, is_heading, indent) per line.
+
+    `indent` is the raw line's leading-whitespace width — used to tell a
+    nested sub-bullet (a continuation of an item) from a top-level entry.
+    """
     h2 = h3 = None
     out = []
     for i, raw in enumerate(content.splitlines()):
         stripped = raw.strip()
+        indent = len(raw) - len(raw.lstrip())
         if raw.startswith("### "):
             h3 = raw[4:].strip()
-            out.append((i, stripped, h2, h3, True))
+            out.append((i, stripped, h2, h3, True, indent))
         elif raw.startswith("## "):
             h2, h3 = raw[3:].strip(), None
-            out.append((i, stripped, h2, h3, True))
+            out.append((i, stripped, h2, h3, True, indent))
         else:
-            out.append((i, stripped, h2, h3, False))
+            out.append((i, stripped, h2, h3, False, indent))
     return out
 
 
 def _check_batch_slugs(annotated, warnings):
     """Check 1: every batch title line carries a **[slug]** marker."""
-    for i, line, h2, _h3, is_heading in annotated:
+    for i, line, h2, _h3, is_heading, _indent in annotated:
         if is_heading or h2 != "Batches" or not line:
             continue
         if FULL_BOLD_LINE.match(line) and not SLUG_MARKER.search(line):
@@ -100,17 +112,24 @@ def _check_batch_slugs(annotated, warnings):
 
 
 def _check_parked_headers(annotated, warnings):
-    """Check 2: every parked item has a Blocked by:/Parked: header."""
+    """Check 2: every parked item has a Blocked by:/Parked: header.
+
+    A line indented under an item (indent > 0) is a continuation of that
+    item — a nested sub-bullet, not a standalone parked entry — so only a
+    top-level (indent 0) bullet or full-bold line starts a new item. A
+    sub-bullet under a parked item used to be read as its own loose entry
+    and falsely flagged; requiring indent 0 fixes that.
+    """
     blocks = []
     current = None
-    for i, line, _h2, h3, is_heading in annotated:
+    for i, line, _h2, h3, is_heading, indent in annotated:
         if h3 != "Parked" or is_heading:
             if current:
                 blocks.append(current)
                 current = None
             continue
-        starts_item = line.startswith("- ") or bool(
-            line and FULL_BOLD_LINE.match(line)
+        starts_item = indent == 0 and (
+            line.startswith("- ") or bool(line and FULL_BOLD_LINE.match(line))
         )
         if starts_item:
             if current:
@@ -134,10 +153,10 @@ def _check_parked_headers(annotated, warnings):
 
 def _check_captures_divider(annotated, warnings):
     """Check 3: the Captures section keeps its bare --- divider."""
-    has_captures = any(h2 == "Captures" for _i, _l, h2, _h3, _ih in annotated)
+    has_captures = any(h2 == "Captures" for _i, _l, h2, _h3, _ih, _ind in annotated)
     if not has_captures:
         return
-    for _i, line, h2, h3, is_heading in annotated:
+    for _i, line, h2, h3, is_heading, _ind in annotated:
         if h2 == "Captures" and h3 is None and not is_heading and line == "---":
             return
     warnings.append(
@@ -147,9 +166,28 @@ def _check_captures_divider(annotated, warnings):
     )
 
 
+def _deferred_slugs(annotated):
+    """Slugs referenced in the Deferred tests section.
+
+    A slug staged in Deferred tests is a valid pending trigger, so a
+    Blocked by: (or other dependency header) pointing at it is not
+    dangling. Deferred-test lines write the slug as a plain [slug]
+    reference, not a bold **[slug]** marker, so SLUG_MARKER — and thus
+    defined_slugs — never picks them up; this fills that gap for the
+    dangling-ref check only. A slug found in neither Batches nor here is
+    still flagged: a fully-shipped blocker is a real unpark signal.
+    """
+    slugs = set()
+    for _i, line, h2, _h3, is_heading, _indent in annotated:
+        if is_heading or h2 != "Deferred tests":
+            continue
+        slugs.update(SLUG_REF.findall(line))
+    return slugs
+
+
 def _check_dangling_refs(annotated, defined_slugs, warnings):
     """Check 4: dependency headers only name slugs defined in the file."""
-    for i, line, _h2, _h3, is_heading in annotated:
+    for i, line, _h2, _h3, is_heading, _indent in annotated:
         if is_heading:
             continue
         match = DEP_HEADER.match(line)
@@ -167,7 +205,7 @@ def _check_dangling_refs(annotated, defined_slugs, warnings):
 
 def _check_subheadings(annotated, warnings):
     """Check 5: batch subheadings are Build:/Test:/Audit: only."""
-    for i, line, h2, _h3, is_heading in annotated:
+    for i, line, h2, _h3, is_heading, _indent in annotated:
         if is_heading or h2 != "Batches":
             continue
         match = SUBHEADING.match(line)
@@ -189,7 +227,7 @@ def _check_prose_refs(annotated, defined_slugs, warnings):
     """
     blocks = []
     current = None
-    for _i, line, h2, _h3, is_heading in annotated:
+    for _i, line, h2, _h3, is_heading, _indent in annotated:
         if h2 != "Batches" or is_heading:
             if current:
                 blocks.append(current)
@@ -241,16 +279,118 @@ def _check_prose_refs(annotated, defined_slugs, warnings):
         )
 
 
+def _check_dep_ordering(annotated, warnings):
+    """Check 7: a batch's Depends on: names an active batch ordered below it.
+
+    Only active batches in Batches count. A dependency that resolves to a
+    Deferred-tests slug (staged) or to nothing (shipped) is not an ordering
+    error — it simply isn't an active batch, so it's never in the position
+    map and never flagged here (the dangling-ref check owns the
+    resolves-to-nothing case). A parked target is likewise skipped: depending
+    on a parked item is a block, not an ordering mistake. Advisory only.
+    """
+    batches = []
+    current = None
+    for i, line, h2, h3, is_heading, indent in annotated:
+        if h2 != "Batches" or h3 == "Parked" or is_heading:
+            if current:
+                batches.append(current)
+                current = None
+            continue
+        if MARKER_LINE.match(line):
+            if current:
+                batches.append(current)
+                current = None
+            continue
+        if indent == 0 and line and FULL_BOLD_LINE.match(line):
+            if current:
+                batches.append(current)
+            current = {"idx": i, "own": set(SLUG_MARKER.findall(line)), "deps": set()}
+        elif current is not None:
+            mh = DEP_HEADER.match(line)
+            if mh and mh.group(1) == "Depends on":
+                current["deps"].update(SLUG_REF.findall(line))
+    if current:
+        batches.append(current)
+
+    position = {}
+    for order_i, b in enumerate(batches):
+        for s in b["own"]:
+            position[s] = order_i
+
+    for order_i, b in enumerate(batches):
+        for dep in sorted(b["deps"]):
+            if dep in b["own"]:
+                continue
+            if dep in position and position[dep] > order_i:
+                label = sorted(b["own"])[0] if b["own"] else f"line {b['idx'] + 1}"
+                warnings.append(
+                    f"line {b['idx'] + 1}: [{label}] Depends on: [{dep}], but "
+                    f"[{dep}] is ordered below it in Batches — /next would reach "
+                    f"[{label}] first. Move [{dep}] above it, or reorder."
+                )
+
+
+def _check_spec_edit_build_mix(annotated, warnings):
+    """Check 8: a batch carries both a Build and a Spec-edit subheading.
+
+    A spec edit gets its own batch, separate from a feature build. The
+    scope-lock can't catch a folded one (listing SPEC.md satisfies it), so
+    this advisory flag backstops the authoring rule in plan.md. Advisory
+    only — like the rest of the lint, it flags and never blocks.
+    """
+    batches = []
+    current = None
+    for i, line, h2, h3, is_heading, indent in annotated:
+        if h2 != "Batches" or h3 == "Parked" or is_heading:
+            if current:
+                batches.append(current)
+                current = None
+            continue
+        if MARKER_LINE.match(line):
+            if current:
+                batches.append(current)
+                current = None
+            continue
+        if indent == 0 and line and FULL_BOLD_LINE.match(line):
+            if current:
+                batches.append(current)
+            current = {"idx": i, "title": line, "subs": set()}
+        elif current is not None:
+            ms = SUBHEADING.match(line)
+            if ms:
+                current["subs"].add(ms.group(1))
+    if current:
+        batches.append(current)
+
+    for b in batches:
+        if "Build" in b["subs"] and "Spec-edit" in b["subs"]:
+            own = sorted(SLUG_MARKER.findall(b["title"]))
+            label = own[0] if own else b["title"][:40]
+            warnings.append(
+                f"line {b['idx'] + 1}: [{label}] carries both a Build and a "
+                "Spec-edit subheading — a spec change gets its own batch, "
+                "separate from a feature build. Split them."
+            )
+
+
 def lint(content: str) -> list[str]:
     annotated = _annotate(content)
     defined_slugs = set(SLUG_MARKER.findall(content))
+    deferred_slugs = _deferred_slugs(annotated)
     warnings = []
     _check_batch_slugs(annotated, warnings)
     _check_parked_headers(annotated, warnings)
     _check_captures_divider(annotated, warnings)
-    _check_dangling_refs(annotated, defined_slugs, warnings)
+    # Dangling-ref check resolves against Batches slugs PLUS Deferred-tests
+    # slugs (a staged test is a valid pending trigger). The prose-ref check
+    # deliberately stays on defined_slugs only — adding deferred slugs there
+    # would start flagging citations the absent-slug skip currently quiets.
+    _check_dangling_refs(annotated, defined_slugs | deferred_slugs, warnings)
     _check_subheadings(annotated, warnings)
     _check_prose_refs(annotated, defined_slugs, warnings)
+    _check_dep_ordering(annotated, warnings)
+    _check_spec_edit_build_mix(annotated, warnings)
     return warnings
 
 

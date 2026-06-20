@@ -122,12 +122,15 @@ def _dirty_tree_count(cwd):
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
-def _deferred_tests_present(queue_path):
-    """True when QUEUE.md has at least one entry under its '## Deferred tests' section.
+def _host_side_deferred_tests_present(queue_path):
+    """True when QUEUE.md's '## Deferred tests' section has a host-side line.
 
-    Reads the section between its heading and the next top-level heading, and
-    looks for any list item. Used only to decide whether the version-change
-    report should mention that deferred tests may now be live-testable.
+    Host-side deferred tests are the ones a reinstall actually makes
+    checkable — tagged "(host-side)" or "Deferral: host-side". A needs-user
+    or external line isn't gated on a reinstall, so it doesn't trigger the
+    post-update confirm-session nudge. Reads the section between its heading
+    and the next top-level heading, and checks each list item for the
+    host-side marker.
     """
     try:
         with open(queue_path, "r", encoding="utf-8") as f:
@@ -143,7 +146,10 @@ def _deferred_tests_present(queue_path):
     if next_heading != -1:
         section = section[:next_heading]
     for line in section.splitlines():
-        if line.lstrip().startswith("- "):
+        if not line.lstrip().startswith("- "):
+            continue
+        low = line.lower()
+        if "(host-side)" in low or "deferral: host-side" in low:
             return True
     return False
 
@@ -298,18 +304,21 @@ def main() -> int:
 
     # Version-change report: the retained "a plugin update just happened" signal
     # (see version_mismatch above). This is NOT the drift warning — that is
-    # presence-based above. When deferred tests are waiting, the update may have
-    # made some of them live-testable, so the report names that path to /plan.
+    # presence-based above. When host-side checks are waiting (the ones a
+    # reinstall makes checkable), append a plain-English nudge to run a quick
+    # session to confirm the update behaves — framed as a testing session, no
+    # internal jargon.
     if version_mismatch:
         update_msg = (
             "[Sovereign Implementer] Plugin version changed since this project was "
             f"last set up ({project_version} → {plugin_version}) — an update has been "
             "installed."
         )
-        if _deferred_tests_present(queue_path):
+        if _host_side_deferred_tests_present(queue_path):
             update_msg += (
-                " Deferred tests in QUEUE.md may now be live-testable — /plan can roll "
-                "the runnable ones into a test batch."
+                " Now's a good moment to run a quick session and confirm the update "
+                "behaves the way you expect — that check is itself a testing session. "
+                "Run /plan when you're ready and it'll line up what's worth confirming."
             )
         context_parts.append("")
         context_parts.append(update_msg)
