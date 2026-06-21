@@ -46,7 +46,7 @@ Stated once here; the build and test sub-docs point at this section.
 
 A planned test that can't run in the closing session is written to QUEUE.md's "## Deferred tests" section, one line per test. Each line records two separate axes, because they answer two different questions:
 
-- **Deferral reason — why it has to wait.** One of: **host-side** (the behaviour only goes live after push + reinstall), **needs-user** (a person must do something before it can run), or **external** (an outside event hasn't fired yet).
+- **Deferral reason — why it has to wait.** One of: **host-side** (the behaviour only goes live once the plugin is reinstalled — a private test-build reinstall is enough; publishing to the remote isn't required), **needs-user** (a person must do something before it can run), or **external** (an outside event hasn't fired yet).
 - **Runnability — who runs it once the wait clears.** One of: **Claude-runnable** (Claude can produce the confirming event itself) or **user-run** (only the user can). An external-event line names its event in place of a runnability tail.
 
 So a full line carries: source batch slug, what to verify, what confirms it, and both axes. Exemplar: "[ask-before-device-use] — the first build needing on-device verification asks permission before connecting, instead of connecting silently. Confirmed by: observed in the first such build after push + reinstall. Deferral: host-side. Runnability: user-run." Keep the two axes distinct — the deferral reason says *when* the line becomes checkable, the runnability says *who* checks it then, and a later session needs both to route the line.

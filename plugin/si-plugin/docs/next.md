@@ -31,12 +31,13 @@ Once the user confirms:
 ```markdown
 # Active Build
 
-Entry: [copy the batch title and all entry text]
+Entry: [copy the batch title and all entry text — but drop any line that starts with `Files:`. The structured `Files:` section below is the only file list the scope-lock reads; a stray `Files:` line copied into the entry text would be a second one, and the lock must never see a `Files:` line outside the section it's meant to read.]
 
 Index entry candidate: [the pre-generated entry from sub-step 1]
 
 Files:
 - [each file the batch entries name — one bare path per line, relative to project root, nothing else on the line]
+[This section is the only file list the scope-lock reads. Keep it as bare-path bullets directly under this `Files:` header, and make sure no other line in this file starts with `Files:`.]
 
 Progress:
 [empty — ticked as entries complete]

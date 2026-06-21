@@ -273,6 +273,21 @@ def main() -> int:
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
     context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
 
+    # Surface the installed host version (the version of the plugin actually
+    # running this session, test suffix included). This is the always-correct
+    # source for "what host is installed?" — it runs inside the installed host,
+    # unlike any hand-maintained record, which goes stale the moment the user
+    # reinstalls without Claude in the loop. Surfaced so the deferred-test roll
+    # can resolve whether a host-side change has gone live mechanically instead
+    # of interrogating the user. Version only — the host-vs-target comparison is
+    # Claude's reasoning (a consumer project has no target to compare against).
+    if plugin_version:
+        context_parts.append(
+            f"  Installed plugin (host) version: {plugin_version} — the version "
+            "running this session. Use it to judge whether a host-side deferred "
+            "test has gone live, instead of asking the user what's installed."
+        )
+
     # Presence-based drift: a project is "behind" only when it's actually missing
     # files/folders the current plugin scaffolds. A higher plugin version with
     # everything present is not drift. Scope: missing files/folders only —

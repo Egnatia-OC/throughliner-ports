@@ -74,6 +74,10 @@ Not during an ordinary build. SPEC.md is your project's source of truth, so it's
 
 Your SPEC.md is the project's source of truth, so the method keeps it from being changed quietly as a side effect of building a feature. A spec change always gets its own dedicated job — a spec-edit batch — rather than being folded into a feature build. So if a build would also need to change the spec, Claude will ask to split it into its own spec-edit batch. That way the source of truth only ever changes through a deliberate, visible step you approve, never as a hidden part of something else.
 
+## When Claude edits a doc or other writing during a build, do I see the new wording?
+
+Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude shows you the actual new wording in chat right after making the edit, so you don't have to open the file to see what changed. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
+
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
 Tell Claude. It gets added to Captures without derailing current work. Next /plan session picks it up for discussion and routing.

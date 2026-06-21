@@ -8,8 +8,11 @@ the file from disk and flags known format violations:
   1. A batch title line with no **[slug]** marker.
   2. A parked item with no Blocked by:/Parked: header.
   3. The Captures processed/unprocessed divider (a bare ---) deleted.
-  4. A Depends on:/Blocks:/Blocked by: header naming a slug defined
-     nowhere in the file.
+  4. A Depends on:/Blocks:/Blocked by: header naming a slug that is
+     unresolved everywhere — not defined in the file, not staged in
+     Deferred tests, and not shipped per LOG/index.md. A slug recorded
+     as shipped is a satisfied citation, not a dangling dependency, so
+     it isn't flagged (which also stops it re-flagging on every edit).
   5. A subheading inside a batch that isn't Build/Spec-edit/Test/
      Audit/Freeform — catches typos; ALLOWED_SUBHEADINGS must grow
      when new batch types ship.
@@ -185,8 +188,43 @@ def _deferred_slugs(annotated):
     return slugs
 
 
-def _check_dangling_refs(annotated, defined_slugs, warnings):
-    """Check 4: dependency headers only name slugs defined in the file."""
+def _shipped_slugs(cwd):
+    """Slugs recorded as shipped in LOG/index.md.
+
+    A `Blocked by:` (or other dependency header) prose tail often cites a
+    prerequisite that has already shipped — work that is done and whose batch
+    is long gone from QUEUE.md, so it appears in neither Batches nor Deferred
+    tests. That citation is satisfied, not dangling, but the dangling-ref
+    check used to flag it anyway (and re-flag it on every QUEUE.md edit,
+    forever), because it only resolved against the file in front of it.
+    LOG/index.md is the authoritative record of shipped work — one line per
+    closed session, each naming its batch slug — so a slug found there is
+    resolved and must not flag.
+
+    Read broadly: every [slug] token in the index counts. Over-resolving only
+    quiets flags, which is the fail-safe direction here — a satisfied citation
+    must never read as dangling. (Under-reading would let it re-flag forever,
+    the exact noise this fixes.) Returns an empty set when the index is
+    missing or unreadable, so a project without LOG/ simply gains nothing and
+    loses nothing.
+    """
+    index_path = os.path.join(cwd, "LOG", "index.md")
+    try:
+        with open(index_path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except (OSError, UnicodeDecodeError):
+        return set()
+    return set(SLUG_REF.findall(text))
+
+
+def _check_dangling_refs(annotated, resolved_slugs, warnings):
+    """Check 4: dependency headers only name unresolved slugs.
+
+    A slug is resolved — and so never flagged — when it is defined in the
+    file (an active batch or parked item), staged in Deferred tests, or
+    recorded as shipped in LOG/index.md. Only a slug resolved by none of
+    those is a genuine dangling reference worth surfacing.
+    """
     for i, line, _h2, _h3, is_heading, _indent in annotated:
         if is_heading:
             continue
@@ -194,12 +232,13 @@ def _check_dangling_refs(annotated, defined_slugs, warnings):
         if not match:
             continue
         for slug in SLUG_REF.findall(line):
-            if slug not in defined_slugs:
+            if slug not in resolved_slugs:
                 warnings.append(
                     f"line {i + 1}: {match.group(1)}: names [{slug}], but "
-                    "nothing in this file carries that slug — shipped "
-                    "already, renamed, or a typo? A satisfied dependency "
-                    "is stale and can come off the header."
+                    "nothing carries that slug — not in this file, not staged "
+                    "in Deferred tests, and not shipped per LOG/index.md. "
+                    "Renamed, or a typo? A satisfied dependency is stale and "
+                    "can come off the header."
                 )
 
 
@@ -374,7 +413,7 @@ def _check_spec_edit_build_mix(annotated, warnings):
             )
 
 
-def lint(content: str) -> list[str]:
+def lint(content: str, shipped_slugs=frozenset()) -> list[str]:
     annotated = _annotate(content)
     defined_slugs = set(SLUG_MARKER.findall(content))
     deferred_slugs = _deferred_slugs(annotated)
@@ -383,10 +422,14 @@ def lint(content: str) -> list[str]:
     _check_parked_headers(annotated, warnings)
     _check_captures_divider(annotated, warnings)
     # Dangling-ref check resolves against Batches slugs PLUS Deferred-tests
-    # slugs (a staged test is a valid pending trigger). The prose-ref check
-    # deliberately stays on defined_slugs only — adding deferred slugs there
-    # would start flagging citations the absent-slug skip currently quiets.
-    _check_dangling_refs(annotated, defined_slugs | deferred_slugs, warnings)
+    # slugs (a staged test is a valid pending trigger) PLUS shipped slugs from
+    # LOG/index.md (a satisfied citation of completed work). The prose-ref
+    # check deliberately stays on defined_slugs only — adding deferred or
+    # shipped slugs there would start flagging citations the absent-slug skip
+    # currently quiets.
+    _check_dangling_refs(
+        annotated, defined_slugs | deferred_slugs | shipped_slugs, warnings
+    )
     _check_subheadings(annotated, warnings)
     _check_prose_refs(annotated, defined_slugs, warnings)
     _check_dep_ordering(annotated, warnings)
@@ -426,7 +469,7 @@ def main() -> int:
     except (OSError, UnicodeDecodeError):
         return 0
 
-    warnings = lint(content)
+    warnings = lint(content, shipped_slugs=_shipped_slugs(cwd))
     if not warnings:
         return 0
 

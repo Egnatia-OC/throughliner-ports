@@ -62,8 +62,32 @@ def _parse_build_files(build_path: str) -> list[str] | None:
     """Extract file paths from _build.md's Files: section.
 
     Returns None when no Files: section exists (no enforcement),
-    an empty list when the section exists but lists nothing
+    an empty list when a section exists but lists nothing
     (method docs only), or the listed paths.
+
+    Robust to a stray, content-bearing `Files: a, b, c` line — e.g. one
+    copied into the Entry field from a batch's own text. Such a line used
+    to shadow the real section: the parser latched onto the FIRST line
+    starting with `Files:`, found no bare-path bullets beneath it, broke at
+    the next prose line, and returned an empty list — which locked the build
+    out of its own files (method docs only). Two changes fix that, and the
+    pair is the fail-safe choice (a malformed file can never silently turn
+    the lock off):
+
+      - EVERY `Files:` line contributes; the scan never stops at the first.
+        A non-bullet line ends only the current bullet run, not the whole
+        scan, so a structured `Files:` section further down is still read.
+      - A content-bearing `Files: a, b, c` line is not ignored — its
+        comma-separated paths after the colon are taken directly. So even
+        when an inline line is the ONLY `Files:` present, it yields a
+        non-empty list (lock on, scoped) rather than None (lock off).
+
+    A bare `Files:` header (nothing after the colon) opens a bullet section
+    whose `- path` bullets are collected. found_section is set by any
+    `Files:` line, so the None (no-enforcement) return is reserved for a
+    file carrying no `Files:` line at all. Over-collecting is safe: an extra
+    path only widens the allow-list to a file the build named anyway, never
+    grants access to an unrelated file.
     """
     files = []
     try:
@@ -72,15 +96,27 @@ def _parse_build_files(build_path: str) -> list[str] | None:
     except OSError:
         return None
 
-    in_files = False
+    in_bullets = False
     found_section = False
     for line in content.splitlines():
         stripped = line.strip()
         if stripped.lower().startswith("files:"):
-            in_files = True
             found_section = True
+            inline = stripped[len("files:"):].strip()
+            if inline:
+                # Content-bearing line: take the comma-separated paths after
+                # the colon. It does not open a bullet section — any bullets
+                # that follow belong to a later bare `Files:` header.
+                in_bullets = False
+                for part in inline.split(","):
+                    entry = part.strip()
+                    if entry:
+                        files.append(entry)
+            else:
+                # Bare header: the bullets beneath it are the paths.
+                in_bullets = True
             continue
-        if in_files:
+        if in_bullets:
             if stripped.startswith("- "):
                 # Entries are taken whole after the leading "- " marker.
                 # No annotation stripping: a Files: line is a bare path,
@@ -92,7 +128,9 @@ def _parse_build_files(build_path: str) -> list[str] | None:
                 if file_entry:
                     files.append(file_entry)
             elif stripped and not stripped.startswith("-"):
-                break  # End of Files section
+                # End of this bullet run — but keep scanning: a later
+                # `Files:` header (the real structured section) may follow.
+                in_bullets = False
     if not found_section:
         return None
     return files

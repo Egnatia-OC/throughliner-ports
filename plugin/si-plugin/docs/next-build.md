@@ -6,15 +6,22 @@ Execution procedure for build batches. Reached from next.md after pre-flight che
 
 Execute entry by entry.
 
-The silence here governs the success path — the routine bookkeeping of making changes and ticking entries when things go fine. It is not a gag on the moments that must speak: reporting a failure, asking before scope grows, and handing a test to the user all speak. A response-shape tag on one of those specific moments overrides this step's silence — that's the precedence rule working as intended, not a conflict.
+The silence here governs the success path — the routine bookkeeping of making changes and ticking entries when things go fine. It is not a gag on the moments that must speak: reporting a failure, asking before scope grows, handing a test to the user, and revealing a readable edit's new text (below) all speak. A response-shape tag on one of those specific moments overrides this step's silence — that's the precedence rule working as intended, not a conflict.
+
+**No pre-edit preview.** Don't precede an edit with a point-form list of the changes you're about to make. The work was already agreed in /plan, and a "here's what I'm about to change" beat right before an edit that lands almost instantly is just noise. This holds for every edit, readable or code — the success path stays quiet until the entry is done, minus that preview.
+
+**Readable edits reveal their new text** [the reveal speaks; informational, not an ask]. When an edit changes readable (non-code) content — a doc, copy, a spec section, anything a person reads rather than runs — show the actual new wording in chat *after* making the edit, as a wrapped, readable block. It's an informational reveal, so don't append an approval ask: the change was already agreed in /plan. Why it's worth surfacing: the exact wording is produced here in /next and was never seen in /plan, which agreed only the intent — so this is the first time the user meets the real words. A code edit doesn't get this half — a non-coder can't review code text the same way — so a code edit stays silent on the success path (still no preview).
+
+**A small mid-build tweak to a just-surfaced readable edit is in scope** [PROMPT]. Once the new text is visible, the user may ask for a small "just change this one bit" tweak. A tweak that refines the build's already-agreed work product is refining the work, not new planning: make it, reveal the updated text, and record it in _build.md Changes so it folds into the single LOG entry /done writes — no separately logged object (a new index line would bloat the index), and no /plan round-trip. A request that's actually new scope — a different feature, or a change to something that already worked — is not this; route it out via Scope management below, like any out-of-scope ask.
 
 ### Build entries
 
 For each:
 
 1. Read any relevant existing code or context.
-2. Make the changes.
-3. Tick it in _build.md Progress: `- [x] entry description — done`
+2. Make the changes — no point-form preview first (see Execute above).
+3. If the change is readable (non-code) content, reveal the new text in chat as a wrapped, readable block — informational, no approval ask. Code edits skip this; the success path stays silent.
+4. Tick it in _build.md Progress: `- [x] entry description — done`
 
 ### Test entries
 

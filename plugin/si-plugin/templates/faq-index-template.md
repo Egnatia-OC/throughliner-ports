@@ -18,6 +18,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why did Claude say my new change has to wait for a fresh session?](faq.md#why-did-claude-say-my-new-change-has-to-wait-for-a-fresh-session)
 - [Can I edit SPEC.md while doing a build?](faq.md#can-i-edit-specmd-while-doing-a-build)
 - [Why won't the method let a spec change ride inside a build?](faq.md#why-wont-the-method-let-a-spec-change-ride-inside-a-build)
+- [When Claude edits a doc or other writing during a build, do I see the new wording?](faq.md#when-claude-edits-a-doc-or-other-writing-during-a-build-do-i-see-the-new-wording)
 - [I just had an idea for a feature. How do I record it?](faq.md#i-just-had-an-idea-for-a-feature-how-do-i-record-it-without-losing-my-train-of-thought)
 - [Why does Claude sometimes re-read our conversation at the end of a planning session?](faq.md#why-does-claude-sometimes-re-read-our-conversation-at-the-end-of-a-planning-session)
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
