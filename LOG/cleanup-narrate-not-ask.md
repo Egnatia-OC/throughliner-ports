@@ -1,4 +1,4 @@
-# [HASH] — Mechanical queue cleanup is narrate-and-do, not ask-for-approval
+# 2ccbadf — Mechanical queue cleanup is narrate-and-do, not ask-for-approval
 
 Across several sessions Claude over-asked on routine queue bookkeeping — for example, finding batches whose "depends on" was now met and asking permission to clear the redundant notes as cleanup riding the commit. Clearing a met dependency is bookkeeping on a batch that's otherwise fine: it drops nothing, reorders nothing, changes nothing the user owns. So asking defers a call Claude already owns and trains the user to rubber-stamp routine maintenance.
 

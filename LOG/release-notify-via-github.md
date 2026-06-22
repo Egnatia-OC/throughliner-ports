@@ -1,4 +1,4 @@
-# [HASH] — GitHub Watch → Releases notify route documented; Push ritual cuts a real Release
+# 2ccbadf — GitHub Watch → Releases notify route documented; Push ritual cuts a real Release
 
 Alex wants her users to sign up for a heads-up when she ships a new version. GitHub supports this natively — a user clicks Watch → Custom → Releases on the repo and is emailed on each published release — so no custom infrastructure is needed for a first version. (The email-list option, better UX for non-coders, was weighed and deferred as the heavier later choice, alongside the parked [consumer-plugin-feedback-channel] contact form.)
 

@@ -1,4 +1,4 @@
-# [HASH] — README + INSTALL refresh: desktop-app UI + content overhaul
+# 2ccbadf — README + INSTALL refresh: desktop-app UI + content overhaul
 
 The desktop Claude app's UI changed, so README.md and INSTALL.md had drifted out of step with what a new user actually sees. Install is now "add" (Customise > Plugins > add > Upload plugin), not the old "+ icon → Create a plugin"; uninstall is now Customise > Plugins > Sovereign Implementer > three-dots > Uninstall, replacing the old "gear icon > Uninstall". Both files were brought back in line: README's install line, and INSTALL's upload-screen walkthrough, its two uninstall spots, and the screenshot-pointer note (the screenshot itself still waits on [install-upload-path-clarity], which needs a real desktop capture).
 

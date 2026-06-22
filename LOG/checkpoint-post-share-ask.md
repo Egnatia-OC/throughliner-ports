@@ -1,4 +1,4 @@
-# [HASH] — /plan capture loop ends on the ask; clear park/drop recommend merges into the interview close
+# 2ccbadf — /plan capture loop ends on the ask; clear park/drop recommend merges into the interview close
 
 Two roughnesses in /plan's capture loop, both about turn shape, fixed in plan.md.
 
