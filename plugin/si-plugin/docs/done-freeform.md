@@ -43,7 +43,7 @@ Path-split like next.md's pre-flight: stay silent when the sweep finds nothing; 
 - Remaining batches or Captures reference renamed/deleted files?
 - Reference behaviour or rules that this session (or any prior shift the queue hasn't caught up to) has moved past?
 - Items sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag — and split the flag by the fix path in plugin-behaviour.md Staleness watch: a fate-decision flag (drop / rewrite / keep) defers to /plan; a drifted pointer on an otherwise-valid item, whose target content is unchanged, may be fixed here with the user's approval, riding this commit. Run the unpark watch on the same pass — anything parked that's now newly unblocked? Flag for /plan.
+- If so, flag — and split the flag by the fix path in plugin-behaviour.md Staleness watch: a fate-decision flag (drop / rewrite / keep) defers to /plan; mechanical maintenance — a drifted pointer whose target content is unchanged, or clearing a met dependency note whose blocker has shipped — is narrate-and-do: fix it here and report it in one line, riding this commit, with no approval ask. Run the unpark watch on the same pass — anything parked that's now newly unblocked? Flag for /plan.
 
 ### 2.3 Delete _build.md [SILENT]
 

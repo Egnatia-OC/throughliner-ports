@@ -16,27 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Desktop-app UI refresh + README content overhaul** **[readme-install-refresh]**
-
-The desktop Claude app's UI changed — plugin install is now "add" (not "+ > Create plugin"), and uninstall is now Customise > Plugins > Sovereign Implementer > three-dots > Uninstall. Several README descriptions also drifted or were never general enough, and the test model has moved to Opus 4.8 on "high" effort (stable for a week). This brings README.md and INSTALL.md back in line with the current app and generalises the pitch beyond "apps" so non-app projects see themselves. (The "spec read-only during builds" line was reviewed and kept — accurate for every build but a spec-edit.)
-
-Build — README.md:
-- Tagline (top line): generalise beyond "build apps" — keep apps as the headline example for appeal, but make clear it covers any project a non-coder wants to build.
-- "Who it's for": generalise "what their app should do" to be project-agnostic, still explicitly for non-coders.
-- Install line: replace "+ > Create plugin" with "add"; replace the uninstall step "(gear icon > Uninstall)" with "Customise > Plugins > Sovereign Implementer > three-dots > Uninstall".
-- `/setup` bullet: "asks a short questionnaire about your project and scaffolds everything" — drop the question count, and fix "answers" → "asks".
-- `/done` bullet: drop "test" — /done records and commits; testing happens during /next.
-- Tested environment: "Claude Opus 4.6 on max effort" → "Claude Opus 4.8 on effort level high".
-- Auto mode: keep it, but add a short why — it's optional, and it spares you approving each step by hand; turn it off if you'd rather confirm each action.
-- "/clear after every skill" → "/clear after every /done".
-- Getting started: "Open any project folder in Claude Code and type /setup" → "run /setup"; and drop the "five questions" count here too ("a short questionnaire").
-
-Build — INSTALL.md:
-- Replace the uninstall pathway (the two "gear icon" spots) with the new Customise > Plugins > Sovereign Implementer > three-dots > Uninstall pathway.
-- Replace the "+ icon → Create a plugin" upload wording with the new "add" path, matching the README.
-
-Review: the user reads the refreshed README and INSTALL.md and says if any wording's off — a read, not a pass/fail test.
-
 **Add a screenshot of the plugin upload screen to INSTALL.md** **[install-upload-path-clarity]**
 
 The prose half of this batch landed in a goal session (2026-06-15), but the desktop app's UI has since changed: the upload path is now "add" (Customise > Plugins > add > Upload plugin), not the old "+ icon → Create a plugin". [readme-install-refresh] refreshes that prose to the new path. Only the screenshot remains here, and a goal session can't produce it — it needs a real capture of the current Plugins screen showing the "add" option.
@@ -54,18 +33,6 @@ Test (all user-run E2E on the 1.13.0-test1 build):
 - [migration-aware-setup] — opening a session in a content-bearing folder with no SPEC.md shows the softened possible-migration message (not "it hasn't been set up"), and a /setup run there frames it as a possible migration and applies the role-fit and project-root guardrails when mapping, in plain language.
 - [setup-preexisting-content-handling] — a Case B /setup run peeks at pre-existing content before Q1 (a framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message.
 
-**Stop asking approval for Claude-owned queue cleanup** **[cleanup-narrate-not-ask]**
-
-Seen across several sessions — example in a WhatsApp-audit project's close: Claude found five batches whose "depends on" was now met and asked permission to remove the redundant notes as cleanup riding the commit. Clearing a met dependency is bookkeeping on a batch that's otherwise fine — it drops nothing, reorders nothing, changes nothing the user owns — so asking is Claude deferring a call it already owns. The fix is narrate-and-do: Claude says it's clearing the met notes (or repointing a reference that drifted) and does it as it commits, so the user still sees it but isn't asked to approve routine cleanup. The mis-firing piece is a rule that lets Claude make these mechanical fixes "with the user's approval" — right for genuine judgment calls (drop / rewrite / keep still go to a planning session), wrong for mechanical maintenance. Scoped broader this session at the user's call: both met-dependency cleanup and the other small mechanical fixes, not just the dependency case.
-
-Build:
-- plugin-behaviour.md (Dependency ownership): change the staleness fix-path so mechanical maintenance — a drifted reference whose target content is unchanged, and clearing a "depends on" / "blocked by" note whose blocker has shipped — is narrate-and-do (Claude does it and reports it, riding the commit), not "with the user's approval." Fate decisions (drop / rewrite / keep) still defer to a planning session, unchanged. Make explicit that clearing a met dependency note is Claude-owned cleanup, so it stops being over-asked.
-- done-build.md, done-test.md, done-audit.md, done-freeform.md: update each one's close-out line that currently says a drifted reference "may be fixed here with the user's approval" to match — narrate-and-do for mechanical maintenance, fate decisions still to planning.
-- faq-template.md + faq-index-template.md: add a plain-English entry for a user who sees Claude tidy queue bookkeeping during a commit without asking — that routine queue cleanup is Claude's to handle, and it still tells you.
-
-Test:
-- Confirmed by observation after the next reinstall: the first close where a dependency clears or a reference drifts narrates the cleanup and does it with no approval ask, while a genuine drop/rewrite/keep call still defers to planning.
-
 **Tag placement + narration drift review** **[full-tag-placement-recheck]**
 
 A shelved tag-placement re-check, woken up and widened. It was held until the 2026-06-16 batch of tag and narration changes shipped, so it wouldn't grade docs that were still moving — those are now shipped and live. Widened this session at the user's request to also cover narration-quality drift, because recent changes have thrown the narration off and reading every doc once serves both lenses. This produces findings only; the fixes get scoped in a later planning session that processes them.
@@ -76,35 +43,6 @@ Audit:
   - **Tag placement** — each step's response-shape tag ([SILENT] / [BRIEF] / [DISCUSS] / [PROMPT] / [SEQUENCE]): missing where one's due, wrong for the step, prose written where a tag belongs, or drift since the last tag audit (commit 0405315).
   - **Narration drift** — background-only vocabulary leaking into user-facing narration (loop, Step N, gate, pre-flight, Phase X, slug names, and the rest of the Vocabulary list); option-menus offered where a recommendation-first was due (per [narration-vs-menu-drift]); noisy multi-finding openings that should consolidate to one line.
 - Output: findings routed to Captures. No edits to the docs being read.
-
-**Tighten the /plan capture-loop turn shape — end on the ask, and don't split a clear park/drop recommend across turns** **[checkpoint-post-share-ask]**
-
-Two related roughnesses in /plan's capture loop, both about how turns are shaped.
-
-(1) End on the ask. Both the first capture's presentation and the per-item checkpoint end the message on a raw quoted block, which reads as Claude stopping mid-thought — nothing hands the decision back. Seen in the evidence-audit project. The earlier [verbatim-at-checkpoint] decision put the verbatim last on purpose, so the turn boundary separates the item from the next turn's analysis; a short closing ask after the verbatim keeps analysis on the next turn while giving the message a proper landing.
-
-(2) Don't split a clear park/drop recommend across turns. When Claude already has a clear park or drop lean by the end of the interview exposition, it currently closes with a bare "anything to add?" and then re-states the recommendation in a separate turn — so the route gets named twice with a content-free exchange between (seen in Taskflow: "my lean is park" → "anything you'd change?" → "Recommending park. Park it?"). Park and drop can't fold to an action the way promote does (promote's draft is the safety net; park/drop are terminal), but the recommend doesn't need its own turn — it can be asked at the end of the exposition. The separate recommend-and-wait stays the fallback for when the lean genuinely isn't clear yet. Promote's fold-to-draft is unchanged.
-
-Build — plan.md:
-- Checkpoint step: present the verbatim, then close with the three off-ramps (continue to the next, close out and run /done, raise something else) as the final, bold ask. The off-ramps move to below the verbatim; drop the offer-above shape. Keep the existing reasoning about why the verbatim lands this turn.
-- First-item presentation step: end the first capture's quote message on a brief, bold closing prompt that invites the user to continue, instead of stopping with no ask. Keep the quote-as-its-own-beat and the confirm-against-the-file re-read.
-- Recommend step + interview close: when a park or drop lean is clear by the end of the interview, merge the recommendation into the exposition-closing turn — one combined, bold ask ("…my recommendation is park; anything you'd change, or shall I park it?") — rather than asking "anything to add?" and re-recommending in a later turn. The standalone recommend-and-wait remains for the unclear-lean case. Promote's fold-to-draft and park/drop's terminal-approval requirement are both preserved.
-
-Test:
-- Confirmed by observation after reinstall: the next /plan capture loop ends its first-item quote and each checkpoint on the ask (verbatim above); and a clear park/drop decision is asked once, at the end of the exposition turn, not split across two turns. Deferral reason: host-side. Runnability: observed.
-
-**Document the GitHub "Watch → Releases" notify route, and cut a real Release on each push** **[release-notify-via-github]**
-
-Alex wants her users to be able to sign up for a heads-up when she ships a new version. GitHub already supports this natively — a user clicks Watch → Custom → Releases on the repo and gets emailed on each new release — so no custom infrastructure is needed for a first version. The email-list option (better UX for non-coders) was weighed and deferred as the heavier choice for later, alongside the parked [consumer-plugin-feedback-channel] contact form. Two pieces make the native route work: the README has to tell users how to turn it on, and the release ritual has to actually publish a GitHub Release (tagged, named), because Watch → Releases fires on a published Release, not on a plain `git push` — and today's ritual only pushes commits.
-
-Build:
-- README.md (repo root): add a short "Get notified of new versions" section telling users to click Watch on the repo, choose Custom, and tick Releases — in plain language, noting it needs a free GitHub account. Verify the exact Watch-menu wording against the live GitHub UI when authoring, since labels drift.
-- CLAUDE.md (repo root, Push ritual): add a step, after `git push`, to publish a GitHub Release for the new version — tag = the new version, the zip (`plugin/si-plugin.zip`) attached, notes drawn from the release's LOG entries / commit. If `gh` isn't authenticated in the session, fall back to telling Alex how to publish the Release from the GitHub web UI, so the step never silently does nothing.
-- faq-template.md + faq-index-template.md: a plain-English entry — "How do I find out when there's a new version?" — pointing to the Watch → Releases method.
-
-Test:
-- README and FAQ text: a user review — Alex reads the new section and says if the wording or steps are off (not a pass/fail test).
-- Release-cutting step: confirmed by observation at the next release push — a GitHub Release appears for the new version with the zip attached. Deferral reason: needs the next push. Runnability: observed.
 
 ### Parked
 
@@ -164,6 +102,9 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [surface-readable-edits] — the first /next build after reinstall that edits readable content surfaces the new text with no pre-edit preview and no re-approval ask, and a first code edit drops the preview while staying quiet-until-done (also naturally observable in the Taskflow E2E project). Confirmed by: observed after reinstall. Deferral: host-side. Runnability: observed.
 - [surface-installed-host-version] — after the next reinstall including this change, the first session start surfaces the installed host version, and the next /plan resolves the deferred-test roll without asking the user what's installed. Confirmed by: observed in the first session + /plan after reinstall. Deferral: host-side. Runnability: observed.
 - [blocked-by-lint-flags-shipped-citations] — the first capture-heavy /plan after reinstall no longer emits the false-positive Blocked-by dangling flags for shipped or context-cited slugs (the LOG-resolution fix was Claude-tested in-session: a shipped-slug citation no longer flags while a genuinely-unresolved slug still does). Confirmed by: observed after reinstall. Deferral: host-side. Runnability: observed.
+- [cleanup-narrate-not-ask] — the first /done close where a met dependency note clears or a drifted pointer is repointed narrates the cleanup and makes the edit with no approval ask, while a genuine drop/rewrite/keep call still defers to /plan. Confirmed by: observed in the first such close after reinstall. Deferral: host-side. Runnability: observed.
+- [checkpoint-post-share-ask] — the next /plan capture loop ends its first-item quote and each checkpoint on the ask (verbatim above the off-ramps), and a clear park/drop decision is asked once at the end of the exposition turn, not split across two turns. Confirmed by: observed in the first /plan capture loop after reinstall. Deferral: host-side. Runnability: observed.
+- [release-notify-via-github] — the next release push publishes a GitHub Release for the new version with the zip (`plugin/si-plugin.zip`) attached, so Watch → Releases subscribers are notified. Confirmed by: observed at the next release push. Deferral: external (needs the next push). Runnability: observed.
 
 
 ## Captures

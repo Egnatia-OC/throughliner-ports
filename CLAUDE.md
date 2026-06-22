@@ -135,7 +135,12 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 7. Repackage: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix before pushing.
 8. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 3), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's backfill edits). Commit: "Bump to v<VERSION> and repackage".
 9. `git push`.
-10. Tell Alex: "Pushed and rezipped. Uninstall/reinstall to update the host."
+10. Publish a GitHub Release for the new version, so users who subscribed via Watch → Releases get notified — a plain `git push` does not fire that notification; only a published Release does. Use `gh`:
+    - Tag and title = the new version (e.g. `v1.13.0`). Notes = a short summary of what shipped, drawn from this release's LOG entries / commit messages.
+    - Attach the zip: `plugin/si-plugin.zip`.
+    - Command shape: `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --notes "<summary>"`.
+    - If `gh` isn't authenticated in this session (the command errors on auth), don't silently skip the Release — tell Alex how to publish it from the GitHub web UI instead: on the repo's **Releases** page, click **Draft a new release**, create the tag `v<VERSION>`, set the same title, paste the summary as the notes, attach `plugin/si-plugin.zip`, and **Publish release**. The step never silently does nothing.
+11. Tell Alex: "Pushed, released, and rezipped. Uninstall/reinstall to update the host."
 
 **Archive accuracy.** Push keeps archiving the previous zip as above. Git history is the authoritative record of released zips — each push commits `si-plugin.zip`. So if a private rezip overwrote `si-plugin.zip` since the last push, the copy that lands in `plugin/zip-archive/` at the next push is a convenience that may reflect a test build rather than the prior release. This is cosmetic: git holds the true releases.
 

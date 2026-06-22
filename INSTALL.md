@@ -89,10 +89,11 @@ After both succeed, the plugin activates on a `/reload-plugins` or a full restar
 
 2. **Open the Claude Code desktop app.**
 
-3. **Open the plugin upload screen.** The path is **Customise (top left) → the + icon on the left → "Create a plugin" → browse and select the downloaded .zip**. Walk them through each click — they have never used this part of the UI before:
+3. **Open the plugin upload screen.** The path is **Customise (top left) → Plugins → add → Upload plugin → browse and select the downloaded .zip**. Walk them through each click — they have never used this part of the UI before:
    - Click **Customise** in the top left.
-   - Click the **+** icon on the left.
-   - Choose **Create a plugin**. (Heads-up: that label sounds like it's for *building* a plugin from scratch, but it's actually the right way to *install* one from a file — don't let the wording throw you.)
+   - Open **Plugins**.
+   - Click **add**.
+   - Choose **Upload plugin**.
    - A file picker opens — browse to where the `si-plugin.zip` was saved and select it. The app installs it.
 
 4. **Run the smoke test — confirm the plugin works.** This is just a quick check that the install took. It doesn't need a real project.
@@ -105,15 +106,15 @@ After both succeed, the plugin activates on a `/reload-plugins` or a full restar
    If it fails, work through these in order — don't jump straight to reinstalling:
    1. Check the plugin is actually there and turned on: go to **Customise > Plugins** and confirm Sovereign Implementer is listed and enabled.
    2. **Fully quit and reopen the app** — not just a new session. Plugin commands register when the app launches, and on Windows a normal "quit" can leave the app running in the background, so a new chat or even a normal close-and-reopen may not pick them up. Quit the app, then on Windows confirm the process has actually exited (check Task Manager and end it if it's still there) before reopening. Then try `/setup` again.
-   3. Only if both of those check out, remove the plugin (gear icon > **Uninstall**) and repeat the upload steps.
+   3. Only if both of those check out, remove the plugin (**Customise > Plugins > Sovereign Implementer > three-dots > Uninstall**) and repeat the upload steps.
 
    A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.
 
-   *(A screenshot of the Plugins screen — showing the + icon and the "Create a plugin" option — would help here; see the queue item to add one.)*
+   *(A screenshot of the Plugins screen — showing the **add** option — would help here; see the queue item to add one.)*
 
 ### Updating later
 
-To update: uninstall via the gear icon, download the latest zip from the same URL above, and repeat the upload.
+To update: uninstall via **Customise > Plugins > Sovereign Implementer > three-dots > Uninstall**, download the latest zip from the same URL above, and repeat the upload.
 
 ## Step 2 — First-run pointer
 

@@ -46,6 +46,10 @@ A waiting list for tests that couldn't run in the session that planned them — 
 
 Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
 
+## How do I find out when there's a new version of the plugin?
+
+GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintCraftTech/sovereign-implementer`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
+
 ## I just updated the plugin — how do I check it still works?
 
 Run a quick session and confirm the new behaviour works the way you expect — that check is itself a testing session. The method saves up exactly these checks for after an update: when something could only be confirmed once the update was installed, it's set aside, and the first session after you reinstall is when it becomes checkable. So when you open a session right after updating, Claude may point out that now's a good moment to confirm the update — run /plan and it'll line up what's worth checking into a quick test session.
@@ -143,6 +147,10 @@ You don't track these links yourself — Claude does, and it fixes or flags them
 ## What does Claude mean by a "circular dependency"?
 
 Sometimes a piece of work would be better if you added something first — but that something can't be finished until the very work you're about to do is done. That's a circular dependency: each side waits on the other, so "do the other thing first" never actually finishes. When Claude spots this, it won't send you round in a loop. It builds a first version of the work now to break the circle, and keeps the missing piece on the queue (parked, or marked as blocked) to add once this work exists. Nothing is lost — the gap is tracked, just filled later instead of first.
+
+## Claude tidied up the queue while committing, without asking me. Is that normal?
+
+Yes. Some queue housekeeping is Claude's to handle on its own — clearing a "waiting on" note once the thing it was waiting for is done, or fixing a pointer to a section that has moved. These change nothing you decide: they drop no work, reorder nothing, and don't alter any choice you've made — they're bookkeeping on entries that are otherwise fine. So Claude makes the fix and tells you it did, as part of the commit, rather than stopping to ask. Anything that's a real judgment call — dropping an item, rewriting it, or deciding whether to keep it — still waits for a planning session and your say. You always see what was tidied; you just aren't asked to approve the routine kind.
 
 ## How do I know what was done in a previous session?
 

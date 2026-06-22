@@ -11,6 +11,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What is the Red flags section at the top of QUEUE.md?](faq.md#what-is-the-red-flags-section-at-the-top-of-queuemd)
 - [What is the "Deferred tests" section in QUEUE.md?](faq.md#what-is-the-deferred-tests-section-in-queuemd)
 - [Why do some tests run straight away and others wait?](faq.md#why-do-some-tests-run-straight-away-and-others-wait)
+- [How do I find out when there's a new version of the plugin?](faq.md#how-do-i-find-out-when-theres-a-new-version-of-the-plugin)
 - [I just updated the plugin — how do I check it still works?](faq.md#i-just-updated-the-plugin--how-do-i-check-it-still-works)
 - [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
 - [Is it safe to clear the conversation or start a new session between steps?](faq.md#is-it-safe-to-clear-the-conversation-or-start-a-new-session-between-steps)
@@ -32,4 +33,5 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [What does it mean when Claude says a dependency is "out of order" or "dangling"?](faq.md#what-does-it-mean-when-claude-says-a-dependency-is-out-of-order-or-dangling)
 - [What does Claude mean by a "circular dependency"?](faq.md#what-does-claude-mean-by-a-circular-dependency)
+- [Claude tidied up the queue while committing, without asking me. Is that normal?](faq.md#claude-tidied-up-the-queue-while-committing-without-asking-me-is-that-normal)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
