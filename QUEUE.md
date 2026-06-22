@@ -77,6 +77,35 @@ Audit:
   - **Narration drift** — background-only vocabulary leaking into user-facing narration (loop, Step N, gate, pre-flight, Phase X, slug names, and the rest of the Vocabulary list); option-menus offered where a recommendation-first was due (per [narration-vs-menu-drift]); noisy multi-finding openings that should consolidate to one line.
 - Output: findings routed to Captures. No edits to the docs being read.
 
+**Tighten the /plan capture-loop turn shape — end on the ask, and don't split a clear park/drop recommend across turns** **[checkpoint-post-share-ask]**
+
+Two related roughnesses in /plan's capture loop, both about how turns are shaped.
+
+(1) End on the ask. Both the first capture's presentation and the per-item checkpoint end the message on a raw quoted block, which reads as Claude stopping mid-thought — nothing hands the decision back. Seen in the evidence-audit project. The earlier [verbatim-at-checkpoint] decision put the verbatim last on purpose, so the turn boundary separates the item from the next turn's analysis; a short closing ask after the verbatim keeps analysis on the next turn while giving the message a proper landing.
+
+(2) Don't split a clear park/drop recommend across turns. When Claude already has a clear park or drop lean by the end of the interview exposition, it currently closes with a bare "anything to add?" and then re-states the recommendation in a separate turn — so the route gets named twice with a content-free exchange between (seen in Taskflow: "my lean is park" → "anything you'd change?" → "Recommending park. Park it?"). Park and drop can't fold to an action the way promote does (promote's draft is the safety net; park/drop are terminal), but the recommend doesn't need its own turn — it can be asked at the end of the exposition. The separate recommend-and-wait stays the fallback for when the lean genuinely isn't clear yet. Promote's fold-to-draft is unchanged.
+
+Build — plan.md:
+- Checkpoint step: present the verbatim, then close with the three off-ramps (continue to the next, close out and run /done, raise something else) as the final, bold ask. The off-ramps move to below the verbatim; drop the offer-above shape. Keep the existing reasoning about why the verbatim lands this turn.
+- First-item presentation step: end the first capture's quote message on a brief, bold closing prompt that invites the user to continue, instead of stopping with no ask. Keep the quote-as-its-own-beat and the confirm-against-the-file re-read.
+- Recommend step + interview close: when a park or drop lean is clear by the end of the interview, merge the recommendation into the exposition-closing turn — one combined, bold ask ("…my recommendation is park; anything you'd change, or shall I park it?") — rather than asking "anything to add?" and re-recommending in a later turn. The standalone recommend-and-wait remains for the unclear-lean case. Promote's fold-to-draft and park/drop's terminal-approval requirement are both preserved.
+
+Test:
+- Confirmed by observation after reinstall: the next /plan capture loop ends its first-item quote and each checkpoint on the ask (verbatim above); and a clear park/drop decision is asked once, at the end of the exposition turn, not split across two turns. Deferral reason: host-side. Runnability: observed.
+
+**Document the GitHub "Watch → Releases" notify route, and cut a real Release on each push** **[release-notify-via-github]**
+
+Alex wants her users to be able to sign up for a heads-up when she ships a new version. GitHub already supports this natively — a user clicks Watch → Custom → Releases on the repo and gets emailed on each new release — so no custom infrastructure is needed for a first version. The email-list option (better UX for non-coders) was weighed and deferred as the heavier choice for later, alongside the parked [consumer-plugin-feedback-channel] contact form. Two pieces make the native route work: the README has to tell users how to turn it on, and the release ritual has to actually publish a GitHub Release (tagged, named), because Watch → Releases fires on a published Release, not on a plain `git push` — and today's ritual only pushes commits.
+
+Build:
+- README.md (repo root): add a short "Get notified of new versions" section telling users to click Watch on the repo, choose Custom, and tick Releases — in plain language, noting it needs a free GitHub account. Verify the exact Watch-menu wording against the live GitHub UI when authoring, since labels drift.
+- CLAUDE.md (repo root, Push ritual): add a step, after `git push`, to publish a GitHub Release for the new version — tag = the new version, the zip (`plugin/si-plugin.zip`) attached, notes drawn from the release's LOG entries / commit. If `gh` isn't authenticated in the session, fall back to telling Alex how to publish the Release from the GitHub web UI, so the step never silently does nothing.
+- faq-template.md + faq-index-template.md: a plain-English entry — "How do I find out when there's a new version?" — pointing to the Watch → Releases method.
+
+Test:
+- README and FAQ text: a user review — Alex reads the new section and says if the wording or steps are off (not a pass/fail test).
+- Release-cutting step: confirmed by observation at the next release push — a GitHub Release appears for the new version with the zip attached. Deferral reason: needs the next push. Runnability: observed.
+
 ### Parked
 
 ## Deferred tests
@@ -93,7 +122,6 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [red-flags-structure] — verify a red flag Claude raises lands in QUEUE.md's Red flags section with a state, and an accepted flag's decision appears in the session LOG. Confirmed by: the first red flag raised, and the first flag accepted, after push + reinstall.
 - [allow-parallel-sessions] — verify opening a /plan chat while a build is active is no longer refused (the active-build session-start message naming planning-alongside was confirmed in-session against a fixture). Confirmed by: the first time a /plan session is opened alongside an active build after push + reinstall.
 - [make-drift-visible] — verify a session in a drifted project (missing a scaffolded file/folder) opens with Claude plainly flagging what's out of date and offering /setup, while a current project on a higher plugin version stays silent (the presence-based logic and no-false-alarm were confirmed in-session against fixtures). Confirmed by: the first session in a drifted project after push + reinstall.
-- [approval-display-blockquotes] — verify the next /plan or /done approval draft (LOG entry, capture, or batch) arrives as a labelled blockquote that wraps, not a fence. Confirmed by: the first /plan or /done approval draft after push + reinstall. (host-side) [Commit-step clause dropped 2026-06-16: superseded by [closeout-text-collapse], whose own deferred test now covers the collapsed commit step.]
 - [show-before-write] — verify a later /plan writes nothing to QUEUE.md without the verbatim entry in the immediately preceding message; the case to watch is late-session, after compaction. Confirmed by: the first /plan batch write in a long/compacted session after push + reinstall. (host-side)
 - [session-start-dirty-tree-check] — verify the live one-liner at session start with known dirt and no _build.md (the fixture test — dirty-without-build warns, dirty-with-build silent, clean silent — passed in-session this goal session). Confirmed by: the first session opened with a dirty tree and no active build after push + reinstall. (host-side)
 - [plan-state-artifact] — verify the live resume offer: interrupt a /plan mid-processing, open a new session, watch for the "INTERRUPTED PLANNING SESSION" report (the fixture test — _plan.md detected, dirty-warning suppressed with _plan.md present, silent when absent — passed in-session this goal session). Confirmed by: the first interrupted /plan reopened after push + reinstall. (host-side)
