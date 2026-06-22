@@ -1,4 +1,4 @@
-# [HASH] — next-build.md: readable (non-code) edits reveal their new text after the edit (no pre-edit preview, no re-approval); a small mid-build tweak folds into the build's LOG entry; FAQ entry
+# ec7ce6f — next-build.md: readable (non-code) edits reveal their new text after the edit (no pre-edit preview, no re-approval); a small mid-build tweak folds into the build's LOG entry; FAQ entry
 
 `/next` used to treat every edit like code: list the upcoming changes as bullets, make them silently, never show the actual new wording. For readable content (a doc, copy, a spec section) that's the wrong shape — the pre-edit bullet preview is noise when the edit lands instantly, and the user never sees the real words without opening the file. The exact wording of a readable edit is produced in `/next` and was never seen in `/plan` (which agreed only the intent), so showing it is the first time the user meets the actual words.
 

@@ -1,4 +1,4 @@
-# [HASH] — pre_tool_use.py `_parse_build_files` hardened so a stray inline `Files:` line can't shadow the structured section; next.md template drops inline `Files:` from the Entry field
+# ec7ce6f — pre_tool_use.py `_parse_build_files` hardened so a stray inline `Files:` line can't shadow the structured section; next.md template drops inline `Files:` from the Entry field
 
 The scope-lock parser bound to the *first* line starting with `Files:`. When `/next` copied a batch's entry text into `_build.md` and that text carried a stray inline `Files: a, b, c` line, the parser latched onto it, found no bare-path bullets beneath, broke at the next prose line, and returned an empty list — which read as "method docs only" and denied the build edits to its own listed files. Traced live against the 2026-06-20 `/next` build of [plan-close-dep-check].
 

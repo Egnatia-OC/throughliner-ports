@@ -1,4 +1,4 @@
-# [HASH] — post_tool_use.py: the QUEUE.md lint's dangling-ref check resolves slugs against LOG/index.md, so a shipped or context-cited slug in a Blocked-by tail no longer false-flags
+# ec7ce6f — post_tool_use.py: the QUEUE.md lint's dangling-ref check resolves slugs against LOG/index.md, so a shipped or context-cited slug in a Blocked-by tail no longer false-flags
 
 The structure lint's dangling-reference check (check 4) flagged any slug named in a `Blocked by:`/`Depends on:`/`Blocks:` header that wasn't defined in the file or staged in Deferred tests — including shipped prerequisites cited for context in a prose tail. Because a shipped slug is gone from the queue, such a citation read as unresolved forever and re-fired on every QUEUE.md edit; it fired seven times during the 2026-06-21 /plan, a live demonstration.
 
