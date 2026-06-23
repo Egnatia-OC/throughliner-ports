@@ -22,6 +22,10 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
 
+## Why did my audit file its findings as captures instead of writing them into a doc?
+
+Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit batch that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
+
 ## What is `/next freeform`?
 
 A fourth kind of /next session, for work that isn't a build, a test, or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when none of the other three fit. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
@@ -46,6 +50,10 @@ A waiting list for tests that couldn't run in the session that planned them — 
 
 Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
 
+## Why does Claude sometimes ask me to run a test instead of running it itself?
+
+Because some tests need something only you can provide — and when that's the case, Claude tells you plainly what the test checks, what it needs, and why it can't run it. A test might need you to look at a screen and judge how something appears, tap through your app on a phone, or run a command in a terminal Claude can't reach. Claude usually can't see your setup, so it doesn't guess what you can or can't do — instead it names exactly what the test requires ("needs the terminal," "needs a phone connected," "needs you to look at the screen") and leaves it to you to judge whether that's yours to do. If a test needs nothing of yours, Claude just runs it — handing one to you is only ever for the checks that genuinely need you.
+
 ## How do I find out when there's a new version of the plugin?
 
 GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintCraftTech/sovereign-implementer`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
@@ -53,6 +61,10 @@ GitHub can email you whenever a new version of Sovereign Implementer is publishe
 ## I just updated the plugin — how do I check it still works?
 
 Run a quick session and confirm the new behaviour works the way you expect — that check is itself a testing session. The method saves up exactly these checks for after an update: when something could only be confirmed once the update was installed, it's set aside, and the first session after you reinstall is when it becomes checkable. So when you open a session right after updating, Claude may point out that now's a good moment to confirm the update — run /plan and it'll line up what's worth checking into a quick test session.
+
+## What is the "build stamp" the plugin records at the start of a session?
+
+A short fingerprint of the installed plugin's own files — a content check that reflects exactly what's installed right now, not just a version number. Its job is to tell whether a plugin update is genuinely in place after you reinstall. Some checks the method sets aside (on the "Deferred tests" list) can only be confirmed once an update is actually live, and a version number alone can miss a change that didn't bump the version — so the stamp gives Claude a reliable yes/no on whether the installed files are current. It runs behind the scenes: you don't see it or manage it, and nothing about your own project goes into it — it only fingerprints the plugin's files.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
@@ -78,6 +90,16 @@ Not during an ordinary build. SPEC.md is your project's source of truth, so it's
 
 Your SPEC.md is the project's source of truth, so the method keeps it from being changed quietly as a side effect of building a feature. A spec change always gets its own dedicated job — a spec-edit batch — rather than being folded into a feature build. So if a build would also need to change the spec, Claude will ask to split it into its own spec-edit batch. That way the source of truth only ever changes through a deliberate, visible step you approve, never as a hidden part of something else.
 
+## What's the difference between SPEC.md, CLAUDE.md, and Claude's memory?
+
+Three different homes for three different kinds of thing, and they're easy to mix up:
+
+- **SPEC.md** is *what your project is* — what it does, who it's for, how it works. Product truth. A feature, a rule your app enforces, who the users are: all SPEC.
+- **CLAUDE.md** is *how Claude should work on this project* — your conventions, workflow rules, house style. Instructions for Claude, specific to this one project.
+- **Claude's memory** is for things that apply *across all your projects* — how you like Claude to communicate, your general preferences — not tied to any single project.
+
+Two quick tests sort almost everything. "What it is" vs "how to work on it" splits SPEC from CLAUDE.md: if it describes the product, it's SPEC; if it's an instruction for working on the product, it's CLAUDE.md. "This project" vs "every project" splits CLAUDE.md from memory: only-here goes in CLAUDE.md, everywhere goes in memory. One thing Claude watches for on your behalf: if you say "make Claude always do X" but it's really describing what the app should *do*, that's product truth — Claude will point out it belongs in SPEC, rather than filing it as a working instruction.
+
 ## When Claude edits a doc or other writing during a build, do I see the new wording?
 
 Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude shows you the actual new wording in chat right after making the edit, so you don't have to open the file to see what changed. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
@@ -89,6 +111,10 @@ Tell Claude. It gets added to Captures without derailing current work. Next /pla
 ## Why does Claude sometimes re-read our conversation at the end of a planning session?
 
 Before wrapping up a planning session, Claude takes a pass back over the conversation and points out things you mentioned in passing but never asked to save. It's a safety net: when you think out loud, good ideas and concerns slip by without being formally captured, and this catches them before the session closes. It's best-effort — Claude can only re-read what's still in view, so in a long session some earlier discussion may already be out of reach. That means "I didn't find anything" means nothing jumped out in what Claude could still see, not a guarantee nothing was missed. Whatever it surfaces, you approve (or wave off), and approved items get sorted into the queue like any other captured idea.
+
+## Does Claude do that end-of-conversation pass when I close with /done too?
+
+Yes — a lighter version. When you close any session with /done, Claude takes the same quick pass back over the conversation and points out things you mentioned but never asked to save. The difference from a planning session is what happens next: at /done it only *files* what it finds into your captures list, so nothing is lost, and leaves the sorting — whether each one becomes real work, gets parked, or gets dropped — for your next /plan. You still approve what gets filed; Claude shows you the wording first. Two limits worth knowing: if you opened a brand-new conversation just to run /done, there's no earlier discussion to re-read, so it won't find anything; and if you already did a planning session in the same conversation, it may turn up the same things you already captured, which is harmless.
 
 ## The queue is empty. Does that mean the project is done?
 
