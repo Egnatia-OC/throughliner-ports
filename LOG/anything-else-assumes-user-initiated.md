@@ -1,4 +1,4 @@
-# [HASH] — Differentiate the mid-capture closer by who raised it (plugin-behaviour.md)
+# ee238d1 — Differentiate the mid-capture closer by who raised it (plugin-behaviour.md)
 
 Built in a six-batch goal session (plugin off).
 

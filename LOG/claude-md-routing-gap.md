@@ -1,4 +1,4 @@
-# [HASH] — Add CLAUDE.md to the routing taxonomy and make placement a self-check (plugin-behaviour.md + FAQ)
+# ee238d1 — Add CLAUDE.md to the routing taxonomy and make placement a self-check (plugin-behaviour.md + FAQ)
 
 Built in a six-batch goal session (plugin off).
 

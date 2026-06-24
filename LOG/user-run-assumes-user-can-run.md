@@ -1,4 +1,4 @@
-# [HASH] — Classify user-run tests by requirement, and explain them when surfaced (done.md + plan.md + QUEUE.md + FAQ)
+# ee238d1 — Classify user-run tests by requirement, and explain them when surfaced (done.md + plan.md + QUEUE.md + FAQ)
 
 Built in a six-batch goal session (plugin off).
 

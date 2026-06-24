@@ -1,4 +1,4 @@
-# [HASH] — Deferred-test roll liveness check: content stamp replaces version comparison (session_start.py + plan.md + CLAUDE.md + FAQ)
+# ee238d1 — Deferred-test roll liveness check: content stamp replaces version comparison (session_start.py + plan.md + CLAUDE.md + FAQ)
 
 Built in a six-batch goal session (plugin off).
 

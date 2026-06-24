@@ -1,4 +1,4 @@
-# [HASH] — Guard audit batches against direct doc-writes: plan.md authoring guard + next-audit.md execution guard + FAQ
+# ee238d1 — Guard audit batches against direct doc-writes: plan.md authoring guard + next-audit.md execution guard + FAQ
 
 Built in a six-batch goal session (plugin off).
 

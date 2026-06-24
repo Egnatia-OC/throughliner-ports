@@ -1,4 +1,4 @@
-# [HASH] — Add a file-only wind-down re-scan at the /done close (done.md + plan.md + plugin-behaviour.md + FAQ)
+# ee238d1 — Add a file-only wind-down re-scan at the /done close (done.md + plan.md + plugin-behaviour.md + FAQ)
 
 Built in a six-batch goal session (plugin off).
 
