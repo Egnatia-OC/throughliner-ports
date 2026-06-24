@@ -25,7 +25,7 @@ Three project docs structure each project:
 
 Two hooks enforce discipline mechanically, and a third advises:
 - `session_start` — detect project state and load behaviour rules.
-- `pre_tool_use` — enforces the scope-lock (which governs SPEC.md like any other file) and git safety.
+- `pre_tool_use` — enforces the scope-lock (which governs SPEC.md like any other file) and git safety, and asks for your approval before Claude spawns a subagent (a cost guard that asks, never blocks).
 - `post_tool_use` — advisory QUEUE.md structure lint; flags format drift, never blocks.
 
 One behaviour doc steers everything the hooks can't enforce:

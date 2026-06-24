@@ -16,14 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**SPEC: pre_tool_use gains the subagent ask-gate** **[subagent-ask-gate-spec]**
-Blocks: [subagent-ask-gate]
-
-The subagent ask-gate adds a new behaviour to the pre_tool_use hook — prompting before a subagent spawns. SPEC's hooks summary currently describes pre_tool_use as only enforcing the scope-lock and git safety, so it would be incomplete once the gate ships. This keeps SPEC accurate. Ordered before the feature build, per the spec-edit-first pipeline, and kept to a single sentence so SPEC stays lean rather than drifting toward boilerplate.
-
-Spec-edit:
-- SPEC.md, "How it works" hooks list — extend the pre_tool_use bullet so it also names the subagent ask-gate: pre_tool_use prompts for the user's approval before Claude spawns a subagent (a cost guard that asks, never blocks), alongside the scope-lock and git safety. The Spec-edit entry names SPEC.md, so the scope-lock allows the edit.
-
 **Subagent cost guard — harden the tool-use rule and add an ask-gate hook** **[subagent-ask-gate]**
 Depends on: [subagent-ask-gate-spec]
 
