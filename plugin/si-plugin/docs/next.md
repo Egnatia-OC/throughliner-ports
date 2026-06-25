@@ -63,7 +63,7 @@ _build.md is the crash-recovery mechanism. If the session dies, the next session
 
 Load the procedure doc matching the batch's subheadings:
 
-- **Build batches** (Build subheading, optionally with Test) → read and follow `next-build.md`. A **Spec-edit** batch (Spec-edit subheading, the batch that edits SPEC.md) routes here too — it executes like any build.
+- **Build batches** (Build subheading, optionally with Test) → read and follow `next-build.md`. A build that changes SPEC.md is an ordinary build batch — it lists SPEC.md in its Files and routes here like any other.
 - **Test-only batches** (Test subheading, no Build) → read and follow `next-test.md`.
 - **Audit batches** (Audit subheading) → read and follow `next-audit.md`.
 - **Freeform batches** (Freeform subheading) → read and follow `next-freeform.md`. Freeform is unqueued or loosely-scoped work that isn't a build, a test, or an audit — somewhere to make changes and talk them through when none of the other three fit. See next-freeform.md for what it's for and what it won't do.

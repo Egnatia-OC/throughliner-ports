@@ -48,8 +48,9 @@ Brief acknowledgment if the user needs to know the step happened; no output if p
 
 ## Tool use
 
-- For bounded checklists — a known set of files to read, fields to compare, or strings to grep — use direct tool calls (Read, Grep, Glob). Don't spawn agents.
-- Agents are for open-ended exploration where the shape of the answer isn't known in advance. If you can write out the lookups before doing them, do them inline.
+- For bounded checklists — a known set of files to read, fields to compare, or strings to grep — use direct tool calls (Read, Grep, Glob). When you can write the lookups out before doing them, do them inline.
+- Ask before spawning a subagent. A subagent — the Task tool, and the built-in deep-research skill that fans out several at once — burns tokens fast: a single run can exhaust the user's usage for the session. So get a yes first, which keeps that cost the user's call rather than a surprise. Spawn one only for genuinely open-ended exploration whose answer-shape isn't known in advance and is too broad to write out as inline lookups — and even then, name the cost and ask before starting. Scope: every session type, every skill, any moment a subagent or the deep-research skill would be spawned. The why this rule carries its stakes: it has slipped before at real cost — a plain "research this" was silently escalated into a five-subagent deep-research fan-out and blew the user's usage in one run, and a rule the model is to self-enforce holds on 4.8 only when its reason travels with it.
+- A plain research request gets inline reading and searching first — never a silent escalation into a parallel subagent or deep-research fan-out. Treat "look into X" as a request to Read and Grep directly; if the work genuinely needs a subagent, name that, name the cost, and ask before starting it. A mechanical ask-gate backs this up (the Task tool prompts for approval before any subagent runs), but the gate is the backstop — recognising the inline-first case yourself is the rule.
 
 ## Research
 

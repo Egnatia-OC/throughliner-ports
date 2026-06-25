@@ -13,9 +13,9 @@ the file from disk and flags known format violations:
      Deferred tests, and not shipped per LOG/index.md. A slug recorded
      as shipped is a satisfied citation, not a dangling dependency, so
      it isn't flagged (which also stops it re-flagging on every edit).
-  5. A subheading inside a batch that isn't Build/Spec-edit/Test/
-     Audit/Freeform — catches typos; ALLOWED_SUBHEADINGS must grow
-     when new batch types ship.
+  5. A subheading inside a batch that isn't Build/Test/Audit/Freeform
+     — catches typos; ALLOWED_SUBHEADINGS must grow when new batch
+     types ship.
   6. Batch prose naming a slug that is still defined in the file but
      not carried by the batch's own headers — "dependency or
      citation?", advisory precisely because evidence citations are
@@ -28,9 +28,6 @@ the file from disk and flags known format violations:
      below it in Batches — an out-of-order dependency /next would trip
      on. Deps that resolve to a Deferred-tests slug (staged) or to
      nothing (shipped) are not ordering errors and aren't flagged.
-  8. A batch carrying both a Build and a Spec-edit subheading — a spec
-     change gets its own batch; the scope-lock can't catch a folded one
-     because listing SPEC.md satisfies it.
 
 Deny-list by design: only known violations are flagged; unknown or
 novel structure passes in silence, so the format can evolve (new
@@ -62,17 +59,17 @@ SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\](?!\()")
 # Dependency headers, matched on the stripped line.
 DEP_HEADER = re.compile(r"^(Depends on|Blocks|Blocked by):")
 
-# A batch subheading: a single capitalised word (hyphens allowed, e.g.
-# "Spec-edit") and a colon, alone on the line. Multi-word lines with
-# colons (e.g. "Depends on: x") and lines with text after the colon
-# never match.
+# A batch subheading: a single capitalised word (hyphens allowed, so a
+# future hyphenated batch type still matches) and a colon, alone on the
+# line. Multi-word lines with colons (e.g. "Depends on: x") and lines
+# with text after the colon never match.
 SUBHEADING = re.compile(r"^([A-Z][A-Za-z-]*):$")
 
 # Marker lines between batches ("--- Push required before continuing ---",
 # plan markers). They separate batch blocks and are never violations.
 MARKER_LINE = re.compile(r"^---.+---$")
 
-ALLOWED_SUBHEADINGS = {"Build", "Spec-edit", "Test", "Audit", "Freeform"}
+ALLOWED_SUBHEADINGS = {"Build", "Test", "Audit", "Freeform"}
 
 
 def _normalise(path: str) -> str:
@@ -251,7 +248,7 @@ def _check_subheadings(annotated, warnings):
         if match and match.group(1) not in ALLOWED_SUBHEADINGS:
             warnings.append(
                 f"line {i + 1}: subheading '{line}' isn't one of "
-                "Build:/Spec-edit:/Test:/Audit:/Freeform: — a typo, or a new batch "
+                "Build:/Test:/Audit:/Freeform: — a typo, or a new batch "
                 "type this lint doesn't know yet? (New types must be added to "
                 "ALLOWED_SUBHEADINGS in post_tool_use.py.)"
             )
@@ -370,49 +367,6 @@ def _check_dep_ordering(annotated, warnings):
                 )
 
 
-def _check_spec_edit_build_mix(annotated, warnings):
-    """Check 8: a batch carries both a Build and a Spec-edit subheading.
-
-    A spec edit gets its own batch, separate from a feature build. The
-    scope-lock can't catch a folded one (listing SPEC.md satisfies it), so
-    this advisory flag backstops the authoring rule in plan.md. Advisory
-    only — like the rest of the lint, it flags and never blocks.
-    """
-    batches = []
-    current = None
-    for i, line, h2, h3, is_heading, indent in annotated:
-        if h2 != "Batches" or h3 == "Parked" or is_heading:
-            if current:
-                batches.append(current)
-                current = None
-            continue
-        if MARKER_LINE.match(line):
-            if current:
-                batches.append(current)
-                current = None
-            continue
-        if indent == 0 and line and FULL_BOLD_LINE.match(line):
-            if current:
-                batches.append(current)
-            current = {"idx": i, "title": line, "subs": set()}
-        elif current is not None:
-            ms = SUBHEADING.match(line)
-            if ms:
-                current["subs"].add(ms.group(1))
-    if current:
-        batches.append(current)
-
-    for b in batches:
-        if "Build" in b["subs"] and "Spec-edit" in b["subs"]:
-            own = sorted(SLUG_MARKER.findall(b["title"]))
-            label = own[0] if own else b["title"][:40]
-            warnings.append(
-                f"line {b['idx'] + 1}: [{label}] carries both a Build and a "
-                "Spec-edit subheading — a spec change gets its own batch, "
-                "separate from a feature build. Split them."
-            )
-
-
 def lint(content: str, shipped_slugs=frozenset()) -> list[str]:
     annotated = _annotate(content)
     defined_slugs = set(SLUG_MARKER.findall(content))
@@ -433,7 +387,6 @@ def lint(content: str, shipped_slugs=frozenset()) -> list[str]:
     _check_subheadings(annotated, warnings)
     _check_prose_refs(annotated, defined_slugs, warnings)
     _check_dep_ordering(annotated, warnings)
-    _check_spec_edit_build_mix(annotated, warnings)
     return warnings
 
 

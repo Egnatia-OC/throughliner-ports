@@ -13,6 +13,14 @@ Coherent graph: continue to the LOG entry below, say nothing. Broken graph: stop
 
 The why this bounces to /plan rather than fixing it here: reordering the queue is planning work, and /done fixing it would cross the build/plan skill line — /done records and commits, it doesn't re-plan. Committing a broken graph ships a queue /next trips on, so surfacing and routing back is the safe move. A fresh /done is a second pair of eyes on the graph, not a second planner. Scope: every plan-type /done close (plan, setup, and method-doc-only sessions).
 
+## Spec-sync gate [SILENT] when in sync; [PROMPT] when drift found
+
+Before drafting the LOG entry, check one thing: did a decision this session change what SPEC says? If a planning decision changed product truth — a capability, a constraint, a rule the app enforces, who it's for — and SPEC.md wasn't updated to match, stop the close. Surface the drift in plain words, get the user's approval, and update SPEC.md in this same session so the edit lands in this commit. Only then continue to the LOG entry. (Unlike the coherence backstop above, this fix happens here and isn't bounced to /plan: editing SPEC to match a decision the user already made this session is recording, not re-planning — the decision is settled, SPEC is just being brought into line with it.)
+
+The check is semantic, not mechanical — "did this session's decisions make a SPEC sentence wrong or incomplete?" is a judgment no hook can make and no lint can backstop, so Claude actually running it is the only enforcement. Run it on every plan-type close where a product-truth decision was made; a session that changed only queue ordering or captures touched no SPEC sentence and passes silently.
+
+The why this gate exists, and what it replaces: spec-driven development's contract is that any change altering behaviour updates the spec in the same commit (resources/research/spec-driven-development-edit-workflow.md). The retired spec-edit batch used to carry SPEC changes through their own /next cycle; this commit-boundary gate enforces the same atomicity directly, so /plan can edit SPEC in-session and the close guarantees SPEC never lags the decision that changed it. Last time SPEC was editable in /plan it got left behind — this gate is what makes in-session editing safe. Scope: every plan-type /done close (plan, setup, method-doc-only sessions).
+
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
 Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):

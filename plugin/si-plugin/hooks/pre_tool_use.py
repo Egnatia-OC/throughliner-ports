@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """
-PreToolUse hook — enforces two rules:
+PreToolUse hook — enforces three rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, LOG/, _build.md — are
    always editable). Tri-state: no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
-   when it's explicitly listed in Files: — a spec-edit batch lists it;
-   a feature build does not, so scope-lock alone keeps SPEC read-only
-   for any build that doesn't name it.
+   when it's explicitly listed in Files: — a batch that needs to change
+   SPEC lists it; a feature build that doesn't name SPEC can't touch it,
+   so scope-lock alone keeps SPEC read-only for any build that doesn't
+   name it.
 2. Git safety: block git reset --hard, git push --force, blanket
    staging (git add -A / --all / .), and git commit -a / -am.
+3. Subagent cost ask-gate: the Task tool (spawning a subagent) returns
+   permissionDecision "ask" — never "deny" — so the user is always
+   prompted before a subagent runs, but keeps full choice. A subagent
+   burns tokens fast and a single run can exhaust the user's usage, so
+   the spawn must never be silent. Fires wherever the plugin is
+   installed, independent of project adoption.
 
+For Task: checks rule 3 (cost ask-gate).
 For Edit/Write/MultiEdit: checks rule 1.
 For Bash/PowerShell: checks rule 2 (git safety) only.
 """
@@ -51,6 +59,24 @@ def _deny(reason: str) -> int:
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "deny",
+            "permissionDecisionReason": reason,
+        }
+    }
+    json.dump(output, sys.stdout)
+    return 0
+
+
+def _ask(reason: str) -> int:
+    """Surface a permission prompt the user approves or declines.
+
+    Unlike _deny, "ask" does not block — it hands the decision to the user
+    with the reason shown. Used by the subagent cost gate so a subagent
+    spawn is never silent, while the user keeps full choice.
+    """
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "ask",
             "permissionDecisionReason": reason,
         }
     }
@@ -200,6 +226,24 @@ def main() -> int:
     cwd = data.get("cwd", "")
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
+
+    # --- Task (subagent): cost ask-gate ---
+    # A subagent run burns tokens fast and a single run can exhaust the
+    # user's usage, so every spawn gets a permission prompt before it starts.
+    # "ask", never "deny": the user keeps full choice — the cost just stops
+    # being a silent surprise. Checked before the cwd / SPEC.md gates below,
+    # because the cost protection is universal: a subagent is as expensive in
+    # an unadopted folder as an adopted one. Pairs with the hardened
+    # "Tool use" rule in plugin-behaviour.md — the rule steers, the gate
+    # guarantees.
+    if tool_name == "Task":
+        return _ask(
+            "[Sovereign Implementer] Claude wants to start a subagent. "
+            "Subagents burn tokens fast — a single run can use up your usage "
+            "for the session. Approve if this genuinely needs wide, "
+            "open-ended exploration; decline to have Claude do the work "
+            "directly instead. Declining is a normal, safe choice."
+        )
 
     if not cwd:
         return 0

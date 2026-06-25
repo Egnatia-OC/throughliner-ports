@@ -82,6 +82,8 @@ Both paths below ask and wait, so the tag sits on the whole section. If the work
 - **Minor** (a small prerequisite, one or two files): ask to add, naming the work and the files: "This needs [work], which means editing [file] — add it to scope?" Once approved, append any not-yet-listed file to _build.md's `Files:` section before editing it — the scope-lock denies edits to unlisted files.
 - **Significant** (multiple new files, design uncertainty): propose splitting. Finish what's scoped, /done to close, then /plan to queue the rest.
 
+**A SPEC change the build discovers it needs is a legitimate scope-grow.** SPEC.md is a normal file a build can add to scope — the separate spec-edit batch a build used to be forced to queue is retired. When the build finds a SPEC sentence must change for the work to be correct, treat it like any scope-grow: name the change and ask ("this needs SPEC to say X instead of Y — add SPEC.md to scope?"), and once approved, append SPEC.md to _build.md's `Files:` section before editing it (the scope-lock denies SPEC until it's listed). Then edit SPEC inline as part of the build. The why this is safe in-build now: spec-driven development wants the spec to move in the same commit as the behaviour change, and the /done-build spec-sync gate (done-build.md) backstops it — that gate stops the close if the build changed product truth and SPEC wasn't brought into line. So the build edits SPEC inline with the user's approval and the close guarantees the two ship together. A SPEC change is product truth, so it always gets the explicit ask — it never rides in silently.
+
 ## Mid-build course-correction
 
 ### Claude discovers user-runnable testing is needed [PROMPT]

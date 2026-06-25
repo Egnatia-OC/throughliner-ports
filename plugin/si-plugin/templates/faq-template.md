@@ -82,13 +82,9 @@ Two different saves. **Committing** saves a snapshot of your work to your projec
 
 Because the close (/done) is for recording and saving the work that was just finished — not for starting new work. If you ask for something brand-new while Claude is closing a session — a redesign, a new feature, a change to something that already worked — Claude finishes the close first, then that new change becomes its own build session (or gets noted for later if it isn't urgent). The one thing Claude will fix on the spot is a genuine bug in what was just built — that's finishing the job, not starting a new one. Keeping new work to its own session means it gets planned and built properly instead of squeezed into the close.
 
-## Can I edit SPEC.md while doing a build?
+## Can I change SPEC.md, and how?
 
-Not during an ordinary build. SPEC.md is your project's source of truth, so it's kept from shifting under active work — the safety check blocks a build from editing any file its batch doesn't list, and ordinary builds don't list SPEC.md. Changing SPEC takes a planned spec-edit batch: /plan queues it, and /next runs it like any other build. So if you spot a spec issue mid-build, note it for /plan, which turns it into a spec-edit batch.
-
-## Why won't the method let a spec change ride inside a build?
-
-Your SPEC.md is the project's source of truth, so the method keeps it from being changed quietly as a side effect of building a feature. A spec change always gets its own dedicated job — a spec-edit batch — rather than being folded into a feature build. So if a build would also need to change the spec, Claude will ask to split it into its own spec-edit batch. That way the source of truth only ever changes through a deliberate, visible step you approve, never as a hidden part of something else.
+Yes. SPEC.md is your project's source of truth, and the method keeps it changing only in deliberate, approved ways — but it's a normal document now, not something locked behind a special batch. A SPEC change happens one of two ways. If a planning session decides something that changes what SPEC says — a new capability, a different rule, who it's for — Claude updates SPEC right there in that /plan session, with your approval. If a build turns out to need a SPEC change, Claude asks you, adds SPEC.md to that build's file list, and edits it as part of the build. Either way you approve the change before it lands, and the safety check still blocks a build from touching SPEC unless its batch lists it — so a spec change never slips in quietly as a side effect of something else. (There used to be a separate "spec-edit batch" for this; it's gone — it added a whole extra step to change one line and protected nothing that the approval and the safety check don't already.)
 
 ## What's the difference between SPEC.md, CLAUDE.md, and Claude's memory?
 
@@ -143,6 +139,10 @@ Claude stops and asks. It stays within batch scope. If something else needs chan
 ## Will Claude use my phone or another device to test my app?
 
 Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
+
+## Why did Claude ask before starting a "subagent"?
+
+A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
 
 ## What does "Parked" mean in the queue?
 

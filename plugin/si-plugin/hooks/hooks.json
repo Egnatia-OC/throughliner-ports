@@ -1,5 +1,5 @@
 {
-  "description": "Sovereign Implementer plugin hooks. SessionStart detects project state and orients Claude. PreToolUse enforces SPEC.md read-only during builds, batch file-list boundary, and git safety. PostToolUse lints QUEUE.md structure after edits (advisory).",
+  "description": "Sovereign Implementer plugin hooks. SessionStart detects project state and orients Claude. PreToolUse enforces the batch file-list boundary (SPEC editable only when a batch lists it), git safety, and a subagent cost ask-gate (the Task tool prompts for approval before a subagent runs — ask, never block). PostToolUse lints QUEUE.md structure after edits (advisory).",
   "hooks": {
     "SessionStart": [
       {
@@ -23,6 +23,15 @@
       },
       {
         "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre_tool_use.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
         "hooks": [
           {
             "type": "command",

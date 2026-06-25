@@ -1,6 +1,6 @@
 # Build close-out
 
-Close-out for build batches (including their test entries). Reached from done.md's router when _build.md's Entry carries a Build subheading — or a Spec-edit subheading, since a spec-edit batch closes like any build through these same steps.
+Close-out for build batches (including their test entries). Reached from done.md's router when _build.md's Entry carries a Build subheading. A build that changed SPEC.md (because it listed SPEC in its Files, or grew scope to include it mid-build) closes here like any other build — there is no separate spec-edit close.
 
 ## Phase 1: Judgment (while context is fresh)
 
@@ -30,9 +30,13 @@ Any planned test from the batch that couldn't run in this session goes to QUEUE.
 
 **A user-review of generated output is not a deferred test.** When the batch's verification was the user eyeballing generated output (a doc, copy, a draft) rather than a behaviour check, don't write it as a Deferred-tests line and don't frame it as "mark the test passed" or "defer it to a queue line." Frame the close as a plain request — "have a read of X and tell me if anything's off." If the user hasn't read it yet, hold that as a plain reminder in the recommend-next step, not a Deferred-tests test line. The obligation to look is kept; only the test framing goes (see done.md Deferred tests).
 
-### 1.4 Spec-drift check [SILENT] when nothing drifts, [BRIEF] when filing
+### 1.4 Spec-sync gate [SILENT] when nothing drifts, [PROMPT] when drift found
 
-Build closes only (test and audit land no product changes). Read SPEC.md against the changes this build landed and apply the spec-entry trigger test in its canonical form — the Spec-edit batches rule in plan.md (Step 3), whose test is whether any sentence in SPEC goes wrong or incomplete given these changes. Quote plan.md's wording rather than restating it, so the two don't drift. If the test fires, file a mandatory capture naming the gap — which SPEC sentence the build made wrong or incomplete. Never edit SPEC.md here: product-truth edits stay in /plan and ship through a spec-edit batch, so this is a detect-and-file backstop, not an author. The trigger exists because the prospective /plan gate has leaked before — a build landed a spec-affecting change with no prior spec entry, caught only by luck at /done. Path-split like the staleness sweep: silent when nothing drifts, one or two sentences when filing.
+Build closes only (test and audit land no product changes). Read SPEC.md against the changes this build landed and apply the spec-entry trigger test — whether any sentence in SPEC goes wrong or incomplete given these changes. That is the test plan.md's "SPEC changes are normal build scope" rule names; quote its wording rather than restating it, so the two don't drift.
+
+If the test fires, stop the close — don't commit yet. Surface the drift in plain words, naming which SPEC sentence the build made wrong or incomplete, and get the user's approval to fix it. Then add SPEC.md to _build.md's `Files:` list (so the scope-lock allows the edit), edit SPEC to match what the build landed, and commit SPEC together with the build in this same commit. Don't file it as a capture for a later session.
+
+The why this is now a stop-the-close gate, not a detect-and-file backstop: SPEC is in-session-editable now — the spec-edit batch type is retired (plan.md) — so a build that changed product truth can and must bring SPEC into line in the same commit. Spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md); deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does. Scope: every build close where the build changed product truth.
 
 ## Phase 2: Record
 
