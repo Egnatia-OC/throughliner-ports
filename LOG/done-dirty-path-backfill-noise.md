@@ -1,4 +1,4 @@
-# [HASH] — [done-dirty-path-backfill-noise] /done recognises the expected hash-backfill LOG files instead of re-investigating them
+# 3a12926 — [done-dirty-path-backfill-noise] /done recognises the expected hash-backfill LOG files instead of re-investigating them
 
 Built in the goal run (fourth of four). Every /done's out-of-scope dirty-path check finds the LOG files the session-start hook auto-edited — filling the previous session's placeholder hash with the real commit hash, in the entry heading and the index line. These appear every single session after a /done and the answer is always the same ("it's the backfill, stage it"), but the check didn't recognise them, so it investigated and explained them every time for zero decision value. Per the escalation heuristic this is a sharpen-the-rule case (mild delay, not a high-cost failure), so it's a behavioural change to done.md, not a hook.
 

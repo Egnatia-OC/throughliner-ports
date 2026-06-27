@@ -1,4 +1,4 @@
-# [HASH] — [retire-spec-edit-batch-type] SPEC becomes a normal file; spec-edit batch type removed, two close-out spec-sync gates replace it
+# 3a12926 — [retire-spec-edit-batch-type] SPEC becomes a normal file; spec-edit batch type removed, two close-out spec-sync gates replace it
 
 Built in the goal run (second of four). The spec-edit batch type had become a time sink — often a whole /next cycle to change one SPEC line. This retires it entirely: SPEC.md is now a normal doc any batch can list in its Files. Three paths replace the batch — a SPEC change decided in /plan is edited in that /plan session; a build that discovers it needs a SPEC change asks the user, adds SPEC.md to scope, and edits it inline; a large SPEC rework is a normal build batch that lists SPEC.md.
 

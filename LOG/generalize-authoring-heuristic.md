@@ -1,4 +1,4 @@
-# [HASH] — [generalize-authoring-heuristic] renamed 4-8-authoring-heuristic.md → authoring-heuristic.md; added a model-agnostic rule-writing section + the escalation heuristic
+# 3a12926 — [generalize-authoring-heuristic] renamed 4-8-authoring-heuristic.md → authoring-heuristic.md; added a model-agnostic rule-writing section + the escalation heuristic
 
 Built in the goal run (third of four). Two pressures met: the escalation heuristic (when a slipped rule earns a hook vs. just sharper wording) needed a durable home, and CLAUDE.md was already heavy, so piling rule-writing rules into it would bloat it further; separately, resources/4-8-authoring-heuristic.md was named for a model and goes stale as the project adopts future ones. One move fixes both.
 

@@ -1,4 +1,4 @@
-# [HASH] — [subagent-ask-gate] subagent cost guard: hardened tool-use rule + PreToolUse "ask" gate on the Task tool + FAQ
+# 3a12926 — [subagent-ask-gate] subagent cost guard: hardened tool-use rule + PreToolUse "ask" gate on the Task tool + FAQ
 
 Built in a goal run (first of four back-to-back batches). Claude had silently escalated a plain "research this" request into the built-in deep-research skill — a five-subagent fan-out — exhausting the user's Max usage for the first time in weeks. The existing plugin-behaviour.md "Tool use" rule said "don't spawn agents" but carried no why, no stakes, no scope — the one un-hardened rule in an otherwise compliance-hardened doc — and it had slipped before. So one behavioural rule wasn't enough; this lays down two layers.
 
