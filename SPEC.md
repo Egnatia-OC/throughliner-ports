@@ -34,6 +34,8 @@ One behaviour doc steers everything the hooks can't enforce:
 One output style sets the communication default at system-prompt priority:
 - A concise output style — shipped in the plugin and applied automatically when SI is enabled. It lifts the plugin's communication structure (lead with the decision, one item at a time, gate detail) to system-prompt priority, the level that holds when lower-priority instructions are skipped. It steers structure and plain English, not terseness — the goal is to not overwhelm the non-coder who reads and approves everything, never to cap length.
 
+**Readiness line.** /plan maintains a line in the queue — rendered `--- Cleared to run above this line ---` — that marks which work is vetted and safe to build (above it) from work that still needs planning (below it). /plan positions it at every close and narrates where it sits, so the user never has to work out by hand how much of the queue is safe to run next. The unattended build mode inherits it as its run bound — a clean finish at the line rather than running into unvetted work.
+
 **Red flags.** Claude watches for anything that could expose the user's data or their users' data, or amount to a breach, and surfaces it as a red flag instead of quietly building past it. Red flags collect in a section at the top of QUEUE.md, so they're the first thing seen each session. Each flag carries a state — open, resolved, or accepted. An accepted flag records the user's decision in the LOG: what they were warned about, and that they chose to proceed anyway. Open flags are meant to gate the unattended build mode — a user who leaves a risk unaddressed stays on hand to approve each step rather than letting the build run on its own.
 
 ## Principles

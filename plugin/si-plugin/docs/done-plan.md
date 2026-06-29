@@ -21,6 +21,10 @@ The check is semantic, not mechanical — "did this session's decisions make a S
 
 The why this gate exists, and what it replaces: spec-driven development's contract is that any change altering behaviour updates the spec in the same commit (resources/research/spec-driven-development-edit-workflow.md). The retired spec-edit batch used to carry SPEC changes through their own /next cycle; this commit-boundary gate enforces the same atomicity directly, so /plan can edit SPEC in-session and the close guarantees SPEC never lags the decision that changed it. Last time SPEC was editable in /plan it got left behind — this gate is what makes in-session editing safe. Scope: every plan-type /done close (plan, setup, method-doc-only sessions).
 
+## Readiness line (confirm and narrate) [BRIEF]
+
+/plan positions the `--- Cleared to run above this line ---` marker at its own close (plan.md Step 4). Confirm it's present in Batches and sits where the readiness definition puts it — everything above it traced, complete (every dependency has a producer), correctly ordered, and not still waiting on a raw capture below the divider (plugin-behaviour.md Dependency tracing). If it's missing or misplaced, fix it with the user, then narrate the boundary plainly in one line as part of the close — e.g. "Two batches are cleared to run; the line sits above [batch-x], whose dependencies aren't settled yet." A setup or method-doc-only session with no Batches has no line to place — say nothing. Scope: every plan-type /done close.
+
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
 Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):

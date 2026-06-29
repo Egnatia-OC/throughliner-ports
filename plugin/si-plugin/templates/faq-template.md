@@ -159,6 +159,14 @@ Nothing leaves active flow without one of these — prose alone isn't enough for
 
 It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
+## When I add new work to the queue, why does Claude read through my files first?
+
+Before a piece of work goes in the queue as ready to build, Claude traces what it depends on rather than guessing. It reads the files that work would touch — and the relevant part of your SPEC — to work out what has to exist first, then checks that each of those things has something that actually builds it: another queued item, work already finished, or code that's already there. If it finds a dependency with nothing to build it — a "missing-producer" gap — it tells you, so the gap gets filled before the work is lined up. The point is to catch ordering problems while planning, where they're a quick fix, instead of hitting them mid-build where they stall the work. Claude does this for build work only — checking and reviewing work don't carry build dependencies.
+
+## What does the "Cleared to run above this line" marker in the queue mean?
+
+It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been checked over in planning — its order is right and everything it depends on is accounted for — so it's safe to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When the unattended build mode arrives, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
+
 ## What does it mean when Claude says a dependency is "out of order" or "dangling"?
 
 Some pieces of work depend on others — one batch needs another finished first. Claude tracks those links in the queue. Now and then a link breaks: a batch is lined up *before* the thing it depends on (out of order), or it points to a piece of work that's no longer in the queue (dangling). Either way, building in that order would trip up.

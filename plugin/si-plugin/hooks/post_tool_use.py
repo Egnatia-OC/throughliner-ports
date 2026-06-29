@@ -13,6 +13,8 @@ the file from disk and flags known format violations:
      Deferred tests, and not shipped per LOG/index.md. A slug recorded
      as shipped is a satisfied citation, not a dangling dependency, so
      it isn't flagged (which also stops it re-flagging on every edit).
+     A Depends on: header is framed as a missing-producer hole — the
+     batch declares it needs work nothing in the queue or log builds.
   5. A subheading inside a batch that isn't Build/Test/Audit/Freeform
      — catches typos; ALLOWED_SUBHEADINGS must grow when new batch
      types ship.
@@ -23,7 +25,11 @@ the file from disk and flags known format violations:
      an absent slug is shipped work, and a reference to shipped work
      can only be a citation (a dry run against the real queue showed
      those make up the bulk of prose references — flagging them buried
-     the real signals under ~2.5KB of noise per edit).
+     the real signals under ~2.5KB of noise per edit). Diff-scoped: a
+     citation is flagged only on the edit that introduces or changes
+     its line, never re-flagged while it sits unchanged — "citation vs
+     dependency" is a static property of the line, so an edit elsewhere
+     can't change it. The other checks still scan the whole file.
   7. A batch whose Depends on: names another active batch positioned
      below it in Batches — an out-of-order dependency /next would trip
      on. Deps that resolve to a Deferred-tests slug (staged) or to
@@ -221,6 +227,11 @@ def _check_dangling_refs(annotated, resolved_slugs, warnings):
     file (an active batch or parked item), staged in Deferred tests, or
     recorded as shipped in LOG/index.md. Only a slug resolved by none of
     those is a genuine dangling reference worth surfacing.
+
+    The message varies by header: a Depends on: slug nothing produces is
+    framed as a missing-producer hole (the batch needs work nothing in the
+    queue or log builds); Blocks:/Blocked by: keeps the renamed-or-typo
+    framing. Advisory only — never blocks, like every check here.
     """
     for i, line, _h2, _h3, is_heading, _indent in annotated:
         if is_heading:
@@ -228,10 +239,25 @@ def _check_dangling_refs(annotated, resolved_slugs, warnings):
         match = DEP_HEADER.match(line)
         if not match:
             continue
+        header = match.group(1)
         for slug in SLUG_REF.findall(line):
-            if slug not in resolved_slugs:
+            if slug in resolved_slugs:
+                continue
+            if header == "Depends on":
+                # A Depends on: slug nothing produces is a missing-producer
+                # hole: the batch declares it needs work that no active batch,
+                # staged test, or shipped log entry builds.
                 warnings.append(
-                    f"line {i + 1}: {match.group(1)}: names [{slug}], but "
+                    f"line {i + 1}: Depends on: names [{slug}], but nothing "
+                    "produces it — not an active batch here, not staged in "
+                    "Deferred tests, not shipped per LOG/index.md. That's a "
+                    "missing-producer hole: this batch depends on work nothing "
+                    "in the queue or the log builds. Add a producer, or drop "
+                    "the dependency if it's already satisfied."
+                )
+            else:
+                warnings.append(
+                    f"line {i + 1}: {header}: names [{slug}], but "
                     "nothing carries that slug — not in this file, not staged "
                     "in Deferred tests, and not shipped per LOG/index.md. "
                     "Renamed, or a typo? A satisfied dependency is stale and "
@@ -254,12 +280,23 @@ def _check_subheadings(annotated, warnings):
             )
 
 
-def _check_prose_refs(annotated, defined_slugs, warnings):
+def _check_prose_refs(annotated, defined_slugs, warnings, changed_lines=None):
     """Check 6: batch prose naming defined slugs its headers don't carry.
 
     Only references to slugs still defined in the file are flagged: a
     pending item can be a missed dependency; an absent slug is shipped
     work, and a reference to shipped work can only be a citation.
+
+    Diff-scoped: when `changed_lines` is given (the stripped lines of the
+    current edit's new text), a prose-citation is flagged only when its own
+    line is in that set — so a citation is judged once, when written, and
+    never re-flagged on later edits that leave it untouched. The whole file
+    is still parsed (to know which slugs the block's headers carry); only
+    the *triggering* prose line must be part of this edit. `changed_lines`
+    is None when no diff text is available — then the check scans the whole
+    file as before. "Citation vs dependency" is a static property of the
+    line, so an edit elsewhere can't change it; scoping the other checks
+    would miss real drift, so only this advisory is scoped.
     """
     blocks = []
     current = None
@@ -287,18 +324,22 @@ def _check_prose_refs(annotated, defined_slugs, warnings):
     for block in blocks:
         own = set(SLUG_MARKER.findall(block["title"]))
         header_slugs = set()
-        prose_slugs = []
+        prose_refs = []
         for line in block["lines"]:
             refs = SLUG_REF.findall(line)
             if DEP_HEADER.match(line):
                 header_slugs.update(refs)
             else:
-                prose_slugs.extend(refs)
+                for s in refs:
+                    prose_refs.append((s, line))
         unheadered = sorted(
             {
                 s
-                for s in prose_slugs
-                if s in defined_slugs and s not in header_slugs and s not in own
+                for s, line in prose_refs
+                if s in defined_slugs
+                and s not in header_slugs
+                and s not in own
+                and (changed_lines is None or line in changed_lines)
             }
         )
         if unheadered:
@@ -367,10 +408,41 @@ def _check_dep_ordering(annotated, warnings):
                 )
 
 
-def lint(content: str, shipped_slugs=frozenset()) -> list[str]:
+def _changed_text(tool_name: str, tool_input: dict) -> str:
+    """The new text an edit introduces — for diff-scoping the citation check.
+
+    Write replaces the whole file, so its `content` is the changed text (and
+    every line counts as new, which correctly scans the whole file). Edit's
+    changed text is its `new_string`; MultiEdit's is every edit's new_string.
+    Anything else yields "" — the caller treats empty as "no diff info" and
+    falls back to a whole-file prose scan.
+    """
+    if tool_name == "Write":
+        return tool_input.get("content", "") or ""
+    if tool_name == "Edit":
+        return tool_input.get("new_string", "") or ""
+    if tool_name == "MultiEdit":
+        parts = []
+        for e in tool_input.get("edits", []) or []:
+            if isinstance(e, dict):
+                parts.append(e.get("new_string", "") or "")
+        return "\n".join(parts)
+    return ""
+
+
+def lint(content: str, shipped_slugs=frozenset(), changed_text=None) -> list[str]:
     annotated = _annotate(content)
     defined_slugs = set(SLUG_MARKER.findall(content))
     deferred_slugs = _deferred_slugs(annotated)
+    # The citation advisory (check 6) fires only for a prose-citation line the
+    # current edit introduced or changed. changed_lines holds the edit's new
+    # text as stripped lines; None means no diff info, so check 6 scans the
+    # whole file as before. The other checks always scan the whole file.
+    changed_lines = None
+    if changed_text:
+        changed_lines = {
+            line.strip() for line in changed_text.splitlines() if line.strip()
+        }
     warnings = []
     _check_batch_slugs(annotated, warnings)
     _check_parked_headers(annotated, warnings)
@@ -385,7 +457,7 @@ def lint(content: str, shipped_slugs=frozenset()) -> list[str]:
         annotated, defined_slugs | deferred_slugs | shipped_slugs, warnings
     )
     _check_subheadings(annotated, warnings)
-    _check_prose_refs(annotated, defined_slugs, warnings)
+    _check_prose_refs(annotated, defined_slugs, warnings, changed_lines)
     _check_dep_ordering(annotated, warnings)
     return warnings
 
@@ -422,7 +494,11 @@ def main() -> int:
     except (OSError, UnicodeDecodeError):
         return 0
 
-    warnings = lint(content, shipped_slugs=_shipped_slugs(cwd))
+    warnings = lint(
+        content,
+        shipped_slugs=_shipped_slugs(cwd),
+        changed_text=_changed_text(tool_name, tool_input),
+    )
     if not warnings:
         return 0
 
