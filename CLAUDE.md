@@ -23,7 +23,7 @@ Resolved 2026-06-15: this project targets **Opus 4.8** and will not regress to 4
 
 ## Host and target
 
-**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only uninstalling and reinstalling does.
+**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only a `claude` CLI install/update against the committed marketplace plus a full app restart does (the desktop app's in-app plugin upload is gone; see the Rezip and Push rituals below for the exact commands). A bare working-tree or zip edit changes nothing the host sees, because the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files.
 **Target** = the editable source at `plugin/si-plugin/`. This is what sessions build and edit. Target changes have no effect until packaged and installed as the new host.
 
 Host and target are the same plugin at different stages. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target. **Default assumption: discussion is about the target unless the user says otherwise.** Most target changes become host changes automatically on reinstall. Changes that live outside the plugin package (e.g. project doc structure, this CLAUDE.md) won't propagate through reinstall and need manual updates.
@@ -113,7 +113,12 @@ When Alex says "rezip" (or asks for a fresh local build to test), run this — n
 1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the current version and increment N (`-test1` → `-test2`), or start at `-test1` if the base carries no suffix (`1.12.0` → `1.12.0-test1`).
 2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never ships in the zip (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
 3. Repackage, overwriting the existing zip: `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip" -Force` (zip the folder, not its contents — internal paths must start with `si-plugin/`). Verify: list the zip's entries and confirm none contain `__pycache__` — if any do, stop and fix.
-4. Tell Alex: "Zip rebuilt — nothing has been published. Uninstall/reinstall to test the new host privately." Note that loading the new host needs a **full app restart, not just a new session** — plugin skills register at app launch, and on Windows a normal quit can leave the app running, so fully quit (confirm the process exited via Task Manager if needed) and relaunch before testing.
+4. Refresh the installed host from the local-folder marketplace via the `claude` CLI, then fully restart the app. The desktop app no longer has an in-app plugin upload, and a working-tree or zip edit alone changes nothing the installed host sees — the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files. So testing the new build means re-running the install/update so the CLI re-snapshots the current `plugin/si-plugin`. Claude runs these commands; Alex types nothing in a terminal.
+   - First time only — register the local marketplace (the committed `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at `plugin/si-plugin`): `claude plugin marketplace add "C:\Users\Alex\Desktop\Taskflow Planning\No code method"`
+   - Each rezip after — re-snapshot the current build: `claude plugin update sovereign-implementer@flintcraft` (or `claude plugin install sovereign-implementer@flintcraft`).
+   - Then a **full app restart, not just a new session** — plugin skills register at app launch, and on Windows a normal quit can leave the app running, so fully quit (confirm the process exited via Task Manager if needed) and relaunch before testing.
+
+   Tell Alex: "Host refreshed via the CLI — nothing has been published. Fully restart the app to load it for private testing."
 
 ### Push (release)
 
@@ -140,7 +145,7 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
     - Attach the zip: `plugin/si-plugin.zip`.
     - Command shape: `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --notes "<summary>"`.
     - If `gh` isn't authenticated in this session (the command errors on auth), don't silently skip the Release — tell Alex how to publish it from the GitHub web UI instead: on the repo's **Releases** page, click **Draft a new release**, create the tag `v<VERSION>`, set the same title, paste the summary as the notes, attach `plugin/si-plugin.zip`, and **Publish release**. The step never silently does nothing.
-11. Tell Alex: "Pushed, released, and rezipped. Uninstall/reinstall to update the host."
+11. Update the installed host via the `claude` CLI, then tell Alex to fully restart the app. Same mechanism as the Rezip reload step — the host reads a frozen cache snapshot, so without a CLI update + full restart it keeps running the old build. The marketplace is already registered from earlier testing, so this is just: `claude plugin update sovereign-implementer@flintcraft`. Then tell Alex: "Pushed, released, and rezipped. I've updated the host via the CLI — fully quit and relaunch the app to load it."
 
 **Archive accuracy.** Push keeps archiving the previous zip as above. Git history is the authoritative record of released zips — each push commits `si-plugin.zip`. So if a private rezip overwrote `si-plugin.zip` since the last push, the copy that lands in `plugin/zip-archive/` at the next push is a convenience that may reflect a test build rather than the prior release. This is cosmetic: git holds the true releases.
 

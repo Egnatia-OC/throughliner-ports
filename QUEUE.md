@@ -16,20 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Rewrite the Rezip & Push rituals to the CLI install flow** **[rezip-push-cli-flow]**
-
-The desktop app removed its in-app plugin upload, so CLAUDE.md's Rezip and Push rituals — which both end in "uninstall/reinstall via the desktop UI" — now describe a path that no longer exists. Until they're fixed, the documented way to test and release SI is broken. The verified replacement (confirmed end-to-end this session, capture [cli-install-confirmed-rezip-loop-update]) is the `claude` CLI: `claude plugin install`/`update` against the committed marketplace, then a full app restart. A critical fact the new ritual must carry: the install reads a cache snapshot under `~/.claude/plugins/cache/...`, NOT the live working tree — so a rezip alone changes nothing the host sees; the CLI install/update is what refreshes the snapshot.
-Trace evidence: edits CLAUDE.md only (host-only doc, not in the plugin package). The CLI commands are verified by capture [cli-install-confirmed-rezip-loop-update] and documented in resources/research/claude-code-plugin-install-paths.md (the canonical source for the flow). The committed `.claude-plugin/marketplace.json` already exists and works. No queued-batch dependency. Shared primitive with the consumer-docs batch ([install-docs-cli-refresh]): both describe the CLI install path, so both must match the research file's canonical commands — kept consistent by pointing at that file, not duplicating divergent command lists.
-
-Build:
-- CLAUDE.md "Rezip (local testing)": replace the final desktop "uninstall/reinstall to test" step with the CLI flow — after repackaging, run `claude plugin install` (or `update`) to refresh the cache snapshot from the local-folder marketplace (`flintcraft`, from the committed marketplace.json), then full app restart. State plainly that a working-tree/zip edit alone changes nothing the installed host sees, because the host reads the cache snapshot.
-- CLAUDE.md "Push (release)" step 11: replace "Uninstall/reinstall to update the host" with the CLI install/update + full restart.
-- CLAUDE.md "Host and target" section: update "only uninstalling and reinstalling does" to the CLI install/update + restart.
-- Verify exact CLI command spellings against resources/research/claude-code-plugin-install-paths.md and capture 7 before writing.
-
-Test:
-- (observed) The next rezip cycle uses the CLI install/update and the host reflects the change after a full restart; the next push step 11 uses the CLI flow. Confirmed by observation at the next rezip and next push. (The CLI commands are already verified this session — this only confirms the rewritten ritual is followed.)
-
 **Refresh consumer install docs to the CLI/marketplace path** **[install-docs-cli-refresh]**
 
 README.md and INSTALL.md currently describe installing SI via the desktop app's "add → Upload plugin" button (from [readme-install-refresh], shipped). Capture [desktop-plugin-upload-removed] confirms that button — and the whole in-app upload path — is gone from the current desktop app, so the consumer install instructions point at a UI that no longer exists. Rewrite them to the supported path: add the SI marketplace from the GitHub repo and install via the `claude` CLI, with Claude driving the commands so the non-coder never types in a terminal. The committed marketplace.json already backs this (capture [cli-install-confirmed-rezip-loop-update]).
@@ -157,12 +143,15 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [readiness-line] — the first /plan close after reinstall positions and narrates the `--- Cleared to run above this line ---` marker, and the first /next reads everything above it as cleared to run (soft-stopping with a /plan recommendation when the line sits at the top of Batches). Confirmed by: observed in the first /plan close + /next after push + reinstall. Deferral: host-side. Runnability: observed.
 - [unpark-scan-mixed-trigger] — the next /plan whose Parked shelf holds an item with a mixed slug+behavioural `Blocked by:`, where a named slug has shipped, surfaces it as an unpark candidate regardless of the behavioural half. Confirmed by: observed in the first such /plan after push + reinstall. Deferral: host-side. Runnability: observed.
 - [lint-citation-diff-scope] — on the installed host, the citation advisory fires only for a citation line the current edit introduced or changed, not for pre-existing unchanged citations elsewhere in the file (the run-now fixture passed in-session; the old whole-file host re-flagged a pre-existing citation this very session, confirming the fix isn't live until reinstall). Confirmed by: observed on the first capture-heavy /plan QUEUE.md edit after push + reinstall. Deferral: host-side. Runnability: observed.
+- [rezip-push-cli-flow] — the next rezip cycle follows the rewritten CLI ritual (marketplace add first time, `claude plugin update sovereign-implementer@flintcraft` each rezip after) and the host reflects the change after a full app restart; the next release push step 11 uses the CLI update + full restart in place of the removed uninstall/reinstall. Confirmed by: observation at the next rezip and the next push. Deferral: external (waits for the next rezip / next push to occur). Runnability: observed (Claude drives the rezip/push, so it confirms by following the rewritten ritual).
 
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
+
+**[rezip-zip-vs-folder-coherence]** The committed local marketplace (`.claude-plugin/marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` **folder** (`source: ./plugin/si-plugin`), so the `claude` CLI local-test install snapshots the folder, not `plugin/si-plugin.zip`. After the [rezip-push-cli-flow] rewrite, the Rezip ritual still rebuilds the zip in steps 2–3, but that zip no longer feeds the local test loop — the CLI reads the folder. So the zip rebuild on rezip now serves only as the committed/released artifact (what Push archives and the Release attaches), not as the thing being dogfooded. Question for /plan: is rebuilding the zip on every rezip-for-testing still worth keeping, or does it belong only in the Push ritual now? Also: the `__pycache__` cleanup (step 2) still matters for the folder install, since the CLI snapshots the live folder. Low urgency — nothing is broken; the rituals are just carrying a step whose original purpose (a zip to upload) is gone.
 
 ### Parked
 
