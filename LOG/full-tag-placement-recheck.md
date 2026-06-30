@@ -1,4 +1,4 @@
-# [HASH] — [full-tag-placement-recheck] audit: read all 13 procedure docs against the 3-lens compliance checklist; 3 findings routed to Captures
+# 77ef065 — [full-tag-placement-recheck] audit: read all 13 procedure docs against the 3-lens compliance checklist; 3 findings routed to Captures
 
 First run of the routine method-compliance audit checklist built this same session ([method-compliance-checklist]). Read every procedure doc once — setup.md, plan.md, the next family (next.md, next-build.md, next-test.md, next-audit.md, next-freeform.md), the done family (done.md, done-build.md, done-test.md, done-plan.md, done-audit.md, done-freeform.md), and plugin-behaviour.md — applying all three lenses (4.8 authoring-compliance, response-shape tag placement, narration drift), deliberately including the docs freshly edited earlier in this run so the audit grades current state. Findings only; no edits to the docs read, per the audit's route-to-Captures contract. Three findings filed raw to Captures for a later /plan to route:
 
