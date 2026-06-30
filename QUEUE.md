@@ -16,6 +16,31 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
+**Scope git-safety checks to single command segments** **[git-safety-cross-segment-false-positive]**
+
+The git-safety patterns in `pre_tool_use.py` scan the entire compound command as one string, so tokens from unrelated segments combine across `&&`. A real denial proved it: a /done commit `git add … LOG/rezip-push-cli-flow.md … && git commit -F COMMIT_MSG.tmp && rm -f COMMIT_MSG.tmp && git remote` was blocked with the `git push --force` message. Mechanism, recovered from the prior session's transcript and verified: `PUSH_FORCE` (`\bgit\b.*\bpush\b.*-f\b`) matched `git` (from `git add`) + `push` (inside the staged filename `rezip-push-cli-flow.md`, where `\bpush\b` matches `-push-`) + `-f` (from `rm -f`). Removing either the filename's `push` or the `rm -f` breaks the match — confirmed both ways. So a benign commit was denied because a staged file happened to have "push" in its name and the cleanup used `rm -f`. (Supersedes the filing-time capture name `[git-safety-hook-rm-f-false-positive]`, whose diagnosis — "rm -f triggers it" — was only half the cause.)
+Fix: split the command on shell control operators (`&&`, `||`, `;`, `|`, newlines) and apply `RESET_HARD`, `PUSH_FORCE`, and `BLANKET_ADD` to each segment independently, so a `push` in one segment can't pair with a `-f` in another. Additionally anchor `PUSH_FORCE` to `git push` as the actual subcommand (not `push` appearing anywhere), so a filename containing "push" can't satisfy it even within one segment. The documented pattern-as-data behavior (a single segment literally containing the pattern as data) is unchanged — separate and accepted, and the hook's note already gives its workaround.
+Trace evidence: edits `plugin/si-plugin/hooks/pre_tool_use.py` only. Traced against that file's `--- Git safety patterns ---` block (`RESET_HARD`, `PUSH_FORCE`, `BLANKET_ADD`) and the `run()` git-command branch that applies them, plus the prior session's transcript for the real command. SPEC's `pre_tool_use` line still reads true (git safety unchanged in intent — this only removes false denials), so no SPEC change. No shared primitive with other queued batches. No FAQ entry — a correctness fix to existing behavior, not a new consumer-facing surface.
+
+Build:
+- `plugin/si-plugin/hooks/pre_tool_use.py`: split the incoming command on shell control operators and run each git-safety pattern per segment; anchor `PUSH_FORCE` to the `git push` subcommand. Keep `--force-with-lease` allowed. Preserve the pattern-as-data note.
+
+Test:
+- Claude-runnable fixtures at build (import the module / exercise the patterns): the real chain `git add …rezip-push-cli-flow.md… && … && rm -f …` no longer denies; a genuine `git push --force` and `git push -f` still deny; `git push --force-with-lease` still passes; `git reset --hard` and `git add -A` / `git add .` still deny; a `push`-bearing filename in a `git add` segment with no force flag passes.
+- Host-side deferred test: on the installed host after reinstall, the first /done commit whose staged file list contains a `push`-bearing filename alongside an `rm -f` cleanup commits successfully instead of being denied.
+
+**Drop the zip rebuild from the Rezip ritual** **[rezip-zip-vs-folder-coherence]**
+
+The committed local marketplace (`.claude-plugin/marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` folder, not the zip. So the `claude` CLI local-test install snapshots the folder. The zip Rezip rebuilds is no longer installed, never committed (Rezip makes no commit), and is overwritten at the next rezip or Push. It does no work for local testing and creates one minor hazard: a test-suffixed zip left in the working tree can be mis-archived into `zip-archive/` at the next Push — the exact case the Push ritual's "Archive accuracy" note warns about. Removing the rebuild from Rezip means the zip changes only at Push, so the committed and archived zip always reflects a real release, and that caveat becomes moot.
+Trace evidence: edits CLAUDE.md only (the Rezip ritual and the Push ritual's "Archive accuracy" note). Traced against the current Rezip/Push rituals in CLAUDE.md, both shipped by [rezip-push-cli-flow] (LOG 65e50ac). No SPEC sentence touches the rituals, so no SPEC change. No shared primitive with other queued batches. Host-only dev workflow, so no FAQ entry.
+
+Build:
+- CLAUDE.md Rezip ritual: remove the `Compress-Archive` repackaging step and its zip-entry verification. Keep the version-suffix bump and the `__pycache__` cleanup (the cleanup still matters because the CLI snapshots the live folder). Renumber the remaining steps and adjust any "steps 2–3 build the zip" wording so the section reads coherently.
+- CLAUDE.md Push ritual "Archive accuracy" note: simplify or remove it — with Rezip no longer touching the zip, the rezip-overwrote-the-zip scenario it describes can no longer happen.
+
+Test:
+- Self-verifying at build via a read: the Rezip section no longer repackages, the `__pycache__` cleanup and suffix bump remain, and the "Archive accuracy" note no longer describes a scenario the rituals can produce. No runtime test.
+
 **Refresh consumer install docs to the CLI/marketplace path** **[install-docs-cli-refresh]**
 
 README.md and INSTALL.md currently describe installing SI via the desktop app's "add → Upload plugin" button (from [readme-install-refresh], shipped). Capture [desktop-plugin-upload-removed] confirms that button — and the whole in-app upload path — is gone from the current desktop app, so the consumer install instructions point at a UI that no longer exists. Rewrite them to the supported path: add the SI marketplace from the GitHub repo and install via the `claude` CLI, with Claude driving the commands so the non-coder never types in a terminal. The committed marketplace.json already backs this (capture [cli-install-confirmed-rezip-loop-update]).
@@ -150,8 +175,6 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
-
-**[rezip-zip-vs-folder-coherence]** The committed local marketplace (`.claude-plugin/marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` **folder** (`source: ./plugin/si-plugin`), so the `claude` CLI local-test install snapshots the folder, not `plugin/si-plugin.zip`. After the [rezip-push-cli-flow] rewrite, the Rezip ritual still rebuilds the zip in steps 2–3, but that zip no longer feeds the local test loop — the CLI reads the folder. So the zip rebuild on rezip now serves only as the committed/released artifact (what Push archives and the Release attaches), not as the thing being dogfooded. Question for /plan: is rebuilding the zip on every rezip-for-testing still worth keeping, or does it belong only in the Push ritual now? Also: the `__pycache__` cleanup (step 2) still matters for the folder install, since the CLI snapshots the live folder. Low urgency — nothing is broken; the rituals are just carrying a step whose original purpose (a zip to upload) is gone.
 
 ### Parked
 
