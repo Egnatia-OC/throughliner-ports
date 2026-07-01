@@ -382,6 +382,62 @@ def main() -> int:
             "asked, because a note the user never reads leaves the project drifting."
         )
 
+    # Content-level top-up: a scaffolded file exists but is missing a setting the
+    # current templates add. This is distinct from missing_scaffold above (whole
+    # files/folders absent) — here the file is present but predates a newer setting,
+    # so a project set up weeks ago silently misses it and the user never knows to
+    # re-run setup. Add-only by design: the injected instruction tells Claude to
+    # *add* the missing setting, never to rewrite or clobber what the user wrote.
+    # Built as a list so future settings join by adding one entry. The risky case —
+    # rewriting content whose template wording changed — is deliberately excluded
+    # (parked as [scaffolding-resync]). The missing-file path (missing_scaffold)
+    # owns a project with no CLAUDE.md at all, so we don't double-flag: each check
+    # only fires when its host file is present.
+    claude_md_path = os.path.join(cwd, "CLAUDE.md")
+    claude_md_content = ""
+    if os.path.isfile(claude_md_path):
+        try:
+            with open(claude_md_path, "r", encoding="utf-8") as f:
+                claude_md_content = f.read()
+        except OSError:
+            pass
+
+    # Each entry: the file that must already exist, its loaded content, the marker
+    # whose absence means the setting is missing, and the plain-English instruction
+    # to inject. "needs_answer" instructions open with a one-line question and write
+    # the user's answer; a setting that needs no answer would be added silently with
+    # a note (none yet — the list is built to hold both kinds).
+    missing_settings = []
+    setting_checks = [
+        {
+            "file_present": bool(claude_md_content),
+            "marker": "## Editor",
+            "instruction": (
+                "Your CLAUDE.md is missing the Editor setting, added to the method "
+                "since this project was set up. It records the .md editor you work "
+                "in, which lets the plugin save tokens by pointing at a doc instead "
+                "of re-pasting it. Open your first reply by asking, in one line, "
+                "which editor the user works in here (they can say to skip if they "
+                "don't use one). Then write their answer into a new '## Editor' "
+                "section of CLAUDE.md, matching the template's format. Add only that "
+                "section — change nothing else the user has written."
+            ),
+        },
+    ]
+    for check in setting_checks:
+        if check["file_present"] and check["marker"] not in claude_md_content:
+            missing_settings.append(check["instruction"])
+
+    if missing_settings:
+        context_parts.append("")
+        context_parts.append(
+            "PROJECT MISSING NEWER SETTINGS — this project was set up before the "
+            "method added one or more settings it now expects. Bring it up to date "
+            "now, before /next or /plan, adding only what's missing:"
+        )
+        for instruction in missing_settings:
+            context_parts.append("- " + instruction)
+
     # Version-change report: the retained "a plugin update just happened" signal
     # (see version_mismatch above). This is NOT the drift warning — that is
     # presence-based above. When host-side checks are waiting (the ones a

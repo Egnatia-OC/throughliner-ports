@@ -6,7 +6,7 @@
 
 **What to expect.** Claude will ask you a couple of quick questions to find out where you're starting from, then guide you through getting Claude Code (if you don't have it), making sure you're on a paid plan, and adding the plugin. It goes one step at a time and waits for you at each one.
 
-**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin). If you're comfortable in Claude Code, Branch B opens with a faster terminal install — two commands you run (or ask the Claude Code agent to run) inside Claude Code itself; the click-through zip upload is there as the no-terminal fallback.
+**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin). Branch B installs by asking Claude Code to add the plugin's marketplace and install it — Claude runs the commands for you, so you never type in a terminal.
 
 **For Claude (the assistant reading this):** your operating instructions are at the end of this file, in the "Instructions for Claude" section. Read that section before you start walking the user through anything.
 
@@ -59,62 +59,46 @@ Recommend the subscription path for a non-coder unless they already have API cre
 
 ## Branch B — Install the Sovereign Implementer plugin
 
-Once Claude Code is installed and the user is on a paid plan, there are two ways to install. Offer the terminal path first to anyone comfortable in Claude Code — it's faster — and fall back to the click-through zip upload for anyone who'd rather not touch a terminal.
+Once Claude Code is installed and the user is on a paid plan, the plugin installs from its marketplace on GitHub. The good news for a non-coder: **Claude Code runs the install commands for you** — you ask it, in plain English, and it does the rest. You never type in a terminal.
 
-**This still hands off.** You (Claude, in the claude.ai chat) cannot run the install from here — you have no access to the user's machine. Whichever path they pick, they do it inside Claude Code, and you wait for them to report back. Never pretend this chat can run the install itself.
+**This still hands off.** You (Claude, in the claude.ai chat) cannot run the install from here — you have no access to the user's machine. The install happens inside **Claude Code**, driven by the Claude Code agent there. Your job in this chat is to tell the user exactly what to ask Claude Code to do, then wait for them to report back. Never pretend this chat can run the install itself.
 
-### B.1 — Terminal install (faster, for users comfortable with Claude Code)
+### B.1 — Ask Claude Code to install the plugin
 
-This path uses Claude Code's plugin marketplace. The user runs two commands **inside Claude Code** — either typed into Claude Code's integrated terminal, or by asking the Claude Code agent (in its own chat) to run them. They do NOT run in this claude.ai chat.
+The install uses Claude Code's plugin marketplace. It's two commands — but the user does **not** have to type them. Instead, have them open a chat **inside Claude Code** and ask the Claude Code agent, in plain words, to install the plugin. Give them this to paste or say:
 
-First, register the marketplace:
+> Please add the plugin marketplace `FlintCraftTech/sovereign-implementer` and then install the `sovereign-implementer@flintcraft` plugin from it.
+
+The Claude Code agent will run the two commands itself:
 
 ```
 claude plugin marketplace add FlintCraftTech/sovereign-implementer
-```
-
-Then install the plugin from it:
-
-```
 claude plugin install sovereign-implementer@flintcraft
 ```
 
-After both succeed, the plugin activates on a `/reload-plugins` or a full restart of Claude Code. Then run the smoke test (step 4 of B.2 below) to confirm it took. If either command errors — for example, the marketplace can't be found — fall back to the zip upload in B.2.
+(If the user would rather run them by hand, those are the commands — but the default and easiest path is to let Claude Code run them.)
 
-### B.2 — Zip upload (no terminal needed)
+After both succeed, the plugin activates on a full restart of Claude Code. Have the user fully quit and reopen the app, then run the smoke test in B.2 to confirm it took. If the marketplace-add or install errors — for example, the marketplace can't be found — have them tell the Claude Code agent the exact error and work it from there; the agent can retry or diagnose.
 
-1. **Download the plugin zip.** Direct link: `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip`
+### B.2 — Smoke test — confirm the plugin works
 
-   A quick note so the link doesn't look suspicious: **FlintCraftTech** is the account that publishes this plugin, and **Sovereign Implementer** is the plugin's name — the names differ, but this is the official source. When they click the link, the file should download on its own as `si-plugin.zip`. If instead it opens in the browser as a page of text, have them right-click the link and choose **Save link as…** (or **Save As…**) to save it. Tell them to save it somewhere easy to find, like the Downloads folder.
+This is just a quick check that the install took. It doesn't need a real project.
 
-2. **Open the Claude Code desktop app.**
+- Have them make a new empty folder anywhere (e.g. on the Desktop, call it `si-test`).
+- In Claude Code, open that folder via **File > Open Folder** (or the app's equivalent "open folder" action) so there's a folder open to work in.
+- Click into the **chat box** (where you'd normally type a message) and start typing `/setup`. As they type, a menu of available commands appears.
+- **Success looks like:** a command for setup shows up in that menu. It may appear as `/setup`, or namespaced as `/sovereign-implementer:setup` — either form means the plugin is installed. Have them select it and press **Enter** to run it. (For the smoke test, seeing the command appear is already enough; they don't have to finish a real setup here.)
+- **Failure looks like:** they type `/setup` and **no matching command appears** in the menu at all. That means the plugin isn't registered yet.
 
-3. **Open the plugin upload screen.** The path is **Customise (top left) → Plugins → add → Upload plugin → browse and select the downloaded .zip**. Walk them through each click — they have never used this part of the UI before:
-   - Click **Customise** in the top left.
-   - Open **Plugins**.
-   - Click **add**.
-   - Choose **Upload plugin**.
-   - A file picker opens — browse to where the `si-plugin.zip` was saved and select it. The app installs it.
+If it fails, work through these in order — don't jump straight to reinstalling:
+1. **Fully quit and reopen the app** — not just a new session. Plugin commands register when the app launches, and on Windows a normal "quit" can leave the app running in the background, so a new chat or even a normal close-and-reopen may not pick them up. Quit the app, then on Windows confirm the process has actually exited (check Task Manager and end it if it's still there) before reopening. Then try `/setup` again.
+2. If it still doesn't show, have the user ask the Claude Code agent to confirm the plugin is installed and enabled (the agent can list installed plugins), and to reinstall it with `claude plugin install sovereign-implementer@flintcraft` if needed. Then fully restart again.
 
-4. **Run the smoke test — confirm the plugin works.** This is just a quick check that the install took. It doesn't need a real project.
-   - Have them make a new empty folder anywhere (e.g. on the Desktop, call it `si-test`).
-   - In Claude Code, open that folder via **File > Open Folder** (or the app's equivalent "open folder" action) so there's a folder open to work in.
-   - Click into the **chat box** (where you'd normally type a message) and start typing `/setup`. As they type, a menu of available commands appears.
-   - **Success looks like:** a command for setup shows up in that menu. It may appear as `/setup`, or namespaced as `/sovereign-implementer:setup` — either form means the plugin is installed. Have them select it and press **Enter** to run it. (For the smoke test, seeing the command appear is already enough; they don't have to finish a real setup here.)
-   - **Failure looks like:** they type `/setup` and **no matching command appears** in the menu at all. That means the plugin isn't registered yet.
-
-   If it fails, work through these in order — don't jump straight to reinstalling:
-   1. Check the plugin is actually there and turned on: go to **Customise > Plugins** and confirm Sovereign Implementer is listed and enabled.
-   2. **Fully quit and reopen the app** — not just a new session. Plugin commands register when the app launches, and on Windows a normal "quit" can leave the app running in the background, so a new chat or even a normal close-and-reopen may not pick them up. Quit the app, then on Windows confirm the process has actually exited (check Task Manager and end it if it's still there) before reopening. Then try `/setup` again.
-   3. Only if both of those check out, remove the plugin (**Customise > Plugins > Sovereign Implementer > three-dots > Uninstall**) and repeat the upload steps.
-
-   A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.
-
-   *(A screenshot of the Plugins screen — showing the **add** option — would help here; see the queue item to add one.)*
+A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.
 
 ### Updating later
 
-To update: uninstall via **Customise > Plugins > Sovereign Implementer > three-dots > Uninstall**, download the latest zip from the same URL above, and repeat the upload.
+To update, have the user ask the Claude Code agent to run `claude plugin update sovereign-implementer@flintcraft` (Claude Code runs it — no terminal typing), then fully restart the app so the new version loads.
 
 ## Step 2 — First-run pointer
 
@@ -135,7 +119,7 @@ This section is for the assistant reading the guide, not for the human installer
 **Note to Claude:** You are reading this guide on a user's behalf. They have opened a fresh chat at claude.ai and pasted this link because they want to install the Sovereign Implementer plugin for Claude Code. Follow the instructions in this file to walk them through it.
 
 **Ground rules:**
-- Assume the user has zero terminal experience and is mildly allergic to terminals. Use the Claude Code **desktop app** at all times. Do not suggest CLI commands, `claude --version`, `/config` in a terminal, or any terminal-based workflow except where this guide explicitly says one is needed.
+- Assume the user has zero terminal experience and is mildly allergic to terminals. Use the Claude Code **desktop app** at all times. The plugin install (Branch B) uses `claude plugin ...` commands, but the user does not type them — the Claude Code agent runs them on the user's behalf. Frame it that way: they ask Claude Code in plain English and it runs the commands. Don't have the user open or type into a terminal, and don't suggest unrelated CLI workflows (`claude --version`, `/config` in a terminal, etc.).
 - You don't have access to their machine from this chat. You're giving them instructions to follow in their own desktop app and browser. Wait for them to report back at each step.
 - If you need a current download URL or up-to-date install instructions for Claude Code itself, do a web search rather than guessing — official pages change.
 - The pacing rules below are mandatory. Read them before you start the walkthrough.

@@ -4,9 +4,9 @@ A Claude Code plugin that lets you build the project you have in mind — an app
 
 ## Install
 
-**Already have Claude Code?** [Download the zip](https://github.com/FlintCraftTech/sovereign-implementer/raw/main/plugin/si-plugin.zip), then in the desktop app go to **Customise > Plugins > add > Upload plugin** and select `si-plugin.zip`. To update: uninstall the old version first (**Customise > Plugins > Sovereign Implementer > three-dots > Uninstall**), then repeat.
+**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintCraftTech/sovereign-implementer` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintCraftTech/sovereign-implementer` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
 
-**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience.
+**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
 
 ## Get notified of new versions
 

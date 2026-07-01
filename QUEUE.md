@@ -16,46 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Session-start top-up for missing settings in existing projects** **[scaffold-field-topup]**
-
-New users are being onboarded while the plugin keeps updating. Someone sets up a project, then leaves it for weeks while the templates move on. Today the plugin only notices when a whole file or folder is *missing* — not when an existing file is missing a newer setting inside it. So an already-set-up project silently misses new settings, and the user never knows to re-run setup. The first real case is the Editor setting: projects set up before it existed never gain it, so they miss the token-saving pointer path. This builds an automatic catch-up. At the start of the user's next working session — before /next or /plan — the plugin notices settings the project is missing and brings it up to date. It is add-only: it never rewrites or clobbers anything the user has written. Where a setting needs an answer, like the editor, it opens with a one-line question and writes the answer; settings that need no answer are added silently with a note. The editor field is the first and currently only case, and the check is built as a list so future settings can be added to it. The risky case — rewriting existing content whose template wording changed — is deliberately left out; it stays parked as [scaffolding-resync] until it actually causes a problem.
-
-Trace evidence: extends the presence-based drift check in session_start.py (shipped by [make-drift-visible]) and reuses the Editor field and question shipped by [editor-awareness-core] (CLAUDE-TEMPLATE.md's `## Editor` section, setup.md's Q6). Traced against session_start.py's missing-scaffold block, CLAUDE-TEMPLATE.md's Editor section, and setup.md Steps 3–4. No shared mechanism with the other queued batches. Folds in the capture "Editor field isn't backfilled into already-set-up projects."
-
-Build:
-- plugin/si-plugin/hooks/session_start.py: extend the drift detection so it also checks an existing CLAUDE.md for a missing `## Editor` section. When it's absent (and CLAUDE.md exists), inject a plain-English instruction telling Claude to open its first reply by asking which editor the user works in here (or that they can skip), then write the answer into the Editor field in the template's format. Add-only — touch nothing else. Build the missing-setting check as a small list so more settings can be added later. Don't double-flag a folder that has no CLAUDE.md at all — the existing missing-file path owns that.
-- SPEC.md: extend the drift/scaffold statement to cover content-level top-up of missing settings (add-only, ask-when-input-needed), so SPEC matches the new behaviour. If SPEC carries no drift statement, add a brief one.
-- plugin/si-plugin/templates/faq-template.md + faq-index-template.md: add an FAQ entry — "A session opened by asking which editor I use, or saying my project was missing something — what happened?" → plain explanation that the plugin catches projects up on settings added since setup, only adding what's missing, and asking when it needs an answer.
-
-Test:
-- Run now (Claude, in-session): fixture test on session_start.py — a CLAUDE.md missing the `## Editor` section triggers the top-up instruction; a CLAUDE.md that already has it stays silent; a folder with no CLAUDE.md is handled by the existing missing-file path with no double-flag.
-- Deferred (host-side, observed after push + reinstall): the first real session opened in a project whose CLAUDE.md lacks the Editor field asks the editor question and writes the answer, add-only.
-
-**Drop the zip rebuild from the Rezip ritual** **[rezip-zip-vs-folder-coherence]**
-
-The committed local marketplace (`.claude-plugin/marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` folder, not the zip. So the `claude` CLI local-test install snapshots the folder. The zip Rezip rebuilds is no longer installed, never committed (Rezip makes no commit), and is overwritten at the next rezip or Push. It does no work for local testing and creates one minor hazard: a test-suffixed zip left in the working tree can be mis-archived into `zip-archive/` at the next Push — the exact case the Push ritual's "Archive accuracy" note warns about. Removing the rebuild from Rezip means the zip changes only at Push, so the committed and archived zip always reflects a real release, and that caveat becomes moot.
-Trace evidence: edits CLAUDE.md only (the Rezip ritual and the Push ritual's "Archive accuracy" note). Traced against the current Rezip/Push rituals in CLAUDE.md, both shipped by [rezip-push-cli-flow] (LOG 65e50ac). No SPEC sentence touches the rituals, so no SPEC change. No shared primitive with other queued batches. Host-only dev workflow, so no FAQ entry.
-
-Build:
-- CLAUDE.md Rezip ritual: remove the `Compress-Archive` repackaging step and its zip-entry verification. Keep the version-suffix bump and the `__pycache__` cleanup (the cleanup still matters because the CLI snapshots the live folder). Renumber the remaining steps and adjust any "steps 2–3 build the zip" wording so the section reads coherently.
-- CLAUDE.md Push ritual "Archive accuracy" note: simplify or remove it — with Rezip no longer touching the zip, the rezip-overwrote-the-zip scenario it describes can no longer happen.
-
-Test:
-- Self-verifying at build via a read: the Rezip section no longer repackages, the `__pycache__` cleanup and suffix bump remain, and the "Archive accuracy" note no longer describes a scenario the rituals can produce. No runtime test.
-
-**Refresh consumer install docs to the CLI/marketplace path** **[install-docs-cli-refresh]**
-
-README.md and INSTALL.md currently describe installing SI via the desktop app's "add → Upload plugin" button (from [readme-install-refresh], shipped). Capture [desktop-plugin-upload-removed] confirms that button — and the whole in-app upload path — is gone from the current desktop app, so the consumer install instructions point at a UI that no longer exists. Rewrite them to the supported path: add the SI marketplace from the GitHub repo and install via the `claude` CLI, with Claude driving the commands so the non-coder never types in a terminal. The committed marketplace.json already backs this (capture [cli-install-confirmed-rezip-loop-update]).
-Trace evidence: edits README.md + INSTALL.md (shipped/consumer-facing) and the FAQ template. The CLI/marketplace facts are canonical in resources/research/claude-code-plugin-install-paths.md (shared with [rezip-push-cli-flow] — both point there rather than carrying divergent command lists). The GitHub-repo marketplace path is verifiable only once the marketplace.json is pushed to the remote — that verification is the existing Deferred tests lines [publish-marketplace-manifest] and [install-self-install-branch] (external, user-run), so the docs are written now and confirmed at the next push. No queued-batch dependency for writing the docs.
-
-Build:
-- README.md: replace the desktop upload-button install copy with the CLI/marketplace path (add marketplace from the GitHub repo, `claude plugin install sovereign-implementer@<marketplace>`), framed as Claude-driven so the user types nothing.
-- INSTALL.md: same rewrite in full step detail; remove the stale upload-button steps and the leftover screenshot placeholder pointer (left by [install-upload-path-clarity]).
-- plugin/si-plugin/templates/faq-template.md + faq-index-template.md: add an FAQ entry — "Do I need to use the terminal to install or update SI?" → no, Claude runs the CLI commands for you; what the marketplace/CLI install means in plain terms.
-
-Test:
-- Verification is the existing Deferred tests external lines [publish-marketplace-manifest] and [install-self-install-branch] (the GitHub-marketplace add + install succeed from a terminal once the manifest is pushed) — they already cover this, so no new test line. Doc-content correctness (commands match the research file, dead copy removed) is self-verifying at build via a read.
-
 **E2E /setup verification across folder states** **[setup-e2e-verification]**
 
 The host is current (1.14.0 includes the /setup redesign work), so four /setup behaviours that were waiting on reinstall are now confirmable. They cluster naturally — one E2E pass running /setup across a fresh folder, a content-bearing/migration folder, and a folder with a leftover REGISTRY.md confirms all four — so they roll out of Deferred tests into this batch. They need deliberate /setup runs, unlike the rest of the deferred section, which confirms through normal dogfooding and stays put. The corrected reinstall-is-the-gate understanding is what unblocks them. Test-only batch — no build scope, so the lock stays at method-docs-only; runnable now, independent of the build batches ahead of it.
@@ -65,26 +25,6 @@ Test (all user-run E2E on the 1.14.0 build):
 - [retire-registry] — a fresh /setup scaffolds three docs (SPEC/QUEUE/LOG), not four, and session start no longer flags a missing REGISTRY; and a /setup re-run in a project still holding a REGISTRY.md retires it, with the content-safety check surfacing any non-scaffold content before removal rather than deleting blind.
 - [migration-aware-setup] — opening a session in a content-bearing folder with no SPEC.md shows the softened possible-migration message (not "it hasn't been set up"), and a /setup run there frames it as a possible migration and applies the role-fit and project-root guardrails when mapping, in plain language.
 - [setup-preexisting-content-handling] — a Case B /setup run peeks at pre-existing content before Q1 (a framing clarifier, never a pre-answer) and leaves it untouched during scaffolding while naming it in the closing message.
-
-**Audit doc-fixes from the 2026-06-29 tag-placement recheck** **[tag-recheck-doc-fixes]**
-
-Three small procedure-doc fixes surfaced by the 2026-06-29 [full-tag-placement-recheck] audit, batched together because they share an origin and a kind — low-risk authoring tweaks to procedure docs.
-(1) The readiness line is narrated twice on a plan→done flow (plan.md Step 4 at the /plan close, done-plan.md again at the /done-plan close), and is mandated to narrate every close even when it hasn't moved — both cut against the method's anti-nag principle (the parked-item stamp, the citation-advisory diff-scoping). Fix: narrate only when the line moves, confirm silently when it's already correctly placed, matching the sibling coherence-graph check that stays silent when clean. This touches SPEC's readiness-line sentence ("narrates where it sits" at every close), so SPEC.md updates in the same batch to keep the spec in sync with the behaviour.
-(2) The dependency-tracing rules preach "show the shape" (the 4.8 authoring pass's strongest lever) but carry no exemplar themselves, while their neighbours in the same section do — add a one-line trace-evidence exemplar in both places.
-(3) done-freeform.md Phase 3 is the odd one out among the four done-* docs: its siblings all instruct the "state the scan result either way, clean case is a plain assessment not a hedge" wording and it doesn't — align it.
-Trace evidence: producers all shipped — the readiness-line narration steps from [readiness-line], the trace-dependencies rules from [dependency-tracing-pass], done-freeform.md Phase 3 from [ship-freeform-next-type]. Traced against plan.md Steps 3–4, done-plan.md, done-freeform.md Phase 3, plugin-behaviour.md Dependency ownership, and SPEC's readiness-line paragraph. No shared primitive with other queued batches. Note: the readiness-model verification-status change recorded into [cruise-control] concern 8 will later revisit the readiness line / dependency tracing — a future design item, not a conflict with this wording fix. No FAQ entry: (1) reduces narration, (2) and (3) are internal doc consistency — none adds a consumer-facing surface.
-
-Build:
-- plan.md Step 4 "Position the readiness line": narrate only when the line moves; confirm silently when it's already correctly placed (mirror the coherence-graph check's silent-when-clean shape).
-- done-plan.md "Readiness line (confirm and narrate)": make the confirm silent when placement is unchanged; surface only when it had to fix placement — so a plan→done flow doesn't state the boundary twice.
-- SPEC.md readiness-line paragraph: soften "narrates where it sits" (every close) to narrate-on-move / silent-when-unmoved, keeping SPEC in sync.
-- plan.md Step 3 "Trace dependencies (build batches)": add a one-line trace-evidence exemplar (sanity-check the wording reads cleanly rather than pasting the capture's draft verbatim).
-- plugin-behaviour.md Dependency ownership "Dependency tracing": add the same one-line exemplar to the "Record the trace evidence" obligation.
-- done-freeform.md Phase 3 (Recommend next): bring the capture-overlap-scan wording in line with done-build / done-test / done-audit (state the result either way; clean case is a plain assessment, not a hedge).
-
-Test:
-- (host-side, observed) After reinstall: a /plan close confirms the readiness line silently when its placement is unchanged and narrates only when it moves; a /plan-then-/done flow no longer states the boundary twice. Confirmed by observation in the first /plan close + /done-plan after push + reinstall.
-- The trace-exemplar and done-freeform fixes are self-verifying at build (a read confirms the exemplar is present and done-freeform Phase 3 matches its siblings) — no runtime test.
 
 --- Cleared to run above this line ---
 
@@ -174,6 +114,8 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [git-safety-cross-segment-false-positive] — on the installed host after reinstall, the first /done commit whose staged file list contains a `push`-bearing filename alongside an `rm -f` cleanup commits successfully instead of being denied with the force-push message. Confirmed by: observed at the first such /done commit after push + reinstall. Deferral: host-side. Runnability: observed.
 - [editor-awareness-core] — a real /setup run after reinstall asks the optional editor question and records the answer into the generated CLAUDE.md's Editor field (a named editor when given, `not recorded` when skipped). Confirmed by: observed in the first full /setup run after push + reinstall. Deferral: host-side. Runnability: user-run (needs a real /setup run in a fresh project).
 - [view-in-doc-group-a] — after reinstall, in a project whose CLAUDE.md records an editor, the first /plan capture turn and the first /next pre-flight show a one-line pointer + link to the doc rather than the pasted quote; a project with no editor recorded still shows the inline verbatim quote. Confirmed by: observed in the first /plan capture turn and /next pre-flight after push + reinstall. Deferral: host-side. Runnability: observed.
+- [scaffold-field-topup] — after reinstall, the first real session opened in a project whose CLAUDE.md exists but lacks a `## Editor` section opens by asking which editor the user works in (skippable) and writes the answer add-only into a new Editor section, touching nothing else; a project whose CLAUDE.md already has the section stays silent, and a folder with no CLAUDE.md is handled by the missing-file path (no double-flag). The fixture test passed in-session this goal run. Confirmed by: observed in the first such session after push + reinstall. Deferral: host-side. Runnability: observed.
+- [tag-recheck-doc-fixes] — after reinstall, a /plan close confirms the readiness line silently when its placement is unchanged and narrates only when it moves; a /plan-then-/done flow no longer states the boundary twice (done-plan.md confirms silently when placement is already correct). Confirmed by: observed in the first /plan close + /done-plan after push + reinstall. Deferral: host-side. Runnability: observed.
 
 ## Captures
 
