@@ -34,12 +34,26 @@ import sys
 # --- Git safety patterns ---
 
 RESET_HARD = re.compile(r"\bgit\b.*\breset\b.*--hard\b")
-PUSH_FORCE = re.compile(r"\bgit\b.*\bpush\b.*(?:--force(?!-with-lease)\b|-f\b)")
+# PUSH_FORCE is anchored to `git push` as the actual subcommand (git then
+# whitespace then push), not `push` appearing anywhere after git. Without the
+# anchor, `\bgit\b.*\bpush\b` let an unrelated `push` token satisfy the rule —
+# e.g. a staged filename like `rezip-push-cli-flow.md`, where `\bpush\b` matches
+# `-push-`. Combined with per-segment scanning (see _split_segments), this stops
+# a `push`-bearing filename in one part of a compound command from pairing with
+# a `-f` (e.g. an `rm -f`) elsewhere to trigger a false denial.
+PUSH_FORCE = re.compile(r"\bgit\s+push\b.*(?:--force(?!-with-lease)\b|-f\b)")
 # Blanket-add boundaries: a bare "." token only (explicit paths like
 # ./scripts/x.py or .gitignore must pass), -A/--all as standalone flags.
 BLANKET_ADD = re.compile(r'\bgit\b.*\badd\b.*(?:\s-A\b|\s--all\b|\s\.(?=\s|$|[;&|"\')]))')
 # Commit boundaries: --amend and --allow-empty must not match -a / --all.
 COMMIT_ALL = re.compile(r"\bgit\b.*\bcommit\b.*\s(?:-a\b|-am\b|--all\b)")
+
+# Shell control operators that separate independent command segments. The
+# git-safety patterns are applied to each segment alone (see _split_segments),
+# so tokens from unrelated segments can't combine across an `&&` / `;` / `|`.
+# Order in the alternation matters: the two-char operators (`&&`, `||`) come
+# before the single-char ones so `&&` isn't split as two empty `&` halves.
+SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
 
 # Appended to every git-safety denial: the patterns match command text,
 # not intent, so a denial can fire on a command that only carries the
@@ -82,6 +96,22 @@ def _ask(reason: str) -> int:
     }
     json.dump(output, sys.stdout)
     return 0
+
+
+def _split_segments(command: str) -> list[str]:
+    """Split a compound command into independent segments on shell control
+    operators (`&&`, `||`, `;`, `|`, newlines).
+
+    The git-safety patterns are matched per segment so a token in one segment
+    can't pair with a token in another to satisfy a pattern — the cross-segment
+    false-denial bug (a `push`-bearing filename in a `git add` segment combining
+    with an `rm -f` segment to trigger PUSH_FORCE). Splitting is deliberately
+    naive about quoting and escaping: an operator inside a quoted string would
+    over-split, but over-splitting only ever narrows what each pattern sees, so
+    it can cause a missed denial in a contrived case, never a new false one —
+    the fail-safe direction for a guard whose job is removing false denials.
+    """
+    return SEGMENT_SPLIT.split(command)
 
 
 def _parse_build_files(build_path: str) -> list[str] | None:
@@ -262,44 +292,48 @@ def main() -> int:
         if not isinstance(command, str):
             return 0
 
-        if RESET_HARD.search(command):
-            return _deny(
-                "[Sovereign Implementer] BLOCKED: `git reset --hard` destroys "
-                "uncommitted work and cannot be undone.\n\n"
-                "Safer alternatives:\n"
-                "- `git stash` — saves changes for later.\n"
-                "- `git checkout -- <file>` — discards one file's changes.\n"
-                "- `git reset HEAD~1` — moves HEAD back, keeps working tree."
-                + PATTERN_AS_DATA_NOTE
-            )
+        # Match each git-safety pattern per segment, never against the whole
+        # compound command, so tokens from unrelated segments can't combine
+        # across a shell operator (the cross-segment false-denial bug).
+        for segment in _split_segments(command):
+            if RESET_HARD.search(segment):
+                return _deny(
+                    "[Sovereign Implementer] BLOCKED: `git reset --hard` destroys "
+                    "uncommitted work and cannot be undone.\n\n"
+                    "Safer alternatives:\n"
+                    "- `git stash` — saves changes for later.\n"
+                    "- `git checkout -- <file>` — discards one file's changes.\n"
+                    "- `git reset HEAD~1` — moves HEAD back, keeps working tree."
+                    + PATTERN_AS_DATA_NOTE
+                )
 
-        if PUSH_FORCE.search(command):
-            return _deny(
-                "[Sovereign Implementer] BLOCKED: `git push --force` can "
-                "overwrite remote commits.\n\n"
-                "Use `git push --force-with-lease` instead — it refuses to "
-                "push if the remote has commits you haven't fetched."
-                + PATTERN_AS_DATA_NOTE
-            )
+            if PUSH_FORCE.search(segment):
+                return _deny(
+                    "[Sovereign Implementer] BLOCKED: `git push --force` can "
+                    "overwrite remote commits.\n\n"
+                    "Use `git push --force-with-lease` instead — it refuses to "
+                    "push if the remote has commits you haven't fetched."
+                    + PATTERN_AS_DATA_NOTE
+                )
 
-        if BLANKET_ADD.search(command):
-            return _deny(
-                "[Sovereign Implementer] BLOCKED: blanket adds (`git add -A`, "
-                "`git add --all`, `git add .`) stage everything in the tree, "
-                "including files never meant for the commit.\n\n"
-                "Stage explicitly — name each path: `git add <path> <path>`."
-                + PATTERN_AS_DATA_NOTE
-            )
+            if BLANKET_ADD.search(segment):
+                return _deny(
+                    "[Sovereign Implementer] BLOCKED: blanket adds (`git add -A`, "
+                    "`git add --all`, `git add .`) stage everything in the tree, "
+                    "including files never meant for the commit.\n\n"
+                    "Stage explicitly — name each path: `git add <path> <path>`."
+                    + PATTERN_AS_DATA_NOTE
+                )
 
-        if COMMIT_ALL.search(command):
-            return _deny(
-                "[Sovereign Implementer] BLOCKED: `git commit -a` / `-am` "
-                "auto-stages every modified file, including changes never "
-                "meant for the commit.\n\n"
-                "Stage explicitly, then commit: `git add <path> <path>`, "
-                'then `git commit -m "<message>"`.'
-                + PATTERN_AS_DATA_NOTE
-            )
+            if COMMIT_ALL.search(segment):
+                return _deny(
+                    "[Sovereign Implementer] BLOCKED: `git commit -a` / `-am` "
+                    "auto-stages every modified file, including changes never "
+                    "meant for the commit.\n\n"
+                    "Stage explicitly, then commit: `git add <path> <path>`, "
+                    'then `git commit -m "<message>"`.'
+                    + PATTERN_AS_DATA_NOTE
+                )
 
         return 0
 
