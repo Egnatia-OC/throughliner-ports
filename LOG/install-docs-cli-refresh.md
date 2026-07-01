@@ -1,4 +1,4 @@
-# [HASH] — Build [install-docs-cli-refresh]: rewrite README + INSTALL to the CLI/marketplace install path
+# 08823b6 — Build [install-docs-cli-refresh]: rewrite README + INSTALL to the CLI/marketplace install path
 
 README.md and INSTALL.md described installing SI via the desktop app's "Customise → Plugins → add → Upload plugin" button. Capture `[desktop-plugin-upload-removed]` confirmed that button — and the whole in-app upload path — is gone from the current desktop app, so the consumer install docs pointed at UI that no longer exists. Rewrote both to the supported path: add the SI marketplace from the GitHub repo and install via the `claude` CLI, framed so the Claude Code agent runs the commands and the non-coder never types in a terminal.
 

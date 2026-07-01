@@ -1,4 +1,4 @@
-# [HASH] — Build [tag-recheck-doc-fixes]: three procedure-doc fixes from the 2026-06-29 tag-placement recheck + a SPEC sync
+# 08823b6 — Build [tag-recheck-doc-fixes]: three procedure-doc fixes from the 2026-06-29 tag-placement recheck + a SPEC sync
 
 Three low-risk authoring tweaks surfaced by the `[full-tag-placement-recheck]` audit, batched by shared origin and kind.
 

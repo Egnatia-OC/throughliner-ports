@@ -1,4 +1,4 @@
-# [HASH] — Build [rezip-zip-vs-folder-coherence]: drop the zip rebuild from CLAUDE.md's Rezip ritual
+# 08823b6 — Build [rezip-zip-vs-folder-coherence]: drop the zip rebuild from CLAUDE.md's Rezip ritual
 
 The committed local marketplace (`marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` folder, not the zip, so the `claude` CLI local-test install snapshots the folder. The zip that Rezip rebuilt was therefore doing no work for local testing — it's never committed by Rezip, overwritten at the next rezip or Push, and its only effect was one hazard: a test-suffixed zip left in the working tree could be mis-archived into `zip-archive/` at the next Push (the exact case the Push ritual's "Archive accuracy" note warned about).
 

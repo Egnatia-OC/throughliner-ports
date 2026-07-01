@@ -1,4 +1,4 @@
-# [HASH] — Build [scaffold-field-topup]: session-start content-level top-up for missing settings, Editor field first
+# 08823b6 — Build [scaffold-field-topup]: session-start content-level top-up for missing settings, Editor field first
 
 Extended `session_start.py`'s drift detection so it catches not just missing files/folders (the existing presence-based `missing_scaffold` path) but a scaffolded file that exists yet lacks a *setting* the current templates have since added. The first and only case is the Editor field: a project set up before `[editor-awareness-core]` shipped has a CLAUDE.md with no `## Editor` section, so it silently misses the token-saving view-in-doc pointer and the user never knows to re-run setup.
 
