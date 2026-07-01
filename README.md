@@ -42,7 +42,7 @@ The habit that matters: always /done before /clear, so each session is saved bef
 - Run `/setup` in your project folder to scaffold the method docs
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
-- Claude Opus 4.8 on effort level high
+- Claude Opus 4.8, all effort levels tested OK
 - Auto mode enabled — optional; it spares you approving each step by hand. Turn it off if you'd rather confirm each action.
 - `/clear` after every `/done` (keeps each session's context clean)
 
