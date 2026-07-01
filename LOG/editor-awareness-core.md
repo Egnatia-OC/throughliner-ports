@@ -1,4 +1,4 @@
-# [HASH] — Build [editor-awareness-core]: record the user's .md editor at /setup, stored in the generated CLAUDE.md
+# 35ccaa6 — Build [editor-awareness-core]: record the user's .md editor at /setup, stored in the generated CLAUDE.md
 
 First batch of a two-batch goal run for the Pro-budget token push. Adds a per-project record of which `.md` editor the user works in, so a later session can point the user to their open docs with a link instead of re-pasting doc-resident text into chat (the payoff the sibling batch [view-in-doc-group-a] then spends). Minimal slice of the parked [editor-awareness] capture — the web-search-its-capabilities remainder stays parked.
 

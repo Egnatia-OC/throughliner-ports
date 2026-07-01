@@ -1,4 +1,4 @@
-# [HASH] — Build [view-in-doc-group-a]: link to doc-resident text instead of re-pasting it, gated on the editor field
+# 35ccaa6 — Build [view-in-doc-group-a]: link to doc-resident text instead of re-pasting it, gated on the editor field
 
 Second batch of the two-batch goal run. Cuts tokens by not re-rendering text that already lives in a doc: /plan's present-and-interview verbatim capture quote and its checkpoint, and /next's pre-flight top-batch quote. When CLAUDE.md records a real Editor value (the field produced by [editor-awareness-core], its only dependency), these three spots now send a one-line pointer naming the item plus a clickable link to the doc, instead of the pasted block. With no editor recorded, each degrades to the current inline verbatim quote — the safe default, unchanged for every project not yet carrying the field.
 
