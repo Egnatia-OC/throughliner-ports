@@ -30,6 +30,12 @@ This project uses the Sovereign Implementer method.
 
 Language: English
 
+## Editor
+
+Editor: not recorded
+
+<!-- The `.md` editor you work in, from the optional /setup question. When it names an editor, Claude points you to your open docs with a link instead of re-pasting their text into chat, saving tokens. Left as `not recorded` if you skipped the question — Claude then quotes the text inline as usual. -->
+
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 
 ## Project rules

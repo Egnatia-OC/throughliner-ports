@@ -5,6 +5,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What do /plan, /next, and /done each do?](faq.md#what-do-plan-next-and-done-each-do)
 - [How do the four commands fit together day-to-day?](faq.md#how-do-the-four-commands-fit-together-day-to-day)
 - [What does /setup do, and do I run it more than once?](faq.md#what-does-setup-do-and-do-i-run-it-more-than-once)
+- [Why does setup ask which editor I use?](faq.md#why-does-setup-ask-which-editor-i-use)
 - [What's the difference between Batches and Captures in QUEUE.md?](faq.md#whats-the-difference-between-batches-and-captures-in-queuemd)
 - [How are entries organized in the queue?](faq.md#how-are-entries-organized-in-the-queue)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)

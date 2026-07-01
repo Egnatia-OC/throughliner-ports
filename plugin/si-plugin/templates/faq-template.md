@@ -14,6 +14,10 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 /setup adopts your project folder into the method: it scaffolds the working docs (SPEC.md, QUEUE.md, the LOG folder, and this FAQ) and interviews you with five short questions to fill in SPEC.md — what the project is, who it's for, how it works. You run it once per project. If you run it again later — for instance after a plugin update — it only backfills scaffolding that's missing; it does not overwrite or reconcile content you've already written. So re-running it is safe, but it won't refresh or rewrite your existing docs.
 
+## Why does setup ask which editor I use?
+
+So Claude can point you to your open docs instead of re-pasting their text into the chat. When Claude needs to show you a captured idea or the next batch of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the editor you keep those files open in, it can just link you to the file — "it's in QUEUE.md" — and you glance at it there, rather than Claude copying the whole block into chat every time. Over a project's life that saves a real amount of tokens. The question is optional: skip it and nothing breaks — Claude simply quotes the text inline the way it always has. It's asked once, during /setup, and never again.
+
 ## What's the difference between Batches and Captures in QUEUE.md?
 
 **Batches** are ready-to-build work — entries under Build/Test subheadings, worked top to bottom. One batch per /next session. **Captures** is an inbox — ideas, questions, and observations from builds or between sessions. Not actionable yet — during /plan, each gets discussed and either promoted, parked, or dropped.

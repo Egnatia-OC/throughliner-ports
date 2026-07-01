@@ -117,15 +117,15 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`
 - `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`; Step 4 fills it from Q6.
 
 **.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
 **Git repository:** If the folder is not already a git repository, run `git init` so the project has version history from the first session. Do this silently and mechanically, like the rest of the scaffold — no narration. This is what lets the close-out commit the new files: without a repository there is nothing to commit to.
 
-## Step 3: Interview (5 questions, one at a time)
+## Step 3: Interview (5 questions, one at a time, plus one optional)
 
-Ask these one per message, and stop after each — wait for the user's answer before asking the next. Never bundle two questions into one message, even short ones. Use the answers to fill SPEC.md and QUEUE.md.
+Ask these one per message, and stop after each — wait for the user's answer before asking the next. Never bundle two questions into one message, even short ones. Use the answers to fill SPEC.md and QUEUE.md. Q6 is a short optional extra after the five — ask it the same way, one message of its own.
 
 **Q1. What is this project, and who is it for?**
 → Fills "What this is" and "Who it's for" in SPEC.md.
@@ -142,11 +142,15 @@ Ask these one per message, and stop after each — wait for the user's answer be
 **Q5. Anything else I should know before we start?**
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
 
+**Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
+→ Records which editor you work in (e.g. a Markdown editor, or a code editor), so Claude can point you to your open docs with a link instead of re-pasting their text into chat — which saves tokens over a project's life. Fills the Editor field in the generated CLAUDE.md. Ask it plainly and make skipping easy — "if you're not sure or don't have a preference, just say skip." Skippable, no nag, asked once and never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
+
 ## Step 4: Write the docs
 
 After all 5 answers, write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
 1. Fill SPEC.md with the interview answers.
 2. Write one build entry in QUEUE.md from Q4 — under a Build subheading, in the user's words, not multiple scoped entries.
+2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:

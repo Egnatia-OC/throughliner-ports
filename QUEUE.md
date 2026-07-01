@@ -16,33 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Editor-awareness (core) — record the user's .md editor at /setup** **[editor-awareness-core]**
-Blocks: [view-in-doc-group-a]
-
-Minimal slice carved from the parked [editor-awareness] capture (2026-07-01), prioritised because the user moved to a Pro budget and needs token-drain cuts. This editor signal is the foundation the token-cutting [view-in-doc-group-a] batch reads. Records which `.md` editor the user works in, per-project, as a once-off /setup question — no web-search-capabilities step (that remainder stays parked). Stored in the generated CLAUDE.md so every session reads it from context, degrading safely when absent. Trace: reads setup.md's interview, CLAUDE-TEMPLATE.md, and the FAQ templates; produces the editor field [view-in-doc-group-a] consumes; no unmet dependency.
-
-Build:
-- plugin/si-plugin/docs/setup.md: add a once-off interview question recording which `.md` editor the user works in — plain, skippable, no nag.
-- plugin/si-plugin/templates/CLAUDE-TEMPLATE.md: add an "Editor" field so the generated project CLAUDE.md carries the answer where Claude reads it each session.
-- plugin/si-plugin/templates/faq-template.md + faq-index-template.md: FAQ entry — "Why does setup ask which editor I use?" (so Claude can point you to your open docs instead of re-pasting them, saving tokens; optional to answer).
-- CLAUDE.md (this project): record the Editor field = Zettel, so this dev project benefits immediately. Host-only edit, not shipped.
-
-Test:
-- Self-verifying at build via a read: setup.md asks the question, the template carries the field, the FAQ entry is present, this project's CLAUDE.md records Zettel.
-- E2E (user-run, host-side — defer to Deferred tests): a real /setup run after reinstall records the editor into the generated CLAUDE.md.
-
-**View-in-doc Group A — link to doc-resident text instead of re-pasting it** **[view-in-doc-group-a]**
-Depends on: [editor-awareness-core]
-
-The token-cutting slice of parked [view-in-doc-approve-in-chat] (2026-07-01), carved out for the Pro-budget token push. Stops re-rendering text that already lives in a doc: /plan's present-and-interview verbatim capture quote (and its checkpoint) and /next's pre-flight top-batch quote (next.md step 3). When the editor field is present in CLAUDE.md, replace the pasted block with a one-line pointer naming the item plus a clickable link to the doc; degrade to the current inline quote when no editor is recorded. Touches only reproduction, not the approval model — Group B stays parked. Trace: reads plan.md (present-and-interview + checkpoint) and next.md (step 3 pre-flight quote), plus the editor field produced by [editor-awareness-core], its only dependency, whose producer is the batch above.
-
-Build:
-- plugin/si-plugin/docs/plan.md: in present-and-interview and the checkpoint, render the item as a pointer + clickable link when the editor field is present; keep the verbatim inline quote when it isn't.
-- plugin/si-plugin/docs/next.md: same conditional treatment for the step-3 pre-flight top-batch quote.
-
-Test:
-- Observed, host-side (defer to Deferred tests): after reinstall, in a project with the editor field, the first /plan capture turn and /next pre-flight show the pointer+link, not the paste; a project without the field still shows the inline quote.
-
 **Drop the zip rebuild from the Rezip ritual** **[rezip-zip-vs-folder-coherence]**
 
 The committed local marketplace (`.claude-plugin/marketplace.json`, marketplace `flintcraft`) sources the plugin from the `plugin/si-plugin` folder, not the zip. So the `claude` CLI local-test install snapshots the folder. The zip Rezip rebuilds is no longer installed, never committed (Rezip makes no commit), and is overwritten at the next rezip or Push. It does no work for local testing and creates one minor hazard: a test-suffixed zip left in the working tree can be mis-archived into `zip-archive/` at the next Push — the exact case the Push ritual's "Archive accuracy" note warns about. Removing the rebuild from Rezip means the zip changes only at Push, so the committed and archived zip always reflects a real release, and that caveat becomes moot.
@@ -184,12 +157,16 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [lint-citation-diff-scope] — on the installed host, the citation advisory fires only for a citation line the current edit introduced or changed, not for pre-existing unchanged citations elsewhere in the file (the run-now fixture passed in-session; the old whole-file host re-flagged a pre-existing citation this very session, confirming the fix isn't live until reinstall). Confirmed by: observed on the first capture-heavy /plan QUEUE.md edit after push + reinstall. Deferral: host-side. Runnability: observed.
 - [rezip-push-cli-flow] — the next rezip cycle follows the rewritten CLI ritual (marketplace add first time, `claude plugin update sovereign-implementer@flintcraft` each rezip after) and the host reflects the change after a full app restart; the next release push step 11 uses the CLI update + full restart in place of the removed uninstall/reinstall. Confirmed by: observation at the next rezip and the next push. Deferral: external (waits for the next rezip / next push to occur). Runnability: observed (Claude drives the rezip/push, so it confirms by following the rewritten ritual).
 - [git-safety-cross-segment-false-positive] — on the installed host after reinstall, the first /done commit whose staged file list contains a `push`-bearing filename alongside an `rm -f` cleanup commits successfully instead of being denied with the force-push message. Confirmed by: observed at the first such /done commit after push + reinstall. Deferral: host-side. Runnability: observed.
+- [editor-awareness-core] — a real /setup run after reinstall asks the optional editor question and records the answer into the generated CLAUDE.md's Editor field (a named editor when given, `not recorded` when skipped). Confirmed by: observed in the first full /setup run after push + reinstall. Deferral: host-side. Runnability: user-run (needs a real /setup run in a fresh project).
+- [view-in-doc-group-a] — after reinstall, in a project whose CLAUDE.md records an editor, the first /plan capture turn and the first /next pre-flight show a one-line pointer + link to the doc rather than the pasted quote; a project with no editor recorded still shows the inline verbatim quote. Confirmed by: observed in the first /plan capture turn and /next pre-flight after push + reinstall. Deferral: host-side. Runnability: observed.
 
 ## Captures
 
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. See plan.md Capture and parking discipline.
 
 ---
+
+- **Editor field isn't backfilled into already-set-up projects** — Filed 2026-07-01 (goal run building [editor-awareness-core]). The Editor field lands via a fresh /setup (the new Q6 → CLAUDE.md), but setup.md's Step 2C migration re-scaffold only adds *missing files*, not new fields inside an existing CLAUDE.md — so a project already adopted before this ships never gets the Editor field, and so never gets the token-saving pointer path from [view-in-doc-group-a], until the user adds the line by hand. Degradation is safe (no editor → inline quote, unchanged), so nothing breaks; the gap is that existing projects silently miss the token win. This is the same content-level scaffold-drift shape as [scaffolding-resync] (a present file falling behind its template) — likely wants folding into that item rather than its own fix. Low urgency: the fresh-setup path works, and a one-line manual add closes it per project.
 
 - **Progressive-disclosure token payoff is uncertain for skill-heavy usage** — Filed 2026-07-01 (/plan wind-down). After [behaviour-doc-double-load] shipped, behaviour.md injects once at session start and skills no longer re-read it. So a compact-core-plus-load-on-demand restructure ([method-doc-structure-pass] / [behaviour-doc-size-watch]) saves little for a user who runs skills every session — the full doc still loads at skill start, so compact-core + full-at-skill-start can equal or exceed today's single injection. The win is real mainly for skill-light (pure-conversation) sessions. Weigh this token math when those items are convened. Relates to [method-doc-structure-pass], [behaviour-doc-size-watch], [skill-startup-preload-hook].
 
