@@ -9,7 +9,9 @@ the file from disk and flags known format violations:
   2. A parked item with no Blocked by:/Parked: header.
   3. The Captures processed/unprocessed divider (a bare ---) deleted.
   4. A Depends on:/Blocks:/Blocked by: header naming a slug that is
-     unresolved everywhere — not defined in the file, not staged in
+     unresolved everywhere — not defined in the file (in either
+     definition shape: a bold **[slug]** marker, or a #### capture
+     heading ending in [slug]), not staged in
      Deferred tests, and not shipped per LOG/index.md. A slug recorded
      as shipped is a satisfied citation, not a dangling dependency, so
      it isn't flagged (which also stops it re-flagging on every edit).
@@ -56,6 +58,14 @@ FULL_BOLD_LINE = re.compile(r"^(?:\*\*[^*]+\*\*)(?:\s+\*\*[^*]+\*\*)*$")
 # A slug definition: the bold **[kebab-case]** marker on a title line or
 # parked item. Slugs are lowercase kebab, two characters minimum.
 SLUG_MARKER = re.compile(r"\*\*\[([a-z0-9][a-z0-9-]+)\]\*\*")
+
+# The second slug-definition shape: a capture filed as a #### heading with
+# its slug at the end of the heading line (captures render in editor
+# outlines this way). Without this, a heading-form capture's slug would
+# read as undefined and its references would falsely flag as dangling.
+SLUG_HEADING = re.compile(
+    r"^####\s+.*\[([a-z0-9][a-z0-9-]+)\]\s*$", re.MULTILINE
+)
 
 # A slug reference anywhere in text. The (?!\() guard skips markdown
 # links; the lowercase-only class skips tokens like [HASH] or [PROMPT];
@@ -135,7 +145,9 @@ def _check_parked_headers(annotated, warnings):
                 current = None
             continue
         starts_item = indent == 0 and (
-            line.startswith("- ") or bool(line and FULL_BOLD_LINE.match(line))
+            line.startswith("- ")
+            or line.startswith("#### ")
+            or bool(line and FULL_BOLD_LINE.match(line))
         )
         if starts_item:
             if current:
@@ -432,7 +444,11 @@ def _changed_text(tool_name: str, tool_input: dict) -> str:
 
 def lint(content: str, shipped_slugs=frozenset(), changed_text=None) -> list[str]:
     annotated = _annotate(content)
-    defined_slugs = set(SLUG_MARKER.findall(content))
+    # Two slug-definition shapes: the bold **[slug]** marker (batch titles,
+    # legacy parked items) and the #### heading form captures use.
+    defined_slugs = set(SLUG_MARKER.findall(content)) | set(
+        SLUG_HEADING.findall(content)
+    )
     deferred_slugs = _deferred_slugs(annotated)
     # The citation advisory (check 6) fires only for a prose-citation line the
     # current edit introduced or changed. changed_lines holds the edit's new

@@ -8,6 +8,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why does setup ask which editor I use?](faq.md#why-does-setup-ask-which-editor-i-use)
 - [What's the difference between Batches and Captures in QUEUE.md?](faq.md#whats-the-difference-between-batches-and-captures-in-queuemd)
 - [How are entries organized in the queue?](faq.md#how-are-entries-organized-in-the-queue)
+- [Why do captures show up as headings in my queue?](faq.md#why-do-captures-show-up-as-headings-in-my-queue)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
 - [What is `/next freeform`?](faq.md#what-is-next-freeform)
 - [What is the Red flags section at the top of QUEUE.md?](faq.md#what-is-the-red-flags-section-at-the-top-of-queuemd)

@@ -24,7 +24,11 @@ So Claude can point you to your open docs instead of re-pasting their text into 
 
 ## How are entries organized in the queue?
 
-Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are plain bullets — each carries its own reasoning inline.
+Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are small headings — each carries its own reasoning underneath.
+
+## Why do captures show up as headings in my queue?
+
+So you can see them from your editor's outline or sidebar. Most .md editors build a table of contents from a file's headings — but not from bullet points. When each captured idea is its own small heading, your editor's outline shows the whole list at a glance, including the parked ones, and you can jump straight to any of them. As a bullet list, they'd be invisible there — you'd have to scroll the file to find anything. The little tag in square brackets at the end of each heading is the capture's short name, which Claude uses to refer to it precisely; you don't need to do anything with it. Batches keep their bold titles — this is just how captures are filed.
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 

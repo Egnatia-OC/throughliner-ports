@@ -97,7 +97,7 @@ Verification waiting on an event — not a parallel to-do list. A planned test l
 
 ## Captures
 
-Captured outside /plan. Picked up and routed during the next /plan session.
+Captured outside /plan. Picked up and routed during the next /plan session. Each capture is filed as its own `####` heading, so the list shows up in an editor's outline.
 
 ### Parked
 ```
