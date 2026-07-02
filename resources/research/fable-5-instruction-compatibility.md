@@ -33,6 +33,17 @@ The guide's through-line: "Instruction-following is improved enough that you can
 
 The project's declared model target is Opus 4.8 (CLAUDE.md Model target, resolved 2026-06-15: "future models are adopted when they arrive"). Nothing in the 4.8-shaped text can "go" until the project decides to retarget (or dual-target) — and consumers of the plugin may run either model, so shipped docs face a mixed audience. The 4.8 techniques are mostly *harmless-but-heavy* on Fable, except the over-prescription risk, which is a genuine reason to slim rather than just tolerate.
 
+## Who can run Fable — access model (added 2026-07-02)
+
+Researched for the dual-docset capture ([fable-docset-model-detection]): how large is the Fable-running user base the method would be designing for?
+
+- **Through July 7 2026:** Fable 5 is included for Pro, Max, Team, and select Enterprise plans, capped at 50% of weekly usage limits. It returned globally July 1 "on Claude Platform, Claude.ai, Claude Code, and Claude Cowork."
+- **After July 7:** Fable 5 moves to **usage credits** — Anthropic's prepaid overage system, available on Pro, Max 5x, Max 20x, Team, and seat-based Enterprise. Credits activate after included plan usage is exhausted; a funded credit balance lets any paid subscriber keep using Fable. API rate: $10/M input, $50/M output.
+- **Implication:** access is NOT commercial-plans-only. Any paid subscriber (including Pro) willing to fund credits can run Fable — a massively larger potential user base than the earlier commercial-only framing, which is what makes designing for Fable worth considering.
+- **Open sub-question:** no source explicitly confirms Fable-via-credits works *inside Claude Code / the desktop app* post-July-7 (it demonstrably ran there during the included window — this research session itself ran on Fable in the desktop app). Verify when the switch lands.
+
+Sources for this section: [Anthropic — Claude Fable 5 and Mythos 5](https://www.anthropic.com/news/claude-fable-5-mythos-5), [DigitalApplied — the July 7 usage-credits switch](https://www.digitalapplied.com/blog/claude-fable-5-usage-credits-july-7-pricing-guide-2026), [claudefa.st — Fable 5 usage credits guide](https://claudefa.st/blog/guide/development/fable-5-usage-credits), [MindStudio — Fable 5 pricing/access](https://www.mindstudio.ai/blog/claude-fable-5-pricing-access-usage-limits).
+
 ## Sources
 
 - [Prompting Claude Fable 5 — Anthropic docs](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5) (primary; all quotes above)

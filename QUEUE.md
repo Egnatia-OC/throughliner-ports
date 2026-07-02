@@ -127,6 +127,9 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ---
 
+#### Per-model docsets with session-start model detection [fable-docset-model-detection]
+Fable 5's instruction following makes most of the method's 4.8-specific machinery unnecessary, and Anthropic warns over-prescriptive skills can degrade Fable output (research: resources/research/fable-5-instruction-compatibility.md). From 2026-07-07 Fable is available via usage credits on Pro plans and up — not commercial-only — so the Fable-running user base is large enough to design for. The idea (user, 2026-07-02): ship a Fable skill docset and an Opus skill docset, detect the operating model automatically at session start, and have Claude read the docset matching the model. This may be the only way the method gets even somewhat model-agnostic within Anthropic's ecosystem. Sub-questions for the design session: (a) how session start detects the model mechanically — needs verification of what the hooks can see; (b) whether two full docsets are right, or a shared core plus per-model deltas — two full copies of every procedure doc risk drifting apart on every edit, the same staleness problem the method fights elsewhere; (c) confirm Fable-via-credits works inside the desktop app once the July 7 switch lands; (d) what this means for CLAUDE.md's single Model target rule. Trim candidates and keep-list per the research file.
+
 ### Parked
 
 #### Don't assume the user's environment [dont-assume-user-environment]
