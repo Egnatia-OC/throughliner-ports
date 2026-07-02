@@ -16,7 +16,54 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
+**Queue redesign — behaviour-doc definitions** **[work-line-behaviour-defs]**
+
+Founding batch of the queue-redesign branch. Replaces the old work-type model (build/test/audit batches, parking, dependencies, red flags, deferred tests) with a single notion of *work* carrying two properties: who does it (default Claude; user-work marked `[user]`) and whether it's processed (which of two sections it sits in). QUEUE.md collapses to exactly two headings — Processed and Unprocessed. A "capture" becomes unprocessed work; the old Captures section and its internal divider dissolve into the single Unprocessed heading. Parking and blocking are abolished — proven unreliable to unpark — so work is either in the queue or deleted. One stop device only: the existing "cleared to run above this line" marker. /next builds Claude-work top-down and hands over at the first user-work line (full mechanism lands in a later batch). This batch changes only the definitions in plugin-behaviour.md plus the SPEC truth they make stale; plan.md, next/done, the hooks, and templates follow in later batches, and this project's own QUEUE.md is migrated last. Traced against plugin-behaviour.md (Captures, Red flags, Dependency ownership, Why-pipeline, Routing and discipline, Scope) and SPEC.md lines 23/41; this batch is the shared primitive the later plan/next/done/hooks batches consume, so it has no upstream producer and no shared-primitive merge.
+
+Build:
+- Rewrite **Captures**: a capture is unprocessed work appended to Unprocessed. Each line carries a one-line description, prose rationale, a lightweight slug (LOG traceability only), and a provenance label ("captured by you / by Claude") that persists onto the line after it's processed. Remove the processed/unprocessed capture divider, the `####` capture-heading machinery, and `Blocked by:`-at-filing. The single Unprocessed→Processed move (discuss + agree) replaces the old three-state limbo.
+- Remove the **Red flags** section and its **Flag states** subsection entirely.
+- Gut **Dependency ownership**: remove Depends on / Blocks / Blocked by / Parked headers, Unpark watch, Staleness watch and parked-shelf review, dependency tracing, the anti-nag stamp, circular-incorporation. Keep the lightweight-slug rule (LOG link only) and narrate-your-placement (Claude still places Claude-work by judgment).
+- Update **Why-pipeline**, **Routing and discipline**, **Scope**: batch/capture/promote vocabulary → work-line vocabulary; "route to Captures" → "append to Unprocessed"; keep the filing-vs-routing boundary and rationale-as-prose; note where /next now self-scopes.
+- Edit **SPEC.md**: line 23 QUEUE description → "processed and unprocessed work"; remove the Red flags paragraph and the red-flags mentions in the doc list.
+- FAQ: add/adjust an entry describing the new queue shape (two sections, work lines) via the FAQ templates.
+
+Test: none — doc/spec rewrite, self-verifying from the entries; real-use verification comes when this project's QUEUE.md is migrated onto the new model in the final batch.
+
+Files: plugin/si-plugin/docs/plugin-behaviour.md, SPEC.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
+
+**Queue redesign — /plan procedure rewrite** **[plan-work-line-procedure]**
+Depends on: work-line-behaviour-defs
+
+Rewrites the /plan procedure onto the two-section work-line model that [work-line-behaviour-defs] defines. Today plan.md is built around capture-processing with promote/park/drop routing, dependency tracing, unpark and parked-shelf scans, and a batch-structure section with Build/Test/Audit subheadings — most of which the new model deletes. Under the new model /plan does two things: it reads unprocessed work with you and, on agreement, moves each item into Processed (placing Claude-work by judgment, user-work where you agree) or deletes it; and it maintains the order of Processed work and the position of the one stop line. No parking, no dependency headers, no batch subheadings, no deferred-test roll. done-plan.md moves in the same batch because its close-out dependency-graph gate reads the `Depends on:` headers this redesign removes. Traced against plan.md, done-plan.md, and plugin-behaviour.md as redefined by [work-line-behaviour-defs]; producer for the definitions it consumes is that batch (target-side, authored before this runs); no shared primitive with the still-pending next/done/hooks batches beyond those definitions.
+
+Build:
+- Rewrite **Step 1 (read state)**: read QUEUE.md's Processed and Unprocessed sections plus SPEC. Remove the unpark scan, parked-shelf review, and deferred-test roll scan (all gone with parking and deferred tests). Keep the plain entry question.
+- Rewrite **Step 2 (process work)**: process Unprocessed items one at a time — present, discuss, and on agreement either move the item into Processed (Claude places Claude-work by judgment and reports placement; user-work is placed once the user agrees) or delete it. Remove promote/park/drop, the dependency scan, the downstream-impact/structural-rule scan, and the routing gate. Keep the provenance label ("captured by you / by Claude") on each line. Keep _plan.md as the resumable state file. Keep the wind-down re-scan (surfaces things thought out loud, files them to Unprocessed).
+- Remove **Step 3 (batch structure)** entirely — no Build/Test/Audit subheadings, no Files lists, no dependency tracing, no plan markers, no audit-batch sizing. A processed line is just work with rationale and a slug.
+- Rewrite **Step 4 (close)**: keep the SPEC-in-sync gate and the stop-line positioning (rename its narration to match the new model). Remove the dependency-graph walk (no headers to check).
+- Rewrite **done-plan.md**: remove the dependency-graph close gate; keep the SPEC-sync hard gate and the readiness/stop-line confirmation.
+- FAQ: update any /plan-facing entry describing capture-processing or batches to the new work-line flow.
+
+Test: none — procedure-doc rewrite, self-verifying from the entries; real-use verification comes when the method is exercised on the migrated queue in the final batch.
+
+Files: plugin/si-plugin/docs/plan.md, plugin/si-plugin/docs/done-plan.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
+
 --- Cleared to run above this line ---
+
+**Queue redesign — fresh queue, clean break** **[fresh-queue-clean-break]**
+
+Final batch of the redesign. Replaces this project's QUEUE.md with a clean two-section file once the docs and hooks understand the new format. Runs last: it can't happen until [work-line-behaviour-defs], the /plan, /next, /done, hooks, and template batches have shipped, because blanking the queue any earlier would delete the redesign's own build plan, and dogfooding the new file needs the lint and session_start to read two sections. The old queue — every parked item and all its reasoning — is preserved in git history; the clean break stops carrying it forward in the working file, it does not destroy it. Three parked items are pulled forward as fresh Unprocessed work (captured by you); everything else stays in history, retrievable if it ever matters.
+
+Build:
+- Rewrite QUEUE.md to the two-section shape: `## Processed` (with the stop line at its top, nothing cleared yet) and `## Unprocessed` below. Remove Red flags, Deferred tests, Batches, and Captures sections entirely.
+- Carry forward three items as Unprocessed work lines, each with a lean rationale and provenance "captured by you": [consumer-plugin-feedback-channel], [setup-interview-depth], [ideas-doc]. Reference the git history for their full prior prose rather than pasting it wholesale.
+- Leave every other parked/captured item in git history — no migration.
+- Update CLAUDE.md's Method-docs / QUEUE.md description to the two-section model (rides this commit as the last doc still describing the old structure).
+
+Test: none for the file rewrite; the new model gets its first real exercise when the next /plan and /next run against this fresh queue.
+
+Files: QUEUE.md, CLAUDE.md
 
 --- Plan session here: cruise control is still a design block with open concerns (2 dependency-management, 7 batch-granularity, the 8 unverified-dependency sub-question, 11 skill-vs-mode); it needs its own design session before /next can build it. The dependency-tracing design ran 2026-06-29 and shipped as [dependency-tracing-pass] + [readiness-line]. ---
 
@@ -141,6 +188,9 @@ Fix at /plan: rewrite the Q6 ask in setup.md to (a) state the real purpose (defa
 
 #### /setup copies FAQ file before creating the FAQ folder [setup-faq-folder-ordering]
 Observed in the PFA-5 /setup run (2026-07-02, host 1.15.0-test1). During scaffolding, /setup ran a `cp` to write `FAQ/faq.md` before the `FAQ/` folder existed, so the copy failed ("No such file or directory"); a follow-up command then created the folder and it succeeded. Outcome was fine — the FAQ files were created — but the scaffolding did the steps out of order (file-into-folder before making the folder), causing an avoidable failed step and retry. Fix at /plan: adjust setup.md's FAQ scaffolding so the folder is created before anything is copied into it (or the copy uses a folder-creating form), removing the failed-then-retry.
+
+#### Shape the remaining queue-redesign batches [remaining-redesign-batches]
+The queue-redesign branch has three batches authored ([work-line-behaviour-defs], [plan-work-line-procedure], [fresh-queue-clean-break]) but the middle of the sequence is unshaped: /next (next.md + next-*.md — top-line pick, autonomous-through-to-user-work, stop line), the /done family (done.md + done-build/test/audit/freeform — adapt the shipped-slug cross-check, drop deferred-test writes), the hooks (post_tool_use lint → two sections, drop ALLOWED_SUBHEADINGS / red-flag / deferred checks; session_start → drop the deferred-tests and red-flag lines; pre_tool_use → /next self-scoping), and the templates/SPEC batch. These must be authored in a follow-up /plan and shipped before [fresh-queue-clean-break] can run. Captured by Claude.
 
 ### Parked
 
