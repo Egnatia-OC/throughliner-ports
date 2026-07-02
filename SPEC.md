@@ -20,7 +20,7 @@ Four skills drive the workflow:
 
 Three project docs structure each project:
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
-- `QUEUE.md` — work batches, captured ideas, and red flags (security, privacy, and breach risks Claude has surfaced).
+- `QUEUE.md` — processed and unprocessed work. Processed work is vetted and ready to build; unprocessed work is captured ideas and tasks not yet discussed. One line per piece of work.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 Two hooks enforce discipline mechanically, and a third advises:
@@ -37,8 +37,6 @@ One output style sets the communication default at system-prompt priority:
 **Readiness line.** /plan maintains a line in the queue — rendered `--- Cleared to run above this line ---` — that marks which work is vetted and safe to build (above it) from work that still needs planning (below it). /plan positions it at every close and narrates where it sits whenever the line moves — confirming silently when its placement is unchanged — so the user never has to work out by hand how much of the queue is safe to run next without being told the same boundary twice. The unattended build mode inherits it as its run bound — a clean finish at the line rather than running into unvetted work.
 
 **Keeping projects current.** The plugin keeps improving while projects sit set up, so a project can fall behind what the current method scaffolds. At the start of a working session, before /plan or /next, `session_start` catches this two ways: it flags whole docs or folders the project is missing (offering /setup to add them), and it tops up an existing doc that's missing a newer *setting* the method has since added. The top-up is add-only — it never rewrites or clobbers anything the user has written; where a setting needs an answer (like which editor they work in), Claude opens with a one-line question and writes the answer, and settings needing no answer are added silently with a note. The missing-setting check is a list, so new settings join it over time. The riskier case — reconciling content whose template wording changed — is deliberately out of scope for now.
-
-**Red flags.** Claude watches for anything that could expose the user's data or their users' data, or amount to a breach, and surfaces it as a red flag instead of quietly building past it. Red flags collect in a section at the top of QUEUE.md, so they're the first thing seen each session. Each flag carries a state — open, resolved, or accepted. An accepted flag records the user's decision in the LOG: what they were warned about, and that they chose to proceed anyway. Open flags are meant to gate the unattended build mode — a user who leaves a risk unaddressed stays on hand to approve each step rather than letting the build run on its own.
 
 ## Principles
 

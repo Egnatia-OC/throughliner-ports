@@ -18,17 +18,15 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 So Claude can point you to your open docs instead of re-pasting their text into the chat. When Claude needs to show you a captured idea or the next batch of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the editor you keep those files open in, it can just link you to the file — "it's in QUEUE.md" — and you glance at it there, rather than Claude copying the whole block into chat every time. Over a project's life that saves a real amount of tokens. The question is optional: skip it and nothing breaks — Claude simply quotes the text inline the way it always has. It's asked once, during /setup, and never again.
 
-## What's the difference between Batches and Captures in QUEUE.md?
+## What are the Processed and Unprocessed sections in QUEUE.md?
 
-**Batches** are ready-to-build work — entries under Build/Test subheadings, worked top to bottom. One batch per /next session. **Captures** is an inbox — ideas, questions, and observations from builds or between sessions. Not actionable yet — during /plan, each gets discussed and either promoted, parked, or dropped.
+Your queue has two sections. **Processed** is vetted, ready-to-build work — one line per piece of work, worked top to bottom, discussed and agreed with you during /plan. **Unprocessed** is an inbox — ideas, questions, and tasks captured during builds or between sessions, not looked over yet. During /plan, each unprocessed line gets discussed and either moved up into Processed (kept as real work) or dropped. There's no in-between: a piece of work is unprocessed, processed, or gone.
 
-## How are entries organized in the queue?
+Every work line carries a short name in square brackets (its slug), so Claude can refer to it precisely, and a note of who raised it — "captured by you" or "by Claude" — which stays on the line even after it's processed.
 
-Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are small headings — each carries its own reasoning underneath.
+## What does it mean when a work line is marked `[user]`?
 
-## Why do captures show up as headings in my queue?
-
-So you can see them from your editor's outline or sidebar. Most .md editors build a table of contents from a file's headings — but not from bullet points. When each captured idea is its own small heading, your editor's outline shows the whole list at a glance, including the parked ones, and you can jump straight to any of them. As a bullet list, they'd be invisible there — you'd have to scroll the file to find anything. The little tag in square brackets at the end of each heading is the capture's short name, which Claude uses to refer to it precisely; you don't need to do anything with it. Batches keep their bold titles — this is just how captures are filed.
+It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own lines top to bottom and stops at the first `[user]` line to hand it over to you. Most lines aren't marked — they're Claude's by default.
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
@@ -37,18 +35,6 @@ Because an audit's job is to find things and route them for review — not to wr
 ## What is `/next freeform`?
 
 A fourth kind of /next session, for work that isn't a build, a test, or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when none of the other three fit. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
-
-## What is the Red flags section at the top of QUEUE.md?
-
-It's where Claude lists security and privacy risks it has spotted — anything that could expose your data or your users' data, or amount to a breach. It sits at the very top of the queue so it's the first thing you see each session; a risk you should know about shouldn't be buried. The section stays empty until something comes up.
-
-Each red flag carries one of three states:
-
-- **Open** — the risk has been raised but not yet dealt with.
-- **Resolved** — the risk has been fixed or designed out; the work no longer carries it. This includes a risk Claude designs out during planning, before any code is written — it's still recorded here as resolved, with a note on how.
-- **Accepted** — you were told the risk plainly and chose to go ahead anyway. That choice is written into the session log: what you were warned about, and that you agreed to proceed. It's a clear record if the risk ever matters later.
-
-Claude raises and updates these — you don't maintain the section. Accepting a risk is a decision only you can make.
 
 ## What is the "Deferred tests" section in QUEUE.md?
 
@@ -114,7 +100,7 @@ Yes. For readable changes — a doc, a piece of copy, a section of your spec, an
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
-Tell Claude. It gets added to Captures without derailing current work. Next /plan session picks it up for discussion and routing.
+Tell Claude. It gets added to your Unprocessed work without derailing what's going on. The next /plan session picks it up for discussion — kept as real work or dropped.
 
 ## Why does Claude sometimes re-read our conversation at the end of a planning session?
 
@@ -159,17 +145,6 @@ Only if you say yes. Some checks need a real device or emulator — installing t
 ## Why did Claude ask before starting a "subagent"?
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
-
-## What does "Parked" mean in the queue?
-
-Items you've decided not to work on now but don't want to lose. During /plan, parking moves an item to the Parked subsection until revisited. Dropping removes it entirely.
-
-Parked items carry one of two reason lines that signal whether they come back automatically:
-
-- `Blocked by: [slug] + condition` — a trigger exists. When the named item ships or the condition fires, Claude offers to unpark it during the next /plan or /next.
-- `Parked: short reason` — no trigger. The item stays parked until you bring it up; Claude won't auto-surface it.
-
-Nothing leaves active flow without one of these — prose alone isn't enough for Claude to track it mechanically.
 
 ## What does a "Plan session here" line in the queue mean?
 
