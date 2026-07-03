@@ -2,6 +2,16 @@
 
 Claude Code auto-loads this file on session start.
 
+## You are on the queue-redesign branch (merges back to main)
+
+This folder is the `queue-redesign` worktree — an isolated fork (`sovereign-implementer-x` / `flintcraft-x`, version `0.1.0`) where the two-section queue model is being built before it rejoins the real plugin on `main`. The plan:
+
+1. Finish the redesign's middle — the `[remaining-redesign-batches]` work (/next, the /done family, all three hooks, templates) — then dogfood the rebuilt plugin via rezip.
+2. Run `[fresh-queue-clean-break]` (the last batch) to replace QUEUE.md with the clean two-section starter.
+3. **Then merge this branch back into `main`.** On the merge: keep main's plugin identity — take main's (ours) `plugin.json` and `marketplace.json`, not this branch's `-x` rename — and blend QUEUE.md rather than take-theirs. The merge is deliberately **held until step 1 is finished**, because merging earlier lands a half-converted plugin on main (only plan.md / done-plan.md / plugin-behaviour.md are recut so far; /next, /done, and the hooks still speak the old structure), which must never be pushed or reinstalled as the host in that state.
+
+The full decision and reasoning live in main's QUEUE.md under `[adopt-queue-redesign]`, and in main's LOG entry `fable-goal-queue-drain-adopt.md`. This note is here because `[fresh-queue-clean-break]` wipes QUEUE.md, so the merge plan can't live there — CLAUDE.md survives the clean break.
+
 ## What this is
 
 The Sovereign Implementer — a Claude Code plugin that gives non-coders a structured workflow for building apps with Claude Code.
