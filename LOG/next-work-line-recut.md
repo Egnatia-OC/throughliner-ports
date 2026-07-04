@@ -1,4 +1,4 @@
-# [HASH] — Recut the /next family to the two-section work-line model
+# 672ca2f — Recut the /next family to the two-section work-line model
 
 /next still spoke the old batch model — it picked a "batch" from a Batches section, read Build/Test/Audit/Freeform subheadings, and carried push-markers, a Captures-scanning blocker gate, and unpark/staleness scans, all dependency machinery the redesign removed. This recut moves the whole /next family onto the flat two-section model: Processed holds work lines, each Claude-work by default or `[user]`, and /next self-scopes — deriving its editable Files list from the lines it's about to build rather than copying a pre-authored list.
 

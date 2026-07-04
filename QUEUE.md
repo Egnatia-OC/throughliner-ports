@@ -16,26 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**/done recut to the work-line model — flavor routing, deferred-test writes dropped, red-flag consent reconciled** **[done-work-line-recut]**
-Depends on: red-flags-restore-defs
-Blocks: fresh-queue-clean-break
-
-/done still speaks the old model: it routes by Build/Test/Audit/Freeform subheadings, writes can't-run-now verifications to a `## Deferred tests` QUEUE section, cross-checks shipped slugs against a `## Batches` section, and names LOG files after a "batch slug" — all structure the redesign removed. And its existing Accepted red flags section references the Flag states definition the redesign deleted (restored by [red-flags-restore-defs]). This recut moves the /done family onto the two-section work-line model. Traced against done.md + the done-*.md family, the recut plan.md/plugin-behaviour.md (two sections, `[user]` work, self-scoping), and [red-flags-restore-defs]'s restored Flag states; producer for the model is [work-line-behaviour-defs] (shipped); done-plan.md was already recut in [plan-work-line-procedure] (shipped) so it needs only a sync check, not a rewrite.
-
-Build:
-- done.md — recut the router and shared sections: route by the work line's flavor (build / audit / freeform), not subheadings; drop the `## Deferred tests` section entirely — a verification that can't run in the closing session becomes a `[user]` work line appended to Unprocessed (a capture), since the Deferred tests QUEUE section is gone; adapt the shipped-slug cross-check to confirm each shipped work-line slug is removed from Processed (was Batches); update LOG entry files to name the file after the work-line slug and drop the "test" close type; and reconcile the Accepted red flags section to the tagged-work-line model — an accepted flag is a red-flag work line at `State: accepted`, and its consent still records in the LOG (unchanged obligation, updated reference).
-- done-build.md — recut to self-scoping; drop the Test-entries close handling and the deferred-test-write step (test type retired, Deferred tests section gone); keep the spec-sync gate and the readable-edit framing.
-- done-audit.md, done-freeform.md — recut to the work-line model.
-- done-test.md — delete (test type retired).
-- done-plan.md — sync check only: confirm it references the restored Flag states correctly and carries no stale "batch/Deferred tests" vocabulary; edit only if it does.
-- FAQ — remove or adjust any stale Deferred tests entry in faq-template.md + its index line (the section no longer exists).
-
-Test:
-- The user reviews the recut procedure wording.
-- Deferred (host-side, after reinstall): the first /done closing a build routes by flavor, cross-checks the shipped slug against Processed, and — if a flag was accepted — records consent in the LOG; a can't-run-now check lands as a `[user]` line in Unprocessed rather than a Deferred tests line.
-
-Files: plugin/si-plugin/docs/done.md, plugin/si-plugin/docs/done-build.md, plugin/si-plugin/docs/done-audit.md, plugin/si-plugin/docs/done-freeform.md, plugin/si-plugin/docs/done-test.md, plugin/si-plugin/docs/done-plan.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
-
 **Templates + /setup scaffolding recut to the two-section model** **[templates-spec-recut]**
 Depends on: red-flags-restore-defs, next-work-line-recut
 Blocks: fresh-queue-clean-break
@@ -166,6 +146,7 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [migration-aware-setup] — verify the session-start softened migration message: opening a plain session (before any command) in a content-bearing folder with no SPEC.md shows the "files but no SI docs yet… /setup can treat it as a migration" message, not a blunt "not set up." The /setup migration-framing half (role-fit + project-root guardrails, plain language) was confirmed 2026-07-02 via the Hexboard run under [setup-e2e-verification]; only the session-start-message half remains. Confirmed by: observed at the first plain session open in a content-bearing no-SPEC folder. Deferral: host-side. Runnability: user-run (needs the user to open such a folder and read the opening line).
 - [hooks-work-line-recut] — verify the recut hooks behave live after reinstall: post_tool_use's lint runs clean on the real two-section QUEUE.md (once [fresh-queue-clean-break] has rewritten it) and flags a slugless work line, a missing provenance label, a missing `## Processed`/`## Unprocessed` heading, and an invalid red-flag state; session_start surfaces an open `Red flag · State: open` work line first-thing at a live session start; pre_tool_use allows a live scoped-build write under `resources/research/` while still denying an out-of-scope file. The 16-check module-import suite passed in-session this build. Confirmed by: observed across the first sessions after rezip + reinstall. Deferral: host-side. Runnability: observed.
 - [next-work-line-recut] — verify the recut /next behaves live after reinstall: the first /next picks the top work line(s) from Processed, self-scopes the `_build.md` Files list from the Claude-work lines, runs Claude-work top-down handing over at the first `[user]` line, routes an `[audit]` line to next-audit.md, and stops at the `--- Cleared to run above this line ---` marker. Confirmed by: observed across the first /next sessions after rezip + reinstall (once [fresh-queue-clean-break] has rewritten the queue to two sections). Deferral: host-side. Runnability: observed.
+- [done-work-line-recut] — verify the recut /done family behaves live after reinstall: the first build /done routes by work-line flavor (build/audit/freeform, no test route), names each LOG file after the work-line slug, cross-checks the shipped slug against Processed (not Batches), reconciles an accepted red flag as a `State: accepted` work line recording consent in the LOG, and turns a can't-run-now check into a `[user]` line in Unprocessed rather than a Deferred tests line; done-test.md is gone and done-plan.md records an accepted planning-stage flag. Confirmed by: observed in the first build /done after rezip + reinstall (once [fresh-queue-clean-break] has rewritten the queue to two sections). Deferral: host-side. Runnability: observed.
 
 ## Captures
 
@@ -181,6 +162,9 @@ Alternative design to weigh, not just a separate handoff prompt: fold the pickup
 The recut hooks ([hooks-work-line-recut], shipped this session) encode one literal shape for a work line: a `####` heading whose line ends with `[slug]`, with rationale prose beneath it carrying a provenance label ("captured by you" / "by Claude"). post_tool_use finds work lines this way to check the slug and provenance; session_start scans `####` headings for a `Red flag · State: open` marker beneath them. This shape was inferred during the build — from how the current Captures already render, and from plan.md's existing SLUG_HEADING pattern — because the recut plugin-behaviour.md and plan.md don't state it in one place as "a work line renders as a `#### … [slug]` heading."
 The risk: the still-to-come batches ([next-work-line-recut], [templates-spec-recut], [fresh-queue-clean-break]) each produce or describe work lines. If any renders them as bold lines or bullets instead of `####` headings, all three hooks silently mis-detect — the lint flags nothing and the red-flag scan finds nothing, with no error to notice.
 Action for /plan: pin the canonical work-line rendering (`####` heading + trailing slug + provenance, red flag adds its marker line) explicitly in plugin-behaviour.md, and confirm the /setup scaffold and the clean-break rewrite emit exactly that shape so the docs and all three hooks agree. By Claude.
+
+#### FAQ "how do I check an update works" entry still describes the retired deferred-test lifecycle [faq-update-check-test-concept]
+The [done-work-line-recut] build removed the Deferred tests section from done.md and the two FAQ entries that named it. But the FAQ entry "I just updated the plugin — how do I check it still works?" still describes the old lifecycle in softer words: "the method saves up exactly these checks for after an update… it's set aside" and "/plan will line up what's worth checking into a quick test session." Both halves lean on the deferred-tests-for-host-side machinery and the retired test-session type. It wasn't rewritten in this batch because how the work-line model handles a check that can only run after a reinstall is itself unsettled — it belongs with the bigger [test-concept-redesign] design question, not a quick FAQ swap. Route: rewrite this FAQ entry once [test-concept-redesign] settles how post-reinstall verification works under the two-section model. By Claude.
 
 ### Parked
 

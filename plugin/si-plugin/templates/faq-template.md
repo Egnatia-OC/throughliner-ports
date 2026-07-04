@@ -46,14 +46,6 @@ Because an audit's job is to find things and route them for review — not to wr
 
 The loosest work-line flavor, for work that isn't a build or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when neither of the other two fit. You can also start one on demand by running `/next freeform`. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
 
-## What is the "Deferred tests" section in QUEUE.md?
-
-A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. /plan reads this list each session and folds the ones that can now run into a test batch; and when a later session happens to confirm one along the way, /done removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.
-
-## Why do some tests run straight away and others wait?
-
-Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
-
 ## Why does Claude sometimes ask me to run a test instead of running it itself?
 
 Because some tests need something only you can provide — and when that's the case, Claude tells you plainly what the test checks, what it needs, and why it can't run it. A test might need you to look at a screen and judge how something appears, tap through your app on a phone, or run a command in a terminal Claude can't reach. Claude usually can't see your setup, so it doesn't guess what you can or can't do — instead it names exactly what the test requires ("needs the terminal," "needs a phone connected," "needs you to look at the screen") and leaves it to you to judge whether that's yours to do. If a test needs nothing of yours, Claude just runs it — handing one to you is only ever for the checks that genuinely need you.
@@ -72,7 +64,7 @@ Run a quick session and confirm the new behaviour works the way you expect — t
 
 ## What is the "build stamp" the plugin records at the start of a session?
 
-A short fingerprint of the installed plugin's own files — a content check that reflects exactly what's installed right now, not just a version number. Its job is to tell whether a plugin update is genuinely in place after you reinstall. Some checks the method sets aside (on the "Deferred tests" list) can only be confirmed once an update is actually live, and a version number alone can miss a change that didn't bump the version — so the stamp gives Claude a reliable yes/no on whether the installed files are current. It runs behind the scenes: you don't see it or manage it, and nothing about your own project goes into it — it only fingerprints the plugin's files.
+A short fingerprint of the installed plugin's own files — a content check that reflects exactly what's installed right now, not just a version number. Its job is to tell whether a plugin update is genuinely in place after you reinstall. Some behaviour can only be confirmed once an update is actually live, and a version number alone can miss a change that didn't bump the version — so the stamp gives Claude a reliable yes/no on whether the installed files are current. It runs behind the scenes: you don't see it or manage it, and nothing about your own project goes into it — it only fingerprints the plugin's files.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
@@ -84,7 +76,7 @@ After /done, yes — everything is recorded in the session log and committed, so
 
 ## What's the difference between committing and pushing, and why does Claude only ask about pushing?
 
-Two different saves. **Committing** saves a snapshot of your work to your project's history on your own computer. It always happens when you close a build session, and you don't have to approve it — the snapshot's description is the session summary you already approved. **Pushing** additionally sends that snapshot to a remote backup, like GitHub, if your project has one set up. So at the end of a build, Claude commits first (the safe, local save), then asks whether to also push (the part that sends your work somewhere external). If your project has no remote set up, there's nothing to push to, so Claude just commits and doesn't ask. Planning and test sessions commit too, but never offer a push — they record bookkeeping, not a change to release.
+Two different saves. **Committing** saves a snapshot of your work to your project's history on your own computer. It always happens when you close a build session, and you don't have to approve it — the snapshot's description is the session summary you already approved. **Pushing** additionally sends that snapshot to a remote backup, like GitHub, if your project has one set up. So at the end of a build, Claude commits first (the safe, local save), then asks whether to also push (the part that sends your work somewhere external). If your project has no remote set up, there's nothing to push to, so Claude just commits and doesn't ask. Planning sessions commit too, but never offer a push — they record bookkeeping, not a change to release.
 
 ## Why did Claude say my new change has to wait for a fresh session?
 

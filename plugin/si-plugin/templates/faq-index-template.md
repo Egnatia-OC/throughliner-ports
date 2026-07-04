@@ -11,8 +11,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What are the build, audit, and freeform flavors — and is there a separate "test"?](faq.md#what-are-the-build-audit-and-freeform-flavors--and-is-there-a-separate-test)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
 - [What is `/next freeform`?](faq.md#what-is-next-freeform)
-- [What is the "Deferred tests" section in QUEUE.md?](faq.md#what-is-the-deferred-tests-section-in-queuemd)
-- [Why do some tests run straight away and others wait?](faq.md#why-do-some-tests-run-straight-away-and-others-wait)
 - [Why does Claude sometimes ask me to run a test instead of running it itself?](faq.md#why-does-claude-sometimes-ask-me-to-run-a-test-instead-of-running-it-itself)
 - [Do I need to use the terminal to install or update SI?](faq.md#do-i-need-to-use-the-terminal-to-install-or-update-si)
 - [How do I find out when there's a new version of the plugin?](faq.md#how-do-i-find-out-when-theres-a-new-version-of-the-plugin)

@@ -31,6 +31,8 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files).
 
+If a red flag was accepted during this session — a planning-stage risk the user was told plainly and chose to carry — also record the decision in this entry per done.md Accepted red flags: what the user was warned about, and that they chose to proceed. The accepted flag itself lives in the queue as a red-flag work line at `State: accepted` (plugin-behaviour.md Flag states).
+
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
 ```
@@ -53,7 +55,7 @@ Delete `_plan.md` if one exists, as part of the close — same lifecycle as _bui
 
 Plain-language guard: narrate the queue situation in everyday words. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be looked over.
 
-Before recommending, scan any still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit the top item if it were sorted first (mirrors the overlap scan in next.md's pre-flight). State the scan's result either way, not only when it blocks: nothing unprocessed — say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking."
+Before recommending, scan any still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit the top item if it were sorted first. State the scan's result either way, not only when it blocks: nothing unprocessed — say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking."
 
 Otherwise, based on queue state:
 - Fresh setup session whose only work line is the rough first build line: recommend /plan to scope it, never /next. The interview wrote that line deliberately unscoped, so it isn't ready to build yet — scoping is /plan's job.
