@@ -8,6 +8,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why does setup ask which editor I use?](faq.md#why-does-setup-ask-which-editor-i-use)
 - [What are the Processed and Unprocessed sections in QUEUE.md?](faq.md#what-are-the-processed-and-unprocessed-sections-in-queuemd)
 - [What does it mean when a work line is marked `[user]`?](faq.md#what-does-it-mean-when-a-work-line-is-marked-user)
+- [What are the build, audit, and freeform flavors — and is there a separate "test"?](faq.md#what-are-the-build-audit-and-freeform-flavors--and-is-there-a-separate-test)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
 - [What is `/next freeform`?](faq.md#what-is-next-freeform)
 - [What is the "Deferred tests" section in QUEUE.md?](faq.md#what-is-the-deferred-tests-section-in-queuemd)

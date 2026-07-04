@@ -28,13 +28,23 @@ Every work line carries a short name in square brackets (its slug), so Claude ca
 
 It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own lines top to bottom and stops at the first `[user]` line to hand it over to you. Most lines aren't marked — they're Claude's by default.
 
+## What are the build, audit, and freeform flavors — and is there a separate "test"?
+
+Every piece of Claude's work in the queue carries a flavor that says how Claude carries it out, shown as a small tag at the front of the line:
+
+- **Build** (no tag) — the normal kind: Claude makes changes to your files. Most work is this.
+- **`[audit]`** — a review pass: Claude reads something over and reports what it finds, without changing anything. The findings go into your queue for you to look over.
+- **`[freeform]`** — loose, talk-it-through work that doesn't fit build or audit — an ad-hoc change, or a discussion of edits already made, with scope grown a file at a time.
+
+There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds its own lines top to bottom, routing each by its flavor, and stops to hand over at the first `[user]` line.
+
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
 Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit batch that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
 
 ## What is `/next freeform`?
 
-A fourth kind of /next session, for work that isn't a build, a test, or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when none of the other three fit. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
+The loosest work-line flavor, for work that isn't a build or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when neither of the other two fit. You can also start one on demand by running `/next freeform`. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
 
 ## What is the "Deferred tests" section in QUEUE.md?
 
