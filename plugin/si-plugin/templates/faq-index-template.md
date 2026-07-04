@@ -35,6 +35,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [A session opened by asking which editor I use, or saying my project was missing something — what happened?](faq.md#a-session-opened-by-asking-which-editor-i-use-or-saying-my-project-was-missing-something--what-happened)
 - [What happens if Claude needs to touch something outside the current batch?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-batch)
 - [Will Claude use my phone or another device to test my app?](faq.md#will-claude-use-my-phone-or-another-device-to-test-my-app)
+- [What's a "red flag," and what do open, resolved, and accepted mean?](faq.md#whats-a-red-flag-and-what-do-open-resolved-and-accepted-mean)
 - [Why did Claude ask before starting a "subagent"?](faq.md#why-did-claude-ask-before-starting-a-subagent)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [When I add new work to the queue, why does Claude read through my files first?](faq.md#when-i-add-new-work-to-the-queue-why-does-claude-read-through-my-files-first)

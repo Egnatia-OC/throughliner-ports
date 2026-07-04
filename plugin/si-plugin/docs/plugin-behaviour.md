@@ -73,6 +73,50 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 - Mid-session captures follow the same rules. No special priority.
 - Reference other queue items by slug, never by status. A work line's prose may name another item by its slug, but must not assert its status (queued, processed, shipped) or assume it is still present — that point-in-time claim goes stale silently the moment the item moves, and nothing mechanical reads free-prose status claims to flag them. Status is re-derived from LOG when the item is convened. Same family as converting relative dates to absolute: write what stays true, not what happens to be true now.
 
+## Work-line states — the canonical four
+
+A work line is only ever in one of four states. Naming them plainly stops a session mischaracterising the queue as still having a parked shelf or dependency headers — it has neither.
+
+- **Unprocessed** — captured, not yet discussed. It sits in the Unprocessed section, waiting for a /plan session to weigh it.
+- **Processed, above the cleared-to-run line** — kept, and ready to build. /next picks work from here.
+- **Processed, below the cleared-to-run line** — kept, but not ready to build yet. It needs more thought, or it's waiting on something outside the queue. This is where "decided but not ready" lives.
+- **Deleted** — judged not worth doing, and removed from the working file. Git history keeps it if it ever matters again.
+
+Two things the old model carried are folded into this, not kept as separate machinery:
+
+- The cleared-to-run line **is** the replacement for parking. "Decided but not ready" is Processed-below-the-line — never a separate parked shelf.
+- Order within a section **is** the replacement for dependencies. "This before that" is placement, narrated when it's a judgment call (see Dependency ownership) — never a `Depends on:` header.
+
+Since this file loads at every session start, this is where the four-state model is read.
+
+## Red flags
+
+Claude screens every session — planning, building, auditing, capturing — for anything that could expose the user's data or their users' data, or that amounts to a breach. When one is found, Claude raises a red flag: a plain-English statement naming the risk, surfaced to the user immediately, and files it as a red-flag work line.
+
+A red flag is an ordinary work line carrying one extra marker line directly under its description:
+
+`Red flag · State: <open | resolved | accepted>`
+
+It lives in the queue as a work line — not in a dedicated section. The why it's a tagged line and not its own pinned section: a standing "Red flags" section reads as a claim that the tool tracks every risk that exists — comprehensive data-and-security management the tool can't actually back up — when all it ever holds is the risks Claude happened to identify. A tagged work line lets Claude surface and address a genuine risk without that over-claim. Describe each risk by what will be done about it, which is what the queue is for; the marker and its state carry the risk-tracking, the surrounding line carries the work. This is the fine line the model must hold: provide risk-addressing, without promising risk management.
+
+Claude never silently fixes a security concern and ships past it, and never builds past one without surfacing it. Surfacing costs one sentence; silence costs a breach the user can't defend because they were never told.
+
+Scope: security, privacy, and breach risk specifically — data exposure, unauthorized access, credential handling, injection vectors, information leakage, unprotected storage, anything whose failure mode is "someone's data is compromised." The threshold is a genuine risk, not every data-handling intention.
+
+Flagging, not fixing: Claude names and routes the risk. It does not quietly handle it or silently redesign around it, even when the fix seems obvious. The user decides what happens next.
+
+Planning-stage risks are recorded the same way. A security, privacy, or breach risk identified during planning — before any code exists — becomes a red-flag work line with a state, exactly as a build-session risk does: **resolved** if the design eliminated it in-session (record how it was designed out), **open** if it will be carried into the build, **accepted** if the user is told the risk plainly and chooses to proceed.
+
+### Flag states
+
+Each red flag carries one of three states:
+
+- **Open** — raised, not yet addressed. The risk is known; no decision has been made.
+- **Resolved** — the risk has been designed out or fixed. The code no longer carries it.
+- **Accepted** — the user has consciously accepted the risk. Their decision is recorded in the LOG entry as informed consent: what they were warned about, and that they chose to proceed. This is the trail that protects them if a breach surfaces later.
+
+The future unattended mode's gate reads these states: only resolved or accepted flags let it run. An open flag blocks unattended execution — a user who leaves a risk unaddressed stays on hand to approve each step.
+
 ## Why-pipeline
 
 Rationale is prose. Carry it forward; don't collapse it into a structured "why" field.

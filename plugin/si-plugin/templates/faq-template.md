@@ -142,6 +142,16 @@ Claude stops and asks. It stays within batch scope. If something else needs chan
 
 Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
 
+## What's a "red flag," and what do open, resolved, and accepted mean?
+
+A red flag is how Claude surfaces a risk to your data or your users' data — anything that could expose private information or amount to a security breach. Claude watches for these in every session, and when it spots a genuine one, it tells you plainly rather than quietly working around it or building past it. The risk then goes into your queue as an ordinary piece of work, marked with a red-flag tag and one of three states:
+
+- **Open** — the risk has been raised, but nothing's been decided about it yet.
+- **Resolved** — the risk has been designed out or fixed, so the work no longer carries it.
+- **Accepted** — you've heard the risk spelled out and chosen to go ahead anyway. That choice is written into the session log, so there's a record of what you were told and that you agreed — the trail that protects you if the risk ever surfaces later.
+
+It's tagged onto a work line rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
+
 ## Why did Claude ask before starting a "subagent"?
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
