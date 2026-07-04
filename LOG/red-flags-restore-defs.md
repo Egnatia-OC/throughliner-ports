@@ -1,4 +1,4 @@
-# [HASH] — Restored red flags as tagged work lines: plugin-behaviour.md rules + four-state model, plan.md risk routing, FAQ entry
+# 3565ea1 — Restored red flags as tagged work lines: plugin-behaviour.md rules + four-state model, plan.md risk routing, FAQ entry
 
 The queue redesign had stripped the structured red-flags mechanism — the dedicated `## Red flags` section and the open/resolved/accepted states — leaving only the plain-English screening in SPEC. This batch restores the structure, recast for the two-section work-line model: a red flag is now an ordinary work line carrying a `Red flag · State: <open|resolved|accepted>` marker, not a pinned section. The rationale, carried from the 2026-07-04 /plan session and folded inline: a dedicated section would read as a claim to manage every risk that exists — comprehensive data/security management the tool can't back up — when it only ever holds the risks Claude identified; a tagged work line surfaces and addresses a genuine risk without that over-claim. SPEC's risk principle (line 46) survived intact and stays honest, so SPEC needed no edit — the spec-sync gate confirmed no drift.
 

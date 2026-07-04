@@ -167,36 +167,35 @@ def _dirty_tree_count(cwd):
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
-def _host_side_deferred_tests_present(queue_path):
-    """True when QUEUE.md's '## Deferred tests' section has a host-side line.
+def _open_red_flags(queue_path):
+    """Descriptions of work lines carrying `Red flag · State: open`.
 
-    Host-side deferred tests are the ones a reinstall actually makes
-    checkable — tagged "(host-side)" or "Deferral: host-side". A needs-user
-    or external line isn't gated on a reinstall, so it doesn't trigger the
-    post-update confirm-session nudge. Reads the section between its heading
-    and the next top-level heading, and checks each list item for the
-    host-side marker.
+    A red flag is an ordinary work line (a #### heading) with a
+    `Red flag · State: <state>` marker beneath it. This returns the cleaned
+    heading text of every such line whose state is open, so session start
+    can surface unaddressed risks first-thing. The two-section work-line
+    model has no pinned Red flags section, so this scan is what keeps an
+    open risk unmissable. Returns [] on any error or when none are open.
     """
     try:
         with open(queue_path, "r", encoding="utf-8") as f:
-            text = f.read()
-    except OSError:
-        return False
-    marker = "## Deferred tests"
-    idx = text.find(marker)
-    if idx == -1:
-        return False
-    section = text[idx + len(marker):]
-    next_heading = section.find("\n## ")
-    if next_heading != -1:
-        section = section[:next_heading]
-    for line in section.splitlines():
-        if not line.lstrip().startswith("- "):
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        return []
+    open_flags = []
+    current_heading = None
+    for raw in lines:
+        stripped = raw.strip()
+        if re.match(r"^####\s+\S", stripped):
+            current_heading = stripped
             continue
-        low = line.lower()
-        if "(host-side)" in low or "deferral: host-side" in low:
-            return True
-    return False
+        if re.match(r"^Red flag\s*·?\s*State:\s*open\b", stripped, re.IGNORECASE):
+            desc = current_heading if current_heading else stripped
+            # Strip the leading #### and the trailing [slug] for a clean read.
+            desc = re.sub(r"^#+\s+", "", desc)
+            desc = re.sub(r"\s*\[[a-z0-9][a-z0-9-]+\]\s*$", "", desc)
+            open_flags.append(desc.strip())
+    return open_flags
 
 
 def main() -> int:
@@ -312,6 +311,18 @@ def main() -> int:
             "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===\n"
             + behaviour_rules
             + "\n=== END BEHAVIOUR RULES ==="
+        )
+
+    # Open red flags first-thing: the two-section model has no pinned Red flags
+    # section, so this scan is what keeps an unaddressed data-exposure risk
+    # unmissable at session start. Surfaced ahead of ordinary project state.
+    open_flags = _open_red_flags(queue_path)
+    if open_flags:
+        context_parts.append(
+            "OPEN RED FLAG(S) — unaddressed security, privacy, or data-exposure "
+            "risk(s) recorded in this project's queue. Tell the user about these "
+            "first, in plain language, before other work:\n"
+            + "\n".join(f"- {flag}" for flag in open_flags)
         )
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
@@ -440,24 +451,15 @@ def main() -> int:
 
     # Version-change report: the retained "a plugin update just happened" signal
     # (see version_mismatch above). This is NOT the drift warning — that is
-    # presence-based above. When host-side checks are waiting (the ones a
-    # reinstall makes checkable), append a plain-English nudge to run a quick
-    # session to confirm the update behaves — framed as a testing session, no
-    # internal jargon.
+    # presence-based above. Kept as a plain line: the old queue-inspecting
+    # confirm nudge is gone, so the report no longer scans the queue.
     if version_mismatch:
-        update_msg = (
+        context_parts.append("")
+        context_parts.append(
             "[Sovereign Implementer] Plugin version changed since this project was "
             f"last set up ({project_version} → {plugin_version}) — an update has been "
             "installed."
         )
-        if _host_side_deferred_tests_present(queue_path):
-            update_msg += (
-                " Now's a good moment to run a quick session and confirm the update "
-                "behaves the way you expect — that check is itself a testing session. "
-                "Run /plan when you're ready and it'll line up what's worth confirming."
-            )
-        context_parts.append("")
-        context_parts.append(update_msg)
 
     if has_active_build:
         context_parts.append("")

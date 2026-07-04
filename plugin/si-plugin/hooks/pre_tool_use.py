@@ -3,8 +3,9 @@
 PreToolUse hook — enforces three rules:
 
 1. During a build, _build.md's Files: section governs which files are
-   editable (method docs — QUEUE.md, LOG/, _build.md — are
-   always editable). Tri-state: no Files: section = no enforcement;
+   editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
+   memory dir and resources/research/ are always editable). Tri-state:
+   no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
    when it's explicitly listed in Files: — a batch that needs to change
@@ -231,6 +232,21 @@ def _is_memory_dir(filepath: str) -> bool:
     return "memory" in parts[claude_idx + 1:]
 
 
+def _is_research_dir(filepath: str, cwd: str) -> bool:
+    """Check if a path is under the project's resources/research/ folder.
+
+    Research notes are filed under resources/research/<topic>.md the moment a
+    finding is produced (plugin-behaviour.md Research > Filing), and that
+    filing is open to every session type — build, test, or audit. The
+    scope-lock must not block it, so this folder is always editable, mirroring
+    the method-docs and memory exemptions. Matched relative to the project
+    root, so it holds wherever the project lives.
+    """
+    norm = _normalise(filepath)
+    research_dir = _normalise(os.path.join(cwd, "resources", "research"))
+    return norm.startswith(research_dir + os.sep) or norm == research_dir
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -358,6 +374,9 @@ def main() -> int:
             return 0
 
         if _is_memory_dir(filepath):
+            return 0
+
+        if _is_research_dir(filepath, cwd):
             return 0
 
         if not build_files:
