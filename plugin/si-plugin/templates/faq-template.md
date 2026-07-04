@@ -16,7 +16,7 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 ## Why does setup ask which editor I use?
 
-So Claude can point you to your open docs instead of re-pasting their text into the chat. When Claude needs to show you a captured idea or the next batch of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the editor you keep those files open in, it can just link you to the file — "it's in QUEUE.md" — and you glance at it there, rather than Claude copying the whole block into chat every time. Over a project's life that saves a real amount of tokens. The question is optional: skip it and nothing breaks — Claude simply quotes the text inline the way it always has. It's asked once, during /setup, and never again.
+So Claude knows your default `.md` app and can point you to a project doc with a link, instead of writing the doc's text out into the chat. When Claude needs to show you a captured idea or the next piece of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the app you open those files in, it can link you to the file — "it's in QUEUE.md" — and you read it there. The catch: a link only helps if you keep a default `.md` reader open alongside Claude, so the doc actually opens when you click it. The question is optional, and skipping is a fine choice for anyone — nothing breaks. The trade-off of skipping: when Claude needs to show you a doc, it writes the text out into the chat the way it always has, which costs some tokens each time and adds up over a project's life. It's asked once, during /setup, and never again.
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 

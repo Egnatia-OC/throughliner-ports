@@ -16,18 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**/setup fixes from the PFA-5 run: editor-question wording (Q6) + FAQ folder order** **[setup-editor-ask-wording-fix]**
-
-The optional /setup editor question (Q6 in setup.md) and its FAQ entry both explain the editor field with a rationale that's factually wrong: they say knowing the editor lets Claude "link you to your docs instead of re-pasting/copying their text into chat." Claude can't copy or paste — it regenerates every token (see resources/research/claude-copy-vs-generate-text.md) — and linking to a doc isn't gated by knowing the editor; Claude can link regardless. The question's real job is to identify the user's default `.md` app, so the user can be told the doc links only open usefully if they keep a default `.md` reader open alongside Claude. The current wording also hides the skip consequence (docs get re-emitted into chat, at a token cost) and frames skip as only "if you're unsure" rather than a plain option anyone may take. Traced against setup.md's Q6 ask (line 145) and faq-template.md's editor entry (line 17); producer is [editor-awareness-core] (shipped, created the ask); no shared primitive with the redesign batches (they touch setup.md's queue-scaffolding, a different section — no collision). Also folds in [setup-faq-folder-ordering] (same PFA-5 run, same file): setup.md's FAQ scaffolding step (line 116) bundles folder-creation and file-copy without pinning the order, so the /setup run fired the copy before the `FAQ/` folder existed, failed, then retried; the fix makes folder-creation explicitly precede the copies.
-
-Build:
-- Rewrite setup.md's Q6 ask and its → guidance to: (a) state the real purpose — identify the default `.md` app so doc links open usefully, noting links only help if the user keeps a default `.md` reader open alongside Claude; (b) name the skip consequence plainly (docs get re-emitted into chat) and its token cost; (c) drop the "link instead of re-pasting/copying" framing; (d) offer skip plainly as anyone's option, not only "if unsure."
-- Sync faq-template.md's "Why does setup ask which editor I use?" entry to the same corrected framing — drop the copying/pasting language, add the default-reader-open caveat, keep the accurate skip-consequence + token note.
-- Keep a light touch on the remote-control caveat (links aren't useful under remote control — ties to [view-in-doc-remote-control-tension]); don't over-promise.
-- Reorder setup.md's FAQ scaffolding step (line 116) so the `FAQ/` folder is created before the two template files are copied into it (an explicit `mkdir -p FAQ/` first, or a folder-creating copy form), removing the failed-copy-then-retry.
-
-Files: plugin/si-plugin/docs/setup.md, plugin/si-plugin/templates/faq-template.md
-
 **Red flags restored to the two-section model — the rulebook layer** **[red-flags-restore-defs]**
 Blocks: hooks-work-line-recut, done-work-line-recut
 

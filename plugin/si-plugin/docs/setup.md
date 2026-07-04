@@ -113,7 +113,7 @@ One-line summaries of each session. Newest first. Each line names the session's 
 
 Session entries are written by /done, each as its own file in LOG/ — nothing else to scaffold.
 
-**FAQ/ folder:** Create the directory with two files scaffolded from templates:
+**FAQ/ folder:** Create the `FAQ/` directory first, then copy the two template files into it — the folder must exist before the copies, or they fail:
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`
 - `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
 
@@ -143,7 +143,7 @@ Ask these one per message, and stop after each — wait for the user's answer be
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
 
 **Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
-→ Records which editor you work in (e.g. a Markdown editor, or a code editor), so Claude can point you to your open docs with a link instead of re-pasting their text into chat — which saves tokens over a project's life. Fills the Editor field in the generated CLAUDE.md. Ask it plainly and make skipping easy — "if you're not sure or don't have a preference, just say skip." Skippable, no nag, asked once and never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
+→ Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
 
 ## Step 4: Write the docs
 
