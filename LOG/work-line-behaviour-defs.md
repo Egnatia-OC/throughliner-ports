@@ -1,4 +1,4 @@
-# [HASH] — Build [work-line-behaviour-defs] — behaviour docs + SPEC recut to the two-section work-line model
+# 8697a79 — Build [work-line-behaviour-defs] — behaviour docs + SPEC recut to the two-section work-line model
 
 Founding build of the queue-redesign branch. The old model carried several parallel work-type structures — build/test/audit batches, parking, dependencies, red flags, deferred tests — each with its own machinery. This batch replaces them in the behaviour definitions with a single notion of *work* carrying two properties: who does it (Claude by default; user-work marked `[user]`) and whether it's processed (which of two sections it sits in). QUEUE.md's model collapses to exactly two headings — Processed and Unprocessed — and a capture becomes unprocessed work.
 

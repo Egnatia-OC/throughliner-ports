@@ -1,4 +1,4 @@
-# [HASH] — Build [plan-work-line-procedure] — /plan and done-plan rewritten onto the work-line model
+# 8697a79 — Build [plan-work-line-procedure] — /plan and done-plan rewritten onto the work-line model
 
 Second build of the queue-redesign branch, consuming the definitions [work-line-behaviour-defs] shipped in the same session. plan.md was built around capture-processing with promote/park/drop routing, dependency tracing, unpark and parked-shelf scans, and a Build/Test/Audit batch-structure section — most of which the new model deletes. Under the new model /plan does two things: it reads unprocessed work with the user and, on agreement, moves each item into Processed or deletes it; and it maintains the order of Processed work and the position of the one cleared-to-run line.
 
