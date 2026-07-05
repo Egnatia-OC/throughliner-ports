@@ -16,23 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Templates + /setup scaffolding recut to the two-section model** **[templates-spec-recut]**
-Depends on: red-flags-restore-defs, next-work-line-recut
-Blocks: fresh-queue-clean-break
-
-The consumer-facing scaffolding still describes and creates the old queue: CLAUDE-TEMPLATE.md documents Red flags / Batches (Build/Test/Audit) / Deferred tests / Captures with `---` / Blocked-by/Parked, and /setup scaffolds a fresh QUEUE.md with those same five sections and writes the onboarding answer as a "Build subheading" entry. A new consumer would get an old-model project. This recut brings the scaffolding onto the two-section work-line model, so a fresh /setup produces a Processed/Unprocessed queue with the build/audit/freeform flavors and red-flags-as-tagged-lines, and creates the `resources/research/` folder the [hooks-work-line-recut] carve-out now allows every session to write to. Placed last so it reflects the vocabulary the model batches settle. Traced against CLAUDE-TEMPLATE.md, setup.md's scaffolding + Q4/Q6 steps, and the recut plugin-behaviour.md/plan.md; the flavor vocabulary comes from [next-work-line-recut] and the red-flag line shape from [red-flags-restore-defs], hence the two dependencies; producer for the two-section model is [work-line-behaviour-defs] (shipped). SPEC.md was already synced in [work-line-behaviour-defs], so it needs only a consistency check, not a rewrite.
-
-Build:
-- CLAUDE-TEMPLATE.md — recut the Project docs QUEUE line, the Workflow line, and the Rules to the two-section model: Processed/Unprocessed work lines (slug + provenance), the build/audit/freeform flavors with `[user]` handover (no separate test type), and red flags as tagged work lines carrying a state — dropping the Red flags/Batches/Deferred tests/Captures/Parked descriptions.
-- setup.md — recut the QUEUE.md scaffold to the two sections (Processed / Unprocessed), write the onboarding answer (Q4) as a work line in Unprocessed (slug + provenance) rather than a Build-subheading entry, and add scaffolding for the `resources/research/` folder so research notes have a home from day one.
-- SPEC.md — consistency check only: confirm it carries no stale old-model vocabulary; edit only if it does.
-
-Test:
-- The user reviews the recut template and scaffolding wording.
-- Deferred (host-side, after reinstall): the first /setup scaffolds a two-section QUEUE.md and a `resources/research/` folder, writes the onboarding answer as an Unprocessed work line, and the scaffolded CLAUDE.md describes the two-section model.
-
-Files: plugin/si-plugin/templates/CLAUDE-TEMPLATE.md, plugin/si-plugin/docs/setup.md, SPEC.md
-
 --- Cleared to run above this line ---
 
 --- Switch to dogfooding here: rezip + reinstall the redesigned plugin as the host, then run everything below on it. The middle redesign batches ([red-flags-restore-defs], [hooks-work-line-recut], [next-work-line-recut], [done-work-line-recut], [templates-spec-recut]) are shaped and sit above the cleared-to-run line; the switch lands after they ship and before the queue rewrite ([fresh-queue-clean-break]). ---
@@ -147,6 +130,7 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 - [hooks-work-line-recut] — verify the recut hooks behave live after reinstall: post_tool_use's lint runs clean on the real two-section QUEUE.md (once [fresh-queue-clean-break] has rewritten it) and flags a slugless work line, a missing provenance label, a missing `## Processed`/`## Unprocessed` heading, and an invalid red-flag state; session_start surfaces an open `Red flag · State: open` work line first-thing at a live session start; pre_tool_use allows a live scoped-build write under `resources/research/` while still denying an out-of-scope file. The 16-check module-import suite passed in-session this build. Confirmed by: observed across the first sessions after rezip + reinstall. Deferral: host-side. Runnability: observed.
 - [next-work-line-recut] — verify the recut /next behaves live after reinstall: the first /next picks the top work line(s) from Processed, self-scopes the `_build.md` Files list from the Claude-work lines, runs Claude-work top-down handing over at the first `[user]` line, routes an `[audit]` line to next-audit.md, and stops at the `--- Cleared to run above this line ---` marker. Confirmed by: observed across the first /next sessions after rezip + reinstall (once [fresh-queue-clean-break] has rewritten the queue to two sections). Deferral: host-side. Runnability: observed.
 - [done-work-line-recut] — verify the recut /done family behaves live after reinstall: the first build /done routes by work-line flavor (build/audit/freeform, no test route), names each LOG file after the work-line slug, cross-checks the shipped slug against Processed (not Batches), reconciles an accepted red flag as a `State: accepted` work line recording consent in the LOG, and turns a can't-run-now check into a `[user]` line in Unprocessed rather than a Deferred tests line; done-test.md is gone and done-plan.md records an accepted planning-stage flag. Confirmed by: observed in the first build /done after rezip + reinstall (once [fresh-queue-clean-break] has rewritten the queue to two sections). Deferral: host-side. Runnability: observed.
+- [templates-spec-recut] — verify the recut consumer scaffolding behaves live after reinstall: the first /setup scaffolds a two-section QUEUE.md (`## Processed` with the `--- Cleared to run above this line ---` marker, `## Unprocessed` below) and a `resources/research/` folder, writes the onboarding answer (Q4) as an Unprocessed work line (`#### ` heading + `[slug]` + "captured by you"), and the scaffolded CLAUDE.md describes the two-section work-line model. Confirmed by: observed in the first /setup after push + reinstall (naturally observable in the Taskflow E2E project or a deliberate /setup in a fresh folder). Deferral: host-side. Runnability: observed.
 
 ## Captures
 
