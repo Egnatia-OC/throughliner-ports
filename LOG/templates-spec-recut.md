@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE-TEMPLATE.md + setup.md recut to the two-section work-line model (Processed/Unprocessed, build/audit/freeform flavors with `[user]` handover, red flags as tagged state-carrying lines); setup.md scaffolds `resources/research/` and writes the onboarding answer as an Unprocessed work line; SPEC.md consistency-checked.
+# 969af5b — CLAUDE-TEMPLATE.md + setup.md recut to the two-section work-line model (Processed/Unprocessed, build/audit/freeform flavors with `[user]` handover, red flags as tagged state-carrying lines); setup.md scaffolds `resources/research/` and writes the onboarding answer as an Unprocessed work line; SPEC.md consistency-checked.
 
 The consumer-facing scaffolding was the last part of the plugin still describing and creating the old five-section queue. CLAUDE-TEMPLATE.md documented Red flags / Batches / Deferred tests / Captures, and /setup scaffolded a fresh QUEUE.md with those same sections plus a "Build subheading" onboarding entry — so a new consumer would have started on the old model. This batch brings both onto the two-section work-line model that the earlier redesign batches settled.
 
