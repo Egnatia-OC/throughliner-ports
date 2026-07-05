@@ -16,20 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Pin the canonical work-line rendering in plugin-behaviour.md** **[pin-work-line-format]**
-Depends on: hooks-work-line-recut
-Blocks: templates-spec-recut, fresh-queue-clean-break
-
-The recut hooks encode one literal shape for a work line, but that shape is written down nowhere as the canonical definition. All three hooks detect a work line the same way: a `####` heading whose line ends in a `[slug]`, under `## Processed` or `## Unprocessed`, with a provenance label ("captured by you" / "by Claude") in the block beneath, and — for a red flag — a `Red flag · State: <open|resolved|accepted>` marker line in that block. plugin-behaviour.md's Line-format bullet lists the four parts of a work line but never states that the description line renders as a `####` heading — the one detail every hook keys on. A scaffold or queue rewrite that emitted bold lines or bullets instead would read fine to a human while silently breaking all three hooks: the lint flags nothing, the red-flag scan finds nothing, no error surfaces. This batch pins the rendering explicitly, so the two still-to-come batches that emit work lines ([templates-spec-recut], [fresh-queue-clean-break]) are authored against a stated shape rather than an inferred one. Traced against plugin-behaviour.md's Line-format bullet + Red-flags marker and post_tool_use.py / session_start.py's detection regexes; the shape's producer is [hooks-work-line-recut] (shipped); no shared primitive — the other two batches consume the shape, hence Blocks not merge. No SPEC impact (internal format convention).
-
-Build:
-- plugin/si-plugin/docs/plugin-behaviour.md — in the Captures "Line format" bullet (and/or a short adjacent note), state explicitly that a work line renders as a `#### ` heading: the description text is the heading line, its `[slug]` sits at the end of that heading line, the rationale prose and provenance label live in the block beneath it, and a red flag adds its `Red flag · State: …` marker line in that block. Note that this is the exact shape all three hooks parse. Reconcile the line-68 "a single line" wording so it doesn't undercut the heading-plus-block shape.
-
-Test:
-- Run-now (Claude, in-session): confirm the pinned wording matches the three hooks' actual detection — post_tool_use.py's `WORKLINE_HEADING` / `SLUG_AT_END` / `PROVENANCE` / `RED_FLAG_MARKER` and session_start.py's `_open_red_flags` — so the doc and the code agree.
-
-Files: plugin/si-plugin/docs/plugin-behaviour.md
-
 **Templates + /setup scaffolding recut to the two-section model** **[templates-spec-recut]**
 Depends on: red-flags-restore-defs, next-work-line-recut
 Blocks: fresh-queue-clean-break

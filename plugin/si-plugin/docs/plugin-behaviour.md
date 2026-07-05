@@ -65,8 +65,16 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 
 ## Captures
 
-- A capture is unprocessed work: a single line appended to QUEUE.md's **Unprocessed** section. Capturing is how any session — planning, building, or between — puts a new idea, discovery, or task into the queue without stopping to work it. Draft the wording and show it before writing to QUEUE.md; include the reasoning, not just what was noticed.
-- Line format. Each work line carries four things: a one-line description of the work; the prose rationale under it; a lightweight slug at the end of the description line (LOG traceability only — it lets a later LOG entry name the work precisely, nothing more); and a provenance label naming who raised it — "captured by you" or "by Claude". The provenance label stays on the line after the work is processed, so a processed line still shows where it came from. A capture Claude files carries "by Claude"; one the user asks for carries "captured by you".
+- A capture is unprocessed work: a single work line appended to QUEUE.md's **Unprocessed** section — one `#### ` heading with a short block of prose beneath it (see Line format below for the exact rendering). Capturing is how any session — planning, building, or between — puts a new idea, discovery, or task into the queue without stopping to work it. Draft the wording and show it before writing to QUEUE.md; include the reasoning, not just what was noticed.
+- Line format. A work line renders as a `#### ` heading with a block of prose beneath it, and carries four things:
+  - The **one-line description** of the work *is the `#### ` heading line itself* — the text right after the `#### `.
+  - A lightweight **`[slug]`** sits at the **end of that same heading line** (LOG traceability only — it lets a later LOG entry name the work precisely, nothing more).
+  - The **prose rationale** lives in the block beneath the heading.
+  - A **provenance label** naming who raised it — "captured by you" or "by Claude" — also lives in that block. It stays on the line after the work is processed, so a processed line still shows where it came from. A capture Claude files carries "by Claude"; one the user asks for carries "captured by you".
+
+  A red-flag work line adds one more line to that block: its `Red flag · State: <open | resolved | accepted>` marker (see Red flags).
+
+  This exact shape — `#### ` heading, `[slug]` at the end of the heading line, provenance in the block, red-flag marker (when present) in the block, all under a `## Processed` or `## Unprocessed` section heading — is what all three hooks parse: post_tool_use's queue lint, session_start's open-red-flag scan, and the section headings both key on. Emitting a work line as a bold line or a plain bullet instead would read fine to a person but silently break all three — the lint flags nothing, the red-flag scan finds nothing, no error surfaces. The `#### ` heading rendering is load-bearing, not cosmetic.
 - Flavor marker. A work line may carry an optional leading tag that names how it's executed. There are three tags and one default:
   - **(no tag)** — a build. The default Claude-work flavor: changes get made to files. /next routes it to next-build.md.
   - **`[audit]`** — a review pass. Claude reads and reports findings rather than editing files; the findings become fresh captures. /next routes it to next-audit.md.
