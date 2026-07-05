@@ -1,4 +1,4 @@
-# [HASH] — Recut the /done family to the two-section work-line model
+# ee6d713 — Recut the /done family to the two-section work-line model
 
 The /done family still spoke the old model — routing by Build/Test/Audit/Freeform subheadings, writing can't-run checks to a `## Deferred tests` section, cross-checking shipped slugs against `## Batches`, and naming LOG files after a "batch slug." This recut moves it onto the two-section work-line model that plan.md, plugin-behaviour.md, and the /next family already use.
 
