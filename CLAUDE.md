@@ -7,10 +7,22 @@ Claude Code auto-loads this file on session start.
 This folder is the `queue-redesign` worktree — an isolated fork (`sovereign-implementer-x` / `flintcraft-x`, version `0.1.0`) where the two-section queue model is being built before it rejoins the real plugin on `main`. The plan:
 
 1. Finish the redesign's middle — the `[remaining-redesign-batches]` work (/next, the /done family, all three hooks, templates) — then dogfood the rebuilt plugin via rezip.
-2. Run `[fresh-queue-clean-break]` (the last batch) to replace QUEUE.md with the clean two-section starter.
-3. **Then merge this branch back into `main`.** On the merge: keep main's plugin identity — take main's (ours) `plugin.json` and `marketplace.json`, not this branch's `-x` rename — and blend QUEUE.md rather than take-theirs. The merge is deliberately **held until step 1 is finished**, because merging earlier lands a half-converted plugin on main (only plan.md / done-plan.md / plugin-behaviour.md are recut so far; /next, /done, and the hooks still speak the old structure), which must never be pushed or reinstalled as the host in that state.
+2. **Then merge this branch back into `main`.** The merge is where the two queues reconcile — there is no separate fork-side queue rewrite. Do it off main's already-drained copy: start from main's `QUEUE.md` (drained to the carry-forward set by the 2026-07-04 Fable session), convert *that* to the two-section shape (`## Processed` / `## Unprocessed`), and pull forward any still-relevant items from this fork's queue by judgment. Do **not** take this fork's `QUEUE.md` wholesale — it still holds the old bloat main already cut. Keep main's plugin identity too: take main's (ours) `plugin.json` and `marketplace.json`, not this branch's `-x` rename. The merge is deliberately **held until step 1 is finished**, because merging before the redesign's middle is finished and dogfooded lands a half-converted plugin on main (docs and hooks that partly speak the old structure), which must never be pushed or reinstalled as the host in that state.
 
-The full decision and reasoning live in main's QUEUE.md under `[adopt-queue-redesign]`, and in main's LOG entry `fable-goal-queue-drain-adopt.md`. This note is here because `[fresh-queue-clean-break]` wipes QUEUE.md, so the merge plan can't live there — CLAUDE.md survives the clean break.
+Retired 2026-07-06: the old `[fresh-queue-clean-break]` batch (a fork-side wipe-and-rebuild of this project's own bloated queue) is dropped. It was redundant — main's queue was already drained on 2026-07-04, and the merge is the natural place to reconcile the two copies and do the two-section conversion, off main's clean base. Converting this fork's bloat first only to discard it at merge was wasted work.
+
+The full decision and reasoning live in main's QUEUE.md under `[adopt-queue-redesign]`, and in main's LOG entry `fable-goal-queue-drain-adopt.md`. This merge plan lives in CLAUDE.md (not QUEUE.md) because QUEUE.md is itself what the merge reconciles and supersedes — the plan has to sit in a doc that survives that.
+
+**Rollout and retirement path.** The redesigned plugin keeps its `-x` fork identity (`flintcraft-x` / `sovereign-implementer-x`) and is dogfooded here first, SI-on-SI — Alex handles running the two installed plugins side by side and doesn't need that juggling re-explained. The old SI (`flintcraft` / `sovereign-implementer`) stays **frozen** and in continued use on her other, older projects during this. Once dogfooding here gives enough confidence the redesign works, adopt the new plugin on those other projects too, retire the old SI there, and finally uninstall it. So the one thing Alex actually tracks is *when the new plugin is trustworthy enough to start relying on here* — everything downstream (freezing the old one, migrating the other projects, uninstalling) follows from that. (Replaces the former `[keep-x-identity-until-merge]` capture, folded here 2026-07-06 so it isn't rehashed each session.)
+
+## Working mode — remote control vs local (temporary, ~through 2026-07-09)
+
+At the start of every /plan or /next, ask Alex which mode she's working in: **remote control** or **local**. This is a stopgap until the proper mode mechanism is designed and built.
+
+- **Remote control** — render doc-bound text (capture drafts, batch drafts, log entries, verbatim quotes) directly into the chat, not as view-in-doc pointers or links to the file. On remote control she works from her phone and can't open an edited file without navigating Google Drive and re-downloading it, so pointers don't work — she needs the text in the chat.
+- **Local** — normal behaviour: view-in-doc pointers/links where an editor is recorded.
+
+Remove this section once Alex is back at the desktop full-time and the real mode mechanism exists.
 
 ## What this is
 
