@@ -148,10 +148,14 @@ Captured outside /plan. Picked up and routed during the next /plan session. Proc
 
 ---
 
-#### Confirm which SI build is installed here and where the redesign stands [installed-build-vs-redesign-state]
-This session's plugin loaded as `flintcraft/sovereign-implementer/1.15.0-test1` — the main identity/version line, not the `-x` fork (`0.1.0`, `flintcraft-x`) that the rollout plan describes dogfooding under. Pin down what's actually installed, whether it's the redesigned build, and which redesign batches remain — this is what answers "when can I start relying on the new plugin here." Needs a look at the plugin manifests and the redesign's completion state. By Claude.
+#### Kick off dogfooding — first rezip + install of the -x fork (desktop) [start-fork-dogfooding]
+The redesign is code-complete in this fork but has never been dogfooded; this is the concrete action that starts it, and it's what unblocks [execute-merge-to-main]. Must be done at the desktop — it needs a full app restart and live sessions, neither doable on remote control. Steps: Claude runs the fork's rezip ritual (bump plugin.json to `0.1.0-test1`, clear `__pycache__`, `claude plugin marketplace add` this `-x` folder for the `flintcraft-x` marketplace, then `claude plugin install sovereign-implementer-x@flintcraft-x`); Alex fully restarts the app; Alex runs real /plan, /next, /done sessions on the `-x` build. The `-x` fork installs as a separate plugin alongside the existing main SI (`sovereign-implementer` / `flintcraft`) — main SI is untouched and stays available for the legal project. Captured 2026-07-08. By Claude.
 
 ### Parked
+
+#### Execute the -x → main merge (Claude-run git work) [execute-merge-to-main]
+Queue the branch merge as Claude-executed work — the user doesn't do git and wants Claude to run the whole thing end-to-end. Per CLAUDE.md's branch/merge plan: merge this queue-redesign (`-x`) branch into `main`; keep main's plugin identity (take main's `plugin.json` and `marketplace.json`, not the `-x` rename); reconcile QUEUE.md by starting from main's already-drained queue, converting it to the two-section shape, and pulling forward still-relevant items from this fork by judgment — do not take this fork's bloated QUEUE wholesale. When it runs: promote to a freeform batch (Claude executes the git operation; the user touches no git).
+Blocked by: the fork's redesign dogfooded live on the two-section model — the `-x` fork rezipped, installed as host, and run across real /plan, /next, and /done sessions that confirm the two-section build works. Behavioural trigger, no slug. Merging before this lands a code-complete-but-unproven plugin on main, which the merge plan (CLAUDE.md) forbids. The [installed-build-vs-redesign-state] check that used to gate this resolved 2026-07-08: middle built, not yet dogfooded — so dogfooding is now the sole remaining gate.
 
 #### Don't assume the user's environment [dont-assume-user-environment]
 Don't assume the user's environment — a plugin-level communication guard. Split from [user-run-assumes-user-can-run] on 2026-06-23: that batch fixed the narrow test-routing case (classify user-run tests by requirement); this is the broader default underneath it.
