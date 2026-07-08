@@ -42,6 +42,18 @@ Files: plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/fa
 
 Traced against the redesigned /done family (shipped [done-work-line-recut], which turns a can't-run-now check into a `[user]` line) and the FAQ template; producer is the shipped two-section model. Shared-primitive scan: [session-handoff-offer] also edits faq-template.md but adds a different entry — no shared mechanism, so kept separate; the two sit adjacently and can be built back-to-back.
 
+**Kick off dogfooding — rezip + install the -x fork, then run live sessions** **[start-fork-dogfooding]**
+Depends on: session-handoff-offer, faq-update-check-rewrite
+Blocks: execute-merge-to-main
+
+The redesign is code-complete in this fork but has never been dogfooded — this is the concrete action that starts it, and it unblocks the `-x` → main merge ([execute-merge-to-main]). It must run at the desktop: it needs a full app restart and live sessions, neither doable on remote control. Placed just below [session-handoff-offer] and [faq-update-check-rewrite] so their edits fold into the single install you dogfood, rather than installing twice. Freeform because it's an install-and-use action — not source-editing, not a pass/fail check, not a read-and-route.
+
+Freeform:
+- Claude runs the `-x` fork's rezip ritual: bump plugin.json to `0.1.0-test1`, clear `__pycache__`, `claude plugin marketplace add` this `-x` folder for the `flintcraft-x` marketplace, then `claude plugin install sovereign-implementer-x@flintcraft-x`.
+- Alex fully restarts the app.
+- Alex runs real /plan, /next, /done sessions on the `-x` build to confirm the two-section model works in practice. The `-x` fork installs as a separate plugin alongside main SI (`sovereign-implementer` / `flintcraft`); main SI is untouched and stays available for the legal project.
+- Why none of build/test/audit fit: the work is installing the fork and using it live, not editing source, verifying one behaviour against a checkbox, or reading-and-routing.
+
 --- Cleared to run above this line ---
 
 --- Plan session here: cruise control is still a design block with open concerns (2 dependency-management, 7 batch-granularity, the 8 unverified-dependency sub-question, 11 skill-vs-mode); it needs its own design session before /next can build it. The dependency-tracing design ran 2026-06-29 and shipped as [dependency-tracing-pass] + [readiness-line]. ---
@@ -147,9 +159,6 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. Each capture is filed as a `####` heading with its slug at the end of the heading line, so the capture list — including Parked — is navigable from an editor's outline. See plan.md Capture and parking discipline.
 
 ---
-
-#### Kick off dogfooding — first rezip + install of the -x fork (desktop) [start-fork-dogfooding]
-The redesign is code-complete in this fork but has never been dogfooded; this is the concrete action that starts it, and it's what unblocks [execute-merge-to-main]. Must be done at the desktop — it needs a full app restart and live sessions, neither doable on remote control. Steps: Claude runs the fork's rezip ritual (bump plugin.json to `0.1.0-test1`, clear `__pycache__`, `claude plugin marketplace add` this `-x` folder for the `flintcraft-x` marketplace, then `claude plugin install sovereign-implementer-x@flintcraft-x`); Alex fully restarts the app; Alex runs real /plan, /next, /done sessions on the `-x` build. The `-x` fork installs as a separate plugin alongside the existing main SI (`sovereign-implementer` / `flintcraft`) — main SI is untouched and stays available for the legal project. Captured 2026-07-08. By Claude.
 
 ### Parked
 
