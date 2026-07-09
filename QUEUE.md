@@ -16,20 +16,6 @@ Worked top to bottom. Each batch of changes or tests is one /next session of eit
 - build session where changes are applied, then claude runs all tests it is able to do itself
 - test session where the user runs any testing only they can do
 
-**Offer a fresh-session handoff on a fatigue signal** **[session-handoff-offer]**
-
-When the user reports the session is degrading — it feels too long, context is getting full, or responses are getting worse — Claude offers to continue the work in a fresh session and to write a paste-ready handoff prompt carrying the state forward. This lives in plugin-behaviour.md's Communication rules as a cross-skill behaviour (it fires in any skill and in plain conversation).
-
-The trigger is the user's own report, and the rule must say so plainly: Claude has no internal signal that context is filling — it only learns the session is degrading when the user surfaces it (fatigue, mistakes they notice, or the usage bar they can see and Claude can't). So the rule can't lean on Claude noticing; it rests on the user's signal, and the why travels with it — a non-coder won't know that a fresh session is the fix or that a handoff prompt is possible, so Claude names both the moment the user signals the problem. Chosen as a plain behaviour rule over folding a pickup-line into the LOG (which would tax every skill open with a standing check for an occasional need).
-
-Build:
-- Add the rule to plugin-behaviour.md's Communication section, why-clause and scope included, 4.8-shaped.
-- Add an FAQ entry (+ its index line) covering the new moment: what it means when Claude offers to hand off to a fresh session.
-
-Files: plugin/si-plugin/docs/plugin-behaviour.md, plugin/si-plugin/templates/faq-template.md, plugin/si-plugin/templates/faq-index-template.md
-
-Traced against plugin-behaviour.md's Communication rules (the rule's home) and SPEC's context-management line; producer is plugin-behaviour.md (exists). Shared-primitive scan: no other buildable batch edits the Communication rules right now ([dont-assume-user-environment] and [method-doc-structure-pass] both touch that area but are parked, not queued).
-
 **Rewrite the "how do I check an update works" FAQ entry to the two-section model** **[faq-update-check-rewrite]**
 
 The FAQ entry "I just updated the plugin — how do I check it still works?" still describes the retired deferred-test lifecycle in soft words ("the method saves up exactly these checks for after an update… it's set aside," "/plan will line up what's worth checking into a quick test session"). Both halves lean on the deferred-tests machinery and the retired test-session type, which the two-section redesign removes. Its original route waited on [test-concept-redesign], but that item was folded into the adopted two-section redesign (deleted on main 2026-07-04), so the question is now settled and the entry is unblocked: under the two-section model there's no saved-up-checks section — a check that genuinely can't run until later is a plain `[user]` work line, and anything else surfaces in use and gets captured then.
@@ -159,6 +145,9 @@ Verification waiting on an event — not a parallel test queue. A planned test l
 Captured outside /plan. Picked up and routed during the next /plan session. Processed captures (slug assigned, dependencies scanned) sit above the `---` divider; unprocessed raw captures collect below. Each capture is filed as a `####` heading with its slug at the end of the heading line, so the capture list — including Parked — is navigable from an editor's outline. See plan.md Capture and parking discipline.
 
 ---
+
+#### A project-folder move breaks its local-directory marketplace path [install-move-breaks-marketplace-path]
+When a project folder that's registered as a **local-directory** plugin marketplace moves (as `No code method` and `No code method-x` did in the 2026-07-08 C: → G: migration), the desktop app's marketplace registration keeps pointing at the old path and silently breaks: slash commands stop autocompleting and get flagged "invalid," though the cached snapshot still runs when forced. Fix is to re-point the marketplace: `claude plugin marketplace remove <name>`, then `add "<new path>"`, then `install <plugin>@<marketplace>`, then a full app restart. Worth a one-line note in CLAUDE.md's Rezip/Push rituals so a future folder move doesn't cost another debugging session. Consumers are unaffected — they install from the GitHub marketplace, which has no local path to break. Filed 2026-07-09 from the session-handoff-offer /done, after this exact breakage was diagnosed and fixed live this session.
 
 ### Parked
 

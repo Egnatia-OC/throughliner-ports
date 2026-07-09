@@ -18,6 +18,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What is the "build stamp" the plugin records at the start of a session?](faq.md#what-is-the-build-stamp-the-plugin-records-at-the-start-of-a-session)
 - [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
 - [Is it safe to clear the conversation or start a new session between steps?](faq.md#is-it-safe-to-clear-the-conversation-or-start-a-new-session-between-steps)
+- [Claude offered to write a "handoff prompt" for a fresh session. What is that?](faq.md#claude-offered-to-write-a-handoff-prompt-for-a-fresh-session-what-is-that)
 - [What's the difference between committing and pushing, and why does Claude only ask about pushing?](faq.md#whats-the-difference-between-committing-and-pushing-and-why-does-claude-only-ask-about-pushing)
 - [Why did Claude say my new change has to wait for a fresh session?](faq.md#why-did-claude-say-my-new-change-has-to-wait-for-a-fresh-session)
 - [Can I change SPEC.md, and how?](faq.md#can-i-change-specmd-and-how)
