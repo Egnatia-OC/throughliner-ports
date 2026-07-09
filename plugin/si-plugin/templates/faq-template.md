@@ -60,7 +60,9 @@ GitHub can email you whenever a new version of Sovereign Implementer is publishe
 
 ## I just updated the plugin — how do I check it still works?
 
-Run a quick session and confirm the new behaviour works the way you expect — that check is itself a testing session. The method saves up exactly these checks for after an update: when something could only be confirmed once the update was installed, it's set aside, and the first session after you reinstall is when it becomes checkable. So when you open a session right after updating, Claude may point out that now's a good moment to confirm the update — run /plan and it'll line up what's worth checking into a quick test session.
+You don't have to do anything special. Just carry on using it — run your normal /plan, /next, and /done sessions — and if something behaves oddly, you'll notice it in the moment and can have Claude capture it as work to fix. There's no set-aside list of post-update checks to work through, and no separate testing session to run.
+
+The one exception is a check that genuinely can't be done except by you — looking at a screen, tapping through your app, running something in a place Claude can't reach. When a piece of work needs a check like that, it's written into your queue as its own `[user]` line, so it's already waiting for you there rather than resting on you to remember it. Everything Claude can check itself, it checks while building — so most updates need nothing from you at all.
 
 ## What is the "build stamp" the plugin records at the start of a session?
 
