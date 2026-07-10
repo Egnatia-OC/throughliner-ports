@@ -126,6 +126,15 @@ Depends on: capture-parking-discipline (host-side)
 
 These are two separate actions. **Rezip** refreshes the installed host from the local `plugin/si-plugin` folder so Alex can dogfood the plugin privately — it never publishes and no longer builds a zip (the local marketplace sources the folder, and the CLI snapshots it directly). **Push** is the full release ritual that publishes to the public remote. The word "push" (said directly, or chosen at a /done close) always means the full release ritual below. "Rezip" is a separate, explicit request and never publishes — bumps no version, makes no commit, touches no remote. Do whichever Alex actually asked for; don't run a push because she asked to rezip.
 
+### Recovering from a project-folder move
+
+Moving this project folder breaks two path-based links that both hold absolute paths and don't self-heal — fix both, then fully restart the app:
+
+1. **Local-directory marketplace.** The desktop app's marketplace registration keeps pointing at the old path: slash commands stop autocompleting and get flagged "invalid" (the cached snapshot still runs when forced). Re-point it in place — `claude plugin marketplace add "<new project path>"` (re-registers the path; no `remove` needed) — then `claude plugin install sovereign-implementer@flintcraft`.
+2. **Git worktree.** This is the `queue-redesign` worktree, so a move severs the worktree link both ways and git reports "not a repository" until both sides are repointed: this worktree's `.git` file (the `gitdir:` pointer) and the main repo's `worktrees/<name>/gitdir` back-reference.
+
+Consumers are unaffected — they install from the GitHub marketplace, which has no local path to break.
+
 ### Rezip (local testing)
 
 When Alex says "rezip" (or asks for a fresh local build to test), run this — no release version bump, no archive, no commit, no push. (The one version change is the test suffix in step 1; the release version is never bumped here.)
