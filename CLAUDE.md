@@ -90,7 +90,7 @@ No code method/
 
 ## Working conventions
 
-- **Use absolute paths** for sub-folder lookups. `C:\Users\Alex\Desktop\Taskflow Planning\No code method\plugin\si-plugin\...`
+- **Use absolute paths** for sub-folder lookups. `G:\My Drive\Desktop\Prioritiy projects\Taskflow Planning\No code method\plugin\si-plugin\...`
 - **Run commands directly.** Don't ask Alex to run them unless they require the desktop app UI or a separate session.
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Cross-doc references go by name.** When editing the docs under `plugin/si-plugin/`, a reference to a step in another doc names its target ("the blocker gate in next.md's pre-flight"), never a step number. Step numbers silently retarget when a batch adds, deletes, or reorders steps — the reference still resolves, but to the wrong content; names survive renumbering. Within-doc references are exempt: renumbering is visible in the file being edited.
@@ -135,7 +135,7 @@ When Alex says "rezip" (or asks for a fresh local build to test), run this — n
 1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the current version and increment N (`-test1` → `-test2`), or start at `-test1` if the base carries no suffix (`1.12.0` → `1.12.0-test1`).
 2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never gets snapshotted into the installed host (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`. (No zip is built here — the local marketplace sources the plugin from the `plugin/si-plugin` folder, and the CLI snapshots that folder directly. The zip only changes at Push, so a test build never touches it.)
 3. Refresh the installed host from the local-folder marketplace via the `claude` CLI, then fully restart the app. The desktop app no longer has an in-app plugin upload, and a working-tree or zip edit alone changes nothing the installed host sees — the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files. So testing the new build means re-running the install/update so the CLI re-snapshots the current `plugin/si-plugin`. Claude runs these commands; Alex types nothing in a terminal.
-   - First time only — register the local marketplace (the committed `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at `plugin/si-plugin`): `claude plugin marketplace add "C:\Users\Alex\Desktop\Taskflow Planning\No code method"`
+   - First time only — register the local marketplace (the committed `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at `plugin/si-plugin`): `claude plugin marketplace add "G:\My Drive\Desktop\Prioritiy projects\Taskflow Planning\No code method"`
    - Each rezip after — re-snapshot the current build: `claude plugin update sovereign-implementer@flintcraft` (or `claude plugin install sovereign-implementer@flintcraft`).
    - Then a **full app restart, not just a new session** — plugin skills register at app launch, and on Windows a normal quit can leave the app running, so fully quit (confirm the process exited via Task Manager if needed) and relaunch before testing.
 
@@ -194,7 +194,7 @@ Handoff-claim provenance. When a session opens from a Claude-authored handoff or
 
 ## E2E testing
 
-**Taskflowapp** at `C:\Users\Alex\Desktop\Taskflow Planning\Planning in here\Taskflowapp` is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.
+**Taskflowapp** at `G:\My Drive\Desktop\Prioritiy projects\Taskflow Planning\Planning in here\Taskflowapp` is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.
 
 ### Reading session transcripts
 

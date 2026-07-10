@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — /done repair: fixed SI-x "not working" after the project moved into `Prioritiy projects\` — root cause was absolute paths recorded at creation time not surviving the move; re-registered both local marketplaces via CLI, relinked the git worktree's `.git` pointer and back-reference, and updated 7 stale path refs across three CLAUDE.md files (plus Taskflowapp's doubly-stale `C:\` path). → plan-2026-07-10.md
 - [HASH] — /next build [faq-update-check-rewrite]: rewrote the "just updated the plugin, how do I check it works?" FAQ template entry from the retired deferred-test/test-session lifecycle to the two-section model (must-do-later checks become `[user]` lines, otherwise notice-in-use-and-capture); index summary unchanged. → faq-update-check-rewrite.md
 - [HASH] — /next freeform [start-fork-dogfooding]: bumped the -x fork plugin.json to 0.1.0-test1, cleared __pycache__, re-snapshotted the installed host via `claude plugin update sovereign-implementer-x@flintcraft-x` to start live dogfooding of the two-section redesign; handed app-restart + live sessions to Alex. Unblocks the -x → main merge. → start-fork-dogfooding.md
 - 9f7ad66 — /next build [session-handoff-offer]: added a fresh-session handoff-offer rule to plugin-behaviour.md Communication (fires on the user's own fatigue/degradation signal; offers a fresh session + paste-ready handoff prompt; why + scope inline) plus a matching FAQ entry + index line. Filed capture [install-move-breaks-marketplace-path]. → session-handoff-offer.md
