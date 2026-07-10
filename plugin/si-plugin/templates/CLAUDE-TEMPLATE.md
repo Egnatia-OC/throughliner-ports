@@ -16,6 +16,7 @@ This project uses the Sovereign Implementer method.
 - `/setup` — scaffold project docs (done if you're reading this).
 - `/plan` — queue management, captures, design questions.
 - `/next` — execute the top piece of ready work (a build or an audit, by its flavor tag). `/next freeform` does loosely-scoped work that isn't either — an ad-hoc change or a discussion of edits already made.
+- `/cruise` — work several cleared pieces of work back-to-back without confirming each one: it builds and commits them one at a time, top-down, stopping at the readiness line or when something genuinely needs you. The "do many" version of /next.
 - `/done` — record, update docs, commit.
 
 ## Rules for Claude

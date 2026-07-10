@@ -11,6 +11,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What are the build, audit, and freeform flavors — and is there a separate "test"?](faq.md#what-are-the-build-audit-and-freeform-flavors--and-is-there-a-separate-test)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
 - [What is `/next freeform`?](faq.md#what-is-next-freeform)
+- [What is `/cruise`, and when should I use it?](faq.md#what-is-cruise-and-when-should-i-use-it)
 - [Why does Claude sometimes ask me to run a test instead of running it itself?](faq.md#why-does-claude-sometimes-ask-me-to-run-a-test-instead-of-running-it-itself)
 - [Do I need to use the terminal to install or update SI?](faq.md#do-i-need-to-use-the-terminal-to-install-or-update-si)
 - [How do I find out when there's a new version of the plugin?](faq.md#how-do-i-find-out-when-theres-a-new-version-of-the-plugin)

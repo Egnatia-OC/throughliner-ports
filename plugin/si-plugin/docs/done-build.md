@@ -79,6 +79,8 @@ Routine bookkeeping — delete the file, no narration. Unlocks future builds. On
 
 Run the commit core in done.md.
 
+**Under a cruise run:** the commit core's wind-down re-scan auto-files what it surfaces instead of prompting for approval, and no push is offered (the run commits per line and publishes nothing outward). See cruise.md's Autonomy adaptations — this note just marks that the same close runs with its user-approval moments answered unattended.
+
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
 Plain-language guard: narrate the queue situation in everyday words — never the background section-bookkeeping phrasing. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be sorted.
