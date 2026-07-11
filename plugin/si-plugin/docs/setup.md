@@ -68,7 +68,7 @@ Create these files (empty structure, content comes from the interview). Do this 
 
 Three project docs structure each project:
 - `SPEC.md` — product truth. What the project is, who it's for, how it works.
-- `QUEUE.md` — work batches and captured ideas.
+- `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work (captured ideas not yet discussed).
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 ## Principles
@@ -79,27 +79,17 @@ Three project docs structure each project:
 ```markdown
 # QUEUE
 
-## Red flags
+## Processed
 
-Security, privacy, and data-exposure risks Claude has surfaced — kept at the top so they're the first thing seen each session. Each carries a state: open, resolved, or accepted. Empty until a risk comes up.
+Vetted work, ready to build — worked top to bottom. Each piece of work is one line: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[freeform]` for loose work, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work line carrying a `Red flag · State: open/resolved/accepted` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-## Batches
+--- Cleared to run above this line ---
 
-Worked top to bottom. Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit).
+## Unprocessed
+
+Captured ideas and tasks not yet discussed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
 [filled by Q4]
-
-### Parked
-
-## Deferred tests
-
-Verification waiting on an event — not a parallel to-do list. A planned test lands here when it can't run in the session that planned it: the behaviour only goes live after the plugin updates, a person has to do something first, or an outside event hasn't happened yet. Each line records what to verify, what will confirm it, and two things about the wait — the deferral reason (why it waits: host-side / needs-user / external) and the runnability once the wait clears (who runs it then: Claude-runnable / user-run). Claude writes lines here and clears them; each /plan asks which waits have cleared and rolls the now-runnable ones into a test batch. You don't maintain this section.
-
-## Captures
-
-Captured outside /plan. Picked up and routed during the next /plan session. Each capture is filed as its own `####` heading, so the list shows up in an editor's outline.
-
-### Parked
 ```
 
 **LOG/ folder:** Create the directory with one file:
@@ -113,9 +103,11 @@ One-line summaries of each session. Newest first. Each line names the session's 
 
 Session entries are written by /done, each as its own file in LOG/ — nothing else to scaffold.
 
-**FAQ/ folder:** Create the directory with two files scaffolded from templates:
+**FAQ/ folder:** Create the `FAQ/` directory first, then copy the two template files into it — the folder must exist before the copies, or they fail:
 - `FAQ/faq.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md`
 - `FAQ/index.md` — from `${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md`
+
+**resources/research/ folder:** Create the `resources/research/` directory (empty — no files). It's the home for research notes: when a web search or external lookup yields a finding worth keeping, Claude files it here as `resources/research/<topic>.md`. Creating it at setup means research notes have a place from day one rather than the folder being conjured on first use.
 
 **CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`; Step 4 fills it from Q6.
 
@@ -137,19 +129,19 @@ Ask these one per message, and stop after each — wait for the user's answer be
 → Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave the section with a note that it can be added later.
 
 **Q4. What's the first thing to build or do? What would you want to have working or made progress on by the end of today?**
-→ Creates one rough build entry in QUEUE.md under a Build subheading. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan. If examples would clarify what's in scope, ask a Q4 follow-up instead of smuggling them into the entry — the one-follow-up-max rule for vague answers (see Rules) already covers that case.
+→ Creates one rough work line in QUEUE.md's Unprocessed section — a `#### ` heading in the user's words, with a kebab-case `[slug]` at the end of that heading line and a "captured by you" note beneath it. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan (which is where this line gets processed). If examples would clarify what's in scope, ask a Q4 follow-up instead of smuggling them into the entry — the one-follow-up-max rule for vague answers (see Rules) already covers that case.
 
 **Q5. Anything else I should know before we start?**
 → Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
 
 **Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
-→ Records which editor you work in (e.g. a Markdown editor, or a code editor), so Claude can point you to your open docs with a link instead of re-pasting their text into chat — which saves tokens over a project's life. Fills the Editor field in the generated CLAUDE.md. Ask it plainly and make skipping easy — "if you're not sure or don't have a preference, just say skip." Skippable, no nag, asked once and never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
+→ Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
 
 ## Step 4: Write the docs
 
 After all 5 answers, write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
 1. Fill SPEC.md with the interview answers.
-2. Write one build entry in QUEUE.md from Q4 — under a Build subheading, in the user's words, not multiple scoped entries.
+2. Write one work line in QUEUE.md's Unprocessed section from Q4 — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.

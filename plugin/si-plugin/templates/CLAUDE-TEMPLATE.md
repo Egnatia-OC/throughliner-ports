@@ -7,7 +7,7 @@ This project uses the Sovereign Implementer method.
 ## Project docs
 
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
-- **QUEUE.md** — work queue, top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced, kept at the top so they're seen first — each carries an open, resolved, or accepted state), Batches (Build/Test/Audit subheadings), Deferred tests (one line per planned test that couldn't run in its own session — source batch slug, what to verify, what confirms it, and two axes: the deferral reason (host-side / needs-user / external) and the runnability once unblocked (Claude-runnable / user-run); /done writes entries here, /plan reads the section each session and asks which deferrals have cleared, rolling the now-runnable user-run ones into a test batch, /done's close-out removes any line this session's activity already confirmed), Captures (split by `---` — processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based) or `Parked:` (indefinite) headers. A `--- Plan session here: <reason> ---` marker between batches means /next halts there until a /plan session addresses the named reason.
+- **QUEUE.md** — your work, in two sections. **Processed** work is vetted and ready to build, worked top-to-bottom; a `--- Cleared to run above this line ---` line marks how far down is greenlit (below it is decided but not ready yet). **Unprocessed** work is captured ideas and tasks not yet discussed. Each piece of work is one line: a `#### ` heading naming the work, with a `[slug]` at the end of that heading line and a short rationale beneath it, plus a note of who raised it. A work line can carry a leading flavor tag: none means a build (Claude edits files), `[audit]` a review pass (Claude reads and reports), `[freeform]` loosely-scoped work, `[user]` a step only you can run. A security or privacy risk Claude surfaces becomes a work line carrying a `Red flag · State: open/resolved/accepted` marker — surfaced first each session until it's resolved or you accept it.
 - **LOG/** — session records: what was built, tested, decided. One file per session entry, plus index.md one-line summaries naming each entry file.
 - **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md.
 
@@ -15,7 +15,8 @@ This project uses the Sovereign Implementer method.
 
 - `/setup` — scaffold project docs (done if you're reading this).
 - `/plan` — queue management, captures, design questions.
-- `/next` — execute the top batch (build, test, or audit). `/next freeform` does loosely-scoped work that isn't any of those — an ad-hoc change or a discussion of edits already made.
+- `/next` — execute the top piece of ready work (a build or an audit, by its flavor tag). `/next freeform` does loosely-scoped work that isn't either — an ad-hoc change or a discussion of edits already made.
+- `/cruise` — work several cleared pieces of work back-to-back without confirming each one: it builds and commits them one at a time, top-down, stopping at the readiness line or when something genuinely needs you. The "do many" version of /next.
 - `/done` — record, update docs, commit.
 
 ## Rules for Claude
@@ -24,7 +25,7 @@ This project uses the Sovereign Implementer method.
 - Only touch files listed in the active build scope. Halt and ask if you need more.
 - One build at a time. Never start a second build while _build.md exists — finish and /done before starting another. (A planning session in a separate chat alongside a build is allowed.)
 - State problems plainly. Don't hide them or silently fix unrelated things.
-- Route discoveries to QUEUE.md rather than acting on them immediately.
+- Route discoveries to QUEUE.md's Unprocessed section rather than acting on them immediately — a later /plan decides their fate.
 
 ## Language
 

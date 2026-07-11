@@ -16,19 +16,27 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 ## Why does setup ask which editor I use?
 
-So Claude can point you to your open docs instead of re-pasting their text into the chat. When Claude needs to show you a captured idea or the next batch of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the editor you keep those files open in, it can just link you to the file — "it's in QUEUE.md" — and you glance at it there, rather than Claude copying the whole block into chat every time. Over a project's life that saves a real amount of tokens. The question is optional: skip it and nothing breaks — Claude simply quotes the text inline the way it always has. It's asked once, during /setup, and never again.
+So Claude knows your default `.md` app and can point you to a project doc with a link, instead of writing the doc's text out into the chat. When Claude needs to show you a captured idea or the next piece of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the app you open those files in, it can link you to the file — "it's in QUEUE.md" — and you read it there. The catch: a link only helps if you keep a default `.md` reader open alongside Claude, so the doc actually opens when you click it. The question is optional, and skipping is a fine choice for anyone — nothing breaks. The trade-off of skipping: when Claude needs to show you a doc, it writes the text out into the chat the way it always has, which costs some tokens each time and adds up over a project's life. It's asked once, during /setup, and never again.
 
-## What's the difference between Batches and Captures in QUEUE.md?
+## What are the Processed and Unprocessed sections in QUEUE.md?
 
-**Batches** are ready-to-build work — entries under Build/Test subheadings, worked top to bottom. One batch per /next session. **Captures** is an inbox — ideas, questions, and observations from builds or between sessions. Not actionable yet — during /plan, each gets discussed and either promoted, parked, or dropped.
+Your queue has two sections. **Processed** is vetted, ready-to-build work — one line per piece of work, worked top to bottom, discussed and agreed with you during /plan. **Unprocessed** is an inbox — ideas, questions, and tasks captured during builds or between sessions, not looked over yet. During /plan, each unprocessed line gets discussed and either moved up into Processed (kept as real work) or dropped. There's no in-between: a piece of work is unprocessed, processed, or gone.
 
-## How are entries organized in the queue?
+Every work line carries a short name in square brackets (its slug), so Claude can refer to it precisely, and a note of who raised it — "captured by you" or "by Claude" — which stays on the line even after it's processed.
 
-Batches group entries under **Build**, **Test**, and **Audit** subheadings. Build entries create or change things. Test entries verify things work. Audit entries review what exists and route findings back into the queue. Not every batch needs a Test section — only when verification isn't self-evident. Captures are small headings — each carries its own reasoning underneath.
+## What does it mean when a work line is marked `[user]`?
 
-## Why do captures show up as headings in my queue?
+It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own lines top to bottom and stops at the first `[user]` line to hand it over to you. Most lines aren't marked — they're Claude's by default.
 
-So you can see them from your editor's outline or sidebar. Most .md editors build a table of contents from a file's headings — but not from bullet points. When each captured idea is its own small heading, your editor's outline shows the whole list at a glance, including the parked ones, and you can jump straight to any of them. As a bullet list, they'd be invisible there — you'd have to scroll the file to find anything. The little tag in square brackets at the end of each heading is the capture's short name, which Claude uses to refer to it precisely; you don't need to do anything with it. Batches keep their bold titles — this is just how captures are filed.
+## What are the build, audit, and freeform flavors — and is there a separate "test"?
+
+Every piece of Claude's work in the queue carries a flavor that says how Claude carries it out, shown as a small tag at the front of the line:
+
+- **Build** (no tag) — the normal kind: Claude makes changes to your files. Most work is this.
+- **`[audit]`** — a review pass: Claude reads something over and reports what it finds, without changing anything. The findings go into your queue for you to look over.
+- **`[freeform]`** — loose, talk-it-through work that doesn't fit build or audit — an ad-hoc change, or a discussion of edits already made, with scope grown a file at a time.
+
+There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds its own lines top to bottom, routing each by its flavor, and stops to hand over at the first `[user]` line.
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
@@ -36,27 +44,13 @@ Because an audit's job is to find things and route them for review — not to wr
 
 ## What is `/next freeform`?
 
-A fourth kind of /next session, for work that isn't a build, a test, or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when none of the other three fit. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
+The loosest work-line flavor, for work that isn't a build or an audit — an ad-hoc change, talking through edits you've already made, or surfacing something without the pressure of sorting it out right away. Reach for it when neither of the other two fit. You can also start one on demand by running `/next freeform`. It keeps the safety rails — Claude still asks before touching a file, and still flags risks — but drops the fixed step list, so it suits work that doesn't know its shape up front. One thing it won't do: process your captures. A freeform session can jot ideas into Captures, but promoting, parking, or dropping them is /plan's job — Claude will say so and offer to move to /plan when captures pile up.
 
-## What is the Red flags section at the top of QUEUE.md?
+## What is `/cruise`, and when should I use it?
 
-It's where Claude lists security and privacy risks it has spotted — anything that could expose your data or your users' data, or amount to a breach. It sits at the very top of the queue so it's the first thing you see each session; a risk you should know about shouldn't be buried. The section stays empty until something comes up.
+`/cruise` builds several pieces of work in a row without stopping to confirm each one. Where /next builds a single item and hands back to you, /cruise works down the ready part of your queue — building an item, saving it, building the next, saving it — until it reaches the "cleared to run" line or hits something that genuinely needs you. It's the "do many" version of /next, for when you've got a stretch of vetted work and don't want to shepherd it item by item. It's most useful exactly when you're short on time.
 
-Each red flag carries one of three states:
-
-- **Open** — the risk has been raised but not yet dealt with.
-- **Resolved** — the risk has been fixed or designed out; the work no longer carries it. This includes a risk Claude designs out during planning, before any code is written — it's still recorded here as resolved, with a note on how.
-- **Accepted** — you were told the risk plainly and chose to go ahead anyway. That choice is written into the session log: what you were warned about, and that you agreed to proceed. It's a clear record if the risk ever matters later.
-
-Claude raises and updates these — you don't maintain the section. Accepting a risk is a decision only you can make.
-
-## What is the "Deferred tests" section in QUEUE.md?
-
-A waiting list for tests that couldn't run in the session that planned them — some only become checkable later, some need you to try something, some wait on an outside event. When /done closes a session and a planned test couldn't run, it adds a one-line entry here: which batch the test came from, what to verify, and what confirms it. /plan reads this list each session and folds the ones that can now run into a test batch; and when a later session happens to confirm one along the way, /done removes its line and records the result in the session log. Claude writes and clears this section — you don't maintain it.
-
-## Why do some tests run straight away and others wait?
-
-Claude runs every test it can in the same session it builds in — that's the default. A test only waits for one of two reasons: a person has to run it (a visual check, or tapping through a screen — something Claude can't see or do), or it needs a device or setup that isn't connected yet. Tests that wait go on the "Deferred tests" list and get picked up once they can run. Waiting is the exception, not the norm — if a test can run now, it runs now.
+It keeps every safety rail. It builds each item only within that item's file scope, and it saves (commits) each finished item on its own — so if it stops partway, nothing already built is lost. It never sends your work to an external backup: a cruise run publishes nothing. It stops and hands back to you only for a real blocker — a risk to your data (any open red flag blocks the run outright), a change to what your project *is* (a SPEC change), or a decision only you can make. And it has built-in limits so a run can't spin out of control: a cap on how many items it builds, a stop if it gets stuck repeating the same failure, and a rough spending ceiling. Anything it turns up that *isn't* a blocker — a new idea, or a check only you can run — it files into your queue and keeps going, for you to sort in a later /plan.
 
 ## Why does Claude sometimes ask me to run a test instead of running it itself?
 
@@ -72,11 +66,13 @@ GitHub can email you whenever a new version of Sovereign Implementer is publishe
 
 ## I just updated the plugin — how do I check it still works?
 
-Run a quick session and confirm the new behaviour works the way you expect — that check is itself a testing session. The method saves up exactly these checks for after an update: when something could only be confirmed once the update was installed, it's set aside, and the first session after you reinstall is when it becomes checkable. So when you open a session right after updating, Claude may point out that now's a good moment to confirm the update — run /plan and it'll line up what's worth checking into a quick test session.
+You don't have to do anything special. Just carry on using it — run your normal /plan, /next, and /done sessions — and if something behaves oddly, you'll notice it in the moment and can have Claude capture it as work to fix. There's no set-aside list of post-update checks to work through, and no separate testing session to run.
+
+The one exception is a check that genuinely can't be done except by you — looking at a screen, tapping through your app, running something in a place Claude can't reach. When a piece of work needs a check like that, it's written into your queue as its own `[user]` line, so it's already waiting for you there rather than resting on you to remember it. Everything Claude can check itself, it checks while building — so most updates need nothing from you at all.
 
 ## What is the "build stamp" the plugin records at the start of a session?
 
-A short fingerprint of the installed plugin's own files — a content check that reflects exactly what's installed right now, not just a version number. Its job is to tell whether a plugin update is genuinely in place after you reinstall. Some checks the method sets aside (on the "Deferred tests" list) can only be confirmed once an update is actually live, and a version number alone can miss a change that didn't bump the version — so the stamp gives Claude a reliable yes/no on whether the installed files are current. It runs behind the scenes: you don't see it or manage it, and nothing about your own project goes into it — it only fingerprints the plugin's files.
+A short fingerprint of the installed plugin's own files — a content check that reflects exactly what's installed right now, not just a version number. Its job is to tell whether a plugin update is genuinely in place after you reinstall. Some behaviour can only be confirmed once an update is actually live, and a version number alone can miss a change that didn't bump the version — so the stamp gives Claude a reliable yes/no on whether the installed files are current. It runs behind the scenes: you don't see it or manage it, and nothing about your own project goes into it — it only fingerprints the plugin's files.
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
@@ -86,9 +82,13 @@ Nothing is lost. `_build.md` tracks progress. When you reopen, session start det
 
 After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads its working file (`_build.md` or `_plan.md`) rather than relying on the conversation, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
 
+## Claude offered to write a "handoff prompt" for a fresh session. What is that?
+
+It means Claude thinks a clean restart would help — and it only ever offers this after *you* signal the session is wearing thin: it's dragging, the answers are slipping, or the usage bar you can see (and Claude can't) is filling up. Claude has no sense of that on its own, so it waits for your cue rather than guessing. When you give it, Claude offers two things: to continue the work in a brand-new session, and to write you a paste-ready handoff prompt — a short summary of what you're working on, what's been decided, and what's left to do — that you drop into the fresh session so it picks up right where you left off, without you having to re-explain. A long conversation gradually gets slower and more error-prone as it fills up; starting fresh is the fix, and the handoff prompt is what stops you losing your place in the switch. It's only ever an offer — say yes and Claude writes the prompt, or wave it off and keep going.
+
 ## What's the difference between committing and pushing, and why does Claude only ask about pushing?
 
-Two different saves. **Committing** saves a snapshot of your work to your project's history on your own computer. It always happens when you close a build session, and you don't have to approve it — the snapshot's description is the session summary you already approved. **Pushing** additionally sends that snapshot to a remote backup, like GitHub, if your project has one set up. So at the end of a build, Claude commits first (the safe, local save), then asks whether to also push (the part that sends your work somewhere external). If your project has no remote set up, there's nothing to push to, so Claude just commits and doesn't ask. Planning and test sessions commit too, but never offer a push — they record bookkeeping, not a change to release.
+Two different saves. **Committing** saves a snapshot of your work to your project's history on your own computer. It always happens when you close a build session, and you don't have to approve it — the snapshot's description is the session summary you already approved. **Pushing** additionally sends that snapshot to a remote backup, like GitHub, if your project has one set up. So at the end of a build, Claude commits first (the safe, local save), then asks whether to also push (the part that sends your work somewhere external). If your project has no remote set up, there's nothing to push to, so Claude just commits and doesn't ask. Planning sessions commit too, but never offer a push — they record bookkeeping, not a change to release.
 
 ## Why did Claude say my new change has to wait for a fresh session?
 
@@ -114,7 +114,7 @@ Yes. For readable changes — a doc, a piece of copy, a section of your spec, an
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
-Tell Claude. It gets added to Captures without derailing current work. Next /plan session picks it up for discussion and routing.
+Tell Claude. It gets added to your Unprocessed work without derailing what's going on. The next /plan session picks it up for discussion — kept as real work or dropped.
 
 ## Why does Claude sometimes re-read our conversation at the end of a planning session?
 
@@ -156,20 +156,19 @@ Claude stops and asks. It stays within batch scope. If something else needs chan
 
 Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
 
+## What's a "red flag," and what do open, resolved, and accepted mean?
+
+A red flag is how Claude surfaces a risk to your data or your users' data — anything that could expose private information or amount to a security breach. Claude watches for these in every session, and when it spots a genuine one, it tells you plainly rather than quietly working around it or building past it. The risk then goes into your queue as an ordinary piece of work, marked with a red-flag tag and one of three states:
+
+- **Open** — the risk has been raised, but nothing's been decided about it yet.
+- **Resolved** — the risk has been designed out or fixed, so the work no longer carries it.
+- **Accepted** — you've heard the risk spelled out and chosen to go ahead anyway. That choice is written into the session log, so there's a record of what you were told and that you agreed — the trail that protects you if the risk ever surfaces later.
+
+It's tagged onto a work line rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
+
 ## Why did Claude ask before starting a "subagent"?
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
-
-## What does "Parked" mean in the queue?
-
-Items you've decided not to work on now but don't want to lose. During /plan, parking moves an item to the Parked subsection until revisited. Dropping removes it entirely.
-
-Parked items carry one of two reason lines that signal whether they come back automatically:
-
-- `Blocked by: [slug] + condition` — a trigger exists. When the named item ships or the condition fires, Claude offers to unpark it during the next /plan or /next.
-- `Parked: short reason` — no trigger. The item stays parked until you bring it up; Claude won't auto-surface it.
-
-Nothing leaves active flow without one of these — prose alone isn't enough for Claude to track it mechanically.
 
 ## What does a "Plan session here" line in the queue mean?
 

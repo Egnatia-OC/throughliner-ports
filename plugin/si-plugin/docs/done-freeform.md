@@ -1,18 +1,18 @@
 # Freeform close-out
 
-Close-out for freeform sessions. Reached from done.md's router when _build.md's Entry carries a Freeform subheading, or when _build.md came from an on-demand `/next freeform` run. Freeform has no entry list to verify and no batch to return to the queue — the record is what changed and what was discussed.
+Close-out for freeform sessions. Reached from done.md's router for a run's `[freeform]` line, or when _build.md came from an on-demand `/next freeform` run. Freeform has no finding list to verify and no work line to return to the queue — the record is what changed and what was discussed.
 
 ## Phase 1: Judgment (while context is fresh)
 
-### 1.1 Route findings to Captures [PROMPT]
+### 1.1 Route findings to Unprocessed [PROMPT]
 
-Each routed finding is drafted, shown, and approved before it's written, so this step waits on the user. The record of what was flagged — ideas raised, observations, follow-up work — is _build.md's notes plus any captures already routed at the moment of noticing; sweep those. Conversation memory, when present, is a same-session bonus pass, never a source this step depends on. Route each to Captures, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Freeform files captures but never processes them; processing waits for /plan.
+Each routed finding is drafted, shown, and approved before it's written, so this step waits on the user. The record of what was flagged — ideas raised, observations, follow-up work — is _build.md's notes plus any captures already appended at the moment of noticing; sweep those. Conversation memory, when present, is a same-session bonus pass, never a source this step depends on. Append each to Unprocessed, placed per plugin-behaviour.md Captures placement (Claude-directed where applicable, oldest-first as fallback — narrate the placement). Freeform files captures but never processes them; processing waits for /plan.
 
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-Draft the entry as its own file under `LOG/`, named per done.md LOG entry files. A freeform session has no batch slug, so name it by session type and date — `LOG/freeform-<YYYY-MM-DD>.md` (append `-2`, `-3` if the name is taken). Use this template (placeholder hash — backfilled automatically at the next session start):
+Draft the entry as its own file under `LOG/`, named per done.md LOG entry files. A freeform session has no work-line slug, so name it by session type and date — `LOG/freeform-<YYYY-MM-DD>.md` (append `-2`, `-3` if the name is taken). Use this template (placeholder hash — backfilled automatically at the next session start):
 
 ```markdown
 # [HASH] — [one-line summary]
@@ -39,11 +39,11 @@ There's no pre-generated candidate for a freeform session — author the index e
 
 ### 2.2 Staleness sweep [SILENT] when clean, [BRIEF] when flagging
 
-Path-split like next.md's pre-flight: stay silent when the sweep finds nothing; surface a flag in one or two sentences when it does. Quick check of QUEUE.md against plugin-behaviour.md Dependency ownership Staleness watch — any staleness from any cause:
-- Remaining batches or Captures reference renamed/deleted files?
-- Reference behaviour or rules that this session (or any prior shift the queue hasn't caught up to) has moved past?
-- Items sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag — and split the flag by the fix path in plugin-behaviour.md Staleness watch: a fate-decision flag (drop / rewrite / keep) defers to /plan; mechanical maintenance — a drifted pointer whose target content is unchanged, or clearing a met dependency note whose blocker has shipped — is narrate-and-do: fix it here and report it in one line, riding this commit, with no approval ask. Run the unpark watch on the same pass — anything parked that's now newly unblocked? Flag for /plan.
+Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work lines in QUEUE.md — any staleness from any cause:
+- Do any remaining Unprocessed or Processed work lines reference files this session (or an earlier shift the queue hasn't caught up to) renamed or deleted?
+- Do any reference behaviour or rules a shift since has moved past?
+- Are any sitting long enough that surrounding code or rules have drifted away from them?
+- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected line) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask.
 
 ### 2.3 Delete _build.md [SILENT]
 
@@ -55,12 +55,11 @@ Run the commit core in done.md. Freeform sessions may or may not change source f
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
-Plain-language guard: narrate the captures situation in everyday words — never the background term "processed / unprocessed captures" (see plugin-behaviour.md Vocabulary). Keep the plain statement accurate: don't say the queue is clear when captures are still waiting to be sorted. The scan instruction's "unprocessed Captures" wording below stays as-is — this guard governs only what's said to the user.
+Plain-language guard: narrate the queue situation in everyday words. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be sorted.
 
-Before recommending, scan unprocessed Captures for overlap with the top batch — items that contradict, invalidate, or would benefit the batch if incorporated first (mirrors the capture-overlap scan in next.md's pre-flight blocker gate). State the scan's result either way, not only when it blocks: Captures empty — say nothing's waiting for /plan; Captures waiting but none overlap the next batch — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three captures are waiting; none touches the next batch, so nothing blocks it," never "there may be overlap worth checking."
+Before recommending, scan the still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit it if sorted first. State the scan's result either way, not only when it blocks: nothing unprocessed — say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking."
 
 Otherwise, based on queue state:
-1. Captures routed this session that need processing → recommend /plan, name them. Freeform often leaves captures behind, so this is the common recommendation.
-2. Parked items unblocked by this session's work (per plugin-behaviour.md Dependency ownership Unpark watch) → recommend /plan, name the unpark candidate(s).
-3. More batches → name the next batch, then ask whether the user is continuing into another /next now.
-4. Batches empty → "Queue is clear. Run /plan when you have more."
+1. Captures appended this session that need sorting → recommend /plan, name them. Freeform often leaves captures behind, so this is the common recommendation.
+2. Processed work exists → name the next item, then ask whether the user is continuing into another /next now.
+3. Processed empty → "Queue is clear. Run /plan when you have more."

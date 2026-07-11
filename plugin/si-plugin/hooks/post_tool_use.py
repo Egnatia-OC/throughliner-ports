@@ -3,43 +3,25 @@
 PostToolUse hook — advisory lint of QUEUE.md structure after edits.
 
 Fires after Edit/Write/MultiEdit lands on the project's QUEUE.md. Reads
-the file from disk and flags known format violations:
+the file from disk and flags known format violations against the
+two-section work-line model:
 
-  1. A batch title line with no **[slug]** marker.
-  2. A parked item with no Blocked by:/Parked: header.
-  3. The Captures processed/unprocessed divider (a bare ---) deleted.
-  4. A Depends on:/Blocks:/Blocked by: header naming a slug that is
-     unresolved everywhere — not defined in the file (in either
-     definition shape: a bold **[slug]** marker, or a #### capture
-     heading ending in [slug]), not staged in
-     Deferred tests, and not shipped per LOG/index.md. A slug recorded
-     as shipped is a satisfied citation, not a dangling dependency, so
-     it isn't flagged (which also stops it re-flagging on every edit).
-     A Depends on: header is framed as a missing-producer hole — the
-     batch declares it needs work nothing in the queue or log builds.
-  5. A subheading inside a batch that isn't Build/Test/Audit/Freeform
-     — catches typos; ALLOWED_SUBHEADINGS must grow when new batch
-     types ship.
-  6. Batch prose naming a slug that is still defined in the file but
-     not carried by the batch's own headers — "dependency or
-     citation?", advisory precisely because evidence citations are
-     legitimate. References to slugs absent from the file are skipped:
-     an absent slug is shipped work, and a reference to shipped work
-     can only be a citation (a dry run against the real queue showed
-     those make up the bulk of prose references — flagging them buried
-     the real signals under ~2.5KB of noise per edit). Diff-scoped: a
-     citation is flagged only on the edit that introduces or changes
-     its line, never re-flagged while it sits unchanged — "citation vs
-     dependency" is a static property of the line, so an edit elsewhere
-     can't change it. The other checks still scan the whole file.
-  7. A batch whose Depends on: names another active batch positioned
-     below it in Batches — an out-of-order dependency /next would trip
-     on. Deps that resolve to a Deferred-tests slug (staged) or to
-     nothing (shipped) are not ordering errors and aren't flagged.
+  1. A work line whose description heading doesn't end in a [slug]. A
+     work line renders as a #### heading under ## Processed or
+     ## Unprocessed; the slug at the end of that heading is what lets a
+     later LOG entry name the work precisely.
+  2. A work line carrying no provenance label ("captured by you" or
+     "by Claude") anywhere in its block — every line records who raised
+     it, and that label stays on the line after it's processed.
+  3. A missing section heading — both ## Processed and ## Unprocessed
+     must be present. They are the two sections the whole model runs on.
+  4. A red-flag marker line ("Red flag · State: ...") whose state isn't
+     one of open / resolved / accepted. A red flag is an ordinary work
+     line carrying this one extra marker; the state must be valid.
 
 Deny-list by design: only known violations are flagged; unknown or
 novel structure passes in silence, so the format can evolve (new
-sections, new batch types) without fighting the linter. All findings
+sections, new line shapes) without fighting the linter. All findings
 are advisory — fed back to Claude as context next to the tool result,
 never blocking: the edit has already landed, and judging whether a
 flag is real stays with the session.
@@ -51,41 +33,29 @@ import re
 import sys
 
 
-# A batch title line is entirely bold: one or more **...** segments and
-# nothing else. Rationale prose is never a full-bold line.
-FULL_BOLD_LINE = re.compile(r"^(?:\*\*[^*]+\*\*)(?:\s+\*\*[^*]+\*\*)*$")
+# A work line renders as a #### heading; its slug sits at the end of that
+# heading line (processed and unprocessed work show this way, so the list
+# — including anything below the cleared-to-run line — is navigable from
+# an editor outline). The heading line is the work line's description line.
+WORKLINE_HEADING = re.compile(r"^####\s+\S")
 
-# A slug definition: the bold **[kebab-case]** marker on a title line or
-# parked item. Slugs are lowercase kebab, two characters minimum.
-SLUG_MARKER = re.compile(r"\*\*\[([a-z0-9][a-z0-9-]+)\]\*\*")
+# The trailing [slug] on a work-line heading: lowercase kebab, two chars
+# minimum, so a stray [x] tick or an [PROMPT]-style token never counts.
+SLUG_AT_END = re.compile(r"\[[a-z0-9][a-z0-9-]+\]\s*$")
 
-# The second slug-definition shape: a capture filed as a #### heading with
-# its slug at the end of the heading line (captures render in editor
-# outlines this way). Without this, a heading-form capture's slug would
-# read as undefined and its references would falsely flag as dangling.
-SLUG_HEADING = re.compile(
-    r"^####\s+.*\[([a-z0-9][a-z0-9-]+)\]\s*$", re.MULTILINE
-)
+# Provenance label — who raised the work line. Case-insensitive so
+# "Captured by you." at a sentence start still matches.
+PROVENANCE = re.compile(r"captured by you|by claude", re.IGNORECASE)
 
-# A slug reference anywhere in text. The (?!\() guard skips markdown
-# links; the lowercase-only class skips tokens like [HASH] or [PROMPT];
-# the two-character minimum skips checkbox ticks like [x].
-SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\](?!\()")
+# A red-flag marker line: "Red flag · State: <state>". The middle dot is
+# U+00B7 and is matched leniently (optional) so a spacing slip still reads
+# as a marker and its state still gets validated.
+RED_FLAG_MARKER = re.compile(r"^Red flag\s*·?\s*State:\s*(.*)$", re.IGNORECASE)
 
-# Dependency headers, matched on the stripped line.
-DEP_HEADER = re.compile(r"^(Depends on|Blocks|Blocked by):")
+# The two sections the whole model runs on.
+WORK_SECTIONS = ("Processed", "Unprocessed")
 
-# A batch subheading: a single capitalised word (hyphens allowed, so a
-# future hyphenated batch type still matches) and a colon, alone on the
-# line. Multi-word lines with colons (e.g. "Depends on: x") and lines
-# with text after the colon never match.
-SUBHEADING = re.compile(r"^([A-Z][A-Za-z-]*):$")
-
-# Marker lines between batches ("--- Push required before continuing ---",
-# plan markers). They separate batch blocks and are never violations.
-MARKER_LINE = re.compile(r"^---.+---$")
-
-ALLOWED_SUBHEADINGS = {"Build", "Test", "Audit", "Freeform"}
+VALID_FLAG_STATES = {"open", "resolved", "accepted"}
 
 
 def _normalise(path: str) -> str:
@@ -93,388 +63,118 @@ def _normalise(path: str) -> str:
 
 
 def _annotate(content: str):
-    """Yield (index, stripped line, h2, h3, is_heading, indent) per line.
+    """Yield (index, stripped line, current h2, is_heading) per line.
 
-    `indent` is the raw line's leading-whitespace width — used to tell a
-    nested sub-bullet (a continuation of an item) from a top-level entry.
+    h2 is the nearest preceding `## ` heading (the section the line sits
+    in); is_heading is true for any markdown heading line (`#`..`######`).
     """
-    h2 = h3 = None
+    h2 = None
     out = []
     for i, raw in enumerate(content.splitlines()):
         stripped = raw.strip()
-        indent = len(raw) - len(raw.lstrip())
-        if raw.startswith("### "):
-            h3 = raw[4:].strip()
-            out.append((i, stripped, h2, h3, True, indent))
-        elif raw.startswith("## "):
-            h2, h3 = raw[3:].strip(), None
-            out.append((i, stripped, h2, h3, True, indent))
-        else:
-            out.append((i, stripped, h2, h3, False, indent))
+        is_heading = bool(re.match(r"#{1,6}\s", raw))
+        if raw.startswith("## ") and not raw.startswith("### "):
+            h2 = raw[3:].strip()
+        out.append((i, stripped, h2, is_heading))
     return out
 
 
-def _check_batch_slugs(annotated, warnings):
-    """Check 1: every batch title line carries a **[slug]** marker."""
-    for i, line, h2, _h3, is_heading, _indent in annotated:
-        if is_heading or h2 != "Batches" or not line:
-            continue
-        if FULL_BOLD_LINE.match(line) and not SLUG_MARKER.search(line):
-            warnings.append(
-                f"line {i + 1}: batch title {line!r} has no **[slug]** "
-                "marker — every batch needs one so other items can "
-                "reference it across reorders."
-            )
+def _workline_blocks(annotated):
+    """Group each #### work line under a work section with its own block.
 
-
-def _check_parked_headers(annotated, warnings):
-    """Check 2: every parked item has a Blocked by:/Parked: header.
-
-    A line indented under an item (indent > 0) is a continuation of that
-    item — a nested sub-bullet, not a standalone parked entry — so only a
-    top-level (indent 0) bullet or full-bold line starts a new item. A
-    sub-bullet under a parked item used to be read as its own loose entry
-    and falsely flagged; requiring indent 0 fixes that.
+    A block is the heading line plus every following line up to the next
+    #### heading, the next heading of any level, or a section change. Lines
+    outside the Processed/Unprocessed sections are ignored entirely, so a
+    #### heading elsewhere in the file is never treated as a work line.
     """
     blocks = []
     current = None
-    for i, line, _h2, h3, is_heading, indent in annotated:
-        if h3 != "Parked" or is_heading:
+    for i, line, h2, is_heading in annotated:
+        if h2 not in WORK_SECTIONS:
             if current:
                 blocks.append(current)
                 current = None
             continue
-        starts_item = indent == 0 and (
-            line.startswith("- ")
-            or line.startswith("#### ")
-            or bool(line and FULL_BOLD_LINE.match(line))
-        )
-        if starts_item:
+        if WORKLINE_HEADING.match(line):
             if current:
                 blocks.append(current)
-            current = (i, [line])
-        elif current:
-            current[1].append(line)
-    if current:
-        blocks.append(current)
-
-    for start, lines in blocks:
-        if any(l.startswith(("Blocked by:", "Parked:")) for l in lines):
-            continue
-        snippet = lines[0][:60]
-        warnings.append(
-            f"line {start + 1}: parked item {snippet!r} has no "
-            "Blocked by:/Parked: header — nothing leaves active flow "
-            "without a stated reason in one of those two slots."
-        )
-
-
-def _check_captures_divider(annotated, warnings):
-    """Check 3: the Captures section keeps its bare --- divider."""
-    has_captures = any(h2 == "Captures" for _i, _l, h2, _h3, _ih, _ind in annotated)
-    if not has_captures:
-        return
-    for _i, line, h2, h3, is_heading, _ind in annotated:
-        if h2 == "Captures" and h3 is None and not is_heading and line == "---":
-            return
-    warnings.append(
-        "the Captures processed/unprocessed divider (a line holding just "
-        "---) is missing — restore it: processed captures sit above it, "
-        "raw captures collect below."
-    )
-
-
-def _deferred_slugs(annotated):
-    """Slugs referenced in the Deferred tests section.
-
-    A slug staged in Deferred tests is a valid pending trigger, so a
-    Blocked by: (or other dependency header) pointing at it is not
-    dangling. Deferred-test lines write the slug as a plain [slug]
-    reference, not a bold **[slug]** marker, so SLUG_MARKER — and thus
-    defined_slugs — never picks them up; this fills that gap for the
-    dangling-ref check only. A slug found in neither Batches nor here is
-    still flagged: a fully-shipped blocker is a real unpark signal.
-    """
-    slugs = set()
-    for _i, line, h2, _h3, is_heading, _indent in annotated:
-        if is_heading or h2 != "Deferred tests":
-            continue
-        slugs.update(SLUG_REF.findall(line))
-    return slugs
-
-
-def _shipped_slugs(cwd):
-    """Slugs recorded as shipped in LOG/index.md.
-
-    A `Blocked by:` (or other dependency header) prose tail often cites a
-    prerequisite that has already shipped — work that is done and whose batch
-    is long gone from QUEUE.md, so it appears in neither Batches nor Deferred
-    tests. That citation is satisfied, not dangling, but the dangling-ref
-    check used to flag it anyway (and re-flag it on every QUEUE.md edit,
-    forever), because it only resolved against the file in front of it.
-    LOG/index.md is the authoritative record of shipped work — one line per
-    closed session, each naming its batch slug — so a slug found there is
-    resolved and must not flag.
-
-    Read broadly: every [slug] token in the index counts. Over-resolving only
-    quiets flags, which is the fail-safe direction here — a satisfied citation
-    must never read as dangling. (Under-reading would let it re-flag forever,
-    the exact noise this fixes.) Returns an empty set when the index is
-    missing or unreadable, so a project without LOG/ simply gains nothing and
-    loses nothing.
-    """
-    index_path = os.path.join(cwd, "LOG", "index.md")
-    try:
-        with open(index_path, "r", encoding="utf-8") as f:
-            text = f.read()
-    except (OSError, UnicodeDecodeError):
-        return set()
-    return set(SLUG_REF.findall(text))
-
-
-def _check_dangling_refs(annotated, resolved_slugs, warnings):
-    """Check 4: dependency headers only name unresolved slugs.
-
-    A slug is resolved — and so never flagged — when it is defined in the
-    file (an active batch or parked item), staged in Deferred tests, or
-    recorded as shipped in LOG/index.md. Only a slug resolved by none of
-    those is a genuine dangling reference worth surfacing.
-
-    The message varies by header: a Depends on: slug nothing produces is
-    framed as a missing-producer hole (the batch needs work nothing in the
-    queue or log builds); Blocks:/Blocked by: keeps the renamed-or-typo
-    framing. Advisory only — never blocks, like every check here.
-    """
-    for i, line, _h2, _h3, is_heading, _indent in annotated:
-        if is_heading:
-            continue
-        match = DEP_HEADER.match(line)
-        if not match:
-            continue
-        header = match.group(1)
-        for slug in SLUG_REF.findall(line):
-            if slug in resolved_slugs:
-                continue
-            if header == "Depends on":
-                # A Depends on: slug nothing produces is a missing-producer
-                # hole: the batch declares it needs work that no active batch,
-                # staged test, or shipped log entry builds.
-                warnings.append(
-                    f"line {i + 1}: Depends on: names [{slug}], but nothing "
-                    "produces it — not an active batch here, not staged in "
-                    "Deferred tests, not shipped per LOG/index.md. That's a "
-                    "missing-producer hole: this batch depends on work nothing "
-                    "in the queue or the log builds. Add a producer, or drop "
-                    "the dependency if it's already satisfied."
-                )
-            else:
-                warnings.append(
-                    f"line {i + 1}: {header}: names [{slug}], but "
-                    "nothing carries that slug — not in this file, not staged "
-                    "in Deferred tests, and not shipped per LOG/index.md. "
-                    "Renamed, or a typo? A satisfied dependency is stale and "
-                    "can come off the header."
-                )
-
-
-def _check_subheadings(annotated, warnings):
-    """Check 5: batch subheadings are Build:/Test:/Audit: only."""
-    for i, line, h2, _h3, is_heading, _indent in annotated:
-        if is_heading or h2 != "Batches":
-            continue
-        match = SUBHEADING.match(line)
-        if match and match.group(1) not in ALLOWED_SUBHEADINGS:
-            warnings.append(
-                f"line {i + 1}: subheading '{line}' isn't one of "
-                "Build:/Test:/Audit:/Freeform: — a typo, or a new batch "
-                "type this lint doesn't know yet? (New types must be added to "
-                "ALLOWED_SUBHEADINGS in post_tool_use.py.)"
-            )
-
-
-def _check_prose_refs(annotated, defined_slugs, warnings, changed_lines=None):
-    """Check 6: batch prose naming defined slugs its headers don't carry.
-
-    Only references to slugs still defined in the file are flagged: a
-    pending item can be a missed dependency; an absent slug is shipped
-    work, and a reference to shipped work can only be a citation.
-
-    Diff-scoped: when `changed_lines` is given (the stripped lines of the
-    current edit's new text), a prose-citation is flagged only when its own
-    line is in that set — so a citation is judged once, when written, and
-    never re-flagged on later edits that leave it untouched. The whole file
-    is still parsed (to know which slugs the block's headers carry); only
-    the *triggering* prose line must be part of this edit. `changed_lines`
-    is None when no diff text is available — then the check scans the whole
-    file as before. "Citation vs dependency" is a static property of the
-    line, so an edit elsewhere can't change it; scoping the other checks
-    would miss real drift, so only this advisory is scoped.
-    """
-    blocks = []
-    current = None
-    for _i, line, h2, _h3, is_heading, _indent in annotated:
-        if h2 != "Batches" or is_heading:
+            current = {"idx": i, "heading": line, "lines": [line]}
+        elif is_heading:
+            # Any other heading (a section change, a stray sub-heading) ends
+            # the current work-line block.
             if current:
                 blocks.append(current)
                 current = None
-            continue
-        if MARKER_LINE.match(line):
-            if current:
-                blocks.append(current)
-                current = None
-            continue
-        if line and FULL_BOLD_LINE.match(line):
-            if current:
-                blocks.append(current)
-            current = {"title": line, "lines": []}
         elif current is not None:
             current["lines"].append(line)
     if current:
         blocks.append(current)
+    return blocks
 
-    findings = []
-    for block in blocks:
-        own = set(SLUG_MARKER.findall(block["title"]))
-        header_slugs = set()
-        prose_refs = []
-        for line in block["lines"]:
-            refs = SLUG_REF.findall(line)
-            if DEP_HEADER.match(line):
-                header_slugs.update(refs)
-            else:
-                for s in refs:
-                    prose_refs.append((s, line))
-        unheadered = sorted(
-            {
-                s
-                for s, line in prose_refs
-                if s in defined_slugs
-                and s not in header_slugs
-                and s not in own
-                and (changed_lines is None or line in changed_lines)
-            }
-        )
-        if unheadered:
-            label = sorted(own)[0] if own else block["title"][:40]
-            findings.append(
-                f"[{label}] names " + ", ".join(f"[{s}]" for s in unheadered)
+
+def _check_slugs(blocks, warnings):
+    """Check 1: every work-line heading ends in a [slug]."""
+    for b in blocks:
+        if not SLUG_AT_END.search(b["heading"]):
+            warnings.append(
+                f"line {b['idx'] + 1}: work line {b['heading'][:60]!r} has no "
+                "[slug] at the end of its description line — every work line "
+                "needs one so a later LOG entry can name it."
             )
-    if findings:
-        warnings.append(
-            "prose slug references with no Depends on:/Blocks: header "
-            "carrying them — real dependency, or just a citation? "
-            "Citations are fine and need no change: "
-            + "; ".join(findings)
-        )
 
 
-def _check_dep_ordering(annotated, warnings):
-    """Check 7: a batch's Depends on: names an active batch ordered below it.
+def _check_provenance(blocks, warnings):
+    """Check 2: every work line carries a provenance label in its block."""
+    for b in blocks:
+        if not any(PROVENANCE.search(line) for line in b["lines"]):
+            warnings.append(
+                f"line {b['idx'] + 1}: work line {b['heading'][:60]!r} carries "
+                "no provenance label — add 'captured by you' or 'by Claude' so "
+                "the line records who raised it."
+            )
 
-    Only active batches in Batches count. A dependency that resolves to a
-    Deferred-tests slug (staged) or to nothing (shipped) is not an ordering
-    error — it simply isn't an active batch, so it's never in the position
-    map and never flagged here (the dangling-ref check owns the
-    resolves-to-nothing case). A parked target is likewise skipped: depending
-    on a parked item is a block, not an ordering mistake. Advisory only.
+
+def _check_sections(annotated, warnings):
+    """Check 3: both ## Processed and ## Unprocessed headings are present."""
+    present = {h2 for _i, _l, h2, _ih in annotated if h2}
+    for name in WORK_SECTIONS:
+        if name not in present:
+            warnings.append(
+                f"the '## {name}' section heading is missing — the queue holds "
+                "two sections, Processed (discussed, kept work) and Unprocessed "
+                "(captured, not yet discussed)."
+            )
+
+
+def _check_red_flag_states(annotated, warnings):
+    """Check 4: a red-flag marker line names a valid state.
+
+    Scans every line, not only work-line blocks: a marker is only ever
+    valid under a work line, but validating it wherever it appears is the
+    fail-safe direction — a stray marker with a bad state still gets caught.
     """
-    batches = []
-    current = None
-    for i, line, h2, h3, is_heading, indent in annotated:
-        if h2 != "Batches" or h3 == "Parked" or is_heading:
-            if current:
-                batches.append(current)
-                current = None
+    for i, line, _h2, _ih in annotated:
+        match = RED_FLAG_MARKER.match(line)
+        if not match:
             continue
-        if MARKER_LINE.match(line):
-            if current:
-                batches.append(current)
-                current = None
-            continue
-        if indent == 0 and line and FULL_BOLD_LINE.match(line):
-            if current:
-                batches.append(current)
-            current = {"idx": i, "own": set(SLUG_MARKER.findall(line)), "deps": set()}
-        elif current is not None:
-            mh = DEP_HEADER.match(line)
-            if mh and mh.group(1) == "Depends on":
-                current["deps"].update(SLUG_REF.findall(line))
-    if current:
-        batches.append(current)
-
-    position = {}
-    for order_i, b in enumerate(batches):
-        for s in b["own"]:
-            position[s] = order_i
-
-    for order_i, b in enumerate(batches):
-        for dep in sorted(b["deps"]):
-            if dep in b["own"]:
-                continue
-            if dep in position and position[dep] > order_i:
-                label = sorted(b["own"])[0] if b["own"] else f"line {b['idx'] + 1}"
-                warnings.append(
-                    f"line {b['idx'] + 1}: [{label}] Depends on: [{dep}], but "
-                    f"[{dep}] is ordered below it in Batches — /next would reach "
-                    f"[{label}] first. Move [{dep}] above it, or reorder."
-                )
+        rest = match.group(1).strip()
+        token = rest.split()[0].strip(".,;:—–-").lower() if rest else ""
+        if token not in VALID_FLAG_STATES:
+            shown = rest[:30] if rest else "(none)"
+            warnings.append(
+                f"line {i + 1}: red-flag marker has state {shown!r}, but a red "
+                "flag's state must be one of open / resolved / accepted."
+            )
 
 
-def _changed_text(tool_name: str, tool_input: dict) -> str:
-    """The new text an edit introduces — for diff-scoping the citation check.
-
-    Write replaces the whole file, so its `content` is the changed text (and
-    every line counts as new, which correctly scans the whole file). Edit's
-    changed text is its `new_string`; MultiEdit's is every edit's new_string.
-    Anything else yields "" — the caller treats empty as "no diff info" and
-    falls back to a whole-file prose scan.
-    """
-    if tool_name == "Write":
-        return tool_input.get("content", "") or ""
-    if tool_name == "Edit":
-        return tool_input.get("new_string", "") or ""
-    if tool_name == "MultiEdit":
-        parts = []
-        for e in tool_input.get("edits", []) or []:
-            if isinstance(e, dict):
-                parts.append(e.get("new_string", "") or "")
-        return "\n".join(parts)
-    return ""
-
-
-def lint(content: str, shipped_slugs=frozenset(), changed_text=None) -> list[str]:
+def lint(content: str) -> list[str]:
     annotated = _annotate(content)
-    # Two slug-definition shapes: the bold **[slug]** marker (batch titles,
-    # legacy parked items) and the #### heading form captures use.
-    defined_slugs = set(SLUG_MARKER.findall(content)) | set(
-        SLUG_HEADING.findall(content)
-    )
-    deferred_slugs = _deferred_slugs(annotated)
-    # The citation advisory (check 6) fires only for a prose-citation line the
-    # current edit introduced or changed. changed_lines holds the edit's new
-    # text as stripped lines; None means no diff info, so check 6 scans the
-    # whole file as before. The other checks always scan the whole file.
-    changed_lines = None
-    if changed_text:
-        changed_lines = {
-            line.strip() for line in changed_text.splitlines() if line.strip()
-        }
+    blocks = _workline_blocks(annotated)
     warnings = []
-    _check_batch_slugs(annotated, warnings)
-    _check_parked_headers(annotated, warnings)
-    _check_captures_divider(annotated, warnings)
-    # Dangling-ref check resolves against Batches slugs PLUS Deferred-tests
-    # slugs (a staged test is a valid pending trigger) PLUS shipped slugs from
-    # LOG/index.md (a satisfied citation of completed work). The prose-ref
-    # check deliberately stays on defined_slugs only — adding deferred or
-    # shipped slugs there would start flagging citations the absent-slug skip
-    # currently quiets.
-    _check_dangling_refs(
-        annotated, defined_slugs | deferred_slugs | shipped_slugs, warnings
-    )
-    _check_subheadings(annotated, warnings)
-    _check_prose_refs(annotated, defined_slugs, warnings, changed_lines)
-    _check_dep_ordering(annotated, warnings)
+    _check_slugs(blocks, warnings)
+    _check_provenance(blocks, warnings)
+    _check_sections(annotated, warnings)
+    _check_red_flag_states(annotated, warnings)
     return warnings
 
 
@@ -510,11 +210,7 @@ def main() -> int:
     except (OSError, UnicodeDecodeError):
         return 0
 
-    warnings = lint(
-        content,
-        shipped_slugs=_shipped_slugs(cwd),
-        changed_text=_changed_text(tool_name, tool_input),
-    )
+    warnings = lint(content)
     if not warnings:
         return 0
 
