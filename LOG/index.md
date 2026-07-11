@@ -2,7 +2,9 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: processed 8 dogfooding captures — deleted [done-close-skips-view-in-doc-in-local-mode] (folded into [view-in-doc-approve-in-chat]) and [done-defaulted-to-retired-deferred-tests] (fork-transitional; done.md already correct); resolved [cruise-design-refs-retired-deferred-tests] with a model-translation note on the [cruise-control] block; kept 3 `[user]` cruise verifications below the cleared line; spawned build lines [faq-reconcile-work-line-model] and [done-multi-entry-commit-msg] (the latter decided the multi-entry commit-message rule). → plan-2026-07-11.md
+- [HASH] — /plan: unparked [execute-merge-to-main] and promoted it to a cleared [freeform] line at top of Batches — decided the -x→main merge is ready (dogfooding gate found circular); deleted [merge-stranded-in-park]. → plan-2026-07-11-2.md
+
+- 11c660d — /plan: processed 8 dogfooding captures — deleted [done-close-skips-view-in-doc-in-local-mode] (folded into [view-in-doc-approve-in-chat]) and [done-defaulted-to-retired-deferred-tests] (fork-transitional; done.md already correct); resolved [cruise-design-refs-retired-deferred-tests] with a model-translation note on the [cruise-control] block; kept 3 `[user]` cruise verifications below the cleared line; spawned build lines [faq-reconcile-work-line-model] and [done-multi-entry-commit-msg] (the latter decided the multi-entry commit-message rule). → plan-2026-07-11.md
 
 - 2b21b54 — /next build [cruise-skill-loop]: added the /cruise skill — new skills/cruise/SKILL.md + docs/cruise.md holding the (a)–(h) autonomous loop, reusing next-build.md/done-build.md per line; separate skill, not a /next mode. → cruise-skill-loop.md
 - 2b21b54 — /next build [cruise-autonomy-adaptations]: added cruise.md's response spine (route-and-continue / halt-for-user+BLOCKED / hard-stop) and unattended close answers (wind-down auto-file, no push, subagent decline); done-build.md unattended note. → cruise-autonomy-adaptations.md
