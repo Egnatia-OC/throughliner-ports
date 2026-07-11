@@ -1,4 +1,4 @@
-# [HASH] — E2E /setup verification across folder states (partial)
+# 0047b36 — E2E /setup verification across folder states (partial)
 
 Ran the [setup-e2e-verification] test batch as user-run E2E on host 1.15.0-test1, reading the raw session transcripts (PFA-5, a fresh empty folder; Hexboard, a content-bearing migration folder). Closed partial — two of the four planned scenarios (leftover-REGISTRY re-run, and a Case C leftover-`_build.md` close) weren't run, and the session-start migration message wasn't seen because /setup was typed directly; all three routed back to Deferred tests for dogfooding.
 

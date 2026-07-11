@@ -1,4 +1,4 @@
-# [HASH] — Fable goal session: drained QUEUE.md, landed the ADOPT call on the two-section redesign with four amendments, held a merge
+# 7a4da6d — Fable goal session: drained QUEUE.md, landed the ADOPT call on the two-section redesign with four amendments, held a merge
 
 Autonomous goal session (SI disabled — plain file edits + git) run against FABLE-BRIEF.md: the queue never drains, test-shaped work leaks everywhere, and everything gets parked/deferred instead of finished or dropped.
 
