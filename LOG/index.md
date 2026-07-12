@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — CLAUDE.md drive paths: stale G:\ File Stream paths → C:\ mirror-mode paths (this project's + Taskflow Planning's); My Drive root already correct → update-stale-drive-paths.md
+- [HASH] — plugin-behaviour.md Communication: added a "don't assume the user's environment" guard — surface the setup a step needs and let the user judge whether it's theirs; split from [user-run-assumes-user-can-run] → dont-assume-user-environment.md
+- 5a7278a — CLAUDE.md drive paths: stale G:\ File Stream paths → C:\ mirror-mode paths (this project's + Taskflow Planning's); My Drive root already correct → update-stale-drive-paths.md
 
 - e256e1a — next.md — reworded the /next `[user]`-step handover copy: added a copy-discipline note to Step 3's handover branch that keeps the silent active-build check out of the message and drops the "nothing to build" framing in favour of naming the `[user]` step and offering to assist. [next-user-step-copy-sounds-confused] → next-user-step-copy-sounds-confused.md
 - fc6f7fc — /plan: bulk-processed Unprocessed — promoted 6 captures to build lines (next [user]-copy fix, drive-path fixes, dont-assume-environment guard, view-in-doc phantom-write fix, working-mode mechanism, user-work-as-[user]-lines), ran the view-in-doc + user-work design sessions (working-mode = persistent CLAUDE.md default + single render test; to-do-list surface rejected as always-stale), surfaced the merged-plugin reinstall as [user] line [reinstall-merged-plugin], filed [quickplan-skill] + [concurrent-session-support] → plan-2026-07-12-2.md
