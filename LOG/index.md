@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — view-in-doc pointer treatment: added a write-then-verify-then-point ordering rule to plugin-behaviour.md (never emit a pointer before the Write succeeds and a re-read confirms), applied at the five pointer sites in plan.md and next.md; fixes the phantom-write failure → view-in-doc-phantom-write.md
 - [HASH] — plugin-behaviour.md Communication: added a "don't assume the user's environment" guard — surface the setup a step needs and let the user judge whether it's theirs; split from [user-run-assumes-user-can-run] → dont-assume-user-environment.md
 - 5a7278a — CLAUDE.md drive paths: stale G:\ File Stream paths → C:\ mirror-mode paths (this project's + Taskflow Planning's); My Drive root already correct → update-stale-drive-paths.md
 
