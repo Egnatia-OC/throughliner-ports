@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — /next freeform [execute-merge-to-main]: merged the queue-redesign (-x) fork into main — full two-section work-line model adopted (recut hooks/next/done/setup, /cruise skill+gate, templates), main's `sovereign-implementer`/`flintcraft` v1.15.0 identity kept over the fork's -x rename, QUEUE.md hand-reconciled to two sections off main's drained base (9 Processed / 16 Unprocessed), the ~90-line deferred-test pile folded into one `[merged-plugin-live-verification]` check, and 4 post-Fable-drain fork captures rescued; merge = 748cc80, not pushed. → execute-merge-to-main.md
 - [HASH] — /plan: unparked [execute-merge-to-main] and promoted it to a cleared [freeform] line at top of Batches — decided the -x→main merge is ready (dogfooding gate found circular); deleted [merge-stranded-in-park]. → plan-2026-07-11-2.md
 
 - 11c660d — /plan: processed 8 dogfooding captures — deleted [done-close-skips-view-in-doc-in-local-mode] (folded into [view-in-doc-approve-in-chat]) and [done-defaulted-to-retired-deferred-tests] (fork-transitional; done.md already correct); resolved [cruise-design-refs-retired-deferred-tests] with a model-translation note on the [cruise-control] block; kept 3 `[user]` cruise verifications below the cleared line; spawned build lines [faq-reconcile-work-line-model] and [done-multi-entry-commit-msg] (the latter decided the multi-entry commit-message rule). → plan-2026-07-11.md
