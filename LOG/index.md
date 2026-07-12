@@ -2,8 +2,9 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — view-in-doc pointer treatment: added a write-then-verify-then-point ordering rule to plugin-behaviour.md (never emit a pointer before the Write succeeds and a re-read confirms), applied at the five pointer sites in plan.md and next.md; fixes the phantom-write failure → view-in-doc-phantom-write.md
-- [HASH] — plugin-behaviour.md Communication: added a "don't assume the user's environment" guard — surface the setup a step needs and let the user judge whether it's theirs; split from [user-run-assumes-user-can-run] → dont-assume-user-environment.md
+- [HASH] — /plan: rewrote [working-mode-mechanism] to key view-in-doc rendering on doc-residency (folded in 3 render captures, added next-build.md step-3 as the real inline-paste culprit); filed [park-trigger-method-audit] for the leftover parking apparatus + 2 other captures → plan-2026-07-12-3.md
+- c77969c — view-in-doc pointer treatment: added a write-then-verify-then-point ordering rule to plugin-behaviour.md (never emit a pointer before the Write succeeds and a re-read confirms), applied at the five pointer sites in plan.md and next.md; fixes the phantom-write failure → view-in-doc-phantom-write.md
+- 3db6a25 — plugin-behaviour.md Communication: added a "don't assume the user's environment" guard — surface the setup a step needs and let the user judge whether it's theirs; split from [user-run-assumes-user-can-run] → dont-assume-user-environment.md
 - 5a7278a — CLAUDE.md drive paths: stale G:\ File Stream paths → C:\ mirror-mode paths (this project's + Taskflow Planning's); My Drive root already correct → update-stale-drive-paths.md
 
 - e256e1a — next.md — reworded the /next `[user]`-step handover copy: added a copy-discipline note to Step 3's handover branch that keeps the silent active-build check out of the message and drops the "nothing to build" framing in favour of naming the `[user]` step and offering to assist. [next-user-step-copy-sounds-confused] → next-user-step-copy-sounds-confused.md
