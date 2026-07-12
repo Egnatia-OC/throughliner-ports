@@ -1,4 +1,4 @@
-# [HASH] — next.md — reworded the /next `[user]`-step handover copy: added a copy-discipline note to Step 3's handover branch that keeps the silent active-build check out of the message and drops the "nothing to build" framing in favour of naming the `[user]` step and offering to assist
+# e256e1a — next.md — reworded the /next `[user]`-step handover copy: added a copy-discipline note to Step 3's handover branch that keeps the silent active-build check out of the message and drops the "nothing to build" framing in favour of naming the `[user]` step and offering to assist
 
 Observed 2026-07-11 dogfooding the drive-folder-cleanup project: running /next when the top ready line was a `[user]` step produced copy that read as confused and defensive — "No active build. The top of the ready queue is a `[user]` step … there's nothing for me to build." Two things were wrong with it. It folded the internal active-build check (Step 1's [SILENT] check) into a user-facing message, blurring two unrelated facts; and it framed the situation as having nothing to do, when /next helps either way.
 
