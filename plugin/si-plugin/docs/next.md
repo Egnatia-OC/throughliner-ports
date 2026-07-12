@@ -11,7 +11,7 @@ Each work line carries a flavor, set as an optional leading tag (plugin-behaviou
 - **(no tag)** — a build. Route to `next-build.md`.
 - **`[audit]`** — a review pass. Route to `next-audit.md`.
 - **`[freeform]`** — loosely-scoped work talked through. Route to `next-freeform.md`.
-- **`[user]`** — handover. Work only the user can run; /next hands it over rather than building it.
+- **`[user]`** — handover. Work only the user can run; /next hands it over rather than building it. A `[user]` line is also how a discovered user-action gets filed: when a session notices work only the user can do, it files a `[user]` line to Unprocessed rather than an untagged capture, so the action surfaces as queued work instead of prose a later session must re-notice (plugin-behaviour.md Routing and discipline, user-only discoveries).
 
 ## Step 1: Pre-flight
 
