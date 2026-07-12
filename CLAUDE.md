@@ -8,15 +8,6 @@ The `queue-redesign` fork has been merged back into `main` (see LOG `execute-mer
 
 **Rollout and retirement path.** With the redesign on main, the next steps are: rezip + reinstall to dogfood the merged plugin here, then push + release so the other projects update via the marketplace; the old pre-redesign SI stays frozen on those projects until the new one is adopted there and the old one uninstalled. The one thing to track is *when the merged plugin is trustworthy enough to rely on* — freezing the old one, migrating the other projects, and uninstalling all follow from that.
 
-## Working mode — remote control vs local (temporary, ~through 2026-07-09)
-
-At the start of every /plan or /next, ask Alex which mode she's working in: **remote control** or **local**. This is a stopgap until the proper mode mechanism is designed and built.
-
-- **Remote control** — render doc-bound text (capture drafts, batch drafts, log entries, verbatim quotes) directly into the chat, not as view-in-doc pointers or links to the file. On remote control she works from her phone and can't open an edited file without navigating Google Drive and re-downloading it, so pointers don't work — she needs the text in the chat.
-- **Local** — normal behaviour: view-in-doc pointers/links where an editor is recorded.
-
-Remove this section once Alex is back at the desktop full-time and the real mode mechanism exists.
-
 ## What this is
 
 The Sovereign Implementer — a Claude Code plugin that gives non-coders a structured workflow for building apps with Claude Code.
@@ -212,6 +203,8 @@ The why, weighed against the alternatives: reading the raw file in chunks does N
 Alex is a non-coder using the Claude Code desktop app. Explain things in plain English. The desktop app doesn't support `--plugin-dir` or `/plugin` CLI commands.
 
 Editor: Zettel — the `.md` editor Alex works in. This is the editor field the view-in-doc treatment reads (plan.md's capture quotes, next.md's top-batch quote): because it's recorded, those quotes render as a pointer + link to the doc rather than a re-pasted block. A project with no editor recorded degrades to the inline quote.
+
+Working mode: local — governs how doc-bound text is surfaced (plugin-behaviour.md Working mode and view-in-doc rendering). `local` = Alex is at the desktop, so doc-resident text renders as a pointer/link where an editor is recorded; `remote` = she's driving from her phone, so it's pasted inline. Persistent default set here, not asked each session; flip it for one session with a word. This field replaces the temporary "ask remote or local every session" section that used to sit near the top of this file.
 
 ## Current state
 

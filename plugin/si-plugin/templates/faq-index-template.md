@@ -6,6 +6,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [How do the four commands fit together day-to-day?](faq.md#how-do-the-four-commands-fit-together-day-to-day)
 - [What does /setup do, and do I run it more than once?](faq.md#what-does-setup-do-and-do-i-run-it-more-than-once)
 - [Why does setup ask which editor I use?](faq.md#why-does-setup-ask-which-editor-i-use)
+- [Why does setup ask whether I work from my computer or my phone?](faq.md#why-does-setup-ask-whether-i-work-from-my-computer-or-my-phone)
 - [What are the Processed and Unprocessed sections in QUEUE.md?](faq.md#what-are-the-processed-and-unprocessed-sections-in-queuemd)
 - [What does it mean when a work line is marked `[user]`?](faq.md#what-does-it-mean-when-a-work-line-is-marked-user)
 - [What are the build, audit, and freeform flavors — and is there a separate "test"?](faq.md#what-are-the-build-audit-and-freeform-flavors--and-is-there-a-separate-test)

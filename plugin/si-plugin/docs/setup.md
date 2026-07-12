@@ -109,15 +109,15 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 
 **resources/research/ folder:** Create the `resources/research/` directory (empty — no files). It's the home for research notes: when a web search or external lookup yields a finding worth keeping, Claude files it here as `resources/research/<topic>.md`. Creating it at setup means research notes have a place from day one rather than the folder being conjured on first use.
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`; Step 4 fills it from Q6.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded` and a Working mode field defaulting to `local`; Step 4 fills them from Q6 and Q7.
 
 **.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
 **Git repository:** If the folder is not already a git repository, run `git init` so the project has version history from the first session. Do this silently and mechanically, like the rest of the scaffold — no narration. This is what lets the close-out commit the new files: without a repository there is nothing to commit to.
 
-## Step 3: Interview (5 questions, one at a time, plus one optional)
+## Step 3: Interview (5 questions, one at a time, plus two optional)
 
-Ask these one per message, and stop after each — wait for the user's answer before asking the next. Never bundle two questions into one message, even short ones. Use the answers to fill SPEC.md and QUEUE.md. Q6 is a short optional extra after the five — ask it the same way, one message of its own.
+Ask these one per message, and stop after each — wait for the user's answer before asking the next. Never bundle two questions into one message, even short ones. Use the answers to fill SPEC.md and QUEUE.md. Q6 and Q7 are short optional extras after the five — ask each the same way, one message of its own.
 
 **Q1. What is this project, and who is it for?**
 → Fills "What this is" and "Who it's for" in SPEC.md.
@@ -137,12 +137,16 @@ Ask these one per message, and stop after each — wait for the user's answer be
 **Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
 → Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
 
+**Q7 (optional). Will you usually be working from your computer, or driving Claude from your phone?**
+→ Sets your working mode. Two options, explained once here: **local** means you're at your desktop, where an edited file opens instantly — so Claude points you to text in your docs with a link. **remote** means you're driving Claude from your phone, where opening an edited file is awkward — so Claude pastes the text straight into chat instead. Defaults to **local** if you skip. Fills the Working mode field in the generated CLAUDE.md, and you can switch anytime just by telling Claude ("I'm remote today") — it holds for that session and reverts after. Asked once, no nag.
+
 ## Step 4: Write the docs
 
 After all 5 answers, write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
 1. Fill SPEC.md with the interview answers.
 2. Write one work line in QUEUE.md's Unprocessed section from Q4 — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
+2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:
