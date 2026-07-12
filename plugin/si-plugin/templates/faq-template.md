@@ -174,28 +174,9 @@ A subagent is a separate helper Claude can spin up to go off and work on somethi
 
 It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
-## When I add new work to the queue, why does Claude read through my files first?
-
-Before a piece of work goes in the queue as ready to build, Claude traces what it depends on rather than guessing. It reads the files that work would touch — and the relevant part of your SPEC — to work out what has to exist first, then checks that each of those things has something that actually builds it: another queued item, work already finished, or code that's already there. If it finds a dependency with nothing to build it — a "missing-producer" gap — it tells you, so the gap gets filled before the work is lined up. The point is to catch ordering problems while planning, where they're a quick fix, instead of hitting them mid-build where they stall the work. Claude does this for build work only — checking and reviewing work don't carry build dependencies.
-
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
-It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been checked over in planning — its order is right and everything it depends on is accounted for — so it's safe to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When the unattended build mode arrives, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
-
-## What does it mean when Claude says a dependency is "out of order" or "dangling"?
-
-Some pieces of work depend on others — one batch needs another finished first. Claude tracks those links in the queue. Now and then a link breaks: a batch is lined up *before* the thing it depends on (out of order), or it points to a piece of work that's no longer in the queue (dangling). Either way, building in that order would trip up.
-
-Claude checks the links when a planning session wraps up, and checks them again at /done. If it finds a break, it won't quietly carry on:
-
-- For a simple ordering mix-up, it offers to reorder the queue right then, with your okay.
-- For anything needing more thought, it sends you back to /plan to sort out before any building starts.
-
-You don't track these links yourself — Claude does, and it fixes or flags them before they reach a build.
-
-## What does Claude mean by a "circular dependency"?
-
-Sometimes a piece of work would be better if you added something first — but that something can't be finished until the very work you're about to do is done. That's a circular dependency: each side waits on the other, so "do the other thing first" never actually finishes. When Claude spots this, it won't send you round in a loop. It builds a first version of the work now to break the circle, and keeps the missing piece on the queue (parked, or marked as blocked) to add once this work exists. Nothing is lost — the gap is tracked, just filled later instead of first.
+It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. A /cruise run stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
 
 ## Claude tidied up the queue while committing, without asking me. Is that normal?
 
