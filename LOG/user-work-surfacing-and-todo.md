@@ -1,4 +1,4 @@
-# [HASH] — plugin-behaviour.md + next.md: user-only discoveries now file as a `[user]` work line, not a plain capture, so user-actions surface as ordered queued work
+# 80bb381 — plugin-behaviour.md + next.md: user-only discoveries now file as a `[user]` work line, not a plain capture, so user-actions surface as ordered queued work
 
 The gap this closes: work only the user can do (a reinstall, a terminal command, a device check) would get filed as a plain untagged capture, so its next-ness — the fact that it's a concrete action, often one gating other work — survived only in whoever's session memory noticed it. That's the same "next-ness lives in memory" failure the `[user]` line and the readiness marker were built to remove.
 
