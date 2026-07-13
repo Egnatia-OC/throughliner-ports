@@ -164,6 +164,17 @@ Each red flag carries one of three states:
 
 The future unattended mode's gate reads these states: only resolved or accepted flags let it run. An open flag blocks unattended execution — a user who leaves a risk unaddressed stays on hand to approve each step.
 
+### Lifecycle at ship
+
+A red-flag marker must always sit on a line that carries real remaining work. It is never a standalone tracking line — a flag with no work left to do doesn't get parked in the queue as a bare reminder, and it never silently disappears when its line ships. Both failures break the model above, where the marker rides the work and the work is what the queue holds.
+
+This forces one thing at the close of any line carrying a red-flag marker: at the moment the line's work completes, the close makes an explicit resolve-or-accept decision and records it in the LOG entry before the line leaves the queue. A flag never leaves unrecorded.
+
+- A completed fix flips to **resolved** at that close. The code no longer carries the risk, which is what resolved means — so the flag resolves the instant the fix ships, not later. If the fix still needs a live check to confirm it works, that check rides an ordinary `[user]` verification line as a normal check — not as a lingering open flag. Resolved-plus-a-pending-verification-line is the correct shape; open-until-verified is not.
+- The user consciously chooses to ship with the risk → **accepted**, with the informed-consent trail recorded in the LOG per Flag states above.
+
+The close routing that enforces this lives in done-build.md (a build line's close) and done.md (the shared close core): before a red-flag-carrying line is removed from the queue, the close surfaces the flag, forces the resolve/accept decision, and writes it to the LOG.
+
 ## Why-pipeline
 
 Rationale is prose. Carry it forward; don't collapse it into a structured "why" field.

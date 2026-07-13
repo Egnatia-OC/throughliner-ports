@@ -36,6 +36,12 @@ Every work line carries a short name in square brackets (its slug), so Claude ca
 
 It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own lines top to bottom and stops at the first `[user]` line to hand it over to you. Most lines aren't marked — they're Claude's by default.
 
+## When Claude hands over a `[user]` step, do I have to do it alone?
+
+No — a handover isn't Claude dropping the task on you and stepping back. When Claude reaches a `[user]` line, it offers to guide you through it: it runs whatever parts it *can* (any commands or setup it can drive), explains in plain words what you need to check or do, and walks you through it step by step if you'd like. The `[user]` tag just marks who has to actually do or witness the step — usually because it needs your eyes on a screen, or a tool Claude can't reach. You're always welcome to say "just tell me what to do and I'll handle it," but the default is that Claude helps you through it, not that you're on your own.
+
+One related detail about *when* these show up: Claude only hands over a `[user]` step once the work it depends on is finished. A check that's waiting on something not built yet stays parked in your queue until it's ready — so when Claude does hand one to you, it's genuinely ready for you to do.
+
 ## What are the build and audit flavors — and is there a separate "test"?
 
 Every piece of Claude's work in the queue carries a flavor that says how Claude carries it out, shown as a small tag at the front of the line:
@@ -172,6 +178,12 @@ A red flag is how Claude surfaces a risk to your data or your users' data — an
 - **Accepted** — you've heard the risk spelled out and chosen to go ahead anyway. That choice is written into the session log, so there's a record of what you were told and that you agreed — the trail that protects you if the risk ever surfaces later.
 
 It's tagged onto a work line rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
+
+## What happens to a red flag when the work carrying it is finished?
+
+It gets settled and recorded before that piece of work leaves your queue — it never just quietly disappears, and it never lingers as a leftover reminder with no work left to do. When Claude closes a piece of work that carries a red-flag tag, it stops and settles the flag with you: either the work fixed the risk (**resolved** — the risk is designed out, so the flag closes right then) or you've chosen to ship with it (**accepted** — written into the session log as the record that you were told and agreed). Whichever it is, that outcome goes into the session log before the work is committed, so there's always a trail of how the risk ended.
+
+One detail worth knowing: a flag counts as resolved the moment the fix is built, even if the fix still needs a real-world check to confirm it works. That leftover check becomes its own `[user]` line in your queue — a normal thing for you to verify later — rather than keeping the flag hanging open. So "fixed, with a check still to do" shows up as a resolved flag plus a waiting check, not as an unresolved risk.
 
 ## Why did Claude ask before starting a "subagent"?
 

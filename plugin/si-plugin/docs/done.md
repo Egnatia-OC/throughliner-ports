@@ -61,6 +61,20 @@ Stated once here; every sub-doc's LOG-entry step points at this section.
 
 If a red flag was accepted this session — the user was told a security, privacy, or breach risk plainly and chose to proceed anyway — record the decision in the session's LOG entry: what the user was warned about, and that they chose to proceed. This is the informed-consent trail defined in plugin-behaviour.md Flag states; the LOG entry is where it lands. An accepted flag itself lives in the queue as a red-flag work line at `State: accepted` (plugin-behaviour.md Red flags), not in a dedicated section. Recording the consent in the LOG is unconditional once a flag is accepted — the consent record never rides only in chat or on the red-flag work line, because no later session re-reads those for consent history. Nothing to record when no flag was accepted this session.
 
+## Red-flag lifecycle at close
+
+Stated once here; the sub-doc close-outs point at this section when the closing line carries a red-flag marker.
+
+A red-flag marker never leaves the queue silently and never lingers as a workless standalone line (plugin-behaviour.md Red flags, Lifecycle at ship). So when a line carrying a `Red flag · State: …` marker completes and is about to leave the queue at this close, force the disposition before it goes — don't let the line disappear with the flag unresolved or the decision unrecorded:
+
+1. **Surface the flag** in plain words — name the risk the marker tracks.
+2. **Force the resolve-or-accept decision** [PROMPT]:
+   - **Resolved** — the work fixed or designed out the risk. The code no longer carries it. If a live check is still needed to confirm the fix, that check rides an ordinary `[user]` verification line (file it per the Checks the closing session couldn't run section) — the flag still resolves now, it does not stay open pending verification.
+   - **Accepted** — the user consciously ships with the risk. Record the informed-consent trail per the Accepted red flags section above.
+3. **Record the disposition in this line's LOG entry** — the state it closed at (resolved or accepted) and why — before the commit. A flag never leaves unrecorded.
+
+Nothing to do when the closing line carries no red-flag marker.
+
 ## Wind-down re-scan (file-only) [BRIEF, PROMPT]
 
 Stated once here; Commit core points at it, so it runs at every /done close regardless of session type.

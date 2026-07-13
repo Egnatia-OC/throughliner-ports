@@ -8,3 +8,5 @@ Built the plugin-side half of the consumer feedback channel — a way for a cons
 - plugin/si-plugin/templates/faq-template.md + faq-index-template.md — new entry + index line
 
 **Routed to Captures:** [redflag-resolution-not-forced-at-ship] — a red-flag line shipping and leaving the queue without an explicit resolve/accept decision being forced at close
+
+**Red flag — State: resolved (recorded retroactively 2026-07-13 by [red-flag-ship-lifecycle]).** The risk: a method-problem report leaving the machine for a public destination could leak the consumer's private data (app names, file contents, secrets). Resolved by design in that session — the report is scrubbed by construction (it carries only what the plugin did vs expected, the skill/step, and the version, never app content), and it is never auto-submitted: the user reviews and pastes it themselves, a human scrubbing backstop. The code no longer carries the leak risk. This resolution was omitted at that close (the flag vanished unrecorded) — the exact failure [red-flag-ship-lifecycle] was built to prevent; this line backfills the missing record.

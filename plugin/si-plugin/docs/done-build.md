@@ -32,6 +32,10 @@ If the test fires, stop the close — don't commit yet. Surface the drift in pla
 
 The why this is a stop-the-close gate, not a detect-and-file backstop: SPEC is in-session-editable now — the spec-edit batch type is retired (plan.md) — so a build that changed product truth can and must bring SPEC into line in the same commit. Spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md); deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does. Scope: every build close where the build changed product truth.
 
+### 1.4 Red-flag close [SILENT] when no flag, [PROMPT] when a line carries one
+
+Per built line: if the line carries a `Red flag · State: …` marker, run the Red-flag lifecycle at close in done.md before the line leaves the queue — surface the flag, force the resolve/accept decision, and record the disposition in this line's LOG entry (2.1). A completed fix flips to resolved; live verification, if still needed, rides an ordinary `[user]` line. Silent when no built line carries a flag.
+
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
