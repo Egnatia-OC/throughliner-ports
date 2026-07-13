@@ -270,6 +270,7 @@ def main() -> int:
     if not has_spec:
         # Check if there's substantial work here (not an empty folder)
         has_work = False
+        nested_si = []
         try:
             entries = os.listdir(cwd)
             non_infra = [
@@ -280,6 +281,19 @@ def main() -> int:
                 }
             ]
             has_work = len(non_infra) > 3
+            # Nested SI projects: child folders that are themselves set up
+            # (they hold a SPEC.md or QUEUE.md). If the user opened a parent
+            # folder by mistake, running /setup here would adopt the parent —
+            # so name what we see and let them course-correct, rather than
+            # scanning into a child to work there or adopting over the top of
+            # them. Detection only; the choice stays the user's.
+            for e in non_infra:
+                child = os.path.join(cwd, e)
+                if os.path.isdir(child) and (
+                    os.path.isfile(os.path.join(child, "SPEC.md"))
+                    or os.path.isfile(os.path.join(child, "QUEUE.md"))
+                ):
+                    nested_si.append(e)
         except OSError:
             pass
 
@@ -295,6 +309,16 @@ def main() -> int:
             msg = (
                 "[Sovereign Implementer] Empty project folder. "
                 "Run /setup to scaffold the project docs and describe what you're building."
+            )
+
+        if nested_si:
+            msg += (
+                " Heads up: this folder contains what look like separate Sovereign "
+                "Implementer projects of their own (" + ", ".join(sorted(nested_si)) + "). "
+                "If you meant to work in one of those, open it directly rather than this "
+                "parent folder — running /setup here would adopt this parent folder, not "
+                "them. Tell the user this plainly so they can course-correct before "
+                "anything is adopted."
             )
 
         output = {

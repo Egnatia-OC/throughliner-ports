@@ -18,7 +18,7 @@ The autonomous multi-line runner. /cruise works the cleared queue top-down — b
 
 Work the cleared region one work line at a time, top-down. For each line, run steps (a)–(f); (g) advances; (h) closes the whole run.
 
-**(a) Pick the top cleared work line.** The next un-built line at the top of the run. An `[audit]` or `[freeform]` line routes to its own per-line procedure (`next-audit.md` / `next-freeform.md`) and closes through its own (`done-audit.md` / `done-freeform.md`) — the loop is flavor-agnostic, it just drives whatever the line's flavor dictates.
+**(a) Pick the top cleared work line.** The next un-built line at the top of the run. An `[audit]` line routes to its own per-line procedure (`next-audit.md`) and closes through its own (`done-audit.md`) — the loop is flavor-agnostic, it just drives whatever the line's flavor dictates.
 
 **(b) Gate-check before building.** Before touching the line, run the pre-build gate:
 - **Red-flags gate** — if any red flag is open, the run may not proceed (see Red-flags gate below). Only resolved or accepted flags let it run.

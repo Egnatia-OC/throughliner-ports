@@ -1,6 +1,6 @@
 # Build procedure
 
-Execution procedure for build-flavor work lines. Reached from next.md after the run is confirmed and scope is locked. next.md routes here for each build line (a work line with no flavor tag); it handles `[audit]` and `[freeform]` lines through their own docs.
+Execution procedure for build-flavor work lines. Reached from next.md after the run is confirmed and scope is locked. next.md routes here for each build line (a work line with no flavor tag); it handles `[audit]` lines through their own doc.
 
 ## Execute [SILENT]
 

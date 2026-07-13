@@ -10,7 +10,6 @@ Each work line carries a flavor, set as an optional leading tag (plugin-behaviou
 
 - **(no tag)** — a build. Route to `next-build.md`.
 - **`[audit]`** — a review pass. Route to `next-audit.md`.
-- **`[freeform]`** — loosely-scoped work talked through. Route to `next-freeform.md`.
 - **`[user]`** — handover. Work only the user can run; /next hands it over rather than building it. A `[user]` line is also how a discovered user-action gets filed: when a session notices work only the user can do, it files a `[user]` line to Unprocessed rather than an untagged capture, so the action surfaces as queued work instead of prose a later session must re-notice (plugin-behaviour.md Routing and discipline, user-only discoveries).
 
 ## Step 1: Pre-flight
@@ -67,7 +66,6 @@ Changes:
 Progress format varies by flavor:
 - **Build lines:** `- [x] line description — done`
 - **Audit lines:** `- [x] Finding description — captured` or `- [x] Finding description — dropped`
-- **Freeform lines:** ticked as the work is agreed complete, per next-freeform.md.
 
 _build.md is the crash-recovery mechanism. If the session dies, the next session sees it and offers to resume.
 
@@ -77,17 +75,12 @@ Work the run's lines top-down. Route each Claude-work line by its flavor, and ha
 
 - **Build line** (no tag) → read and follow `next-build.md`.
 - **`[audit]` line** → read and follow `next-audit.md`.
-- **`[freeform]` line** → read and follow `next-freeform.md`.
 
 Between lines, keep going autonomously — the user confirmed the whole run at Ready, so there's no per-line re-confirmation. Tick each line in _build.md Progress as it finishes before starting the next.
 
 **Handover branch — a `[user]` line** [PROMPT]. The run stops at the first `[user]` line (this is where the run boundary was drawn in Step 1). Hand it over: state plainly what the user needs to do and why it's theirs to run, then wait. Don't build past it. A `[user]` line stays in the queue for a later session — it isn't part of this build's _build.md — so when the whole run before it is built, tell the user the Claude-work is done, name the user-work waiting, and recommend /done to record the build.
 
 **Copy discipline when the top line is `[user]` (no Claude-work ran first).** Two things keep this message clear, because a muddled version once read as confused and defensive. First, don't fold the silent active-build check into it: whether a build was already in progress is an internal check (Step 1's [SILENT] active-build check), so leading with "no active build" blurs two unrelated things — say only that the next ready line is a step for the user to run. Second, don't frame it as "there's nothing for me to build" — /next helps either way, so name the `[user]` step plainly, say why it's the user's to run, and offer to assist with it, then wait.
-
-## On-demand freeform: `/next freeform` with no cleared work line
-
-When the user runs `/next freeform` and the top of the cleared queue isn't a `[freeform]` line, this is on-demand freeform work. Run the gate first [PROMPT]: ask whether the work could instead be a build or an audit — those have homes already, and freeform is the refuge only for work that fits neither. Require a one-line answer naming why neither fits before proceeding; don't start until it's stated. Once it is, follow `next-freeform.md` directly — there's no queued line to read or lock, so the Step 1 run-pick and the Step 2 line-move don't apply; next-freeform.md creates _build.md with an empty Files list and grows scope ask-by-ask.
 
 ## Ending before scope-lock
 

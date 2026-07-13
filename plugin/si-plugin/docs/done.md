@@ -11,13 +11,22 @@ Check for _build.md. The check is automatic — don't ask, and don't narrate the
 - **_build.md exists** → read it, then route by the flavor of the run's work lines (its `Run:` and `Entries:` — the same flavors /next routed on):
   - **Build** lines (no flavor tag) → read and follow `done-build.md`. A build that changed SPEC.md closes here like any other build — same steps, same commit core.
   - **`[audit]`** lines → read and follow `done-audit.md`.
-  - **`[freeform]`** lines (including a _build.md from on-demand `/next freeform`) → read and follow `done-freeform.md`.
   - A run of one flavor follows that flavor's close-out. A mixed run — say a build line and an audit line built back-to-back — closes each line through its own flavor's close-out (build lines via done-build.md, audit lines via done-audit.md), writing one LOG entry per line and sharing the single end-of-session commit.
-- **No _build.md** → planning session. Read and follow `done-plan.md`.
+- **No _build.md** → no build ran this session. Two shapes:
+  - **A planning session** — the session managed the queue, processed captures, or moved the readiness line (or _plan.md exists) → read and follow `done-plan.md`.
+  - **A standalone handmade-work close** — no planning happened either, and the working tree holds uncommitted edits the session didn't make through a skill (the user changed files by hand) → follow **Standalone handmade-work close** below. Read those edits as the user's own expected work, not a broken repo (plugin-behaviour.md, the don't-panic reading), confirm with the user, then log and commit them.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit core below, then return to the sub-doc for the recommendation.
 
 There is no test close-out — the test flavor is retired. A check Claude can run is part of building, closed by done-build.md; a check only the user can run is a `[user]` work line, which /next hands over and which never enters a _build.md, so no /done closes it.
+
+## Standalone handmade-work close [BRIEF, PROMPT]
+
+Reached when /done runs with no _build.md and no planning work — the user made ad-hoc edits by hand and wants them recorded. This is the case the retired freeform close used to own. It is never required: hand edits left uncommitted are simply swept into the next /done (build or planning) that runs. It exists for when the user wants their handmade work logged and committed as its own clean record.
+
+1. **Read the edits as the user's own work — don't panic.** Uncommitted changes the session didn't make are most likely the user's expected work (plugin-behaviour.md, the don't-panic reading). Run `git status --porcelain`, and where what changed isn't self-evident, look. Confirm with the user that these are theirs and meant to be saved. Never report them as a broken repo or a problem, and never try to undo them.
+2. **Decide LOG granularity by judgment.** If the edits are one coherent change, write a single date-named entry — `LOG/handmade-<YYYY-MM-DD>.md` (`-2` if the name is taken). If they span several distinct logical changes, write a separate entry per logical change rather than one lumped entry — better recall when the log is referenced later. (The right unit converges with the two-section LOG-index question and defers to whatever that resolves.) Draft each entry's one-liner and rationale and show them for approval, per the LOG entry files section below and plugin-behaviour.md Captures.
+3. **Run the wind-down re-scan, then the commit core** (both below), staging the hand-edited files explicitly. The commit message is the approved entry; for several entries, the title names the handmade-work close and the body carries each entry's summary. Unlike a planning close, a handmade-work close does offer push when a remote exists — it's real project work, not bookkeeping — following the commit core's remote-gated push exactly.
 
 ## LOG entry files
 
@@ -28,7 +37,7 @@ Stated once here; every sub-doc's entry-writing step points at this section.
 Each LOG entry is written as its own file under `LOG/` — never appended to a shared log file:
 
 - **Session closing work lines with slugs** (build, audit): name each entry file after its work-line slug — `LOG/<slug>.md` (e.g. `LOG/drop-log-per-release-split.md`). A run that built several work lines writes one entry file per line, each named after that line's slug.
-- **Session with no work-line slug** (planning, setup, freeform): name it by session type and date — `LOG/<type>-<YYYY-MM-DD>.md` (e.g. `LOG/plan-2026-06-09.md`).
+- **Session with no work-line slug** (planning, setup, standalone handmade-work): name it by session type and date — `LOG/<type>-<YYYY-MM-DD>.md` (e.g. `LOG/plan-2026-06-09.md`, `LOG/handmade-2026-06-09.md`).
 - **Name already taken** (a re-run work line, a second planning session the same day): append `-2`, `-3`, and so on.
 - The matching `LOG/index.md` line ends with the entry's filename, so a later lookup goes straight from the index line to the file.
 
