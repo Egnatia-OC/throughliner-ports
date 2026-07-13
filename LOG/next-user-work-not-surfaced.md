@@ -1,4 +1,4 @@
-# [HASH] — /plan places ready [user] work above the cleared-to-run marker; /next hands it over collaboratively
+# 7077c3c — /plan places ready [user] work above the cleared-to-run marker; /next hands it over collaboratively
 
 Fixed the gap where /next handed over no `[user]` work though the queue held ready `[user]` verification lines: those lines sat *below* the cleared-to-run marker, and /next builds and hands over only from above it. Chosen direction (over Option B, "make /next surface ready `[user]` work regardless of the marker"): keep the marker as the single **positional** gate for both builds and handover, and fix it in /plan. The user prefers one gate over a second readiness check inside /next.
 

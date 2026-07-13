@@ -1,4 +1,4 @@
-# [HASH] — Red-flag lifecycle at ship: a flag must ride real work, and its resolve/accept is forced and recorded at close
+# 7077c3c — Red-flag lifecycle at ship: a flag must ride real work, and its resolve/accept is forced and recorded at close
 
 Built the red-flag lifecycle-at-ship rule, folding in two captures that were halves of one question — what happens to a red flag when its work-line finishes. One half caught a flag lingering as a standalone workless line; the other caught a flag vanishing unrecorded when its line shipped. Both break the redesign's model, where a red-flag marker only ever rides a line carrying real work.
 
