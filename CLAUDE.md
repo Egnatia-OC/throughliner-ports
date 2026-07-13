@@ -38,13 +38,14 @@ Host and target are the same plugin at different stages. Ambiguous references to
 
 **3 project docs** (created by `/setup` in consumer projects):
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
-- `QUEUE.md` — red flags (security/privacy/breach risks Claude surfaced, kept at the top, each with an open/resolved/accepted state), work batches (Build/Test/Audit subheadings), and captured ideas (plain bullets).
+- `QUEUE.md` — two sections (Processed / Unprocessed), each holding work lines as `#### ` headings with rationale beneath. A work line that carries a security or privacy risk gets a red-flag marker (a `Red flag · State:` tag) — the flag rides the work, not the other way around.
 - `LOG/` — per-session records. `LOG/index.md` for summaries (newest first), one file per session entry. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`.
 
-**4 skills:**
+**5 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
 - `/plan` — all thinking work: queue management, read-back, ideas, questions, drift detection.
-- `/next` — pick the top queue entry, execute it (build, test, or audit).
+- `/next` — pick the top ready work, execute it (build or audit), hand over at `[user]` lines.
+- `/cruise` — autonomous multi-line runner: builds cleared work top-down, one commit per line.
 - `/done` — record what happened, clean up, commit.
 
 **3 hooks** — two enforcing, one advisory:
@@ -80,6 +81,7 @@ No code method/
 - **Cross-doc references go by name.** When editing the docs under `plugin/si-plugin/`, a reference to a step in another doc names its target ("the blocker gate in next.md's pre-flight"), never a step number. Step numbers silently retarget when a batch adds, deletes, or reorders steps — the reference still resolves, but to the wrong content; names survive renumbering. Within-doc references are exempt: renumbering is visible in the file being edited.
 - **Author method text 4.8-shaped.** Every self-hosting build batch and spec-writing batch is run against the 4.8 section of [`resources/authoring-heuristic.md`](resources/authoring-heuristic.md) before its authored text ships — the short checklist distilling what Opus 4.8 (this project's model target) actually steers on. That doc is also the home for rule-writing rules (the model-agnostic "Rules about writing rules" section — e.g. when a slipped rule earns a hook vs. just sharper wording), so reach for it both when authoring text and when deciding how to fix a rule that slipped. Self-hosting scope: the doc is host-only and not in the plugin package, so the check stays in this project. Revisit shipping the check if the doc ever ships into the package.
 - **FAQ entries are part of batch authoring.** When /plan authors a batch that introduces something a consumer would see or ask about — a new queue line, a new doc section, a new narration moment — the batch carries a `plugin/si-plugin/templates/faq-template.md` entry (plus its `faq-index-template.md` index line) in its build list. The test mirrors the spec-entry trigger: would a non-coder meeting this change have a question the FAQ doesn't answer? If yes, the FAQ entry ships with the batch. Host-project rule, not shipped plan.md — consumers never author FAQ entries, so the rule would misfire in their /plan sessions.
+- **README feature-list sync rides the SPEC-sync trigger.** A change that adds or removes a user-facing feature — a skill, a mode, a command, or user-visible hook behaviour — already must update SPEC.md. That same moment also syncs README.md's "What it does" feature list, which is the plain-English mirror of SPEC's feature list. One more clause on the existing trigger, not a new detection point. Host-only concern: consumers don't maintain the method's README.
 - **A new batch type touches four places.** Adding a batch type (beyond Build / Test / Audit / Freeform) must wire all four, or it ships half-working: `plugin/si-plugin/docs/next.md` (execution routing), `plugin/si-plugin/docs/done.md` (close routing), `plugin/si-plugin/hooks/post_tool_use.py`'s `ALLOWED_SUBHEADINGS` (the queue lint), and `plugin/si-plugin/docs/plan.md`'s Step 3 batch structure. The now-retired spec-edit batch type was caught half-wired once — it omitted next.md's router — and a later goal session had to finish it; the type is gone, but the half-wiring lesson is exactly why this rule exists. Host-only concern: consumers never author batch types, so this stays in this CLAUDE.md, not in shipped plan.md.
 - **Old plugin history** is on GitHub (`FlintCraftTech/sovereign-implementer`, pre-rebuild commits). Not in this folder.
 

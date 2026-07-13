@@ -95,3 +95,5 @@ Otherwise, based on queue state:
 1. Captures appended this session that affect the next work → recommend /plan, name the blocker.
 2. Processed work exists → name the next item, then ask whether the user is continuing into another /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
 3. Processed empty → "Queue is clear. Run /plan when you have more."
+
+**File the forward-recommendation advisory** when this step made a concrete recommendation — name what to plan or build next and why. File it per plugin-behaviour.md Forward-recommendation advisory: a capture at the top of Unprocessed, worded as advice, consumed and cleared by the next /plan. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.

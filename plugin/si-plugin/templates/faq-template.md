@@ -197,6 +197,12 @@ It's a planning checkpoint Claude placed between batches. When /next reaches it,
 
 It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. A /cruise run stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
 
+## Why did Claude reorder my queue at the end of a planning session?
+
+At the end of every planning session, Claude walks through both sections of your queue and puts them in the order that makes the most sense for working through them. For unprocessed items, it puts the one that would unblock the most other work first — so processing it moves the most things forward. For processed items, it puts the one that should be built first — the one whose output is needed by later work — at the top, so you're not building something that depends on something you haven't done yet.
+
+Claude owns this ordering and does it on its own — it tells you what it moved and why, but doesn't ask permission. That's because ordering is low-stakes and easy to undo (just say "move X back above Y"), and asking about every reorder would add ceremony to every planning close. The narration is the catch-point: if Claude moved something you disagree with, say so and it adjusts. A reorder that changes what gets built *next* is flagged clearly; a small tidy gets a one-line note.
+
 ## Claude tidied up the queue while committing, without asking me. Is that normal?
 
 Yes. Some queue housekeeping is Claude's to handle on its own — clearing a "waiting on" note once the thing it was waiting for is done, or fixing a pointer to a section that has moved. These change nothing you decide: they drop no work, reorder nothing, and don't alter any choice you've made — they're bookkeeping on entries that are otherwise fine. So Claude makes the fix and tells you it did, as part of the commit, rather than stopping to ask. Anything that's a real judgment call — dropping an item, rewriting it, or deciding whether to keep it — still waits for a planning session and your say. You always see what was tidied; you just aren't asked to approve the routine kind.
@@ -204,6 +210,12 @@ Yes. Some queue housekeeping is Claude's to handle on its own — clearing a "wa
 ## Something about the method itself is broken or confusing — where does that go?
 
 Not into your project's queue — that queue is for your app, and a note about how Sovereign Implementer *itself* behaves would just clutter it. Method problems go to the plugin's author instead. If you hit one — a command doing something odd, a step that doesn't make sense, or a question this FAQ doesn't answer — tell Claude, and it drafts a short report you can send. Claude can also spot a method problem itself mid-session and offer once to draft the report. The report is scrubbed by design: it describes what the plugin did, which step, and the version — never your app's name, your files, or any secrets. Claude shows you the report and you paste it at flintcraft.tech/report yourself; Claude never sends it for you, so nothing leaves your machine without your eyes on it first. The test Claude uses to tell the two apart: is this about how the method works, or about what you're building with it? The first goes to the author; the second stays in your queue as normal work. (This is not Claude Code's built-in `/bug` command — that reports Claude Code itself to Anthropic, not this plugin to its author.)
+
+## Why is there a "Last session advises…" line at the top of my queue?
+
+That's a forward-recommendation note — the previous session's suggestion for where to focus next. It's there so you don't have to remember what the last session recommended; the recommendation sits right where the next /plan session sees it first.
+
+It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Once you and Claude have agreed on the processing or build order for the session, the note is deleted automatically. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
 ## How do I know what was done in a previous session?
 

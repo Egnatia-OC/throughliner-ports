@@ -31,7 +31,7 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files).
 
-If a red flag was accepted during this session — a planning-stage risk the user was told plainly and chose to carry — also record the decision in this entry per done.md Accepted red flags: what the user was warned about, and that they chose to proceed. The accepted flag itself lives in the queue as a red-flag work line at `State: accepted` (plugin-behaviour.md Flag states).
+If a red flag was accepted during this session — a planning-stage risk the user was told plainly and chose to carry — also record the decision in this entry per done.md Accepted red flags: what the user was warned about, and that they chose to proceed. The accepted flag itself lives in the queue as a marker on the work line at `State: accepted` (plugin-behaviour.md Flag states).
 
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
@@ -61,3 +61,5 @@ Otherwise, based on queue state:
 - Fresh setup session whose only work line is the rough first build line: recommend /plan to scope it, never /next. The interview wrote that line deliberately unscoped, so it isn't ready to build yet — scoping is /plan's job.
 - Processed work exists: name the next item, then ask whether the user is continuing into a /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
 - Processed work empty: "Queue is clear. Run /plan when you have more."
+
+**File the forward-recommendation advisory** when this step made a concrete recommendation — name what to plan or build next and why. File it per plugin-behaviour.md Forward-recommendation advisory: a capture at the top of Unprocessed, worded as advice, consumed and cleared by the next /plan. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.

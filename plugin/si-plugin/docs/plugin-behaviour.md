@@ -105,7 +105,7 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
   - The **prose rationale** lives in the block beneath the heading.
   - A **provenance label** naming who raised it — "captured by you" or "by Claude" — also lives in that block. It stays on the line after the work is processed, so a processed line still shows where it came from. A capture Claude files carries "by Claude"; one the user asks for carries "captured by you".
 
-  A red-flag work line adds one more line to that block: its `Red flag · State: <open | resolved | accepted>` marker (see Red flags).
+  A work line carrying a red-flag marker adds one more line to that block: its `Red flag · State: <open | resolved | accepted>` tag (see Red flags).
 
   This exact shape — `#### ` heading, `[slug]` at the end of the heading line, provenance in the block, red-flag marker (when present) in the block, all under a `## Processed` or `## Unprocessed` section heading — is what all three hooks parse: post_tool_use's queue lint, session_start's open-red-flag scan, and the section headings both key on. Emitting a work line as a bold line or a plain bullet instead would read fine to a person but silently break all three — the lint flags nothing, the red-flag scan finds nothing, no error surfaces. The `#### ` heading rendering is load-bearing, not cosmetic.
 - Flavor marker. A work line may carry an optional leading tag that names how it's executed. There are two tags and one default:
@@ -119,6 +119,18 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 - Don't process work outside /plan — append it to Unprocessed and defer. Filing a capture is open to every session; moving a line into Processed or deleting it is /plan's, because that decision is the user's to make (see Routing and discipline, filing vs processing).
 - Mid-session captures follow the same rules. No special priority.
 - Reference other queue items by slug, never by status. A work line's prose may name another item by its slug, but must not assert its status (queued, processed, shipped) or assume it is still present — that point-in-time claim goes stale silently the moment the item moves, and nothing mechanical reads free-prose status claims to flag them. Status is re-derived from LOG when the item is convened. Same family as converting relative dates to absolute: write what stays true, not what happens to be true now.
+
+### Forward-recommendation advisory
+
+When /done's close makes a concrete "do X next" recommendation — naming specific work to plan or build next — that recommendation is filed as an advisory capture at the **top** of Unprocessed, not appended oldest-first. The advisory is a transient orientation handoff, not a work line: it tells the next session what the last one recommended, framed as advice, not a command.
+
+**Format.** A `#### ` heading worded as "Last session advises processing [slug or description] next" with the reasoning beneath and provenance "by Claude". It uses the standard capture shape (heading, slug, provenance) so the queue lint parses it, but its lifecycle differs from ordinary captures.
+
+**Lifecycle — consumed and cleared, not processed.** The advisory is never run through keep/delete like work and never moves into Processed. At the next /plan, it informs the order discussion: /plan reads it, lets it orient where the session focuses, and deletes it once the processing/build order is agreed — whether the recommendation was followed or not. It has done its job once the fresh session's own judgment has run. A /plan that opens with no advisory in the queue skips this step — nothing to consume.
+
+**Filing.** /done files the advisory at the end of its "Recommend next" step, after the commit, when it has a concrete forward recommendation to make. When the recommendation is generic ("run /plan when you have more") or there's nothing specific to advise, no advisory is filed — the mechanism fires on concrete recommendations only.
+
+**The why.** Without this, a forward recommendation lives only in chat, so acting on it requires the user to remember it across sessions — the next-ness-lives-in-memory failure. Filing it on the queue's single capture mechanism makes it durable and visible, while the advisory framing and consume-and-clear lifecycle keep it from becoming a dictation the next session is bound by.
 
 ## Work-line states — the canonical four
 
@@ -138,13 +150,13 @@ Since this file loads at every session start, this is where the four-state model
 
 ## Red flags
 
-Claude screens every session — planning, building, auditing, capturing — for anything that could expose the user's data or their users' data, or that amounts to a breach. When one is found, Claude raises a red flag: a plain-English statement naming the risk, surfaced to the user immediately, and files it as a red-flag work line.
+Claude screens every session — planning, building, auditing, capturing — for anything that could expose the user's data or their users' data, or that amounts to a breach. When one is found, Claude raises a red flag: a plain-English statement naming the risk, surfaced to the user immediately, and tags the work line that carries the risk with a red-flag marker.
 
-A red flag is an ordinary work line carrying one extra marker line directly under its description:
+A red flag is a marker on a work line — one extra line directly under the work line's description:
 
 `Red flag · State: <open | resolved | accepted>`
 
-It lives in the queue as a work line — not in a dedicated section. The why it's a tagged line and not its own pinned section: a standing "Red flags" section reads as a claim that the tool tracks every risk that exists — comprehensive data-and-security management the tool can't actually back up — when all it ever holds is the risks Claude happened to identify. A tagged work line lets Claude surface and address a genuine risk without that over-claim. Describe each risk by what will be done about it, which is what the queue is for; the marker and its state carry the risk-tracking, the surrounding line carries the work. This is the fine line the model must hold: provide risk-addressing, without promising risk management.
+The flag rides the work, not the other way around: the work line is the work (what will be done about the risk), and the marker tags it as carrying a security or privacy concern with a tracked state. The marker lives on an ordinary work line in the queue — not in a dedicated section. The why it's a marker on a line and not its own pinned section: a standing "Red flags" section reads as a claim that the tool tracks every risk that exists — comprehensive data-and-security management the tool can't actually back up — when all it ever holds is the risks Claude happened to identify. A marker on a work line lets Claude surface and address a genuine risk without that over-claim. Describe each risk by what will be done about it, which is what the queue is for; the marker and its state carry the risk-tracking, the surrounding line carries the work. This is the fine line the model must hold: provide risk-addressing, without promising risk management.
 
 Claude never silently fixes a security concern and ships past it, and never builds past one without surfacing it. Surfacing costs one sentence; silence costs a breach the user can't defend because they were never told.
 
@@ -152,7 +164,7 @@ Scope: security, privacy, and breach risk specifically — data exposure, unauth
 
 Flagging, not fixing: Claude names and routes the risk. It does not quietly handle it or silently redesign around it, even when the fix seems obvious. The user decides what happens next.
 
-Planning-stage risks are recorded the same way. A security, privacy, or breach risk identified during planning — before any code exists — becomes a red-flag work line with a state, exactly as a build-session risk does: **resolved** if the design eliminated it in-session (record how it was designed out), **open** if it will be carried into the build, **accepted** if the user is told the risk plainly and chooses to proceed.
+Planning-stage risks are recorded the same way. A security, privacy, or breach risk identified during planning — before any code exists — gets a red-flag marker on its work line with a state, exactly as a build-session risk does: **resolved** if the design eliminated it in-session (record how it was designed out), **open** if it will be carried into the build, **accepted** if the user is told the risk plainly and chooses to proceed.
 
 ### Flag states
 

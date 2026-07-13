@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>No-Code Platform Comparison — Portability & Rights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d0f14;
+    --surface:   #141720;
+    --border:    #252a36;
+    --text:      #d4d8e8;
+    --muted:     #6b7280;
+    --heading:   #e8ecf8;
+    --sovereign: #131c14;
+    --sov-border:#2a4a2c;
+
+    --yes-bg:    #0d2b1a;
+    --yes-fg:    #4ade80;
+    --no-bg:     #2b0d0d;
+    --no-fg:     #f87171;
+    --partial-bg:#2b1f08;
+    --partial-fg:#fbbf24;
+    --note:      #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  header {
+    max-width: calc(100vw - 32px);
+    margin: 0 auto 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: #4ade80;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .yes     { background: var(--yes-bg);     color: var(--yes-fg);     border: 1px solid #1a4a2e; }
+  .no      { background: var(--no-bg);      color: var(--no-fg);      border: 1px solid #4a1a1a; }
+  .partial { background: var(--partial-bg); color: var(--partial-fg); border: 1px solid #4a3410; }
+
+  .table-wrap {
+    max-width: calc(100vw - 32px);
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    /* Intentionally no overflow-x — that would coerce overflow-y to a scroll context
+       and trap the sticky SI row inside the wrap instead of anchoring to the viewport.
+       If the table is wider than the viewport, the page body scrolls horizontally. */
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1600px;
+  }
+
+  /* Section header rows that delineate categories within the table. */
+  .section-header {
+    background: #1a1f2c !important;
+  }
+
+  .section-header td {
+    padding: 20px 16px 14px;
+    border-top: 1px solid #2a3041;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header:hover {
+    background: #1a1f2c !important;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.05rem;
+    color: var(--heading);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .section-blurb {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+    max-width: 900px;
+  }
+
+  /* Audience tag — appears below platform name so non-coders can skim by relevance. */
+  .audience-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    padding: 2px 6px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  .audience-tag.noncoder {
+    color: #4ade80;
+    border: 1px solid #2a4a2c;
+    background: rgba(74, 222, 128, 0.06);
+  }
+
+  .audience-tag.developer {
+    color: #c4b5fd;
+    border: 1px solid #4a3a6a;
+    background: rgba(196, 181, 253, 0.06);
+  }
+
+  .audience-tag.mixed {
+    color: var(--note);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  /* Watching section — emerging tools and adjacent categories, one-liners only. */
+  .watching {
+    max-width: calc(100vw - 32px);
+    margin: 24px auto 0;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .watching h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--heading);
+    margin-bottom: 6px;
+  }
+
+  .watching-intro {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .watching-group {
+    margin-top: 18px;
+  }
+
+  .watching-group-title {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--note);
+    margin-bottom: 10px;
+  }
+
+  .watching-item {
+    font-size: 11px;
+    color: var(--text);
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--border);
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 14px;
+    line-height: 1.45;
+  }
+
+  .watching-item:last-child {
+    border-bottom: none;
+  }
+
+  .watching-item strong {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  thead th {
+    background: #181c25;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: bottom;
+    white-space: nowrap;
+  }
+
+  thead th:first-child {
+    min-width: 160px;
+    color: var(--text);
+  }
+
+  thead th.col-curve {
+    color: #a78bfa;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody tr:hover:not(.sovereign-row) {
+    background: #181c25;
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    vertical-align: top;
+  }
+
+  .platform-name {
+    font-weight: 600;
+    color: var(--heading);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .platform-type {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  .cell-note {
+    color: var(--note);
+    font-size: 11px;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  .curve-time {
+    font-weight: 600;
+    font-size: 12px;
+    color: #c4b5fd;
+  }
+
+  .curve-skill {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .sovereign-row {
+    border-bottom: none !important;
+  }
+
+  /* Sticky-bottom: SI row stays pinned to viewport bottom while competitors scroll past above it. */
+  .sovereign-row td {
+    position: sticky;
+    bottom: 0;
+    background: var(--sovereign);
+    border-top: 2px solid var(--sov-border);
+    border-bottom: none;
+    z-index: 10;
+    box-shadow: 0 -10px 20px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .sovereign-row .platform-name {
+    color: #4ade80;
+  }
+
+  .sovereign-row:hover td {
+    background: #162018 !important;
+  }
+
+  .sov-label {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4ade80;
+    background: #0d2b1a;
+    border: 1px solid #1f4a28;
+    border-radius: 2px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .footnotes {
+    max-width: calc(100vw - 32px);
+    margin: 24px auto 0;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .footnotes h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--heading);
+    margin-bottom: 12px;
+  }
+
+  .footnotes ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .footnotes li {
+    font-size: 11px;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .footnotes li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #4a5568;
+  }
+
+  .footnotes li strong {
+    color: var(--note);
+  }
+
+  .updated {
+    max-width: calc(100vw - 32px);
+    margin: 12px auto 0;
+    font-size: 11px;
+    color: #3d4555;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>No-Code Platforms vs. <em>Sovereign Implementer</em><br>Portability, Rights &amp; Learning Curve</h1>
+  <div class="subtitle">COMPILED MAY 2026 — BASED ON PUBLIC TERMS, DOCUMENTATION, AND COMMUNITY RESEARCH</div>
+  <div class="legend">
+    <div class="legend-item"><span class="badge yes">YES</span> Full / Clear</div>
+    <div class="legend-item"><span class="badge partial">PARTIAL</span> Conditional or limited</div>
+    <div class="legend-item"><span class="badge no">NO</span> Absent or blocked</div>
+  </div>
+</header>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th class="col-curve">Learning<br>Curve</th>
+      <th>AI<br>Subscription</th>
+      <th>Code<br>Export</th>
+      <th>Data<br>Export</th>
+      <th>IP<br>Ownership</th>
+      <th>Platform<br>Lock-in Risk</th>
+      <th>Self-Hosting<br>Option</th>
+      <th>Open Source<br>/ Licence</th>
+      <th>Pricing<br>Model Risk</th>
+      <th>Vendor<br>Dependency</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ============================================================== -->
+    <!-- SECTION: AI-ASSISTED CODE GENERATION                              -->
+    <!-- ============================================================== -->
+    <tr class="section-header">
+      <td colspan="11">
+        <div class="section-title">AI-assisted code generation</div>
+        <div class="section-blurb">Tools where AI produces a real codebase you own. Sovereign Implementer's true peer category. Output is portable code on standard frameworks, not a configured app on the vendor's runtime.</div>
+      </td>
+    </tr>
+
+    <!-- LOVABLE -->
+    <tr>
+      <td>
+        <div class="platform-name">Lovable</div>
+        <div class="platform-type">Browser AI app generator</div>
+        <div class="audience-tag noncoder">Solo non-coder</div>
+      </td>
+      <td>
+        <div class="curve-time">~2 hours to first MVP</div>
+        <div class="curve-skill">Genuinely non-coder accessible. Chat-driven; basic web concepts help with sophisticated prompts.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$25/mo Pro includes AI credits — single subscription, single bill.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">React/TypeScript synced to your GitHub repo on all plans. Pro adds private repos and write access.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Supabase backend (PostgreSQL) — independently deployable. Lovable Cloud is opt-in.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full ownership of generated code. Standard React stack. Explicitly positions against Bubble's lock-in.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW</span>
+        <div class="cell-note">Low if you've exported. Higher if you depend on Lovable Cloud or built-in hosting.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Export and self-host anywhere. Builder itself stays SaaS.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary builder. Output uses open-source frameworks.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Credit-based — complex prompts burn faster than expected. Pro caps monthly; no à la carte top-ups.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Exported app runs independently of Lovable. Builder access lost if vendor disappears.</div>
+      </td>
+    </tr>
+
+    <!-- BOLT.NEW -->
+    <tr>
+      <td>
+        <div class="platform-name">Bolt.new</div>
+        <div class="platform-type">Browser AI app generator (StackBlitz)</div>
+        <div class="audience-tag mixed">Mixed — leans developer</div>
+      </td>
+      <td>
+        <div class="curve-time">Minutes to demo; the "70% wall"</div>
+        <div class="curve-skill">Non-coders hit a wall when the AI gets the app to roughly working and something breaks. Production maintenance assumes someone who can read code.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">AI included in $25/mo Pro. Token-based — burns faster on bigger codebases. <em>bolt.diy</em> open-source fork lets you bring your own API keys.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full code download on all plans. Push to GitHub or deploy to Vercel/Netlify.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Standard data formats. Bolt Cloud (DB, auth) is opt-in.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full ownership of exported code.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW</span>
+        <div class="cell-note">Low for exported code. High if relying on Bolt Cloud or Bolt's built-in hosting (documented outages, Jan 2026).</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Export anywhere. <em>bolt.diy</em> (MIT) lets you self-host the builder itself with your own keys.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Commercial Bolt is proprietary. <em>bolt.diy</em> fork is MIT-licensed.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Token model scales with codebase size — every prompt sends the whole project as context.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Exported app independent of Bolt. bolt.diy is a fallback for the generation workflow.</div>
+      </td>
+    </tr>
+
+    <!-- V0.DEV -->
+    <tr>
+      <td>
+        <div class="platform-name">v0.app</div>
+        <div class="platform-type">AI React/Next.js generator (Vercel)</div>
+        <div class="audience-tag developer">Developer-leaning</div>
+      </td>
+      <td>
+        <div class="curve-time">Minutes for UIs; longer for full apps</div>
+        <div class="curve-skill">Non-coders can generate stunning UIs in minutes. Wiring frontend to a working backend requires developer help. v0 made full-stack moves in Feb 2026 but remains frontend-first.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$20/mo Premium includes AI credits. Switched to token-based billing in Feb 2026 — chat history counts as input.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">React/Next.js code. GitHub integration added Feb 2026 (branches, commits, PRs from v0 UI).</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Standard data formats; databases connect through v0 UI (Snowflake, AWS as of Feb 2026).</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Generated code is yours. No v0-specific runtime.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Tightly coupled to Vercel/Next.js ecosystem. Deploying elsewhere loses DX advantage.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Next.js output is self-hostable on any Node host. v0 itself is Vercel SaaS.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary builder. Next.js output is open source.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Token-based since Feb 2026. Credits do NOT roll over. Vercel hosting cost scales with traffic.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Generated code runs anywhere. Significant if relying on Vercel CDN/edge functions.</div>
+      </td>
+    </tr>
+
+    <!-- REPLIT AGENT -->
+    <tr>
+      <td>
+        <div class="platform-name">Replit Agent</div>
+        <div class="platform-type">Cloud IDE + AI agent</div>
+        <div class="audience-tag mixed">Mixed — beginners and devs</div>
+      </td>
+      <td>
+        <div class="curve-time">Hours to first app</div>
+        <div class="curve-skill">Lowest setup friction in the category — open a browser and start. Complexity rises fast beyond simple apps; docs lag the product.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$25/mo Core includes AI credits. Agent 3 uses effort-based pricing — community reports 2.5–6× higher effective costs after Feb 2026 overhaul.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Code downloadable to GitHub. <em>Replit-specific utilities and built-in DB don't migrate cleanly</em> — multiple community reports of lock-in discovered after investment.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Standard data export; Replit's built-in key-value DB is not portable.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">You own generated code, with caveats about Replit-specific utilities.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Whole dev environment is Replit's. No local IDE, no local terminal. Migrating live apps off is non-trivial.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Pure cloud platform. No self-hosted Replit.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Compute and storage billed separately; community analysis puts total ownership ~70% above listed price at scale.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Apps run on Replit's servers; go down with the platform unless exported and rehosted externally.</div>
+      </td>
+    </tr>
+
+    <!-- CURSOR -->
+    <tr>
+      <td>
+        <div class="platform-name">Cursor</div>
+        <div class="platform-type">AI-native code editor (Anysphere)</div>
+        <div class="audience-tag developer">Developer</div>
+      </td>
+      <td>
+        <div class="curve-time">Days for devs; not for non-coders</div>
+        <div class="curve-skill">Cursor is an IDE. Opening it without coding context is disorienting. Not for non-coders. Developers migrate from VS Code in minutes.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$20/mo Pro includes $20 in monthly model credits. Credit-based since June 2025 — power users hit walls under the new model.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Local editor writing to your filesystem. There is no "export" — you already own everything.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Cursor doesn't touch your data layer.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Total. Codebase is yours.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">If Cursor disappeared, open VS Code and keep going.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Local editor. Code never lives on Cursor's servers.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary editor (VS Code fork).</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">$20–$200/mo tiers. Pay-as-you-go overages at API rates. GPT-4.5 can burn $2/request.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Codebase and app: unaffected by Cursor. Only your AI-assisted workflow depends on the vendor.</div>
+      </td>
+    </tr>
+
+    <!-- WINDSURF -->
+    <tr>
+      <td>
+        <div class="platform-name">Windsurf</div>
+        <div class="platform-type">AI code editor (Cognition; formerly Codeium)</div>
+        <div class="audience-tag developer">Developer</div>
+      </td>
+      <td>
+        <div class="curve-time">Days for devs</div>
+        <div class="curve-skill">IDE for developers. Cascade's auto-context retrieval makes it beginner-friendly within the developer audience.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$15/mo Pro — cheaper than Cursor. March 2026 shift from credits to quotas; some users hit lockouts mid-session.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Local editor; your files, your Git repo.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">No data layer involvement.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Total.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">Local files; remove Windsurf, codebase intact.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Local editor. Codeium extension can point at self-hosted models for fully offline use.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary (VS Code fork). Codeium extension separately available free.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW–MED</span>
+        <div class="cell-note">Cheaper than Cursor. Free tier more generous. Quota model has trade-offs.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW</span>
+        <div class="cell-note">Cognition acquired late 2025; long-term direction uncertain. Codebase unaffected by vendor changes.</div>
+      </td>
+    </tr>
+
+    <!-- CLAUDE CODE -->
+    <tr>
+      <td>
+        <div class="platform-name">Claude Code</div>
+        <div class="platform-type">Terminal agentic AI (Anthropic)</div>
+        <div class="audience-tag mixed">Mixed — used by SI</div>
+      </td>
+      <td>
+        <div class="curve-time">Real terminal comfort required</div>
+        <div class="curve-skill">Terminal-native. Non-coders need command-line basics and clear architectural direction. Sovereign Implementer methods (structured CLAUDE.md, planning mode) make non-coder use viable.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">Included in Claude.ai Pro ($20/mo), Max 5× ($100/mo), Max 20× ($200/mo). Or pay-as-you-go via API.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Writes directly to local files. Remove the tool and nothing changes about your code.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Anthropic doesn't touch your data layer.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Total. Codebase is ordinary.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">Anthropic-side dependency for AI; zero lock-in on the code itself.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Local tool calling Anthropic API. No self-hosted Claude available; OpenCode/Aider are offline-capable alternatives.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary (Claude Code CLI + Anthropic models).</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Pro briefly gated behind Max in April 2026 (reversed in hours). v2.1.100+ token-inflation bug reported May 2026, ~40% extra consumption, workaround is older version. Verify current pricing.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Codebase: zero dependency. Workflow: high dependency on Anthropic continuing to operate at current capability.</div>
+      </td>
+    </tr>
+
+    <!-- GITHUB COPILOT -->
+    <tr>
+      <td>
+        <div class="platform-name">GitHub Copilot</div>
+        <div class="platform-type">AI assistant ecosystem (Microsoft)</div>
+        <div class="audience-tag developer">Developer-leaning</div>
+      </td>
+      <td>
+        <div class="curve-time">Minutes for devs already in VS Code</div>
+        <div class="curve-skill">Plugin model — no migration required. GitHub Spark (Pro+) is the most non-coder-accessible Copilot surface.</div>
+      </td>
+      <td>
+        <span class="badge yes">BUNDLED</span>
+        <div class="cell-note">$10/mo Pro. <em>Major billing change June 1, 2026</em> — from request-based to usage-based (token consumption).</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Plugin/service over your existing code. GitHub explicitly disclaims ownership of suggestions.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">No data layer involvement.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Your code in your repo. Code referencing feature flags potential training-data matches.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">Remove Copilot from VS Code and keep working.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No self-hosted Copilot. Continue.dev with local models is the alternative path.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Billing model changing June 2026. Opus 4.7 was gated mid-cycle from Pro to Pro+ in April 2026 — mid-cycle gating is a risk signal.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Codebase untouched. AI features and PR automations go with the vendor.</div>
+      </td>
+    </tr>
+
+    <!-- AIDER -->
+    <tr>
+      <td>
+        <div class="platform-name">Aider</div>
+        <div class="platform-type">Open-source terminal pair programmer</div>
+        <div class="audience-tag developer">Developer</div>
+      </td>
+      <td>
+        <div class="curve-time">Hours for devs; not for non-coders</div>
+        <div class="curve-skill">Terminal-first with no GUI. Not appropriate for non-coders. Transparent diff-based workflow for devs.</div>
+      </td>
+      <td>
+        <span class="badge partial">SEPARATE</span>
+        <div class="cell-note">Tool is free (MIT). You bring your own API key (Anthropic, OpenAI). Or point at local model via Ollama for $0 offline use.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Writes to your filesystem. Auto-commits to your Git with descriptive messages.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">No data layer involvement.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Total. Tool itself is MIT-licensed and auditable.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">Open source. Fork it if needed.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Fully — install locally, bring your own keys (or use local models).</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">MIT-licensed. 27K+ GitHub stars.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">No subscription. Typical session at Claude Sonnet 4.6 rates: $0.50–$5. Local models: $0.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">Open source; survives vendor exit by definition. Model vendor (if cloud) is a separable dependency.</div>
+      </td>
+    </tr>
+
+    <!-- ============================================================== -->
+    <!-- SECTION: VISUAL NO-CODE BUILDERS                                 -->
+    <!-- ============================================================== -->
+    <tr class="section-header">
+      <td colspan="11">
+        <div class="section-title">Visual no-code builders</div>
+        <div class="section-blurb">Drag-and-drop platforms where you configure an app inside the vendor's runtime. The output is a configured app on that runtime — not a portable codebase. Moving to another platform means rebuilding.</div>
+      </td>
+    </tr>
+
+    <!-- BUBBLE -->
+    <tr>
+      <td>
+        <div class="platform-name">Bubble</div>
+        <div class="platform-type">Visual web + native mobile app builder</div>
+        <div class="audience-tag mixed">Non-coder, but real logic curve</div>
+      </td>
+      <td>
+        <div class="curve-time">4–6 months to proficiency</div>
+        <div class="curve-skill">No code required, but steep logic curve. Native mobile builder added mid-2025. Extensive Academy and community resources available.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Apps run only on Bubble's servers. No source code accessible.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">CSV export of app data.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">You own your content &amp; data. Bubble explicitly retains ownership of the underlying app code ("like Microsoft Word").</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App cannot exist outside Bubble. Full rebuild required to migrate.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Enterprise gets dedicated infrastructure but remains Bubble-hosted.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Usage-based Workload Units create unpredictable cost scaling. History of significant price changes.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App is non-functional if Bubble closes or account is terminated.</div>
+      </td>
+    </tr>
+
+    <!-- FLUTTERFLOW -->
+    <tr>
+      <td>
+        <div class="platform-name">FlutterFlow</div>
+        <div class="platform-type">Flutter/Dart visual builder</div>
+        <div class="audience-tag developer">Developer-leaning</div>
+      </td>
+      <td>
+        <div class="curve-time">200+ hours</div>
+        <div class="curve-skill">Developer literacy required. Reclassified as a "developer tool" (Feb 2026). Requires Flutter/Dart familiarity, external database setup (Firebase/Supabase), and understanding of widget trees and state management. Not suited to non-technical beginners.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required. AI Copilot is bundled in Pro tier as an optional feature.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Full Flutter/Dart export from Basic ($39/mo) and above. Free plan: no export. Plans restructured late 2025; new lineup is Free / Basic / Growth (Pro) / Business.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Standard data formats.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Explicit "Own Your Code" policy. "We claim no ownership rights over User Content." Packages use permissive licences (MIT/BSD-3).</div>
+      </td>
+      <td>
+        <span class="badge partial">CONDITIONAL</span>
+        <div class="cell-note">Low if you export regularly. High if you never export — code only exists on their platform until then.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Once exported, deploy anywhere. No ongoing FlutterFlow dependency.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary platform; output uses open-source Flutter framework.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Code export requires paid plan. Database costs are separate and additional (~$25–100/mo). GitHub integration needs higher tier.</div>
+      </td>
+      <td>
+        <span class="badge partial">CONDITIONAL</span>
+        <div class="cell-note">Negligible once code is exported and in version control. High if you haven't exported.</div>
+      </td>
+    </tr>
+
+    <!-- GLIDE -->
+    <tr>
+      <td>
+        <div class="platform-name">Glide</div>
+        <div class="platform-type">Spreadsheet-to-app builder</div>
+        <div class="audience-tag noncoder">Solo non-coder</div>
+      </td>
+      <td>
+        <div class="curve-time">Hours to first app</div>
+        <div class="curve-skill">No prior skill needed. Point-and-click. If data is already in Google Sheets or Airtable, setup is near-instant. Cited as among the easiest entry points in no-code.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No code export. UI and logic must be rebuilt from scratch on any other platform.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Data lives in Google Sheets / Airtable / Excel — already portable and user-owned. Glide doesn't hold your data.</div>
+      </td>
+      <td>
+        <span class="badge partial">SPLIT</span>
+        <div class="cell-note">Data ownership is strong (external spreadsheet). App/UI/logic IP is unclear — no code to own.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Full rebuild required for the app itself. Data is portable, but the app is not.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">PWA only. No self-hosting path.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Per-user pricing — costs scale linearly with team size. Hard 25k row cap on Business plan.</div>
+      </td>
+      <td>
+        <span class="badge partial">SPLIT</span>
+        <div class="cell-note">Data survives vendor failure (lives externally). App functionality does not.</div>
+      </td>
+    </tr>
+
+    <!-- ADALO -->
+    <tr>
+      <td>
+        <div class="platform-name">Adalo</div>
+        <div class="platform-type">Native mobile/web builder</div>
+        <div class="audience-tag noncoder">Solo non-coder</div>
+      </td>
+      <td>
+        <div class="curve-time">Hours to first app</div>
+        <div class="curve-skill">No prior skill needed. Described as "easy as PowerPoint." Easiest learning curve among native mobile builders. AI Magic Start (bundled) generates full app foundations from a description.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required. AI Magic Start is bundled in the standard plans.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No code export available on any plan.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">CSV / API data export.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">You own your content and data. App code is not exportable — IP in the build is effectively Adalo's to host.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App cannot exist outside Adalo. Full rebuild required to migrate.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No self-hosting option.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Flat-rate $36–$52/mo. Adalo 3.0 (late 2025) removed App Actions — no more usage-based bill shock. Unlimited records and unlimited publishing on paid plans.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App non-functional if Adalo closes. Adalo 3.0 backend overhaul made the platform 3–4× faster but didn't change the lock-in.</div>
+      </td>
+    </tr>
+
+    <!-- WEBFLOW -->
+    <tr>
+      <td>
+        <div class="platform-name">Webflow</div>
+        <div class="platform-type">Visual web / marketing site builder</div>
+        <div class="audience-tag mixed">Designer / mixed</div>
+      </td>
+      <td>
+        <div class="curve-time">Days to first site; weeks to master</div>
+        <div class="curve-skill">No coding required. Web design basics helpful but not essential. WYSIWYG editor is intuitive; advanced animations, CMS, and responsive configuration take longer to learn.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required. AI credits for opt-in AI features enforced from June 29, 2026 on Workspace plans.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">HTML/CSS/JS static export on paid Workspace plans. CMS, forms, ecommerce, and search are NOT included — must be rebuilt separately.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">CMS collections exportable as CSV.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">You own your content. Exported static code is yours; dynamic logic stays proprietary.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Static design exports cleanly. CMS-driven pages, forms, and commerce require significant rework to migrate.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Static frontend can be self-hosted. CMS, forms, and search require third-party replacements.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS. Not open source.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Restructured to seat-based Workspace model (Dec 2024) — Full and Limited seats stack up fast for teams. May 2026 "Premium Site plan" combines CMS + Business. AI credit enforcement starts June 29, 2026.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Static sites survive vendor failure. Dynamic/CMS sites do not.</div>
+      </td>
+    </tr>
+
+    <!-- THUNKABLE -->
+    <tr>
+      <td>
+        <div class="platform-name">Thunkable</div>
+        <div class="platform-type">Block-based mobile builder</div>
+        <div class="audience-tag noncoder">Solo non-coder</div>
+      </td>
+      <td>
+        <div class="curve-time">Days to basic app</div>
+        <div class="curve-skill">No prior skill needed. Block-based logic (similar to Scratch) removes syntax barriers entirely. Cited as the gentlest learning curve of any platform that produces native mobile output. Advanced features take weeks.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No direct code export. Proprietary block-based format only.</div>
+      </td>
+      <td>
+        <span class="badge partial">LIMITED</span>
+        <div class="cell-note">Basic data export available. No comprehensive portability documentation.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">You own your content. No explicit "own your code" policy; block-based apps have no portable format.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Full rebuild required. Block format is proprietary and non-transferable.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No self-hosting option.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Per-app publishing fees on some plans. Pricing appears stable but less documented than larger platforms.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App is non-functional if Thunkable closes.</div>
+      </td>
+    </tr>
+
+    <!-- WEWEB -->
+    <tr>
+      <td>
+        <div class="platform-name">WeWeb</div>
+        <div class="platform-type">Vue.js frontend builder</div>
+        <div class="audience-tag mixed">Mixed</div>
+      </td>
+      <td>
+        <div class="curve-time">1–2 weeks to productive; longer to master</div>
+        <div class="curve-skill">API/data literacy needed. Steeper than Softr or Glide. Figma-like interface helps designers. Full productivity with workflows and data connections takes weeks; one reviewer onboarded a non-technical client in 3 hours to basic editing.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full export as Vue.js SPA. Can push to GitHub. Self-host on Vercel, Netlify, AWS, or own servers.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Data lives in your external backend — never touches WeWeb servers. WeWeb Tables (native backend, April 2026) also exportable.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full ownership of exported frontend. Standard open web code (Vue.js). Explicit self-hosting support.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Frontend can be exported and run fully independently. No WeWeb dependency once hosted.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Full self-hosting via code export. WeWeb-hosted option also available (optional).</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Platform is proprietary. Output uses open web standards (Vue.js).</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW–MED</span>
+        <div class="cell-note">Seat-based, no per-user or per-project caps. Hosting is optional. Regional pricing available.</div>
+      </td>
+      <td>
+        <span class="badge yes">LOW</span>
+        <div class="cell-note">Exported and self-hosted app runs independently of WeWeb.</div>
+      </td>
+    </tr>
+
+    <!-- SOFTR -->
+    <tr>
+      <td>
+        <div class="platform-name">Softr</div>
+        <div class="platform-type">Portal / internal tool builder</div>
+        <div class="audience-tag noncoder">Solo non-coder</div>
+      </td>
+      <td>
+        <div class="curve-time">Hours to first app</div>
+        <div class="curve-skill">No prior skill needed. Consistently cited as the fastest platform to get started on. Block-based assembly from templates. AI Co-Builder (2026) generates apps from a natural-language prompt.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required. AI Co-Builder is bundled into Softr's standard pricing.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No frontend or backend code export. Fully hosted, no portability path for the app.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Data lives in external sources (Airtable, Google Sheets, etc.) — inherently portable.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">You own your data (via external source). App UI and logic have no export path.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">App must be fully rebuilt to migrate. No code, no export, no migration tool.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">No self-hosting option. Fully vendor-hosted.</div>
+      </td>
+      <td>
+        <span class="badge no">NO</span>
+        <div class="cell-note">Proprietary SaaS.</div>
+      </td>
+      <td>
+        <span class="badge partial">MEDIUM</span>
+        <div class="cell-note">Strict end-user limits on lower plans (e.g. 20 users on Basic). Costs scale with user count.</div>
+      </td>
+      <td>
+        <span class="badge partial">SPLIT</span>
+        <div class="cell-note">Data survives vendor failure (external source). App does not.</div>
+      </td>
+    </tr>
+
+    <!-- SAP BUILD APPS -->
+    <tr>
+      <td>
+        <div class="platform-name">SAP Build Apps</div>
+        <div class="platform-type">Formerly AppGyver — enterprise</div>
+        <div class="audience-tag developer">Enterprise / developer</div>
+      </td>
+      <td>
+        <div class="curve-time">Weeks to months</div>
+        <div class="curve-skill">Enterprise/SAP ecosystem knowledge assumed. Requires understanding of SAP BTP, authentication, and enterprise data integration. Community AppGyver edition is more accessible. Not suited to solo indie builders.</div>
+      </td>
+      <td>
+        <span class="badge yes">NONE</span>
+        <div class="cell-note">No AI subscription required to use Build Apps itself; SAP's own AI offerings (Joule, etc.) sit alongside, not inside.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Can generate deployable artefacts for SAP BTP. Not independently portable — deeply tied to SAP ecosystem.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Enterprise-grade data export. SAP explicitly states customer data ownership is not changed by API policies.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">You own your custom apps and configurations. SAP retains platform IP. April 2026 API policy controversy raised concerns about data access throttling.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Deep SAP BTP ecosystem dependency. Migrating to non-SAP infrastructure requires significant rework.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Deployment via SAP BTP; possible on AWS/Azure/GCP via RISE — but always within SAP's managed layer.</div>
+      </td>
+      <td>
+        <span class="badge partial">PARTIAL</span>
+        <div class="cell-note">Some components open source (OpenUI5, Kyma). Platform itself is proprietary.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Complex enterprise licensing. RISE contracts run 3–5 years. Mid-term exit is very difficult.</div>
+      </td>
+      <td>
+        <span class="badge no">HIGH</span>
+        <div class="cell-note">Requires SAP BTP infrastructure to run. Not viable as a standalone deployment.</div>
+      </td>
+    </tr>
+
+    <!-- SOVEREIGN IMPLEMENTER -->
+    <tr class="sovereign-row">
+      <td>
+        <div class="platform-name">Sovereign Implementer <span class="sov-label">BENCHMARK</span></div>
+        <div class="platform-type">Claude Code + No-Code Method plugin</div>
+        <div class="audience-tag noncoder">Solo non-coder (directed)</div>
+      </td>
+      <td>
+        <div class="curve-time">Days to first toy app; months to fluency</div>
+        <div class="curve-skill">No code required, but real prerequisites: AI-tooling fluency, basic terminal use, and Git literacy. Initial setup (tooling, Git, first build cycle) takes days. Ongoing fluency is cumulative and develops across projects — skills transfer in a way platform skills typically don't, but the onramp is honest work, not an afternoon.</div>
+      </td>
+      <td>
+        <span class="badge partial">SEPARATE</span>
+        <div class="cell-note">The method itself is free. A Claude subscription is required separately — Claude.ai Pro at $20/mo, Max 5× at $100/mo, Max 20× at $200/mo, or pay-as-you-go via API. This is a real second account to set up, not a hidden cost.</div>
+      </td>
+      <td>
+        <span class="badge yes">N/A</span>
+        <div class="cell-note">You own the source code from the first commit. No export needed. Maintaining or extending it without AI tooling assumes coding fluency.</div>
+      </td>
+      <td>
+        <span class="badge yes">FULL</span>
+        <div class="cell-note">You control the database, schema, and backup strategy. You also operate them — provisioning, backups, and migrations are your responsibility, not the platform's.</div>
+      </td>
+      <td>
+        <span class="badge yes">COMPLETE</span>
+        <div class="cell-note">Full IP ownership of the code itself. No platform claims rights over your build. Note that purely AI-generated work may not be copyrightable in some jurisdictions — see footnote.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW</span>
+        <div class="cell-note">The deployed app is a normal codebase — host it on any server or cloud. The build process itself is tied to Claude Code plus this method's plugin and is not portable to other AI vendors.</div>
+      </td>
+      <td>
+        <span class="badge yes">YES</span>
+        <div class="cell-note">Deploy to any server or cloud. Operational responsibility — uptime, security, patches, backups — is yours, not a hosted platform's.</div>
+      </td>
+      <td>
+        <span class="badge yes">YOUR CHOICE</span>
+        <div class="cell-note">Licence your own work however you choose.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW–MED</span>
+        <div class="cell-note">Infrastructure cost is yours and predictable. AI-tooling cost is the Claude subscription paid to Anthropic — recurring, ongoing, and load-bearing for the method to function. Anthropic's pricing changes are your pricing changes.</div>
+      </td>
+      <td>
+        <span class="badge partial">LOW</span>
+        <div class="cell-note">The deployed app has no vendor dependency — it runs on its own once built. To change anything about it later (add features, fix bugs), you need Claude Code. The app-runtime and the build-time situations are different things.</div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<div class="watching">
+  <h3>Watching — adjacent tools worth knowing about</h3>
+  <div class="watching-intro">Not in the main comparison because they're either too small to warrant a full row yet, sit in an adjacent category (open-source self-hostable platforms), or compete in a way the column structure doesn't capture cleanly. Useful to know exists.</div>
+
+  <div class="watching-group">
+    <div class="watching-group-title">More AI coding tools</div>
+    <div class="watching-item"><strong>Cline</strong><span>Open-source VS Code agent. MIT. 38K+ GitHub stars. Bring your own API key. Most recommended open-source alternative to Cursor's Agent mode. Free; pay your own model costs.</span></div>
+    <div class="watching-item"><strong>OpenCode</strong><span>Open-source terminal agent. MIT. 153K+ GitHub stars (highest in the category). Direct alternative to Claude Code; supports 75+ model providers including local models for $0 offline use.</span></div>
+    <div class="watching-item"><strong>Continue.dev</strong><span>Open-source VS Code/JetBrains extension. Apache 2.0. Multi-model (any provider, local-capable). Pivoting toward "Continuous AI" — agents that run on PRs. Solo free; $10/dev/mo team tier.</span></div>
+    <div class="watching-item"><strong>Firebase Studio</strong><span>Google's Gemini-CLI-powered web/Android app builder. Free tier: 1,000 requests/day. Credible free alternative to Lovable/Bolt for apps with Google Cloud backends.</span></div>
+    <div class="watching-item"><strong>Rork</strong><span>Niche AI generator for native iOS/Android apps. Mobile equivalent of Lovable/Bolt. Recently emerged; worth tracking.</span></div>
+    <div class="watching-item"><strong>Wasp</strong><span>Open-source full-stack framework (React/Node/Prisma). MIT. Not AI itself, but explicitly designed for AI-assisted development — ~40% fewer AI tokens than equivalent Next.js per the Wasp team's March 2026 study. Open SaaS boilerplate available.</span></div>
+  </div>
+
+  <div class="watching-group">
+    <div class="watching-group-title">Open-source self-hostable low-code platforms</div>
+    <div class="watching-item"><strong>Budibase</strong><span>Internal tool builder. Self-host up to 20 users free. The most non-developer-friendly of this group. Apps run on the Budibase runtime, not as exportable code.</span></div>
+    <div class="watching-item"><strong>Appsmith</strong><span>JavaScript-heavy internal tool builder with strong Git integration. Community Edition: unlimited users, self-hosted, free. Developer-leaning.</span></div>
+    <div class="watching-item"><strong>ToolJet</strong><span>AI-native low-code platform — natural language → working prototype. Community Edition self-hosted with no user limits (standout). JavaScript/Python for customisation.</span></div>
+    <div class="watching-item"><strong>NocoBase</strong><span>Data-model-first low-code. MIT-licensed. Plugin-extensible. Best for ERP/CRM-style business apps rather than simple dashboards.</span></div>
+    <div class="watching-item"><strong>Directus</strong><span>Headless CMS + admin UI layered over your existing SQL database. Free self-hosted forever. "Bring your own SQL" — your data stays in your database, accessible directly.</span></div>
+    <div class="watching-item"><strong>Refine</strong><span>React meta-framework. Generates real React code you own — not a configuration artefact on a runtime. MIT. The "actual code, not a platform" answer in this category.</span></div>
+    <div class="watching-item"><strong>Plasmic</strong><span>Visual builder that integrates with existing React codebases. Codegen mode gives full ownership; hosted-CMS mode is a runtime dependency. Designers and developers share the same canvas.</span></div>
+  </div>
+</div>
+
+<div class="footnotes">
+  <h3>Notes &amp; caveats</h3>
+  <ul>
+    <li><strong>FlutterFlow learning curve</strong> — reclassified as a "developer tool" in the February 2026 independent State of App Building report. Reddit community estimates 200+ hours. Requires external database setup (Firebase/Supabase) on top of the platform itself.</li>
+    <li><strong>FlutterFlow code export</strong> — requires paid plan (~$39/mo Basic or higher). On the free plan you build but cannot export, which means lock-in until you upgrade.</li>
+    <li><strong>Webflow CMS lock-in</strong> — static HTML/CSS exports cleanly, but CMS content, forms, ecommerce, and site search are tied to Webflow's servers and require third-party replacements if self-hosting.</li>
+    <li><strong>Glide / Softr data portability</strong> — data lives in an external source (Google Sheets, Airtable). The data is portable; the app built on top of it is not. These are two different things.</li>
+    <li><strong>SAP Build Apps</strong> — heavily enterprise-focused since the AppGyver acquisition. Less relevant for indie builders; included for completeness. April 2026 API policy controversy is ongoing.</li>
+    <li><strong>WeWeb backend (April 2026)</strong> — WeWeb launched native Postgres backend (WeWeb Tables) in April 2026. Exportability of this backend layer is not yet fully documented; treat as partial until confirmed.</li>
+    <li><strong>Sovereign Implementer learning curve</strong> — "days to first toy app" reflects initial orientation (tooling setup, Git basics, first build cycle). Fluency — the point at which you can scope, build, and maintain a real app end-to-end — develops over months and across multiple projects. Skills are cumulative and transfer across builds in a way platform skills typically don't, but the onramp is not comparable to Glide or Softr.</li>
+    <li><strong>Sovereign Implementer AI-tooling dependency</strong> — the deployed app runs independently of any vendor; the builder doesn't. Feature work and bug fixes require Claude Code. The method ships as a Claude Code plugin and isn't ported to other AI tools — if you want to use the doc system with a different AI partner, that's your build to make.</li>
+    <li><strong>Claude Code pricing volatility (mid-2026)</strong> — April 2026 saw a brief Pro-tier removal test for a small percentage of new signups (reversed within hours after public reaction). v2.1.100+ has been reported to inflate token consumption by ~40% as of mid-May 2026 (workaround: pin to v2.1.34 or use the npm install rather than the native binary). Verify current pricing and tool behaviour at claude.com before quoting any AI-tooling cost.</li>
+    <li><strong>AI Subscription column</strong> — "Bundled" means the AI cost is part of the platform's subscription (single vendor, single bill). "Separate" means the user must hold their own AI vendor account independently — typical for open-source tools (Aider) and the Sovereign Implementer model. "None" means the platform doesn't require AI to function, though some bundle AI assistants at higher tiers.</li>
+    <li><strong>AI-generated code and copyright</strong> — the US Copyright Office's current position is that purely AI-generated work is not eligible for copyright; human authorship is required. For builders commercialising a Sovereign Implementer build, this affects what "full IP ownership" actually protects. Not legal advice — consult a lawyer for commercial decisions.</li>
+    <li><strong>IP ownership rows</strong> — based on public ToS as of May 2026. Not legal advice. Review current terms before making commercial decisions.</li>
+  </ul>
+</div>
+
+<div class="updated">Last updated: May 2026 — research via platform documentation, ToS, and community sources</div>
+
+</body>
+</html>

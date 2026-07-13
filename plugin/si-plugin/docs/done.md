@@ -59,7 +59,7 @@ So the only thing /done does with a check it couldn't run is the ordinary captur
 
 Stated once here; every sub-doc's LOG-entry step points at this section.
 
-If a red flag was accepted this session — the user was told a security, privacy, or breach risk plainly and chose to proceed anyway — record the decision in the session's LOG entry: what the user was warned about, and that they chose to proceed. This is the informed-consent trail defined in plugin-behaviour.md Flag states; the LOG entry is where it lands. An accepted flag itself lives in the queue as a red-flag work line at `State: accepted` (plugin-behaviour.md Red flags), not in a dedicated section. Recording the consent in the LOG is unconditional once a flag is accepted — the consent record never rides only in chat or on the red-flag work line, because no later session re-reads those for consent history. Nothing to record when no flag was accepted this session.
+If a red flag was accepted this session — the user was told a security, privacy, or breach risk plainly and chose to proceed anyway — record the decision in the session's LOG entry: what the user was warned about, and that they chose to proceed. This is the informed-consent trail defined in plugin-behaviour.md Flag states; the LOG entry is where it lands. An accepted flag itself lives in the queue as a marker on the work line at `State: accepted` (plugin-behaviour.md Red flags), not in a dedicated section. Recording the consent in the LOG is unconditional once a flag is accepted — the consent record never rides only in chat or on the red-flag marker, because no later session re-reads those for consent history. Nothing to record when no flag was accepted this session.
 
 ## Red-flag lifecycle at close
 
