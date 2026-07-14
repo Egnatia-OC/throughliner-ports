@@ -1,4 +1,4 @@
-# [HASH] — Added advisory forward-recommendation capture: /done files a "Last session advises…" note atop Unprocessed; /plan consumes and clears it
+# 04d59e6 — Added advisory forward-recommendation capture: /done files a "Last session advises…" note atop Unprocessed; /plan consumes and clears it
 
 A forward recommendation at session close lived only in chat, so acting on it required the user to remember it — the next-ness-lives-in-memory failure. Fix: when /done's "Recommend next" step makes a concrete recommendation, it files an advisory capture at the top of Unprocessed, worded as advice ("Last session advises processing X next"). The advisory is a transient orientation handoff, not a work line: the next /plan reads it, lets it inform the order discussion, and deletes it once order is agreed — whether the recommendation was followed or not. It never moves into Processed and is never run through keep/delete. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.
 
