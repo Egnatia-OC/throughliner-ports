@@ -1,4 +1,4 @@
-# [HASH] — Make /next's close commit rule explicit: one line logs verbatim, many get a summary
+# 5e62c1c — Make /next's close commit rule explicit: one line logs verbatim, many get a summary
 
 done-build.md already wrote one LOG entry per built line, but done.md's commit core still assumed a single entry became the commit message — it said the message *is* the approved LOG entry, title and body verbatim. Under a multi-line run that silently underspecified: with four entries, nothing said which one was the commit message, or whether there should be four commits.
 

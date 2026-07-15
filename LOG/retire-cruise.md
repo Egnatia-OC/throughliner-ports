@@ -1,4 +1,4 @@
-# [HASH] — Retire /cruise, collapsing to multi-line /next as the single queue-clearing skill
+# 5e62c1c — Retire /cruise, collapsing to multi-line /next as the single queue-clearing skill
 
 /cruise duplicated what /next already did. next.md's run model already builds several cleared lines back-to-back, top-down, stopping at the readiness line — which was /cruise's whole job. /next is unattended in practice (it runs faster than the user can follow), so multi-line /next *is* the unattended runner, and it works because /plan feeds it a well-vetted cleared region. Keeping both meant maintaining two runners for one purpose.
 

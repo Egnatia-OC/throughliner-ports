@@ -1,4 +1,4 @@
-# [HASH] — Keep a lightweight no-progress stop in /next
+# 5e62c1c — Keep a lightweight no-progress stop in /next
 
 Now that /next is the only runner and unattended in practice, a line that thrashes wastes the run with nobody watching. This is the one /cruise guard worth recycling: if the same error, an empty diff, or the same failing check repeats roughly three times on one line, /next stops and tells the user what repeated, routing through the existing "Approach not working" path.
 

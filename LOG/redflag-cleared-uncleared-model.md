@@ -1,4 +1,4 @@
-# [HASH] — Rework red flags to a two-state cleared/uncleared model, with clearing forced at processing
+# 5e62c1c — Rework red flags to a two-state cleared/uncleared model, with clearing forced at processing
 
 The three-state model (open / resolved / accepted) held a distinction the queue didn't need to carry. Whether a risk was designed out or consciously accepted matters enormously — but it matters as a *record*, not as queue state, and the LOG is what preserves records. So the states collapse to two, with how it cleared written into the LOG.
 
