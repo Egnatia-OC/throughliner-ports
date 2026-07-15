@@ -81,7 +81,7 @@ Three project docs structure each project:
 
 ## Processed
 
-Vetted work, ready to build — worked top to bottom. Each piece of work is one line: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work line carrying a `Red flag · State: open/resolved/accepted` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
+Vetted work, ready to build — worked top to bottom. Each piece of work is one line: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work line carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
 --- Cleared to run above this line ---
 

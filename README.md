@@ -18,12 +18,11 @@ Non-coders who know what their project should do but need a framework to keep Cl
 
 ## What it does
 
-The plugin splits your project into a build queue and walks you through it. Five slash commands drive the workflow:
+The plugin splits your project into a build queue and walks you through it. Four slash commands drive the workflow:
 
 - `/setup` — asks a short questionnaire about your project and scaffolds everything
 - `/plan` — organise the queue, capture ideas, resolve design questions
-- `/next` — build the next piece of ready work, scope-locked so Claude stays focused
-- `/cruise` — the autonomous runner: builds several pieces of cleared work back-to-back without you confirming each one
+- `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one
 - `/done` — record what happened, commit
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
@@ -33,8 +32,7 @@ Hooks run automatically in the background to enforce discipline — locking edit
 Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.
 
 - **/plan** — think and organise: manage the queue, add ideas, resolve questions. Run it as often as planning needs; a long planning stretch is just /plan → /done → /clear, repeated.
-- **/next** — build: it picks the top piece of ready work and builds it. You'll run /next many times, working down the queue.
-- **/cruise** — when you want several pieces of work built back-to-back without confirming each one. It works down the cleared part of the queue autonomously.
+- **/next** — build: it picks the top piece of ready work and builds it. You'll run /next many times, working down the queue. When several pieces are cleared, one /next can build them back-to-back without you confirming each one.
 
 The habit that matters: always /done before /clear, so each session is saved before the context resets.
 

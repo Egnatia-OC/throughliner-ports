@@ -39,7 +39,7 @@ The Approval outcomes line records what the bulk-approval step decided: a findin
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
 
-If a red flag was accepted during this session, also record the decision in this entry per done.md Accepted red flags — what the user was warned about, and that they chose to proceed.
+An audit doesn't clear red flags — clearing happens at processing (plugin-behaviour.md Flag states). A security, privacy, or breach risk this audit surfaces is filed as an ordinary uncleared capture in Unprocessed (`Red flag · State: uncleared`), which a later /plan clears; note in this entry that the audit surfaced it.
 
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 

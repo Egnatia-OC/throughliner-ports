@@ -31,7 +31,7 @@ Draft the entry as its own file under `LOG/`, named per done.md LOG entry files,
 
 Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file. This entry is the session's summary — there is no separate chat recap. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files).
 
-If a red flag was accepted during this session — a planning-stage risk the user was told plainly and chose to carry — also record the decision in this entry per done.md Accepted red flags: what the user was warned about, and that they chose to proceed. The accepted flag itself lives in the queue as a marker on the work line at `State: accepted` (plugin-behaviour.md Flag states).
+If a red flag was cleared during this session — a risk designed out in-session, or one the user was told plainly and chose to carry — record how in this entry per done.md Recording a cleared red flag: for a design-out, how it was eliminated; for an acceptance, what the user was warned about and that they chose to proceed. Clearing happens at processing, so /plan is where this record is written. The cleared flag itself lives in the queue as a marker on the work line at `State: cleared` (plugin-behaviour.md Flag states).
 
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 

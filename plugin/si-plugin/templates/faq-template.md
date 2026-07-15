@@ -55,12 +55,6 @@ There's no separate "test" flavor. Checking is just part of building: any check 
 
 Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit batch that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
 
-## What is `/cruise`, and when should I use it?
-
-`/cruise` builds several pieces of work in a row without stopping to confirm each one. Where /next builds a single item and hands back to you, /cruise works down the ready part of your queue — building an item, saving it, building the next, saving it — until it reaches the "cleared to run" line or hits something that genuinely needs you. It's the "do many" version of /next, for when you've got a stretch of vetted work and don't want to shepherd it item by item. It's most useful exactly when you're short on time.
-
-It keeps every safety rail. It builds each item only within that item's file scope, and it saves (commits) each finished item on its own — so if it stops partway, nothing already built is lost. It never sends your work to an external backup: a cruise run publishes nothing. It stops and hands back to you only for a real blocker — a risk to your data (any open red flag blocks the run outright), a change to what your project *is* (a SPEC change), or a decision only you can make. And it has built-in limits so a run can't spin out of control: a cap on how many items it builds, a stop if it gets stuck repeating the same failure, and a rough spending ceiling. Anything it turns up that *isn't* a blocker — a new idea, or a check only you can run — it files into your queue and keeps going, for you to sort in a later /plan.
-
 ## Why does Claude sometimes ask me to run a test instead of running it itself?
 
 Because some tests need something only you can provide — and when that's the case, Claude tells you plainly what the test checks, what it needs, and why it can't run it. A test might need you to look at a screen and judge how something appears, tap through your app on a phone, or run a command in a terminal Claude can't reach. Claude usually can't see your setup, so it doesn't guess what you can or can't do — instead it names exactly what the test requires ("needs the terminal," "needs a phone connected," "needs you to look at the screen") and leaves it to you to judge whether that's yours to do. If a test needs nothing of yours, Claude just runs it — handing one to you is only ever for the checks that genuinely need you.
@@ -169,21 +163,22 @@ Claude stops and asks. It stays within batch scope. If something else needs chan
 
 Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
 
-## What's a "red flag," and what do open, resolved, and accepted mean?
+## What's a "red flag," and what do cleared and uncleared mean?
 
-A red flag is how Claude surfaces a risk to your data or your users' data — anything that could expose private information or amount to a security breach. Claude watches for these in every session, and when it spots a genuine one, it tells you plainly rather than quietly working around it or building past it. The risk then goes into your queue as an ordinary piece of work, marked with a red-flag tag and one of three states:
+A red flag is how Claude surfaces a risk to your data or your users' data — anything that could expose private information or amount to a security breach. Claude watches for these in every session, and when it spots a genuine one, it tells you plainly rather than quietly working around it or building past it. The risk then goes into your queue as an ordinary piece of work, marked with a red-flag tag and one of two states:
 
-- **Open** — the risk has been raised, but nothing's been decided about it yet.
-- **Resolved** — the risk has been designed out or fixed, so the work no longer carries it.
-- **Accepted** — you've heard the risk spelled out and chosen to go ahead anyway. That choice is written into the session log, so there's a record of what you were told and that you agreed — the trail that protects you if the risk ever surfaces later.
+- **Uncleared** — the risk still stands, and nothing's been decided about it yet. An uncleared flag sits in the "not yet discussed" part of your queue; it's surfaced first each session until it's dealt with.
+- **Cleared** — the risk has been dealt with, one of two ways: either it was **designed out or fixed** (the work no longer carries it), or you **heard it spelled out and chose to go ahead anyway**. Which of the two it was is written into the session log — for an acceptance, that's the record of what you were told and that you agreed, the trail that protects you if the risk ever surfaces later.
+
+Clearing a flag happens when you and Claude work through the item in planning — a piece of work only becomes "ready to build" once its flag is cleared. If a risk can't be cleared yet, its item stays in the "not yet discussed" part of the queue rather than moving to "ready" — so a risk is never quietly shelved.
 
 It's tagged onto a work line rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
 
-## What happens to a red flag when the work carrying it is finished?
+## What happens to a red flag when the work carrying it is built?
 
-It gets settled and recorded before that piece of work leaves your queue — it never just quietly disappears, and it never lingers as a leftover reminder with no work left to do. When Claude closes a piece of work that carries a red-flag tag, it stops and settles the flag with you: either the work fixed the risk (**resolved** — the risk is designed out, so the flag closes right then) or you've chosen to ship with it (**accepted** — written into the session log as the record that you were told and agreed). Whichever it is, that outcome goes into the session log before the work is committed, so there's always a trail of how the risk ended.
+By the time a red-flagged piece of work is ready to build, its flag has already been cleared — that happened back in planning, when you and Claude decided how the risk was handled and recorded it in the log. So when the work is built and committed, Claude just carries that cleared flag through into the session log; the risk was never left hanging. A red flag never quietly disappears, and it never lingers as a leftover reminder with no work left to do.
 
-One detail worth knowing: a flag counts as resolved the moment the fix is built, even if the fix still needs a real-world check to confirm it works. That leftover check becomes its own `[user]` line in your queue — a normal thing for you to verify later — rather than keeping the flag hanging open. So "fixed, with a check still to do" shows up as a resolved flag plus a waiting check, not as an unresolved risk.
+One detail worth knowing: a risk counts as cleared the moment it's designed out or you accept it — even if a fix still needs a real-world check to confirm it works. That leftover check becomes its own `[user]` line in your queue — a normal thing for you to verify later — rather than keeping the flag hanging. So "fixed, with a check still to do" shows up as a cleared flag plus a waiting check, not as an unhandled risk.
 
 ## Why did Claude ask before starting a "subagent"?
 
@@ -195,7 +190,7 @@ It's a planning checkpoint Claude placed between batches. When /next reaches it,
 
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
-It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. A /cruise run stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
+It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
 
 ## Why did Claude reorder my queue at the end of a planning session?
 

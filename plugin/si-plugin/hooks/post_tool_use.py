@@ -16,7 +16,7 @@ two-section work-line model:
   3. A missing section heading — both ## Processed and ## Unprocessed
      must be present. They are the two sections the whole model runs on.
   4. A red-flag marker line ("Red flag · State: ...") whose state isn't
-     one of open / resolved / accepted. A red flag is an ordinary work
+     one of cleared / uncleared. A red flag is an ordinary work
      line carrying this one extra marker; the state must be valid.
 
 Deny-list by design: only known violations are flagged; unknown or
@@ -55,7 +55,7 @@ RED_FLAG_MARKER = re.compile(r"^Red flag\s*·?\s*State:\s*(.*)$", re.IGNORECASE)
 # The two sections the whole model runs on.
 WORK_SECTIONS = ("Processed", "Unprocessed")
 
-VALID_FLAG_STATES = {"open", "resolved", "accepted"}
+VALID_FLAG_STATES = {"cleared", "uncleared"}
 
 
 def _normalise(path: str) -> str:
@@ -163,7 +163,7 @@ def _check_red_flag_states(annotated, warnings):
             shown = rest[:30] if rest else "(none)"
             warnings.append(
                 f"line {i + 1}: red-flag marker has state {shown!r}, but a red "
-                "flag's state must be one of open / resolved / accepted."
+                "flag's state must be one of cleared / uncleared."
             )
 
 

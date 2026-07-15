@@ -105,7 +105,7 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
   - The **prose rationale** lives in the block beneath the heading.
   - A **provenance label** naming who raised it — "captured by you" or "by Claude" — also lives in that block. It stays on the line after the work is processed, so a processed line still shows where it came from. A capture Claude files carries "by Claude"; one the user asks for carries "captured by you".
 
-  A work line carrying a red-flag marker adds one more line to that block: its `Red flag · State: <open | resolved | accepted>` tag (see Red flags).
+  A work line carrying a red-flag marker adds one more line to that block: its `Red flag · State: <cleared | uncleared>` tag (see Red flags).
 
   This exact shape — `#### ` heading, `[slug]` at the end of the heading line, provenance in the block, red-flag marker (when present) in the block, all under a `## Processed` or `## Unprocessed` section heading — is what all three hooks parse: post_tool_use's queue lint, session_start's open-red-flag scan, and the section headings both key on. Emitting a work line as a bold line or a plain bullet instead would read fine to a person but silently break all three — the lint flags nothing, the red-flag scan finds nothing, no error surfaces. The `#### ` heading rendering is load-bearing, not cosmetic.
 - Flavor marker. A work line may carry an optional leading tag that names how it's executed. There are two tags and one default:
@@ -154,7 +154,7 @@ Claude screens every session — planning, building, auditing, capturing — for
 
 A red flag is a marker on a work line — one extra line directly under the work line's description:
 
-`Red flag · State: <open | resolved | accepted>`
+`Red flag · State: <cleared | uncleared>`
 
 The flag rides the work, not the other way around: the work line is the work (what will be done about the risk), and the marker tags it as carrying a security or privacy concern with a tracked state. The marker lives on an ordinary work line in the queue — not in a dedicated section. The why it's a marker on a line and not its own pinned section: a standing "Red flags" section reads as a claim that the tool tracks every risk that exists — comprehensive data-and-security management the tool can't actually back up — when all it ever holds is the risks Claude happened to identify. A marker on a work line lets Claude surface and address a genuine risk without that over-claim. Describe each risk by what will be done about it, which is what the queue is for; the marker and its state carry the risk-tracking, the surrounding line carries the work. This is the fine line the model must hold: provide risk-addressing, without promising risk management.
 
@@ -164,28 +164,26 @@ Scope: security, privacy, and breach risk specifically — data exposure, unauth
 
 Flagging, not fixing: Claude names and routes the risk. It does not quietly handle it or silently redesign around it, even when the fix seems obvious. The user decides what happens next.
 
-Planning-stage risks are recorded the same way. A security, privacy, or breach risk identified during planning — before any code exists — gets a red-flag marker on its work line with a state, exactly as a build-session risk does: **resolved** if the design eliminated it in-session (record how it was designed out), **open** if it will be carried into the build, **accepted** if the user is told the risk plainly and chooses to proceed.
+Planning-stage risks are recorded the same way. A security, privacy, or breach risk identified during planning — before any code exists — gets a red-flag marker on its work line. Clearing it is part of processing the line (see Flag states): the flag reads **uncleared** while the risk stands, and **cleared** once the risk has been designed out in-session or the user has been told it plainly and chosen to proceed. The LOG records which of the two cleared it. A risk that can't be cleared this session stays a capture — its line returns to the bottom of Unprocessed rather than moving into Processed.
 
 ### Flag states
 
-Each red flag carries one of three states:
+Each red flag carries one of two states:
 
-- **Open** — raised, not yet addressed. The risk is known; no decision has been made.
-- **Resolved** — the risk has been designed out or fixed. The code no longer carries it.
-- **Accepted** — the user has consciously accepted the risk. Their decision is recorded in the LOG entry as informed consent: what they were warned about, and that they chose to proceed. This is the trail that protects them if a breach surfaces later.
+- **Uncleared** — the risk still stands, unaddressed. No decision has cleared it. An uncleared flag lives on a capture in the Unprocessed section; it never sits in Processed.
+- **Cleared** — the risk has been dealt with, one of two ways: **designed out or fixed** (the code no longer carries it), or **consciously accepted** by the user after being told it plainly. Which way it cleared is recorded in the LOG entry, not in a separate state — a fix records how it was designed out; an acceptance records the informed-consent trail (what the user was warned about, and that they chose to proceed), the trail that protects them if a breach surfaces later.
 
-The future unattended mode's gate reads these states: only resolved or accepted flags let it run. An open flag blocks unattended execution — a user who leaves a risk unaddressed stays on hand to approve each step.
+Processing is the explicit moment a flag is cleared (plan.md's keep-step). A work line reaches Processed only with its flag cleared, so **cleared** is the only state a flag ever carries in Processed. If a flag genuinely can't be cleared, its capture returns to the **bottom of Unprocessed** — the one shelving move — never parked in Processed; this guarantees every risk is eventually cleared, or its line deleted, never silently shelved.
 
-### Lifecycle at ship
+/next builds a red-flagged line like any other — the cleared label simply rides through to the LOG. There is no gate stopping /next on a red-flagged line, because by the time a line sits in Processed its flag is already cleared. Backstop: an uncleared flag reaching Processed should be impossible, so if /next ever meets one it stops and surfaces it rather than building. (This replaces the old rule that only resolved-or-accepted flags let an unattended run proceed: with clearing forced at processing, the cleared region is red-flag-safe by construction, and the impossible case is the only thing left to guard.)
 
-A red-flag marker must always sit on a line that carries real remaining work. It is never a standalone tracking line — a flag with no work left to do doesn't get parked in the queue as a bare reminder, and it never silently disappears when its line ships. Both failures break the model above, where the marker rides the work and the work is what the queue holds.
+### Lifecycle
 
-This forces one thing at the close of any line carrying a red-flag marker: at the moment the line's work completes, the close makes an explicit resolve-or-accept decision and records it in the LOG entry before the line leaves the queue. A flag never leaves unrecorded.
+A red-flag marker must always sit on a line that carries real remaining work. It is never a standalone tracking line — a flag with no work left to do doesn't get parked in the queue as a bare reminder — and it never silently disappears. Both failures break the model above, where the marker rides the work and the work is what the queue holds.
 
-- A completed fix flips to **resolved** at that close. The code no longer carries the risk, which is what resolved means — so the flag resolves the instant the fix ships, not later. If the fix still needs a live check to confirm it works, that check rides an ordinary `[user]` verification line as a normal check — not as a lingering open flag. Resolved-plus-a-pending-verification-line is the correct shape; open-until-verified is not.
-- The user consciously chooses to ship with the risk → **accepted**, with the informed-consent trail recorded in the LOG per Flag states above.
+The decision moment is **processing**, not ship. At the /plan moment a flagged capture is judged ready, its flag is cleared — designed out or accepted — and only then does the line move to Processed (Flag states). How it cleared is recorded in that /plan session's LOG entry. A flag that can't be cleared keeps the line in Unprocessed; it never rides into Processed uncleared.
 
-The close routing that enforces this lives in done-build.md (a build line's close) and done.md (the shared close core): before a red-flag-carrying line is removed from the queue, the close surfaces the flag, forces the resolve/accept decision, and writes it to the LOG.
+At ship, the line's flag is already cleared, so the build or audit close does not re-decide it: it carries the cleared flag into the shipping LOG entry — a flag never leaves the queue unrecorded — and, as a backstop, stops if it ever meets a marker still reading uncleared. The close routing that carries this through lives in done-build.md (a build line's close) and done.md (the shared close core); the substantive clearing record itself is written at the /plan close (done-plan.md).
 
 ## Why-pipeline
 

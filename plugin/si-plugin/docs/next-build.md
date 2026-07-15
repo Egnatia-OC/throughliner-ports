@@ -71,6 +71,12 @@ Don't attempt the check inline if it genuinely needs the user. Don't extend the 
 
 **Before assuming a device or environment is absent, check.** When a check would need a device, emulator, or environment that "isn't available here," ask the user whether one is available rather than assuming none is. And before using any connected device, ask permission first: "May I use your connected device to test this?" — then wait for a yes. This applies the Device and hardware access rule in plugin-behaviour.md at the verification step. The why: a connected device the user didn't expect Claude to touch is a consent surprise, and a check wrongly skipped on a guess that no device was present sits unrun for weeks.
 
+### Going in circles [PROMPT]
+
+/next is unattended in practice — it works several lines faster than the user can follow — so a line that silently thrashes wastes the run with no one watching. Watch for the signature of no progress on the line you're building: the **same error** recurring, an **empty diff** (an edit that changes nothing), or the **same check failing** the same way — roughly **three times** on one line. When you see it, stop; don't keep trying. Tell the user plainly what repeated — the exact error, or what wouldn't change — and hand them the decision, routing through Approach not working below.
+
+This is a judgment call, not a mechanical counter: three is the rough trigger, and the point is to surface a stuck line rather than to tally attempts. The old autonomous runner's other limits — an iteration ceiling, a per-run spend ceiling — are deliberately not recreated here: they were arbitrary and undetectable, and session length is handled at plan time instead.
+
 ### Approach not working [DISCUSS, PROMPT]
 
 If something goes wrong — a false assumption, a missing dependency, an approach that isn't working:

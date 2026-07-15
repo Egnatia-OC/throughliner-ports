@@ -167,35 +167,36 @@ def _dirty_tree_count(cwd):
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
-def _open_red_flags(queue_path):
-    """Descriptions of work lines carrying `Red flag · State: open`.
+def _uncleared_red_flags(queue_path):
+    """Descriptions of work lines carrying `Red flag · State: uncleared`.
 
     A red flag is an ordinary work line (a #### heading) with a
     `Red flag · State: <state>` marker beneath it. This returns the cleaned
-    heading text of every such line whose state is open, so session start
-    can surface unaddressed risks first-thing. The two-section work-line
+    heading text of every such line whose state is uncleared, so session
+    start can surface unaddressed risks first-thing. The two-section work-line
     model has no pinned Red flags section, so this scan is what keeps an
-    open risk unmissable. Returns [] on any error or when none are open.
+    uncleared risk unmissable. Returns [] on any error or when none are
+    uncleared.
     """
     try:
         with open(queue_path, "r", encoding="utf-8") as f:
             lines = f.read().splitlines()
     except (OSError, UnicodeDecodeError):
         return []
-    open_flags = []
+    uncleared_flags = []
     current_heading = None
     for raw in lines:
         stripped = raw.strip()
         if re.match(r"^####\s+\S", stripped):
             current_heading = stripped
             continue
-        if re.match(r"^Red flag\s*·?\s*State:\s*open\b", stripped, re.IGNORECASE):
+        if re.match(r"^Red flag\s*·?\s*State:\s*uncleared\b", stripped, re.IGNORECASE):
             desc = current_heading if current_heading else stripped
             # Strip the leading #### and the trailing [slug] for a clean read.
             desc = re.sub(r"^#+\s+", "", desc)
             desc = re.sub(r"\s*\[[a-z0-9][a-z0-9-]+\]\s*$", "", desc)
-            open_flags.append(desc.strip())
-    return open_flags
+            uncleared_flags.append(desc.strip())
+    return uncleared_flags
 
 
 def main() -> int:
@@ -337,16 +338,16 @@ def main() -> int:
             + "\n=== END BEHAVIOUR RULES ==="
         )
 
-    # Open red flags first-thing: the two-section model has no pinned Red flags
-    # section, so this scan is what keeps an unaddressed data-exposure risk
+    # Uncleared red flags first-thing: the two-section model has no pinned Red
+    # flags section, so this scan is what keeps an unaddressed data-exposure risk
     # unmissable at session start. Surfaced ahead of ordinary project state.
-    open_flags = _open_red_flags(queue_path)
-    if open_flags:
+    uncleared_flags = _uncleared_red_flags(queue_path)
+    if uncleared_flags:
         context_parts.append(
-            "OPEN RED FLAG(S) — unaddressed security, privacy, or data-exposure "
+            "UNCLEARED RED FLAG(S) — unaddressed security, privacy, or data-exposure "
             "risk(s) recorded in this project's queue. Tell the user about these "
             "first, in plain language, before other work:\n"
-            + "\n".join(f"- {flag}" for flag in open_flags)
+            + "\n".join(f"- {flag}" for flag in uncleared_flags)
         )
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
