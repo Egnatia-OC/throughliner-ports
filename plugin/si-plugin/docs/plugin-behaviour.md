@@ -118,6 +118,7 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 - Placement: Claude places work by judgment where a relationship applies (when new work revises earlier work, builds on it, or otherwise belongs next to existing material), oldest-first as the fallback. This holds for both sections — a new capture appends to Unprocessed oldest-first unless it belongs beside a relative, and processed work is placed in Processed by the same judgment. Narrate the placement in one line when judgment is exercised (see Dependency ownership).
 - Don't process work outside /plan — append it to Unprocessed and defer. Filing a capture is open to every session; moving a line into Processed or deleting it is /plan's, because that decision is the user's to make (see Routing and discipline, filing vs processing).
 - Mid-session captures follow the same rules. No special priority.
+- Narration discipline when filing or deferring a capture. Two rules. (1) State what was filed in one line and move on — don't narrate the internal shelving reasoning (why it's a capture, which section it lands in, how it'll be processed later) to the user, who doesn't need the mechanics. Say what it is, not how the queue holds it. (2) Never use day-scoped timing like "this won't be designed today" or "we won't get to it this session" — every idea is captured immediately and fleshed out at some later /plan, not on a same-day boundary, so the accurate frame is "capture now, design later (loosely)," never a today/not-today split. Observed 2026-07-14: filing a discussion idea, Claude narrated "This is a design thread that won't be fully designed today, so it belongs as a capture in Unprocessed" — both over-explaining the mechanics and misdating the model. This clause is the narration-wording fix; the model itself (capture-now/design-later) is defined in the four-state section above.
 - Reference other queue items by slug, never by status. A work line's prose may name another item by its slug, but must not assert its status (queued, processed, shipped) or assume it is still present — that point-in-time claim goes stale silently the moment the item moves, and nothing mechanical reads free-prose status claims to flag them. Status is re-derived from LOG when the item is convened. Same family as converting relative dates to absolute: write what stays true, not what happens to be true now.
 
 ### Forward-recommendation advisory
@@ -136,10 +137,19 @@ When /done's close makes a concrete "do X next" recommendation — naming specif
 
 A work line is only ever in one of four states. Naming them plainly stops a session mischaracterising the queue as still having a parked shelf or dependency headers — it has neither.
 
-- **Unprocessed** — captured, not yet discussed. It sits in the Unprocessed section, waiting for a /plan session to weigh it.
+- **Unprocessed** — captured, not yet **fully processed**. This covers two kinds of work: never-discussed captures, and work that *has* been discussed and is worth doing but isn't yet designed enough to describe what its build would change. Both sit in the Unprocessed section, waiting for a /plan session to weigh them. Discriminator: can you describe what gets built? No → Unprocessed; yes-but-not-greenlit → Processed below the cleared-to-run line.
 - **Processed, above the cleared-to-run line** — kept, and ready to build. /next picks work from here.
-- **Processed, below the cleared-to-run line** — kept, but not ready to build yet. It needs more thought, or it's waiting on something outside the queue. This is where "decided but not ready" lives.
+- **Processed, below the cleared-to-run line** — kept, designed, and buildable, but not greenlit to run yet. It needs a final go-ahead, or it's waiting on something outside the queue. This is where "decided and designed but not cleared" lives — NOT a shelf for undesigned work, which stays in Unprocessed.
 - **Deleted** — judged not worth doing, and removed from the working file. Git history keeps it if it ever matters again.
+
+**One shelf, one shelving move.** There is exactly ONE holding place for not-ready work — the Unprocessed section (captures) — and exactly ONE shelving move — placing or returning a line at the bottom of Unprocessed. Below-the-cleared-to-run-line is NOT a second shelf: it holds designed, buildable work awaiting greenlight, not work set aside for later thought.
+
+**Anti-invention guardrail.** Do not derive a fifth state, a new tag, or a new shelving category — however reasonable the felt need. Any pull to "shelve this differently" resolves one of two ways: keep the line in Unprocessed (if it still needs thought or design), or give it a proper home outside the queue (below). The why, carried because the failure recurs: Claude has repeatedly invented a fifth shelf where the definitions left a gap — a "below-line = external-waits only" category (2026-07-13), a red-flagged line accidentally parked below the cleared-to-run marker (2026-07-14), and below-the-line treated as a home for a never-to-be-built standing note (2026-07-18). The user caught each one. The definitions above close the gap; this guardrail names the reflex so it doesn't reopen it.
+
+**Proper homes for recurring meta-items** — things that feel queue-shaped but aren't work to build:
+- A standing design consideration unlikely ever to be built belongs as a SPEC note or principle, or a CLAUDE.md rule — not a permanent queue line.
+- A durable finding belongs in a doc (resources/research, LOG) — not a queue line kept as a reminder.
+- A forward-recommendation advisory is transient by design (top of Unprocessed, consumed and cleared — see Forward-recommendation advisory), and is named as such — not a shelf.
 
 Two things the old model carried are folded into this, not kept as separate machinery:
 

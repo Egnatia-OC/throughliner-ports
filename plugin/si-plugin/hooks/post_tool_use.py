@@ -142,7 +142,7 @@ def _check_sections(annotated, warnings):
             warnings.append(
                 f"the '## {name}' section heading is missing — the queue holds "
                 "two sections, Processed (discussed, kept work) and Unprocessed "
-                "(captured, not yet discussed)."
+                "(captured, not yet fully processed)."
             )
 
 

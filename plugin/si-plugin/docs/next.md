@@ -4,7 +4,7 @@ You are building the cleared work from the queue. /next works the Processed sect
 
 ## The work-line model /next runs on
 
-QUEUE.md holds two sections: **Unprocessed** (captured, not yet discussed) and **Processed** (discussed, agreed, ready). /next only ever builds from Processed, and only from above the `--- Cleared to run above this line ---` marker — the boundary /plan maintains between work greenlit to build (above) and work still being settled (below).
+QUEUE.md holds two sections: **Unprocessed** (captured, not yet fully processed) and **Processed** (discussed, agreed, ready). /next only ever builds from Processed, and only from above the `--- Cleared to run above this line ---` marker — the boundary /plan maintains between work greenlit to build (above) and work still being settled (below).
 
 Each work line carries a flavor, set as an optional leading tag (plugin-behaviour.md Captures, Flavor marker):
 

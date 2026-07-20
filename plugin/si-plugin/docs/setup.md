@@ -68,7 +68,7 @@ Create these files (empty structure, content comes from the interview). Do this 
 
 Three project docs structure each project:
 - `SPEC.md` — product truth. What the project is, who it's for, how it works.
-- `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work (captured ideas not yet discussed).
+- `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work (captured ideas not yet fully processed).
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 ## Principles
@@ -87,7 +87,7 @@ Vetted work, ready to build — worked top to bottom. Each piece of work is one 
 
 ## Unprocessed
 
-Captured ideas and tasks not yet discussed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
+Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
 [filled by Q4]
 ```
