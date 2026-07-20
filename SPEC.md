@@ -20,7 +20,7 @@ Four skills drive the workflow:
 
 Three project docs structure each project:
 - `SPEC.md` — product truth. What the app is, who it's for, how it works.
-- `QUEUE.md` — processed and unprocessed work. Processed work is vetted and ready to build; unprocessed work is captured ideas and tasks not yet discussed. One line per piece of work.
+- `QUEUE.md` — processed and unprocessed work. Processed work is vetted and ready to build; unprocessed work is captured ideas and tasks not yet fully processed — either not yet discussed, or discussed and worth doing but not yet designed enough to describe the build. One line per piece of work.
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 Two hooks enforce discipline mechanically, and a third advises:
