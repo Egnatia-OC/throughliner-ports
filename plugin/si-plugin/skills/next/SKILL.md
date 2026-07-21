@@ -1,6 +1,6 @@
 ---
 name: next
-description: Pick the top queue entry and execute it — build or test, type-agnostic. One batch at a time, scope-locked.
+description: Pick the top queue entry and execute it — build or audit. One work item at a time, scope-locked.
 disable-model-invocation: true
 user-invocable: true
 ---

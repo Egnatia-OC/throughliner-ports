@@ -4,7 +4,7 @@ Answers to common questions about how this project's workflow operates.
 
 ## What do /plan, /next, and /done each do?
 
-They split work into three modes. **/plan** is for thinking — queue management, captures, design questions. **/next** is for doing — picks the top batch and builds it. **/done** is for closing — records, updates docs, commits. Always in order: plan, do, close.
+They split work into three modes. **/plan** is for thinking — queue management, captures, design questions. **/next** is for doing — picks the top work item and builds it. **/done** is for closing — records, updates docs, commits. Always in order: plan, do, close.
 
 ## How do the four commands fit together day-to-day?
 
@@ -28,17 +28,17 @@ To set your **working mode** — whether you're usually at your desktop or drivi
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 
-Your queue has two sections. **Processed** is vetted, ready-to-build work — one line per piece of work, worked top to bottom, discussed and agreed with you during /plan. **Unprocessed** is an inbox — ideas, questions, and tasks captured during builds or between sessions, not looked over yet. During /plan, each unprocessed line gets discussed and either moved up into Processed (kept as real work) or dropped. There's no in-between: a piece of work is unprocessed, processed, or gone.
+Your queue has two sections. **Processed** is vetted, ready-to-build work — one item per piece of work, worked top to bottom, discussed and agreed with you during /plan. **Unprocessed** is an inbox — ideas, questions, and tasks captured during builds or between sessions, not looked over yet. During /plan, each unprocessed item gets discussed and either moved up into Processed (kept as real work) or dropped. There's no in-between: a piece of work is unprocessed, processed, or gone.
 
-Every work line carries a short name in square brackets (its slug), so Claude can refer to it precisely, and a note of who raised it — "captured by you" or "by Claude" — which stays on the line even after it's processed.
+Every work item carries a short name in square brackets (its slug), so Claude can refer to it precisely, and a note of who raised it — "captured by you" or "by Claude" — which stays on the item even after it's processed.
 
-## What does it mean when a work line is marked `[user]`?
+## What does it mean when a work item is marked `[user]`?
 
-It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own lines top to bottom and stops at the first `[user]` line to hand it over to you. Most lines aren't marked — they're Claude's by default.
+It's work only you can do — a check that needs your eyes on the screen, or a step in a tool Claude can't drive. Everything else is Claude's to build. When Claude works down the queue, it builds its own items top to bottom and stops at the first `[user]` item to hand it over to you. Most items aren't marked — they're Claude's by default.
 
 ## When Claude hands over a `[user]` step, do I have to do it alone?
 
-No — a handover isn't Claude dropping the task on you and stepping back. When Claude reaches a `[user]` line, it offers to guide you through it: it runs whatever parts it *can* (any commands or setup it can drive), explains in plain words what you need to check or do, and walks you through it step by step if you'd like. The `[user]` tag just marks who has to actually do or witness the step — usually because it needs your eyes on a screen, or a tool Claude can't reach. You're always welcome to say "just tell me what to do and I'll handle it," but the default is that Claude helps you through it, not that you're on your own.
+No — a handover isn't Claude dropping the task on you and stepping back. When Claude reaches a `[user]` item, it offers to guide you through it: it runs whatever parts it *can* (any commands or setup it can drive), explains in plain words what you need to check or do, and walks you through it step by step if you'd like. The `[user]` tag just marks who has to actually do or witness the step — usually because it needs your eyes on a screen, or a tool Claude can't reach. You're always welcome to say "just tell me what to do and I'll handle it," but the default is that Claude helps you through it, not that you're on your own.
 
 One related detail about *when* these show up: Claude only hands over a `[user]` step once the work it depends on is finished. A check that's waiting on something not built yet stays parked in your queue until it's ready — so when Claude does hand one to you, it's genuinely ready for you to do.
 
@@ -49,11 +49,11 @@ Every piece of Claude's work in the queue carries a flavor that says how Claude 
 - **Build** (no tag) — the normal kind: Claude makes changes to your files. Most work is this.
 - **`[audit]`** — a review pass: Claude reads something over and reports what it finds, without changing anything. The findings go into your queue for you to look over.
 
-There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds its own lines top to bottom, routing each by its flavor, and stops to hand over at the first `[user]` line.
+There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds its own items top to bottom, routing each by its flavor, and stops to hand over at the first `[user]` item.
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
-Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit batch that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
+Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit item that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
 
 ## Why does Claude sometimes ask me to run a test instead of running it itself?
 
@@ -71,7 +71,7 @@ GitHub can email you whenever a new version of Sovereign Implementer is publishe
 
 You don't have to do anything special. Just carry on using it — run your normal /plan, /next, and /done sessions — and if something behaves oddly, you'll notice it in the moment and can have Claude capture it as work to fix. There's no set-aside list of post-update checks to work through, and no separate testing session to run.
 
-The one exception is a check that genuinely can't be done except by you — looking at a screen, tapping through your app, running something in a place Claude can't reach. When a piece of work needs a check like that, it's written into your queue as its own `[user]` line, so it's already waiting for you there rather than resting on you to remember it. Everything Claude can check itself, it checks while building — so most updates need nothing from you at all.
+The one exception is a check that genuinely can't be done except by you — looking at a screen, tapping through your app, running something in a place Claude can't reach. When a piece of work needs a check like that, it's written into your queue as its own `[user]` item, so it's already waiting for you there rather than resting on you to remember it. Everything Claude can check itself, it checks while building — so most updates need nothing from you at all.
 
 ## What is the "build stamp" the plugin records at the start of a session?
 
@@ -95,7 +95,7 @@ Two different saves. **Committing** saves a snapshot of your work to your projec
 
 ## I changed some files by hand — how do I save them?
 
-Just run /done. Claude reads changes you made yourself as your own expected work — not as something broken — confirms they're yours, writes them up in the session log, and commits them. You don't have to run /plan or /next first: a /done on its own, after a batch of hand edits, records and saves them cleanly. It's never required — if you leave hand edits uncommitted, the next /done you run (after any session) sweeps them up anyway — it's just there for when you want your handmade work saved as its own tidy record. If you made several unrelated changes, Claude may split them into separate log entries so each is easy to find later. One habit, entirely optional: if you've made ad-hoc changes by hand, mention it to Claude before running /done. It's not a requirement and skipping it breaks nothing — Claude handles the changes either way — it just helps Claude describe them accurately.
+Just run /done. Claude reads changes you made yourself as your own expected work — not as something broken — confirms they're yours, writes them up in the session log, and commits them. You don't have to run /plan or /next first: a /done on its own, after a set of hand edits, records and saves them cleanly. It's never required — if you leave hand edits uncommitted, the next /done you run (after any session) sweeps them up anyway — it's just there for when you want your handmade work saved as its own tidy record. If you made several unrelated changes, Claude may split them into separate log entries so each is easy to find later. One habit, entirely optional: if you've made ad-hoc changes by hand, mention it to Claude before running /done. It's not a requirement and skipping it breaks nothing — Claude handles the changes either way — it just helps Claude describe them accurately.
 
 ## Why did Claude say my new change has to wait for a fresh session?
 
@@ -103,7 +103,7 @@ Because the close (/done) is for recording and saving the work that was just fin
 
 ## Can I change SPEC.md, and how?
 
-Yes. SPEC.md is your project's source of truth, and the method keeps it changing only in deliberate, approved ways — but it's a normal document now, not something locked behind a special batch. A SPEC change happens one of two ways. If a planning session decides something that changes what SPEC says — a new capability, a different rule, who it's for — Claude updates SPEC right there in that /plan session, with your approval. If a build turns out to need a SPEC change, Claude asks you, adds SPEC.md to that build's file list, and edits it as part of the build. Either way you approve the change before it lands, and the safety check still blocks a build from touching SPEC unless its batch lists it — so a spec change never slips in quietly as a side effect of something else. (There used to be a separate "spec-edit batch" for this; it's gone — it added a whole extra step to change one line and protected nothing that the approval and the safety check don't already.)
+Yes. SPEC.md is your project's source of truth, and the method keeps it changing only in deliberate, approved ways — but it's a normal document now, not something locked behind a special mode. A SPEC change happens one of two ways. If a planning session decides something that changes what SPEC says — a new capability, a different rule, who it's for — Claude updates SPEC right there in that /plan session, with your approval. If a build turns out to need a SPEC change, Claude asks you, adds SPEC.md to that build's file list, and edits it as part of the build. Either way you approve the change before it lands, and the safety check still blocks a build from touching SPEC unless that build lists it in its files — so a spec change never slips in quietly as a side effect of something else. (There used to be a separate "spec-edit step" for this; it's gone — it added a whole extra step to change one line and protected nothing that the approval and the safety check don't already.)
 
 ## What's the difference between SPEC.md, CLAUDE.md, and Claude's memory?
 
@@ -137,7 +137,7 @@ No — an empty queue is a normal resting state. Run /plan when you have ideas o
 
 ## What is _build.md? Should I edit it?
 
-The active build's working file. It does four jobs: carries the batch being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the batch's reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
+The active build's working file. It does four jobs: carries the work item being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the item's reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
 
 ## What is _plan.md? Should I edit it?
 
@@ -155,9 +155,9 @@ It means the plugin has been updated and now creates a file or folder your proje
 
 The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. Some settings need an answer from you: the first one is which .md editor you work in (it lets Claude point you to a doc instead of re-pasting its text, saving tokens), so Claude opens by asking that in one line — and you can say to skip it. Settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
 
-## What happens if Claude needs to touch something outside the current batch?
+## What happens if Claude needs to touch something outside the current work item?
 
-Claude stops and asks. It stays within batch scope. If something else needs changing: "I need to edit [file] because [reason]. Add to scope?"
+Claude stops and asks. It stays within the work item's scope. If something else needs changing: "I need to edit [file] because [reason]. Add to scope?"
 
 ## Will Claude use my phone or another device to test my app?
 
@@ -172,13 +172,13 @@ A red flag is how Claude surfaces a risk to your data or your users' data — an
 
 Clearing a flag happens when you and Claude work through the item in planning — a piece of work only becomes "ready to build" once its flag is cleared. If a risk can't be cleared yet, its item stays in the "not yet fully processed" part of the queue rather than moving to "ready" — so a risk is never quietly shelved.
 
-It's tagged onto a work line rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
+It's tagged onto a work item rather than kept in a separate "risks" list, and that's deliberate: a standing risk list would look like a promise that Claude tracks every possible risk to your project, which no tool can honestly make. The tag only ever marks the risks Claude actually noticed — real ones, surfaced so you can decide what happens next.
 
 ## What happens to a red flag when the work carrying it is built?
 
 By the time a red-flagged piece of work is ready to build, its flag has already been cleared — that happened back in planning, when you and Claude decided how the risk was handled and recorded it in the log. So when the work is built and committed, Claude just carries that cleared flag through into the session log; the risk was never left hanging. A red flag never quietly disappears, and it never lingers as a leftover reminder with no work left to do.
 
-One detail worth knowing: a risk counts as cleared the moment it's designed out or you accept it — even if a fix still needs a real-world check to confirm it works. That leftover check becomes its own `[user]` line in your queue — a normal thing for you to verify later — rather than keeping the flag hanging. So "fixed, with a check still to do" shows up as a cleared flag plus a waiting check, not as an unhandled risk.
+One detail worth knowing: a risk counts as cleared the moment it's designed out or you accept it — even if a fix still needs a real-world check to confirm it works. That leftover check becomes its own `[user]` item in your queue — a normal thing for you to verify later — rather than keeping the flag hanging. So "fixed, with a check still to do" shows up as a cleared flag plus a waiting check, not as an unhandled risk.
 
 ## Why did Claude ask before starting a "subagent"?
 
@@ -186,7 +186,7 @@ A subagent is a separate helper Claude can spin up to go off and work on somethi
 
 ## What does a "Plan session here" line in the queue mean?
 
-It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
+It's a planning checkpoint Claude placed between work items. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
 ## What does the "Cleared to run above this line" marker in the queue mean?
 

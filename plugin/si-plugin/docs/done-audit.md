@@ -1,8 +1,8 @@
 # Audit close-out
 
-Close-out for audit-flavor work lines. Reached from done.md's router for the run's `[audit]` lines. Audits edit no source files — the session's product is the captures it appended to Unprocessed.
+Close-out for audit-flavor work items. Reached from done.md's router for the run's `[audit]` items. Audits edit no source files — the session's product is the captures it appended to Unprocessed.
 
-A run may contain several audit lines. The record step writes one LOG entry per audit line; the staleness sweep, commit, and recommendation run once for the whole close.
+A run may contain several audit items. The record step writes one LOG entry per audit item; the staleness sweep, commit, and recommendation run once for the whole close.
 
 ## Phase 1: Judgment (while context is fresh)
 
@@ -20,12 +20,12 @@ Each straggler is drafted, shown, and approved before it's written, so this step
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-A run may have run several audit lines. Write one LOG entry file per audit line, each named after that line's slug (done.md LOG entry files), reusing that line's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
+A run may have run several audit items. Write one LOG entry file per audit item, each named after that item's slug (done.md LOG entry files), reusing that item's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
 
 ```markdown
 # [HASH] — [one-line summary]
 
-[Prose rationale — what was audited against which criteria and why, re-authored from the work line's rationale in _build.md; what the read surfaced. Inline prose, no `Why:` label.]
+[Prose rationale — what was audited against which criteria and why, re-authored from the work item's rationale in _build.md; what the read surfaced. Inline prose, no `Why:` label.]
 
 **Files touched:**
 - [the target artifacts that were read — the audit edited nothing]
@@ -47,15 +47,15 @@ Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entrie
 - [HASH] — [index entry] → [entry filename]
 ```
 
-If _build.md carries a matching `Index entry candidate` for the line and the audit ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
+If _build.md carries a matching `Index entry candidate` for the item and the audit ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
 
 ### 2.2 Staleness sweep [SILENT] when clean, [BRIEF] when flagging
 
-Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work lines in QUEUE.md — any staleness from any cause, not just what this audit surfaced:
-- Do any remaining Unprocessed or Processed work lines reference files anything since has renamed or deleted?
+Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work items in QUEUE.md — any staleness from any cause, not just what this audit surfaced:
+- Do any remaining Unprocessed or Processed work items reference files anything since has renamed or deleted?
 - Do any reference behaviour or rules a shift since has moved past?
 - Are any sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected line) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask.
+- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected item) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask.
 
 ### 2.3 Delete _build.md [SILENT]
 

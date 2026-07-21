@@ -1,8 +1,8 @@
 # Build close-out
 
-Close-out for build-flavor work lines. Reached from done.md's router for the run's build lines (work lines carrying no flavor tag). A build that changed SPEC.md (because it grew scope to include it mid-build, or a build line listed it) closes here like any other build — there is no separate spec-edit close.
+Close-out for build-flavor work items. Reached from done.md's router for the run's build items (work items carrying no flavor tag). A build that changed SPEC.md (because it grew scope to include it mid-build, or a build item listed it) closes here like any other build — there is no separate spec-edit close.
 
-A run may contain several build lines. The judgment and record steps below apply per built line where noted — one LOG entry per line — while the staleness sweep, commit, and recommendation run once for the whole close.
+A run may contain several build items. The judgment and record steps below apply per built item where noted — one LOG entry per item — while the staleness sweep, commit, and recommendation run once for the whole close.
 
 ## Phase 1: Judgment (while context is fresh)
 
@@ -14,9 +14,9 @@ If a new directive arises during the close — the user raises a change, or veri
 
 ### 1.1 Verify completion
 
-Read _build.md. Every build line in the run ticked in Progress?
+Read _build.md. Every build item in the run ticked in Progress?
 - **Yes:** Proceed.
-- **Some unticked:** [PROMPT] Ask — finish (/next) or close partial (defer the unticked lines, returning them to QUEUE.md's Processed section). Wait for the user's call.
+- **Some unticked:** [PROMPT] Ask — finish (/next) or close partial (defer the unticked items, returning them to QUEUE.md's Processed section). Wait for the user's call.
 
 Reconcile the file against memory where the session is still remembered: if _build.md and what you recall disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Unprocessed (per 1.2). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it.
 
@@ -30,11 +30,11 @@ Build closes only (audits land no product changes). Read SPEC.md against the cha
 
 If the test fires, stop the close — don't commit yet. Surface the drift in plain words, naming which SPEC sentence the build made wrong or incomplete, and get the user's approval to fix it. Then add SPEC.md to _build.md's `Files:` list (so the scope-lock allows the edit), edit SPEC to match what the build landed, and commit SPEC together with the build in this same commit. Don't file it as a capture for a later session.
 
-The why this is a stop-the-close gate, not a detect-and-file backstop: SPEC is in-session-editable now — the spec-edit batch type is retired (plan.md) — so a build that changed product truth can and must bring SPEC into line in the same commit. Spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md); deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does. Scope: every build close where the build changed product truth.
+The why this is a stop-the-close gate, not a detect-and-file backstop: SPEC is in-session-editable now — the separate spec-edit step is retired (plan.md) — so a build that changed product truth can and must bring SPEC into line in the same commit. Spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md); deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does. Scope: every build close where the build changed product truth.
 
-### 1.4 Red-flag close [SILENT] when no flag, [PROMPT] when a line carries one
+### 1.4 Red-flag close [SILENT] when no flag, [PROMPT] when an item carries one
 
-Per built line: if the line carries a `Red flag · State: …` marker, run the Red-flag lifecycle at close in done.md before the line leaves the queue. Its flag was cleared at processing, so carry the cleared flag into this line's LOG entry (2.1); the backstop stops only if the marker still reads uncleared. Silent when no built line carries a flag.
+Per built item: if the item carries a `Red flag · State: …` marker, run the Red-flag lifecycle at close in done.md before the item leaves the queue. Its flag was cleared at processing, so carry the cleared flag into this item's LOG entry (2.1); the backstop stops only if the marker still reads uncleared. Silent when no built item carries a flag.
 
 ## Phase 2: Record
 
@@ -42,12 +42,12 @@ Per built line: if the line carries a `Red flag · State: …` marker, run the R
 
 Narrate first [BRIEF]: one sentence noting the work's reasoning is being carried from _build.md into the LOG entry — the file's last job before /done deletes it.
 
-A run may have built several build lines. Write one LOG entry file per built line, each named after that line's slug (done.md LOG entry files), reusing that line's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
+A run may have built several build items. Write one LOG entry file per built item, each named after that item's slug (done.md LOG entry files), reusing that item's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
 
 ```markdown
 # [HASH] — [one-line summary]
 
-[Prose rationale — re-authored from the work line's rationale in _build.md, expanded with what was learned during the build (tradeoffs, constraints, approach changes). Inline prose, no `Why:` label.]
+[Prose rationale — re-authored from the work item's rationale in _build.md, expanded with what was learned during the build (tradeoffs, constraints, approach changes). Inline prose, no `Why:` label.]
 
 **Files touched:**
 - [from _build.md Changes]
@@ -55,9 +55,9 @@ A run may have built several build lines. Write one LOG entry file per built lin
 **Routed to Captures:** [items added, or "none"]
 ```
 
-Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. If this run shipped only this one line, this approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). If the run shipped several lines, the commit message is instead a one-line summary of the whole run, drafted and approved at the commit step — each line's entry here still stands on its own. This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
+Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. If this run shipped only this one item, this approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). If the run shipped several items, the commit message is instead a one-line summary of the whole run, drafted and approved at the commit step — each item's entry here still stands on its own. This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
 
-If a built line carried a red flag, note in this entry that it carried a red flag and that it was cleared, per done.md Recording a cleared red flag — the carry-through, since the substantive clearing record was written at the /plan close that cleared it.
+If a built item carried a red flag, note in this entry that it carried a red flag and that it was cleared, per done.md Recording a cleared red flag — the carry-through, since the substantive clearing record was written at the /plan close that cleared it.
 
 Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
 
@@ -65,15 +65,15 @@ Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entrie
 - [HASH] — [index entry] → [entry filename]
 ```
 
-If _build.md carries a matching `Index entry candidate` for the line and it built as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
+If _build.md carries a matching `Index entry candidate` for the item and it built as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
 
 ### 2.2 Staleness sweep [SILENT] when clean, [BRIEF] when flagging
 
-Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work lines in QUEUE.md — any staleness from any cause, not just what this build changed:
-- Do any remaining Unprocessed or Processed work lines reference files this build (or an earlier shift the queue hasn't caught up to) renamed or deleted?
+Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work items in QUEUE.md — any staleness from any cause, not just what this build changed:
+- Do any remaining Unprocessed or Processed work items reference files this build (or an earlier shift the queue hasn't caught up to) renamed or deleted?
 - Do any reference behaviour or rules that a shift since has moved past?
 - Are any sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected line) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask (the same ride-along as the hash backfill).
+- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected item) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask (the same ride-along as the hash backfill).
 
 ### 2.3 Delete _build.md [SILENT]
 
