@@ -1,4 +1,4 @@
-# [HASH] — Swept method docs to make "work item" the canonical unit name
+# 53e3a8e — Swept method docs to make "work item" the canonical unit name
 
 Settled "work item" (or "item" in context) as the canonical name for a unit of work — a `####` heading plus its rationale block — replacing "work line". Three supporting rules drove the sweep: "build" is a flavor only (an untagged item is *a build*, never a synonym for the unit); "batch" is retired (excised wherever it lingered from the pre-two-section model, rephrased to "work item" / "model" / "step" as fit); and "line" is reserved for literal file lines — the cleared-to-run marker, push markers, heading/description/index lines, "one path per line", "45 lines" — all left untouched. The care the item flagged was real: "work line" and bare unit-"line" are pervasive, so each occurrence was judged unit-reference vs literal-line one at a time.
 
