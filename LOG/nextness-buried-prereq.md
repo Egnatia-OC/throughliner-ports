@@ -1,4 +1,4 @@
-# [HASH] — plan.md keep-step + plugin-behaviour: split a buried user-only gating prerequisite into its own [user] line at processing time
+# 053c608 — plan.md keep-step + plugin-behaviour: split a buried user-only gating prerequisite into its own [user] line at processing time
 
 Observed live in Metro-admin: leave-subproject's real blocker — a supervisor-only ask that gated the whole tool — lived only as prose inside that item's rationale, never filed as its own trackable `[user]` line, so a concrete gating action was invisible as next-work until the user asked. Nothing caught the buried prerequisite at processing time, when the item was first kept.
 

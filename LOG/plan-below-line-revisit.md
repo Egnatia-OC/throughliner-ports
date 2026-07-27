@@ -1,4 +1,4 @@
-# [HASH] — plan.md + plugin-behaviour + SPEC + FAQ: standing /plan revisit lifts shelved below-line work when its lift-condition clears
+# 053c608 — plan.md + plugin-behaviour + SPEC + FAQ: standing /plan revisit lifts shelved below-line work when its lift-condition clears
 
 Readiness was set once at processing and never revisited, so an item correctly shelved below the cleared-to-run marker (because it waited on something outside the queue) depended on the user remembering to come back to it — the exact thing the queue exists to prevent (observed live: Stephanie abuse, Metro-admin). This build closed the gap in two halves.
 

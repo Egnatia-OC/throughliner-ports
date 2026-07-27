@@ -1,4 +1,4 @@
-# [HASH] — plan.md: neutral end-of-queue gate — an empty Unprocessed no longer presumes close
+# 053c608 — plan.md: neutral end-of-queue gate — an empty Unprocessed no longer presumes close
 
 Observed in testing: when the last Unprocessed item was processed, /plan leaned toward closing — sometimes running the wind-down re-scan straight away — rather than asking whether the user had more to capture or discuss; and when the user did raise a further capture after that point, /plan filed it but re-leaned to close.
 

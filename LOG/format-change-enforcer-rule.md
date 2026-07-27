@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md: added host wiring rule to trace a hook-enforced-format change's scope by grep
+# 053c608 — CLAUDE.md: added host wiring rule to trace a hook-enforced-format change's scope by grep
 
 Observed 2026-07-15 (building [redflag-cleared-uncleared-model]): when a work item changes a format or enum the hooks enforce, the change ripples to every doc naming the values, the hook validating them, and the consumer templates + FAQ. Nothing at plan time traced that ripple, so the file list got written from the design discussion rather than a grep — the red-flag-states change missed post_tool_use.py's valid-state set (which would have rejected every new `State: cleared` marker) plus done-family docs, setup.md, CLAUDE-TEMPLATE.md, and two FAQ entries. /next's self-scoping caught it, but only by halting mid-run — the interruption an unattended run shouldn't need.
 

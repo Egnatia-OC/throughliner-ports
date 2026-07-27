@@ -1,4 +1,4 @@
-# [HASH] — next.md + plan.md: collapsed pre-work ready-checks to at most one in both skills
+# 053c608 — next.md + plan.md: collapsed pre-work ready-checks to at most one in both skills
 
 Merges the identical over-asking pattern — Claude asking the user to okay forward motion more times than the work needs — in two skills.
 

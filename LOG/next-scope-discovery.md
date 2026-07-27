@@ -1,4 +1,4 @@
-# [HASH] — next.md Step 2.2: scoped "surface rather than guess" to own-file underspecification; adjacent-work discovery captures-and-continues
+# 053c608 — next.md Step 2.2: scoped "surface rather than guess" to own-file underspecification; adjacent-work discovery captures-and-continues
 
 Observed live (building [work-item-terminology]): self-scoping noticed the hooks carried the old "work line" term — adjacent work beyond the enumerated scope — and Claude stopped to ask whether to expand scope, rather than capturing the discovery and continuing on the decided scope. A blocking scope-ask both defeats the unattended run and reopens a scope decision the plan/next boundary reserves for /plan. next.md Step 2.2's "surface it rather than guessing" read as licensing a block-ask for the adjacent-work case too.
 

@@ -1,4 +1,4 @@
-# [HASH] — next/next-build/done/done-plan/plan/plugin-behaviour + SPEC + FAQ: gave [user] handover items a full completion lifecycle
+# 053c608 — next/next-build/done/done-plan/plan/plugin-behaviour + SPEC + FAQ: gave [user] handover items a full completion lifecycle
 
 Before this, once /next handed over a `[user]` item nothing detected it got done, recorded it, or removed it — so a finished handover stranded in Processed and the next /next re-handed it back as unbuilt (observed live: Metro-admin 2026-07-20, scrolly-thing 2026-07-16). This build gave `[user]` items a complete lifecycle in three parts.
 

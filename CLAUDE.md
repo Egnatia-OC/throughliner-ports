@@ -171,6 +171,16 @@ LOG entries are per-entry files — no log capping or push markers at push time.
 
 When a session opens from a Claude-authored handoff or context prompt — a resume note, a "here's where we left off" summary — treat its claims as unverified until the user confirms them. Claude-written content is not read in the user's voice. The why: a handoff Claude authored is not a user-vouched fact, and a fresh or weaker session can't tell which claims the user stood behind versus which Claude wrote — so a Claude-authored line ("the lint keeps flagging X") must not be used as evidence that the user reported X. Confirm before relying on it. (Resolved 2026-06-26: no claim-marking format is added — this standing rule suffices. Multi-line /next takes its instructions from the queue, user-vouched by construction, so it never reads a mixed Claude-authored directive whose claims would need marking; the one Claude-authored thing a run reads is its own working-state file (_build.md) on resume, read as mechanical state, exactly what this rule already covers.)
 
+## Cross-platform ports
+
+There are two ports of Sovereign Implementer: this one (the **canonical** SI, for Claude Code) and a **Codex** port at `C:\Users\Alex 2\.codex\plugins\cache\personal\sovereign-implementer-codex\`. They are separate distributions with separate procedure docs and hooks.
+
+The boundary between them, set by Alex (2026-07-28):
+
+- **Neither port builds the other.** Claude never edits or builds the Codex port's SI, and Codex never edits or builds this canonical SI. Each is developed only within its own platform's sessions.
+- **Cross weigh-ins are allowed.** Either port may be asked to *diagnose or advise on* the other — read its source, reason about its behaviour, report findings — without editing it. When diagnosing the other port, verify against its actual source rather than trusting a transcript's narration (the handoff-provenance rule).
+- **This port weighs in more strongly right now.** This canonical SI is the one Alex actively uses and tests across all her projects, so its design decisions are the reference the Codex port is measured against — not the reverse. (Live example: the Codex port's `[user]`-handover deadlock, diagnosed 2026-07-28 — LOG `plan-2026-07-28.md` — is evidence *for* this port's decision to keep `[user]` handovers out of `_build.md`.)
+
 ## E2E testing
 
 **Taskflowapp** at `C:\Users\Alex\My Drive\Desktop\Prioritiy projects\Taskflow Planning\Planning in here\Taskflowapp` is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.

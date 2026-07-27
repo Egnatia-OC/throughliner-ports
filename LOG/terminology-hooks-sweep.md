@@ -1,4 +1,4 @@
-# [HASH] — post_tool_use.py + session_start.py: renamed user-facing "work line"→"work item", "top batch"→"top work item", completing [work-item-terminology]
+# 053c608 — post_tool_use.py + session_start.py: renamed user-facing "work line"→"work item", "top batch"→"top work item", completing [work-item-terminology]
 
 The [work-item-terminology] sweep made "work item" canonical across docs/templates/SPEC/QUEUE-header but excluded the hooks, so the lint output a consumer reads still said "work line," and session_start still told the user to "start the top batch" — the canonical name wasn't canonical where the user sees it.
 

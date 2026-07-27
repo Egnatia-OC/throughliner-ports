@@ -1,4 +1,4 @@
-# [HASH] — plugin-behaviour.md: plugin-feedback report now drafted as one free-form scrubbed block, not labelled fields
+# 053c608 — plugin-behaviour.md: plugin-feedback report now drafted as one free-form scrubbed block, not labelled fields
 
 The consumer feedback channel had Claude draft the scrubbed report broken into labelled fields (method+version, skill/step, question or gap, context, steps to reproduce). Those fields don't correspond to whatever input the flintcraft.tech/report page presents, so a user pasting the draft had to reconcile Claude's structure against a different on-page form.
 

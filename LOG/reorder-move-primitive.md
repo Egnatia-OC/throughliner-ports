@@ -1,4 +1,4 @@
-# [HASH] — new scripts/reorder_queue.py + plan.md close reorder: mechanical byte-for-byte queue-reorder mover with self-check
+# 053c608 — new scripts/reorder_queue.py + plan.md close reorder: mechanical byte-for-byte queue-reorder mover with self-check
 
 /plan's close-out reorder asks Claude to re-sort the queue sections, but the only edit primitive is exact-string replace — so moving a work item means retyping its whole prose block verbatim, twice. Items run several hundred words, so on a long queue the sort silently degraded to a partial move, and a single transcription slip would corrupt an item with no error. The fix (decided 2026-07-25) was a mechanical mover, not accepting partial sorts or forcing items to stay short.
 
