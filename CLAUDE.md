@@ -173,7 +173,11 @@ When a session opens from a Claude-authored handoff or context prompt — a resu
 
 ## Cross-platform ports
 
-There are two ports of Sovereign Implementer: this one (the **canonical** SI, for Claude Code) and a **Codex** port at `C:\Users\Alex 2\.codex\plugins\cache\personal\sovereign-implementer-codex\`. They are separate distributions with separate procedure docs and hooks.
+There are two ports of Sovereign Implementer: this one (the **canonical** SI, for Claude Code) and a **Codex** port. They are separate distributions with separate procedure docs and hooks.
+
+Two Codex paths, and they are not the same thing:
+- **Installed plugin cache:** `C:\Users\Alex 2\.codex\plugins\cache\personal\sovereign-implementer-codex\` — the frozen snapshot Codex runs.
+- **Development project (source + its own QUEUE.md/SPEC.md/LOG):** `C:\Users\Alex 2\My Drive\Desktop\Prioritity projects\Taskflow Planning\Sovereign Implementer - Codex port\` — where the port is built, and where cross-platform findings for our side get parked (e.g. `[audit-codex-session-findings-for-claude]`, `[claude-retire-forward-recommendation-advisory]`). Read here (read-only) when checking what a Codex-side slug actually means.
 
 The boundary between them, set by Alex (2026-07-28):
 
