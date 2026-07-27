@@ -14,6 +14,10 @@ The why this gate exists, and what it replaces: spec-driven development's contra
 
 /plan positions the `--- Cleared to run above this line ---` marker at its own close (plan.md Step 3). Confirm it's present in the Processed section and sits where it belongs — everything above it processed and greenlit to build, everything below it processed but still being settled. If it's present and correctly placed — the normal case, since /plan just positioned it — confirm silently and say nothing; a plan→done flow already narrated the boundary at the /plan close, so restating it here just says the same thing twice. Only if it's missing or misplaced: fix it with the user, then narrate the boundary plainly in one line — e.g. "Two items are cleared to run; the line sits above [work-x], which isn't greenlit yet." A setup or method-doc-only session with no processed work has no line to place — say nothing. Scope: every plan-type /done close.
 
+## Completed `[user]` handovers (close any the session confirmed done) [SILENT when none; BRIEF when closing one]
+
+If this /plan session confirmed that a `[user]` handover item was completed async — the Step 1 completion-ask surfaced it (plan.md Step 1) — record and remove it now through done.md's **Completed `[user]`-item close**: a LOG entry per completed item named by its slug, and the item removed from Processed. This is the /plan half of the handover-completion close (the /next-adjacent half is a standalone /done). Fold each such item's LOG entry into this session's records alongside the planning entry below, and its slug into the commit. When the session confirmed no completed handover, say nothing.
+
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
 Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):

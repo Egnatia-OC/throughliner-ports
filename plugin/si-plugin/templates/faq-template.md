@@ -42,6 +42,10 @@ No — a handover isn't Claude dropping the task on you and stepping back. When 
 
 One related detail about *when* these show up: Claude only hands over a `[user]` step once the work it depends on is finished. A check that's waiting on something not built yet stays parked in your queue until it's ready — so when Claude does hand one to you, it's genuinely ready for you to do.
 
+## I did a `[user]` step Claude handed me. How does it get recorded and cleared?
+
+When Claude hands over a `[user]` step, it tells you how to close it out: once you've done it, **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would hand you the same step again, as if you'd never done it. To catch that, when Claude meets a `[user]` step still sitting in your queue, it simply asks — "have you already done this one?" — rather than re-handing it over. Say yes and it records it and clears it; say no and it hands it over as normal. (It asks rather than trying to detect it automatically, because a handover is often a check or a decision with no file to look for.)
+
 ## What are the build and audit flavors — and is there a separate "test"?
 
 Every piece of Claude's work in the queue carries a flavor that says how Claude carries it out, shown as a small tag at the front of the line:
@@ -188,9 +192,17 @@ A subagent is a separate helper Claude can spin up to go off and work on somethi
 
 It's a planning checkpoint Claude placed between work items. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
+## I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?
+
+Yes. When a piece of work is parked below the line because it's waiting on something — a step you have to do, another piece of work being finished and checked, a restart — Claude records right there in the item what it's waiting for ("once X is done", "after a restart"). Then at the start of every planning session, Claude goes back over everything parked below the line and re-checks those conditions. Anything it can confirm by itself — a piece of work that's now finished and verified, a file that's now there — it offers to move up above the line so it's ready to build. Anything only *you* can confirm — did the restart happen, did you set the thing up — it rolls into a single question asked once, rather than pestering you item by item. The point is that parked work gets picked back up when its wait actually clears, instead of relying on you to remember it was there.
+
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
 It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
+
+## Why did /next stop before finishing everything?
+
+Because it hit a wall on one item and stopped rather than spinning on it. When /next works down your cleared queue, it watches the item it's building for signs of no progress — the **same error** coming back, an edit that **changes nothing**, or the **same check failing** the same way, roughly three times on one item. When it sees that, it stops and tells you plainly what repeated (the exact error, or what wouldn't change), and hands you the decision, instead of burning the rest of the run thrashing on something stuck. Since /next often runs faster than you're watching, this stop is what keeps a stuck item from quietly wasting the whole session. It's not a failure of your project — it just means that one item needs a human look before it can go further; the items already finished before it are safe, and you decide how to handle the stuck one from there.
 
 ## How does a planning session work through my unprocessed ideas — can I skip or drop things?
 

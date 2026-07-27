@@ -4,13 +4,13 @@ PostToolUse hook — advisory lint of QUEUE.md structure after edits.
 
 Fires after Edit/Write/MultiEdit lands on the project's QUEUE.md. Reads
 the file from disk and flags known format violations against the
-two-section work-line model:
+two-section work-item model:
 
-  1. A work line whose description heading doesn't end in a [slug]. A
-     work line renders as a #### heading under ## Processed or
+  1. A work item whose description heading doesn't end in a [slug]. A
+     work item renders as a #### heading under ## Processed or
      ## Unprocessed; the slug at the end of that heading is what lets a
      later LOG entry name the work precisely.
-  2. A work line carrying no provenance label ("captured by you" or
+  2. A work item carrying no provenance label ("captured by you" or
      "by Claude") anywhere in its block — every line records who raised
      it, and that label stays on the line after it's processed.
   3. A missing section heading — both ## Processed and ## Unprocessed
@@ -33,17 +33,17 @@ import re
 import sys
 
 
-# A work line renders as a #### heading; its slug sits at the end of that
+# A work item renders as a #### heading; its slug sits at the end of that
 # heading line (processed and unprocessed work show this way, so the list
 # — including anything below the cleared-to-run line — is navigable from
-# an editor outline). The heading line is the work line's description line.
+# an editor outline). The heading line is the work item's description line.
 WORKLINE_HEADING = re.compile(r"^####\s+\S")
 
-# The trailing [slug] on a work-line heading: lowercase kebab, two chars
+# The trailing [slug] on a work-item heading: lowercase kebab, two chars
 # minimum, so a stray [x] tick or an [PROMPT]-style token never counts.
 SLUG_AT_END = re.compile(r"\[[a-z0-9][a-z0-9-]+\]\s*$")
 
-# Provenance label — who raised the work line. Case-insensitive so
+# Provenance label — who raised the work item. Case-insensitive so
 # "Captured by you." at a sentence start still matches.
 PROVENANCE = re.compile(r"captured by you|by claude", re.IGNORECASE)
 
@@ -80,12 +80,12 @@ def _annotate(content: str):
 
 
 def _workline_blocks(annotated):
-    """Group each #### work line under a work section with its own block.
+    """Group each #### work item under a work section with its own block.
 
     A block is the heading line plus every following line up to the next
     #### heading, the next heading of any level, or a section change. Lines
     outside the Processed/Unprocessed sections are ignored entirely, so a
-    #### heading elsewhere in the file is never treated as a work line.
+    #### heading elsewhere in the file is never treated as a work item.
     """
     blocks = []
     current = None
@@ -101,7 +101,7 @@ def _workline_blocks(annotated):
             current = {"idx": i, "heading": line, "lines": [line]}
         elif is_heading:
             # Any other heading (a section change, a stray sub-heading) ends
-            # the current work-line block.
+            # the current work-item block.
             if current:
                 blocks.append(current)
                 current = None
@@ -113,22 +113,22 @@ def _workline_blocks(annotated):
 
 
 def _check_slugs(blocks, warnings):
-    """Check 1: every work-line heading ends in a [slug]."""
+    """Check 1: every work-item heading ends in a [slug]."""
     for b in blocks:
         if not SLUG_AT_END.search(b["heading"]):
             warnings.append(
-                f"line {b['idx'] + 1}: work line {b['heading'][:60]!r} has no "
-                "[slug] at the end of its description line — every work line "
+                f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} has no "
+                "[slug] at the end of its description line — every work item "
                 "needs one so a later LOG entry can name it."
             )
 
 
 def _check_provenance(blocks, warnings):
-    """Check 2: every work line carries a provenance label in its block."""
+    """Check 2: every work item carries a provenance label in its block."""
     for b in blocks:
         if not any(PROVENANCE.search(line) for line in b["lines"]):
             warnings.append(
-                f"line {b['idx'] + 1}: work line {b['heading'][:60]!r} carries "
+                f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} carries "
                 "no provenance label — add 'captured by you' or 'by Claude' so "
                 "the line records who raised it."
             )
@@ -149,8 +149,8 @@ def _check_sections(annotated, warnings):
 def _check_red_flag_states(annotated, warnings):
     """Check 4: a red-flag marker line names a valid state.
 
-    Scans every line, not only work-line blocks: a marker is only ever
-    valid under a work line, but validating it wherever it appears is the
+    Scans every line, not only work-item blocks: a marker is only ever
+    valid under a work item, but validating it wherever it appears is the
     fail-safe direction — a stray marker with a bad state still gets caught.
     """
     for i, line, _h2, _ih in annotated:

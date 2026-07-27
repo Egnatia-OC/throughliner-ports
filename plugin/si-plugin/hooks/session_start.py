@@ -46,6 +46,26 @@ def _oldest_commit_for(cwd, entry_title):
     return hashes[-1] if hashes else ""
 
 
+def _file_is_committed(cwd, relpath):
+    """True if `relpath` has at least one commit in git history.
+
+    Used to tell an unresolved placeholder that *should* have resolved (its
+    entry file is already committed, so `git log -S` should have found it)
+    from the normal case (the current session's own entry, not yet committed).
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--pretty=%h", "--", relpath],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
 def backfill_log_hashes(cwd):
     """Fill hash placeholders across LOG/*.md in place.
 
@@ -62,16 +82,23 @@ def backfill_log_hashes(cwd):
         return ""
     filled = 0
     touched_files = []
+    # Placeholders that stayed unresolved even though their entry file is
+    # already committed — these SHOULD have resolved, so surface them loudly
+    # instead of the silent skip that let scrolly-thing's failure accumulate
+    # unnoticed. Keyed by file so each anomalous file is named once.
+    unresolved_committed = []
     for name in names:
         if not name.endswith(".md"):
             continue
         path = os.path.join(log_dir, name)
+        relpath = "LOG/" + name
         try:
             with open(path, "r", encoding="utf-8", newline="") as f:
                 lines = f.read().splitlines(keepends=True)
         except (OSError, UnicodeDecodeError):
             continue
         changed = False
+        file_flagged = False
         for i, line in enumerate(lines):
             match = _HASH_POSITION.match(line)
             if not match:
@@ -81,6 +108,12 @@ def backfill_log_hashes(cwd):
                 continue
             commit = _oldest_commit_for(cwd, entry_title)
             if not commit:
+                # An unresolved placeholder is normal for the current session's
+                # own entry (not committed yet). But if this entry file is
+                # already committed, it should have resolved — flag it.
+                if not file_flagged and _file_is_committed(cwd, relpath):
+                    unresolved_committed.append(name)
+                    file_flagged = True
                 continue
             lines[i] = (
                 match.group("prefix") + commit + match.group("sep") + line[match.end():]
@@ -94,12 +127,22 @@ def backfill_log_hashes(cwd):
             except OSError:
                 continue
             touched_files.append(name)
+    anomaly = ""
+    if unresolved_committed:
+        anomaly = (
+            f" Note: {len(unresolved_committed)} committed entry file(s) still "
+            f"carry an unfilled hash placeholder ({', '.join(unresolved_committed)}) "
+            "— these should have resolved, so the backfill may be failing (e.g. an "
+            "index summary reworded since it was committed). Worth checking."
+        )
     if not filled:
+        if anomaly:
+            return "[Sovereign Implementer] Log housekeeping:" + anomaly
         return ""
     return (
         f"[Sovereign Implementer] Log housekeeping: filled {filled} commit-hash "
         f"placeholder(s) in {', '.join(touched_files)}. This is an uncommitted "
-        "working-tree edit — fold it into this session's commit."
+        "working-tree edit — fold it into this session's commit." + anomaly
     )
 
 
@@ -168,9 +211,9 @@ def _dirty_tree_count(cwd):
 
 
 def _uncleared_red_flags(queue_path):
-    """Descriptions of work lines carrying `Red flag · State: uncleared`.
+    """Descriptions of work items carrying `Red flag · State: uncleared`.
 
-    A red flag is an ordinary work line (a #### heading) with a
+    A red flag is an ordinary work item (a #### heading) with a
     `Red flag · State: <state>` marker beneath it. This returns the cleaned
     heading text of every such line whose state is uncleared, so session
     start can surface unaddressed risks first-thing. The two-section work-line
@@ -499,7 +542,7 @@ def main() -> int:
         context_parts.append("")
         context_parts.append(
             "Ready. "
-            "Run /plan to manage the queue, or /next to start the top batch."
+            "Run /plan to manage the queue, or /next to start the top work item."
         )
 
     if has_plan_state:
