@@ -43,6 +43,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why did Claude ask before starting a "subagent"?](faq.md#why-did-claude-ask-before-starting-a-subagent)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [What does the "Cleared to run above this line" marker in the queue mean?](faq.md#what-does-the-cleared-to-run-above-this-line-marker-in-the-queue-mean)
+- [How does a planning session work through my unprocessed ideas — can I skip or drop things?](faq.md#how-does-a-planning-session-work-through-my-unprocessed-ideas--can-i-skip-or-drop-things)
 - [Why did Claude reorder my queue at the end of a planning session?](faq.md#why-did-claude-reorder-my-queue-at-the-end-of-a-planning-session)
 - [Claude tidied up the queue while committing, without asking me. Is that normal?](faq.md#claude-tidied-up-the-queue-while-committing-without-asking-me-is-that-normal)
 - [Something about the method itself is broken or confusing — where does that go?](faq.md#something-about-the-method-itself-is-broken-or-confusing--where-does-that-go)
