@@ -1,4 +1,4 @@
-# [HASH] — Consolidated /plan's Step 3 shadow close into the always-run /done close (done-plan.md)
+# 2f31148 — Consolidated /plan's Step 3 shadow close into the always-run /done close (done-plan.md)
 
 plan.md's Step 3 "Close out" had accreted a second, near-/done-sized close — SPEC-sync, reorder both sections, position the cleared-to-run marker, hold-back check, place ready `[user]` work — that ran only when the user explicitly hit the /plan checkpoint's "close out" off-ramp. A session that ended any other way (or a bare /done) skipped that durable work, and it duplicated the "/done is THE close" boundary. The fix consolidates the durable work into done-plan.md, the one close that always runs (via /done) however a /plan session ends — mirroring how /next holds no close work and pushes everything to done-build.md.
 
