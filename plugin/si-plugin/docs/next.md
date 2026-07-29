@@ -84,7 +84,7 @@ Work the run's items top-down. Route each Claude-work item by its flavor, and ha
 
 Between items, keep going autonomously — the user confirmed the whole run at Ready, so there's no per-item re-confirmation. Tick each item in _build.md Progress as it finishes before starting the next.
 
-**Handover branch — a `[user]` item** [PROMPT]. The run stops at the first `[user]` item (this is where the run boundary was drawn in Step 1). It only reaches here because /plan placed a ready `[user]` item above the cleared-to-run marker (plan.md Step 3); the marker is the single gate, so /next hands over whatever ready `[user]` work sits above it and never reaches below it.
+**Handover branch — a `[user]` item** [PROMPT]. The run stops at the first `[user]` item (this is where the run boundary was drawn in Step 1). It only reaches here because the /plan close placed a ready `[user]` item above the cleared-to-run marker (done-plan.md); the marker is the single gate, so /next hands over whatever ready `[user]` work sits above it and never reaches below it.
 
 Run the **completion-ask** (Step 1) first — the item may already be done from a past handover. If the user says it's done, don't hand it over: it's a completed handover to record, so recommend /done and stop. Otherwise hand it over.
 
