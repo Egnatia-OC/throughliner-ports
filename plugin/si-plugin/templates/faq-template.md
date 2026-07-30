@@ -53,7 +53,7 @@ Every piece of Claude's work in the queue carries a flavor that says how Claude 
 - **Build** (no tag) — the normal kind: Claude makes changes to your files. Most work is this.
 - **`[audit]`** — a review pass: Claude reads something over and reports what it finds, without changing anything. The findings go into your queue for you to look over.
 
-There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds its own items top to bottom, routing each by its flavor, and stops to hand over at the first `[user]` item.
+There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude hands to you rather than running. When Claude works down the cleared part of the queue, it builds all its own items first, routing each by its flavor, and then hands over any `[user]` steps — so a handover no longer ends the run partway through, and cleared work waiting after it still gets built. (Your planning session usually places `[user]` steps at the end of a run, so in practice the build runs straight through and the handover comes last.)
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
