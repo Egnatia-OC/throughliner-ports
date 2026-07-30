@@ -65,7 +65,7 @@ Changes:
 
    The `Files:` section feeds the scope-lock (plugin-behaviour.md Scope): the pre_tool_use hook allows edits only to the listed files plus the method docs (QUEUE.md, LOG/, _build.md) and denies everything else. Files: lines must be bare paths — one per line, nothing else — because the hook matches each line as an exact path; any annotation becomes part of the path and silently breaks the match.
 
-4. **Remove the run's items from QUEUE.md** (move them into _build.md — the queue is now free for other sessions). /done deletes _build.md after close.
+4. **Remove the run's items from QUEUE.md** now that _build.md holds them (sub-step 3) — the queue is free for other sessions. This removal is deliberately destination-first: the items were written into _build.md *before* being removed here, so the run is never lost even if something interrupts between the two. There's no both-sections window to avoid at this step — the destination is the working file (_build.md), not the other QUEUE section — so the source-first ordering the keep-step uses (plan.md) doesn't apply here; destination-first is the safe order when moving out of QUEUE into the working file. /done deletes _build.md after close.
 
 5. **Narrate the lock** [BRIEF] — one sentence on what _build.md is for, in user-facing terms: the build's working file — it carries the run's work while QUEUE.md stays free, lists the files the safety check allows, tracks progress so an interrupted session can resume, and holds the reasoning /done writes into the session record.
 
