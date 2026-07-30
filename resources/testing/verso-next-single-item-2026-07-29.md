@@ -1,5 +1,7 @@
 # Verso /next session — single-item stop (verbatim, 2026-07-29)
 
+> **Correction (2026-07-30):** This transcript is NOT evidence of the /next run-termination bug. In this Verso session the single-item stop was gated — the later builds depended on `[build-file-locking]`'s user-run verification and were held below the cleared-to-run line, so only one item was cleared and stopping was correct — and the `[user]` verification ran collaboratively in-session (Defender exclusion, build path, clean build), not deferred to a fresh /next + /done. That in-session collaborative handover is the correct shape, not the failure. The genuine run-termination deviation was the spec one fixed in [next-run-terminates-at-user-item], not this session. Caveat: Verso's actual queue state then isn't readable from the SI project, so "no other cleared items were skipped above the marker" can't be fully confirmed here.
+
 Evidence for [next-stops-after-one-item]. Pasted verbatim from a Verso /next session by the user. Note: in THIS session the single-item stop was *reasoned* (the item gates later builds and needs user-run verification), so it is a data point, not proof — the diagnosis must check whether the recurring cross-project pattern is unreasoned single-item stops. See the capture in QUEUE.md for the diagnostic frame.
 
 ────────────────────────────────────────────────────────

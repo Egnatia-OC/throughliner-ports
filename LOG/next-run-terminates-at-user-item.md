@@ -1,4 +1,4 @@
-# [HASH] — next.md: /next hands over `[user]` items without terminating the run
+# fda7b07 — next.md: /next hands over `[user]` items without terminating the run
 
 Reworked /next's run model so a `[user]` handover no longer ends the run. Previously the run was defined as the cleared items "down to — but not including — the first `[user]` item," and Step 3 said "Don't build past it" — so a cleared order like [Claude-A, user-X, Claude-B] built only A, handed over X, and stranded B though it was cleared. The design intent (user, 2026-07-30) is that stopping at `[user]` was only ever meant to keep contiguous Claude blocks from being split mid-stream — never to terminate a run whose principle is "run continuously wherever possible."
 
