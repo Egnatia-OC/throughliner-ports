@@ -104,10 +104,12 @@ If something goes wrong — a false assumption, a missing dependency, an approac
 
 ## Context management
 
-If context is running low, prefer in order:
+/next can't sense the context window filling — Claude only learns a session is wearing thin when the *user* says so (plugin-behaviour.md's fresh-session-handoff rule). So this isn't a trigger /next watches for; it's what to do **when the user reports the squeeze** ("this is getting long," "you're slowing down"). At that point, prefer in order:
 
 1. **Finish and /done.** If most of the run is ticked, push through. Short-term memory is enough.
 2. **Close partial.** If significant work remains, /done what's ticked and requeue the rest. The next session picks up cleanly from _build.md and QUEUE.md.
+
+Either way, pair it with the fresh-session handoff offer (plugin-behaviour.md) — offer to carry the remaining work into a new session with a paste-ready handoff.
 
 ## Completion [BRIEF, PROMPT]
 

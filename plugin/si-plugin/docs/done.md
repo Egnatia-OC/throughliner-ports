@@ -35,7 +35,7 @@ Reached when the user has done a `[user]` handover item and wants it recorded. A
 Reached when /done runs with no _build.md and no planning work — the user made ad-hoc edits by hand and wants them recorded. This is the case the retired freeform close used to own. It is never required: hand edits left uncommitted are simply swept into the next /done (build or planning) that runs. It exists for when the user wants their handmade work logged and committed as its own clean record.
 
 1. **Read the edits as the user's own work — don't panic.** Uncommitted changes the session didn't make are most likely the user's expected work (plugin-behaviour.md, the don't-panic reading). Run `git status --porcelain`, and where what changed isn't self-evident, look. Confirm with the user that these are theirs and meant to be saved. Never report them as a broken repo or a problem, and never try to undo them.
-2. **Decide LOG granularity by judgment.** If the edits are one coherent change, write a single date-named entry — `LOG/handmade-<YYYY-MM-DD>.md` (`-2` if the name is taken). If they span several distinct logical changes, write a separate entry per logical change rather than one lumped entry — better recall when the log is referenced later. (The right unit converges with the two-section LOG-index question and defers to whatever that resolves.) Draft each entry's one-liner and rationale and show them for approval, per the LOG entry files section below and plugin-behaviour.md Captures.
+2. **Decide LOG granularity by judgment.** If the edits are one coherent change, write a single date-named entry — `LOG/<YYYY-MM-DD>-handmade.md` (`-2` if the name is taken). If they span several distinct logical changes, write a separate entry per logical change rather than one lumped entry — better recall when the log is referenced later. (The right unit converges with the two-section LOG-index question and defers to whatever that resolves.) Draft each entry's one-liner and rationale and show them for approval, per the LOG entry files section below and plugin-behaviour.md Captures.
 3. **Run the wind-down re-scan, then the commit core** (both below), staging the hand-edited files explicitly. The commit message is the approved entry; for several entries, the title names the handmade-work close and the body carries each entry's summary. Unlike a planning close, a handmade-work close does offer push when a remote exists — it's real project work, not bookkeeping — following the commit core's remote-gated push exactly.
 
 ## LOG entry files
@@ -44,12 +44,14 @@ Stated once here; every sub-doc's entry-writing step points at this section.
 
 **One text, several positions.** The session authors two texts, not four. The one-liner is the same authored text in three positions: the entry heading's summary, the index line's body, and the commit title. The rationale prose is the same authored text in two positions: the entry body and the commit body. The user approves both once — at the entry-writing step — and the commit step (commit core above) reuses them verbatim, with nothing new to read.
 
-Each LOG entry is written as its own file under `LOG/` — never appended to a shared log file:
+Each LOG entry is written as its own file under `LOG/`, **date-prefixed** so the folder sorts newest-first on a name sort — never appended to a shared log file. Every entry filename starts with `<YYYY-MM-DD>-` (the session's date):
 
-- **Session closing work items with slugs** (build, audit): name each entry file after its work-item slug — `LOG/<slug>.md` (e.g. `LOG/drop-log-per-release-split.md`). A run that built several work items writes one entry file per item, each named after that item's slug.
-- **Session with no work-item slug** (planning, setup, standalone handmade-work): name it by session type and date — `LOG/<type>-<YYYY-MM-DD>.md` (e.g. `LOG/plan-2026-06-09.md`, `LOG/handmade-2026-06-09.md`).
-- **Name already taken** (a re-run work item, a second planning session the same day): append `-2`, `-3`, and so on.
+- **Session closing work items with slugs** (build, audit): name each entry file `LOG/<YYYY-MM-DD>-<slug>.md` (e.g. `LOG/2026-06-09-drop-log-per-release-split.md`). A run that built several work items writes one entry file per item, each named after that item's slug — all sharing the session date.
+- **Session with no work-item slug** (planning, setup, standalone handmade-work): name it `LOG/<YYYY-MM-DD>-<type>.md` (e.g. `LOG/2026-06-09-plan.md`, `LOG/2026-06-09-handmade.md`) — date first, so it sorts alongside the slug-named entries rather than clumping under the type word.
+- **Name already taken** (a re-run work item, a second planning session the same day): append `-2`, `-3`, and so on (e.g. `LOG/2026-06-09-plan-2.md`).
 - The matching `LOG/index.md` line ends with the entry's filename, so a later lookup goes straight from the index line to the file.
+
+The date prefix is the entry's session date, not the commit date — write it from the current date at close. Its only job is a newest-first name sort; it is not a second copy of the hash (the hash still lives only in the heading and index line, per below).
 
 The hash lives in the entry file's heading and the index line, never in the filename — the commit hash doesn't exist yet when the file is written, which is why the `[HASH]` placeholder pattern exists (see Commit core below).
 

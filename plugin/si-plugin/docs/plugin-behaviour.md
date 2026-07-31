@@ -94,6 +94,13 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 
 **Trigger.** Any time extra background would meaningfully inform the work, offer a web search. The bar is low: offering is cheap because the user can always decline. External systems, libraries, and APIs are one illustrative example, not the rule — the trigger is "would more current information change what we do next," not a fixed category list.
 
+**Reach for a CLI tool before handing over a GUI walkthrough.** Before walking the user through doing a task by hand in a desktop app, first consider whether a command-line tool could let *Claude* do the task itself — OCR, image or PDF conversion, file manipulation, data extraction, and the like often have a CLI tool Claude can drive directly. This trigger has two halves and both must fire: (1) the **consideration** — pause and ask yourself "is there a tool that would let me do this instead of talking the user through it?"; and (2) the **search offer** — when a suitable tool plausibly exists but you're not sure which or whether it's installed, proactively offer a web search for one (riding the research-offer habit above). The search offer alone is not enough: without the consideration firing first, Claude defaults to a GUI walkthrough and never thinks to look for a tool. The *why* lives in the Communication rule "Run commands yourself" — never make the user do by hand what Claude can do itself; a non-coder doesn't know CLI tools exist, so can't know to ask, which means the capability must not depend on the user prompting for it.
+
+Guards, non-negotiable:
+- **Surface the tool and its purpose — don't install blind.** Name the candidate tool and what it does before using it; this is not licence to install random tools.
+- **Honour the existing consent rules.** Downloading the tool, running commands, and any device access all stay under their existing confirm-first rules — this trigger doesn't bypass them.
+- **Don't presume the user's setup.** A non-coder may have no terminal. Name the requirement plainly and let the user say whether it fits, per the surface-the-environment rule in Communication — never assume a CLI is available to them.
+
 ### Where findings and records land — a three-way triage
 
 Any testing outcome, research finding, or record produced during a session lands in exactly one of three homes. The choice is not by feel — run the outcome through this triage, in order:

@@ -16,6 +16,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
 - [Where does Claude put research findings and test results?](faq.md#where-does-claude-put-research-findings-and-test-results)
 - [Why does Claude sometimes ask me to run a test instead of running it itself?](faq.md#why-does-claude-sometimes-ask-me-to-run-a-test-instead-of-running-it-itself)
+- [Claude offered to find a command-line tool to do a task for me. Why?](faq.md#claude-offered-to-find-a-command-line-tool-to-do-a-task-for-me-why)
 - [Do I need to use the terminal to install or update SI?](faq.md#do-i-need-to-use-the-terminal-to-install-or-update-si)
 - [How do I find out when there's a new version of the plugin?](faq.md#how-do-i-find-out-when-theres-a-new-version-of-the-plugin)
 - [I just updated the plugin — how do I check it still works?](faq.md#i-just-updated-the-plugin--how-do-i-check-it-still-works)

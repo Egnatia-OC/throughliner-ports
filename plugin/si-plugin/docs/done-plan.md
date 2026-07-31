@@ -12,7 +12,14 @@ The why this gate exists, and what it replaces: spec-driven development's contra
 
 ## Reorder both sections [SILENT when no reorder; BRIEF when reordering]
 
-Walk both sections and reorder by the principle that fits each:
+**This reorder is conditional and change-scoped — not a full re-derivation every close.** Reordering both whole sections from scratch each session, even when the order is already right (the common case), is wasted work. So run it in two cheap steps:
+
+1. **Scope to what changed this session.** The things that can disturb a correct order are this session's own edits — items kept (newly in Processed), deleted, or whose relationships changed. Consider only those against their neighbours, not the whole queue re-reasoned from zero. Lean on the slug-references items already carry in their prose to see what relates to what, rather than re-deriving every dependency.
+2. **Reorder only if genuinely wrong.** If the change you made leaves the section still satisfying the principles below, it's already right — **silent no-op, change nothing, say nothing.** Only when a changed item actually sits in the wrong place do you compute and apply a new order (and narrate it).
+
+Do **not** reintroduce `Blocks:` / `Depends on:` headers or any dependency lint to support this — the prose slug-references are the whole dependency signal, and they carry no stale-header risk.
+
+When a reorder *is* warranted, order by the principle that fits each section:
 - **Unprocessed → unlock-potential.** Process first what would unblock the most other work — an item whose resolution lets other items move forward sits above one that stands alone. Processing is meant to move work toward ready, so items that gate others come first.
 - **Processed → build-order.** Build first what unblocks or reshapes the framing for later work — an item whose output is a prerequisite or input for a later item sits above the one that needs it.
 

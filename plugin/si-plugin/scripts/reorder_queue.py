@@ -12,11 +12,20 @@ Claude's hands.
 
 Contract:
   python reorder_queue.py <queue_path> <section> <slug1> <slug2> ... [--marker-after <slug|TOP|BOTTOM>]
+  python reorder_queue.py <queue_path> <section> --move <slug> <TOP|BOTTOM> [--marker-after ...]
 
   <section>  one of: Processed | Unprocessed
   <slug...>  the FULL desired order of that section's work-item slugs, top to
              bottom. Every slug currently in the section must appear exactly
              once; no extra slugs.
+  --move <slug> <TOP|BOTTOM>  single-item-move mode: relocate exactly one item
+             to the top or bottom of its section, keeping every other item in
+             its current relative order. The caller names only the one slug —
+             the script derives the full order from the file — so a common move
+             (e.g. /plan's skip-to-defer sending an item to the bottom of
+             Unprocessed) needs no hand-typed slug list. The same byte-for-byte
+             block preservation and self-checks apply. Mutually exclusive with a
+             positional slug list.
   --marker-after (Processed only): where the `--- Cleared to run above this
              line ---` marker lands — after the named slug, or TOP / BOTTOM of
              the section. Omit to keep the marker in its current relative spot
@@ -136,11 +145,30 @@ def main():
         except IndexError:
             die("--marker-after needs a value (a slug, TOP, or BOTTOM)")
         args = args[:k] + args[k + 2:]
-    if len(args) < 3:
+    move_slug = None
+    move_pos = None
+    if '--move' in args:
+        k = args.index('--move')
+        try:
+            move_slug = args[k + 1]
+            move_pos = args[k + 2]
+        except IndexError:
+            die("--move needs two values: <slug> <TOP|BOTTOM>")
+        if move_pos not in ('TOP', 'BOTTOM'):
+            die("--move position must be TOP or BOTTOM, got: " + move_pos)
+        args = args[:k] + args[k + 3:]
+    if len(args) < 2:
         die("usage: reorder_queue.py <queue_path> <section> <slug...> "
-            "[--marker-after <slug|TOP|BOTTOM>]")
+            "[--marker-after <slug|TOP|BOTTOM>]\n"
+            "   or: reorder_queue.py <queue_path> <section> --move <slug> "
+            "<TOP|BOTTOM> [--marker-after ...]")
     queue_path, section = args[0], args[1]
-    desired = args[2:]
+    desired = args[2:]  # empty in --move mode; derived from the file below
+    if move_slug is not None and desired:
+        die("--move takes no positional slug list (it derives the order from "
+            "the file)")
+    if move_slug is None and not desired:
+        die("no order supplied: pass a full slug list or use --move")
     if section not in ('Processed', 'Unprocessed'):
         die("section must be Processed or Unprocessed, got: " + section)
 
@@ -156,6 +184,15 @@ def main():
     preamble, blocks, marker_after, had_marker = split_blocks(body)
 
     have = [s for s, _ in blocks]
+
+    # In --move mode, derive the desired order from the file: keep every item in
+    # its current relative order, with the named slug lifted to TOP or BOTTOM.
+    if move_slug is not None:
+        if move_slug not in have:
+            die("--move slug '%s' is not in section %s" % (move_slug, section))
+        rest = [s for s in have if s != move_slug]
+        desired = [move_slug] + rest if move_pos == 'TOP' else rest + [move_slug]
+
     if sorted(have) != sorted(desired):
         die("slug set mismatch.\n  in file: %s\n  supplied: %s"
             % (sorted(have), sorted(desired)))
