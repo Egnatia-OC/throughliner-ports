@@ -52,4 +52,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Claude tidied up the queue while committing, without asking me. Is that normal?](faq.md#claude-tidied-up-the-queue-while-committing-without-asking-me-is-that-normal)
 - [Something about the method itself is broken or confusing — where does that go?](faq.md#something-about-the-method-itself-is-broken-or-confusing--where-does-that-go)
 - [Why is there a "Last session advises…" line at the top of my queue?](faq.md#why-is-there-a-last-session-advises-line-at-the-top-of-my-queue)
+- [Claude offered to delete some files when I closed a session. What's that?](faq.md#claude-offered-to-delete-some-files-when-i-closed-a-session-whats-that)
+- [Why did Claude split my project into several files (or keep it in one)?](faq.md#why-did-claude-split-my-project-into-several-files-or-keep-it-in-one)
+- [What is the filed-after note on one of my captured items?](faq.md#what-is-the-filed-after-note-on-one-of-my-captured-items)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)

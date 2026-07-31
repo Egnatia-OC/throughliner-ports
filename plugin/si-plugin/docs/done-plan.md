@@ -42,6 +42,17 @@ Place or move the `--- Cleared to run above this line ---` marker in the Process
 
 If this /plan session confirmed that a `[user]` handover item was completed async — the Step 1 completion-ask surfaced it (plan.md Step 1) — record and remove it now through done.md's **Completed `[user]`-item close**: a LOG entry per completed item named by its slug, and the item removed from Processed. This is the /plan half of the handover-completion close (the /next-adjacent half is a standalone /done). Fold each such item's LOG entry into this session's records alongside the planning entry below, and its slug into the commit. When the session confirmed no completed handover, say nothing.
 
+## Clear the consumed forward-recommendation advisory [SILENT when none; BRIEF when clearing]
+
+This is the backstop clear for the forward-recommendation advisory (plugin-behaviour.md Forward-recommendation advisory). /plan Step 1 *reads* the advisory to orient the session; the *clear* lives here, at the one close that always runs however a /plan ends. It used to be tied to "once the processing/build order is agreed" at the end of the /plan discussion — a beat a no-work or off-ramp /plan never reaches, so the clear was silently skipped and a stale advisory survived. Anchoring it to this close fixes that.
+
+If Unprocessed holds a forward-recommendation advisory (a "Last session advises…" line):
+
+- **Clear it if it oriented this session.** If this session's /plan read it at Step 1 and it shaped where the session focused, it has done its job — delete it from Unprocessed now, whether or not the recommendation was followed. Its removal is a QUEUE.md change that stages into this close's commit like the other queue edits.
+- **Honour an explicit persist-condition.** If the advisory names a condition to persist past a single session — e.g. "persist until the cleared builds ship", tied to a build event rather than the next /plan — and that condition hasn't been met, **leave it in place**. Only a standard advisory with no unmet persist-condition is cleared here.
+
+Narrate in one line when clearing one; say nothing when there's no advisory or a persist-condition holds it. This is distinct from Step 3's "Recommend next", which *files a fresh* advisory after the commit — clearing the consumed one and filing the next one are two different advisories.
+
 ## 1. Write LOG entry [DISCUSS, PROMPT]
 
 Draft the entry as its own file under `LOG/`, named per done.md LOG entry files, using this template (placeholder hash — backfilled automatically at the next session start):

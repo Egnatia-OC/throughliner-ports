@@ -92,11 +92,27 @@ Present all surfaced candidates as ONE numbered set of fully-drafted captures fo
 
 Name the step's best-effort nature in plain words when it runs — it re-reads whatever discussion is still in view, so a surfaced-nothing result is "nothing jumped out in what I could still see," not a guarantee nothing was missed. Two things to state, not fix: a fresh-chat /done has none of the session's thinking in view, so there is nothing to re-scan — only capturing-as-you-go covers that case; and when /plan already ran its own wind-down re-scan this session, this is a harmless no-op — re-reading the same discussion surfaces the same items, already filed. Exemplar of the no-op: "Re-read our discussion — nothing came up that isn't already captured."
 
+## Session-file cleanup (throwaway artifacts) [BRIEF, PROMPT]
+
+Stated once here; Commit core points at it, so it runs at every /done close regardless of session type.
+
+The working files _build.md and _plan.md are deleted by the close already. This step generalises that lifecycle to *other* throwaway files this session created — a scratch script, a one-off intermediate the build wrote into the project, a temporary artifact with no future use. (Prevention comes first: temp files should have gone to the scratchpad directory and never reached the project — see plugin-behaviour.md, Temporary files and session artifacts. This close-time step catches the ones that landed in the project anyway.)
+
+Offer to delete only files that meet **all** of these:
+- **Claude created or wrote them this session** — established from _build.md Changes (where one existed) and this session's own edits. A file Claude did not create this session is **never** presumed rubbish: uncommitted changes the session didn't make are the user's own expected work (plugin-behaviour.md, the don't-panic reading), so they are left alone, not offered for deletion.
+- **They have no future use** — not a deliverable, not a research finding, not evidence a later session must re-read (those have proper homes per the triage in plugin-behaviour.md). Purely throwaway.
+
+How the offer runs:
+- **One at a time, user approves each** [PROMPT] — never auto-delete. Name the file and why it looks throwaway, and wait for a yes before removing it. If nothing session-created looks throwaway, say so in one line and move on.
+- **Warn by recoverability.** A git-tracked file is recoverable from history, so its deletion is low-stakes — say so plainly. An untracked file, or one outside the repo, is **not** recoverable once deleted — give a clear warning before removing it, so the user approves knowing it's permanent.
+
 ## Commit core [BRIEF, PROMPT]
 
 Stated once here; every sub-doc's Commit step points at this section.
 
 **Run the wind-down re-scan (the section above) before staging** — it files any un-flagged captures from this session's discussion so they land in this same commit. File-only: it never routes them. Skip nothing; on a fresh chat with no discussion in view it correctly finds nothing.
+
+**Run the session-file cleanup (the section above) before staging too** — offer to remove this session's throwaway files, one at a time with the user approving each, so any deletions the user accepts fold into this same commit. It only ever offers files Claude created this session with no future use, and never auto-deletes.
 
 **Shipped-slug cross-check (work-item closes).** Before staging, when this session shipped one or more work items, cross-check each shipped work-item slug named in this session's LOG entries against QUEUE.md's Processed section and confirm it has been removed. A work item is normally removed from Processed when /next locks its scope, so the slug should already be gone — this step is the safety net that confirms it. If a shipped slug is still sitting in Processed as active work, surface it in one line and remove it (or halt and ask) before committing. The why: a multi-item close removes many items in a loop with no mechanical check that each actually left the queue — a prior multi-item run shipped fourteen work items but left one in QUEUE.md, genuinely built yet never removed, so it re-presented the next session as unbuilt and wasted the first move rediscovering it was done. Trivial for a single-item close, where the one slug is self-evidently gone; the net earns its place on multi-item and unattended closes. A planning close names no shipped work-item slug, so there is nothing to cross-check. Output stays silent unless a stray slug is found.
 

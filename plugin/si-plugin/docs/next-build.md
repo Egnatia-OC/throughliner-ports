@@ -25,6 +25,16 @@ The silence here governs the success path — the routine bookkeeping of making 
 
 **A check Claude can run is part of building, not a separate test.** When building the item, run whatever verification you can this session — read the code back, run a command, inspect output, check file content — as part of getting the item right. There's no separate test flavor: a check Claude can run is just building; a check that needs the user is a `[user]` work item, which /plan would have set as its own item and /next hands over, not something a build item defers. If, mid-build, you discover the work needs a user-run check that isn't already a `[user]` item, route it (see Course-correction below) — don't invent a deferral here.
 
+## File structure — split by independent unit
+
+When the build creates or grows the project's files and there's a choice about how to split the work across files, recommend a structure by this heuristic — it's guidance Claude offers, not a hard rule, so file structure stays case-by-case.
+
+**Split by independent unit; keep reasoned-across content together.** Break the project into smaller single-purpose files along the lines of genuinely independent units — a self-contained tool, a standalone path through the app. But content that has to be understood as one connected whole stays in one file, even where splitting would look tidier.
+
+The why, which is specific to a non-coder building with an AI: splitting into smaller files pays off *because the AI does the editing*. An edit's blast radius is one file, the AI reasons over less at once, and a mistake is contained by the file boundary rather than spreading across the whole project. That contained-blast-radius payoff is what makes the split worth its cost (each version has to be zipped and re-extracted), even though a browser opening files directly (`file://`) gets only shared-namespace `<script src>` splitting, not true module isolation — compiler-enforced isolation was never the point.
+
+The counter-force that bounds it: an AI reasons *less* well across files than within one. So content the AI must hold as a connected whole — closely interdependent logic that's constantly reasoned about together — stays in a single file even when it's large, because splitting it would make the AI's job harder, not easier. Weigh the two forces per case: independent → split; reasoned-across → keep together.
+
 ## Rules during build
 
 - Stay within the active run's described work — that's build scope (see plugin-behaviour.md Scope). Growing past it needs approval first (see Scope management below).
