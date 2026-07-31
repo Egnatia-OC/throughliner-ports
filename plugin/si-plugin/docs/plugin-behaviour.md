@@ -84,7 +84,7 @@ Brief acknowledgment if the user needs to know the step happened; no output if p
 - Ask before spawning a subagent. A subagent — the Task tool, and the built-in deep-research skill that fans out several at once — burns tokens fast: a single run can exhaust the user's usage for the session. So get a yes first, which keeps that cost the user's call rather than a surprise. Spawn one only for genuinely open-ended exploration whose answer-shape isn't known in advance and is too broad to write out as inline lookups — and even then, name the cost and ask before starting. Scope: every session type, every skill, any moment a subagent or the deep-research skill would be spawned. The why this rule carries its stakes: it has slipped before at real cost — a plain "research this" was silently escalated into a five-subagent deep-research fan-out and blew the user's usage in one run, and a rule the model is to self-enforce holds on 4.8 only when its reason travels with it.
 - A plain research request gets inline reading and searching first — never a silent escalation into a parallel subagent or deep-research fan-out. Treat "look into X" as a request to Read and Grep directly; if the work genuinely needs a subagent, name that, name the cost, and ask before starting it. A mechanical ask-gate backs this up (the Task tool prompts for approval before any subagent runs), but the gate is the backstop — recognising the inline-first case yourself is the rule.
 
-## Research
+## Research and evidence filing
 
 Offering a web search is a capable move, not an admission of ignorance. Volunteer it freely.
 
@@ -94,7 +94,17 @@ Offering a web search is a capable move, not an admission of ignorance. Voluntee
 
 **Trigger.** Any time extra background would meaningfully inform the work, offer a web search. The bar is low: offering is cheap because the user can always decline. External systems, libraries, and APIs are one illustrative example, not the rule — the trigger is "would more current information change what we do next," not a fixed category list.
 
-**Filing.** When a web search or external lookup yields a non-trivial finding, file it under `resources/research/<topic>.md` as part of using the finding — not only when the user asks. Filing is part of using a finding, not a separate request. Threshold: a finding that informed a decision, or that would have to be redone if lost, gets filed; a fact checked once and discarded doesn't. Name the file in chat when it lands, so the filing is visible and checkable rather than a silent rule no one can audit. This is the one canonical statement of where research goes.
+### Where findings and records land — a three-way triage
+
+Any testing outcome, research finding, or record produced during a session lands in exactly one of three homes. The choice is not by feel — run the outcome through this triage, in order:
+
+- **It reveals work to do** → a capture in QUEUE.md's **Unprocessed** section. If the outcome means something should change or get built, it's work, and work lives in the queue.
+- **It's a finding or a clean pass, with no need for a future session to re-read it word-for-word** → the observing session's **LOG entry**. This is durable and searchable and adds zero queue bloat. A clean testing PASS goes here too — a pass is a finding, not work, so it belongs in the LOG, not left as a queue reminder.
+- **It's evidence a future session must re-read verbatim** — the exact wording is the evidence, feeding an open audit or dispute (for example, a saved session transcript that a specific queued item will be judged against) → a durable file under **`resources/`**.
+
+**What `resources/` is for.** `resources/` holds two things only: research findings at `resources/research/<topic>.md`, and re-read-later testing evidence under `resources/testing/`. A durable file there is *earned only by the third triage branch* — evidence whose exact words a later session must re-read. Everything else routes to the LOG (findings, passes) or the QUEUE (work). Without this gate `resources/` becomes a dumping ground, so the default answer to "should this be a durable file?" is no unless the verbatim-re-read test is met.
+
+**Filing research findings (the first `resources/` home).** When a web search or external lookup yields a non-trivial finding, file it under `resources/research/<topic>.md` as part of using the finding — not only when the user asks. Filing is part of using a finding, not a separate request. Threshold: a finding that informed a decision, or that would have to be redone if lost, gets filed; a fact checked once and discarded doesn't. Name the file in chat when it lands, so the filing is visible and checkable rather than a silent rule no one can audit. (This is the research branch of the triage above; a plain finding that needs no verbatim re-read still goes to the LOG, not here.)
 
 ## Captures
 

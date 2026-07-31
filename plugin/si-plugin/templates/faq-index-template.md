@@ -14,6 +14,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I did a `[user]` step Claude handed me. How does it get recorded and cleared?](faq.md#i-did-a-user-step-claude-handed-me-how-does-it-get-recorded-and-cleared)
 - [What are the build and audit flavors — and is there a separate "test"?](faq.md#what-are-the-build-and-audit-flavors--and-is-there-a-separate-test)
 - [Why did my audit file its findings as captures instead of writing them into a doc?](faq.md#why-did-my-audit-file-its-findings-as-captures-instead-of-writing-them-into-a-doc)
+- [Where does Claude put research findings and test results?](faq.md#where-does-claude-put-research-findings-and-test-results)
 - [Why does Claude sometimes ask me to run a test instead of running it itself?](faq.md#why-does-claude-sometimes-ask-me-to-run-a-test-instead-of-running-it-itself)
 - [Do I need to use the terminal to install or update SI?](faq.md#do-i-need-to-use-the-terminal-to-install-or-update-si)
 - [How do I find out when there's a new version of the plugin?](faq.md#how-do-i-find-out-when-theres-a-new-version-of-the-plugin)
