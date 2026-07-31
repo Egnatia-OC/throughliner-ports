@@ -2,7 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — /plan: designed buried-user-work emergency fix ([user-work-surfacing-fix]); resolved Throughliner rename migration (big-bang + renames map) + folded in the concept rename; decided reorder-cost fix; kept 2 audits + statusline-reader below line; 2 research files → plan-2026-07-31-2.md
+- [HASH] — next.md/plan.md/plugin-behaviour.md/SPEC.md/faq-template.md — rewired [user] handover: walk-through-first (dropped the leading completion-ask), executable-plans-are-queue-items routing rule, described-walkthrough requirement + tight [user] tagging criterion → user-work-surfacing-fix.md
+- b7b0a38 — /plan: designed buried-user-work emergency fix ([user-work-surfacing-fix]); resolved Throughliner rename migration (big-bang + renames map) + folded in the concept rename; decided reorder-cost fix; kept 2 audits + statusline-reader below line; 2 research files → plan-2026-07-31-2.md
 - bebffe7 — plugin-behaviour.md — added "Temporary files and session artifacts": route temp files to the scratchpad (prevention), and a work item referencing a project-resident temp file must declare a delete-time up front [temp-file-delete-time] → temp-file-delete-time.md
 - bebffe7 — plugin-behaviour.md + done.md + faq — prevention-first temp-file hygiene: scratchpad-routing rule + a narrow /done "Session-file cleanup" step offering to delete this session's throwaway files, one at a time, user-approved, never auto [session-file-cleanup] → session-file-cleanup.md
 - bebffe7 — next-build.md + faq — added a build-time file-granularity heuristic: split independent units (AI-edited blast radius stays contained), keep reasoned-across content together; a recommendation not a rule [ai-file-granularity-payoff] → ai-file-granularity-payoff.md
