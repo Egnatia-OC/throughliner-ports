@@ -74,7 +74,7 @@ No code method/
 
 ## Working conventions
 
-- **Use absolute paths** for sub-folder lookups. `C:\Users\Alex\My Drive\Desktop\Prioritiy projects\Taskflow Planning\No code method\plugin\si-plugin\...`
+- **Use absolute paths** for sub-folder lookups. `<PROJECT_ROOT>\plugin\si-plugin\...` — substitute `<PROJECT_ROOT>` with the absolute path to this project's folder on your machine.
 - **Run commands directly.** Don't ask Alex to run them unless they require the desktop app UI or a separate session.
 - **Route decisions to QUEUE.md.** Don't hold design decisions in conversation only.
 - **Cross-doc references go by name.** When editing the docs under `plugin/si-plugin/`, a reference to a step in another doc names its target ("the blocker gate in next.md's pre-flight"), never a step number. Step numbers silently retarget when a batch adds, deletes, or reorders steps — the reference still resolves, but to the wrong content; names survive renumbering. Within-doc references are exempt: renumbering is visible in the file being edited.
@@ -133,7 +133,7 @@ When Alex says "rezip" (or asks for a fresh local build to test), run this — n
 3. Refresh the installed host from the local-folder marketplace via the `claude` CLI, then fully restart the app. The desktop app no longer has an in-app plugin upload, and a working-tree or zip edit alone changes nothing the installed host sees — the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files. So testing the new build means re-running the install/update so the CLI re-snapshots the current `plugin/si-plugin`. Claude runs these commands; Alex types nothing in a terminal.
 
    **`claude` is NOT on PATH in the desktop app's Bash/PowerShell tools — invoke it by full path.** A bare `claude plugin …` fails with "command not found"; this is the single reason the reinstall has repeatedly been handed to Alex instead of run by Claude, and the workaround previously lived only in LOG entries (so every rezip rediscovered it). The executable is at `~/.local/bin/claude.exe` (equivalently `C:\Users\<you>\.local\bin\claude.exe`); if it isn't there, it's under `AppData/Roaming/Claude/claude-code/<version>/claude.exe`. Run every CLI step in this ritual by full path, e.g. `"/c/Users/<you>/.local/bin/claude.exe" plugin update sovereign-implementer@flintcraft`. Locating and running it is Claude's job — don't hand the reinstall to Alex just because a bare `claude` failed.
-   - First time only — register the local marketplace (the committed `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at `plugin/si-plugin`): `claude plugin marketplace add "C:\Users\Alex\My Drive\Desktop\Prioritiy projects\Taskflow Planning\No code method"`
+   - First time only — register the local marketplace (the committed `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at `plugin/si-plugin`): `claude plugin marketplace add "<PROJECT_ROOT>"` — substitute `<PROJECT_ROOT>` with the absolute path to this project's folder on your machine.
    - Each rezip after — re-snapshot the current build: `claude plugin update sovereign-implementer@flintcraft` (or `claude plugin install sovereign-implementer@flintcraft`).
    - Then a **full app restart, not just a new session** — plugin skills register at app launch, and on Windows a normal quit can leave the app running, so fully quit (confirm the process exited via Task Manager if needed) and relaunch before testing.
 
@@ -178,11 +178,11 @@ When a session opens from a Claude-authored handoff or context prompt — a resu
 
 This project — the **canonical** SI for Claude Code — is the only port under active development. A **Codex** port once existed as a separate distribution with its own procedure docs and hooks, but it has been **shelved indefinitely** (dormant since 2026-07-28). The method now evolves solely on the Claude side; there is no live two-way relationship to maintain, and no Codex-side work to weigh against.
 
-The shelved Codex port is downstream-only: its source (at `C:\Users\Alex 2\My Drive\Desktop\Prioritity projects\Taskflow Planning\Sovereign Implementer - Codex port\`, with its own QUEUE.md/SPEC.md/LOG) survives as read-only history. Read it only if you ever need to check what an old Codex-side slug meant — never to build, sync, or reconcile against it. If the port is ever revived, this section gets rewritten to describe a live relationship again; until then, treat Codex as archived.
+The shelved Codex port is downstream-only: its source (at `<PROJECT_ROOT>\..\Sovereign Implementer - Codex port\` — a sibling folder alongside this project, with its own QUEUE.md/SPEC.md/LOG) survives as read-only history. Read it only if you ever need to check what an old Codex-side slug meant — never to build, sync, or reconcile against it. If the port is ever revived, this section gets rewritten to describe a live relationship again; until then, treat Codex as archived.
 
 ## E2E testing
 
-**Taskflowapp** at `C:\Users\Alex\My Drive\Desktop\Prioritiy projects\Taskflow Planning\Planning in here\Taskflowapp` is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.
+**Taskflowapp** at `<TASKFLOWAPP_ROOT>` (its folder on your machine; on this machine it sits under `Taskflow Planning\Planning in here\Taskflowapp`) is the test consumer project. Alex runs E2E in a separate desktop-app session; observations come back here as queue items.
 
 ### Reading session transcripts
 

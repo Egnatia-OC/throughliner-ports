@@ -40,6 +40,7 @@ When the Case B content is a migration — existing planning or spec docs from a
 The plugin version has changed since this project was last set up. Re-scaffold without overwriting user content. Run the checks and file creation silently; keep the close (item 5) to a sentence or two:
 
 1. **Check each doc/folder** from the Step 2 scaffold list. If it exists, skip it. If not, create it from the standard scaffold (empty structure, not interview-filled).
+1a. **Convert an old-format QUEUE.md.** If the project's existing `QUEUE.md` uses an old multi-section shape (a `## Red flags`, `## Batches`, `### Parked`, `## Deferred tests`, or `## Captures` section) rather than the current `## Processed` / `## Unprocessed` model, load `${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md` and follow it to convert the queue — drafting the converted queue and getting the user's approval before writing. If the queue is already two-section, skip this. (This is the one project doc that reliably falls behind when the method evolves; the checklist encodes the judgment rules a find-and-replace can't make.)
 2. **Retire REGISTRY.md if present.** REGISTRY.md is no longer one of the method's docs — older versions created it, so a project set up under one of those may still have a REGISTRY.md in it. Don't delete it on sight: the user may have written real notes there. Read it first. If it holds only what the old setup put there — a `# REGISTRY` heading with the "Components that exist…" line and either the empty placeholder or an auto-generated file list — remove it quietly as part of the migration. If it holds anything the user clearly added themselves, leave it in place, tell them plainly what's in it, and ask where that content should live now (usually SPEC.md) before removing the file. Where their own content goes is the user's call, not yours.
 3. **Update .si-version** to the current plugin version.
 4. **Skip the interview** — the project is already described in SPEC.md.
@@ -115,24 +116,22 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 
 **Git repository:** If the folder is not already a git repository, run `git init` so the project has version history from the first session. Do this silently and mechanically, like the rest of the scaffold — no narration. This is what lets the close-out commit the new files: without a repository there is nothing to commit to.
 
-## Step 3: Interview (5 questions, one at a time, plus two optional)
+## Step 3: Interview (adaptive discovery, one question at a time, plus two optional settings)
 
-Ask these one per message, and stop after each — wait for the user's answer before asking the next. Never bundle two questions into one message, even short ones. Use the answers to fill SPEC.md and QUEUE.md. Q6 and Q7 are short optional extras after the five — ask each the same way, one message of its own.
+The interview is an **adaptive discovery**, not a fixed script. Its job is to reach a shared, buildable understanding of the project — enough to fill SPEC.md's What / Who / How / Principles and capture a first piece of work — by reading each answer and asking the next question that actually matters, rather than marching through a set list. Ask **one question per message** and stop after each — wait for the answer before asking the next. Never bundle two questions into one message, even short ones.
 
-**Q1. What is this project, and who is it for?**
-→ Fills "What this is" and "Who it's for" in SPEC.md.
+**How the adaptive interview runs:**
 
-**Q2. What's the core of it — the main thing it produces, organises, or does?**
-→ Fills "How it works" in SPEC.md.
+- **Read each answer, then reason about what's still unclear** before choosing the next question. Walk the design one branch at a time — resolve what an answer opens up before moving to a new topic, rather than reading questions off a list. The next question is generated from what's still missing, not from a fixed position in a script.
+- **Recommend an answer to each question.** Don't just ask cold — offer a plausible answer the user can accept, correct, or replace ("My guess is this is for personal use rather than a team — is that right?"). This composes with the method's one-at-a-time and recommend-an-answer rules; a non-coder finds it far easier to react to a proposal than to fill a blank.
+- **Cover these topics** (this is a bank to draw on, not a checklist to recite): what the project is and who it's for (fills What this is / Who it's for); the core of it — the main thing it produces, organises, or does (fills How it works); any principles or constraints, e.g. "must work offline", "no accounts", "everything in plain text", "must follow the 2025 tax rules" (fills Principles); the first thing to build or make progress on today (becomes the first work item); and anything else worth knowing before starting. Draw on whichever of these the project still needs — skip what an earlier answer or the existing content already settled, and probe deeper wherever the picture is still thin.
+- **Explore whatever already exists first.** A non-coder is often starting from scratch, but not always — there may be an old doc, a sketch, a rough notes file, or a running app. Read whatever material the folder already holds (Case B) and use it to inform your questions, rather than asking the user things the existing content already answers. Where there's genuinely nothing yet, that's fine — just interview from a blank slate.
 
-**Q3. Any principles or constraints? (e.g., "must work offline", "no accounts", "everything in plain text", "must follow the 2025 tax rules")**
-→ Fills "Principles" in SPEC.md. If the user says "none" or isn't sure, leave the section with a note that it can be added later.
+**The stopping rule (the anti-overwhelm guard).** Keep probing only until there's a shared, buildable understanding — the point where the answers bottom out into something concrete enough to build from (the "5 Whys" idea: you're done when the Whys are answered, not when every possible branch is exhausted). Don't turn discovery into an interrogation. And tell the user plainly, early on, that they can end the interview any time by saying **"build from what we have"** — at which point you stop asking and write the docs from whatever's been gathered. Depth is the goal; a slog is not.
 
-**Q4. What's the first thing to build or do? What would you want to have working or made progress on by the end of today?**
-→ Creates one rough work item in QUEUE.md's Unprocessed section — a `#### ` heading in the user's words, with a kebab-case `[slug]` at the end of that heading line and a "captured by you" note beneath it. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan (which is where this item gets processed). If examples would clarify what's in scope, ask a Q4 follow-up instead of smuggling them into the entry — the one-follow-up-max rule for vague answers (see Rules) already covers that case.
+**The first work item** — whichever answer names the first thing to build — creates one rough work item in QUEUE.md's Unprocessed section: a `#### ` heading in the user's words, with a kebab-case `[slug]` at the end of that heading line and a "captured by you" note beneath it. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan (which is where this item gets processed). If examples would clarify what's in scope, ask a follow-up instead of smuggling them into the entry.
 
-**Q5. Anything else I should know before we start?**
-→ Free-form. Route to SPEC.md if it's product info, to QUEUE.md if it's a task, or acknowledge and move on.
+**The two settings questions (Q6, Q7) are fixed, not adaptive** — they're project settings, not discovery, so ask them the same way each time, one message of its own, after the discovery has reached its stopping point. They're optional; the user can skip either.
 
 **Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
 → Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
@@ -142,9 +141,9 @@ Ask these one per message, and stop after each — wait for the user's answer be
 
 ## Step 4: Write the docs
 
-After all 5 answers, write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
+Once discovery has reached a buildable understanding (or the user says "build from what we have"), write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
 1. Fill SPEC.md with the interview answers.
-2. Write one work item in QUEUE.md's Unprocessed section from Q4 — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
+2. Write one work item in QUEUE.md's Unprocessed section from the first-thing-to-build answer — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
@@ -158,7 +157,7 @@ After all 5 answers, write the docs, then close in a sentence or two — show wh
 
 - One question per message. Do not bundle.
 - Use the user's language — don't rephrase into jargon.
-- If an answer is vague, ask one follow-up for clarity. Don't interrogate.
-- Don't create files until you have at least Q1–Q4 answered (Q5 is optional if skipped).
+- If an answer is vague, ask a follow-up for clarity — but honour the stopping rule and don't interrogate. Probe until the picture is buildable, then stop.
+- Don't create files until discovery has covered at least what the project is, who it's for, its core, and a first thing to build — enough to fill SPEC's What / Who / How and one work item. Principles and the free-form "anything else" are optional if the user has nothing to add.
 - Unsure about a scaffolding choice the user owns — which folder to adopt, whether existing content is a doc to leave alone, how to read an ambiguous answer? Ask before acting; don't guess and scaffold wrong. The question costs one turn; a wrong guess makes the user undo a scaffold.
 - The "adopt the folder" framing: the method is being applied to their project, not the other way around.

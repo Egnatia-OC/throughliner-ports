@@ -12,7 +12,7 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 ## What does /setup do, and do I run it more than once?
 
-/setup adopts your project folder into the method: it scaffolds the working docs (SPEC.md, QUEUE.md, the LOG folder, and this FAQ) and interviews you with five short questions to fill in SPEC.md — what the project is, who it's for, how it works. You run it once per project. If you run it again later — for instance after a plugin update — it only backfills scaffolding that's missing; it does not overwrite or reconcile content you've already written. So re-running it is safe, but it won't refresh or rewrite your existing docs.
+/setup adopts your project folder into the method: it scaffolds the working docs (SPEC.md, QUEUE.md, the LOG folder, and this FAQ) and interviews you to fill in SPEC.md — what the project is, who it's for, how it works. The interview adapts to your answers rather than running a fixed list of questions: Claude reads each answer, asks the next thing that actually matters, suggests an answer you can just react to, and keeps going one question at a time only until there's a clear enough picture to build from. It's not an interrogation — you can stop it any time by saying "build from what we have," and Claude writes the docs from whatever you've covered. If your folder already has something in it — an old doc, a sketch, a running app — Claude reads that first and asks about what's still unclear, instead of asking things the material already answers. You run it once per project. If you run it again later — for instance after a plugin update — it only backfills scaffolding that's missing; it does not overwrite or reconcile content you've already written. So re-running it is safe, but it won't refresh or rewrite your existing docs.
 
 ## Can I keep several projects in one folder, and what if I open the wrong one?
 
@@ -30,7 +30,7 @@ To set your **working mode** — whether you're usually at your desktop or drivi
 
 Your queue has two sections. **Processed** is vetted, ready-to-build work — one item per piece of work, worked top to bottom, discussed and agreed with you during /plan. **Unprocessed** is an inbox — ideas, questions, and tasks captured during builds or between sessions, not looked over yet. During /plan, each unprocessed item gets discussed and either moved up into Processed (kept as real work) or dropped. There's no in-between: a piece of work is unprocessed, processed, or gone.
 
-Every work item carries a short name in square brackets (its slug), so Claude can refer to it precisely, and a note of who raised it — "captured by you" or "by Claude" — which stays on the item even after it's processed.
+Every work item carries a short name in square brackets (its slug), so Claude can refer to it precisely. Items you personally raised are tagged "captured by you," and that credit stays on the item even after it's processed; anything else is left unmarked (Claude is assumed to be the author by default, so it isn't labelled as such).
 
 ## What does it mean when a work item is marked `[user]`?
 
@@ -143,6 +143,10 @@ Before wrapping up a planning session, Claude takes a pass back over the convers
 
 Yes — a lighter version. When you close any session with /done, Claude takes the same quick pass back over the conversation and points out things you mentioned but never asked to save. The difference from a planning session is what happens next: at /done it only *files* what it finds into your captures list, so nothing is lost, and leaves the sorting — whether each one becomes real work or gets dropped — for your next /plan. You still approve what gets filed; Claude shows you the wording first. Two limits worth knowing: if you opened a brand-new conversation just to run /done, there's no earlier discussion to re-read, so it won't find anything; and if you already did a planning session in the same conversation, it may turn up the same things you already captured, which is harmless.
 
+## Claude offered to "seed the queue from SPEC." What does that mean?
+
+When your SPEC describes a lot of your app but your queue is empty or nearly so, all those described features have no path into your build queue — they can just sit in SPEC with nothing to build them. So in that situation Claude offers to *seed* the queue from SPEC: it reads your SPEC and drafts a set of work items from the features it describes, so the backlog actually reflects what you've said you want built. You choose how chunky those items are — a few big milestones, or one item per feature — and you approve the drafts before anything is written. The items land in your **Unprocessed** list (the inbox), not straight into ready-to-build work, so they still get discussed and vetted in planning like any other idea. Claude only offers this on its own when your queue is thin and your SPEC is rich; the rest of the time it stays quiet, but you can ask for it any time by saying "seed the queue from SPEC." Note this is a /plan thing — /setup never does it; setup only scaffolds and interviews, it never invents work for you.
+
 ## The queue is empty. Does that mean the project is done?
 
 No — an empty queue is a normal resting state. Run /plan when you have ideas or want to review. The project is done when you say it is.
@@ -161,7 +165,7 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 ## Claude says my project is "out of date" and offers to run /setup. What does that do?
 
-It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
+It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. The one exception is your **queue**: if an older version stored it in a different layout, /setup offers to convert it to the current format — and even then it drafts the converted queue and shows it to you before writing, so nothing changes without your okay. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
 
 ## A session opened by asking which editor I use, or saying my project was missing something — what happened?
 
@@ -217,6 +221,8 @@ Because it hit a wall on one item and stopped rather than spinning on it. When /
 Yes, both, and it's built to keep you moving rather than grinding through every item in order. When /plan starts on your unprocessed queue, it does two quick things first. It skims for items that are clearly not worth doing any more — a duplicate, or something whose reason has passed — and shows them to you as one short list to drop together; you just name any you'd rather keep. (This pass can only *drop* things, never quietly promote them — anything that isn't an obvious drop gets discussed properly, one at a time.) Then it puts the items that would unblock the most other work first, and suggests roughly how many to get through this session.
 
 After that it goes through the rest one at a time. At each step you can carry on to the next item, **skip** the next one to the bottom of the queue for a later session (it's not dropped — just set aside), close out, or raise something new. And if you toss in a fresh idea mid-session, Claude files it and asks whether you want to dig into it now or keep going through the queue — so a new thought never feels like it got parked and forgotten.
+
+Claude may also *suggest* skipping an item itself: if a piece of work turns out to be too big or too unsettled to pin down into something buildable this session, it'll propose noting down whatever you worked out and setting the item aside for a later planning session, rather than grinding on it. There's no special "give this its own session" mode — setting it aside to the bottom of the queue *is* how something gets deferred, and next time it comes back up as an ordinary item.
 
 ## Why did Claude reorder my queue at the end of a planning session?
 

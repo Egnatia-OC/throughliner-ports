@@ -7,11 +7,11 @@ multi-section format to the current **two-section** model (`## Processed` / `## 
 `####` work items). It exists because when the method evolves, the one project doc that reliably falls
 behind is a project's `QUEUE.md` format — everything else (LOG, CLAUDE.md, SPEC) needs little or nothing.
 
-**Status — read before relying on it.** This is the *ad-hoc recipe*, not a shipped `/migrate` skill or a
-loaded procedure doc. Building it into a real shipped checklist is still queued in the method project as
-`[migration-checklist]`. So run it as a **guided manual pass in an ordinary session** opened on the
-old-format project: work item by item, checking each against the judgment rules below, drafting the
-converted queue and getting the user's approval before writing.
+**Status — superseded by the shipped checklist.** `[migration-checklist]` has landed: the checklist now
+ships in the plugin as `plugin/si-plugin/docs/migrate-checklist.md`, loaded on demand (setup.md's Step 2C
+points to it when a project's QUEUE.md is old-format). **Prefer the shipped doc** — a real migration follows
+that, not this file. This host copy is kept only as the historical record of the ad-hoc recipe and its live
+validation (below); it is not the operative procedure any more.
 
 **Provenance.** Drafted and validated live in the Hexboard consumer project on 2026-07-29 (host
 1.15.0-test6) — it passed cleanly (see "Validated live" at the end). This file is a copy kept in the

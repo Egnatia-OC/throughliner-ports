@@ -4,7 +4,8 @@ PreToolUse hook — enforces three rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
-   memory dir and resources/research/ are always editable). Tri-state:
+   memory dir, resources/research/, and the session scratchpad dir are
+   always editable). Tri-state:
    no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
@@ -247,6 +248,39 @@ def _is_research_dir(filepath: str, cwd: str) -> bool:
     return norm.startswith(research_dir + os.sep) or norm == research_dir
 
 
+def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
+    """Check if a path is under the session's scratchpad directory.
+
+    The harness gives each session a scratchpad directory OUTSIDE the repo,
+    shaped like `<temp>/claude/<project-slug>/<session-id>/scratchpad/...` —
+    a `scratchpad` directory sitting beneath a `claude` temp directory.
+    plugin-behaviour.md's Temporary-files rule actively instructs Claude to
+    route scratch scripts and working files there, so the scope-lock must not
+    block those writes — this exemption mirrors the method-docs, memory, and
+    research exemptions.
+
+    Matched tightly by path SHAPE, never a hardcoded machine path, so it holds
+    for every consumer wherever their temp dir lives. Three conditions must all
+    hold, keeping the whitelist scoped to the actual scratchpad and nowhere
+    else: (1) a `scratchpad` path segment; (2) a `claude` segment somewhere
+    above it (the harness scratchpad always sits under a `claude` temp dir);
+    and (3) the path is OUTSIDE the project repo — scratch is never in-tree, so
+    an in-repo `scratchpad/` folder stays under the normal scope-lock. Requiring
+    all three keeps the scope-lock's containment value everywhere else.
+    """
+    norm = _normalise(filepath)
+    parts = norm.split(os.sep)
+    if "scratchpad" not in parts:
+        return False
+    sp_idx = parts.index("scratchpad")
+    if "claude" not in parts[:sp_idx]:
+        return False
+    cwd_norm = _normalise(cwd)
+    if norm == cwd_norm or norm.startswith(cwd_norm + os.sep):
+        return False
+    return True
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -377,6 +411,9 @@ def main() -> int:
             return 0
 
         if _is_research_dir(filepath, cwd):
+            return 0
+
+        if _is_scratchpad_dir(filepath, cwd):
             return 0
 
         if not build_files:

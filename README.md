@@ -20,7 +20,7 @@ Non-coders who know what their project should do but need a framework to keep Cl
 
 The plugin splits your project into a build queue and walks you through it. Four slash commands drive the workflow:
 
-- `/setup` — asks a short questionnaire about your project and scaffolds everything
+- `/setup` — interviews you about your project (adapting to your answers) and scaffolds everything
 - `/plan` — organise the queue, capture ideas, resolve design questions
 - `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one
 - `/done` — record what happened, commit

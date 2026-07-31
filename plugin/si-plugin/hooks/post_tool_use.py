@@ -10,14 +10,21 @@ two-section work-item model:
      work item renders as a #### heading under ## Processed or
      ## Unprocessed; the slug at the end of that heading is what lets a
      later LOG entry name the work precisely.
-  2. A work item carrying no provenance label ("captured by you" or
-     "by Claude") anywhere in its block — every line records who raised
-     it, and that label stays on the line after it's processed.
-  3. A missing section heading — both ## Processed and ## Unprocessed
+  2. A missing section heading — both ## Processed and ## Unprocessed
      must be present. They are the two sections the whole model runs on.
-  4. A red-flag marker line ("Red flag · State: ...") whose state isn't
+  3. A red-flag marker line ("Red flag · State: ...") whose state isn't
      one of cleared / uncleared. A red flag is an ordinary work
      line carrying this one extra marker; the state must be valid.
+
+Provenance is NOT linted. The old model required every work item to
+carry a "captured by you" / "by Claude" label; that requirement is
+gone. The convention is now asymmetric and default-AI: an unmarked item
+is assumed to come from the AI, and an explicit "captured by you" credit
+is written only when the user personally raised, pushed through, or
+wrote the item. No AI-authorship label is ever written. Because a
+user-credit is optional and an AI label is absent by design, there is
+nothing to enforce — so the lint neither requires a label nor forbids
+one (a leftover "by Claude" on an old item is harmless).
 
 Deny-list by design: only known violations are flagged; unknown or
 novel structure passes in silence, so the format can evolve (new
@@ -42,10 +49,6 @@ WORKLINE_HEADING = re.compile(r"^####\s+\S")
 # The trailing [slug] on a work-item heading: lowercase kebab, two chars
 # minimum, so a stray [x] tick or an [PROMPT]-style token never counts.
 SLUG_AT_END = re.compile(r"\[[a-z0-9][a-z0-9-]+\]\s*$")
-
-# Provenance label — who raised the work item. Case-insensitive so
-# "Captured by you." at a sentence start still matches.
-PROVENANCE = re.compile(r"captured by you|by claude", re.IGNORECASE)
 
 # A red-flag marker line: "Red flag · State: <state>". The middle dot is
 # U+00B7 and is matched leniently (optional) so a spacing slip still reads
@@ -123,19 +126,8 @@ def _check_slugs(blocks, warnings):
             )
 
 
-def _check_provenance(blocks, warnings):
-    """Check 2: every work item carries a provenance label in its block."""
-    for b in blocks:
-        if not any(PROVENANCE.search(line) for line in b["lines"]):
-            warnings.append(
-                f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} carries "
-                "no provenance label — add 'captured by you' or 'by Claude' so "
-                "the line records who raised it."
-            )
-
-
 def _check_sections(annotated, warnings):
-    """Check 3: both ## Processed and ## Unprocessed headings are present."""
+    """Check 2: both ## Processed and ## Unprocessed headings are present."""
     present = {h2 for _i, _l, h2, _ih in annotated if h2}
     for name in WORK_SECTIONS:
         if name not in present:
@@ -147,7 +139,7 @@ def _check_sections(annotated, warnings):
 
 
 def _check_red_flag_states(annotated, warnings):
-    """Check 4: a red-flag marker line names a valid state.
+    """Check 3: a red-flag marker line names a valid state.
 
     Scans every line, not only work-item blocks: a marker is only ever
     valid under a work item, but validating it wherever it appears is the
@@ -172,7 +164,6 @@ def lint(content: str) -> list[str]:
     blocks = _workline_blocks(annotated)
     warnings = []
     _check_slugs(blocks, warnings)
-    _check_provenance(blocks, warnings)
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
     return warnings

@@ -33,6 +33,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I just had an idea for a feature. How do I record it?](faq.md#i-just-had-an-idea-for-a-feature-how-do-i-record-it-without-losing-my-train-of-thought)
 - [Why does Claude sometimes re-read our conversation at the end of a planning session?](faq.md#why-does-claude-sometimes-re-read-our-conversation-at-the-end-of-a-planning-session)
 - [Does Claude do that end-of-conversation pass when I close with /done too?](faq.md#does-claude-do-that-end-of-conversation-pass-when-i-close-with-done-too)
+- [Claude offered to "seed the queue from SPEC." What does that mean?](faq.md#claude-offered-to-seed-the-queue-from-spec-what-does-that-mean)
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
 - [What is _build.md? Should I edit it?](faq.md#what-is-_buildmd-should-i-edit-it)
 - [What is _plan.md? Should I edit it?](faq.md#what-is-_planmd-should-i-edit-it)
