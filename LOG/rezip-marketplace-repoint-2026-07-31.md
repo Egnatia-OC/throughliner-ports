@@ -1,4 +1,4 @@
-# [HASH] — Rezip to 1.15.0-test8 + repoint flintcraft marketplace GitHub→local; Flintcraft /thanks 404 routed out
+# ec021a4 — Rezip to 1.15.0-test8 + repoint flintcraft marketplace GitHub→local; Flintcraft /thanks 404 routed out
 
 Post-close tail of the session that shipped the `[user]`-handover fix (ae92d34). Three things happened after that commit, recorded here for the next session.
 
