@@ -105,8 +105,8 @@ By Claude. This is the post-merge dogfooding check — it replaces the fork's ~9
 
 ## Unprocessed
 
-#### Last session advises running /next on the cleared region, then the corpus audit as its own run [advisory-next-cleared-region]
-By Claude — filed after `4d32835`. The cleared region holds 5 ready builds (next-build-context-self-detection, inseason-moves-bypass-mover, cli-tool-web-search-trigger, log-file-sort-heuristic, reorder-cost-vs-dependency-model), then the corpus audit [method-docset-dedupe-why-audit], then the [user] handover [report-url-404]. Recommend /next for the build cluster; give the corpus audit its own focused /next run (its chunking caveat — it can run long). After the builds ship, rezip + restart before trusting the below-line host-side verifications. Consume-and-clear once oriented.
+#### Last session advises rezip + restart to dogfood the 5 shipped builds, then the corpus audit as its own /next run [advisory-rezip-then-corpus-audit]
+By Claude — filed after `4d32835`. The 5 cleared builds shipped this /next (next-build-context-self-detection, inseason-moves-bypass-mover, cli-tool-web-search-trigger, log-file-sort-heuristic, reorder-cost-vs-dependency-model) — all target-side, so a rezip + full app restart is the way to run them live, which also unblocks the below-line host-side verifications ([merged-plugin-live-verification], [working-mode-render-verification], [statusline-context-reader]'s restart test). The cleared region still holds the corpus audit [method-docset-dedupe-why-audit] (give it its own focused /next run — its chunking caveat means it can run long) and the [user] handover [report-url-404]. Consume-and-clear once oriented.
 
 
 #### Per-model docsets with session-start model detection [fable-docset-model-detection]

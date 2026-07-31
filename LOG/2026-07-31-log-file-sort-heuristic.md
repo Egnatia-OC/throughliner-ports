@@ -1,4 +1,4 @@
-# [HASH] — Date-prefixed all per-entry LOG filenames (YYYY-MM-DD-…) so LOG/ sorts newest-first — full migration + done.md convention change
+# ee99142 — Date-prefixed all per-entry LOG filenames (YYYY-MM-DD-…) so LOG/ sorts newest-first — full migration + done.md convention change
 
 LOG entries are per-entry files named by slug/title, so a filename sort of the LOG folder didn't surface newest-first. Scheme (settled): prefix each per-entry filename with the session date so a descending name-sort (which Zettel does) puts newest at top. Going-forward-only fails — new digit-leading names and legacy letter-leading slug names would sort as separate blocks — so the existing files were renamed too.
 

@@ -1,4 +1,4 @@
-# [HASH] — plan.md + done-plan.md reorders made conditional and change-scoped; SPEC.md synced in the same commit
+# ee99142 — plan.md + done-plan.md reorders made conditional and change-scoped; SPEC.md synced in the same commit
 
 The reorder-by-reasoning runs at two moments — plan.md Step 2 (orders Unprocessed for this session's processing) and done-plan.md's close (orders Processed for /next's durable pick-order). Both stay — they serve different consumers — but re-reasoning over the whole queue's prose from scratch at both moments every session, even when the order is already right (the common case), is the felt token cost. The lighter fix (explicitly NOT a return to blocking): make both reorders conditional (reorder and narrate only when the order is genuinely wrong; silent no-op when already right), scope the re-reasoning to what changed this session, and lean on the prose slug-references items already carry rather than re-deriving dependencies. Explicitly do not reintroduce Blocks:/Depends-on: headers or a dependency lint — that would resurrect the stale-header machinery the two-section recut removed.
 

@@ -1,4 +1,4 @@
-# [HASH] — plan.md Step 2 skip-to-defer routed through reorder_queue.py's new single-item-move mode instead of a hand-retype
+# ee99142 — plan.md Step 2 skip-to-defer routed through reorder_queue.py's new single-item-move mode instead of a hand-retype
 
 Observed 2026-07-31: /plan's in-session skip-to-defer move retyped an item's whole prose block via Edit — the corruption risk done-plan.md's close reorder warns about and routes through reorder_queue.py, but that mover was wired only into the /done close, not plan.md Step 2's in-session move. Scope was narrowed at processing to skip-to-defer only: the keep-move half was already decided against ([queue-move-viewer-lag]) because keeping re-authors the item, so no identical block exists to relocate. Skip-to-defer relocates the item's prose unchanged — a pure byte-move where hand-retyping is the real exposure.
 
