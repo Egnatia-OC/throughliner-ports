@@ -1,4 +1,4 @@
-# [HASH] — Name skip-to-defer as the only defer, and ban the phantom "dedicated pass" framing
+# ea272f6 — Name skip-to-defer as the only defer, and ban the phantom "dedicated pass" framing
 
 A live /plan three times narrated that a big undesigned item "deserves its own dedicated pass / focused session" — a container SI doesn't have. The generic-Claude prior ("big/undesigned → give it a focused session") fills the vacuum whenever nothing names the SI move or forbids the phantom one.
 

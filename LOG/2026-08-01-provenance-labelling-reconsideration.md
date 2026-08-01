@@ -1,4 +1,4 @@
-# [HASH] — Drop mandatory provenance; keep an explicit user-credit marker, default-AI
+# ea272f6 — Drop mandatory provenance; keep an explicit user-credit marker, default-AI
 
 Every work line carried a required author label ("captured by you" / "by Claude"), lint-enforced. The label was unused, inaccurate under mixed authorship, and impossible to trace fully; forcing a "by Claude" on every line added noise no one read. Changed to a one-directional convention: unmarked lines are assumed to come from the AI (no AI-authorship label is ever written), and a `captured by you` credit is written only when the user personally raised, pushed through, or wrote the item — the one signal with value. The credit tracks who *stood behind* the item, not who typed each fragment. Extended one level down as a prose convention: rationale is assumed Claude's unless credited as the user's stated intention, marked inline — consistent with the why-pipeline's rationale-is-prose rule, adding no hook-read field.
 

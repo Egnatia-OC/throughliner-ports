@@ -1,4 +1,4 @@
-# [HASH] — Corpus-wide de-dupe + why-clause-coverage audit of the whole method doc set
+# ea272f6 — Corpus-wide de-dupe + why-clause-coverage audit of the whole method doc set
 
 Ran the corpus-wide audit ([audit] flavor) across the whole docs/ set — plugin-behaviour.md, plan.md, the next-family, the done-family, setup.md, and templates — plus this session's own doc edits (built just before, so in view). Three lenses: same-rule-restated dedupe (not a word-cut pass — length is mostly load-bearing why-clauses), shared-scaffolding factoring across the flavor-doc families, and why-clause coverage gaps. No files edited — findings routed as captures.
 

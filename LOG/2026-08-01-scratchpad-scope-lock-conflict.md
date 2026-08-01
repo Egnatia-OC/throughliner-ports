@@ -1,4 +1,4 @@
-# [HASH] — Whitelist the session scratchpad in the scope-lock so builds can write scratch files there
+# ea272f6 — Whitelist the session scratchpad in the scope-lock so builds can write scratch files there
 
 The pre_tool_use scope-lock denied writes outside _build.md's `Files:` list — including the session scratchpad directory — while plugin-behaviour.md's Temporary-files rule actively routes scratch scripts and working files *to* the scratchpad. The two rules contradicted, forcing a build to pipe scratch scripts through `python` via stdin to avoid writing a file (observed during [log-file-sort-heuristic]).
 

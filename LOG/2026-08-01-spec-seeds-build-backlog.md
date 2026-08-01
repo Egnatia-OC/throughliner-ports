@@ -1,4 +1,4 @@
-# [HASH] — Give /plan a "seed the queue from SPEC" capability so setup-seeded scope doesn't die in SPEC
+# ea272f6 — Give /plan a "seed the queue from SPEC" capability so setup-seeded scope doesn't die in SPEC
 
 When /setup writes a rich SPEC, that whole feature set is buildable work with no path into the queue — it "dies in SPEC" (proven live in a Verso /plan: full Gmail-client SPEC, empty Processed, only an ad-hoc save when Claude happened to notice).
 

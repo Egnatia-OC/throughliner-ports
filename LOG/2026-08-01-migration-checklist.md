@@ -1,4 +1,4 @@
-# [HASH] — Write a documented QUEUE.md migration checklist Claude follows to convert an old-format project
+# ea272f6 — Write a documented QUEUE.md migration checklist Claude follows to convert an old-format project
 
 The one project doc that reliably falls behind as the method evolves is a project's QUEUE.md format (old `## Red flags` / `## Batches` / `### Parked` / `## Deferred tests` / `## Captures` → the two-section model). Phase 1 of the former [migrate-skill]: a checklist Claude follows in an ordinary session, no new skill and no hook change.
 

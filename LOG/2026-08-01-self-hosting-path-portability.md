@@ -1,4 +1,4 @@
-# [HASH] — Make SI's self-hosting rituals path-portable so a fresh clone can run them
+# ea272f6 — Make SI's self-hosting rituals path-portable so a fresh clone can run them
 
 CLAUDE.md hard-coded machine-specific absolute paths (`C:\Users\Alex\…`), some stale — saying `Alex` where the real path is now `Alex 2`, and carrying the `Prioritiy` typo — so on another machine (and in places on this one) the Rezip/Push rituals and E2E pointers couldn't be followed as written.
 

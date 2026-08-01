@@ -1,4 +1,4 @@
-# [HASH] — Deepen /setup's interview into an adaptive, example-bank-driven discovery
+# ea272f6 — Deepen /setup's interview into an adaptive, example-bank-driven discovery
 
 The /setup interview was a fixed five questions. Made it freer, deeper, and adaptive — the motivation being interview quality/depth, not sparse output.
 
