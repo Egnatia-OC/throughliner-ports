@@ -1,4 +1,4 @@
-# [HASH] — Render-verification checks 1–3, six captures filed, and a Claude Code issue comment
+# fa2f8e5 — Render-verification checks 1–3, six captures filed, and a Claude Code issue comment
 
 Post-close tail after the 8-item build/audit run committed at `ea272f6`. Rezipped to 1.16.0-test1 and restarted onto the merged build. Began [working-mode-render-verification] as a `[user]` handover: checks 1–3 passed — a line-anchored doc link lands on the right line, an existing queue item renders as a one-line pointer/link, and a not-yet-written draft renders inline as text. Check 4 (the remote flip) was not run, so the item stays in Processed, partially verified. The check surfaced a significant finding: in the desktop app a `.md` link opens **natively in the app's own viewer at the right line**, not in the recorded editor — which questions the whole Editor-field / keep-a-reader-open premise.
 
