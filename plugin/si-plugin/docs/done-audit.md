@@ -8,9 +8,7 @@ A run may contain several audit items. The record step writes one LOG entry per 
 
 ### 1.1 Verify completion
 
-Read _build.md. All findings ticked (captured or dropped)?
-- **Yes:** Proceed.
-- **Some unticked:** [PROMPT] Ask — finish presenting them (/next) or close partial (defer the unticked, returning the remainder to QUEUE.md's Processed section). Wait for the user's call.
+Run **Verify completion** in done.md. An audit close carries no memory-reconcile delta — a finding is ticked when captured or dropped.
 
 ### 1.2 Route stragglers to Unprocessed [PROMPT]
 
@@ -20,42 +18,13 @@ Each straggler is drafted, shown, and approved before it's written, so this step
 
 ### 2.1 Write LOG entry [DISCUSS, PROMPT]
 
-A run may have run several audit items. Write one LOG entry file per audit item, each named after that item's slug (done.md LOG entry files), reusing that item's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
-
-```markdown
-# [HASH] — [one-line summary]
-
-[Prose rationale — what was audited against which criteria and why, re-authored from the work item's rationale in _build.md; what the read surfaced. Inline prose, no `Why:` label.]
-
-**Files touched:**
-- [the target artifacts that were read — the audit edited nothing]
-
-**Routed to Captures:** [findings captured, or "none"]
-
-**Approval outcomes:** [what happened at bulk approval — findings dropped or reworded, each with the user's reason; or "all findings approved as-is"]
-```
-
-The Approval outcomes line records what the bulk-approval step decided: a finding the user dropped, or reworded, with the reason they gave. Recording it means a decision made at audit time doesn't vanish — without it, the only trace of a dropped or reworded finding is its absence. When every finding was approved as-is, say so in one phrase rather than omitting the line.
-
-Show the wording to the user for approval before writing — see Why-pipeline in plugin-behaviour.md. This one approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
+A run may have run several audit items — write one LOG entry file per audit item, each named after that item's slug. Follow done.md's **LOG entry files** section (Entry template and approval), using its **Audit** per-flavor body fields (`Files touched` — the target artifacts read, since the audit edited nothing; `Routed to Captures`; and `Approval outcomes`). The shared frame covers the template, approval, candidate reuse, and the index-line prepend.
 
 An audit doesn't clear red flags — clearing happens at processing (plugin-behaviour.md Flag states). A security, privacy, or breach risk this audit surfaces is filed as an ordinary uncleared capture in Unprocessed (`Red flag · State: uncleared`), which a later /plan clears; note in this entry that the audit surfaced it.
 
-Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
-
-```
-- [HASH] — [index entry] → [entry filename]
-```
-
-If _build.md carries a matching `Index entry candidate` for the item and the audit ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
-
 ### 2.2 Staleness sweep [SILENT] when clean, [BRIEF] when flagging
 
-Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work items in QUEUE.md — any staleness from any cause, not just what this audit surfaced:
-- Do any remaining Unprocessed or Processed work items reference files anything since has renamed or deleted?
-- Do any reference behaviour or rules a shift since has moved past?
-- Are any sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected item) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask.
+Run the **Staleness sweep** in done.md.
 
 ### 2.3 Delete _build.md [SILENT]
 
@@ -67,12 +36,4 @@ Run the commit core in done.md. No source file edits are staged because the audi
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
-Plain-language guard: narrate the queue situation in everyday words. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be sorted.
-
-Findings appended this session sit unprocessed — the default recommendation after an audit is /plan, to sort them into work. Name the count.
-
-If nothing was appended, scan the still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit it if sorted first. State the scan's result either way, not only when it blocks: nothing unprocessed — say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking." Then, if nothing blocks, recommend by queue state:
-1. Processed work exists → name the next item, then ask whether the user is continuing into another /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first.
-2. Processed empty → "Queue is clear. Run /plan when you have more."
-
-**File the forward-recommendation advisory** when this step made a concrete recommendation — name what to plan or build next and why. File it per plugin-behaviour.md Forward-recommendation advisory: a capture at the top of Unprocessed, worded as advice, consumed and cleared by the next /plan. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.
+Run **Recommend next** in done.md and apply its **Audit close** delta: findings appended this session sit unprocessed, so the default recommendation is /plan, to sort them into work — name the count. Only when nothing was appended does the shared overlap scan run and the ladder apply.

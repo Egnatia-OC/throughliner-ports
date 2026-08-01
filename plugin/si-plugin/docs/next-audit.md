@@ -8,7 +8,7 @@ Before reading, check the item's own wording against the contract. An audit's co
 
 ## Read the target systematically against the criteria [SILENT]
 
-Read every artifact the item names. Apply the criteria pass by pass — one criterion across the whole target, then the next, not mixing criteria per artifact. Don't skim; an audit's value is reading what's there. Accumulate observations in _build.md Changes with precise references (file:line for files) so the user can verify each.
+Read every artifact the item names. Apply the criteria pass by pass — one criterion across the whole target, then the next, not mixing criteria per artifact. The why: a single criterion held across the whole target is applied more consistently than re-deciding all the criteria afresh for each artifact, and it groups the findings by criterion ready for the compile step — whereas reading each artifact once against everything tends, on this model, to collapse the audit into a per-artifact skim that applies each criterion unevenly. Don't skim; an audit's value is reading what's there. Accumulate observations in _build.md Changes with precise references (file:line for files) so the user can verify each.
 
 ## Compile findings [SILENT]
 
@@ -18,7 +18,7 @@ Once the read is complete, group observations into discrete findings. One findin
 
 Compile every finding into one numbered set and present it in a single message. State the count upfront, then list all findings — for each: the number, the observation, the file:line reference, why it matters. Ask the user to approve the whole set, or to list the numbers they don't accept as-is. Then wait.
 
-This is the one inversion of one-at-a-time (see plugin-behaviour.md Communication, sequencing rule): the findings are a deterministic result set produced by criteria the user already approved when they queued the audit, so approving each separately costs round-trips without adding judgment the bulk view doesn't already give. Bulk approval keeps the Captures always-show rule fully intact — the user reads every finding's exact wording before any of it is filed.
+This is the bulk-approval inversion of one-at-a-time (plugin-behaviour.md's [SEQUENCE] rule), applying here because the findings are a deterministic result set produced by criteria the user already approved when they queued the audit. Bulk approval keeps the Captures always-show rule fully intact — the user reads every finding's exact wording before any of it is filed.
 
 ## Handle contested findings one at a time [SEQUENCE, PROMPT]
 

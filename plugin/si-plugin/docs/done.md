@@ -38,11 +38,70 @@ Reached when /done runs with no _build.md and no planning work — the user made
 2. **Decide LOG granularity by judgment.** If the edits are one coherent change, write a single date-named entry — `LOG/<YYYY-MM-DD>-handmade.md` (`-2` if the name is taken). If they span several distinct logical changes, write a separate entry per logical change rather than one lumped entry — better recall when the log is referenced later. (The right unit converges with the two-section LOG-index question and defers to whatever that resolves.) Draft each entry's one-liner and rationale and show them for approval, per the LOG entry files section below and plugin-behaviour.md Captures.
 3. **Run the wind-down re-scan, then the commit core** (both below), staging the hand-edited files explicitly. The commit message is the approved entry; for several entries, the title names the handmade-work close and the body carries each entry's summary. Unlike a planning close, a handmade-work close does offer push when a remote exists — it's real project work, not bookkeeping — following the commit core's remote-gated push exactly.
 
+## Verify completion [PROMPT when unticked]
+
+Stated once here; the build and audit close-outs point at this section for their Phase-1 completion check.
+
+Read _build.md. Is every item in the run ticked in Progress — each build item done, each audit finding captured or dropped?
+- **Yes:** proceed.
+- **Some unticked:** [PROMPT] Ask — finish the rest (/next) or close partial (defer the unticked items, returning them to QUEUE.md's Processed section). Wait for the user's call.
+
+**Build-close delta — reconcile against memory.** At a build close, where the session is still remembered, reconcile _build.md against what you recall: if the file and memory disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Unprocessed (via the build close's findings-routing step). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it. An audit close carries no such reconcile.
+
+## Spec-sync gate [SILENT] when in sync; [PROMPT] when drift found
+
+Stated once here; the build and plan close-outs point at this section. (Audits land no product changes, so an audit close has no spec-sync gate.)
+
+Before recording, check one thing: did this session's work change what SPEC says? Apply the spec-entry trigger test — whether any SPEC sentence goes wrong or incomplete given the changes this session landed. For a build close, that is the test plan.md's "SPEC changes are normal build scope" rule names; quote its wording rather than restating it, so the two don't drift.
+
+If the test fires, stop the close — don't commit yet. Surface the drift in plain words, naming which SPEC sentence the session made wrong or incomplete, and get the user's approval to fix it. Then edit SPEC to match what the session landed, and commit SPEC in this same commit. Don't file it as a capture for a later session.
+
+The why — the same for both flavors: spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md). Deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. SPEC is in-session-editable now (the separate spec-edit step is retired — plan.md), so a session that changed product truth can and must bring SPEC into line in the same commit. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does.
+
+Two flavor deltas in *how* the edit is permitted:
+- **Build close:** SPEC.md is scope-locked, so add SPEC.md to _build.md's `Files:` list before editing (so the scope-lock allows the edit), then edit SPEC to match. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Scope: every build close where the build changed product truth.
+- **Plan close:** no scope-lock is active, so edit SPEC.md directly in-session. Editing SPEC to match a decision the user already made this session is recording, not re-planning — the decision is settled, SPEC is just brought into line. A session that changed only queue ordering or captures touched no SPEC sentence and passes silently. Scope: every plan-type /done close (plan, setup, method-doc-only sessions).
+
+## Staleness sweep [SILENT] when clean, [BRIEF] when flagging
+
+Stated once here; the build and audit close-outs point at this section for their Phase-2 sweep.
+
+Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work items in QUEUE.md — any staleness from any cause, not just what this session changed:
+- Do any remaining Unprocessed or Processed work items reference files anything since has renamed or deleted?
+- Do any reference behaviour or rules that a shift since has moved past?
+- Are any sitting long enough that surrounding code or rules have drifted away from them?
+- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected item) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask (the same ride-along as the hash backfill).
+
 ## LOG entry files
 
 Stated once here; every sub-doc's entry-writing step points at this section.
 
 **One text, several positions.** The session authors two texts, not four. The one-liner is the same authored text in three positions: the entry heading's summary, the index line's body, and the commit title. The rationale prose is the same authored text in two positions: the entry body and the commit body. The user approves both once — at the entry-writing step — and the commit step (commit core above) reuses them verbatim, with nothing new to read.
+
+**Entry template and approval (shared).** Stated once here; every sub-doc's entry-writing step points at this template and approval frame, adding only its per-flavor body fields. Draft each entry as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
+
+```markdown
+# [HASH] — [one-line summary]
+
+[Prose rationale — re-authored from the work's rationale in _build.md (or, for a planning session, what motivated these queue changes), expanded with what was learned along the way. Inline prose, no `Why:` label.]
+
+[per-flavor body fields — see the flavor deltas below]
+```
+
+Per-flavor body fields (the only delta between flavors):
+- **Build:** `**Files touched:**` (from _build.md Changes) and `**Routed to Captures:**` (items added, or "none").
+- **Audit:** `**Files touched:**` (the target artifacts read — the audit edited nothing), `**Routed to Captures:**` (findings captured, or "none"), and `**Approval outcomes:**` (what happened at bulk approval — findings dropped or reworded, each with the user's reason; or "all findings approved as-is"). Recording the Approval outcomes line means a decision made at audit time doesn't vanish — without it, the only trace of a dropped or reworded finding is its absence.
+- **Plan / setup:** `**Queue changes:**` (work processed, reordered, or modified — for a setup session, the first rough build item and the docs scaffolded) and `**Work processed:**` (kept / deleted, with slugs, or "none").
+
+The approval frame, identical for every flavor: show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. If this run shipped only this one item, this approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see Commit core above and the one-text identity). If the run shipped several items, the commit message is instead a one-line summary of the whole run, drafted and approved at the commit step — each item's entry here still stands on its own. This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
+
+Reuse the pre-generated candidate where one exists: if _build.md carries a matching `Index entry candidate` for the item and it built/ran as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim; if scope shifted, author fresh against the same rule. Planning sessions have no pre-generated candidate — author the index entry fresh against the Index entries rule.
+
+Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
+
+```
+- [HASH] — [index entry] → [entry filename]
+```
 
 Each LOG entry is written as its own file under `LOG/`, **date-prefixed** so the folder sorts newest-first on a name sort — never appended to a shared log file. Every entry filename starts with `<YYYY-MM-DD>-` (the session's date):
 
@@ -134,6 +193,26 @@ Stated once here; every sub-doc's Commit step points at this section.
 6. Commit with `git commit -F`. The commit needs no fresh okay — its message was approved at the entry step. Then offer push only when a remote exists (per step 4), and push only if the user accepts.
 
 The LOG entry keeps its `[HASH]` placeholder. The session-start hook backfills it automatically at the next session, as a working-tree edit that folds into that session's commit — no amend, no two-commit flow.
+
+## Recommend next [BRIEF, PROMPT]
+
+Stated once here; every sub-doc's final "recommend next" step points at this section, adding only its flavor delta.
+
+**Plain-language guard.** Narrate the queue situation in everyday words — never the background section-bookkeeping phrasing. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be sorted.
+
+**Overlap scan (shared).** Before recommending, scan the still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit it if sorted first. State the scan's result either way, not only when it blocks: nothing unprocessed → say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item → name what's waiting and give the plain verdict that nothing blocks it; overlap found → recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking."
+
+**Queue-state ladder (shared).** When nothing blocks, recommend by queue state:
+1. Captures appended this session that affect the next work → recommend /plan, name the blocker.
+2. Processed work exists → name the next item, then ask whether the user is continuing into another /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
+3. Processed empty → "Queue is clear. Run /plan when you have more."
+
+**File the forward-recommendation advisory (shared).** When this step made a concrete recommendation — naming what to plan or build next and why — file it per plugin-behaviour.md Forward-recommendation advisory: a capture at the top of Unprocessed, worded as advice, consumed and cleared by the next /plan. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.
+
+Flavor deltas:
+- **Build close:** the shared ladder above is the whole recommendation.
+- **Audit close:** findings appended this session sit unprocessed, so the default recommendation is /plan, to sort them into work — name the count. Only when nothing was appended does the overlap scan run and the ladder apply (ladder steps 2–3).
+- **Plan / setup close:** a fresh setup session whose only work item is the rough first build item recommends /plan to scope it, **never /next** — the interview wrote that item deliberately unscoped, so it isn't ready to build. Otherwise the shared overlap scan + ladder apply.
 
 ## Rules
 

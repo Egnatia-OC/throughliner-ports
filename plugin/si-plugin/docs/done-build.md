@@ -14,11 +14,7 @@ If a new directive arises during the close — the user raises a change, or veri
 
 ### 1.1 Verify completion
 
-Read _build.md. Every build item in the run ticked in Progress?
-- **Yes:** Proceed.
-- **Some unticked:** [PROMPT] Ask — finish (/next) or close partial (defer the unticked items, returning them to QUEUE.md's Processed section). Wait for the user's call.
-
-Reconcile the file against memory where the session is still remembered: if _build.md and what you recall disagree — work that happened but went unticked, a Changes note missing something memory knows was done — that mismatch is itself a finding about build discipline, and it routes to Unprocessed (per 1.2). It's the only routine check _build.md's accuracy gets before a fresh session has to rely on it.
+Run **Verify completion** in done.md. Its build-close delta applies here: reconcile _build.md against memory where the session is still remembered, and route any mismatch to Unprocessed per 1.2.
 
 ### 1.2 Route findings to Unprocessed [PROMPT]
 
@@ -26,11 +22,7 @@ Each routed finding is drafted, shown, and approved before it's written, so this
 
 ### 1.3 Spec-sync gate [SILENT] when nothing drifts, [PROMPT] when drift found
 
-Build closes only (audits land no product changes). Read SPEC.md against the changes this build landed and apply the spec-entry trigger test — whether any sentence in SPEC goes wrong or incomplete given these changes. That is the test plan.md's "SPEC changes are normal build scope" rule names; quote its wording rather than restating it, so the two don't drift.
-
-If the test fires, stop the close — don't commit yet. Surface the drift in plain words, naming which SPEC sentence the build made wrong or incomplete, and get the user's approval to fix it. Then add SPEC.md to _build.md's `Files:` list (so the scope-lock allows the edit), edit SPEC to match what the build landed, and commit SPEC together with the build in this same commit. Don't file it as a capture for a later session.
-
-The why this is a stop-the-close gate, not a detect-and-file backstop: SPEC is in-session-editable now — the separate spec-edit step is retired (plan.md) — so a build that changed product truth can and must bring SPEC into line in the same commit. Spec-driven development's contract is that the spec moves in the same commit as the behaviour change (resources/research/spec-driven-development-edit-workflow.md); deferring the SPEC fix to a capture would close a commit with SPEC already behind, breaking that atomicity — the exact drift this gate prevents. The gate also catches the leak the old detect-and-file backstop existed for: a build landing a spec-affecting change with no prior spec entry, now fixed in-session rather than filed for luck to catch later. Path-split like the staleness sweep: silent when nothing drifts; stop and surface when it does. Scope: every build close where the build changed product truth.
+Run the **Spec-sync gate** in done.md and apply its **Build close** delta: SPEC.md is scope-locked, so add SPEC.md to _build.md's `Files:` list before editing, then edit SPEC to match what the build landed and commit it in this same commit.
 
 ### 1.4 Red-flag close [SILENT] when no flag, [PROMPT] when an item carries one
 
@@ -42,38 +34,13 @@ Per built item: if the item carries a `Red flag · State: …` marker, run the R
 
 Narrate first [BRIEF]: one sentence noting the work's reasoning is being carried from _build.md into the LOG entry — the file's last job before /done deletes it.
 
-A run may have built several build items. Write one LOG entry file per built item, each named after that item's slug (done.md LOG entry files), reusing that item's pre-generated Index entry candidate. Draft each as its own file under `LOG/`, using this template (placeholder hash — backfilled automatically at the next session start):
-
-```markdown
-# [HASH] — [one-line summary]
-
-[Prose rationale — re-authored from the work item's rationale in _build.md, expanded with what was learned during the build (tradeoffs, constraints, approach changes). Inline prose, no `Why:` label.]
-
-**Files touched:**
-- [from _build.md Changes]
-
-**Routed to Captures:** [items added, or "none"]
-```
-
-Show the wording to the user for approval before writing — the rationale prose carries the why forward, see Why-pipeline in plugin-behaviour.md. If this run shipped only this one item, this approval also covers the commit message: the commit title and body derive verbatim from this entry's one-liner and rationale, so the commit step reviews nothing new (see done.md commit core and LOG entry files). If the run shipped several items, the commit message is instead a one-line summary of the whole run, drafted and approved at the commit step — each item's entry here still stands on its own. This entry is the session's summary — there is no separate chat recap. Before showing it, check whether this session raised and resolved a concern or weighed an alternative that lost; if so, carry it with why it lost (plugin-behaviour.md why-pipeline Preserve). After approval, write it to the new entry file.
+A run may have built several build items — write one LOG entry file per built item, each named after that item's slug. Follow done.md's **LOG entry files** section (Entry template and approval), using its **Build** per-flavor body fields (`Files touched` from _build.md Changes; `Routed to Captures`). The shared frame covers the template, approval, candidate reuse, and the index-line prepend.
 
 If a built item carried a red flag, note in this entry that it carried a red flag and that it was cleared, per done.md Recording a cleared red flag — the carry-through, since the substantive clearing record was written at the /plan close that cleared it.
 
-Prepend to `LOG/index.md` after the header, per plugin-behaviour.md Index entries, ending with the entry's filename:
-
-```
-- [HASH] — [index entry] → [entry filename]
-```
-
-If _build.md carries a matching `Index entry candidate` for the item and it built as planned (no scope shifts that change what the entry should say), reuse that candidate verbatim. If scope shifted, author fresh against the same rule.
-
 ### 2.2 Staleness sweep [SILENT] when clean, [BRIEF] when flagging
 
-Stay silent when nothing's stale; surface a flag in one or two sentences when something is. Quick check of the remaining work items in QUEUE.md — any staleness from any cause, not just what this build changed:
-- Do any remaining Unprocessed or Processed work items reference files this build (or an earlier shift the queue hasn't caught up to) renamed or deleted?
-- Do any reference behaviour or rules that a shift since has moved past?
-- Are any sitting long enough that surrounding code or rules have drifted away from them?
-- If so, flag it — and split by fix path: a fate decision (drop / rewrite / keep the affected item) is /plan's, so defer it; a pure pointer drift — a file reference whose target content is unchanged — is mechanical, so fix it here and report it in one line, riding this commit, with no approval ask (the same ride-along as the hash backfill).
+Run the **Staleness sweep** in done.md.
 
 ### 2.3 Delete _build.md [SILENT]
 
@@ -85,13 +52,4 @@ Run the commit core in done.md.
 
 ## Phase 3: Recommend next [BRIEF, PROMPT]
 
-Plain-language guard: narrate the queue situation in everyday words — never the background section-bookkeeping phrasing. Keep the plain statement accurate: don't say the queue is clear when work is still waiting to be sorted.
-
-Before recommending, scan the still-unprocessed work for overlap with the top processed item — work that contradicts, invalidates, or would benefit it if sorted first. State the scan's result either way, not only when it blocks: nothing unprocessed — say nothing's waiting for /plan; unprocessed work waiting but none overlaps the next item — name what's waiting and give the plain verdict that nothing blocks it; overlap found — recommend /plan first and name the overlap. The clean case is a plain assessment, not a hedge — "Three items are waiting to be sorted; none touches the next piece of work, so nothing blocks it," never "there may be overlap worth checking."
-
-Otherwise, based on queue state:
-1. Captures appended this session that affect the next work → recommend /plan, name the blocker.
-2. Processed work exists → name the next item, then ask whether the user is continuing into another /next now. If yes and a reorder is applicable (per plugin-behaviour.md Dependency ownership), offer to reorder the queue first so the next /next picks the right item.
-3. Processed empty → "Queue is clear. Run /plan when you have more."
-
-**File the forward-recommendation advisory** when this step made a concrete recommendation — name what to plan or build next and why. File it per plugin-behaviour.md Forward-recommendation advisory: a capture at the top of Unprocessed, worded as advice, consumed and cleared by the next /plan. When the recommendation is generic ("run /plan when you have more"), no advisory is filed.
+Run **Recommend next** in done.md and apply its **Build close** delta: the shared overlap scan + queue-state ladder are the whole recommendation.
