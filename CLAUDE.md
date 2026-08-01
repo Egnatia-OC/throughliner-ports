@@ -25,7 +25,17 @@ When editing any skill doc, check the output-facing strings against this audienc
 
 ## Model target
 
-Resolved 2026-06-15: this project targets **Opus 4.8** and will not regress to 4.6 or 4.7. We do not work around 4.8's behaviour by reaching for an older model — we focus on getting 4.8 right. When 4.8 behaves in a way the plugin doesn't want (verbosity, instruction-following, bundling), the fix is to steer 4.8 with techniques it actually responds to, recorded in `resources/research/opus-4-8-verbosity-steering.md` and `resources/research/model-instruction-compliance.md`, not to downgrade. Future models are adopted when they arrive; older ones are not a fallback.
+**The method runs on two docsets, one active.** Resolved 2026-08-02 (superseding the single-4.8 target of 2026-06-15): the plugin ships two procedure docsets and session_start picks between them by the running model.
+
+- **Docset A (current, heavy) — frozen 4.8 fallback.** This is the docset the method was built on: heavy, prescriptive, carrying the load-bearing why-clauses that Opus 4.8 needs to follow a rule reliably. As of the freeze (this build ships it), docset A is **not developed further** — it is kept as the known-good fallback so a bad migration to the new docset can never strand the project with no working plugin. That no-strand guarantee is the user's non-negotiable reason for freezing rather than replacing. Its 4.8 steering research stays with it: `resources/research/opus-4-8-verbosity-steering.md`, `resources/research/model-instruction-compliance.md`.
+- **Docset B (new, light) — the active docset.** Authored by *subtraction* from the frozen docset A, docset B is lighter and less prescriptive, and it is where the method evolves from here. It serves the 5-series — **Fable 5 and Opus 5** — which converge on wanting less prescription, not more.
+- **session_start detection.** The hook picks docset B for the 5-series, docset A for 4.8, and **defaults to A when the `model` field is absent** — the safe fallback, since A is the known-good docset.
+
+**The fork this resolves — why two docsets, not N.** The intuitive worry was one docset per model, which drifts under dual maintenance. It collapses to two because Opus 5 is not "as fussy as 4.8" — it is fussy the *opposite* way: it over-does (self-verifies, expands scope, runs verbose), so Anthropic's guidance for it is *subtraction*, and Fable 5 wants the same. The two 5-series models therefore converge on one lighter docset. Freezing A is what dodges the dual-maintenance drift trap: only B is live, so there is no two-docset sync burden. Research: `resources/research/opus-5-instruction-compliance.md`, `fable-5-instruction-compatibility.md`.
+
+**Authoring rule during the split.** Docset B compresses by shedding why-clauses — but those clauses are load-bearing *for 4.8*, so B's lighter register must never be applied back to docset A: doing so would regress 4.8's rule-following. A is frozen; B is authored fresh by subtraction. Future models are adopted when they arrive; A is a frozen fallback, not a model we regress *to* — we do not reach for an older model to dodge a newer one's behaviour.
+
+This is phase 1 of three: this build records the decision and freezes A. Phase 2 authors docset B by subtraction ([opus5-docset-b-authoring]); phase 3 wires the session_start model detection ([opus5-session-start-detection]).
 
 ## Host and target
 
