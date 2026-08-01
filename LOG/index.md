@@ -2,6 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — QUEUE.md + LOG — filed 3 method-design captures on the post-close tail: [post-close-tail-state], [drive-testing-signals-skill-routing], [done-delta-close] → 2026-08-01-post-close-captures.md
 - [HASH] — QUEUE.md + LOG (tail after ea272f6) — render-verification [working-mode-render-verification] checks 1–3 passed (check 4 pending, item stays in Processed); desktop app opens .md links natively at the right line; filed 6 captures; posted (and de-duplicated) a comment on anthropics/claude-code#77134; swapped the forward advisory → 2026-08-01-render-verify-and-captures.md
 - ea272f6 — pre_tool_use.py + plugin-behaviour.md — scope-lock now exempts the session scratchpad dir (path-shape match: scratchpad segment + claude ancestor + outside repo), resolving the temp-file-rule conflict; docs Scope/Temp-files noted [scratchpad-scope-lock-conflict] → 2026-08-01-scratchpad-scope-lock-conflict.md
 - ea272f6 — CLAUDE.md — 4 hard-coded machine paths → `<PROJECT_ROOT>`/`<TASKFLOWAPP_ROOT>` placeholders, stale Alex/Prioritiy fixed; resources/ historical records left as point-in-time truth [self-hosting-path-portability] → 2026-08-01-self-hosting-path-portability.md
