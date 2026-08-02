@@ -76,6 +76,11 @@ Captured by you — filed after `b6f2344`; processed 2026-08-01. Split from the 
 
 ## Unprocessed
 
+#### Last session advises processing the twelve docset-B fidelity findings next [advisory-docset-b-findings]
+The audit that produced them was deliberately run while docset B is inert. That window closes at the next rezip, which is when B starts governing live 5-series sessions — the same cheap-window argument that put the audit above phase 3 in the first place. Twelve findings are now waiting, and three of them change behaviour rather than wording: the missing definition of when an editor counts as recorded, the dropped scope statement on the spec-sync gate's plan-close branch, and the malformed capture line-format block that all three hooks parse.
+The other queued item from this session, [opus5-docset-switch-live-verification], is not a planning question — it waits on a rezip and a restart, so it wants placing below the line with that lift-condition rather than discussing.
+**Persist until the docset-B findings have been processed**, not merely until the next planning session reads this — the window is the rezip, not the session.
+
 #### Decide whether docset B's plugin-behaviour.md should be split under progressive disclosure [docset-b-progressive-disclosure]
 The docset-B authoring item named Anthropic's skill conventions as constraints to stay inside, and listed progressive disclosure among them. That one was not applied: docset B's plugin-behaviour.md kept docset A's monolithic shape, just lighter. At 785 lines it is the largest doc in the docset, and it is the one loaded at every session start — exactly the always-loaded position progressive disclosure exists to protect.
 Two things stop this being a clear miss, which is why it needs deciding rather than fixing. First, the line count overstates it: docset B hard-wraps at about 80 characters where docset A ran long single-line paragraphs, so B's 785 lines are 40KB against A's 373 lines at 89KB. By the measure that actually costs tokens, B is already less than half of A. Second, the ~500-line ceiling in Anthropic's guidance is written for SKILL.md, the entry-point file, not for reference docs loaded by a skill.
