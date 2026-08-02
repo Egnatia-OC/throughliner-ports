@@ -1,4 +1,4 @@
-# [HASH] — Authored docset B in full (11 docs, 39% lighter) and refined its authoring register at the phase-2 checkpoint
+# 6ba51d3 — Authored docset B in full (11 docs, 39% lighter) and refined its authoring register at the phase-2 checkpoint
 
 Phase 2 of the Opus 5 work. Docset B — the light 5-series docset — now exists in full as a sibling `docs-b/` directory with exact filename parity to docset A, authored by subtraction from the frozen A.
 
