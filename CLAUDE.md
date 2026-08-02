@@ -4,7 +4,7 @@ Claude Code auto-loads this file on session start.
 
 ## The two-section redesign is merged in — this is main
 
-The `queue-redesign` fork has been merged back into `main` (see LOG `execute-merge-to-main.md`). Main now carries the full two-section work-line model — Processed / Unprocessed, build/audit flavors with `[user]` handover, red flags as tagged state-carrying lines — with main's original plugin identity kept (`sovereign-implementer` / `flintcraft`, not the fork's `-x` rename). The reconciliation started from main's drained `QUEUE.md` and folded forward the still-relevant fork items by judgment; the fork's bloat and shipped work were left in git history. The founding decision and reasoning are in QUEUE.md's history under `[adopt-queue-redesign]` and LOG `fable-goal-queue-drain-adopt.md`.
+The `queue-redesign` fork has been merged back into `main` (see LOG `execute-merge-to-main.md`). Main now carries the full two-section work-line model — Processed / Unprocessed, build/audit flavors with `[user]` walk-through, red flags as tagged state-carrying lines — with main's original plugin identity kept (`sovereign-implementer` / `flintcraft`, not the fork's `-x` rename). The reconciliation started from main's drained `QUEUE.md` and folded forward the still-relevant fork items by judgment; the fork's bloat and shipped work were left in git history. The founding decision and reasoning are in QUEUE.md's history under `[adopt-queue-redesign]` and LOG `fable-goal-queue-drain-adopt.md`.
 
 **Rollout and retirement path.** With the redesign on main, the next steps are: rezip + reinstall to dogfood the merged plugin here, then push + release so the other projects update via the marketplace; the old pre-redesign SI stays frozen on those projects until the new one is adopted there and the old one uninstalled. The one thing to track is *when the merged plugin is trustworthy enough to rely on* — freezing the old one, migrating the other projects, and uninstalling all follow from that.
 
@@ -54,7 +54,7 @@ Host and target are the same plugin at different stages. Ambiguous references to
 **4 skills:**
 - `/setup` — scaffold docs + ask 5 questions to populate SPEC.md.
 - `/plan` — all thinking work: queue management, read-back, ideas, questions, drift detection.
-- `/next` — pick the top ready work, execute it (build or audit), hand over at `[user]` lines. Works the cleared region top-down, so one invocation can build several cleared lines back-to-back — the unattended-in-practice runner, closed by /done.
+- `/next` — pick the top ready work, execute it (build or audit), walk the user through `[user]` lines. Works the cleared region top-down, so one invocation can build several cleared lines back-to-back — the unattended-in-practice runner, closed by /done.
 - `/done` — record what happened, clean up, commit.
 
 **3 hooks** — two enforcing, one advisory:

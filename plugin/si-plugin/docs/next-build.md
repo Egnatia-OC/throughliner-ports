@@ -23,7 +23,7 @@ The silence here governs the success path — the routine bookkeeping of making 
 3. If the change is readable (non-code) content, reveal the new text — informational, no approval ask — rendering it per the working-mode rule above: a line-anchored link to the edited location when mode is local and an editor is recorded (inline excerpt fallback if the link won't resolve), an inline wrapped block when mode is remote or no editor is recorded. Code edits skip this; the success path stays silent.
 4. Tick it in _build.md Progress: `- [x] item description — done`
 
-**A check Claude can run is part of building, not a separate test.** When building the item, run whatever verification you can this session — read the code back, run a command, inspect output, check file content — as part of getting the item right. There's no separate test flavor: a check Claude can run is just building; a check that needs the user is a `[user]` work item, which /plan would have set as its own item and /next hands over, not something a build item defers. If, mid-build, you discover the work needs a user-run check that isn't already a `[user]` item, route it (see Course-correction below) — don't invent a deferral here.
+**A check Claude can run is part of building, not a separate test.** When building the item, run whatever verification you can this session — read the code back, run a command, inspect output, check file content — as part of getting the item right. There's no separate test flavor: a check Claude can run is just building; a check that needs the user is a `[user]` work item, which /plan would have set as its own item and /next walks the user through, not something a build item defers. If, mid-build, you discover the work needs a user-run check that isn't already a `[user]` item, route it (see Course-correction below) — don't invent a deferral here.
 
 ## File structure — split by independent unit
 
@@ -49,6 +49,8 @@ Changes:
 ## Scope management
 
 These sections elaborate the discovery decision rule in plugin-behaviour.md (Routing and discipline): work needed to complete the item is added or split; work not needed is captured and the session continues. The cases below are how that rule plays out during a build.
+
+**When a mid-build discovery is work only the user can run — a rename Claude can't do, an account action, a device step — file it as a `[user]` line, never float it as a live question.** This is the don't-under-file rule (plugin-behaviour.md Captures, Flavor marker): genuine user work must become a tracked `[user]` line so it can't evaporate when the session ends. The failure to avoid is waving such work off as "separate work you'd handle yourself" or asking a yes/no question about it instead of filing it — that leaves real work living only in chat. If you can't yet script every step, file the line with a rough walkthrough anyway; not-yet-scriptable is not a reason to withhold it.
 
 ### User raises something out of scope [PROMPT]
 
@@ -113,7 +115,7 @@ Either way, pair it with the fresh-session handoff offer (plugin-behaviour.md) �
 
 ## Completion [BRIEF, PROMPT]
 
-When this build item is done, next.md moves to the run's next item. When the whole run is built (every Claude-work item ticked, any `[user]` item handed over):
+When this build item is done, next.md moves to the run's next item. When the whole run is built (every Claude-work item ticked, any `[user]` item walked through):
 
 1. Tell the user the build is complete.
 2. Say: "Run /done to record this and commit, or tighten what's already built before closing." Tightening means refining done work — not raising new work. Anything new routes through the existing paths: out-of-scope via Scope management above, thinking work via Unprocessed. No chat summary of the changes — the LOG entries /done writes are the single session record.

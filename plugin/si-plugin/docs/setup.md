@@ -110,13 +110,13 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 
 **resources/research/ folder:** Create the `resources/research/` directory (empty — no files). It's the home for research notes: when a web search or external lookup yields a finding worth keeping, Claude files it here as `resources/research/<topic>.md`. Creating it at setup means research notes have a place from day one rather than the folder being conjured on first use.
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded` and a Working mode field defaulting to `local`; Step 4 fills them from Q6 and Q7.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`, a Working mode field defaulting to `local`, and a Completion mode field defaulting to `in-/next`; Step 4 fills them from Q6, Q7, and Q8.
 
 **.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
 **Git repository:** If the folder is not already a git repository, run `git init` so the project has version history from the first session. Do this silently and mechanically, like the rest of the scaffold — no narration. This is what lets the close-out commit the new files: without a repository there is nothing to commit to.
 
-## Step 3: Interview (adaptive discovery, one question at a time, plus two optional settings)
+## Step 3: Interview (adaptive discovery, one question at a time, plus three optional settings)
 
 The interview is an **adaptive discovery**, not a fixed script. Its job is to reach a shared, buildable understanding of the project — enough to fill SPEC.md's What / Who / How / Principles and capture a first piece of work — by reading each answer and asking the next question that actually matters, rather than marching through a set list. Ask **one question per message** and stop after each — wait for the answer before asking the next. Never bundle two questions into one message, even short ones.
 
@@ -131,13 +131,16 @@ The interview is an **adaptive discovery**, not a fixed script. Its job is to re
 
 **The first work item** — whichever answer names the first thing to build — creates one rough work item in QUEUE.md's Unprocessed section: a `#### ` heading in the user's words, with a kebab-case `[slug]` at the end of that heading line and a "captured by you" note beneath it. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan (which is where this item gets processed). If examples would clarify what's in scope, ask a follow-up instead of smuggling them into the entry.
 
-**The two settings questions (Q6, Q7) are fixed, not adaptive** — they're project settings, not discovery, so ask them the same way each time, one message of its own, after the discovery has reached its stopping point. They're optional; the user can skip either.
+**The three settings questions (Q6, Q7, Q8) are fixed, not adaptive** — they're project settings, not discovery, so ask them the same way each time, one message of its own, after the discovery has reached its stopping point. They're optional; the user can skip any.
 
 **Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
 → Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
 
 **Q7 (optional). Will you usually be working from your computer, or driving Claude from your phone?**
 → Sets your working mode. Two options, explained once here: **local** means you're at your desktop, where an edited file opens instantly — so Claude points you to text in your docs with a link. **remote** means you're driving Claude from your phone, where opening an edited file is awkward — so Claude pastes the text straight into chat instead. Defaults to **local** if you skip. Fills the Working mode field in the generated CLAUDE.md, and you can switch anytime just by telling Claude ("I'm remote today") — it holds for that session and reverts after. Asked once, no nag.
+
+**Q8 (optional). When there's a step only you can do — like sending something or checking a screen — do you prefer to do it together with Claude as it comes up, or handle those on your own between sessions?**
+→ Sets your completion mode. Two options, explained once here: **in-/next** (the default) means you let Claude walk you through each such step when it reaches it while building — the relaxed way, nothing to remember or chase. **async** means you often do these on your own, between sessions. The only thing it changes: in async mode, planning sessions ask up front whether you've already done any of these steps (so they get recorded); in the default in-/next mode they don't ask — you're doing those steps in /next anyway, so being asked each planning session would just nag. Defaults to **in-/next** if you skip. Fills the Completion mode field in the generated CLAUDE.md; switch anytime by re-running /setup or just telling Claude. Asked once, no nag.
 
 ## Step 4: Write the docs
 
@@ -146,6 +149,7 @@ Once discovery has reached a buildable understanding (or the user says "build fr
 2. Write one work item in QUEUE.md's Unprocessed section from the first-thing-to-build answer — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
+2c. Fill the Completion mode field in CLAUDE.md from Q8 — `in-/next` or `async` as answered, or `in-/next` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:

@@ -13,22 +13,22 @@ Check for _build.md. The check is automatic — don't ask, and don't narrate the
   - **`[audit]`** items → read and follow `done-audit.md`.
   - A run of one flavor follows that flavor's close-out. A mixed run — say a build item and an audit item built back-to-back — closes each item through its own flavor's close-out (build items via done-build.md, audit items via done-audit.md), writing one LOG entry per item and sharing the single end-of-session commit.
 - **No _build.md** → no build ran this session. Three shapes:
-  - **A completed `[user]` handover** — the user ran a `[user]` item that a past session handed over and wants it recorded. Detect by asking: if Processed holds any `[user]` item, ask whether the user just completed one (a fresh chat won't remember the handover, so the ask is what surfaces it). If yes → follow **Completed `[user]`-item close** below. This can coincide with a planning session; when it does, close the handover through that section and let done-plan.md handle the rest.
+  - **A completed `[user]` item** — the user ran a `[user]` item that a past session walked them through (or presented) and wants it recorded. Detect by asking: if Processed holds any `[user]` item, ask whether the user just completed one (a fresh chat won't remember it, so the ask is what surfaces it). If yes → follow **Completed `[user]`-item close** below. This can coincide with a planning session; when it does, close the item through that section and let done-plan.md handle the rest.
   - **A planning session** — the session managed the queue, processed captures, or moved the readiness line (or _plan.md exists) → read and follow `done-plan.md`.
   - **A standalone handmade-work close** — no planning happened either, and the working tree holds uncommitted edits the session didn't make through a skill (the user changed files by hand) → follow **Standalone handmade-work close** below. Read those edits as the user's own expected work, not a broken repo (plugin-behaviour.md, the don't-panic reading), confirm with the user, then log and commit them.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit core below, then return to the sub-doc for the recommendation.
 
-There is no test close-out — the test flavor is retired. A check Claude can run is part of building, closed by done-build.md. A check only the user can run is a `[user]` work item, which /next hands over and which never enters a _build.md — so /done doesn't close it *as a build*, but once the user has run it, /done does record its completion and remove it from the queue, through the Completed `[user]`-item close below.
+There is no test close-out — the test flavor is retired. A check Claude can run is part of building, closed by done-build.md. A check only the user can run is a `[user]` work item, which /next walks the user through and which never enters a _build.md — so /done doesn't close it *as a build*, but once the user has run it, /done does record its completion and remove it from the queue, through the Completed `[user]`-item close below.
 
 ## Completed `[user]`-item close [BRIEF, PROMPT]
 
-Reached when the user has done a `[user]` handover item and wants it recorded. A `[user]` item never entered a _build.md, so it isn't ticked and closed like a build — this is the close that records it and removes it from Processed, so a finished handover doesn't strand in the queue and get re-handed-over by the next /next. It also runs inside a /plan close (done-plan.md points here) when the user mentions async-completed handovers at planning.
+Reached when the user has done a `[user]` item and wants it recorded. A `[user]` item never entered a _build.md, so it isn't ticked and closed like a build — this is the close that records it and removes it from Processed, so a finished `[user]` item doesn't strand in the queue and get re-presented by the next /next. It also runs inside a /plan close (done-plan.md points here) when the user mentions async-completed `[user]` items at planning.
 
-1. **Confirm which `[user]` item(s) completed** [PROMPT]. Name the `[user]` items still in Processed and confirm which the user actually finished. Only the confirmed-done ones close here; the rest stay in Processed for a later handover.
+1. **Confirm which `[user]` item(s) completed** [PROMPT]. Name the `[user]` items still in Processed and confirm which the user actually finished. Only the confirmed-done ones close here; the rest stay in Processed for a later walk-through.
 2. **Write a LOG entry per completed item**, named after its slug (done.md LOG entry files). The entry records what the user did and its outcome — draft the one-liner and rationale and show them for approval, per plugin-behaviour.md Captures and the LOG entry files section below. If a completed item carried a red-flag marker, run the Red-flag lifecycle at close below.
-3. **Remove each completed item from Processed** — this is what stops the re-handover. (The shipped-slug cross-check in the commit core backstops it.)
-4. **Run the wind-down re-scan, then the commit core** (both below), staging QUEUE.md and the LOG changes. A remote-gated push offer applies as normal — a completed handover is real project progress, not bookkeeping.
+3. **Remove each completed item from Processed** — this is what stops it being re-presented. (The shipped-slug cross-check in the commit core backstops it.)
+4. **Run the wind-down re-scan, then the commit core** (both below), staging QUEUE.md and the LOG changes. A remote-gated push offer applies as normal — a completed `[user]` item is real project progress, not bookkeeping.
 
 ## Standalone handmade-work close [BRIEF, PROMPT]
 
@@ -122,7 +122,7 @@ Entries from before the per-entry split live in `LOG/log.md` and `LOG/log-v*.md`
 
 ## Checks the closing session couldn't run
 
-The `## Deferred tests` section is retired — there is no separate test queue. The work-item model handles an unrun check directly: a verification only the user can run is a `[user]` work item, and /plan would have set it as its own item for /next to hand over; a check Claude can run is just part of building.
+The `## Deferred tests` section is retired — there is no separate test queue. The work-item model handles an unrun check directly: a verification only the user can run is a `[user]` work item, and /plan would have set it as its own item for /next to walk the user through; a check Claude can run is just part of building.
 
 So the only thing /done does with a check it couldn't run is the ordinary capture move: if the closing session discovers a needed verification that isn't already a `[user]` item — one that needs the user, a device, or a reinstall before it can run — file it as a `[user]` work item appended to Unprocessed, drafting and showing the wording per plugin-behaviour.md Captures. A later /plan sorts it like any other captured work. Nothing tracks it in a dedicated section, and no LOG-only prose stands in for the queue line — an unrun check recorded only in a log entry never surfaces again.
 
