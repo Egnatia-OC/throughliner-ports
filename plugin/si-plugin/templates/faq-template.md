@@ -268,3 +268,11 @@ When Claude captures an idea into your queue, it tags it with the last save-poin
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file. Each entry file's name starts with its date (`2026-06-09-…`), so if you browse the LOG folder itself, sorting the filenames in descending order lines them up newest-first — the same order the index reads.
+
+## Does it matter which Claude model I'm using?
+
+Not for anything you have to do. The plugin ships two versions of its own instructions — a fuller one and a lighter one — and works out which to use at the start of every session, from the model you're running. There's no setting for it and no message about it.
+
+Both versions describe the same method: the same four commands, the same queue, the same rules about what Claude will and won't do without asking you. The only difference is how much explaining sits around each rule, because different Claude models follow instructions best at different lengths. So your project behaves the same way whichever model you build it on, and switching models between sessions is fine.
+
+If the plugin can't tell which model is running, it uses the fuller version — the one it's been tested on longest.

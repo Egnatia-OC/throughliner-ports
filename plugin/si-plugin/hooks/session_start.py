@@ -190,6 +190,84 @@ def content_stamp(root):
     return digest.hexdigest()[:12]
 
 
+# The running model's family and major version, e.g. "claude-opus-5" -> ("opus", 5)
+# and "claude-haiku-4-5-20251001" -> ("haiku", 4). Anchoring on the FIRST number
+# after the family name is what keeps Haiku 4.5 out of the 5-series bucket: its
+# major version is 4, and the trailing "-5" is a minor.
+_MODEL_FAMILY = re.compile(r"(opus|sonnet|haiku|fable)-(\d+)", re.IGNORECASE)
+
+# The two docsets, by directory name under the plugin root.
+_DOCSET_A = "docs"
+_DOCSET_B = "docs-b"
+
+
+def _model_id(data):
+    """The running model's id from the SessionStart payload, or "".
+
+    SessionStart is the one hook type that can carry a `model` field, but its
+    presence is NOT guaranteed (resources/research/sessionstart-hook-model-detection.md),
+    which is why every caller must have a defined fallback. The field is
+    normally a plain string; some payloads wrap it in an object, so both
+    shapes are read rather than assuming one.
+    """
+    model = data.get("model")
+    if isinstance(model, str):
+        return model.strip()
+    if isinstance(model, dict):
+        for key in ("id", "model", "display_name"):
+            value = model.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return ""
+
+
+def _docset_for_model(model_id):
+    """Which docset directory serves this model: docs-b for the 5-series, docs otherwise.
+
+    Docset A (docs/) is the heavy, prescriptive docset the method was built on
+    and is frozen as the known-good fallback; docset B (docs-b/) is the lighter
+    docset authored for the 5-series, which wants less prescription rather than
+    more. A is the fallback in every uncertain case — an absent `model` field,
+    an id that doesn't parse, or any pre-5 family — because a wrong guess toward
+    B strands the session on a docset its model isn't tuned for, while a wrong
+    guess toward A only costs verbosity.
+    """
+    if not model_id:
+        return _DOCSET_A
+    match = _MODEL_FAMILY.search(model_id)
+    if not match:
+        return _DOCSET_A
+    try:
+        major = int(match.group(2))
+    except ValueError:
+        return _DOCSET_A
+    return _DOCSET_B if major >= 5 else _DOCSET_A
+
+
+def _docset_directive(docset):
+    """The injected instruction that points every skill at the active docset.
+
+    Each skill's SKILL.md names its procedure doc under `docs/`, and a hook
+    can't rewrite those files — so when the active docset is B, this directive
+    is what redirects the read. Emitted only for docset B: docset A needs no
+    redirect, since `docs/` is what the skills already name.
+    """
+    if docset != _DOCSET_B:
+        return ""
+    return (
+        "ACTIVE DOCSET: docs-b. This session is running a 5-series model, which "
+        "the lighter docset B serves. Wherever a skill names a procedure doc at "
+        "${CLAUDE_PLUGIN_ROOT}/docs/<name>.md — plan.md, next.md, next-build.md, "
+        "next-audit.md, done.md, done-build.md, done-audit.md, done-plan.md, "
+        "setup.md, migrate-checklist.md — read "
+        "${CLAUDE_PLUGIN_ROOT}/docs-b/<name>.md instead. The behaviour rules "
+        "above are already docset B's. Both docsets carry the same method; docset "
+        "B states it more compactly. Don't mix them: read one doc from each "
+        "procedure family, from docs-b only. This is internal routing — never "
+        "narrate it to the user."
+    )
+
+
 def _dirty_tree_count(cwd):
     """Count files with uncommitted changes via `git status --porcelain`.
 
@@ -274,7 +352,20 @@ def main() -> int:
             pass
 
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
-    behaviour_path = os.path.join(plugin_root, "docs", "plugin-behaviour.md") if plugin_root else ""
+
+    # Which docset serves this session, decided from the running model. Falls
+    # back to docset A whenever the model can't be established — see
+    # _docset_for_model. If the chosen docset isn't present in this install
+    # (an older package that shipped only docs/), fall back to A rather than
+    # pointing skills at a directory that doesn't exist.
+    docset = _docset_for_model(_model_id(data))
+    if docset != _DOCSET_A and plugin_root and not os.path.isdir(
+        os.path.join(plugin_root, docset)
+    ):
+        docset = _DOCSET_A
+    docset_directive = _docset_directive(docset)
+
+    behaviour_path = os.path.join(plugin_root, docset, "plugin-behaviour.md") if plugin_root else ""
 
     behaviour_rules = ""
     if behaviour_path and os.path.isfile(behaviour_path):
@@ -365,6 +456,13 @@ def main() -> int:
                 "anything is adopted."
             )
 
+        # /setup is the skill this branch points at, and it too lives in both
+        # docsets — so the redirect has to reach an unadopted folder as well,
+        # or a 5-series session would scaffold from docset A while every later
+        # session ran docset B.
+        if docset_directive:
+            msg += "\n\n" + docset_directive
+
         output = {
             "additionalContext": msg,
         }
@@ -380,6 +478,9 @@ def main() -> int:
             + behaviour_rules
             + "\n=== END BEHAVIOUR RULES ==="
         )
+
+    if docset_directive:
+        context_parts.append(docset_directive)
 
     # Uncleared red flags first-thing: the two-section model has no pinned Red
     # flags section, so this scan is what keeps an unaddressed data-exposure risk

@@ -20,3 +20,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
+- [Does it matter which Claude model I'm using?](faq.md#does-it-matter-which-claude-model-im-using)

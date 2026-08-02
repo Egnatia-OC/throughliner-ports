@@ -59,3 +59,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why did Claude split my project into several files (or keep it in one)?](faq.md#why-did-claude-split-my-project-into-several-files-or-keep-it-in-one)
 - [What is the filed-after note on one of my captured items?](faq.md#what-is-the-filed-after-note-on-one-of-my-captured-items)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
+- [Does it matter which Claude model I'm using?](faq.md#does-it-matter-which-claude-model-im-using)

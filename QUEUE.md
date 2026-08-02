@@ -4,18 +4,6 @@ Two sections. **Processed** — work discussed and agreed, ordered top-to-bottom
 
 ## Processed
 
-#### [audit] Read docset B's 11 authored docs against docset A for lost rules and drifted meaning [docset-b-fidelity-audit]
-Docset B was authored in a single /next run (2026-08-02) by subtraction from docset A. Only one section — next.md Step 1 Pre-flight — was ever independently read and judged. The register checkpoint validated that section, and the remaining ten docs were authored on the settled register but never read back against their docset-A originals. The author and the judge were the same session, which is the weak spot the checkpoint itself flagged.
-The risk is specific, not general. Subtraction is lossy by design — it sheds why-clauses — so the failure mode is a rule whose meaning depended on the clause that was shed, or a rule dropped entirely because it read as rationale. One error of exactly this class was already caught mid-run: the pseudocode draft silently narrowed docset A's standing "never pick an item past the marker" rule into a single branch. That is direct evidence the error occurs and that authoring alone does not catch it.
-Criteria for the audit: (1) every rule in A survives in B or was deliberately dropped; (2) no rule's scope silently narrowed or widened; (3) no typed block asserts something the prose didn't say. Read each B doc against its A original and report findings as captures; edit nothing.
-Processed and cleared 2026-08-02. It sits directly above [opus5-session-start-detection] because the audit must run while docset B is still inert — phase 3's rezip is the moment B goes live, and fixing a file no session loads is cheap where fixing one that governs live sessions is not. That ordering is carried by position alone: /next works the cleared region top-down, so the audit runs first because it is first. No marker or lift-condition is used to hold phase 3 back — position is the dependency.
-Files: none — an audit edits nothing. Relates to [opus5-docset-b-authoring] (the work it checks) and [opus5-session-start-detection] (phase 3).
-
-#### Opus 5 — phase 3: wire session_start model detection + absent-model fallback to docset A [opus5-session-start-detection]
-Captured by you; split from [fable-docset-model-detection] on 2026-08-02. Wire session_start to pick docset B for the 5-series and docset A for 4.8, defaulting to **A** (the safe fallback) when the `model` field is absent. Feasibility confirmed: SessionStart can receive `model`, but it's not guaranteed present — hence the A-default (research: resources/research/sessionstart-hook-model-detection.md).
-Cleared to run 2026-08-02, placed directly below [docset-b-fidelity-audit]. Its old lift-condition ("after docset B exists") is met — B shipped in `6ba51d3` — and its old "run the audit first" note is now carried by queue position instead of a condition, per the user's correction: building the item above it is what unblocks this one, so the marker is not needed to stagger them.
-**Files (rough):** hooks/session_start.py (model detection + fallback), SPEC.md (multi-model support is user-facing), README feature-list sync, plus a FAQ entry. Relates to [opus5-model-target-rewrite], [opus5-docset-b-authoring].
-
 --- Cleared to run above this line ---
 
 #### [user] Verify working-mode rendering behaves live after rezip + reinstall [working-mode-render-verification]
@@ -101,6 +89,83 @@ The gap is not the rule, which is clear and stated in several places. It is that
 To settle at /plan: whether resuming from a mid-run pause deserves its own shaped beat in next.md, or whether the existing one-at-a-time rules are sufficient and this was simply a slip to note rather than a gap to fill. The second reading is genuinely possible and shouldn't be assumed away.
 Files (rough): next.md (a resume-from-pause beat, if one is warranted). Relates to [opus5-docset-b-authoring], where it was observed.
 Filed after `91e0292`
+
+#### Verify the docset switch live after rezip + restart [opus5-docset-switch-live-verification]
+Phase 3's model detection is host-side: the hook only picks a docset at a real session start, so nothing about it is exercised until the plugin is rezipped, reinstalled and the app fully restarted. This session verified the routing by driving the hook directly with sample payloads, which proves the classification and the fallback but not that the desktop app actually sends a `model` field — the research flagged that presence is not guaranteed, and it has never been confirmed live on this machine.
+The check is Claude-work, not user-work: the directive the hook injects lands in Claude's own session context, so Claude can read it back and say which docset loaded. It is blocked on a restart, which is an ordering concern, so it belongs below the cleared-to-run line rather than being tagged as a step for the user.
+**Lift-condition:** after the next rezip and a full app restart. Then, in a fresh session on a 5-series model, confirm the injected context names docset B; the stronger confirmation is that the absent-model fallback never silently fires, which shows as docset A loading on a 5-series session. If `model` turns out to be absent in the desktop app, every session falls back to docset A and docset B is dead code in this environment — that outcome reopens the whole approach, so record which way it went.
+Files: none unless it fails. Relates to [opus5-session-start-detection].
+Filed after `575fdd1`
+
+#### Decide whether skills should name their docset directly instead of relying on an injected redirect [docset-routing-mechanism]
+Each SKILL.md hardcodes its procedure doc as `${CLAUDE_PLUGIN_ROOT}/docs/<name>.md`, and a hook cannot rewrite those files. So phase 3 routes to docset B by injecting an instruction telling Claude to substitute `docs-b/` wherever a skill names `docs/`. It works, but it is indirection: the skill says one thing and an injected line says to read something else, and it holds only as long as the model follows the redirect. A model that skims past the directive reads docset A while believing it read B, and nothing detects that.
+Alternatives worth weighing at /plan: leave it as-is; have the skills name a docset placeholder the hook fills; or invert it so `docs/` holds the light docset and the redirect fires for 4.8 instead, since 4.8 is the frozen fallback and the 5-series is the live path — that would make the no-redirect case the common one.
+Files (rough): plugin/si-plugin/skills/*/SKILL.md, hooks/session_start.py. Relates to [opus5-session-start-detection].
+Filed after `575fdd1`
+
+#### Restore docset B's definition of when an editor counts as recorded [docset-b-editor-recorded-definition]
+Docset A defines the test twice — in next.md and plan.md — as: an editor counts as recorded only when the field holds any value other than `not recorded` or an absent field. No docset B doc carries that definition. B's plugin-behaviour.md, next.md and plan.md all say only "editor recorded".
+This matters because B's own setup.md still writes the literal string `not recorded` into the Editor field when the user skips the question. So a B session can read a skipped field as a recorded editor. The effect is a pointer sent to a user who has no way to open it, and no copy of the text in chat either.
+Fix: state the test once in docset B's plugin-behaviour.md, in the working-mode render rule, and let next.md and plan.md point at it. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Decide whether docset B should carry explicit scope clauses, and restore the ones that changed meaning [docset-b-scope-clause-loss]
+Docset A carries 27 explicit `Scope:` clauses — 22 in plugin-behaviour.md, 2 in done.md, 3 in done-plan.md. Docset B carries 2. Each clause states when a rule fires, so dropping one leaves the rule's reach to inference.
+Most of these are probably fine to lose: a rule stated in the doc that governs the step already implies its scope. One is not. Docset A's done.md says the spec-sync gate's plan-close branch applies to "every plan-type /done close (plan, setup, method-doc-only sessions)". Docset B's done.md drops that, so setup sessions and method-doc-only sessions are no longer named as covered by the gate.
+The call to make: is the blanket drop the right register decision, with the done.md one restored as an exception? Or do enough of the 27 carry real reach information to warrant a pass? Found by [docset-b-fidelity-audit]. Relates to [opus5-docset-b-authoring].
+Filed after `575fdd1`
+
+#### Restore the create-the-LOG-directory instruction to docset B's setup scaffold [docset-b-setup-log-dir]
+Docset A's setup.md Step 2 says "LOG/ folder: Create the directory with one file:" and then gives LOG/index.md. Docset B's setup.md drops the folder instruction and jumps straight to the index file.
+The omission looks accidental rather than deliberate, because B kept the equivalent instruction for the FAQ folder — and stated it emphatically, that the directory must exist before the copies or they fail. Writing LOG/index.md will usually create the directory implicitly, so the practical risk is low, but the scaffold list is now missing an item it names everywhere else.
+Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Fix docset B's capture line-format block — it is malformed and asserts a layout the prose never states [docset-b-capture-format-block]
+Docset B's plugin-behaviour.md renders the capture line format as a typed block. Two problems. The credit-and-stamp line is malformed: it reads as a stray angle-bracket construction wrapping the "Captured by you" text. And the block positions the credit and the filing-time commit stamp as a fourth line beneath the rationale, which docset A never says — A describes the credit as an optional prose element in the block, with the stamp as plain prose.
+This is the audit criterion about typed blocks asserting more than the prose did, and it lands on the one block that matters most: this exact shape is what all three hooks parse.
+Fix: repair the malformed line and make the block show only what A states — heading with slug, prose rationale, optional red-flag marker — with the credit and stamp described in prose beneath it. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the two-paste-targets rule to docset B [docset-b-paste-targets-rule]
+Docset A's plugin-behaviour.md ends its verbatim-copy rule with an explicit exception to one-at-a-time: when two genuine paste-target strings belong to the same approval, present both as adjacent fenced blocks in one message and ask for a single approval covering both, rather than splitting them across turns. Docset B's version of the rule stops before that sentence.
+Without it, B falls back to the one-item-per-message default and splits two strings the user needs together — the exact case the exception was written for. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the quote-don't-restate instruction to docset B's spec-sync gate [docset-b-spec-sync-quote-rule]
+Docset A's done.md tells the spec-sync gate to quote plan.md's trigger wording rather than restating it, so the two don't drift. Docset B drops the instruction and restates the trigger in its own words.
+That is the drift the instruction existed to prevent, already happening once. The two statements of the trigger now sit in two docs with nothing tying them together. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the trigger condition on docset B's file-structure heuristic [docset-b-file-structure-trigger]
+Docset A's next-build.md fires the split-by-independent-unit heuristic only when the build creates or grows the project's files and there is a genuine choice about how to split the work across them. Docset B opens the section with unconditional guidance and no trigger.
+This widens the rule's scope: as written, B invites a file-structure recommendation on any build, including ones that touch existing files with no structural choice to make. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore /plan's routing for the two SPEC-change cases it doesn't handle in-session [docset-b-spec-change-routing]
+Docset A's plan.md ground rule on SPEC names three cases: a planning decision changes SPEC, so edit it in that same session; a build discovers it needs a SPEC change, handled in the build per next-build.md; a large SPEC rework, which is its own piece of work naming SPEC.md among its files. Docset B keeps only the first.
+So B states the in-session rule with no statement of where the other two go. A session meeting one of them has no routing to follow. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the approval step to docset B's handmade-work close [docset-b-handmade-close-approval]
+Docset A's done.md handmade-work close says to draft each entry's one-liner and rationale and show them for approval before writing. Docset B's version covers only the granularity decision — one entry or several — and gives no approval instruction in the step.
+The shared LOG-entry section still carries a general approval frame, so this may be judged covered. The reason to restore it anyway is that this close is reached by sessions with no build and no planning behind them, where the shared frame is a further pointer away. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the planning-stage red-flag statement to docset B [docset-b-planning-stage-red-flags]
+Docset A's plugin-behaviour.md states plainly that a security, privacy or breach risk identified during planning — before any code exists — gets a red-flag marker on its work item the same way a build-time risk does. Docset B drops the paragraph.
+B's flag-states section still describes clearing at processing, which implies planning-stage flags exist, but nothing says a pre-code risk is flagged at all. The risk is a session reading the marker as a build-time mechanism and not raising a flag on a design-stage risk. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the no-special-priority line for mid-session captures to docset B [docset-b-midsession-capture-priority]
+Docset A's plugin-behaviour.md Captures section carries the line "Mid-session captures follow the same rules. No special priority." Docset B drops it.
+Small, but it is the only statement that a capture filed mid-build doesn't jump the queue. Without it a session could reasonably place a mid-session capture at the top of Unprocessed on the grounds that it is fresh. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
+
+#### Restore the re-derived-from-LOG mechanism to docset B's [user] marker placement rule [docset-b-user-prereq-derivation]
+Docset A's done-plan.md says a `[user]` item's prerequisite state is re-derived from LOG, the same way the hold-back rule above it re-derives dependency state. Docset B states the condition — prerequisite shipped and verified means place it above the marker — but drops how to determine it.
+The hold-back rule sitting directly above it kept its own wording, so B now has two adjacent rules asking the same question with only one of them saying where the answer comes from. Found by [docset-b-fidelity-audit].
+Filed after `575fdd1`
 
 #### Keep the migration recipe current via a maintenance pass as the method's format evolves [migration-recipe-freshness]
 Captured by you — filed after `f593cd1`. The migration checklist (the recipe for converting an old-format project to the current two-section queue) will drift as the method's queue/doc format keeps changing — a stale recipe is worse than none. So it needs a maintenance pass that keeps it current.

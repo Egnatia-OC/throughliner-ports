@@ -27,6 +27,8 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
 
+The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. There's nothing to set up and nothing to notice: both versions do the same thing, so your project works the same way whichever model you use.
+
 ## How to use it
 
 Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.
@@ -42,7 +44,8 @@ The habit that matters: always /done before /clear, so each session is saved bef
 - Run `/setup` in your project folder to scaffold the method docs
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
-- Claude Opus 4.8, all effort levels tested OK
+- Claude Opus 4.8, all effort levels tested OK — the plugin's fuller instruction set is built and tested against this model
+- The Claude 5 models (Opus 5, Sonnet 5, Fable 5) get the lighter instruction set automatically. It's newer and less exercised than the 4.8 set; if a session goes oddly on a 5-series model, that's worth reporting
 - Auto mode enabled — optional; it spares you approving each step by hand. Turn it off if you'd rather confirm each action.
 - `/clear` after every `/done` (keeps each session's context clean)
 

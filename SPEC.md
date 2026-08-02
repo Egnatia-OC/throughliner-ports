@@ -24,7 +24,7 @@ Three project docs structure each project:
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 Two hooks enforce discipline mechanically, and a third advises:
-- `session_start` — detect project state and load behaviour rules.
+- `session_start` — detect project state, pick the docset that suits the running model, and load that docset's behaviour rules.
 - `pre_tool_use` — enforces the scope-lock (which governs SPEC.md like any other file) and git safety, and asks for your approval before Claude spawns a subagent (a cost guard that asks, never blocks).
 - `post_tool_use` — advisory QUEUE.md structure lint; flags format drift, never blocks.
 
@@ -33,6 +33,8 @@ One behaviour doc steers everything the hooks can't enforce:
 
 One output style sets the communication default at system-prompt priority:
 - A concise output style — shipped in the plugin and applied automatically when SI is enabled. It lifts the plugin's communication structure (lead with the decision, one item at a time, gate detail) to system-prompt priority, the level that holds when lower-priority instructions are skipped. It steers structure and plain English, not terseness — the goal is to not overwhelm the non-coder who reads and approves everything, never to cap length.
+
+**Two docsets, picked automatically by model.** The plugin ships its procedure and behaviour docs twice — a heavier, more prescriptive set and a lighter one — and `session_start` picks between them from the model running the session, with nothing for the user to configure or notice. The lighter set serves the 5-series models, which follow a rule better with less prescription around it; the heavier set serves 4.8, whose reliable rule-following depends on the fuller wording. When the session's model can't be established — the field the hook reads is not guaranteed to be present — the heavier set is used, because it is the known-good one and a wrong guess in that direction costs only verbosity. The two docsets carry the same method: the same skills, the same queue model, the same rules. Only how much is said around each rule differs, so a project's behaviour does not change with the model it is built on.
 
 **Working mode.** The method carries a per-project **working mode** — a `Working mode:` field in CLAUDE.md, set once at /setup — that governs how doc-bound text (an existing queue item, a just-written capture or log entry, a readable edit) is surfaced to the user. In **local** mode, with an editor recorded, that text is surfaced as a one-line pointer or link to where it lives, saving the tokens of re-pasting it; in **remote** mode — the user driving Claude from a phone, where opening an edited file is impractical — the text is pasted inline instead. The field is a persistent default, so there is no per-session ask; the user overrides it for a single session with a word. The render decision keys on doc-residency first: text not yet written (an approval-time draft) is always inline, since there is nothing to point at.
 
