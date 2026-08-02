@@ -94,6 +94,8 @@ render(run):                    # full rule: plugin-behaviour.md, working mode
 
 The pointer is the token-saving path, the inline quote the safe default. These
 items already exist in QUEUE.md, so confirm the link resolves before sending it.
+What counts as a recorded editor is defined once in plugin-behaviour.md's
+working-mode render rule — read it there rather than judging by eye.
 
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
@@ -221,6 +223,22 @@ build item (no tag)  ->  read and follow next-build.md
 Between build items, keep going autonomously — the user confirmed the whole run
 at the Step 1 off-ramp, so there's no per-item re-confirmation. Tick each item in
 _build.md Progress before starting the next.
+
+**Resuming from a mid-run pause**  [PROMPT]. Some work items build in a deliberate
+stop — switch models here, have the user judge this, check that before continuing.
+Coming back from one, ask **the one thing the pause was for**, and nothing else:
+
+```
+the pause's own question   ->  ask it, alone, and wait
+anything else it surfaced  ->  file it, or hold it for the run's close
+```
+
+The pull here is to bundle — the pause surfaced two or three things at once and
+they all feel due now. Resist it. This is a stop the procedure itself created, so
+without a shaped move for coming back the move gets improvised, and improvisation
+bundles: that is exactly how a live run once merged "does this read right?" with
+"should the rest be its own /next?" into one message despite the one-at-a-time
+rule being present and complete. Then carry on with the run as normal.
 
 ### Walk-through branch — the `[user]` items  [SEQUENCE, PROMPT]
 

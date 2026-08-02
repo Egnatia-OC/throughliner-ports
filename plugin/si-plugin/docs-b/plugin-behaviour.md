@@ -31,7 +31,9 @@ Active in every session where the plugin is installed and the project is set up.
 - **One item per message when the user's next action depends on the prior one.**
   State the count upfront, give the first item, stop. No previewing later items —
   a preview is a bundle. Record the full set to the session's working file
-  (_plan.md / _build.md) first, then release one item at a time.
+  (_plan.md / _build.md) first, then release one item at a time. This holds in
+  every multi-part exchange, inside skills and out — ordinary conversation is not
+  an exemption — and there's no exception for items that seem short.
 
   ```
   inversions — deliver together, not one at a time:
@@ -45,7 +47,8 @@ Active in every session where the plugin is installed and the project is set up.
 - **Consolidate the scans at a skill opening into one narration.** When several
   checks fire at once — /plan's read-state, /next's pre-flight, /done's close-out
   — combine what they turn up into one "here's what came up: …", not bullet-by-
-  bullet.
+  bullet. This covers those three skill openings and nothing else, and only when
+  more than one check fires; a single check surfaces as it always did.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
@@ -55,7 +58,9 @@ Active in every session where the plugin is installed and the project is set up.
   copy takes the whole message, so a clean copy affordance needs the string alone
   in its own fence. Scope: genuine paste targets only — paste-ready prompts, and
   commands the user runs in a separate terminal. Commit messages are not paste
-  targets (Claude runs the commit).
+  targets (Claude runs the commit). When two genuine paste targets belong to the
+  same approval, present both as adjacent fences in one message under a single
+  approval — don't split them across turns; the user needs them side by side.
 - **Approval-time outputs render as blockquotes with a bold lead-in** naming the
   content type (**Capture draft:**, **Commit message:**, **Log entry:**). Fenced
   blocks don't wrap in the app, so a long draft runs off-screen and gets approved
@@ -67,6 +72,8 @@ Active in every session where the plugin is installed and the project is set up.
   ("this is getting long", "you're making more mistakes"). Then offer both: to
   continue in a fresh session, and to write a paste-ready handoff prompt carrying
   the state forward. A non-coder won't know either is possible, so name them.
+  This fires wherever the user gives the signal — in plain conversation as much
+  as inside a command, since a session wears thin either way.
 
 ### Working mode and view-in-doc rendering
 
@@ -97,6 +104,13 @@ text already doc-resident                  ->  pointer  IF local AND editor reco
 readable edit's post-write reveal          ->  line-anchored link if it resolves
                                            ->  inline excerpt if it won't
 ```
+
+**"Editor recorded" means the field holds a real editor.** An `Editor:` field
+carrying the literal `not recorded` is NOT a recorded editor, and neither is an
+absent field. /setup writes that exact string when the user skips the question,
+so reading it as a recorded editor sends a pointer to a file the user has no way
+to open — and, because it pointed, pastes nothing in chat. The user gets nothing
+at all. This is the one definition; other docs point here rather than restate it.
 
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
@@ -266,8 +280,10 @@ surfaced. The `#### ` heading is load-bearing, not cosmetic.
 #### <one-line description> [slug]
 <prose rationale — the reasoning, in plain short sentences>
 Red flag · State: <cleared | uncleared>        # only if it carries one
-<"Captured by you — " >filed after `<hash>`    # hash = last commit at filing time
 ```
+
+The user-credit and the filing-time commit stamp are prose conventions written
+into the rationale, not fixed lines of this block — see the two bullets below.
 
 - The description **is** the heading text; the `[slug]` sits at the **end** of
   that same line. Slugs are for LOG traceability, nothing more.
@@ -322,7 +338,9 @@ matters more than compression here.
 
 **Placement.** Place by judgment where a relationship applies (new work revises
 or builds on existing work); oldest-first as the fallback. Narrate the placement
-in one line when judgment is exercised.
+in one line when judgment is exercised. **Mid-session captures follow the same
+rules and get no special priority** — being noticed during a build doesn't put an
+item at the top of Unprocessed.
 
 **Don't process work outside /plan.** Filing is open to every session; moving an
 item into Processed or deleting it is /plan's, because that decision is the
@@ -431,6 +449,10 @@ provide risk-*addressing* without promising risk *management*.
 **Never silently fix a security concern and ship past it**, and never build past
 one without surfacing it. Surfacing costs one sentence; silence costs a breach
 the user can't defend because they were never told.
+
+**A risk spotted during planning is flagged the same way**, before any code
+exists. The marker goes on its work item exactly as a build-time risk's would;
+clearing it is part of processing the item. Nothing here is build-only.
 
 Scope: security, privacy and breach risk — data exposure, unauthorized access,
 credential handling, injection vectors, information leakage, unprotected storage.

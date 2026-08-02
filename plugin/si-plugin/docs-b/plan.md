@@ -27,12 +27,15 @@ gets built first — through discussion, not silently.
 - **A recommendation is not a decision. A draft is not a written line.** Both need
   the user's call.
 - **SPEC is a normal doc.** When a planning decision changes what SPEC says — a
-  new capability, a scope change, a reworded rule (the test: does any SPEC
-  sentence go wrong?) — edit SPEC in that same /plan session, with the user
-  present and approving. Don't defer it. Spec-driven development's contract is
-  that a change altering behaviour updates the spec in the same commit; the
-  /plan-close spec-sync gate enforces that atomicity. When a change touches no
-  SPEC sentence, none of this applies.
+  new capability, a scope change, a reworded rule (**the test: does any SPEC
+  sentence go wrong or incomplete?**) — edit SPEC in that same /plan session, with
+  the user present and approving. Don't defer it. Spec-driven development's
+  contract is that a change altering behaviour updates the spec in the same
+  commit; the /plan-close spec-sync gate enforces that atomicity. When a change
+  touches no SPEC sentence, none of this applies. Two other routes exist: a build
+  that discovers it needs a SPEC change asks, adds SPEC.md to its Files, and edits
+  it inline (next-build.md); and a large SPEC rework is its own piece of work,
+  naming SPEC.md among its files like any other build.
 - **/plan resolves what it can in-session; capture is only for what it can't.**
 
 ```
@@ -253,7 +256,9 @@ when mode is `local` AND an editor is recorded, lead with a one-line pointer
 instead of the pasted quote — `First item — **[work-slug]** — is in
 [QUEUE.md](QUEUE.md) under Unprocessed.` — then the analysis in that same message.
 The confirm re-read still runs in its pointer form (a resolves-check, not a
-text-match). Remote or no editor → keep the inline quote.
+text-match). Remote or no editor → keep the inline quote. What counts as a
+recorded editor is defined once in plugin-behaviour.md's working-mode render
+rule — read it there rather than judging by eye.
 
 **2. Recommend**  [PROMPT]
 

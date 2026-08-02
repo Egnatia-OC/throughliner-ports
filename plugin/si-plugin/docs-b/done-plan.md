@@ -9,6 +9,10 @@ note: >
 
 # Plan close-out
 
+Every step below runs at every plan-type /done close — a /plan session, a /setup
+session, and a session that changed only the method docs. The reorder, the marker
+placement and the `[user]`-placement step each reach all three; none is /plan-only.
+
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
 
 Run done.md's **Spec-sync gate** and apply its **Plan close** delta: no scope-lock
@@ -125,6 +129,11 @@ The why is autonomy: a cleared item can be built unattended with no user in the
 loop, so clearing one that rests on built-but-unverified work would let the run
 stack committed work on a foundation that might later fail its check. Narrate it
 when it holds an item back — one line naming which item waits on which.
+
+**Re-derive prerequisite state from LOG, not from memory.** Whether a dependency
+was built, and whether it was verified, is read off its LOG entry — this rule and
+the `[user]`-placement rule below both depend on that answer, and a fresh short
+session has no memory to fall back on.
 
 **Record the lift-condition when placing any item below the marker** — the
 specific event that would lift it: "cleared once [slug] is built and verified",

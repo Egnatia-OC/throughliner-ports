@@ -209,7 +209,7 @@ up in an editor's outline.
 [filled by Q4]
 ````
 
-**LOG/index.md:**
+**LOG/ folder** — create the directory with one file in it, `LOG/index.md`:
 
 ````markdown
 # LOG Index

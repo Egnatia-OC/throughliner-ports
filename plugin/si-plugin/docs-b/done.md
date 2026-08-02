@@ -101,6 +101,11 @@ several distinct        ->  a separate entry per logical change
 logical changes             # better recall than one lumped entry
 ```
 
+Draft each entry's one-liner and its rationale and **show them for approval before
+writing** — this close is reached by sessions with no build and no planning behind
+them, so the shared LOG-entry approval frame is a doc away. Step 3's "the commit
+message is the approved entry" refers to this approval.
+
 **3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
 files explicitly. The commit message is the approved entry; for several entries,
 the title names the handmade-work close and the body carries each entry's summary.
@@ -135,8 +140,8 @@ The build and plan close-outs point here. (Audits land no product changes, so an
 audit close has no spec-sync gate.)
 
 **Did this session's work change what SPEC says?** Apply the spec-entry trigger
-test: does any SPEC sentence go wrong or incomplete given what this session
-landed?
+test **in plan.md's own wording** — quote it from there rather than keeping a copy
+here, so the two can't drift apart. Read against what this session landed.
 
 If it fires, **stop the close — don't commit yet.** Surface the drift in plain
 words, naming which SPEC sentence the session made wrong, get approval to fix it,
@@ -155,6 +160,10 @@ plan close   ->  no scope-lock active: edit SPEC.md directly in-session.
                  Editing SPEC to match a decision the user already made this
                  session is RECORDING, not re-planning.
 ```
+
+The plan branch covers every plan-type close — a /plan session, a setup session,
+and a method-doc-only session alike. None of the three runs a scope-lock, so all
+three edit SPEC directly.
 
 A session that changed only queue ordering or captures touched no SPEC sentence
 and passes silently.
