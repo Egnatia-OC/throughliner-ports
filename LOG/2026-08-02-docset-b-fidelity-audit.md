@@ -1,4 +1,4 @@
-# [HASH] — Audited docset B against docset A and filed twelve fidelity findings
+# b931278 — Audited docset B against docset A and filed twelve fidelity findings
 
 Docset B was authored in a single run by subtraction from docset A, and only one of its eleven docs — next.md's pre-flight — was ever independently judged. The author and the judge were the same session, which is exactly the weak spot the authoring checkpoint flagged at the time. This audit was queued to close that gap while docset B is still inert, before phase 3's rezip makes it govern live sessions, because fixing a file no session loads is cheap and fixing one that steers real sessions is not.
 

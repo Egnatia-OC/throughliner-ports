@@ -1,4 +1,4 @@
-# [HASH] — session_start now picks the docset from the running model, falling back to the frozen docset A
+# b931278 — session_start now picks the docset from the running model, falling back to the frozen docset A
 
 This is phase 3 of the two-docset decision: phase 1 recorded the split and froze docset A, phase 2 authored docset B by subtraction, and this wires the automatic selection that makes B reachable at all. Until now B was inert — eleven files no session loaded.
 
