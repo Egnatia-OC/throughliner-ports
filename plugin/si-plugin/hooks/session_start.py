@@ -464,7 +464,10 @@ def main() -> int:
             msg += "\n\n" + docset_directive
 
         output = {
-            "additionalContext": msg,
+            "hookSpecificOutput": {
+                "hookEventName": "SessionStart",
+                "additionalContext": msg,
+            }
         }
         json.dump(output, sys.stdout)
         return 0
@@ -677,7 +680,10 @@ def main() -> int:
         context_parts.append(faq_index_content)
 
     output = {
-        "additionalContext": "\n".join(context_parts),
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": "\n".join(context_parts),
+        }
     }
     json.dump(output, sys.stdout)
     return 0
