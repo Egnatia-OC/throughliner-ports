@@ -1,4 +1,4 @@
-# [HASH] — Fixed session_start's output schema, which had been silently discarding every payload, and found the docset directive and the payload size both failing behind it
+# ea50872 — Fixed session_start's output schema, which had been silently discarding every payload, and found the docset directive and the payload size both failing behind it
 
 The `[user]` diagnostic [session-start-output-not-reaching-sessions] was walked through as written: full restart, fresh session, ask neutrally what orientation text arrived. Nothing arrived, on two consecutive sessions. The item's fallback branch then called for a CLI check with `--include-hook-events`, which showed the hook's full 92,000-character output in the event stream.
 

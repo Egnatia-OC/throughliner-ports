@@ -2,7 +2,7 @@
 
 Built in a six-batch goal session (plugin off).
 
-An audit's findings are supposed to route to Captures only, so /plan and the user can vet them before anything durable is written — next-audit.md states this as the audit's defining contract. But a consumer audit batch (whatsapp-audit-4, in an E2E project, 2026-06-22) was authored as an Audit while naming a findings doc in its Files and setting an Output of "append candidates to" that doc. When /next ran it, the session followed the batch's Output and prepared to write straight into the durable doc, silently overriding the route-to-Captures contract — no capture appeared until the user asked for one. Her actual intent was a vetted, lawyer-facing doc eventually, not a write at the audit stage, so the doc-write was a misread of her need.
+An audit's findings are supposed to route to Captures only, so /plan and the user can vet them before anything durable is written — next-audit.md states this as the audit's defining contract. But a consumer audit batch (message-audit-4, in an E2E project, 2026-06-22) was authored as an Audit while naming a findings doc in its Files and setting an Output of "append candidates to" that doc. When /next ran it, the session followed the batch's Output and prepared to write straight into the durable doc, silently overriding the route-to-Captures contract — no capture appeared until the user asked for one. Her actual intent was a vetted, lawyer-facing doc eventually, not a write at the audit stage, so the doc-write was a misread of her need.
 
 Two guards installed so the misread can't recur:
 
