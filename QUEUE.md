@@ -156,6 +156,14 @@ By Claude. This is the post-merge dogfooding check — it replaces the fork's ~9
 
 ## Unprocessed
 
+#### Last session advises processing the six new session_start captures before the release [advisory-session-start-findings-before-release]
+The session_start hook was found to be discarding its entire payload, was fixed, and the fix was confirmed live. Two further defects surfaced immediately behind it, and neither is settled: no docset directive reaches a session, so docset B is inert here; and the payload is too large to inject, so roughly 2KB of 92KB arrives and the red-flag surfacing falls in the discarded remainder.
+[release-docset-b-work] was waiting on the diagnostic. The diagnostic has run, but it did not clear the release — it showed the release's headline feature not working in this environment. Weigh that before shipping.
+Six captures were filed this session: [hook-liveness-and-schema-testing], [harness-misbehaviour-diagnosis-order], [session-start-payload-oversized-and-misordered], [user-lines-walk-through-only-no-asks], [docset-b-inert-on-desktop-app], [rezip-cli-version-divergence]. The cheapest first move is the payload reordering — putting the short state lines ahead of the bulk restores the red-flag surfacing on its own, whatever is decided about size.
+[user-lines-walk-through-only-no-asks] is the user's own feedback about something that upsets them each time it happens, and is worth weighing early on those grounds rather than by size.
+The cleared region is empty, so /next has nothing to run — /plan is the next step.
+Clear this advisory once it has oriented a session.
+
 #### Last session advises running the `[user]` diagnostic first, then the release [advisory-run-diagnostic-then-release]
 The cleared region holds one item, [session-start-output-not-reaching-sessions]. It has to run from a *fresh* session, because the thing being tested is what arrives at session start — so it can't be done from the session that filed it.
 Its outcome decides the next two moves. If the orientation text appears, it also answers [opus5-docset-switch-live-verification] in the same breath, and [release-docset-b-work] clears immediately — eighteen commits are waiting on it. If nothing appears, the failure is systemic, the release should be held because its headline feature lives in that hook, and the CLI hook-event check recorded in the item is the next step.
