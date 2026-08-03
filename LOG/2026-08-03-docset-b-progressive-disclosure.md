@@ -1,4 +1,4 @@
-# [HASH] — Recorded in CLAUDE.md that docset B's monolithic plugin-behaviour.md is deliberate, so the split question stops recurring
+# f37e332 — Recorded in CLAUDE.md that docset B's monolithic plugin-behaviour.md is deliberate, so the split question stops recurring
 
 Anthropic's skill conventions name progressive disclosure among the constraints the docset-B authoring item listed, and B kept docset A's monolithic shape anyway. Decided at /plan on 2026-08-02: don't split it.
 

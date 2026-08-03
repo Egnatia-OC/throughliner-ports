@@ -1,4 +1,4 @@
-# [HASH] — Restored six of docset B's seven reach-carrying scope clauses as inline prose, found the seventh already present, and recorded the other twenty-clause drop as settled
+# f37e332 — Restored six of docset B's seven reach-carrying scope clauses as inline prose, found the seventh already present, and recorded the other twenty-clause drop as settled
 
 Docset A carries 27 explicit `Scope:` clauses; docset B carries 2. About twenty of A's are redundant with residence — "Scope: every skill" on a rule that lives in plugin-behaviour.md, the cross-skill doc, where position already says it. Shedding those was a sound register decision, and this entry records it as deliberate so a later fidelity pass reads it as settled rather than re-raising it.
 

@@ -209,9 +209,19 @@ The why, weighed against the alternatives: reading the raw file in chunks does N
 
 Alex is a non-coder using the Claude Code desktop app. Explain things in plain English. The desktop app doesn't support `--plugin-dir` or `/plugin` CLI commands.
 
+## Editor
+
 Editor: Zettel — the `.md` editor Alex works in. This is the editor field the view-in-doc treatment reads (plan.md's capture quotes, next.md's top-batch quote): because it's recorded, those quotes render as a pointer + link to the doc rather than a re-pasted block. A project with no editor recorded degrades to the inline quote.
 
 Working mode: local — governs how doc-bound text is surfaced (plugin-behaviour.md Working mode and view-in-doc rendering). `local` = Alex is at the desktop, so doc-resident text renders as a pointer/link where an editor is recorded; `remote` = she's driving from her phone, so it's pasted inline. Persistent default set here, not asked each session; flip it for one session with a word. This field replaces the temporary "ask remote or local every session" section that used to sit near the top of this file.
+
+## External communication
+
+Announcements about the method go to the project's Discord server — https://discord.gg/Z7ftKnSjR — currently five people, one of whom is a programmer. Write for that reader: plain English, but no pandering to novices.
+
+Announcement text is recorded **in full** in the session's LOG entry. There is no pointer to link to, because Discord posts aren't addressable from here, and the full text is what lets a later session draw on them — release notes in particular. They are not duplicated as repo docs or a changelog; the LOG is the single home for them, and the LOG already serves as this project's decision record.
+
+The invite link above is deliberately public. Alex was told plainly that committing a working invite to a repo that may be public lets any reader join, and chose to proceed on the grounds that anyone who finds this repo is welcome by that fact alone.
 
 ## Current state
 

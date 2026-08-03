@@ -1,4 +1,4 @@
-# [HASH] — Defined "editor recorded" once in docset B's working-mode render rule and pointed next.md and plan.md at it, fixing a live bug where setup.md's literal `not recorded` string read as a recorded editor
+# f37e332 — Defined "editor recorded" once in docset B's working-mode render rule and pointed next.md and plan.md at it, fixing a live bug where setup.md's literal `not recorded` string read as a recorded editor
 
 Docset A stated the test twice — in next.md and plan.md — and the subtraction dropped both, leaving docset B saying only "editor recorded" with nothing defining it. That is not lost wording, it is a live bug: docset B's own setup.md writes the literal string `not recorded` into the Editor field when the user skips the question, so a B session reads that string as a recorded editor, sends a pointer to a file the user has no way to open, and — because it pointed — pastes nothing in chat. The user gets nothing at all.
 

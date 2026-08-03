@@ -1,4 +1,4 @@
-# [HASH] — Restored ten rules docset B's subtraction dropped — mostly the carve-outs and bounds on the communication rules — across six docs
+# f37e332 — Restored ten rules docset B's subtraction dropped — mostly the carve-outs and bounds on the communication rules — across six docs
 
 Ten of the twelve fidelity-audit findings, agreed individually at /plan on 2026-08-02 and built as one set because they are unambiguous repairs landing in the same files. The two findings that carried design calls stayed separate: [docset-b-editor-recorded-definition] and [docset-b-scope-clause-loss].
 

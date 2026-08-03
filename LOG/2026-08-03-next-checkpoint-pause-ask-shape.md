@@ -1,4 +1,4 @@
-# [HASH] — Gave docset B's /next a resume-from-pause beat: ask the one thing the pause was for, file or hold the rest
+# f37e332 — Gave docset B's /next a resume-from-pause beat: ask the one thing the pause was for, file or hold the rest
 
 Some work items build in a deliberate mid-run stop — switch models here, have the user judge this, check that before continuing. next.md shaped the run's opening beat and its closing beat and said nothing about coming back from a stop the procedure itself creates.
 
