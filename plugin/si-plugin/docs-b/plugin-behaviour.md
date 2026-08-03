@@ -28,6 +28,13 @@ Active in every session where the plugin is installed and the project is set up.
   offered on request, not front-loaded.
 - **Render the single user-facing ask in bold, phrased as a question.** A message
   can't always be short; bolding the ask always can, so the reader can find it.
+- **When the ask is "keep going or stop", word it as an explicit two-sided
+  either/or.** Both options named, equal weight, in the question itself:
+  **"Carry on, or stop here?"** A statement followed by a trailing "…close out
+  here?" reads as a *recommendation* to stop, however neutrally it's meant — a
+  first-time user took it that way repeatedly and thought the session had ended.
+  The rule bites hardest where there's nothing left to name: continuing must
+  still be given a concrete face rather than left as the unstated alternative.
 - **One item per message when the user's next action depends on the prior one.**
   State the count upfront, give the first item, stop. No previewing later items —
   a preview is a bundle. Record the full set to the session's working file
@@ -49,6 +56,15 @@ Active in every session where the plugin is installed and the project is set up.
   — combine what they turn up into one "here's what came up: …", not bullet-by-
   bullet. This covers those three skill openings and nothing else, and only when
   more than one check fires; a single check surfaces as it always did.
+
+  **A suppressed or `[SILENT]` check contributes nothing to that narration —
+  including no mention that it was suppressed.** The second half is the
+  load-bearing one. "I'm not doing X, because Y" is exactly the shape this has
+  failed as: a silent check got swept into the opening roundup, naming both the
+  check and the background setting that suppressed it. A carve-out reading only
+  "don't report its findings" would have permitted that. A step told to stay
+  silent produces no words at all — the roundup summarises what the *speaking*
+  checks turned up, and a silent one simply isn't in it.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
@@ -119,20 +135,14 @@ that misreports a write is worse than pasting: the user opens the doc, finds
 nothing, and has no copy in chat either. (Pointing at text that already existed
 carries no write to confirm — there the re-read is just a resolves-check.)
 
-### Completion mode — the `[user]`-item async check
+### A stale `Completion mode:` line is ignored, never an error
 
-A second stored setting (`Completion mode:` in the project's CLAUDE.md). It
-governs one thing: whether /plan sweeps Processed for already-done `[user]` items.
-
-```
-in-/next (default)  ->  /plan Step 1 sweep SUPPRESSED
-                        # asking every session reads as "why haven't you done
-                        # these?"; detection falls to /next's trailing note
-async               ->  /plan Step 1 sweep FIRES
-                        # user often completes [user] items between sessions
-```
-
-Unset (a project predating the field) → treat as `in-/next`.
+Projects set up before 2026-08 carry a `Completion mode:` field in their
+CLAUDE.md. The setting it controlled no longer exists — `[user]` items are never
+asked about, in any session — so the line governs nothing. **Ignore it silently.**
+Don't act on it, don't flag it, don't ask the user to remove it, and never treat
+it as a broken project. No migration reaches every project, so this line will
+keep turning up for a long time.
 
 ### Vocabulary — background-only terms
 
@@ -228,6 +238,45 @@ CLI tools exist, so can't know to ask.
 Guards: name the candidate tool and what it does before using it (don't install
 blind); downloads, commands and device access stay under their existing
 confirm-first rules; don't presume the user has a terminal.
+
+### When a tool misbehaves, check yourself first
+
+Sometimes something in the tooling appears broken — a step that should run
+doesn't, a setting looks ignored, output that should appear is missing. The
+temptation is to explain it with a theory about the tool being at fault. Work in
+this order instead:
+
+```
+1. check what the tool SAYS it does   ->  read its own documentation and compare
+                                          it against what we're actually doing
+2. check whether it's a known problem ->  look for other people reporting the
+                                          same thing; offer a search
+3. only then, consider a fault in the tool itself
+```
+
+The default assumption is that **we** are wrong. Our own setup is unverified;
+the tool is used by very many people. This order isn't caution for its own sake —
+one instance of getting it backwards spent most of a session building two
+detailed theories about the tool misbehaving, when the real cause was our own
+code not matching the documented contract, and a single check would have found it
+in about a minute.
+
+**The same order applies before *depending* on a behaviour, not just before
+blaming one.** Building on what a tool seems to do, without checking what it
+actually promises, produces a feature that quietly does nothing. That has now
+happened too: a whole capability was built on an input the documentation
+explicitly declines to guarantee.
+
+**"It ran" and "it worked" are different claims — never accept one as evidence
+of the other.** Seeing a step execute, or seeing its output in a log, says only
+that it executed. Whether anything downstream *received* that output is a
+separate question needing separate evidence. When checking, ask **what actually
+arrived**, never whether the result "looks right" — the second question invites
+a plausible reconstruction that is indistinguishable from success.
+
+**Report outward only after ruling out our own code.** If it does turn out to be
+the tool, that's the consumer feedback channel's territory (below) or, for
+Claude Code itself, the user's own report to its makers.
 
 ### Where findings and records land — a three-way triage
 
@@ -413,10 +462,23 @@ pull, recommend skip-to-defer instead.
 
 **Anti-invention guardrail.** Do not derive a fifth state, a new tag, or a new
 shelving category, however reasonable the felt need. Any pull to "shelve this
-differently" resolves one of two ways: keep it in Unprocessed, or give it a
-proper home outside the queue. This failure recurs — an invented "external-waits
-only" category, a red-flagged item parked below the line, below-the-line treated
-as home for a standing note. The user caught each one.
+differently" resolves one of two ways: **keep it in Unprocessed — its bottom is
+the one legitimate postpone — or give it a proper home outside the queue.** Name
+that positive move whenever the pull appears; a prohibition on its own is what
+produces the invention. This failure recurs — an invented "external-waits only"
+category, a red-flagged item parked below the line, below-the-line treated as
+home for a standing note, a lift-condition rewritten to "until you raise it". The
+user caught each one.
+
+**The general form, because this pattern is now well-evidenced: wherever the
+method forbids something at a moment that creates real pressure, it names the
+legitimate alternative in the same breath.** A prohibition with no stated escape
+route reliably produces an invented one, and an invented move is worse than the
+thing prohibited, because nothing recognises or records it. Three separate rules
+have been walked into for exactly this reason — each was clearly stated, and each
+left the pressure with nowhere sanctioned to go. Where the pressure is built into
+a procedure rather than incidental, the positive move belongs beside the
+prohibition, not in some other document.
 
 **Proper homes for queue-shaped things that aren't work:**
 
@@ -426,9 +488,38 @@ a durable finding                                     ->  resources/research, or
 a forward recommendation                              ->  the advisory (transient)
 ```
 
-Two things folded in, not kept as separate machinery: the cleared-to-run line
-**replaces** parking, and order within a section **replaces** dependencies. No
-`Depends on:` headers.
+The cleared-to-run line **replaces** parking — that stays folded in, not separate
+machinery.
+
+### Saying that one item waits on another — three routes, one choice
+
+Order alone does **not** express dependency. Position says *what comes next*; it
+has no memory of *why*, so a dependency held only by position is silently undone
+by the next reorder. Say it explicitly instead. There are exactly three routes,
+and this is the whole set:
+
+```
+waiting on other queued work      ->  Blocked by: [slug]
+    # one line under the item's description. The named item must exist in the
+    # queue and must sit ABOVE this one. Nothing else — no parking, no flavors.
+
+waiting on work being SHIPPED     ->  the push marker between items
+    # built, but it has to be released and running before the next item can
+    # proceed. A build session can't ship mid-run, so this is its own thing.
+
+waiting on something OUTSIDE      ->  a lift-condition in the item's prose
+the queue entirely                    # a restart, a decision only the user can
+                                      # make, an external event
+```
+
+**A lift-condition that names another queue item's slug is the signature of a
+misrouted dependency** — it belongs in `Blocked by:`. That's the specific mistake
+this exists to stop: dependencies kept getting written as prose conditions that
+nothing can check, and items sat below the readiness line waiting for a planning
+session that had nothing to add.
+
+`Blocked by:` is checked by the queue lint, which flags a slug that resolves to
+nothing or sits in the wrong place. Advisory, like the rest of the lint.
 
 ## Red flags
 
@@ -492,11 +583,60 @@ The decision moment is **processing**, not ship. At ship the flag is already
 cleared, so the close doesn't re-decide it: it carries the cleared flag into the
 LOG entry, and stops if it ever meets one still reading uncleared.
 
+## Other people's private information — don't write it down
+
+Project docs get committed, and a commit is forever even if the text is later
+deleted. So the protection that actually works is **not writing it in the first
+place**, not removing it afterwards.
+
+**The rule.** When recording something in SPEC, QUEUE or a LOG entry, don't name
+third parties or their private circumstances. A person's name, the details of
+someone's case or dispute, the nature of a private matter that isn't the user's
+own — none of it is ever needed for the point being recorded. "A consumer
+project", "a third party", "an external user" carries the same lesson with none
+of the exposure. This removes the judgment call rather than adding one, which is
+why it's the primary defence.
+
+**Repo visibility makes this urgent rather than theoretical, and it is recorded
+at /setup.** Read the recorded visibility and let it set the stakes:
+
+```
+public repo   ->  anything written is readable by anyone, immediately and
+                  permanently. Treat every doc as published.
+private repo  ->  still write to the same standard. A private repo can be
+                  shared or made public later, and nothing re-checks the
+                  history when it is.
+```
+
+The reason this is stated so plainly: a real instance ran for six weeks. A third
+party was named in committed log entries in a public repo, and nobody knew the
+repo was public until it was checked. Nothing about that text looked wrong when
+it was written — both parties read it as unremarkable, because neither was
+thinking about the third party at all. **The failure was upstream of any review**,
+which is exactly why a review gate isn't the answer and this write-time rule is.
+
+**The sweep, for what's already written.** A rule only protects what comes after
+it. To find what's already there, run the scrub sweep script — it greps every
+tracked file for known names and surfaces unexplained proper nouns for a human to
+look at. Offer it when third-party exposure comes up, and before making a repo
+public. Mechanical search is genuinely better than a judgment pass here: once a
+name is known, a grep finds every instance instantly and completely.
+
+**Deleting the text doesn't remove it from history.** If something has already
+been committed, say so plainly and let the user decide between rewriting history,
+scrubbing forward only, or making the repo private. Never imply that an edit
+undoes the exposure.
+
 ## `[user]` walk-through lifecycle
 
 Without the back half, a finished `[user]` item strands in Processed and the next
 /next presents it again as if unbuilt.
 
+- **A `[user]` line is walked through, and that is all.** There is **no completion
+  ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
+  leading, not trailing, not as a light aside. Never ask whether one is already
+  done. This is a standing rule with no exceptions and no mode that turns it back
+  on; the setting that used to is retired.
 - **/next leads with the walk-through and drives it live.** Name what's theirs to
   do, run whatever parts you can, give the **first** concrete step, and **wait**.
   One step at a time. This is a live drive, not an offer — you walk *beside* the
@@ -510,12 +650,14 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
   drive to a mere offer.
 - **One `[user]` item at a time — never bundled.** Each in its own message, led by
   its own live walk-through. Not a bulk-approval result set.
-- **The already-done check is a trailing note, not the opener** — "…or tell me if
-  you've already done this and I'll just record it" — and only on an item that
-  could plausibly have been completed before. A freshly-cleared item carries no
-  such note.
-- **Detection is by asking, not scanning.** A `[user]` step can be a device check
-  or a decision, with no artifact to find.
+- **Completion is inferred, never asked.** An item walked to its end this session
+  is done; an item whose lift-condition visibly hasn't cleared isn't; and the user
+  saying they did one is the third way it can be known. Nothing else counts.
+- **The gap this leaves is deliberate: leave the item in place.** An item the user
+  completed on their own, with nothing observable to show for it, will sit in
+  Processed until they mention it — and mentioning it is already a supported path.
+  This is written down precisely so nobody later notices the hole and proposes an
+  ask to fill it. Don't.
 - **A completed `[user]` item has a defined close:** log it under its slug and
   remove it from Processed. Lives in **both** /done (the user runs /done right
   after finishing) and /plan (they completed it async and mention it).
@@ -528,8 +670,11 @@ never revisited — so a correctly-shelved item depends on the user remembering 
 the exact thing the queue exists to prevent.
 
 - **Every below-line item records its lift-condition in prose** — the specific
-  event that must clear ("cleared once [slug] is built and verified", "after a
-  full computer restart"). An item that can't state one belongs in Unprocessed.
+  **external** event that must clear ("after a full computer restart", "once the
+  user has published the page"). A dependency on other queued work is *not* a
+  lift-condition: it's a `Blocked by:` line (see the three routes above). This is
+  what keeps the revisit's input small.
+- **An item that can't state a lift-condition belongs in Unprocessed.**
 - **/plan revisits them each session:**
 
 ```
@@ -542,6 +687,14 @@ provably still-waiting   ->  skip silently
 
 The batching is what keeps the revisit from nagging. Lifting is narrated, not
 asked.
+
+- **An item that keeps coming back and keeps not moving gets a way out.** After
+  the same user-only condition has been asked about across several sessions with
+  no change, stop asking and **propose returning it to the bottom of Unprocessed**
+  instead — one line, the user's call, declining is fine. Without a sanctioned way
+  to stop, the question repeats forever on work the user has plainly deprioritised,
+  and the pressure produces an invented shelf. The bottom of Unprocessed is the
+  only postpone there is.
 
 ## Why-pipeline
 

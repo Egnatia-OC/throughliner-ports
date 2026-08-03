@@ -194,7 +194,13 @@ def content_stamp(root):
 # and "claude-haiku-4-5-20251001" -> ("haiku", 4). Anchoring on the FIRST number
 # after the family name is what keeps Haiku 4.5 out of the 5-series bucket: its
 # major version is 4, and the trailing "-5" is a minor.
-_MODEL_FAMILY = re.compile(r"(opus|sonnet|haiku|fable)-(\d+)", re.IGNORECASE)
+#
+# The separator is loose (hyphen, space, underscore, dot, or nothing) because
+# this regex now reads TWO kinds of input: a model id from the payload
+# ("claude-opus-5") and a human answer recorded at /setup ("Opus 5", "Claude
+# Sonnet 5"). A hyphen-only pattern silently failed to parse every recorded
+# answer and fell back to docset A, which is precisely the inert-selector bug.
+_MODEL_FAMILY = re.compile(r"(opus|sonnet|haiku|fable)[\s\-_.]*(\d+)", re.IGNORECASE)
 
 # The two docsets, by directory name under the plugin root.
 _DOCSET_A = "docs"
@@ -219,6 +225,55 @@ def _model_id(data):
             if isinstance(value, str) and value.strip():
                 return value.strip()
     return ""
+
+
+_RECORDED_MODEL = re.compile(r"^Model:\s*(.+?)\s*$", re.MULTILINE)
+
+
+def _recorded_model(cwd):
+    """The model recorded in the project's CLAUDE.md `Model:` field, or "".
+
+    The payload's `model` field is documented as not guaranteed, and in the
+    desktop app it does not arrive at all — so a docset chosen from it alone
+    was inert everywhere it mattered. This is the fallback source: an explicit
+    project setting the user answered at /setup. `not recorded` (what /setup
+    writes when the question is skipped) is treated as absent.
+    """
+    path = os.path.join(cwd, "CLAUDE.md")
+    if not os.path.isfile(path):
+        return ""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except (OSError, UnicodeDecodeError):
+        return ""
+    match = _RECORDED_MODEL.search(content)
+    if not match:
+        return ""
+    value = match.group(1).strip()
+    if value.lower() in ("not recorded", "none", "unknown", ""):
+        return ""
+    return value
+
+
+def _record_payload_once(cwd, data):
+    """Write the received SessionStart payload to a research file, once.
+
+    Distinguishes an ABSENT field from a malformed one — the question that
+    turned a bug hunt into a design decision, and one nothing else can answer
+    after the fact. Written only if the file doesn't already exist, so it
+    records a real payload without growing each session. Silent on any error:
+    a recording step must never be able to break the hook it observes.
+    """
+    try:
+        target_dir = os.path.join(cwd, "resources", "research")
+        target = os.path.join(target_dir, "session-start-payload-sample.json")
+        if os.path.exists(target) or not os.path.isdir(target_dir):
+            return
+        with open(target, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, sort_keys=True, default=str)
+    except (OSError, TypeError, ValueError):
+        pass
 
 
 def _docset_for_model(model_id):
@@ -261,7 +316,7 @@ def _docset_directive(docset):
         "next-audit.md, done.md, done-build.md, done-audit.md, done-plan.md, "
         "setup.md, migrate-checklist.md — read "
         "${CLAUDE_PLUGIN_ROOT}/docs-b/<name>.md instead. The behaviour rules "
-        "above are already docset B's. Both docsets carry the same method; docset "
+        "included in this context are already docset B's. Both docsets carry the same method; docset "
         "B states it more compactly. Don't mix them: read one doc from each "
         "procedure family, from docs-b only. This is internal routing — never "
         "narrate it to the user."
@@ -353,12 +408,18 @@ def main() -> int:
 
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
 
-    # Which docset serves this session, decided from the running model. Falls
-    # back to docset A whenever the model can't be established — see
-    # _docset_for_model. If the chosen docset isn't present in this install
-    # (an older package that shipped only docs/), fall back to A rather than
-    # pointing skills at a directory that doesn't exist.
-    docset = _docset_for_model(_model_id(data))
+    # Which docset serves this session. THREE SOURCES, LAYERED — deliberately
+    # not one replacing another:
+    #   1. the payload's `model` field, when present. Ground truth about the
+    #      session actually running, so it wins wherever the harness supplies
+    #      it. Documented as not guaranteed, and absent in the desktop app.
+    #   2. the project's recorded `Model:` setting, answered once at /setup.
+    #      This is what makes the choice work at all where (1) never arrives.
+    #   3. docset A, the known-good fallback, when neither is available.
+    # Layering costs nothing, keeps working automatically wherever the field
+    # does appear, and never weakens the no-strand guarantee.
+    _record_payload_once(cwd, data)
+    docset = _docset_for_model(_model_id(data) or _recorded_model(cwd))
     if docset != _DOCSET_A and plugin_root and not os.path.isdir(
         os.path.join(plugin_root, docset)
     ):
@@ -473,21 +534,21 @@ def main() -> int:
         return 0
 
     # State 2 or 3: Adopted
+    # Order matters, and it is not cosmetic. The injected context can be
+    # truncated, and only what survives reaches the session — so everything
+    # SHORT and load-bearing goes first (uncleared red flags, project state,
+    # host version and build stamp, the docset directive) and the behaviour-
+    # rules bulk is appended LAST, at the bottom of this function. With the
+    # rules first, they consumed the whole surviving payload and every state
+    # line — including the red-flag surfacing, which is the one thing that must
+    # never be missed — fell in the discarded remainder.
     context_parts = []
-
-    if behaviour_rules:
-        context_parts.append(
-            "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===\n"
-            + behaviour_rules
-            + "\n=== END BEHAVIOUR RULES ==="
-        )
-
-    if docset_directive:
-        context_parts.append(docset_directive)
 
     # Uncleared red flags first-thing: the two-section model has no pinned Red
     # flags section, so this scan is what keeps an unaddressed data-exposure risk
-    # unmissable at session start. Surfaced ahead of ordinary project state.
+    # unmissable at session start. It is the very first thing appended, ahead of
+    # everything else including the docset directive — it is the line that can
+    # least afford to be cut.
     uncleared_flags = _uncleared_red_flags(queue_path)
     if uncleared_flags:
         context_parts.append(
@@ -496,6 +557,9 @@ def main() -> int:
             "first, in plain language, before other work:\n"
             + "\n".join(f"- {flag}" for flag in uncleared_flags)
         )
+
+    if docset_directive:
+        context_parts.append(docset_directive)
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
@@ -678,6 +742,18 @@ def main() -> int:
     if faq_index_content:
         context_parts.append("")
         context_parts.append(faq_index_content)
+
+    # The behaviour-rules bulk goes LAST — see the ordering note where
+    # context_parts is created. Everything above is short and state-bearing; if
+    # the payload is truncated, this is the part that should lose bytes, not the
+    # red-flag surfacing or the docset directive.
+    if behaviour_rules:
+        context_parts.append("")
+        context_parts.append(
+            "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===\n"
+            + behaviour_rules
+            + "\n=== END BEHAVIOUR RULES ==="
+        )
 
     output = {
         "hookSpecificOutput": {

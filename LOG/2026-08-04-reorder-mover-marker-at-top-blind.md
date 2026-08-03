@@ -1,0 +1,12 @@
+# [HASH] — Fix the queue reorder tool refusing every reorder of Processed when the readiness marker sits above all items
+
+The mover failed with `section has no marker; --marker-after ignored` followed by `self-check failed: marker presence changed`, and correctly wrote nothing, whenever the `--- Cleared to run above this line ---` marker sat above every item in Processed. The cause was a scan-range off-by-one read from the script rather than inferred: `split_blocks` locates the first `####` item, assigns everything before it to the preamble, then starts its marker-detection loop *at* that first item. A marker above all items therefore never matched — `had_marker` stayed `False` while the marker's text survived inside the preamble, so reassembly contradicted itself about whether a marker existed and the self-check caught it.
+
+The fix scans the preamble for the marker explicitly and strips it, setting `had_marker` and leaving `marker_after` as `None` (which the existing code already resolves to TOP). The no-items branch was fixed alongside it: a section holding only a marker previously reported no marker at all.
+
+What made this worth prioritising was that the recorded impact had been too narrow. It read as a greenlighting problem — the empty-cleared-region state — but with the marker at top the mover refuses *any* reorder of Processed, including the close-time reorder that every /plan session runs. Three occurrences in two days all took the same by-hand workaround; the third avoided the move entirely and reworded an item instead. That is the real cost of a broken tool: it doesn't announce itself, it quietly degrades what sessions attempt.
+
+A regression suite was added rather than a single case, because the defect is exactly the kind that gets reintroduced. It covers the marker-above-all shape in plain, `--marker-after` and `--move` modes, plus the shapes that already worked, so the fix can't silently break them. One of those expectations was wrong when first written — a marker at the bottom with no `--marker-after` keeps its *relative* spot rather than staying at the bottom, which is documented behaviour — and the test was corrected to assert the documented rule, with the pinned-to-bottom case added separately.
+
+**Files touched:** `plugin/si-plugin/scripts/reorder_queue.py` (`split_blocks` marker detection and the preamble strip), `resources/testing/test_reorder_queue.py` (new, 8 cases, no framework — all passing).
+**Routed to Captures:** none.

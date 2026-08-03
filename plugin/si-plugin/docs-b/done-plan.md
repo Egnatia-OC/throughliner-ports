@@ -136,12 +136,20 @@ the `[user]`-placement rule below both depend on that answer, and a fresh short
 session has no memory to fall back on.
 
 **Record the lift-condition when placing any item below the marker** — the
-specific event that would lift it: "cleared once [slug] is built and verified",
-"after a full computer restart", "once the manifest is pushed". Prose, not a
-hook-parsed field. This is the enabling half of the below-the-line revisit:
+specific **external** event that would lift it: "after a full computer restart",
+"once the user has published the page", "when the account is approved". Prose,
+not a hook-parsed field. This is the enabling half of the below-the-line revisit:
 without a recorded condition, that revisit can't tell a still-waiting item from a
 now-ready one without nagging. **An item held below with no recordable
 lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
+
+**A lift-condition may no longer name another queue item.** "Cleared once [slug]
+is built" is a dependency on queued work, and that has its own field now:
+`Blocked by: [slug]`, checked by the queue lint. Waiting on built work to be
+shipped and running is the push marker. Lift-conditions are for events outside
+the queue entirely. If you find one naming a slug, rewrite it as `Blocked by:`
+while you're here — that's a pointer fix, not a fate decision, so it rides this
+close without an approval ask.
 
 **Place ready `[user]` walk-through work above the marker.** The marker is the
 single gate for walk-throughs as well as builds — /next walks a `[user]` item
@@ -163,12 +171,13 @@ readiness check of its own. Narrate it when a `[user]` item moves above the mark
 
 ## Completed `[user]` items  [SILENT when none; BRIEF when closing one]
 
-If this session confirmed a `[user]` item was completed async (the Step 1
-completion-ask surfaced it), record and remove it now through done.md's
+If the user mentioned during this session that they'd completed a `[user]` item,
+record and remove it now through done.md's
 **Completed `[user]`-item close**: a LOG entry per completed item named by its
 slug, and the item removed from Processed. Fold each entry into this session's
-records alongside the planning entry, and its slug into the commit. When none was
-confirmed, say nothing.
+records alongside the planning entry, and its slug into the commit. When nothing
+was mentioned, say nothing — **never ask** whether any are done. There is no
+completion ask anywhere in a `[user]` item's life.
 
 ## Clear the consumed forward-recommendation advisory  [SILENT when none; BRIEF when clearing]
 

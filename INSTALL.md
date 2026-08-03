@@ -78,6 +78,14 @@ claude plugin install sovereign-implementer@flintcraft
 
 (If the user would rather run them by hand, those are the commands — but the default and easiest path is to let Claude Code run them.)
 
+**If the command isn't found, that's a known and easily-fixed snag — not a broken install.** Depending on how Claude Code was installed, the `claude` command may not be available under its bare name in the agent's shell, so the agent sees "command not found". The fix takes one line, and the user doesn't need to understand any of it. Give them this to paste or say:
+
+> That's expected on some setups. Please find the `claude` program on this machine and run those two commands using its full path instead. It's usually in a `.local/bin` folder in my home directory, or under `AppData/Roaming/Claude`.
+
+The agent can locate the file and re-run the commands from there. Nothing else about the install changes.
+
+**Minimum version: Claude Code 2.1.193 or later.** The plugin relies on marketplace behaviour that older versions don't have. If the agent reports an older version, have it update Claude Code first — that alone resolves a whole class of confusing install errors.
+
 After both succeed, the plugin activates on a full restart of Claude Code. Have the user fully quit and reopen the app, then run the smoke test in B.2 to confirm it took. If the marketplace-add or install errors — for example, the marketplace can't be found — have them tell the Claude Code agent the exact error and work it from there; the agent can retry or diagnose.
 
 ### B.2 — Smoke test — confirm the plugin works

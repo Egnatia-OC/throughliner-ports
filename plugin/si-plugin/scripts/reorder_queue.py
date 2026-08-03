@@ -95,11 +95,19 @@ def split_blocks(body):
     # find first item
     first = next((i for i, l in enumerate(body) if ITEM_RE.match(l)), None)
     if first is None:
-        return body, [], None, False
-    preamble = body[:first]
+        # No items at all: the marker (if any) is still somewhere in the body.
+        kept = [l for l in body if not MARKER_RE.match(l)]
+        return kept, [], None, len(kept) != len(body)
+    # The marker can sit ABOVE every item, in which case it lands in the
+    # preamble and the item-scanning loop below never sees it. Scan the
+    # preamble for it explicitly and strip it, or the marker's text survives
+    # in the preamble while had_marker stays False — reassembly then
+    # contradicts itself and the self-check refuses to write.
+    preamble = [l for l in body[:first] if not MARKER_RE.match(l)]
+    marker_above_all = len(preamble) != first
     blocks = []
     marker_after = None
-    had_marker = False
+    had_marker = marker_above_all
     cur_slug = None
     cur = []
     prev_slug = None  # slug of the most-recently-completed block (marker anchor)

@@ -42,11 +42,18 @@ Working mode: local
 
 <!-- Where you work from, set at /setup. `local` = at your desktop, where an edited file opens instantly, so Claude points you to text in your docs with a link. `remote` = driving Claude from your phone, where opening an edited file is awkward, so Claude pastes the text straight into chat instead. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
 
-## Completion mode
+## Model
 
-Completion mode: in-/next
+Model: not recorded
 
-<!-- How you handle the `[user]` steps only you can do, set at /setup. `in-/next` (the default) = you let Claude walk you through each such step when it comes up in /next, so planning sessions don't ask up front whether any are already done. `async` = you often do these on your own between sessions, so planning sessions do ask up front, to record any you finished. Change it by re-running /setup or just telling Claude. -->
+<!-- Which Claude model you mostly run, from the optional /setup question. Claude follows instructions better when they're written for the model actually running, so the plugin keeps two sets of its own working instructions and uses this to pick. Left as `not recorded` if you skipped — the safe default is used. Change it by telling Claude. -->
+
+## Repo visibility
+
+Repo visibility: not checked
+
+<!-- Whether this project's code repository is public or private. Detected at /setup rather than asked, because an answer typed once goes out of date without anyone noticing. It matters because a public repo means anything written into these docs is readable by anyone, permanently — so Claude holds a firmer line about never writing other people's names or private details into them. If it was recorded from your answer rather than detected, that's noted here. -->
+<!-- If this repo's visibility changes, tell Claude so this gets re-checked. -->
 
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 

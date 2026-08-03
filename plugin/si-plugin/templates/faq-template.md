@@ -26,14 +26,53 @@ So Claude knows your default `.md` app and can point you to a project doc with a
 
 To set your **working mode** — whether you're usually at your desktop or driving Claude from your phone. It changes one thing: how Claude shows you text that lives in your project files. Set it to **local** (at your computer) and Claude points you to that text with a link, since an edited file opens instantly for you — it saves re-typing the text into chat. Set it to **remote** (on your phone) and Claude pastes the text straight into chat instead, because opening a file on a phone means digging through Google Drive and re-downloading it, so a link would be no use. It's asked once at /setup and defaults to **local** if you skip. You're not locked in: tell Claude "I'm remote today" (or "back at my desk") any time and it switches for that session, reverting afterward. This works alongside the editor setting — a link only gets used when you're in local mode *and* you've told Claude which `.md` app you open your docs in.
 
-## Why does setup ask whether I finish my `[user]` steps in /next or on my own?
+## Setup used to ask about my `[user]` steps. Where did that question go?
 
-To set your **completion mode** — a one-time preference for how you handle the `[user]` steps in your queue (the steps only you can do). There are two ways people work:
+It was removed, deliberately. Setup used to ask whether you finish the steps only you can do (`[user]` steps) together with Claude, or on your own between sessions — a setting called completion mode. Its only job was to control whether planning sessions asked you, up front, "have you already done any of these?"
 
-- **in-/next (the default)** — you let Claude walk you through each `[user]` step when it comes up in /next. This is the relaxed, recommended way: you don't have to remember or chase these steps, you just do them together with Claude when you reach them.
-- **async** — you often do these steps on your own, between sessions.
+That question is gone entirely. Claude no longer asks — in any session, at any point — whether one of your `[user]` steps is already done. It works it out instead: a step Claude just walked you through is done, and a step you mention having finished is done. That's it.
 
-The setting changes one small thing: whether planning sessions ask you up front, "have you already done any of these `[user]` steps?" In the default in-/next mode they *don't* ask — you're doing those steps in /next anyway, so being asked every planning session would feel like being nagged about work you're correctly saving for later. In async mode they *do* ask, so a step you finished on your own gets recorded instead of sitting in your queue. It's asked once at /setup and defaults to in-/next; you can change it later by re-running /setup or just telling Claude. (Either way, if you finish a `[user]` step in /next, Claude still offers to record it right there — this setting only controls the separate up-front question in planning.)
+The reason for removing rather than softening it: being asked to account for work you haven't been walked through yet reads as being chased, and the earlier design had already tried twice to make it less annoying (moving it later in the message, adding this setting to switch it off in most projects) without questioning whether it should exist. It shouldn't.
+
+There's one gap, and it's intentional: if you do a `[user]` step entirely on your own and there's nothing for Claude to see, that item stays in your queue until you mention it. Mentioning it is enough — Claude records it and clears it out.
+
+If your CLAUDE.md still has a `Completion mode:` line from before, leave it. It doesn't do anything now and Claude ignores it.
+
+## Why does setup ask which Claude model I use?
+
+Because Claude follows instructions better when they're written for the model that's actually running. The plugin keeps two versions of its own working instructions — a fuller one and a lighter one — and uses your answer to pick. Newer models do better with less spelled out; the older one needs the fuller wording to follow a rule reliably.
+
+You're only ever asked which model you use, never which version of the instructions you want — that's background machinery you shouldn't have to think about. The question is optional; skip it and the safer, fuller version is used, which costs you nothing but some extra words behind the scenes. Change it later by telling Claude.
+
+You might reasonably ask why Claude can't just tell which model it's running. Sometimes it can, and where that information is available it's used and this setting isn't needed. But it isn't always available — in the desktop app it isn't — so relying on it alone meant the whole feature quietly did nothing. Your answer is the reliable source.
+
+## Why does setup check whether my code is public, and what are the licence and publishing questions?
+
+Three related things, and the first is a safety check rather than a preference.
+
+**Is your repository public?** Claude checks this rather than asking, because an answer typed once goes out of date without anyone noticing. It matters because everything in your project docs gets committed — and a commit is permanent, even if the text is deleted later. If the repository is public, everything written in these docs is readable by anyone, straight away and for good. Knowing that, Claude holds a firmer line about never writing other people's names or private circumstances into your notes, queue, or logs. (It holds that line either way — a private repository can be shared or made public later, and nothing re-checks what's already in it.)
+
+**What licence do you want?** In plain terms: are you happy for other people to use and build on this, or would you rather keep it to yourself? Claude recommends one and writes it as a LICENSE file.
+
+**Do you want this on GitHub?** Offered off the back of the licence choice, and only as an offer — "we can do it now, or note it down for later" is a real answer, not a polite formality. If you'd rather the opposite, Claude can also set things up so none of your project docs are ever committed at all.
+
+## Can Claude find things in my notes that shouldn't be public?
+
+Yes — ask for a scrub sweep and Claude will run one. It reads every committed file and reports two things: every occurrence of any name you tell it to look for, which is complete and exhaustive, and a list of other capitalised words that look like they could be people's names, which is a rough list for you to glance over rather than a definitive answer.
+
+Worth knowing up front: **deleting something from a file does not remove it from your project's history.** If a name has already been committed to a public repository, it has been readable, and it stays readable in the history. That's a decision only you can make — rewriting the history, removing it going forward only, or making the repository private — and Claude will lay out the options rather than implying an edit fixes it.
+
+The better protection is the one that runs all the time: Claude doesn't write other people's names or private details into your docs in the first place. A note about what happened never needs them.
+
+## What does `Blocked by:` mean on a piece of work?
+
+It means that piece of work can't start until another piece is finished, and it names which one. You'll see it as a line under the work's description, pointing at another item by its short name.
+
+It exists because the order things sit in isn't enough on its own. Order tells you what comes next; it doesn't remember *why*. So if the queue gets reordered — which happens routinely — a dependency held only by position quietly disappears, and something gets built before the thing it needed. Saying it outright survives any reorder.
+
+Claude checks these for you as an advisory: if a `Blocked by:` line names something that isn't in your queue, or names something sitting *below* it (which reads backwards), you'll see a note about it. It's a nudge, never a block.
+
+Two near-neighbours work differently, so you don't have to guess: work waiting on something to be *released and running* uses a push marker between items instead, and work waiting on something outside the queue entirely — a restart, an event, a decision that's yours — just says so in plain words and sits below the readiness line.
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 
@@ -53,7 +92,7 @@ One related detail about *when* these show up: Claude only brings up a `[user]` 
 
 ## I did a `[user]` step Claude walked me through. How does it get recorded and cleared?
 
-Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first. To catch a step you may have done in an earlier session, Claude keeps a light check — but it never leads with it. When it reaches a step, it leads straight into walking you through it; then, only for a step that could plausibly have been done before, it adds a closing note like "…or tell me if you've already done this and I'll just record it." Say you've done it and Claude records and clears it instead of walking you through it. (It asks rather than trying to detect it automatically, because a `[user]` step is often a check or a decision with no file to look for.) The reason it never opens with "have you already done this?" is that leading with it would treat ready work as probably-already-done and make you push back before Claude will help — the walk-through is the point, so it comes first.
+Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first. And Claude never asks whether you've already done a step — not at the start, not as a closing aside, not in a planning session. If you *have* already done one, just say so and Claude records and clears it instead of walking you through it. Otherwise it walks you through it. The reason there's no such question anywhere: asking treats work that's ready for you as though it's probably already behind, and makes you push back before Claude will help. The walk-through is the point, so that's what you get.
 
 ## What are the build and audit flavors — and is there a separate "test"?
 

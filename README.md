@@ -6,6 +6,8 @@ A Claude Code plugin that lets you build the project you have in mind — an app
 
 **Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintCraftTech/sovereign-implementer` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintCraftTech/sovereign-implementer` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
 
+If Claude reports that the `claude` command can't be found, that's a known snag on some setups and not a broken install — ask it to find the `claude` program on your machine and run the same commands using its full path. Needs Claude Code **2.1.193 or later**; if yours is older, update Claude Code first.
+
 **New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
 
 ## Get notified of new versions
@@ -27,7 +29,9 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
 
-The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. There's nothing to set up and nothing to notice: both versions do the same thing, so your project works the same way whichever model you use.
+The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. Setup asks which model you mostly use, in one optional question, and that's the whole of it: both versions do the same thing, so your project works the same way whichever model you use.
+
+Some pieces of work are yours to do rather than Claude's — sending something, checking a screen, a decision only you can make. Claude walks you through those live, one step at a time, when they come up. It never asks you whether you've already done them.
 
 ## How to use it
 

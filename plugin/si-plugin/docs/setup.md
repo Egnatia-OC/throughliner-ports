@@ -110,7 +110,7 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 
 **resources/research/ folder:** Create the `resources/research/` directory (empty — no files). It's the home for research notes: when a web search or external lookup yields a finding worth keeping, Claude files it here as `resources/research/<topic>.md`. Creating it at setup means research notes have a place from day one rather than the folder being conjured on first use.
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`, a Working mode field defaulting to `local`, and a Completion mode field defaulting to `in-/next`; Step 4 fills them from Q6, Q7, and Q8.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`, a Working mode field defaulting to `local`, a Model field, and a Repo visibility field; Step 4 fills them from Q6, Q7, Q8, and the Step 3b visibility detection.
 
 **.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
@@ -139,8 +139,18 @@ The interview is an **adaptive discovery**, not a fixed script. Its job is to re
 **Q7 (optional). Will you usually be working from your computer, or driving Claude from your phone?**
 → Sets your working mode. Two options, explained once here: **local** means you're at your desktop, where an edited file opens instantly — so Claude points you to text in your docs with a link. **remote** means you're driving Claude from your phone, where opening an edited file is awkward — so Claude pastes the text straight into chat instead. Defaults to **local** if you skip. Fills the Working mode field in the generated CLAUDE.md, and you can switch anytime just by telling Claude ("I'm remote today") — it holds for that session and reverts after. Asked once, no nag.
 
-**Q8 (optional). When there's a step only you can do — like sending something or checking a screen — do you prefer to do it together with Claude as it comes up, or handle those on your own between sessions?**
-→ Sets your completion mode. Two options, explained once here: **in-/next** (the default) means you let Claude walk you through each such step when it reaches it while building — the relaxed way, nothing to remember or chase. **async** means you often do these on your own, between sessions. The only thing it changes: in async mode, planning sessions ask up front whether you've already done any of these steps (so they get recorded); in the default in-/next mode they don't ask — you're doing those steps in /next anyway, so being asked each planning session would just nag. Defaults to **in-/next** if you skip. Fills the Completion mode field in the generated CLAUDE.md; switch anytime by re-running /setup or just telling Claude. Asked once, no nag.
+**Q8 (optional). Which Claude model do you mostly run — the newest generation, or an older one?**
+→ Claude follows instructions better when they're written for the model actually running, so the plugin keeps two sets of its own working instructions and picks whichever fits. This question is only ever about which model the user runs — something they know — never about which set of instructions they want, which is background machinery they should never have to meet. Name the current models plainly and let them pick; if they don't know, or skip, say the safe default is assumed and move on. Fills the Model field in the generated CLAUDE.md. Asked once, no nag.
+
+## Step 3b: Repo visibility, licensing, and publishing
+
+Three things, in this order. The first is a **safety input** rather than a preference, and it applies to every project — including one with no interest in ever publishing.
+
+**1. Detect whether the repo is public. Don't ask.** A recorded answer to this goes stale silently, and silently is exactly how it does damage: one project's visibility was set long ago, nobody knew what it was, and it was only discovered mid-session — six weeks into a live exposure of a third party's private information. Detection costs one command and is never out of date. Where there's a GitHub remote and the `gh` tool is available, detect it (`gh repo view`) and record what you found. Where detection isn't possible — no remote, no `gh`, a host that isn't GitHub — ask the user once, and record their answer explicitly marked as a stated fallback rather than a detected fact. What consumes this: the write-time rule about other people's private information. A public repo makes that rule urgent rather than theoretical, and a private repo can be shared or made public later with nothing re-checking what's already in it.
+
+**2. Ask about the licence.** In plain terms: does the user want other people free to use and build on this, or would they rather keep it to themselves? Recommend an answer rather than asking cold, and write the choice as a LICENSE file.
+
+**3. Offer public-repo setup, framed off the licence choice.** "Since you chose this licence, would you like this on your GitHub? We can do it now, or note it down for a later planning session." **Offer, never push** — the note-it-for-later branch is the graceful decline and is a real option, not a formality. For a user who wants the most private posture available, offer instead to add every project doc to `.gitignore` so none of it is ever committed.
 
 ## Step 4: Write the docs
 
@@ -149,7 +159,8 @@ Once discovery has reached a buildable understanding (or the user says "build fr
 2. Write one work item in QUEUE.md's Unprocessed section from the first-thing-to-build answer — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
-2c. Fill the Completion mode field in CLAUDE.md from Q8 — `in-/next` or `async` as answered, or `in-/next` if it was skipped.
+2c. Fill the Model field in CLAUDE.md from Q8 — the model the user named, or leave the safe default if it was skipped.
+2d. Fill the Repo visibility field in CLAUDE.md from the Step 3b detection — or from the user's stated answer, marked as user-stated rather than detected.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:

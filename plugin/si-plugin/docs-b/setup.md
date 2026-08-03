@@ -242,8 +242,8 @@ one already exists   ->  APPEND the method block; never overwrite
 ```
 
 The template carries an Editor field (`not recorded`), a Working mode field
-(default `local`), and a Completion mode field (default `in-/next`); Step 4 fills
-them from Q6, Q7, Q8.
+(default `local`), a Model field, and a Repo visibility field; Step 4 fills them
+from Q6, Q7, Q8 and the visibility detection.
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
@@ -334,16 +334,48 @@ your phone, where opening a file is awkward, so Claude pastes the text into chat
 Defaults to **local**. Switch anytime by telling Claude ("I'm remote today") — it
 holds for that session and reverts. Asked once, no nag.
 
-**Q8 (optional). When there's a step only you can do — like sending something or
-checking a screen — do you prefer to do it together with Claude as it comes up, or
-handle those on your own between sessions?**
-→ Sets your completion mode. **in-/next** (default) = Claude walks you through each
-such step when it reaches it while building — nothing to remember or chase.
-**async** = you often do these on your own between sessions. The only thing it
-changes: in async mode, planning sessions ask up front whether you've already done
-any of these steps, so they get recorded; in the default mode they don't ask —
-you're doing those steps in /next anyway, so asking each planning session would
-just nag. Defaults to **in-/next**. Asked once, no nag.
+**Q8 (optional). Which Claude model do you mostly run — the newest generation, or
+an older one?**
+→ Claude works better with instructions written for the model actually running, so
+the plugin keeps two sets and picks the one that fits. Name the current models
+plainly and let the user pick; if they don't know or skip, say the safe default is
+assumed and move on. Record the answer, not a preference about the plugin's
+internals — the user should never meet the word for those two sets. Asked once, no
+nag.
+
+## Step 3b: Repo visibility, licensing, and publishing
+
+Three things, in this order. The first is a **safety input**, not a preference,
+and it applies to every project including one with no interest in publishing.
+
+**1. Detect whether the repo is public — don't ask.** A recorded answer to this
+goes stale silently, and silently is exactly how it hurts: one project's
+visibility was set long ago and nobody knew what it was until it was checked
+mid-session, six weeks into a live exposure. Detection costs one command and is
+never out of date.
+
+```
+GitHub remote + gh available  ->  detect it (`gh repo view`), record what you found
+no remote / no gh / not       ->  ask the user once, and record the answer AS a
+GitHub                            stated fallback, marked as such
+```
+
+Record it in CLAUDE.md. What consumes it: the write-time rule about other people's
+private information (plugin-behaviour.md) — a public repo makes that urgent rather
+than theoretical, and a private one can be shared or made public later without
+anything re-checking.
+
+**2. Ask about the licence** [PROMPT] — in plain terms: does the user want others
+free to use and build on this, or do they want to keep it to themselves? Write
+their answer as a LICENSE file. Recommend one rather than asking cold.
+
+**3. Offer public-repo setup, framed off the licence** [PROMPT] — "since you chose
+this licence, would you like this on your GitHub? We can do it now, or note it for
+a later planning session." **Offer, never push.** The note-it-for-later branch is
+the graceful decline, and it's a real option, not a formality.
+
+For a user who wants the most private posture available, offer to add every
+project doc to `.gitignore` so none of it is ever committed.
 
 ## Step 4: Write the docs
 
@@ -357,7 +389,9 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
     # Not multiple scoped entries.
 2a. fill CLAUDE.md's Editor field from Q6         (or `not recorded`)
 2b. fill CLAUDE.md's Working mode field from Q7   (or `local`)
-2c. fill CLAUDE.md's Completion mode field from Q8 (or `in-/next`)
+2c. fill CLAUDE.md's Model field from Q8            (or leave the safe default)
+2d. fill CLAUDE.md's Repo visibility field from the detection (or the stated
+    fallback answer, marked as user-stated)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files
 5.  teach the working rhythm (below)

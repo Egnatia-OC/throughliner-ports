@@ -43,10 +43,24 @@ NO _build.md      ->  three shapes:
          session didn't make)
 ```
 
-Detect a completed `[user]` item **by asking**: if Processed holds any `[user]`
-item, ask whether the user just completed one — a fresh chat won't remember it, so
-the ask is what surfaces it. This can coincide with a planning session; when it
-does, close the item through that section and let done-plan.md handle the rest.
+Detect a completed `[user]` item **from what the session can already see — never
+by asking.** A `[user]` item is walked through, and that is all; no step of its
+life asks whether it's done.
+
+```
+walked through to its end in THIS session   ->  completed. Close it here.
+the user has said they did it               ->  completed. Close it here.
+anything else                               ->  leave it in Processed, silently
+```
+
+The gap this leaves is real and is meant to stay: an item the user completed on
+their own between sessions, with nothing observable to show for it, will sit in
+the queue until they mention it. **That is the fallback, not a hole to plug** —
+mentioning it is already a supported path, and a completion ask is exactly what
+this removed. Don't reintroduce one under any wording.
+
+This can coincide with a planning session; when it does, close the item through
+that section and let done-plan.md handle the rest.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -57,7 +71,7 @@ a `[user]` work item, which never enters a _build.md — so /done doesn't close 
 *as a build*, but once the user has run it, /done records its completion and
 removes it from the queue through the close below.
 
-## Completed `[user]`-item close  [BRIEF, PROMPT]
+## Completed `[user]`-item close  [BRIEF]
 
 A `[user]` item never entered a _build.md, so it isn't ticked and closed like a
 build. This is the close that records it and removes it from Processed, so a
@@ -65,8 +79,10 @@ finished item doesn't strand in the queue and get re-presented by the next /next
 It also runs inside a /plan close when the user mentions async-completed items.
 
 ```
-1. confirm WHICH [user] item(s) completed  [PROMPT]
-   # name those still in Processed; only confirmed-done ones close here
+1. take the completed item(s) from what the session can see  [SILENT]
+   # the routing test above already identified them. Don't ask, and don't
+   # list the other [user] items still sitting in Processed — an item whose
+   # completion isn't visible simply stays where it is.
 2. write a LOG entry per completed item, named after its slug
    # records what the user did and its outcome; draft and show for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
@@ -449,6 +465,14 @@ RECOGNISE THE HASH-BACKFILL SIGNATURE FIRST — and skip the investigation:
         -> DON'T open a git diff. DON'T explain it file-by-file.
         -> fold it in with at most a one-line note
 
+RECOGNISE THE TEST-BUILD VERSION SIGNATURE TOO — and leave it alone:
+    a dirty plugin.json whose ONLY change is the version string, and only where
+    that new value carries a test suffix (a version ending -test<N>)
+        -> a local test build, deliberately never committed. The clean version
+           is set later, when the plugin is actually released.
+        -> DON'T mention it. DON'T offer to stage it. DON'T stage it as part of
+           anything else. Leave the file dirty.
+
 any OTHER out-of-scope dirty path
         -> full treatment: surface it in a one-line summary and offer to stage
            it, investigating where the change isn't self-evident
@@ -456,6 +480,13 @@ any OTHER out-of-scope dirty path
 
 This exact dirt appears every session and the answer is always "it's the backfill,
 stage it," so re-investigating it is pure delay for zero decision value.
+
+The test-build carve-out is stronger than the backfill one, and deliberately so.
+Merely not *asking* about that file would still let it be swept into a commit
+unremarked — which is exactly what happened once, publishing a test version as
+the released one. So the instruction is not "don't ask", it is **leave it dirty
+and never stage it**. Any other change to that file — anything beyond the version
+string — surfaces normally.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
 already approved at the entry step:
@@ -532,18 +563,37 @@ The clean case is a plain assessment, not a hedge — "Three items are waiting t
 sorted; none touches the next piece of work, so nothing blocks it," never "there
 may be overlap worth checking."
 
-**Queue-state ladder.** When nothing blocks:
+**Always advise a fresh chat first.** Whatever this step recommends, it names
+**two** things in order: start a new chat, *then* run the skill. Both halves,
+every time — a standing shape, not a hint and not conditional on who's reading.
+A novice reads "run /plan next" as an instruction to run it right here, and
+carries a spent conversation into the next piece of work. Say the action the user
+actually takes — "start a new chat" — never the background term for it.
+
+**Queue-state ladder.** When nothing blocks. The distinction rungs 2 and 3 turn
+on is **the readiness line**: /next can only build work sitting *above* it, so
+work below the line is not something /next can act on at all.
 
 ```
 1. captures appended this session that affect the next work
-       ->  recommend /plan, name the blocker
-2. Processed work exists
-       ->  name the next item, then ask whether the user is continuing into
-           another /next now. If yes and a reorder applies, offer to reorder
-           first so the next /next picks the right item.
-3. Processed empty
-       ->  "Queue is clear. Run /plan when you have more."
+       ->  recommend a new chat, then /plan; name the blocker
+2. work sits ABOVE the readiness line
+       ->  name the next item, and recommend starting a new chat and running
+           /next there. If a reorder applies, offer to reorder first so that
+           /next picks the right item.
+3. Processed holds work, but ALL of it is below the readiness line
+       ->  recommend a new chat, then /plan — there is work waiting, but none
+           of it is ready to build yet, so /next would open and immediately
+           have nothing to do. Say that plainly: work is waiting, it just
+           needs a planning session to green-light something first.
+4. Processed empty
+       ->  "Queue is clear. Start a new chat and run /plan when you have more."
 ```
+
+Rung 3 exists because this state is easy to land in and easy to get wrong: a
+close that ships the last ready items leaves Processed *full* — so a "Processed
+empty" test doesn't catch it — while /next has nothing it can build. Pointing at
+/next there sends the user into a dead end.
 
 **File the forward-recommendation advisory.** When this step made a *concrete*
 recommendation, file it as a capture at the top of Unprocessed, worded as advice,
@@ -555,7 +605,7 @@ flavor deltas:
     audit close   ->  findings appended this session sit unprocessed, so the
                       DEFAULT is /plan, to sort them into work — name the count.
                       Only when nothing was appended does the overlap scan run
-                      and the ladder apply (steps 2–3).
+                      and the ladder apply (its work-remaining rungs).
     plan/setup    ->  a fresh setup session whose only work item is the rough
                       first build item recommends /plan to scope it, NEVER
                       /next — the interview wrote that item deliberately

@@ -15,6 +15,14 @@ two-section work-item model:
   3. A red-flag marker line ("Red flag · State: ...") whose state isn't
      one of cleared / uncleared. A red flag is an ordinary work
      line carrying this one extra marker; the state must be valid.
+  4. A "Blocked by: [slug]" line naming a slug that doesn't resolve to a
+     work item in the file, or that resolves to one sitting BELOW the
+     blocked item. This is the one dependency edge the model has, and it
+     is linted because wording alone demonstrably failed at it: with no
+     explicit field, dependencies were repeatedly written as prose
+     conditions naming another item's slug, where nothing could check
+     them. Position can't carry a dependency either — it expresses order,
+     not why the order is what it is, so a reorder silently inverts it.
 
 Provenance is NOT linted. The old model required every work item to
 carry a "captured by you" / "by Claude" label; that requirement is
@@ -59,6 +67,16 @@ RED_FLAG_MARKER = re.compile(r"^Red flag\s*·?\s*State:\s*(.*)$", re.IGNORECASE)
 WORK_SECTIONS = ("Processed", "Unprocessed")
 
 VALID_FLAG_STATES = {"cleared", "uncleared"}
+
+# The one dependency field: "Blocked by: [slug]" on its own line beneath a
+# work item's description. Matched leniently on spacing and case so a slip
+# still reads as the field and still gets validated rather than silently
+# passing as prose.
+BLOCKED_BY = re.compile(r"^Blocked by:\s*(.*)$", re.IGNORECASE)
+
+# Slug references inside a Blocked by: line. More than one is allowed —
+# each is resolved and positioned independently.
+SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\]")
 
 
 def _normalise(path: str) -> str:
@@ -159,6 +177,59 @@ def _check_red_flag_states(annotated, warnings):
             )
 
 
+def _check_blocked_by(blocks, warnings):
+    """Check 4: every `Blocked by: [slug]` resolves, and points upward.
+
+    Two failures, both silent without this check. An unresolvable slug is a
+    dependency on nothing — a typo or a deleted item — so the blocked work
+    waits forever on something that will never land. A slug resolving to an
+    item BELOW the blocked one is a queue that contradicts itself: the thing
+    depended on is scheduled after the thing depending on it.
+
+    Advisory like the rest: novel shapes pass, and a flagged line is for the
+    session to judge, not for the hook to enforce.
+    """
+    positions = {}
+    for b in blocks:
+        m = SLUG_AT_END.search(b["heading"])
+        if m:
+            positions[m.group(0).strip()[1:-1]] = b["idx"]
+
+    for b in blocks:
+        own = SLUG_AT_END.search(b["heading"])
+        own_slug = own.group(0).strip()[1:-1] if own else None
+        for line in b["lines"][1:]:
+            match = BLOCKED_BY.match(line)
+            if not match:
+                continue
+            refs = SLUG_REF.findall(match.group(1))
+            if not refs:
+                warnings.append(
+                    f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} has a "
+                    "'Blocked by:' line naming no [slug] — the field takes the "
+                    "slug of the queued item this one waits on."
+                )
+                continue
+            for ref in refs:
+                if ref == own_slug:
+                    warnings.append(
+                        f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} is "
+                        "blocked by itself."
+                    )
+                elif ref not in positions:
+                    warnings.append(
+                        f"line {b['idx'] + 1}: 'Blocked by: [{ref}]' names a slug "
+                        "that isn't a work item in this queue — check the spelling, "
+                        "or the item may have been deleted or already shipped."
+                    )
+                elif positions[ref] > b["idx"]:
+                    warnings.append(
+                        f"line {b['idx'] + 1}: 'Blocked by: [{ref}]' points at an "
+                        "item sitting BELOW this one — the work depended on should "
+                        "come first. Reorder, or the dependency reads backwards."
+                    )
+
+
 def lint(content: str) -> list[str]:
     annotated = _annotate(content)
     blocks = _workline_blocks(annotated)
@@ -166,6 +237,7 @@ def lint(content: str) -> list[str]:
     _check_slugs(blocks, warnings)
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
+    _check_blocked_by(blocks, warnings)
     return warnings
 
 

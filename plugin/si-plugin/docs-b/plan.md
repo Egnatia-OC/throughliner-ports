@@ -96,21 +96,11 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
 
-**Completion-ask for `[user]` work — only in async completion mode** [SILENT in
-the default in-/next mode, or when none in Processed; PROMPT when async and
-present].
-
-```
-completion mode = in-/next (default)  ->  SUPPRESSED ENTIRELY. Say nothing.
-    # detection falls to /next's trailing note at the natural moment;
-    # asking every session reads as "why haven't you done these?"
-completion mode = async               ->  ask once whether any Processed [user]
-                                          item is now complete
-```
-
-Detection is by asking, not by scanning for a produced file. For any the user
-confirms done, close it at this session's /done — log under its slug, remove from
-Processed.
+**No completion sweep for `[user]` work.** /plan never asks whether Processed's
+`[user]` items are already done — that ask is gone from the method entirely, and
+so is the setting that used to toggle it. If the user mentions having done one,
+close it at this session's /done (log under its slug, remove from Processed);
+otherwise leave them alone and say nothing about them.
 
 **Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
 lift; PROMPT only for the user-only batch]. Walk the below-line items; for each,
@@ -127,6 +117,32 @@ provably still-waiting    ->  skip silently
 
 Per-item asking is the nagging this revisit exists to avoid. An item with no
 recorded lift-condition can't be classified without nagging — note it as a gap.
+
+**When the same item keeps coming back, stop asking and propose moving it.** An
+item whose condition only the user can answer will otherwise surface every single
+session, forever — one such item was asked about at three consecutive sessions,
+and the user's irritation was entirely fair: it was never a priority, it was just
+unsilenceable. So the revisit gets a legitimate way to stop:
+
+```
+asked about across MULTIPLE sessions and still not moving
+    ->  don't ask again. Propose returning it to the BOTTOM of Unprocessed,
+        in one line, as this session's suggestion.
+    ->  the user accepts or declines. Declining is fine — it just means keep
+        asking about this one.
+```
+
+The bottom of Unprocessed is the **only** legitimate way to postpone something.
+Do not invent an alternative — a new state, a "lift when you raise it" condition,
+a quiet shelf — no matter how much pressure the repetition creates. Those aren't
+postponing, they're losing the item somewhere nothing will look again.
+
+That last point generalises, and it's worth stating plainly because it has now
+gone wrong three separate ways: **wherever this method forbids something at a
+moment that creates real pressure, the legitimate alternative is named in the same
+breath.** A prohibition with no stated escape route reliably produces an invented
+one, and an invented move is worse than the thing prohibited, because nothing
+recognises or records it.
 
 **Seed the queue from SPEC** [BRIEF, PROMPT in the trigger state; otherwise
 SILENT]. A rich SPEC can describe buildable features with no path into the queue —
@@ -175,6 +191,12 @@ path, and hands /done a mechanical record instead of a reconstruction from memor
 own discussion. State the count upfront, counting both together ("5 items.
 First: …"). Position in the file *is* the order — an item placed next to its
 relatives is processed there by design.
+
+**Name the always-available moves once, here, in that same opening.** In one
+sentence, tell the user they can skip anything they don't want to get into, and
+raise something of their own at any point. Said once at the start, they hold for
+the whole session — which is why the per-item checkpoint stops reciting them and
+asks only carry-on-or-stop.
 
 Two passes run once, before the loop. Both fire at the same opening, so combine
 what they surface into the fewest messages.
@@ -339,6 +361,26 @@ approved and on screen. If the raw capture had no slug, give it one now. Report
 "moved to Processed as [slug]" only after the Write succeeded and a re-read
 confirms it landed in Processed and is gone from Unprocessed.
 
+*If this item waits on something, choose its route deliberately — don't leave the
+dependency to position or to prose.* Three routes, and the choice is stated once
+here so it isn't re-derived every time:
+
+```
+waits on other queued work   ->  Blocked by: [slug]
+    # one line under the description. The named item must be in the queue,
+    # above this one. The queue lint checks both.
+
+waits on built work being    ->  the push marker between items
+SHIPPED and running              # a build session can't ship mid-run
+
+waits on something OUTSIDE   ->  a lift-condition in the prose, and the item
+the queue                        sits below the readiness line
+```
+
+A lift-condition that names another item's slug is the tell that it should have
+been `Blocked by:` — rewrite it. Position is not a route: it says what comes
+next, not why, so a reorder silently undoes it.
+
 *Split out a buried user-only prerequisite before keeping.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
 When found buried in prose, split it into its own `[user]` line with its own slug
@@ -370,23 +412,32 @@ message's final, bold ask.
 message order:
     1. the NEXT item's verbatim (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
-    2. below it, the off-ramps as the closing bold question:
-         continue to the next item
-         skip this next one to the bottom for a later session
-         close out now (Step 3)
-         raise something else (loop back into Step 2)
+    2. below it, ONE two-sided question as the closing bold ask:
+         **"Carry on, or stop here?"**
 ```
 
-All four must be genuinely on offer; deliver them conversationally, but below the
-verbatim, not above it. Putting the ask last gives the message a landing instead
-of ending on a raw quote that reads as stopping mid-thought.
+**Two sides, equal weight, always.** The failure this shape fixes is a statement
+followed by a trailing "…close out here?", which reads as a *recommendation* to
+stop — a first-time user took it that way over and over and thought the session
+had finished. Both alternatives must be present in the ask itself. Never end on
+a one-sided question.
+
+**Only that pair gets offered per checkpoint.** Skipping an item and raising
+something else are always available just by saying so, so reciting them every
+checkpoint teaches nothing and buries the ask. Name them **once, at the start of
+the session** — "you can skip anything, or raise something of your own, any time"
+— and then don't repeat them. A four-option menu at every checkpoint was tried
+live and was worse: the user called it excessive.
+
+Putting the ask last gives the message a landing instead of ending on a raw quote
+that reads as stopping mid-thought.
 
 The verbatim here is that next item's own presentation, not a forbidden
 look-ahead — the user acts on it immediately, so it's no [SEQUENCE] violation.
 
-**Skip-to-defer.** Skipping is one option among four, never its own turn — a
-separate "dig in or skip?" gate before every item would re-create the over-asking
-the method removed.
+**Skip-to-defer.** Skipping is always available in conversation, named once at the
+session's start, never its own turn — a separate "dig in or skip?" gate before
+every item would re-create the over-asking the method removed.
 
 ```
 on skip:
@@ -404,10 +455,22 @@ _plan.md slug and nothing else** — there is no durable queue marker, no "parke
 or "dedicated-pass" tag written to QUEUE.md. Next session it's ordinary
 Unprocessed again.
 
-Skipping the last item leaves Unprocessed non-empty, which is fine. On the last
-item there's no next verbatim, so the message is just the off-ramps — worded
-**neutrally**, "anything else to capture or discuss, or close out?", never as a
-lean toward closing. An empty Unprocessed is not a signal the session is over.
+Skipping the last item leaves Unprocessed non-empty, which is fine.
+
+**The last item is the case that breaks this shape, so word it deliberately.**
+There is no next item to name, so the two-sided ask has nothing in front of it —
+and an ask with nothing before it collapses straight back into "shall we close?",
+the exact failure being fixed. The final checkpoint of every session would
+reintroduce it. So on the last item, **give continuing a concrete face** rather
+than leaving it as the unnamed alternative:
+
+> "That's the last thing waiting. We can keep going — anything you want to
+> capture or talk through — or stop here. Which?"
+
+Both options are live and equally weighted. Never "anything else, or shall we
+close out?" — a trailing close-question with a vague alternative is a lean toward
+stopping however neutrally it's phrased. An empty Unprocessed is a resting state,
+not a signal the session is over.
 
 **Recommend skip-to-defer when an item won't design out this session** [DISCUSS].
 Skip isn't only the user's to pick. When you can't yet describe what an item's
@@ -444,10 +507,10 @@ kept work in order; section headers intact.
 
 **Neutral end-of-queue gate** [PROMPT]. When the queue empties, do **not** presume
 the session is over and do not slide into the wind-down re-scan or the close. An
-empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
-— "anything else to capture or discuss, or shall we close out?" — and wait. If the
-user raises a further capture, file it and **return to this same neutral gate** —
-never re-lean to close after filing.
+empty Unprocessed is a resting state, not a stop signal. Ask the same two-sided
+question the last checkpoint uses — continuing named concretely, stopping named
+plainly, neither favoured — and wait. If the user raises a further capture, file
+it and **return to this same gate** — never re-lean to close after filing.
 
 New items from conversation follow the same loop — check QUEUE.md for overlap
 first. If you notice a gap: "I notice [X] — want to hear a suggestion?"
