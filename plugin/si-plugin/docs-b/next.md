@@ -106,6 +106,27 @@ user says go         ->  Step 2: lock scope, build begins
 Present-once is deliberate: a separate "here it is" beat followed by a separate
 confirm beat is the redundant gate this collapses.
 
+**Don't size the run.** Present every cleared item. Don't warn the run is long,
+don't suggest splitting it, don't propose building half now and half later, and
+don't hedge the off-ramp with a caveat about how much will fit. The canonical
+rule is in plugin-behaviour.md (Context awareness) and in next-build.md: **the
+trigger for any context conversation is the user's report, never you noticing on
+its own.** It is restated here because this is where the impulse actually fires —
+the canonical statements sit in context-management sections that answer *what to
+do when the user reports a squeeze*, so a session standing at this step has the
+disposition toward caution with nothing nearby contradicting it.
+
+This costs the user a real thing. The warning isn't the expense — the
+*negotiation* is: a round spent re-litigating how much fits, every run, against a
+risk that has not once materialised. Runs get talked down to half and then finish
+the other half fine.
+
+The same rule covers caution expressed as process, which is the form that slips
+past a narrowly-read version of this: proposing pause points, staged markers, or
+"we should stop and check in partway" for a long run is the same warning wearing
+different clothes. If the user asks how much is cleared, answer plainly — that's
+their question, not your caveat.
+
 There is no blocker gate, push marker, or unpark/staleness scan — those belonged
 to the old model and are gone. Ordering and readiness are settled in /plan before
 work reaches the cleared region.

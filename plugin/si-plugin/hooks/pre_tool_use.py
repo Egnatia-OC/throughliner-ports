@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-PreToolUse hook — enforces three rules:
+PreToolUse hook — enforces four rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
    memory dir, resources/research/, and the session scratchpad dir are
    always editable). Tri-state:
-   no Files: section = no enforcement;
+   no Files: section = no enforcement (but it says so — see rule 4);
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
    when it's explicitly listed in Files: — a batch that needs to change
@@ -21,9 +21,19 @@ PreToolUse hook — enforces three rules:
    burns tokens fast and a single run can exhaust the user's usage, so
    the spawn must never be silent. Fires wherever the plugin is
    installed, independent of project adoption.
+4. Planning-session file gate: with NO active build there is no agreed
+   file list, so a write outside the files a planning session touches by
+   design (QUEUE.md, SPEC.md, LOG/, _plan.md, and the always-editable
+   memory / research / scratchpad dirs) returns "ask" — never "deny".
+   Visibility, not containment: such a write should not be stopped, it
+   should be impossible to make unremarked.
+
+Rules 1 and 4 are complementary halves of one question — during a build the
+file list is enforced; outside one it is surfaced. Neither leaves a session
+editing the repo unobserved.
 
 For Task: checks rule 3 (cost ask-gate).
-For Edit/Write/MultiEdit: checks rule 1.
+For Edit/Write/MultiEdit: checks rule 1 during a build, rule 4 outside one.
 For Bash/PowerShell: checks rule 2 (git safety) only.
 """
 
@@ -76,6 +86,24 @@ def _deny(reason: str) -> int:
             "hookEventName": "PreToolUse",
             "permissionDecision": "deny",
             "permissionDecisionReason": reason,
+        }
+    }
+    json.dump(output, sys.stdout)
+    return 0
+
+
+def _advise(context: str) -> int:
+    """Attach a note to the tool result without changing the permission outcome.
+
+    PreToolUse's `additionalContext` lands next to the tool result, so the
+    session is guaranteed to see it. `permissionDecision` is deliberately
+    omitted: this is not a decision, and emitting "allow" here would bypass
+    the user's normal permission prompt as a side effect of printing a note.
+    """
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "additionalContext": context,
         }
     }
     json.dump(output, sys.stdout)
@@ -281,6 +309,56 @@ def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
     return True
 
 
+def _fire_once(cwd: str, marker_name: str) -> bool:
+    """True the first time it's called for this project, False after.
+
+    Backs the once-per-session advisories. The marker lives in the OS temp
+    directory, never in the repo: it is disposable state about a session, not
+    project content, and an in-tree marker would need gitignoring and would
+    show up in every close as a stray file.
+
+    Fails OPEN — any error returns True, so the advisory fires again rather
+    than going quiet. A note repeated is noise; a note lost is the invisibility
+    this exists to fix, so the error direction is chosen deliberately.
+    """
+    try:
+        import hashlib
+        import tempfile
+
+        key = hashlib.sha256(_normalise(cwd).encode("utf-8")).hexdigest()[:16]
+        marker = os.path.join(tempfile.gettempdir(), f"si-{marker_name}-{key}")
+        if os.path.exists(marker):
+            return False
+        with open(marker, "w", encoding="utf-8") as f:
+            f.write(cwd)
+        return True
+    except OSError:
+        return True
+
+
+def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
+    """True for the files a planning session writes by design.
+
+    The planning gate's quiet-list, and it is a quiet-list rather than a
+    boundary: everything else ASKS, nothing is forbidden. QUEUE.md, _plan.md
+    and LOG/ are covered by _is_method_doc; SPEC.md is added here because /plan
+    edits it by design (a SPEC change decided in planning is made in that same
+    session), even though it is deliberately NOT a method doc for the build
+    scope-lock. The memory, research and scratchpad exemptions ride along:
+    they pass silently everywhere else, and prompting for them only here would
+    be inconsistent noise.
+    """
+    if _is_method_doc(filepath, cwd):
+        return True
+    if _normalise(filepath) == _normalise(os.path.join(cwd, "SPEC.md")):
+        return True
+    return (
+        _is_memory_dir(filepath)
+        or _is_research_dir(filepath, cwd)
+        or _is_scratchpad_dir(filepath, cwd)
+    )
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -402,6 +480,35 @@ def main() -> int:
         build_files = _parse_build_files(build_path)
 
         if build_files is None:
+            # FAIL-OPEN, and that is correct: a build whose scope genuinely
+            # isn't settled shouldn't be locked out of every file, and /next
+            # writes the Files: section itself, so in normal operation it is
+            # always there. No denial behaviour changes here.
+            #
+            # What changes is VISIBILITY. Until now a session running with no
+            # containment looked exactly like one running with full containment
+            # — nothing anywhere said the lock wasn't engaged, while every
+            # doc-level scope rule is written assuming it is. The asymmetry gave
+            # it away: the MALFORMED case was hardened deliberately so it could
+            # never silently disable the lock (see _parse_build_files), while
+            # the ABSENT case — the same door — was left open.
+            #
+            # Stated as state, not alarm: this is a normal condition, and the
+            # line exists so the session knows which regime it's in. Once per
+            # project, on the first edit, riding a tool result — session start
+            # was rejected because that payload is size-capped and might not
+            # arrive, whereas this is guaranteed to be seen.
+            if _fire_once(cwd, "unscoped"):
+                return _advise(
+                    "[Sovereign Implementer] This build is running with no file "
+                    "containment: _build.md has no Files: section, so the "
+                    "scope-lock is not enforcing anything and every file in the "
+                    "project is editable. That is allowed — it is what an "
+                    "unscoped build means — but the usual floor isn't under you, "
+                    "so the described work is the only thing bounding what you "
+                    "touch. If this build was meant to be scoped, add a Files: "
+                    "section to _build.md (one bare path per line)."
+                )
             return 0
 
         if _is_method_doc(filepath, cwd):
@@ -440,6 +547,47 @@ def main() -> int:
                 "If this file genuinely needs editing, halt the build and, "
                 "with the user's approval, add it to _build.md's Files: "
                 "section."
+            )
+    else:
+        # --- No active build: the planning-session file gate ---
+        # File containment used to engage ONLY while a build was running, so a
+        # planning session could edit any file in the repo — shipped hooks,
+        # procedure docs, templates — with nothing noticing.
+        #
+        # The gate ASKS; it never denies, and the difference is load-bearing.
+        # Denial is right during a BUILD, where the file list was agreed in
+        # advance so a surprise means drift. In planning there is no agreed list
+        # to drift from: the session is a conversation, the user is present, and
+        # a legitimate write is authorised in one word. A deny-list would block
+        # ordinary work — a real /plan session moved a document into
+        # resources/research/ at the user's request, which no sensible whitelist
+        # would have carried.
+        #
+        # So this is WEAKER than a scope-lock, deliberately. Its job is
+        # visibility, not containment: a planning session that edits a shipped
+        # hook should not be stopped, it should be unable to do it unremarked.
+        #
+        # It also removes the need for any emergency-override machinery. When a
+        # risk must be fixed immediately, the write surfaces an ask, the user
+        # says yes, and the record exists — the departure becomes auditable
+        # rather than invisible. An exception convenient enough to cover a real
+        # emergency is convenient enough to be reached for when it isn't one;
+        # ask-never-deny has no exception to abuse because it forbids nothing.
+        if not _is_plan_quiet_path(filepath, cwd):
+            return _ask(
+                "[Sovereign Implementer] This session has no active build, so "
+                "there's no agreed file list — and this write is outside the "
+                "files a planning session normally touches (QUEUE.md, SPEC.md, "
+                "LOG/, and its own working notes).\n\n"
+                f"File: {filepath}\n\n"
+                "That's often perfectly fine: fixing something urgent, or "
+                "tidying at your request. Approve if you asked for this or "
+                "you're happy for it to happen now. Declining is a normal, safe "
+                "choice — the alternative is to capture it as a work item and "
+                "build it properly through /next.\n\n"
+                "If you approve and this isn't the sort of write a planning "
+                "session usually makes, it gets named in this session's LOG "
+                "entry so the departure is on the record."
             )
 
     return 0

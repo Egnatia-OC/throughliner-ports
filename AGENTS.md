@@ -96,24 +96,21 @@ No code method/
 
 Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Codex can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, and the `next*.md` / `done*.md` families), and `docs/plugin-behaviour.md` — which only refresh after push + uninstall/reinstall.
 
-When a batch depends on a previous batch's host-side effects, that dependency does not resolve in-session. /plan must place the dependent batch after a push marker and annotate its `Depends on:` line as `(host-side)`.
+When an item depends on a previous item's host-side effects, that dependency does not resolve in-session. **It is not cleared to run.** /plan leaves it below the readiness line with a lift-condition naming what must ship — "once [slug] is pushed and reinstalled" — exactly like any other dependency on something outside the queue.
 
-**Push-marker convention.** A line `--- Push required before continuing ---` between batches in QUEUE.md indicates /next must halt until the user has pushed and reinstalled. /plan inserts the marker when placing a host-side-dependent batch.
+**The push marker is retired (2026-08-04).** A line `--- Push required before continuing ---` used to sit between batches and was documented here as halting /next. It never did: /plan placed the marker and /next ignored it, so an item needing a shipped, reinstalled host got built against the old host silently. The readiness line is now the single gate for host-side waits like everything else, and the dependency model is two routes rather than three — `Blocked by: [slug]` for queued work, a lift-condition below the line for everything else.
 
-The marker is hard in only one direction. It halts /next because batches past it read host-side state — an audit reading injected rules, a live test of hook behaviour — which gives wrong results before push + reinstall; protecting that read is the one hard thing the marker does. It does **not** suspend decided rules or reasoning in any session, and it is not a wall for planning work: in-repo sessions read the queue and the discussion, not just the installed plugin, so decided-but-unshipped standards already shape sessions before any push. Treating the line as a blanket "not shipped yet, so don't apply it" suspends decided reasoning and breaks the why-pipeline. The line marks when we aim to ship by — decided rules and reasoning apply from the moment they're decided.
+**What has not changed:** a decided rule applies from the moment it is decided. Nothing about a push boundary ever suspended reasoning. In-repo sessions read the queue and the discussion, not just the installed plugin, so decided-but-unshipped standards shape sessions before any push. Treating "not shipped yet" as "doesn't apply yet" breaks the why-pipeline.
 
 Worked example:
 ```
-**[capture-parking-discipline]** ...
+--- Cleared to run above this line ---
 
---- Push required before continuing ---
-
-**[behaviour-agnosticism-audit]**
-Depends on: capture-parking-discipline (host-side)
-...
+#### Audit the procedure docs against the new capture-routing rules [behaviour-agnosticism-audit]
+Blocked by: nothing queued. Lift-condition: once [capture-parking-discipline]
+has been pushed and the host reinstalled — this audit reads the injected rules
+from the installed plugin, so before the reinstall it would read the old ones.
 ```
-
-[behaviour-agnosticism-audit] reads procedure docs against criteria including capture routing rules. Those rules live in plugin-behaviour.md (host-side). Without the push between them, the audit would read the old rules.
 
 ## Rezip (local testing) and Push (release)
 
@@ -172,7 +169,7 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 
 **Archive accuracy.** Push keeps archiving the previous zip as above. Because only Push ever builds the zip (Rezip no longer touches it), the zip in the working tree is always the last release, so the copy archived into `plugin/zip-archive/` at the next push faithfully reflects the prior release. Git history remains the authoritative record either way — each push commits `si-plugin.zip`.
 
-LOG entries are per-entry files — no log capping or push markers at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
+LOG entries are per-entry files — no log capping at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
 ## Goal sessions
 
@@ -220,7 +217,7 @@ Editor: Zettel — the `.md` editor Alex works in. This is the editor field the 
 ## Method docs
 
 - **SPEC.md** — what this product is, who it's for, how it works. Source of truth for design decisions.
-- **QUEUE.md** — work to be done, ordered top-to-bottom. Red flags (security, privacy, and breach risks Codex surfaced) sit at the top — the first thing seen each session — each carrying an open, resolved, or accepted state. Batches use Build/Test/Audit subheadings. Deferred tests holds verification for shipped work that couldn't run in its own session, one line each (source batch slug, what to verify, what confirms it, and two axes: the deferral reason — host-side / needs-user / external — and the runnability once unblocked — Codex-runnable / user-run) — /done writes entries here; /plan reads the section each session, asks which deferrals have cleared, and rolls the now-runnable user-run ones into a test batch; /done's close-out backstops by removing any line this session's activity already confirmed; the confirming session removes the line and records it in its LOG entry. Host-side liveness is resolved by content stamp, not version: the session-start hook surfaces the installed host's build stamp (a content hash of the installed plugin's files), and /plan compares it against the target's current stamp (the same `content_stamp()` run over `plugin/si-plugin/`) — a match means host-side changes are live, with no asking the user. This replaces the older version-base rule (host base ≥ target ⇒ live), which was blind to build-batch edits that change host-side files without bumping any version. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers. A `--- Plan session here: <reason> ---` marker between batches is a planning gate: /next halts there until a /plan session addresses the named reason, sibling to the push marker but for planning rather than host-side state.
+- **QUEUE.md** — work to be done, ordered top-to-bottom. Red flags (security, privacy, and breach risks Codex surfaced) sit at the top — the first thing seen each session — each carrying an open, resolved, or accepted state. Batches use Build/Test/Audit subheadings. Deferred tests holds verification for shipped work that couldn't run in its own session, one line each (source batch slug, what to verify, what confirms it, and two axes: the deferral reason — host-side / needs-user / external — and the runnability once unblocked — Codex-runnable / user-run) — /done writes entries here; /plan reads the section each session, asks which deferrals have cleared, and rolls the now-runnable user-run ones into a test batch; /done's close-out backstops by removing any line this session's activity already confirmed; the confirming session removes the line and records it in its LOG entry. Host-side liveness is resolved by content stamp, not version: the session-start hook surfaces the installed host's build stamp (a content hash of the installed plugin's files), and /plan compares it against the target's current stamp (the same `content_stamp()` run over `plugin/si-plugin/`) — a match means host-side changes are live, with no asking the user. This replaces the older version-base rule (host base ≥ target ⇒ live), which was blind to build-batch edits that change host-side files without bumping any version. Captures are split by `---` (processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based, auto-surfaces) or `Parked:` (indefinite, conscious revisit) headers. A `--- Plan session here: <reason> ---` marker between batches is a planning gate: /next halts there until a /plan session addresses the named reason. It is now the only in-queue halt marker — the push marker that was once its sibling is retired (see Self-hosting dependency ordering).
 - **LOG/** — per-session records of what was built, tested, and decided. `LOG/index.md` for summaries (newest first), each full entry as its own file named on its index line. Legacy entries from before the per-entry split remain in `LOG/log.md` and `LOG/log-v*.md`, findable by hash.
 - **resources/method-compliance-audit-checklist.md** — the standing criteria for a routine, corpus-wide compliance audit of the method's procedure docs: three lenses — 4.8 authoring-compliance (by reference to the 4.8 section of `resources/authoring-heuristic.md`), response-shape tag placement, and narration drift. Distinct from the authoring heuristic's per-text-at-authoring use: this is the periodic sweep of already-shipped docs. Host-only dev artifact (not shipped in the plugin package). A future /plan scoping a compliance audit reuses this rather than re-deriving the criteria.
 

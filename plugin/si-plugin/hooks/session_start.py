@@ -306,6 +306,14 @@ def _docset_directive(docset):
     can't rewrite those files — so when the active docset is B, this directive
     is what redirects the read. Emitted only for docset B: docset A needs no
     redirect, since `docs/` is what the skills already name.
+
+    The directive carries its own SELF-CHECK. A redirect only holds while the
+    model follows it, and a skimmed redirect leaves a session reading docset A
+    while believing it read B — with nothing noticing. Docset B's docs all open
+    with a `docset: B` frontmatter line and docset A's docs carry no frontmatter
+    at all, so the stamp already exists and costs nothing to consult. Checking
+    the stamp of the doc actually opened converts a silent failure into a loud
+    one, and it holds whichever way the redirect ever points.
     """
     if docset != _DOCSET_B:
         return ""
@@ -315,11 +323,67 @@ def _docset_directive(docset):
         "${CLAUDE_PLUGIN_ROOT}/docs/<name>.md — plan.md, next.md, next-build.md, "
         "next-audit.md, done.md, done-build.md, done-audit.md, done-plan.md, "
         "setup.md, migrate-checklist.md — read "
-        "${CLAUDE_PLUGIN_ROOT}/docs-b/<name>.md instead. The behaviour rules "
-        "included in this context are already docset B's. Both docsets carry the same method; docset "
-        "B states it more compactly. Don't mix them: read one doc from each "
-        "procedure family, from docs-b only. This is internal routing — never "
-        "narrate it to the user."
+        "${CLAUDE_PLUGIN_ROOT}/docs-b/<name>.md instead. Both docsets carry the "
+        "same method; docset B states it more compactly. Don't mix them: read "
+        "one doc from each procedure family, from docs-b only.\n"
+        "SELF-CHECK, every time you open one of those docs: its first lines must "
+        "carry `docset: B`. Docset A's docs have no frontmatter, so a missing "
+        "stamp means you opened the wrong docset — go back and open the docs-b "
+        "path before following anything you read. If the docs-b path genuinely "
+        "isn't there, say so to the user plainly and name which docset you fell "
+        "back to; don't proceed as though the redirect had worked.\n"
+        "The routing itself is internal — never narrate it to the user. The "
+        "exception is that failure: a mismatch or a missing file is told plainly."
+    )
+
+
+def _behaviour_rules_directive(plugin_root, docset):
+    """Instruction to read the behaviour rules from disk, rather than inlining them.
+
+    Hook output is capped at 10,000 characters — documented in the Claude Code
+    hooks reference, and confirmed by anthropics/claude-code#44086 and #70460.
+    Past that, the harness saves the text to a file and injects a ~2KB preview
+    plus a path in its place. `plugin-behaviour.md` is roughly 50KB in docs-b
+    and 89KB in docs, so appending it whole blew the cap by a wide margin and
+    the rules reached no session at all: only the short state lines above
+    survived. The failure was loud in effect and silent in appearance.
+
+    So the rules are pointed at, not pasted. This is a REDIRECT, not progressive
+    disclosure — the distinction is load-bearing. Progressive disclosure fails
+    for standing behavioural rules because a session has no trigger that would
+    make it fetch "lead with the decision"; moving those rules behind an index
+    deletes their effect. An unconditional read-this-first instruction defers
+    nothing and hides nothing: the file is not split, no rule moves behind an
+    index, and the whole of it is read before the session does anything. The
+    redirect mechanism is proven in this very payload — the docset directive is
+    the one part that reached sessions through the truncation, and it was
+    followed.
+
+    The trade is honest: the new failure mode is a skimmed redirect, which is
+    quieter than today's. That is why the self-check ships with it rather than
+    after it.
+    """
+    if not plugin_root:
+        return ""
+    path = "${CLAUDE_PLUGIN_ROOT}/" + docset + "/plugin-behaviour.md"
+    stamp = "carries `docset: B` in its frontmatter" if docset == _DOCSET_B else (
+        "opens with the heading `# Sovereign Implementer — behaviour rules` and "
+        "has no frontmatter"
+    )
+    return (
+        "=== PLUGIN-WIDE BEHAVIOUR RULES — READ THESE FIRST ===\n"
+        "The behaviour rules govern every skill and every reply in this session. "
+        "They are not included here: they are too large for a hook to inject, so "
+        "the harness would silently discard them.\n"
+        f"READ {path} IN FULL NOW, before your first reply and before running any "
+        "skill. This is not optional and it is not conditional — there is no "
+        "trigger that would later remind you to fetch them, so a session that "
+        "skips this runs ungoverned for its whole life.\n"
+        f"SELF-CHECK: the file you open {stamp}. If it isn't there or doesn't "
+        "match, tell the user plainly that the behaviour rules could not be "
+        "loaded and name what you found instead — do not carry on as though they "
+        "had been.\n"
+        "=== END BEHAVIOUR RULES DIRECTIVE ==="
     )
 
 
@@ -398,14 +462,14 @@ def main() -> int:
     has_plan_state = os.path.isfile(plan_state_path)
     has_faq_index = os.path.isfile(faq_index_path)
 
-    faq_index_content = ""
-    if has_faq_index:
-        try:
-            with open(faq_index_path, "r", encoding="utf-8") as f:
-                faq_index_content = f.read()
-        except OSError:
-            pass
-
+    # `has_faq_index` is read for two jobs: the one-line pointer near the end of
+    # this function, and the scaffold-drift check further down (a project with no
+    # FAQ folder is behind). The index's CONTENTS used to be appended whole —
+    # 2.3KB of question titles and anchors, larger than the whole surviving
+    # preview once the payload was truncated. Unlike the behaviour rules, the FAQ
+    # genuinely has a trigger: a session that needs an answer can open faq.md. So
+    # the only thing the injection has to do is make the session aware the FAQ
+    # exists, and that is one sentence.
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
 
     # Which docset serves this session. THREE SOURCES, LAYERED — deliberately
@@ -426,15 +490,7 @@ def main() -> int:
         docset = _DOCSET_A
     docset_directive = _docset_directive(docset)
 
-    behaviour_path = os.path.join(plugin_root, docset, "plugin-behaviour.md") if plugin_root else ""
-
-    behaviour_rules = ""
-    if behaviour_path and os.path.isfile(behaviour_path):
-        try:
-            with open(behaviour_path, "r", encoding="utf-8") as f:
-                behaviour_rules = f.read()
-        except OSError:
-            pass
+    behaviour_directive = _behaviour_rules_directive(plugin_root, docset)
 
     plugin_version = ""
     if plugin_root:
@@ -534,14 +590,20 @@ def main() -> int:
         return 0
 
     # State 2 or 3: Adopted
-    # Order matters, and it is not cosmetic. The injected context can be
-    # truncated, and only what survives reaches the session — so everything
-    # SHORT and load-bearing goes first (uncleared red flags, project state,
-    # host version and build stamp, the docset directive) and the behaviour-
-    # rules bulk is appended LAST, at the bottom of this function. With the
-    # rules first, they consumed the whole surviving payload and every state
-    # line — including the red-flag surfacing, which is the one thing that must
-    # never be missed — fell in the discarded remainder.
+    # Order matters, and it is not cosmetic. Hook output is capped at 10,000
+    # characters; past that the harness keeps a ~2KB preview and files the rest
+    # away, so only what sits earliest reaches the session. Everything SHORT and
+    # load-bearing goes first (uncleared red flags, project state, host version
+    # and build stamp, the docset directive), then the behaviour-rules directive,
+    # then the FAQ pointer.
+    #
+    # Nothing appended here is bulky any more — the two things that used to be
+    # (plugin-behaviour.md whole, and the FAQ index whole) are now pointers, and
+    # the payload sits comfortably inside the cap. The ordering is kept anyway:
+    # it costs nothing and it is what makes adding a line safe. The history is
+    # worth remembering — with the rules pasted first they consumed the entire
+    # surviving payload and every state line, red-flag surfacing included, fell
+    # in the discarded remainder.
     context_parts = []
 
     # Uncleared red flags first-thing: the two-section model has no pinned Red
@@ -739,20 +801,21 @@ def main() -> int:
         context_parts.append("")
         context_parts.append(backfill_report)
 
-    if faq_index_content:
+    # The behaviour-rules directive comes before the FAQ pointer: it is the one
+    # instruction the session must not miss, and the documented truncation
+    # ordering only protects what sits earlier. Nothing here is bulky any more —
+    # the whole payload is now well inside the 10,000-character cap — but the
+    # ordering is kept honest so it stays safe as lines are added.
+    if behaviour_directive:
         context_parts.append("")
-        context_parts.append(faq_index_content)
+        context_parts.append(behaviour_directive)
 
-    # The behaviour-rules bulk goes LAST — see the ordering note where
-    # context_parts is created. Everything above is short and state-bearing; if
-    # the payload is truncated, this is the part that should lose bytes, not the
-    # red-flag surfacing or the docset directive.
-    if behaviour_rules:
+    if has_faq_index:
         context_parts.append("")
         context_parts.append(
-            "=== PLUGIN-WIDE BEHAVIOUR RULES (active every session, govern every skill) ===\n"
-            + behaviour_rules
-            + "\n=== END BEHAVIOUR RULES ==="
+            "This project has an FAQ covering how the workflow works — the "
+            "question list is in FAQ/index.md and the answers in FAQ/faq.md. "
+            "Open it when a workflow question comes up, or point the user there."
         )
 
     output = {

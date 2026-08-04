@@ -14,7 +14,14 @@ gets built first — through discussion, not silently.
 
 ## Ground rules
 
-- **Never build during /plan.** Want to write code? Queue it.
+- **Never build during /plan.** Want to write code? Queue it. Nothing mechanically
+  stops you — there is no `_build.md` in a planning session, so the build
+  scope-lock isn't engaged and every file in the project is writable. What you get
+  instead is a **prompt**: a write to anything outside QUEUE.md, SPEC.md, LOG/ and
+  this session's own notes asks the user first. It asks, it never denies, because
+  in planning there is no agreed file list to drift from — the user is right there,
+  and a legitimate write is authorised in one word. Treat the prompt as the point:
+  it doesn't stop you doing something urgent, it stops you doing it unremarked.
 - **One item at a time.** Finish one before presenting the next.
 - **Read SPEC.md before proposing work.** Don't queue contradictions.
 - **Process the accumulated unprocessed work before new planning work.**
@@ -262,6 +269,39 @@ When quoting the first item, re-read it from QUEUE.md to confirm the quote match
 the file — this catches a context-drifted quote before it's discussed. For later
 items that re-read already happened at the checkpoint.
 
+**Verify the item's load-bearing factual claims before discussing it on its own
+terms.** A capture is written when its claims are true and then sits for weeks
+while the project moves under it. Nothing re-reads it: the below-line revisit
+re-checks lift-conditions, but only for items already in Processed, so a claim
+stated as prose inside an Unprocessed capture rots unobserved. Processing is the
+one moment the item is read closely, so the check belongs here.
+
+**Load-bearing means the item's *disposition* rests on it** — would the item change
+shape, priority, or readiness if the claim were false? That test is what keeps this
+from becoming a fact-audit of every sentence. Background colour needs no check. A
+stated blocker does, and so does any assertion about what the docs say, what a
+number is, or what has or hasn't shipped. A stated blocker is one kind of
+load-bearing claim, not the category — that framing was tried and was too narrow.
+
+```
+"blocked on X existing"     ->  check whether X exists now
+"the docs say Y"            ->  grep for Y
+"the payload is N bytes"    ->  measure it
+"we can't do Z yet"         ->  check whether that's still true
+```
+
+Cheap by construction: one item, one check, and only when the item makes such a
+claim — so the cost scales with the work being done, not with the size of the
+queue. A sweep over all of Unprocessed at the close was considered and rejected
+for exactly that reason: it would near-always find nothing, and a check that
+near-always no-ops is one that gets skipped.
+
+Three real catches, all of which happened only because someone thought to look:
+an item blocked on a recipe that had shipped the day before; an item whose fix
+direction reversed once the docs were grepped and said the opposite; and an item
+resting on a byte count that measured fifteen times larger. Two of the three were
+caught after the item had already been half-discussed on a false premise.
+
 Engage with the item's substance: ask follow-ups to sharpen it or surface missing
 context, depth scaling with the item, until the picture is clear.
 
@@ -362,7 +402,7 @@ approved and on screen. If the raw capture had no slug, give it one now. Report
 confirms it landed in Processed and is gone from Unprocessed.
 
 *If this item waits on something, choose its route deliberately — don't leave the
-dependency to position or to prose.* Three routes, and the choice is stated once
+dependency to position or to prose.* Two routes, and the choice is stated once
 here so it isn't re-derived every time:
 
 ```
@@ -370,12 +410,16 @@ waits on other queued work   ->  Blocked by: [slug]
     # one line under the description. The named item must be in the queue,
     # above this one. The queue lint checks both.
 
-waits on built work being    ->  the push marker between items
-SHIPPED and running              # a build session can't ship mid-run
-
-waits on something OUTSIDE   ->  a lift-condition in the prose, and the item
-the queue                        sits below the readiness line
+waits on ANYTHING ELSE       ->  a lift-condition in the prose, and the item
+                                 sits below the readiness line
+    # a restart, an external event, a decision only the user can make — and
+    # equally, work that must be released and running first. Don't clear an
+    # item that needs a push; shelve it with "once <this> is pushed and
+    # reinstalled" as its lift-condition, like any other external wait.
 ```
+
+The push marker that used to be a third route here is retired: /next never
+honoured it, so it silently let work run against a stale host.
 
 A lift-condition that names another item's slug is the tell that it should have
 been `Blocked by:` — rewrite it. Position is not a route: it says what comes

@@ -145,9 +145,10 @@ lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
 
 **A lift-condition may no longer name another queue item.** "Cleared once [slug]
 is built" is a dependency on queued work, and that has its own field now:
-`Blocked by: [slug]`, checked by the queue lint. Waiting on built work to be
-shipped and running is the push marker. Lift-conditions are for events outside
-the queue entirely. If you find one naming a slug, rewrite it as `Blocked by:`
+`Blocked by: [slug]`, checked by the queue lint. Lift-conditions are for
+everything else — every wait outside the queue, *including* waiting for built
+work to be released and running, which is an ordinary external event and no
+longer has a marker of its own. If you find one naming a slug, rewrite it as `Blocked by:`
 while you're here — that's a pointer fix, not a fate decision, so it rides this
 close without an approval ask.
 

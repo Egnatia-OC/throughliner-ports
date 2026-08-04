@@ -27,7 +27,7 @@ The plugin splits your project into a build queue and walks you through it. Four
 - `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one
 - `/done` — record what happened, commit
 
-Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
+Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. Planning sessions have no file list to lock to, so they get a lighter guard instead: a change to anything beyond your queue, spec and log asks you first. It asks, never refuses — the point is that nothing gets changed without you seeing it.
 
 The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. Setup asks which model you mostly use, in one optional question, and that's the whole of it: both versions do the same thing, so your project works the same way whichever model you use.
 

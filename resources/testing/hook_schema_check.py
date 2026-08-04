@@ -150,12 +150,84 @@ def test_session_start_survives_missing_model_field():
           rc == 0 and _is_json(out), err[:500])
 
 
-def test_session_start_state_lines_precede_the_bulk():
-    """Ordering regression: the behaviour-rules bulk must not lead the payload.
+# Hook output strings are capped at 10,000 characters. Documented in the Claude
+# Code hooks reference and confirmed by anthropics/claude-code#44086 and #70460:
+# past the cap the harness saves the text to a file and injects a ~2KB preview
+# plus a path in its place, so the model never sees the remainder.
+HOOK_OUTPUT_CAP = 10_000
 
-    Truncation keeps only the front of the injected context, so anything short
-    and load-bearing has to sit ahead of the rules block. Putting the rules
-    first once cut every state line, including the red-flag surfacing.
+
+def test_session_start_payload_fits_under_the_cap():
+    """The whole payload must fit in the injected context, not just its front.
+
+    This is the check that matters most in this file, because the failure it
+    guards was invisible in every other way. session_start once appended
+    plugin-behaviour.md whole — ~50KB in docs-b, ~89KB in docs — and the harness
+    silently discarded everything past the preview. Sessions kept working, which
+    is exactly why nobody noticed: Claude read CLAUDE.md and the queue directly
+    and reconstructed roughly what the hook would have said.
+
+    Asserted with real headroom rather than at the line: a payload creeping up
+    on the cap is already a bug waiting for one more state line.
+    """
+    rc, out, err = drive("session_start.py",
+                         {"hook_event_name": "SessionStart", "cwd": ROOT,
+                          "source": "startup"})
+    if not _is_json(out):
+        check("SessionStart: payload size checkable", False, err[:300])
+        return
+    ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
+    size = len(ctx)
+    check(f"SessionStart: payload within the {HOOK_OUTPUT_CAP}-char cap",
+          size < HOOK_OUTPUT_CAP, f"{size} chars")
+    check("SessionStart: payload keeps headroom (under half the cap)",
+          size < HOOK_OUTPUT_CAP // 2, f"{size} chars")
+
+
+def test_session_start_points_at_the_rules_rather_than_pasting_them():
+    """The rules are REDIRECTED to, never inlined.
+
+    A regression here would be silent in the worst way — the payload would grow
+    past the cap and the rules would stop arriving, with sessions still appearing
+    to work. So the check is on the mechanism, not just the size: the directive
+    must be present, and the file's actual contents must NOT be.
+    """
+    rc, out, err = drive("session_start.py",
+                         {"hook_event_name": "SessionStart", "cwd": ROOT,
+                          "source": "startup"})
+    if not _is_json(out):
+        check("SessionStart: rules directive checkable", False, err[:300])
+        return
+    ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
+    at = ctx.find("=== PLUGIN-WIDE BEHAVIOUR RULES")
+    if at == -1:
+        print("  skip SessionStart: behaviour-rules directive not emitted "
+              "(no CLAUDE_PLUGIN_ROOT in this run)")
+        return
+    check("SessionStart: rules directive is not first", at > 0, "index " + str(at))
+    check("SessionStart: rules are pointed at, not pasted",
+          "plugin-behaviour.md IN FULL NOW" in ctx or "IN FULL NOW" in ctx,
+          "no read-first instruction found")
+    # The giveaway that someone re-inlined the file: its own body text.
+    check("SessionStart: the rules file's contents are absent from the payload",
+          "## Response-shape tags" not in ctx and "## Why-pipeline" not in ctx,
+          "rules body detected in payload")
+    # The FAQ pointer follows the rules directive: truncation ordering only
+    # protects what sits earlier, and the rules are the thing that must arrive.
+    faq = ctx.find("This project has an FAQ")
+    if faq != -1:
+        check("SessionStart: FAQ pointer sits after the rules directive",
+              faq > at, f"faq at {faq}, rules at {at}")
+        check("SessionStart: the FAQ index is pointed at, not pasted",
+              "](faq.md#" not in ctx, "FAQ index body detected in payload")
+
+
+def test_session_start_state_lines_lead_the_payload():
+    """Ordering regression: short, load-bearing state must sit at the front.
+
+    Nothing in the payload is bulky any more, so this is belt-and-braces rather
+    than the live defence it once was. It stays because it is what makes adding
+    a line safe.
     """
     rc, out, err = drive("session_start.py",
                          {"hook_event_name": "SessionStart", "cwd": ROOT,
@@ -164,16 +236,6 @@ def test_session_start_state_lines_precede_the_bulk():
         check("SessionStart: ordering checkable", False, err[:300])
         return
     ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
-    at = ctx.find("=== PLUGIN-WIDE BEHAVIOUR RULES")
-    if at == -1:
-        print("  skip SessionStart: behaviour rules not loaded in this run")
-        return
-    check("SessionStart: behaviour-rules bulk is not first", at > 0, "index " + str(at))
-    check("SessionStart: behaviour-rules bulk is last in the payload",
-          ctx.rstrip().endswith("=== END BEHAVIOUR RULES ==="),
-          repr(ctx.rstrip()[-60:]))
-    # The state lines are what a truncated payload must keep. Red flags lead,
-    # so if any are present they sit at the very front; project state follows.
     state = ctx.find("[Sovereign Implementer] Project is set up.")
     check("SessionStart: project state within the first 2KB",
           0 <= state <= 2048, "state line at " + str(state))
@@ -307,7 +369,9 @@ def main():
         test_session_start_adopted,
         test_session_start_unadopted,
         test_session_start_survives_missing_model_field,
-        test_session_start_state_lines_precede_the_bulk,
+        test_session_start_payload_fits_under_the_cap,
+        test_session_start_points_at_the_rules_rather_than_pasting_them,
+        test_session_start_state_lines_lead_the_payload,
         test_pre_tool_use_out_of_scope_denies,
         test_pre_tool_use_in_scope_is_silent,
         test_pre_tool_use_git_safety_denies,

@@ -334,6 +334,22 @@ move: if the closing session discovers a needed verification that isn't already 
 tracks it in a dedicated section, and **no LOG-only prose stands in for the queue
 line** — an unrun check recorded only in a log entry never surfaces again.
 
+## Recording an out-of-shape write  [SILENT when none; BRIEF when recording]
+
+A write the user approved through the file-gate prompt that **departs from the
+session's normal shape** gets named in the LOG entry: what was changed, and why it
+couldn't wait for a work item and a /next run. One or two sentences.
+
+This is what makes the departure auditable rather than invisible, and it is the
+half that has been missing. When a session edited seven files inline to scrub an
+active exposure, the call was right and would be made again — but there was no
+work item, no scope, and afterwards no record that it had happened at all. The
+gate now surfaces the ask; this records the answer.
+
+Scope it by shape, not by file: an ordinary planning write that merely happened to
+prompt (moving a research note at the user's request) needs no entry. A shipped
+hook edited mid-planning does.
+
 ## Recording a cleared red flag
 
 A red flag is cleared at *processing* — the /plan moment its item is judged ready.

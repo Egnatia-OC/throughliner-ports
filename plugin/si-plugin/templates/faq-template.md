@@ -72,7 +72,9 @@ It exists because the order things sit in isn't enough on its own. Order tells y
 
 Claude checks these for you as an advisory: if a `Blocked by:` line names something that isn't in your queue, or names something sitting *below* it (which reads backwards), you'll see a note about it. It's a nudge, never a block.
 
-Two near-neighbours work differently, so you don't have to guess: work waiting on something to be *released and running* uses a push marker between items instead, and work waiting on something outside the queue entirely — a restart, an event, a decision that's yours — just says so in plain words and sits below the readiness line.
+There's one near-neighbour, so you don't have to guess. `Blocked by:` is only for waiting on *another item in your queue*. Waiting on anything else — a restart, an event, a decision that's yours, or something needing to be released and running first — is written in plain words in the item's description, and the item sits below the readiness line until that clears.
+
+(If you've used this before and remember a "push marker" between items for the released-and-running case: that's gone. It was a third route that never actually worked — one part of the method placed it and the part that builds ignored it — so work that needed a released version could get built against the old one without anything noticing. The readiness line covers that case now, along with every other kind of waiting.)
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 
@@ -247,6 +249,18 @@ One detail worth knowing: a risk counts as cleared the moment it's designed out 
 ## Why did Claude ask before starting a "subagent"?
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
+
+## In a planning session, Claude asked permission to change a file. Why?
+
+Planning sessions are for talking things through and shaping your queue, so they normally only touch a few files: your queue, your spec, your session log, and Claude's own working notes. Those go through without interrupting you.
+
+Anything else, Claude asks about first — naming the file — and you say yes or no.
+
+The reason it asks rather than refusing: a planning session sometimes has a genuinely good reason to change something. You spot a problem that needs fixing now rather than in three sessions' time. You ask Claude to tidy a file while you're both looking at it. Something is exposed and shouldn't stay exposed for another day. Blocking those would just get in your way.
+
+But equally, a planning session quietly rewriting parts of your project isn't something that should be able to happen without you noticing. So the prompt splits the difference: nothing is forbidden, and nothing happens unremarked. **Declining is a completely normal answer** — it usually just means "capture that as a work item and build it properly later."
+
+If you approve something out of the ordinary, Claude also notes it in the session log, so there's a record of what was changed outside the usual shape and why.
 
 ## What does a "Plan session here" line in the queue mean?
 

@@ -298,6 +298,36 @@ ground.
 a finding that informed a decision, or that would have to be redone if lost.
 Name the file in chat when it lands, so the filing is visible and checkable.
 
+### When the rules don't cover the moment — which of two things is true
+
+Sooner or later a session reaches a spot the procedures don't address. There are
+two very different situations there, they feel identical from the inside, and
+telling them apart is the whole job:
+
+```
+a MISSING RULE      ->  write it down, capture it, DON'T act on it now.
+    nothing covers this case, so there is nothing to depart from. What's
+    missing is authorship, not permission.
+
+a RIGHT RULE that   ->  the narrow override. Not yours to invent: say what
+must be broken          you're about to do and why, get the user's go-ahead,
+in this instance        and record it in the LOG entry.
+```
+
+**The error that actually happens is reaching for the second when it's the
+first** — it feels like permission is what's lacking, so a session grants itself
+some and acts, when the correct move was to write the rule down and leave the
+action for a session that has one. Four separate sessions hit this fork with the
+distinction unavailable; each improvised, and each improvisation had to be
+captured afterwards as its own problem.
+
+The tell is simple. Ask: *is there a rule here I'd be breaking?* If you can't name
+one, you are not departing from anything — you are noticing a gap. Capture it.
+
+**A departure that isn't recorded is indistinguishable from a violation.**
+Whatever else happens, the LOG carries it: what was done, and why it couldn't
+wait.
+
 ### Temporary files and session artifacts
 
 ```
@@ -491,11 +521,11 @@ a forward recommendation                              ->  the advisory (transien
 The cleared-to-run line **replaces** parking — that stays folded in, not separate
 machinery.
 
-### Saying that one item waits on another — three routes, one choice
+### Saying that one item waits on another — two routes, one choice
 
 Order alone does **not** express dependency. Position says *what comes next*; it
 has no memory of *why*, so a dependency held only by position is silently undone
-by the next reorder. Say it explicitly instead. There are exactly three routes,
+by the next reorder. Say it explicitly instead. There are exactly two routes,
 and this is the whole set:
 
 ```
@@ -503,14 +533,28 @@ waiting on other queued work      ->  Blocked by: [slug]
     # one line under the item's description. The named item must exist in the
     # queue and must sit ABOVE this one. Nothing else — no parking, no flavors.
 
-waiting on work being SHIPPED     ->  the push marker between items
-    # built, but it has to be released and running before the next item can
-    # proceed. A build session can't ship mid-run, so this is its own thing.
-
-waiting on something OUTSIDE      ->  a lift-condition in the item's prose
-the queue entirely                    # a restart, a decision only the user can
-                                      # make, an external event
+waiting on ANYTHING ELSE          ->  a lift-condition in the item's prose,
+                                      and the item sits below the readiness line
+    # a restart, a decision only the user can make, an external event — and
+    # equally, work that has to be released and running first. "Waiting on a
+    # shipped host" is just one kind of external event; it needs no route of
+    # its own.
 ```
+
+**There was once a third route — a push marker placed between items — and it is
+retired.** /plan placed it and /next ignored it, so an item needing a shipped,
+reinstalled host got built against the old one silently, and the wrong results
+read as the design being wrong rather than the sequencing having failed. The
+readiness line already does this job and does it properly: it is the gate the
+method actually maintains, tests, and surfaces at every close, whereas the marker
+was maintained in two docs and honoured in none. Two gates that both bound a run
+is exactly what /next collapsed to one.
+
+The cost is real and worth naming: mid-run sequencing is gone. A run can no
+longer be "build these three, push, then build these two" — the second group
+waits for the next /plan. In practice a run ends at /done and a push falls
+naturally there, so the loss is smaller than it reads, but it is a trade rather
+than a free simplification.
 
 **A lift-condition that names another queue item's slug is the signature of a
 misrouted dependency** — it belongs in `Blocked by:`. That's the specific mistake
@@ -551,6 +595,33 @@ The threshold is a genuine risk, not every data-handling intention.
 
 **Flagging, not fixing.** Name and route the risk; don't quietly handle it or
 redesign around it, even when the fix seems obvious. The user decides.
+
+### Does this wait? — actively spreading vs sitting still
+
+One triage question, asked of every red flag, because the method otherwise has no
+word for the difference and the difference is what decides the timing:
+
+```
+sitting still    ->  route it normally. Capture, process, build through /next.
+    a risk in a design, in unshipped code, in a plan. It is not reaching anyone
+    while it waits, so the queue is exactly the right speed.
+
+actively spreading  ->  say so immediately and ask to fix it now.
+    published, installed, being served, committed to a public repo — the
+    exposure grows for as long as it stands. Deferring it so the paperwork
+    stays tidy is the wrong trade.
+```
+
+This is a triage question, **not** a permission to act alone. Nothing here lets
+you skip the user: you say plainly what is spreading and what you propose, and
+they decide. What it changes is the timing you propose — and outside a build, the
+file gate turns the write itself into a prompt, so an urgent fix is authorised in
+one word and lands on the record rather than happening unremarked.
+
+A worked case, and it is the reason this is written down: a session found a named
+third party's private circumstances readable in committed LOG entries of a public
+repo. That was spreading, the fix was right, and it happened anyway — but nothing
+in the method permitted it and nothing recorded it. Both halves are now covered.
 
 ### Flag states
 
