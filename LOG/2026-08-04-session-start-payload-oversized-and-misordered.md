@@ -1,4 +1,4 @@
-# [HASH] — Stopped inlining the behaviour rules and FAQ index in the session-start payload — 54,886 characters down to 3,288, against a documented 10,000 cap
+# 455082b — Stopped inlining the behaviour rules and FAQ index in the session-start payload — 54,886 characters down to 3,288, against a documented 10,000 cap
 
 Every session in this project had been running without its behaviour rules, and nothing said so. `session_start.py` read `<docset>/plugin-behaviour.md` and appended it whole — 50,685 bytes in docs-b, 89,411 in docs — producing a payload of 54,886 characters. The harness kept a preview and filed the rest away, so only the state lines and the docset directive ever arrived.
 

@@ -41,7 +41,7 @@ This is phase 1 of three: this build records the decision and freezes A. Phase 2
 
 ## Host and target
 
-**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only a `claude` CLI install/update against the committed marketplace plus a full app restart does (the desktop app's in-app plugin upload is gone; see the Rezip and Push rituals below for the exact commands). A bare working-tree or zip edit changes nothing the host sees, because the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files.
+**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only a `claude` CLI install/update against the committed marketplace plus a full app restart does (the desktop app's in-app plugin upload is gone; see the Rezip and Release rituals below for the exact commands). A bare working-tree or zip edit changes nothing the host sees, because the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files.
 **Target** = the editable source at `plugin/si-plugin/`. This is what sessions build and edit. Target changes have no effect until packaged and installed as the new host.
 
 Host and target are the same plugin at different stages. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target. **Default assumption: discussion is about the target unless the user says otherwise.** Most target changes become host changes automatically on reinstall. Changes that live outside the plugin package (e.g. project doc structure, this CLAUDE.md) won't propagate through reinstall and need manual updates.
@@ -100,9 +100,9 @@ No code method/
 
 ### Self-hosting dependency ordering
 
-Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Claude can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, and the `next*.md` / `done*.md` families), and `docs/plugin-behaviour.md` — which only refresh after push + uninstall/reinstall.
+Batch ordering in QUEUE.md implicitly assumes the next batch sees the previous batch's effects. That's true for **target-side** changes — edits to files under `plugin/si-plugin/` that Claude can read at author time. It's false for **host-side** changes — the installed plugin's hooks (`hooks/session_start.py`, `hooks/pre_tool_use.py`), the loaded skill procedure docs (`docs/setup.md`, `plan.md`, and the `next*.md` / `done*.md` families), and `docs/plugin-behaviour.md` — which only refresh after a reinstall (a rezip, or the reinstall step of a release). A routine push changes nothing the host sees.
 
-When an item depends on a previous item's host-side effects, that dependency does not resolve in-session. **It is not cleared to run.** /plan leaves it below the readiness line with a lift-condition naming what must ship — "once [slug] is pushed and reinstalled" — exactly like any other dependency on something outside the queue.
+When an item depends on a previous item's host-side effects, that dependency does not resolve in-session. **It is not cleared to run.** /plan leaves it below the readiness line with a lift-condition naming what must ship — "once [slug] has been reinstalled into the host" — exactly like any other dependency on something outside the queue.
 
 **The push marker is retired (2026-08-04).** A line `--- Push required before continuing ---` used to sit between batches and was documented here as halting /next. It never did: /plan placed the marker and /next ignored it, so an item needing a shipped, reinstalled host got built against the old host silently — and the wrong results read as the design being wrong rather than the sequencing having failed. This file asserted the halt for months while the shipped docset said the mechanism didn't exist.
 
@@ -122,9 +122,19 @@ has been pushed and the host reinstalled — this audit reads the injected rules
 from the installed plugin, so before the reinstall it would read the old ones.
 ```
 
-## Rezip (local testing) and Push (release)
+## Rezip (local testing), Push (routine), and Release (automatic)
 
-These are two separate actions. **Rezip** refreshes the installed host from the local `plugin/si-plugin` folder so Alex can dogfood the plugin privately — it never publishes and no longer builds a zip (the local marketplace sources the folder, and the CLI snapshots it directly). **Push** is the full release ritual that publishes to the public remote. The word "push" (said directly, or chosen at a /done close) always means the full release ritual below. "Rezip" is a separate, explicit request and never publishes — bumps no version, makes no commit, touches no remote. Do whichever Alex actually asked for; don't run a push because she asked to rezip.
+**Three separate actions — and the vocabulary changed on 2026-08-04. The old meaning of "push" is retired.** "Push" used to mean the full release ritual, so a push and a release were one event and the word had to be watched for. They are now decoupled and the words mean what they say.
+
+- **Rezip** refreshes the installed host from the local `plugin/si-plugin` folder so Alex can dogfood the plugin privately. Never publishes, never releases, makes no commit, touches no remote. It no longer builds a zip — the local marketplace sources the folder and the CLI snapshots it directly.
+- **Push** is `git push` and nothing else. Routine and cheap: it runs after every /next and at any /done, with no version bump, no consistency sweep, no zip and no GitHub Release. Its only question is "is the work on the remote yet?"
+- **Release** publishes a version: the bump, the consistency sweep, the repackage, the GitHub pre-release and the host reinstall. It fires **automatically** at any /done whose commits touched files under `plugin/si-plugin/`.
+
+**Why the release trigger is mechanical, and why it must stay that way (Alex's reason, 2026-08-04).** Welding release to push meant every routine save asked "is this good enough to publish?" — a question with no answer when the honest one is that the project is unfinished and will never feel finished. That made releasing something to avoid, so releases stopped happening and the work stayed invisible. Tying the release to a file check removes the question rather than making it easier to answer. **Nothing in this ritual may reintroduce a readiness judgment:** don't ask whether a release is warranted, don't propose holding one back until something is tidier, and don't add a quality condition to the trigger. If the commits touched the plugin, it releases.
+
+**Every release is marked pre-release, and that is the honest label.** The plugin is in active testing and is not ready for the Claude marketplace. GitHub's pre-release flag states that structurally, so it never has to be re-decided or re-worded release by release, and a release is never a claim that the plugin is finished.
+
+Do whichever Alex actually asked for; don't run a release because she asked to rezip.
 
 ### Recovering from a project-folder move
 
@@ -139,9 +149,9 @@ Consumers are unaffected — they install from the GitHub marketplace, which has
 
 When Alex says "rezip" (or asks for a fresh local build to test), run this — no release version bump, no archive, no commit, no push. (The one version change is the test suffix in step 1; the release version is never bumped here.)
 
-**The `-testN` test-build scheme.** A rezip rebuilds the zip without a release bump, because bumping the release version on every private test build would nag Alex's own projects to re-run /setup each time. But test builds still need to be distinct and unmistakably-test, so each carries a `<base>-testN` version — the release-line base plus `-test` and a number incremented each rezip-for-testing (e.g. `1.12.0-test1`, then `-test2`). Honest framing: the suffix is not what makes a reinstalled host load — the full app restart is (see the relaunch step below). `-testN`'s only job is to keep each test build a distinct, clearly-labeled version that's never mistaken for a release. The suffix lives in the working tree's `plugin.json` only and must be reset to a clean version before any push; the Push step's bump does exactly that (Push step 2), so a test suffix never ships in a release.
+**The `-testN` test-build scheme.** A rezip installs a build without touching the release line. **The reason this doc used to give for that is stale, and was checked on 2026-08-04:** it said bumping the release version would nag Alex's own projects to re-run /setup each time. It doesn't — `session_start.py` emits a plain informational line ("an update has been installed") with no re-run prompt. The suffix survives for its real job, which this doc already stated as its honest framing: test builds need to be distinct and unmistakably-test, so each carries a `<base>-testN` version — the release-line base plus `-test` and a number incremented each rezip-for-testing (e.g. `1.12.0-test1`, then `-test2`). Honest framing: the suffix is not what makes a reinstalled host load — the full app restart is (see the relaunch step below). `-testN`'s only job is to keep each test build a distinct, clearly-labeled version that's never mistaken for a release. The suffix lives in the working tree's `plugin.json` only and must be reset to a clean version before any release; the Release ritual's bump does exactly that (Release step 2), so a test suffix never ships in a release. A routine push does **not** reset it — pushes carry no version change at all, so the suffix can and does sit on the remote between releases.
 
-**So `plugin.json` sitting dirty between a rezip and the next push is expected, and it must stay that way.** Every close will see it as an uncommitted file. Leave it. Don't stage it, don't "tidy" it, and don't treat the repetition as a problem to make go away — the reset happens at the Push bump and nowhere else. This has already gone wrong once: faced with the same file surfacing at every close, a session made it stop by committing it, and the public repo advertised `1.16.0-test4` as its version until the next release. The close carries a matching carve-out (`docs-b/done.md`) so it no longer asks.
+**So `plugin.json` sitting dirty between a rezip and the next release is expected, and it must stay that way.** Every close will see it as an uncommitted file. Leave it. Don't stage it, don't "tidy" it, and don't treat the repetition as a problem to make go away — the reset happens at the Release bump and nowhere else. This has already gone wrong once: faced with the same file surfacing at every close, a session made it stop by committing it, and the public repo advertised `1.16.0-test4` as its version until the next release. The close carries a matching carve-out (`docs-b/done.md`) so it no longer asks.
 
 1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the current version and increment N (`-test1` → `-test2`), or start at `-test1` if the base carries no suffix (`1.12.0` → `1.12.0-test1`).
 2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python bytecode never gets snapshotted into the installed host (disposable — Python regenerates them as needed): `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`. (No zip is built here — the local marketplace sources the plugin from the `plugin/si-plugin` folder, and the CLI snapshots that folder directly. The zip only changes at Push, so a test build never touches it.)
@@ -166,19 +176,40 @@ When Alex says "rezip" (or asks for a fresh local build to test), run this — n
 
    Why the wording matters that much: when the hook was dead, sessions kept working, because Claude read CLAUDE.md and the queue directly and reconstructed roughly what the hook would have said. That reconstruction is indistinguishable from success unless the question is "what arrived?". The same trap applies to *any* mechanism whose output Claude could plausibly rebuild from other context. And "it ran" is not "it worked": running a hook through the CLI with `--include-hook-events` echoes its raw stdout whether or not the harness accepts it. This step lives in the ritual rather than in the queue because a queue item fires once, and this is a bug that returns silently.
 
-### Push (release)
+### Push (routine)
 
-When Alex says "push" (or a push happens as part of /done), run this automatically before pushing — no confirmation needed per step:
+`git push`. That is the whole action. It runs when Alex says "push", automatically after every /next, and at any /done — no version bump, no sweep, no zip, no GitHub Release, no confirmation needed. Never `--force`. Stage explicitly, as the file-safety rules require; never `git add -A`.
+
+Pushing often is the point: it decouples "the work is safely on the remote" from "I am publishing a version," so the routine action never carries a publishing decision.
+
+**Then check whether a release is due — a file check, not a judgment.** At a /done close, after the commit:
+
+```bash
+git fetch --tags && git diff --name-only "$(gh release list --limit 1 --json tagName -q '.[0].tagName')"..HEAD -- plugin/si-plugin/
+```
+
+Non-empty output means the commits since the last release touched the plugin, so the **Release** ritual below fires. Empty means it doesn't. Run the check and act on it; don't ask whether a release feels warranted. If no release exists yet, treat that as "release due" and let the ritual create the first one.
+
+**Both halves of that command are load-bearing, and were verified on 2026-08-04 rather than assumed.** `git fetch --tags` is required because release tags are created by `gh release create` on the remote and are **not** in the local clone until fetched — without it the range fails to resolve. And the last-release tag is read from `gh release list`, not from `git describe --tags`, because this repo carries 135 unrelated local tags (`v95`, `v103`, …) from some other history, none of them ancestors of HEAD; `git describe` failed outright here. `gh release list` reads the actual published releases, which is the thing the range is meant to mean.
+
+### Release (automatic, when the check above says so)
+
+Run this whole ritual automatically, no confirmation needed per step. Every step that says "push" here means the ordinary `git push` above.
 
 1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before proceeding. The session-start hook only fires at session start, so a /done that ran earlier in this same session leaves its placeholder unfilled at push time — this step catches it. Same rules as the hook: replace the token only in hash position (an entry heading line or the start of an index line), never in body prose, which may mention the token literally; resolve each to the **oldest** `git log -S "<entry title>"` match, never the newest commit touching the file.
-2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json` to a clean patch/minor — patch for fixes/incremental, minor for new capabilities — and in doing so **drop any `-testN` suffix** the working tree carries from rezip testing (`1.12.0-test3` → `1.12.1` or `1.13.0`), so a test suffix never ships in a release. (The release bump lives here, not in rezip — rezip only ever touches the `-testN` test suffix, never the release line: bumping the release version on every private test build would make Alex's own projects nag "version changed, re-run /setup" each time she tests.)
-3. Pre-push consistency sweep — two passes, run in order:
+2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json` to a clean patch/minor — patch for fixes/incremental, minor for new capabilities — and in doing so **drop any `-testN` suffix** the working tree carries from rezip testing (`1.12.0-test3` → `1.12.1` or `1.13.0`), so a test suffix never ships in a release. (The release bump lives here, not in rezip — rezip only ever touches the `-testN` test suffix, never the release line, so a locally-installed test build stays visibly distinct from a published one.)
+3. Pre-release consistency sweep — two passes, run in order:
 
-   **Pass A — Gather the feed:** Run `git log --oneline origin/main..HEAD` to list unpushed commits. Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted).
+   **Pass A — Gather the feed:** List the commits since the last release, using the same tag lookup as the release check above (fetch tags first; read the tag from `gh release list`, never `git describe`):
+
+   ```bash
+   git fetch --tags && git log --oneline "$(gh release list --limit 1 --json tagName -q '.[0].tagName')"..HEAD
+   ```
+ Read their LOG entries (each session's own file under LOG/) to understand what changed (files touched, features added/removed/renamed, concepts that shifted). **The range is since-the-last-release-tag, not `origin/main..HEAD`** — that older range meant "unpushed," which under routine pushing is usually empty, so the sweep would silently read nothing and pass. The release span is what this sweep is actually about, and Pass A's output is also the feed the release notes are written from in step 10.
 
    **Pass B — Check for staleness against those changes:**
    - **Target internal consistency:** Do templates match the procedure docs they ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current procedure docs (field names, doc structure, workflow descriptions). Update any that fell behind.
-   - **Project docs:** Check QUEUE.md, SPEC.md, and LOG/ for references to removed features, renamed fields, or old formats that the unpushed commits changed. Fix any found.
+   - **Project docs:** Check QUEUE.md, SPEC.md, and LOG/ for references to removed features, renamed fields, or old formats that the release span's commits changed. Fix any found.
    - **CLAUDE.md:** Check this file's descriptions (Architecture, Method docs, Rules) against current target state. Update any stale references.
    - **The install path:** re-read README.md's Install section and INSTALL.md against the way the plugin is actually installed today — the commands, the marketplace name, the minimum Claude Code version. This one earns its own clause because nobody who already has the plugin ever exercises it, so it can break completely and stay broken; the only person who would notice is a brand-new user who by definition can't diagnose it. Every other doc gets read by someone eventually. This one doesn't, so the release sweep is where it gets read.
 4. Archive current zip: `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
@@ -188,16 +219,18 @@ When Alex says "push" (or a push happens as part of /done), run this automatical
 8. Stage every dirty path in `plugin/si-plugin/` (run `git status --porcelain plugin/si-plugin/` and stage each listed path — catches any sweep edits from step 3), plus the zip in `plugin/`, archive changes in `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's backfill edits). Commit: "Bump to v<VERSION> and repackage".
 9. `git push`.
 10. Publish a GitHub Release for the new version, so users who subscribed via Watch → Releases get notified — a plain `git push` does not fire that notification; only a published Release does. Use `gh`:
-    - Tag and title = the new version (e.g. `v1.13.0`). Notes = a short summary of what shipped, drawn from this release's LOG entries / commit messages.
+    - Tag and title = the new version (e.g. `v1.13.0`).
+    - **Always `--prerelease`.** The plugin is in active testing and is not marketplace-ready; the flag says so structurally so it never has to be re-decided per release. Drop it only when the project genuinely leaves testing, which is a deliberate decision, not a judgment made inside this ritual.
+    - **Notes summarise everything since the previous release, and must never be the commit message.** Write them from step 3's Pass A feed — the LOG entries across the whole release span, which will usually cover several sessions. The commit message describes one commit; the notes describe a release. So a note that restates the commit message is wrong **even when the span holds a single commit**, because it reports what was typed at a commit rather than what changed for a reader. Group by theme rather than listing commits, say what changed and why it matters in plain English for the Discord reader, and name it plainly as a testing build.
     - Attach the zip: `plugin/si-plugin.zip`.
-    - Command shape: `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --notes "<summary>"`.
+    - Command shape: `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --prerelease --notes "<summary>"`.
     - If `gh` isn't authenticated in this session (the command errors on auth), don't silently skip the Release — tell Alex how to publish it from the GitHub web UI instead: on the repo's **Releases** page, click **Draft a new release**, create the tag `v<VERSION>`, set the same title, paste the summary as the notes, attach `plugin/si-plugin.zip`, and **Publish release**. The step never silently does nothing.
 11. Update the installed host via the `claude` CLI, then tell Alex to fully restart the app. Same mechanism as the Rezip reload step — the host reads a frozen cache snapshot, so without a CLI update + full restart it keeps running the old build. The marketplace is already registered from earlier testing, so this is just: `claude plugin update sovereign-implementer@flintcraft`. **Invoke `claude` by full path — it is not on PATH in the desktop app's shell tools (see the Rezip reload step's PATH note); a bare `claude` fails, but running it is Claude's job, not a hand-off to Alex.** Then tell Alex: "Pushed, released, and rezipped. I've updated the host via the CLI — fully quit and relaunch the app to load it." Before running the update, apply the Rezip step's **CLI-vs-app version check** and its **plugin-cache prune** — same commands, same reasons; they belong to every reinstall, not only the private ones.
 12. **Prove the hooks are alive after the restart**, exactly as in the Rezip ritual's step 5: run `python resources/testing/hook_schema_check.py` for shape, then ask the first fresh session **what it actually received in its context** for delivery. A release is the worst moment to ship a silently-dead hook, and this is the only step that would notice.
 
-**Archive accuracy.** Push keeps archiving the previous zip as above. Because only Push ever builds the zip (Rezip no longer touches it), the zip in the working tree is always the last release, so the copy archived into `plugin/zip-archive/` at the next push faithfully reflects the prior release. Git history remains the authoritative record either way — each push commits `si-plugin.zip`.
+**Archive accuracy.** Release keeps archiving the previous zip as above. Because only Release ever builds the zip (neither Rezip nor a routine push touches it), the zip in the working tree is always the last release, so the copy archived into `plugin/zip-archive/` at the next release faithfully reflects the prior one. Git history remains the authoritative record either way — each release commits `si-plugin.zip`.
 
-LOG entries are per-entry files — no log capping at push time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
+LOG entries are per-entry files — no log capping at release time. Existing `LOG/log.md` and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so old entries remain findable.
 
 ## Handoff-claim provenance
 

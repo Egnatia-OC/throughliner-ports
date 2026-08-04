@@ -1,4 +1,4 @@
-# [HASH] — Gave planning sessions an ask-never-deny file gate, and dissolved the emergency path into a triage rule and a record duty
+# 455082b — Gave planning sessions an ask-never-deny file gate, and dissolved the emergency path into a triage rule and a record duty
 
 File containment engaged only while a build was running: `pre_tool_use.py` sets `has_active_build` from `_build.md`'s existence, so a planning session could edit any file in the repo — shipped hooks, procedure docs, templates — with nothing noticing. SPEC described the scope-lock with no hint it was build-only, so a reader would reasonably conclude planning sessions were contained.
 

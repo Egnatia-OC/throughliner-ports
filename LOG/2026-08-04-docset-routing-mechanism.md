@@ -1,4 +1,4 @@
-# [HASH] — Made the docset redirect self-verifying against the `docset: B` stamp the docs already carry
+# 455082b — Made the docset redirect self-verifying against the `docset: B` stamp the docs already carry
 
 Each SKILL.md hardcodes its procedure doc under `docs/`, and a hook cannot rewrite those files, so routing a 5-series session to docset B works by injecting an instruction to substitute `docs-b/`. That holds only as long as the model follows it — and the real complaint was never about direction, it was about detection: a session that skims the directive reads docset A while believing it read B, and nothing notices.
 

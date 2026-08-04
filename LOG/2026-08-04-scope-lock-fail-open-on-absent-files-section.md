@@ -1,4 +1,4 @@
-# [HASH] — Surfaced the unscoped-build state, so a build with no file list stops looking identical to a contained one
+# 455082b — Surfaced the unscoped-build state, so a build with no file list stops looking identical to a contained one
 
 `pre_tool_use.py` reads `if build_files is None: return 0` — an absent `Files:` section means no file enforcement for the whole session. **That fail-open is correct and was not changed.** A build whose scope genuinely isn't settled shouldn't be locked out of every file, and /next writes the section itself, so in normal operation it is always present. No denial behaviour moved.
 

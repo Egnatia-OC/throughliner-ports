@@ -1,4 +1,4 @@
-# [HASH] — Stated the missing-rule vs sanctioned-override distinction once, where a session actually meets the fork
+# 455082b — Stated the missing-rule vs sanctioned-override distinction once, where a session actually meets the fork
 
 The item arrived asking for a general override mechanism because four captures circled one. That framing was tested at processing and did not hold, and the reasoning that killed it is what made the remaining work worth doing.
 

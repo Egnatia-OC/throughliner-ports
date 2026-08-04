@@ -1,4 +1,4 @@
-# [HASH] — Made /plan verify an item's load-bearing factual claims at the moment it's processed
+# 455082b — Made /plan verify an item's load-bearing factual claims at the moment it's processed
 
 A capture is written when its claims are true and then sits while the project moves under it. The below-line revisit re-checks lift-conditions every session, but only for items already in Processed — a claim stated as prose inside an Unprocessed capture is re-read by nothing.
 

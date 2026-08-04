@@ -1,4 +1,4 @@
-# [HASH] — Stated the no-unprompted-context-sizing rule at /next's run presentation, where the impulse fires
+# 455082b — Stated the no-unprompted-context-sizing rule at /next's run presentation, where the impulse fires
 
 The capture reported that /next always warns there are too many items, the user tells it to run half, checks context and finds it around 10%, shows that, and /next finishes the rest — having never once run out of context on a run. The cost was never the warning; it was the negotiation, a round spent every run re-litigating how much fits against a risk that has not materialised.
 

@@ -1,4 +1,4 @@
-# [HASH] — Retired the push marker — and found two of that item's three claimed SPEC divergences were false
+# 455082b — Retired the push marker — and found two of that item's three claimed SPEC divergences were false
 
 The item claimed three places where SPEC described a model the package doesn't ship. Checking each before editing — the discipline the sibling item in this same run was built to install — found only one was real.
 

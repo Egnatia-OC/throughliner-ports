@@ -2,14 +2,15 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — Stopped inlining the behaviour rules and FAQ index in the session-start payload — 54,886 characters down to 3,288, against a documented 10,000 cap → 2026-08-04-session-start-payload-oversized-and-misordered.md
-- [HASH] — Made the docset redirect self-verifying against the `docset: B` stamp the docs already carry → 2026-08-04-docset-routing-mechanism.md
-- [HASH] — Surfaced the unscoped-build state, so a build with no file list stops looking identical to a contained one → 2026-08-04-scope-lock-fail-open-on-absent-files-section.md
-- [HASH] — Gave planning sessions an ask-never-deny file gate, and dissolved the emergency path into a triage rule and a record duty → 2026-08-04-plan-scope-lock-gap-and-emergency-path.md
-- [HASH] — Retired the push marker — and found two of that item's three claimed SPEC divergences were false → 2026-08-04-spec-diverges-from-shipped-docsets.md
-- [HASH] — Stated the missing-rule vs sanctioned-override distinction once, where a session actually meets the fork → 2026-08-04-sanctioned-override-mechanism.md
-- [HASH] — Made /plan verify an item's load-bearing factual claims at the moment it's processed → 2026-08-04-unprocessed-blocker-claims-go-stale.md
-- [HASH] — Stated the no-unprompted-context-sizing rule at /next's run presentation, where the impulse fires → 2026-08-04-next-over-warns-run-length.md
+- [HASH] — CLAUDE.md Rezip/Push rituals split into three actions (Rezip / Push / Release) with the release trigger made mechanical — automatic at any /done touching `plugin/si-plugin/`, always `--prerelease`, notes summarising the release span rather than restating the commit message; two stale premises corrected by check (the /setup version nag no longer exists; the sweep's `origin/main..HEAD` range reads empty under routine pushing). QUEUE.md — scrub-forward-only reversed into a full-history rewrite widened to cover the author email on all 385 commits, pre-rebuild history found surviving as 134 orphan tags and folded into [claude-md-old-history-claim-wrong], six-item batch greenlit, nine captures filed from four consumer projects → 2026-08-04-plan-3.md
+- 455082b — Stopped inlining the behaviour rules and FAQ index in the session-start payload — 54,886 characters down to 3,288, against a documented 10,000 cap → 2026-08-04-session-start-payload-oversized-and-misordered.md
+- 455082b — Made the docset redirect self-verifying against the `docset: B` stamp the docs already carry → 2026-08-04-docset-routing-mechanism.md
+- 455082b — Surfaced the unscoped-build state, so a build with no file list stops looking identical to a contained one → 2026-08-04-scope-lock-fail-open-on-absent-files-section.md
+- 455082b — Gave planning sessions an ask-never-deny file gate, and dissolved the emergency path into a triage rule and a record duty → 2026-08-04-plan-scope-lock-gap-and-emergency-path.md
+- 455082b — Retired the push marker — and found two of that item's three claimed SPEC divergences were false → 2026-08-04-spec-diverges-from-shipped-docsets.md
+- 455082b — Stated the missing-rule vs sanctioned-override distinction once, where a session actually meets the fork → 2026-08-04-sanctioned-override-mechanism.md
+- 455082b — Made /plan verify an item's load-bearing factual claims at the moment it's processed → 2026-08-04-unprocessed-blocker-claims-go-stale.md
+- 455082b — Stated the no-unprompted-context-sizing rule at /next's run presentation, where the impulse fires → 2026-08-04-next-over-warns-run-length.md
 - 6ef949d — Confirmed the behaviour rules reach no session, cleared eight items to fix delivery and the scope-lock holes, and retired two mechanisms rather than building them → 2026-08-04-plan-2.md
 - f832385 — plugin/si-plugin/scripts/reorder_queue.py, resources/testing/test_reorder_queue.py (new) — fixed the queue mover's marker scan starting at the first work item, so a readiness marker above all items left `had_marker` false while its text survived in the preamble and the self-check refused every reorder of Processed (not just greenlighting); added an 8-case regression suite, framework-free, covering the marker-above-all shape in plain/`--marker-after`/`--move` modes → 2026-08-04-reorder-mover-marker-at-top-blind.md
 - f832385 — plugin/si-plugin/hooks/session_start.py — moved the behaviour-rules bulk from the front of the injected payload to the end, putting the uncleared red-flag surfacing first and the state lines ahead of it; the surfacing was correct all along and was being cut by append order alone, and the rules block now starts at character 3,544 instead of 0 → 2026-08-04-session-start-state-lines-first.md
