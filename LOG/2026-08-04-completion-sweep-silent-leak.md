@@ -1,4 +1,4 @@
-# [HASH] — A suppressed or silent scan contributes nothing to a skill's opening narration — including no mention that it was suppressed
+# f832385 — A suppressed or silent scan contributes nothing to a skill's opening narration — including no mention that it was suppressed
 
 Observed live at a /plan opening: Claude narrated that a background setting was in one mode, so it wasn't sweeping for already-done `[user]` items. Two faults in one line — the mode suppresses that scan *entirely*, with the doc saying "say nothing about it," so narrating it at all was wrong; and the setting's name is background-only vocabulary that should never reach the user.
 

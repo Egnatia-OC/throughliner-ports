@@ -1,4 +1,4 @@
-# [HASH] — Detect repo visibility at /setup as a safety input, then settle licensing and publishing
+# f832385 — Detect repo visibility at /setup as a safety input, then settle licensing and publishing
 
 The dependency inverted, which is why this could no longer sit behind the scrub work. The item originally waited on the scrub build — don't encourage publishing until the leak risk is closed — but that build turned out to depend on the repo-visibility fact recorded *here*, because the write-time rule is conditional on whether the repo is public. Mutually dependent, so they were built as one, with the visibility half first.
 

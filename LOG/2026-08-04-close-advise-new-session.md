@@ -1,4 +1,4 @@
-# [HASH] — The close now advises starting a new chat before running the skill it names
+# f832385 — The close now advises starting a new chat before running the skill it names
 
 From the method's first external user. The close named which skill to run next and deliberately said nothing about starting fresh first, on the grounds that telling an experienced user to clear would be patronising. That judgement is reversed: a novice reads "run /next next" as an instruction to run it *here*, in the session that just closed, and carries a spent context into the build.
 

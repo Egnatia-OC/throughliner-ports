@@ -1,4 +1,4 @@
-# [HASH] — Put the short state lines ahead of the behaviour-rules bulk at session start, restoring the red-flag surfacing
+# f832385 — Put the short state lines ahead of the behaviour-rules bulk at session start, restoring the red-flag surfacing
 
 `session_start.py` assembled its injected context with the behaviour-rules block first and everything short after it: the uncleared red-flag surfacing, the project-state lines, the installed host version, and the build stamp. Only the front of the payload survives injection, so every one of those lines fell in the discarded remainder. The part worth stating plainly is that the red-flag surfacing was implemented and correct the whole time — it was being silently cut by append order alone, and a fresh session asked neutrally what it had received never mentioned the red flag that was sitting in the queue.
 

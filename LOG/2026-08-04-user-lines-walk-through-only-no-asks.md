@@ -1,4 +1,4 @@
-# [HASH] — Remove every completion ask from `[user]` items and retire the completion-mode setting they existed to govern
+# f832385 — Remove every completion ask from `[user]` items and retire the completion-mode setting they existed to govern
 
 The user's own words: the asks around `[user]` items are jarring, don't feel right, and upset her every time. A standing reaction to a recurring pattern, not a one-off irritation. The instance that finally settled it was a close, immediately following a session that had walked one such item through from first step to result, asking which `[user]` items she had completed — listing all three in the queue. The answer was already fully in view.
 

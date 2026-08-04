@@ -1,4 +1,4 @@
-# [HASH] — Select the docset from a recorded model setting, since the payload's model field never arrives in the desktop app
+# f832385 — Select the docset from a recorded model setting, since the payload's model field never arrives in the desktop app
 
 The live check ran and failed: with the hook's injection working, the payload contained no docset directive anywhere in 92,112 characters, so the fallback fired and docset A loaded on an Opus 5 session. The whole of phase 2 was inert.
 

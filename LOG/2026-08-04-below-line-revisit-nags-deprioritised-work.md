@@ -1,4 +1,4 @@
-# [HASH] — Give the below-line revisit a way to stop asking, and state the positive move wherever a prohibition creates pressure
+# f832385 — Give the below-line revisit a way to stop asking, and state the positive move wherever a prohibition creates pressure
 
 The below-line revisit gathers every shelved item whose condition only the user can answer into one consolidated question. Batching stops per-item nagging *within* a session, but nothing stopped the same question being re-asked *every* session for an item the user had already deprioritised. One item was asked about at three consecutive sessions, and the frustration was justified: it was never a priority, it was simply unsilenceable as written.
 

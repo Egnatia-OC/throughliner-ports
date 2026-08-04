@@ -1,4 +1,4 @@
-# [HASH] — Add a write-time third-party privacy rule and an on-demand scrub sweep, conditioned on recorded repo visibility
+# f832385 — Add a write-time third-party privacy rule and an on-demand scrub sweep, conditioned on recorded repo visibility
 
 This item carried a red flag, and it was **cleared at processing** by informed consent. The consent trail itself — what the user was shown, that deleting text does not remove it from git history, the three options offered, and her choice to scrub forward only while keeping the repo public — was recorded at the /plan close that cleared it. Carried through here as the close's lightweight record: the item shipped with its flag cleared.
 

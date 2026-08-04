@@ -1,4 +1,4 @@
-# [HASH] — Check the documented contract before blaming or building on the tooling, and separate "it ran" from "it worked"
+# f832385 — Check the documented contract before blaming or building on the tooling, and separate "it ran" from "it worked"
 
 A session spent most of its length diagnosing a dead hook. Two hypotheses were built and argued in detail — that the app silently drops oversized injected context, and that it doesn't run these hooks at all. Both were wrong. The actual cause was our own hook emitting an output shape the harness doesn't accept, and one search found the documented contract and three matching reports in about a minute. That search should have been the first move, not the fourth.
 

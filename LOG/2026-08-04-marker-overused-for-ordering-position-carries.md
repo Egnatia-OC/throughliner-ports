@@ -1,4 +1,4 @@
-# [HASH] — Restore one lint-checked `Blocked by:` field and stop expressing dependencies as prose lift-conditions or position
+# f832385 — Restore one lint-checked `Blocked by:` field and stop expressing dependencies as prose lift-conditions or position
 
 The original framing was "position already carries this," and the user's own correction is what made the item buildable: position expresses *order*, not *dependency*. It has no memory of why the order is what it is, so a dependency held only by position can be silently inverted by the close-time reorder that runs every planning session — which has no way to know a particular ordering was load-bearing. Explicit dependency edges survive reordering precisely because they don't rely on it.
 

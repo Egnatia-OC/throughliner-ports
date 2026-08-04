@@ -1,4 +1,4 @@
-# [HASH] — Never stage the test-build version suffix — a recognised signature the close leaves dirty rather than committing
+# f832385 — Never stage the test-build version suffix — a recognised signature the close leaves dirty rather than committing
 
 Every rezip bumps `plugin.json`'s `-testN` suffix as a working-tree-only change, reset to a clean version at the next real push. Between the two the file sits dirty, so the close's out-of-scope-dirty-path check surfaces it at every single session — predictable noise the capture proposed suppressing.
 

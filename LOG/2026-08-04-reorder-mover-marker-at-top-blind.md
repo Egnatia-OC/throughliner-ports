@@ -1,4 +1,4 @@
-# [HASH] — Fix the queue reorder tool refusing every reorder of Processed when the readiness marker sits above all items
+# f832385 — Fix the queue reorder tool refusing every reorder of Processed when the readiness marker sits above all items
 
 The mover failed with `section has no marker; --marker-after ignored` followed by `self-check failed: marker presence changed`, and correctly wrote nothing, whenever the `--- Cleared to run above this line ---` marker sat above every item in Processed. The cause was a scan-range off-by-one read from the script rather than inferred: `split_blocks` locates the first `####` item, assigns everything before it to the preamble, then starts its marker-detection loop *at* that first item. A marker above all items therefore never matched — `had_marker` stayed `False` while the marker's text survived inside the preamble, so reassembly contradicted itself about whether a marker existed and the self-check caught it.
 

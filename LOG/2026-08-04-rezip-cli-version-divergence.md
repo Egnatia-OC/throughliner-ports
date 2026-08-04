@@ -1,4 +1,4 @@
-# [HASH] — Update the standalone CLI, add a CLI-vs-app version check, and prune the plugin cache in the rebuild rituals
+# f832385 — Update the standalone CLI, add a CLI-vs-app version check, and prune the plugin cache in the rebuild rituals
 
 The Rezip and Push rituals drive a standalone `claude` binary to re-snapshot the plugin. That binary reported 2.1.146 while the desktop app ran 2.1.219. Nothing was broken by it today, which is exactly why it sat there — but the rename work depends on a marketplace feature with a 2.1.193 floor, so the migration could not have been validly tested with the binary the rituals actually drive, and it would have failed in a way that reads as the rename design being wrong rather than the tool being old. This project has already lost a session to a wrong theory about a version gap.
 

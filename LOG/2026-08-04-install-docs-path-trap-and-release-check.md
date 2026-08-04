@@ -1,4 +1,4 @@
-# [HASH] — Give the install guide a command-not-found fallback and a version floor, and re-check the install path every release
+# f832385 — Give the install guide a command-not-found fallback and a version floor, and re-check the install path every release
 
 The premise was corrected at capture: the install docs were already CLI-based, not stale in the expected way. What was actually wrong is more specific — the guide instructs a bare `claude plugin …` command that this project knows can fail with "command not found," and anticipates nothing when it does. A brand-new user's agent would hit that wall on the first step with no recorded way past it.
 

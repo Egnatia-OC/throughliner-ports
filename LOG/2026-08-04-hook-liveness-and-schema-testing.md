@@ -1,4 +1,4 @@
-# [HASH] — Add a hook schema-conformance check and a liveness ritual step, so a silently-dead hook can't hide behind Claude's own compensation
+# f832385 — Add a hook schema-conformance check and a liveness ritual step, so a silently-dead hook can't hide behind Claude's own compensation
 
 The `session_start` hook emitted a malformed output shape and had its entire payload silently discarded, probably for a long time, and nothing caught it. Sessions kept working — Claude read CLAUDE.md and the queue directly and reconstructed roughly what the hook would have said. That compensation is the actual problem: it makes a dead hook invisible.
 

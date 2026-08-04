@@ -1,4 +1,4 @@
-# [HASH] — Reshape /plan's checkpoint into a two-sided either/or, with the last-item case worded so it can't collapse into "shall we close?"
+# f832385 — Reshape /plan's checkpoint into a two-sided either/or, with the last-item case worded so it can't collapse into "shall we close?"
 
 From the method's first external user. At every checkpoint /plan presented its off-ramps, and the wording kept collapsing into "here's what's next — close out here?" That trailing question reads as a recommendation to stop, and the first-time user took it as the session being finished, repeatedly.
 

@@ -1,4 +1,4 @@
-# [HASH] — Split the close's queue-state ladder so below-the-line-only work routes to /plan instead of a dead-end /next
+# f832385 — Split the close's queue-state ladder so below-the-line-only work routes to /plan instead of a dead-end /next
 
 At a close where three fixes shipped and left the readiness marker at the top of Processed with nothing above it, Claude still pointed at /next as a live next step. That's a dead end: with nothing above the marker, /next's pre-flight hits its nothing-cleared exit and soft-stops, recommending /plan.
 
