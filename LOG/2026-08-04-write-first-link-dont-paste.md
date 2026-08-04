@@ -1,4 +1,4 @@
-# [HASH] — Approval-time text now written to its doc first and approved in place, collapsing the render rule's two branches into one
+# bf838bf — Approval-time text now written to its doc first and approved in place, collapsing the render rule's two branches into one
 
 The render rule had two cases: text already in a doc got a pointer, and text not
 yet written was always pasted inline "since there's nothing to point at". Write it

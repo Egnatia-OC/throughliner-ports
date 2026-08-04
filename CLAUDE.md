@@ -306,7 +306,7 @@ The invite link above is deliberately public. Alex was told plainly that committ
 
 ## Current state
 
-**Status:** Target v1.16.0. Repo on GitHub, method docs set up (/setup complete).
+**Status:** Target v1.17.0. Repo on GitHub, method docs set up (/setup complete).
 
 ## Method docs
 

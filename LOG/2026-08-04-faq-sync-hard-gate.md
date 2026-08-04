@@ -1,4 +1,4 @@
-# [HASH] — FAQ-sync reframed from a soft confirm into a hard /done close gate requiring a logged disposition line
+# bf838bf — FAQ-sync reframed from a soft confirm into a hard /done close gate requiring a logged disposition line
 
 The FAQ-sync clause added on 2026-07-30 failed on its first real test. It rode the
 SPEC-sync close trigger and asked the close to "confirm the FAQ entry was written"

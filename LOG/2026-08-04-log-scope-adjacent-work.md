@@ -1,4 +1,4 @@
-# [HASH] — LOG scope redefined by an artifact test covering the session's outputs, with Claude proposing a standing CLAUDE.md entry when external work recurs
+# bf838bf — LOG scope redefined by an artifact test covering the session's outputs, with Claude proposing a standing CLAUDE.md entry when external work recurs
 
 The LOG recorded work on the project. Work done *in* a session that sat alongside
 it — an announcement about the method, a piece of writing, research framed for an

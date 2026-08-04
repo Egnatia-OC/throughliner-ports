@@ -1,4 +1,4 @@
-# [HASH] — Fences narrowed to code and shell commands only, prose flipped to display-first with a paste block on request, and the fence rule's justification rewritten
+# bf838bf — Fences narrowed to code and shell commands only, prose flipped to display-first with a paste block on request, and the fence rule's justification rewritten
 
 Two rules collided on any long piece of prose the user intends to paste elsewhere,
 and nothing said which won. The verbatim-copy rule sent genuine paste targets to

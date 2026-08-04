@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's old-history bullet corrected: the pre-rebuild history survives in this repo as the v17–v157 orphan tags, which must never be deleted
+# bf838bf — CLAUDE.md's old-history bullet corrected: the pre-rebuild history survives in this repo as the v17–v157 orphan tags, which must never be deleted
 
 The bullet said the old plugin history was on GitHub as pre-rebuild commits and
 not in this folder. Both halves were wrong, and the replacement wording drafted

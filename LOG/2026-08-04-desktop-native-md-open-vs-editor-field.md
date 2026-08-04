@@ -1,4 +1,4 @@
-# [HASH] — Editor field rescoped from reading to editing, and dropped as a condition on whether pointers are used at all
+# bf838bf — Editor field rescoped from reading to editing, and dropped as a condition on whether pointers are used at all
 
 The `Editor:` field was introduced to answer "which app do we point the user to."
 It never did that. Links open in the desktop app's own viewer whatever the field
