@@ -25,12 +25,15 @@ gets built first — through discussion, not silently.
 - **One item at a time.** Finish one before presenting the next.
 - **Read SPEC.md before proposing work.** Don't queue contradictions.
 - **Process the accumulated unprocessed work before new planning work.**
-- **Never write to QUEUE.md without showing the exact text first.** The rule keys
-  to the *write*, not to where you are in the loop: the message immediately before
-  any QUEUE.md write must contain the text verbatim. Approval attaches to shown
-  text, never to a described shape — a recommendation, however concrete, is not a
-  draft, and "I'll add a line that does X" is not the entry. Keying it to the
-  action holds even when a compacted session has lost track of which beat it's on.
+- **Approval attaches to exact text, never to a described shape.** A
+  recommendation, however concrete, is not a draft, and "I'll add a line that does
+  X" is not the entry. What changes is *where* the user reads that text: write it
+  into QUEUE.md first, then point them at it, and they approve it in its final
+  position (plugin-behaviour.md's working-mode rule — remote mode still gets it
+  pasted inline). If they say no, take out exactly what was written, re-read to
+  confirm it's gone, and say so. The rule keys to the *write* either way, so it
+  holds even when a compacted session has lost track of which beat it's on: no
+  QUEUE.md line stands without the user having read those exact words and agreed.
 - **A recommendation is not a decision. A draft is not a written line.** Both need
   the user's call.
 - **SPEC is a normal doc.** When a planning decision changes what SPEC says — a
@@ -313,14 +316,13 @@ closing the interview:
                                    sub-step 2 carry the recommendation
 ```
 
-**View-in-doc.** The item already exists in QUEUE.md, so it's pointer-eligible:
-when mode is `local` AND an editor is recorded, lead with a one-line pointer
-instead of the pasted quote — `First item — **[work-slug]** — is in
-[QUEUE.md](QUEUE.md) under Unprocessed.` — then the analysis in that same message.
-The confirm re-read still runs in its pointer form (a resolves-check, not a
-text-match). Remote or no editor → keep the inline quote. What counts as a
-recorded editor is defined once in plugin-behaviour.md's working-mode render
-rule — read it there rather than judging by eye.
+**View-in-doc.** The item already exists in QUEUE.md, so in `local` mode lead with
+a one-line pointer instead of the pasted quote — `First item — **[work-slug]** —
+is in [QUEUE.md](QUEUE.md) under Unprocessed, the heading beginning "<the item's
+exact opening words>".` — then the analysis in that same message. Carry the
+heading text: the link lands at the top of the file, so it is what turns a scan
+into a search. The confirm re-read still runs in its pointer form (a
+resolves-check, not a text-match). Remote → keep the inline quote.
 
 **2. Recommend**  [PROMPT]
 
@@ -525,9 +527,9 @@ dedicated-pass state; the only defer is this skip.** The sharpen-first is part o
 the move: capture whatever design progress was made into the item's prose so the
 next /plan starts further along.
 
-**View-in-doc applies here too** — when local and an editor is recorded, lead with
-a one-line pointer to the next item in place of its verbatim, off-ramps below it
-unchanged.
+**View-in-doc applies here too** — in local mode, lead with a one-line pointer to
+the next item (carrying its heading text) in place of its verbatim, off-ramps
+below it unchanged.
 
 ### Process-now offer after a user-filed capture  [PROMPT]
 

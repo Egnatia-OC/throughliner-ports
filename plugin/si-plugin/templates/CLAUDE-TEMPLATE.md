@@ -34,13 +34,13 @@ Language: English
 
 Editor: not recorded
 
-<!-- The `.md` editor you work in, from the optional /setup question. When it names an editor, Claude points you to your open docs with a link instead of re-pasting their text into chat, saving tokens. Left as `not recorded` if you skipped the question — Claude then quotes the text inline as usual. -->
+<!-- The app you'd open a project doc in to change something yourself, from the optional /setup question. Claude's links open docs in Claude's own viewer, which shows the text but won't let you edit it — so this field is about editing by hand, not reading. It doesn't affect whether you get links; you get those either way. Left as `not recorded` if you skipped the question, which is a perfectly normal answer. -->
 
 ## Working mode
 
 Working mode: local
 
-<!-- Where you work from, set at /setup. `local` = at your desktop, where an edited file opens instantly, so Claude points you to text in your docs with a link. `remote` = driving Claude from your phone, where opening an edited file is awkward, so Claude pastes the text straight into chat instead. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
+<!-- Where you work from, set at /setup. Claude writes text into your docs first and then shows you where it landed, so this decides how it shows you. `local` = at your desktop, where a file opens instantly, so you get a link. `remote` = driving Claude from your phone, where opening a file means navigating Drive, so Claude pastes the text into chat as well. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
 
 ## Model
 
@@ -61,4 +61,11 @@ Repo visibility: not checked
 
 <!-- Add your own rules, conventions, and context below. This section is yours — the plugin won't touch it.
      If your project has specific test procedures (how to run tests, what to check, environment setup),
-     add them here or point to where they live — Claude will follow them during test entries and /done verification. -->
+     add them here or point to where they live — Claude will follow them during test entries and /done verification.
+
+     If you regularly write things about this project for people outside it — posts to a community,
+     a newsletter, updates to a client — Claude may offer to add a short section here recording:
+       - where that work goes (the audience, the channel)
+       - whether its full text is kept in the log, or only a description and a pointer to it
+       - what later draws on it (release notes, a changelog, the next update)
+     That's so it isn't re-decided every session. The offer is optional and declining it is fine. -->

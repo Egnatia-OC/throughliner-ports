@@ -315,16 +315,14 @@ examples would clarify scope, ask a follow-up rather than smuggling them in.
 settings, not discovery. Ask them the same way each time, one message each, after
 discovery reaches its stopping point. All optional; the user can skip any.
 
-**Q6 (optional). When you open a `.md` file — like these project docs — what do you
-usually open it in?**
-→ Identifies your default `.md` app, so Claude can point you to a doc with a link
-that opens there. The link is only useful if you keep a default `.md` reader open
-alongside Claude. **If you'd rather not set this, just say skip** — a plain option
-for anyone, not only "if you're unsure." The trade-off of skipping: Claude writes
-the doc's text into the chat instead, which costs tokens each time and adds up.
-(Doc links also aren't much use while Claude is driving your screen remotely — a
-minor caveat, not a reason to skip.) Named editor → record it; skipped → write `not
-recorded` so the field is present but empty. Asked once, no nag.
+**Q6 (optional). If you wanted to change something in one of these project docs
+yourself, what would you open it in?**
+→ Records the app you'd edit in. Claude's links open the file in Claude's own
+viewer, which shows the text but won't let you change it — so this is only about
+where you'd go to make an edit by hand. **Plenty of people never do, so skipping
+this is completely normal** — say skip and nothing else changes: you still get
+links, and Claude still does the writing. Named editor → record it; skipped →
+write `not recorded` so the field is present but empty. Asked once, no nag.
 
 **Q7 (optional). Will you usually be working from your computer, or driving Claude
 from your phone?**

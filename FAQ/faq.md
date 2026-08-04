@@ -96,3 +96,29 @@ Not for anything you have to do. The plugin ships two versions of its own instru
 Both versions describe the same method: the same four commands, the same queue, the same rules about what Claude will and won't do without asking you. The only difference is how much explaining sits around each rule, because different Claude models follow instructions best at different lengths. So your project behaves the same way whichever model you build it on, and switching models between sessions is fine.
 
 If the plugin can't tell which model is running, it uses the fuller version — the one it's been tested on longest.
+
+## /setup asked me which editor I use. What does that actually change?
+
+Less than the question used to suggest, and skipping it is fine.
+
+When Claude gives you a link to one of your project docs, that link opens the file in Claude's own viewer. That happens whatever you answered — the editor setting has nothing to do with it. What the viewer *won't* let you do is change the text. So the editor field records where you'd go if you ever wanted to edit a doc by hand yourself.
+
+Plenty of people never do that, because Claude does the writing. If that's you, say skip. You'll still get links, and nothing else about the method changes. If the question was worded to you as being about *reading* docs, that was the old wording and it was wrong.
+
+## Claude wrote a draft straight into my queue before I approved it. Is that meant to happen?
+
+Yes. Text headed for one of your project docs — a new queue item, a log entry, an edit to SPEC — gets written into the file first, and then Claude points you at it so you can read it where it actually lives, in its final position rather than as a chat message.
+
+You still approve it. Nothing is committed to your project's history until you do, and if you say no, Claude takes the text back out and confirms it's gone.
+
+Two reasons it works this way. You read the item as it will actually appear, next to the items around it, which catches things a chat paste hides. And Claude doesn't have to write every draft twice — once in chat and once in the file — which costs tokens on longer sessions.
+
+If you're driving Claude from your phone, this flips: opening a file on a phone is awkward, so Claude pastes the text into the chat as well. That's what the working-mode setting is for.
+
+## Claude suggested adding a note to CLAUDE.md about where I post updates. Why?
+
+Because it noticed you doing that kind of work more than once — posting to a Discord, sending a newsletter, reporting to a client — and there was nowhere in the project recording what happens to it.
+
+The log records the things your sessions *produce*, not just changes to your app. An announcement you wrote with Claude is one of those things: a later session may well need to draw on it, and if it was never recorded it's gone. That's a real thing that has happened.
+
+The CLAUDE.md note just saves re-deciding the same details every time — where that work goes, whether its full text gets logged or only a pointer to it, and what later draws on it. It's a suggestion, and declining it is fine. Claude will keep logging the work either way.

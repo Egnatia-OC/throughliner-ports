@@ -37,10 +37,11 @@ never seen in /plan, which agreed only the intent. This is the first time the us
 meets the real words.
 
 **How the reveal renders** follows the working-mode rule (plugin-behaviour.md).
-The text is now doc-resident, so: local + editor recorded → a line-anchored link
-to the edited location, falling back to an inline excerpt if the link won't
-resolve; remote or no editor → paste the new wording inline as a wrapped block.
-Either way, only after the write is confirmed.
+The text is doc-resident by the time it's revealed, so: local → a link to the
+edited file plus the exact heading text of the section that changed; remote →
+paste the new wording inline as a wrapped block as well. Never line-anchor a link
+to a `.md` file — that form is dead in the desktop app. Either way, only after the
+write is confirmed by a re-read.
 
 **A small mid-build tweak to a just-surfaced readable edit is in scope**
 [PROMPT]. Once the new text is visible the user may ask to change one bit. That
@@ -120,8 +121,10 @@ walkthrough anyway.
 ### User raises something out of scope  [PROMPT]
 
 ```
-1. draft the capture as a blockquote under **Capture draft:** — show before writing
-2. append to Unprocessed, placed per the Captures placement rule (narrate it)
+1. write the capture into Unprocessed, placed per the Captures placement rule
+   (narrate the placement)
+2. put the wording in front of the user for approval — local: a link plus the
+   heading text; remote: pasted inline. Remove it if they say no.
 3. ask "anything else?" — repeat until no
 4. resume the build
 ```
@@ -165,8 +168,8 @@ physical-device behaviour, a subjective judgment you can't verify — and it isn
 already a `[user]` item:
 
 ```
-1. append it to Unprocessed as a [user] work item (what needs checking, and why)
-   draft the wording, show before writing
+1. append it to Unprocessed as a [user] work item (what needs checking, and why),
+   then put the wording in front of the user for approval where it now sits
 2. ask "anything else?" — repeat until no
 3. resume the build
 ```

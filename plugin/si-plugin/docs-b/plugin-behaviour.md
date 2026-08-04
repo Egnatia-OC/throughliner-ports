@@ -70,19 +70,28 @@ Active in every session where the plugin is installed and the project is set up.
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
   a Claude-raised capture. Inside /plan only, a user-filed capture also gets the
   offer to process it now or carry on.
-- **Verbatim-copy strings go in fenced code blocks, one per string** — the app's
-  copy takes the whole message, so a clean copy affordance needs the string alone
-  in its own fence. Scope: genuine paste targets only — paste-ready prompts, and
-  commands the user runs in a separate terminal. Commit messages are not paste
-  targets (Claude runs the commit). When two genuine paste targets belong to the
-  same approval, present both as adjacent fences in one message under a single
-  approval — don't split them across turns; the user needs them side by side.
-- **Approval-time outputs render as blockquotes with a bold lead-in** naming the
-  content type (**Capture draft:**, **Commit message:**, **Log entry:**). Fenced
-  blocks don't wrap in the app, so a long draft runs off-screen and gets approved
-  unread. Exception: content whose exact characters are the substance (code,
-  shell commands) keeps a fence. End the message with an explicit ask naming the
-  decision needed — a draft with no ask isn't actionable.
+- **Fenced code blocks are for code and shell commands, one per block.** That is
+  the whole scope. Two reasons, and neither is about copying: markdown rendering
+  would corrupt characters whose exactness *is* the substance, and the app
+  attaches a Run button to shell-tagged blocks. (The reason this rule used to
+  give — that the app's copy takes the whole message, so a fence is the only
+  clean copy affordance — is wrong, and is recorded here so it isn't restored:
+  people select the text they want and copy that. A blockquote is already
+  copyable.) When two commands belong to the same approval, present both as
+  adjacent fences in one message under a single approval — don't split them
+  across turns; the user needs them side by side.
+- **Prose never goes in a fence, even when the user will paste it elsewhere.**
+  A long announcement or a paste-ready prompt renders for *reading*; if the user
+  wants a paste block, offer one and produce it on request. Default to the
+  readable rendering. The failure this replaces: fences don't wrap in the app, so
+  a long draft ran off-screen — a user on remote control could not read the text
+  they were being asked to approve.
+- **Approval-time outputs render for reading, as blockquotes with a bold lead-in**
+  naming the content type (**Capture draft:**, **Commit message:**,
+  **Log entry:**). End the message with an explicit ask naming the decision needed
+  — a draft with no ask isn't actionable. Doc-destined text is written to its doc
+  first and approved there instead; see the working-mode rule below for which is
+  which.
 - **Offer a fresh-session handoff when the user reports the session degrading.**
   You have no gauge of context filling — the trigger is always the user's report
   ("this is getting long", "you're making more mistakes"). Then offer both: to
@@ -106,34 +115,62 @@ remote  ->  user is on their phone; opening a file means navigating Drive
 The user flips it for one session with a word ("I'm remote today"). If the field
 is unset, ask once, naming the two options plainly.
 
-**The render rule keys on doc-residency first, then mode, then editor:**
+**Write it first, then point at it.** Approval-time text whose destination is one
+of this method's docs — a capture, a work item, a LOG entry, a SPEC or CLAUDE.md
+edit — is written to that doc *first*, and the user approves it there, reading it
+in its final position rather than as a chat paste.
+
+This **deletes a branch rather than adding one**, which is the reason to prefer
+it. The old rule had two cases: doc-resident text got a pointer, and not-yet-
+written text was always pasted inline "since there's nothing to point at". Write
+it and it's resident. One case remains:
 
 ```
-text NOT yet written                       ->  inline, in every mode
-    # approval-time drafts: captures, LOG entries, work-item drafts,
-    # recommendations. Nothing exists to point at yet.
-
-text already doc-resident                  ->  pointer  IF local AND editor recorded
-    # existing queue items; a capture or LOG entry after its Write succeeded
-                                           ->  inline   otherwise
-
-readable edit's post-write reveal          ->  line-anchored link if it resolves
-                                           ->  inline excerpt if it won't
+local   ->  write, verify, then point: a link to the file plus the target's
+            exact heading text
+remote  ->  write, verify, then paste the text inline as well — on a phone,
+            opening the file means navigating Drive, so a link alone strands
+            the user with nothing to read
 ```
 
-**"Editor recorded" means the field holds a real editor.** An `Editor:` field
-carrying the literal `not recorded` is NOT a recorded editor, and neither is an
-absent field. /setup writes that exact string when the user skips the question,
-so reading it as a recorded editor sends a pointer to a file the user has no way
-to open — and, because it pointed, pastes nothing in chat. The user gets nothing
-at all. This is the one definition; other docs point here rather than restate it.
+Note what is *not* keyed on any more: the pointer no longer depends on an editor
+being recorded. Links open in the desktop app's own viewer whatever the `Editor:`
+field says, so a project with no editor recorded still gets pointers.
 
-**Write, then verify, then point — in that order.** A pointer to content written
-this turn goes out only after the Write returned success *and* a re-read confirms
-the content is there. Never emit a pointer from the intent to write. A pointer
-that misreports a write is worse than pasting: the user opens the doc, finds
-nothing, and has no copy in chat either. (Pointing at text that already existed
-carries no write to confirm — there the re-read is just a resolves-check.)
+**Doc-destined text only.** Not every approval-time output is headed for a file.
+A commit message isn't (Claude runs the commit), and neither is a recommendation
+or a set of options to choose between. Those keep the ordinary approval-time
+rendering above. Without this boundary the rule would try to invent somewhere to
+write a commit message purely so it could link to it.
+
+**Two link facts, and both are load-bearing.** A plain relative `.md` link opens
+the file — always at the top, never at a line. **A `.md` link with a `:N` line
+suffix is dead:** the click does nothing, and it fails silently while still
+looking clickable, so never emit one. Code files (`.py`, `.json`, …) do honour
+their line anchors and keep them.
+
+**So every pointer to a doc carries the target's exact heading text**, because a
+markdown link can only reach a file and never a position. This is not decoration:
+landing at the top of a 480-line queue and being told "it's in there" is the
+failure the pointer exists to avoid, and searchable heading text turns a scan into
+a copy-paste.
+
+**Write, then verify, then point — in that order, and the order is the rule.** The
+pointer goes out only after the write returned success *and* a re-read confirms
+the content is actually there. Never emit a pointer from the *intention* to write.
+This has already gone wrong: a session announced a write it had not yet made. A
+pasted draft cannot be claimed without being produced; a pointer can — which is
+precisely the new risk write-first introduces, and the reason this step is not
+optional. A pointer that misreports a write is worse than pasting: the user opens
+the doc, finds nothing, and has no copy in chat either.
+
+**If the user rejects what was written, remove it — don't leave it to be tidied
+later.** Nothing is committed mid-session, so a reject means editing the text back
+out. Take out exactly what was written, re-read to confirm it's gone, and say so.
+This is the one safety that show-first used to give for free, so it has to be paid
+for explicitly here. The residual cost, stated plainly: there is a short window in
+which a tracked file holds text the user hasn't approved, and a crash or a
+concurrent session landing in that window leaves it there.
 
 ### A stale `Completion mode:` line is ignored, never an error
 
@@ -284,9 +321,19 @@ Claude Code itself, the user's own report to its makers.
 reveals work to do                    ->  capture in QUEUE.md Unprocessed
 a finding, or a clean pass            ->  the observing session's LOG entry
     (no verbatim re-read needed)          # a PASS is a finding, not work
+an OUTPUT the session produced        ->  the LOG entry, in full if a later
+    (an announcement, a piece of              session would need the exact
+     writing, research for an audience)       words; described with a pointer
+                                              otherwise
 evidence a future session must        ->  a durable file under resources/
     re-read WORD-FOR-WORD
 ```
+
+The output row exists because a session produces more than changes to the project,
+and work done alongside the build used to fall through every route here. The test
+is whether it's a durable artifact the project might draw on again — never whether
+its subject was project-ish enough, which is a judgment that goes wrong in a public
+repo. done.md carries the full rule.
 
 `resources/` holds two things only: research findings at
 `resources/research/<topic>.md`, and re-read-later testing evidence under
@@ -347,8 +394,10 @@ keep isn't a temp file — route it per the triage above.
 
 A capture is unprocessed work: one work item appended to QUEUE.md's
 **Unprocessed** section. Capturing is how any session puts a new idea, discovery
-or task into the queue without stopping to work it. Draft the wording and show it
-before writing; include the reasoning, not just what was noticed.
+or task into the queue without stopping to work it. Write the wording into
+QUEUE.md and put it in front of the user for approval — in place if local, pasted
+inline if remote (see the working-mode rule above) — and remove it if they say no.
+Include the reasoning, not just what was noticed.
 
 **Line format** — this exact shape is what all three hooks parse. Emitting a work
 item as a bold line or a plain bullet reads fine to a person and silently breaks
@@ -773,8 +822,8 @@ asked.
 field.**
 
 A reason travels capture → processed work → log as prose. At each stage
-re-author it to fit context and show the wording for approval before writing.
-Reasons live inline in the entry text.
+re-author it to fit context and put the wording in front of the user for approval,
+in the doc it was just written to. Reasons live inline in the entry text.
 
 **Rationale provenance is asymmetric and default-AI**, exactly like the work-item
 credit: reasoning is assumed to be Claude's unless explicitly credited as the
@@ -908,10 +957,10 @@ NOT needed              ->  capture and continue    # the common case
 premise is broken       ->  halt and course-correct
 ```
 
-  "Capture and continue" means: draft the wording, show it, file it to
-  Unprocessed, then confirm-and-resume — a discovery is Claude-raised, so don't
-  close with "anything else?". Don't hold it in conversation to deal with later;
-  an unrouted discovery survives only in memory.
+  "Capture and continue" means: write it into Unprocessed, put the wording in
+  front of the user, then confirm-and-resume — a discovery is Claude-raised, so
+  don't close with "anything else?". Don't hold it in conversation to deal with
+  later; an unrouted discovery survives only in memory.
 
   **User-only discoveries file as a `[user]` work item, not a plain capture.** An
   untagged capture reads as a thought to weigh, so its next-ness — the fact that

@@ -257,8 +257,48 @@ The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
 
-**The approval frame, identical for every flavor.** Show the wording for approval
-before writing.
+**What the entry covers: the session's outputs, judged by an artifact test.** The
+LOG records changes to the project, but that is not the whole of what a session
+produces. Work done *alongside* the build — an announcement written about the
+project, a piece of writing, research framed for an audience — is a session output
+too, and recording only the code changes is how such work gets lost. It has been
+lost: an announcement authored in one session had to be typed back in by hand
+later, because nothing anywhere held it.
+
+```
+the test:  is this a durable artifact the project might need to draw on again?
+    yes  ->  it belongs in the entry. Record its full text if a later session
+             would need the exact words; a description and a pointer otherwise.
+    no   ->  leave it out.
+```
+
+**A test, not a list.** External work is open-ended, so the entry can't enumerate
+what qualifies — the session judges it case by case.
+
+**Draw the line by artifact, never by topic.** The instinct is to sort by subject
+— project work in, personal work out — and it doesn't work: one conversation is
+often both, and there is no honest place to cut. The artifact test dissolves that.
+A supportive conversation that produced a decision is logged for the decision,
+which is ordinary project reasoning; one that produced nothing durable is simply
+absent, not excluded. And judging by topic would mean asking "was that too
+personal to write down?" — a judgment that will eventually be got wrong in a
+public repo. The artifact test never asks it.
+
+**When external work recurs, propose a standing entry in CLAUDE.md** [PROMPT].
+When a project shows *ongoing* outward-facing work — a Discord server, a
+newsletter, a blog, a client the user reports to — offer to record in the
+project's CLAUDE.md where that work goes, whether its text is logged in full or by
+pointer, and what later draws on it. Without it, every session re-decides the same
+three things from scratch. The test stays a judgment call, as it must; this gives
+the judgment project-specific ground to stand on. Propose it on noticing the
+pattern, not at every close, and take a no for an answer.
+
+**The approval frame, identical for every flavor.** Write the entry to its LOG
+file, then put the wording in front of the user for approval — a link plus the
+entry's heading text in local mode, pasted inline in remote (plugin-behaviour.md's
+working-mode rule). If they reject it, remove exactly what was written and confirm
+by re-reading. The commit message is the exception the rule already names: it has
+no doc to live in, so it is shown inline as before.
 
 ```
 run shipped ONE item     ->  this approval ALSO covers the commit message: title

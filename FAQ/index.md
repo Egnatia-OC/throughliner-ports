@@ -21,3 +21,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
 - [Does it matter which Claude model I'm using?](faq.md#does-it-matter-which-claude-model-im-using)
+- [/setup asked me which editor I use. What does that actually change?](faq.md#setup-asked-me-which-editor-i-use-what-does-that-actually-change)
+- [Claude wrote a draft straight into my queue before I approved it. Is that meant to happen?](faq.md#claude-wrote-a-draft-straight-into-my-queue-before-i-approved-it-is-that-meant-to-happen)
+- [Claude suggested adding a note to CLAUDE.md about where I post updates. Why?](faq.md#claude-suggested-adding-a-note-to-claudemd-about-where-i-post-updates-why)
