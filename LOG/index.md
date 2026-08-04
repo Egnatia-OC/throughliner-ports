@@ -2,7 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — QUEUE.md + resources/research — /plan: reprioritised around the public-history exposure, consolidated the privacy-rule scope defect, split the FAQ work into audit-then-build, and cleared five items to run → 2026-08-05-plan.md
+- a7bb165 — QUEUE.md + resources/research — /plan: reprioritised around the public-history exposure, consolidated the privacy-rule scope defect, split the FAQ work into audit-then-build, and cleared five items to run → 2026-08-05-plan.md
 
 - bf838bf — docs-b/done.md, plugin-behaviour.md's evidence triage, CLAUDE-TEMPLATE.md, SPEC.md — LOG scope redefined by an artifact test covering the session's own outputs (an announcement, a piece of writing), drawn by artifact and never by topic because a topic judgment goes wrong in a public repo; plus Claude proposing a standing CLAUDE.md entry when outward-facing work recurs → 2026-08-04-log-scope-adjacent-work.md
 - bf838bf — docs-b/plugin-behaviour.md — fences narrowed to code and shell only, prose flipped to display-first with a paste block on request, and the fence rule's disproved copy-affordance justification replaced (rendering corruption + the Run button) and recorded as wrong so it isn't restored → 2026-08-04-display-first-render-paste-block-on-request.md
