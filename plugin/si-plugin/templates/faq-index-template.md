@@ -68,3 +68,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
 - [Does it matter which Claude model I'm using?](faq.md#does-it-matter-which-claude-model-im-using)
 - [Why won't Claude ask me for my email address, account numbers, or other personal details?](faq.md#why-wont-claude-ask-me-for-my-email-address-account-numbers-or-other-personal-details)
+- [Claude asked me something but I couldn't see how to answer it. What happened?](faq.md#claude-asked-me-something-but-i-couldnt-see-how-to-answer-it-what-happened)

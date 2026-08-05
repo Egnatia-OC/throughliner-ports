@@ -320,6 +320,13 @@ exactly what was written and confirm by re-reading. The commit message is the
 exception the rule already names: it has no doc to live in, so it is shown inline
 as before.
 
+**Name both replies where the ask lands** (plugin-behaviour.md, stop
+self-sufficiency): say what a yes looks like and what a change looks like — "**say
+go and I'll record and commit it, or tell me what to change**". This is the close's
+most-repeated stop and the one most likely to be read on a phone or relayed to
+someone else, where the app's reply suggestions aren't there to supply the missing
+half.
+
 ```
 run shipped ONE item     ->  this approval ALSO covers the commit message: title
                              and body derive verbatim from this entry, so the
@@ -466,6 +473,12 @@ approval; the user contests by number, and only contested items go one at a time
 Append the approved ones to Unprocessed; the LOG entry drafted next then carries
 them in its "Routed to Captures:" line from the start.
 
+**Name both replies in the ask itself** (plugin-behaviour.md, stop
+self-sufficiency): "**tell me any numbers to drop, or say keep them all**". The
+half that gets left out is the accept side, because it feels like the default and
+the app's reply suggestions used to supply it — which they don't on remote
+control, where this ask has read as a bare statement with nothing to answer.
+
 **Name the step's best-effort nature in plain words when it runs** — it re-reads
 whatever discussion is still in view, so a surfaced-nothing result is "nothing
 jumped out in what I could still see," not a guarantee nothing was missed.
@@ -503,6 +516,10 @@ git-tracked file                             ->  recoverable from history;
 untracked, or outside the repo               ->  NOT recoverable. Give a clear
                                                  warning before removing it.
 ```
+
+Name both replies on each offer (plugin-behaviour.md, stop self-sufficiency):
+"**say delete it, or keep it**" — a deletion offer that names only the delete side
+reads as an announcement that it's about to happen.
 
 If nothing session-created looks throwaway, say so in one line and move on.
 
@@ -625,12 +642,22 @@ commit first (the safe, local action), THEN gate the outward push on consent:
 A sub-doc may override to fit its session shape — done-plan.md commits and doesn't
 offer push — but these commit-first mechanics stay canonical.
 
-**5. Pass the message shell-agnostically.** Write it to a file in the project root
-(e.g. `COMMIT_MSG.tmp`), commit with `git commit -F COMMIT_MSG.tmp`, then delete
-the file. One mechanism on every machine — it sidesteps inline-quoting fragility
-(embedded newlines vary by shell, and a PowerShell here-string needs its closing
-token at column 0). The file is writable here because the sub-doc deletes _build.md
-before Commit, or none ever existed, so the scope-lock isn't active on the root.
+**5. Pass the message shell-agnostically.** Write it to a file in the **session
+scratchpad** — never the project root — and commit with
+`git commit -F "<scratchpad path>"`. One mechanism on every machine: it sidesteps
+inline-quoting fragility (embedded newlines vary by shell, and a PowerShell
+here-string needs its closing token at column 0).
+
+**The scratchpad is the point, not an incidental detail.** A commit message file
+is exactly what the temp-file rule describes — something the project never keeps —
+and the scratchpad is its sanctioned home, exempt from every file gate and
+self-clearing, so there is no delete step to run and no stray file to tidy. Writing
+it to the project root instead used to raise a permission popup at every single
+close: the build scope-lock is indeed off by then, but that was never the only
+gate — with no active build, the planning file-gate asks on any project write
+outside its quiet-list, and a root temp file isn't on it. The popup read as the
+app ignoring auto-accept, when it was the method's own safety check firing exactly
+as designed on a file that shouldn't have been there.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
