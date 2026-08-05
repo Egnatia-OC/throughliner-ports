@@ -1,4 +1,4 @@
-# [HASH] — Blitz plan rewritten as one reusable document: both runs' learnings folded into the phases, capture quota gone
+# ee25958 — Blitz plan rewritten as one reusable document: both runs' learnings folded into the phases, capture quota gone
 
 `resources/overnight-blitz-plan.md` had grown a two-tier shape — the phases, then two "Learnings from the Nth run" sections amending them from the bottom. A third run would have had to read the plan and then re-read it against thirteen numbered amendments to know what the plan actually said. The user asked for the findings folded into the plan itself.
 
