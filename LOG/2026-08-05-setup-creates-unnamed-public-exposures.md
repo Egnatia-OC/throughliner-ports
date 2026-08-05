@@ -1,4 +1,4 @@
-# [HASH] — /setup's Step 3b now names the two exposures publishing creates: the commit email (with the noreply option) and the planning record
+# d5378c7 — /setup's Step 3b now names the two exposures publishing creates: the commit email (with the noreply option) and the planning record
 
 The method created repositories and their first commits without ever mentioning who the commits are attributed to, and offered public-repo setup without saying what a visitor actually finds. The commit address is the one exposure no later file edit can fix — before the first commit it's one `git config` line, after it it's a full history rewrite — and two projects (a consumer's, and this repo on all 385 commits, publicly) are already past that free window.
 

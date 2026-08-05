@@ -33,6 +33,8 @@ The plugin also tunes itself to the Claude model you're running. It ships two ve
 
 Some pieces of work are yours to do rather than Claude's — sending something, checking a screen, a decision only you can make. Claude walks you through those live, one step at a time, when they come up. It never asks you whether you've already done them.
 
+When something misbehaves, Claude routes the report to the right place: a problem in your app goes into your queue, a problem with the method itself becomes a scrubbed report you paste at flintcraft.tech/report, and a problem with Claude Code (the app the method runs inside) can be filed as a GitHub issue — Claude offers to file it for you where your GitHub tooling is set up, always showing you the exact text and posting only on your yes.
+
 ## How to use it
 
 Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.

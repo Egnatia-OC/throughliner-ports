@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's worktree claim corrected (this folder is main), the merged queue-redesign worktree deregistered, and the worktree list recorded in the file map
+# d5378c7 — CLAUDE.md's worktree claim corrected (this folder is main), the merged queue-redesign worktree deregistered, and the worktree list recorded in the file map
 
 CLAUDE.md's folder-move recovery instructions claimed "this is the queue-redesign worktree"; `git worktree list` reports this folder as main, so anyone repairing a folder move by those steps would have repointed the wrong links. Rewrote the recovery step from the correct vantage (main tree plus one linked worktree, the Codex port) and recorded the worktree list after the "Where things live" map. AGENTS.md's copy of the wrong sentence went with that file's gutting in the sibling item, as its blocker note predicted.
 

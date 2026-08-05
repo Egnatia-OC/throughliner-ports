@@ -309,13 +309,21 @@ def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
     return True
 
 
-def _fire_once(cwd: str, marker_name: str) -> bool:
-    """True the first time it's called for this project, False after.
+def _fire_once(cwd: str, marker_name: str, scope: str = "") -> bool:
+    """True the first time it's called for this project AND scope, False after.
 
-    Backs the once-per-session advisories. The marker lives in the OS temp
+    Backs the once-per-advisory notes. The marker lives in the OS temp
     directory, never in the repo: it is disposable state about a session, not
     project content, and an in-tree marker would need gitignoring and would
     show up in every close as a stray file.
+
+    `scope` re-arms the advisory when its subject changes. Keyed to the project
+    path alone, the marker was never cleared, so an advisory fired once for the
+    project's entire life — the second unscoped build a week later got nothing,
+    restoring exactly the invisibility the advisory exists to fix. The caller
+    passes something that changes per occasion (for the unscoped-build advisory,
+    _build.md's creation time), so each new occasion fires afresh while repeats
+    within one occasion stay quiet.
 
     Fails OPEN — any error returns True, so the advisory fires again rather
     than going quiet. A note repeated is noise; a note lost is the invisibility
@@ -325,7 +333,9 @@ def _fire_once(cwd: str, marker_name: str) -> bool:
         import hashlib
         import tempfile
 
-        key = hashlib.sha256(_normalise(cwd).encode("utf-8")).hexdigest()[:16]
+        key = hashlib.sha256(
+            (_normalise(cwd) + "\x00" + scope).encode("utf-8")
+        ).hexdigest()[:16]
         marker = os.path.join(tempfile.gettempdir(), f"si-{marker_name}-{key}")
         if os.path.exists(marker):
             return False
@@ -495,10 +505,24 @@ def main() -> int:
             #
             # Stated as state, not alarm: this is a normal condition, and the
             # line exists so the session knows which regime it's in. Once per
-            # project, on the first edit, riding a tool result — session start
-            # was rejected because that payload is size-capped and might not
-            # arrive, whereas this is guaranteed to be seen.
-            if _fire_once(cwd, "unscoped"):
+            # BUILD (scoped by _build.md's creation time, so each new unscoped
+            # build fires afresh), on the first edit, riding a tool result —
+            # session start was rejected because that payload is size-capped
+            # and might not arrive, whereas this is guaranteed to be seen.
+            # Scope = the build's Run: line — stable across the build's own
+            # progress ticks, different for each new run. Creation time was
+            # rejected (ctime means inode-change on non-Windows, so ticks
+            # would re-arm it) and mtime too (every tick re-arms).
+            build_scope = ""
+            try:
+                with open(build_path, "r", encoding="utf-8") as bf:
+                    for bline in bf:
+                        if bline.startswith("Run:"):
+                            build_scope = bline.strip()
+                            break
+            except OSError:
+                pass
+            if _fire_once(cwd, "unscoped", build_scope):
                 return _advise(
                     "[Sovereign Implementer] This build is running with no file "
                     "containment: _build.md has no Files: section, so the "

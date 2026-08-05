@@ -378,6 +378,12 @@ the discussion's reasoning inline. The draft inherits the private-information
 rules (plugin-behaviour.md): no solicited identifiers, and context about the user
 written as decision-plus-reason, never as an assessment of the person.
 
+*When keeping several findings from one audit, destination follows the
+consolidation rule* (plugin-behaviour.md's bulk-approval inversion): unambiguous
+repairs consolidate into one work item with numbered points; a finding carrying
+a design call stays standalone. Still discussed one at a time — the rule sets
+where kept work lands, never how it's decided.
+
 *When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
 user-only (work Claude can run but can't run *yet* is Claude-work shelved below
 the line — the over-tag guard); and **don't under-file** — genuine user work must
@@ -397,20 +403,25 @@ the irreducible user action  ->  a single [user] line, reduced to ONLY that
 ```
 
 Show the draft as a blockquote under **Work item:**. Don't write until approved.
-On approval, make the move so the item is never visible in both sections at once:
+On approval, make the move **via the mechanical mover, then edit in place** —
+the same never-retype rule the close-out reorder already follows: only the
+decision passes through you, never the prose.
 
 ```
-1. REMOVE from Unprocessed        <- source first
-2. ADD to Processed at the reported placement
-   (both writes in the same turn)
+1. MOVE the block mechanically:
+       python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
+           --move-section <slug> Unprocessed Processed [--position ...]
+   # relocates the whole block byte-for-byte; the item is never visible in
+   # both sections, and nothing is hand-retyped
+2. EDIT the moved block in place to the approved draft
+   # the heading rewrite and rationale re-author are deliberate edits made
+   # AFTER the mechanical move, never a reason to retype the whole block
 ```
 
-Adding first leaves a window where the item shows in *both* sections, which reads
-as a lingering duplicate. Removing first means it's briefly in neither — which
-reads correctly as a move in progress. Safe because the drafted item is already
-approved and on screen. If the raw capture had no slug, give it one now. Report
-"moved to Processed as [slug]" only after the Write succeeded and a re-read
-confirms it landed in Processed and is gone from Unprocessed.
+If the raw capture had no slug, give it one (an in-place edit in Unprocessed)
+before the move — the mover addresses blocks by slug. Report "moved to Processed
+as [slug]" only after a re-read confirms it landed in Processed and is gone from
+Unprocessed.
 
 *If this item waits on something, choose its route deliberately — don't leave the
 dependency to position or to prose.* Two routes, and the choice is stated once
@@ -457,6 +468,16 @@ through a plain delete risks dropping content the user wanted kept. When the
 content belongs in another home — a SPEC sentence, a LOG entry, another item's
 rationale — edit the target first with approval, then remove the standalone item.
 Still a delete, just after its worth-keeping content has been carried across.
+
+*Where a decided-no's reasoning lives — one test.* Does the decision merely need
+to **sit in the record**, or does it need to **stop something recurring**? The
+record case is the default and goes to the LOG (the /done entry carries the
+delete and its why). The recurrence case needs an always-read home — CLAUDE.md,
+SPEC, or the surviving item's own prose — and earns it only on evidence: the
+question has *already* come back at least once, not a guess that it might.
+Left unstated, every rejection tends to become either a bookkeeping work item
+(queue inflation) or a LOG line nothing re-reads (silent re-litigation); the
+test is what routes between the two failures.
 
 **4. Checkpoint**  [PROMPT]
 
@@ -596,15 +617,18 @@ flag.
            processing is what the no-planning-in-execution rule protects)
 ```
 
-## Step 3: Close out  [BRIEF, PROMPT]
+## Step 3: Point at /done  [BRIEF, PROMPT]
 
-The durable close work runs at the /done close (done-plan.md), not here —
-reordering both sections, positioning the cleared-to-run marker, holding back
-items that depend on unverified work, recording lift-conditions, and placing ready
-`[user]` work above the marker. /done is the one close that always runs however a
-session ends, so consolidating there is what stops it being silently skipped. The
-spec-sync obligation is likewise the /done close's hard gate, not a duplicate here.
+There is no separate close-out step here, and **never say "close out" to the
+user** — the term names a step that was retired when its work moved into the
+/done close, and hearing it makes users wonder whether running /done alone
+skips something. It doesn't: the /done close runs everything — reordering both
+sections, positioning the cleared-to-run marker, holding back items that depend
+on unverified work, recording lift-conditions, placing ready `[user]` work
+above the marker, and the spec-sync gate. /done is the one close that always
+runs however a session ends, so consolidating there is what stops any of it
+being silently skipped.
 
-So closing a /plan session is just this: **"Run /done to record this and commit,
-or keep planning."** No chat summary — the LOG entry /done writes is the single
-session summary.
+So ending a /plan session is just this, in plain words: **"Run /done and I'll
+record this and commit it — or keep planning."** No chat summary — the LOG
+entry /done writes is the single session summary.

@@ -33,3 +33,5 @@ Check what the doc causes Claude to *say to the user* against the communication 
 ## Output
 
 Findings to Captures, one per drifted spot — name the doc, the step or rule, the lens, and what drifted. No edits to the audited docs; the fixes get scoped in a later /plan that processes the findings.
+
+Two reporting disciplines apply (canonical statement in `docs-b/next-audit.md`'s Compile findings): before reporting a rule as *missing*, search the corpus — "absent entirely" and "present elsewhere but unsignposted" are different findings with different fixes; and before reporting already-shipped work as *broken*, reconcile with the LOG's record of it being verified.

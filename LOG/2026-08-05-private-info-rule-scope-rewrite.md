@@ -1,4 +1,4 @@
-# [HASH] — the private-information rule now covers what Claude asks for and what it writes about the user, not just third parties
+# d5378c7 — the private-information rule now covers what Claude asks for and what it writes about the user, not just third parties
 
 The rule's old title — "Other people's private information" — was doing the scoping, and it scoped out two failures seen three times in one day: Claude asking for sensitive identifiers to put into an item, and Claude writing candid assessments of the user into committed docs. Both fail upstream of any review (the sentence reads as unremarkable at write time), so both needed write-time/ask-time rules like the existing one.
 

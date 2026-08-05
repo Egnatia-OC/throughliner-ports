@@ -1,4 +1,4 @@
-# [HASH] — FAQ audit: the project copy is the fossil, eight of its 22 entries are wrong, the template is current; recommend rebuild-by-replacement and a grouped index
+# d5378c7 — FAQ audit: the project copy is the fossil, eight of its 22 entries are wrong, the template is current; recommend rebuild-by-replacement and a grouped index
 
 The audit's opening premise-check confirmed the spot check: the shipped template (`templates/faq-template.md`, 66 entries after this night's additions, maintained continuously through 2026-08-04) is the current document, and the project's `FAQ/faq.md` is two months behind — base last refreshed 2026-06-18, with only three new-rule entries appended since. Every session pointed at the project copy by session_start has been reading retired machinery described as current.
 

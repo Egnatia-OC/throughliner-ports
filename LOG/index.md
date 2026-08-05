@@ -2,11 +2,25 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — FAQ/faq.md vs templates/faq-template.md — audit: project copy is the fossil (8 of 22 entries describe retired machinery), template current; recommends rebuild-by-replacement + grouped index; findings consolidated into [faq-backfill]'s block → 2026-08-05-faq-audit-wrong-missing-and-shape.md
-- [HASH] — docs-b/setup.md Step 3b, faq-template.md, SPEC.md — /setup now names the commit email (noreply option, every branch, before the first commit) and states that the planning record is what a repo visitor finds → 2026-08-05-setup-creates-unnamed-public-exposures.md
-- [HASH] — docs-b/plugin-behaviour.md + plan.md + next.md + faq-template.md + SPEC.md — private-information rule retitled and widened to three rules: third parties, a solicitation clause (don't ask for identifiers an item doesn't need), and a self-disclosure rephrase clause; sweep declared prevention-only for self-disclosure → 2026-08-05-private-info-rule-scope-rewrite.md
-- [HASH] — CLAUDE.md + .git/worktrees — folder-move recovery corrected (this folder is main), merged queue-redesign worktree deregistered (folder + remote branch left for the user), worktree list recorded in the file map → 2026-08-05-claude-md-worktree-claim-wrong-and-stale-trees.md
-- [HASH] — AGENTS.md + CLAUDE.md — AGENTS.md gutted to a three-line pointer at CLAUDE.md (drifted Codex-era copy, tool shelved); file map lists it → 2026-08-05-agents-md-undocumented-duplicate.md
+- [HASH] — Codex-port QUEUE (read-only) vs main docs — handoff audit: ladder rung + multi-item /next already landed; advisory-retire argument and whole-queue fail-closed read rule never did, filed as captures → 2026-08-05-codex-port-handoff-debt-audit.md
+- [HASH] — docs-b/plugin-behaviour.md + SPEC.md + README.md + faq-template.md — feedback channel now three-way: app → queue, method → flintcraft.tech/report, Claude Code → GitHub issue via gh with approval-before-post, duplicate-check, scrub guards → 2026-08-05-feedback-channel-claude-code-direction.md
+- [HASH] — docs-b/plan.md + plugin-behaviour.md — "close out" retired from user-facing narration: Step 3 heading renamed to "Point at /done", term added to background vocabulary; no reassurance line added → 2026-08-05-retired-plan-closeout-still-produced.md
+- [HASH] — docs-b/plan.md delete step — decided-no routing test added: record-only → LOG; stop-recurrence (evidenced by an actual recurrence) → always-read home → 2026-08-05-decided-no-has-no-home-rule.md
+- [HASH] — docs-b/plugin-behaviour.md + plan.md + next-audit.md — bulk-approval inversion gains destination clause: unambiguous repairs consolidate into one item, design-call findings stay standalone → 2026-08-05-audit-findings-consolidate-destination.md
+- [HASH] — docs-b/next-audit.md + compliance checklist — audits must search the corpus before reporting a rule missing (absent vs unsignposted are different findings) → 2026-08-05-audit-check-elsewhere-before-reporting-missing.md
+- [HASH] — docs-b/next-audit.md — audits must reconcile with the LOG's verification record before reporting shipped work broken (narrow trigger; broad form stays rejected) → 2026-08-05-audit-must-reconcile-with-prior-verification.md
+- [HASH] — docs-b/done.md — wind-down re-scan moved before the LOG entry draft so the Routed-to-Captures line is right at approval; post-commit-tail amendment path preserved → 2026-08-05-wind-down-rescan-runs-after-entry.md
+- [HASH] — docs-b/done.md — forward advisory now filed at the commit core (pre-staging) so closes end with a clean tree; Recommend next only presents → 2026-08-05-advisory-filed-after-commit-unnecessarily.md
+- [HASH] — hooks/pre_tool_use.py — unscoped-build advisory re-fires per build (scope = _build.md's Run: line) instead of once per project ever; fail-open kept → 2026-08-05-unscoped-advisory-fires-once-ever.md
+- [HASH] — scripts/reorder_queue.py + docs-b/plan.md — mover gains --move-section for cross-section moves; keep-step now mandates move-then-edit over hand-retyping → 2026-08-05-no-mechanical-mover-for-cross-section-moves.md
+- [HASH] — scripts/reorder_queue.py — --move gains BEFORE/AFTER anchors so a two-item reorder stops demanding the full slug set → 2026-08-05-reorder-mover-demands-full-slug-set.md
+- [HASH] — CLAUDE.md orphan-tags section — now names what the tags hold: 142-file May-2026 build-log at v157; LOG/ starts 2026-06-12 → 2026-08-05-claude-md-orphan-tags-understate-what-they-hold.md
+
+- d5378c7 — FAQ/faq.md vs templates/faq-template.md — audit: project copy is the fossil (8 of 22 entries describe retired machinery), template current; recommends rebuild-by-replacement + grouped index; findings consolidated into [faq-backfill]'s block → 2026-08-05-faq-audit-wrong-missing-and-shape.md
+- d5378c7 — docs-b/setup.md Step 3b, faq-template.md, SPEC.md — /setup now names the commit email (noreply option, every branch, before the first commit) and states that the planning record is what a repo visitor finds → 2026-08-05-setup-creates-unnamed-public-exposures.md
+- d5378c7 — docs-b/plugin-behaviour.md + plan.md + next.md + faq-template.md + SPEC.md — private-information rule retitled and widened to three rules: third parties, a solicitation clause (don't ask for identifiers an item doesn't need), and a self-disclosure rephrase clause; sweep declared prevention-only for self-disclosure → 2026-08-05-private-info-rule-scope-rewrite.md
+- d5378c7 — CLAUDE.md + .git/worktrees — folder-move recovery corrected (this folder is main), merged queue-redesign worktree deregistered (folder + remote branch left for the user), worktree list recorded in the file map → 2026-08-05-claude-md-worktree-claim-wrong-and-stale-trees.md
+- d5378c7 — AGENTS.md + CLAUDE.md — AGENTS.md gutted to a three-line pointer at CLAUDE.md (drifted Codex-era copy, tool shelved); file map lists it → 2026-08-05-agents-md-undocumented-duplicate.md
 
 - a7bb165 — QUEUE.md + resources/research — /plan: reprioritised around the public-history exposure, consolidated the privacy-rule scope defect, split the FAQ work into audit-then-build, and cleared five items to run → 2026-08-05-plan.md
 

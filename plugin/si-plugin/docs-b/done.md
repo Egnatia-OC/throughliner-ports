@@ -208,6 +208,10 @@ a pure pointer drift                     ->  mechanical. Fix it HERE, report in
 
 Every sub-doc's entry-writing step points here.
 
+**Run the wind-down re-scan first** (its own section below) — any captures it
+files belong in this entry's "Routed to Captures:" line, so the scan precedes
+the draft.
+
 **One text, several positions.** The session authors **two** texts, not four:
 
 ```
@@ -423,11 +427,16 @@ cleared at processing, so the close does **not** re-decide it. Two things:
 
 ## Wind-down re-scan (file-only)  [BRIEF, PROMPT]
 
-Commit core points here, so it runs at **every** /done close regardless of session
-type.
+Runs at **every** /done close regardless of session type — **before the LOG
+entry is drafted**, not inside the commit. Running it first means the entry's
+"Routed to Captures:" line is correct at approval time; the old
+after-the-entry order forced that line to be amended as a working-tree edit
+after approval, an amendment at least one session found it cleaner to avoid by
+simply re-ordering. (A capture raised in the post-commit tail still amends the
+line afterwards — no ordering eliminates that path.)
 
-Before committing, re-read this session's own discussion and surface candidate
-captures — things the user thought out loud but never flagged.
+Re-read this session's own discussion and surface candidate captures — things
+the user thought out loud but never flagged.
 
 ```
 /done  ->  may FILE the surfaced captures
@@ -438,8 +447,8 @@ captures — things the user thought out loud but never flagged.
 
 Present all candidates as ONE numbered set of fully-drafted captures for a single
 approval; the user contests by number, and only contested items go one at a time.
-Append the approved ones to Unprocessed, and add them to this session's LOG entry's
-"Routed to Captures:" line as a working-tree edit riding this commit.
+Append the approved ones to Unprocessed; the LOG entry drafted next then carries
+them in its "Routed to Captures:" line from the start.
 
 **Name the step's best-effort nature in plain words when it runs** — it re-reads
 whatever discussion is still in view, so a surfaced-nothing result is "nothing
@@ -485,11 +494,23 @@ If nothing session-created looks throwaway, say so in one line and move on.
 
 Every sub-doc's Commit step points here.
 
-**Run the wind-down re-scan before staging** — it files any un-flagged captures
-from this session's discussion so they land in this same commit. File-only.
+**The wind-down re-scan has already run** — it fires before the LOG entry is
+drafted (see LOG entry files), so its captures are in the entry's "Routed to
+Captures:" line at approval time rather than amended in afterwards. If anything
+capturable surfaced *since* the entry was approved, file it now and update the
+entry's line — the ordinary captures-filed-after-commit move, just pre-commit.
 
-**Run the session-file cleanup before staging too**, so any deletions the user
+**Run the session-file cleanup before staging**, so any deletions the user
 accepts fold into this same commit.
+
+**File the forward-recommendation advisory before staging.** Derive the
+next-step recommendation now — Recommend next's overlap scan and queue-state
+ladder — and when it is *concrete*, write the advisory capture at the top of
+Unprocessed here, so it rides this commit instead of leaving every close with a
+dirty tree. Its content derives entirely from queue state that is already
+settled; nothing about it needs the commit to exist. Recommend next then only
+*presents* the recommendation — it files nothing. (A generic recommendation
+still files nothing at all.)
 
 **Shipped-slug cross-check (work-item closes).** When this session shipped work
 items, cross-check each shipped slug named in this session's LOG entries against
@@ -651,9 +672,12 @@ close that ships the last ready items leaves Processed *full* — so a "Processe
 empty" test doesn't catch it — while /next has nothing it can build. Pointing at
 /next there sends the user into a dead end.
 
-**File the forward-recommendation advisory.** When this step made a *concrete*
-recommendation, file it as a capture at the top of Unprocessed, worded as advice,
-consumed and cleared by the next /plan. A generic recommendation files nothing.
+**The forward-recommendation advisory was already filed at the commit core**
+(pre-staging, so it rode this session's commit) — this step only presents the
+recommendation it carries. If this step's judgment has genuinely moved past what
+was filed — post-commit conversation changed the picture — update the advisory
+as a working-tree edit; that is then an ordinary post-commit tail write, the
+exception rather than the rule.
 
 ```
 flavor deltas:

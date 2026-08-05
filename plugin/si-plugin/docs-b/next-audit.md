@@ -57,6 +57,27 @@ Group observations into discrete findings — **one finding per actionable chang
 Phrase each as *observed + why it matters*, the shape a capture takes, since
 that's where they'll land.
 
+Two checks run on the findings before they're presented, because both failures
+have happened and both cost a re-scope later:
+
+**Before reporting that already-shipped work is broken, reconcile with the
+record.** Check the LOG for a prior verification of that deliverable; if one
+exists and the finding contradicts it, the finding must *reconcile* — say what
+changed since, or why the earlier verification no longer holds — never report a
+bare contradiction. An audit once declared a shipped deliverable broken while
+the LOG recorded it verified, and a human had to catch it from memory — the
+exact burden the recorded reasoning exists to remove. Narrow by design: the
+check fires only when a finding says *shipped work is broken*, so most audits
+never pay for it. (The broad form — reconcile every finding against the record
+— was rejected: a step that near-always no-ops gets skipped, and then means
+nothing.)
+
+**Before reporting a rule as missing, search the corpus for it.** "Absent
+entirely" and "present elsewhere but not signposted from where it's needed" are
+different findings with different fixes. Four of twelve findings in one real
+audit needed re-scoping because this distinction wasn't drawn — the direction
+was right each time, the reach wrong each time. Report which of the two it is.
+
 ## Present findings as one numbered set  [BRIEF, PROMPT]
 
 One message, all findings. State the count upfront, then list each: number,
@@ -82,9 +103,13 @@ didn't contest is approved as-is.
 
 ## Route the approved set to Unprocessed
 
-Append the approved findings to Unprocessed, each placed per the Captures
-placement rule and written to the capture-authoring standard. Tick each in
-_build.md Progress as `captured` or `dropped`.
+Append the approved findings to Unprocessed, written to the capture-authoring
+standard. **Destination follows the consolidation rule** (plugin-behaviour.md's
+bulk-approval inversion carries it): a finding whose fix is an unambiguous
+repair consolidates with its fellows into one capture with numbered points; a
+finding carrying a design call the user must make stays standalone. Placement
+per the Captures placement rule. Tick each in _build.md Progress as `captured`
+or `dropped`.
 
 ## Close  [BRIEF, PROMPT]
 

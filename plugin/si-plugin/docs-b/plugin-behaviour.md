@@ -51,6 +51,15 @@ Active in every session where the plugin is installed and the project is set up.
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
 
+  **The result-set inversion also carries a destination rule.** Presentation is
+  one message; destination is where the kept findings *land*, and the two are
+  separate calls. A finding whose fix is an unambiguous repair consolidates with
+  its fellows into ONE work item with numbered points — twelve drafts, approvals,
+  scope-locks and log entries collapse to one. A finding carrying a design call
+  the user must make stays standalone, so it can be ordered, deferred or dropped
+  on its own. Each finding is still discussed and decided one at a time —
+  consolidation is a destination rule, never a licence to bulk-keep.
+
 - **Consolidate the scans at a skill opening into one narration.** When several
   checks fire at once — /plan's read-state, /next's pre-flight, /done's close-out
   — combine what they turn up into one "here's what came up: …", not bullet-by-
@@ -189,8 +198,13 @@ the user is expected to understand and doesn't:
 ```
 loop · Step N · Phase X · sub-step · pass · gate · pre-flight · work-item slug
 response-shape tag names ([SILENT], [PROMPT], …) · procedure-doc filenames
-hash backfill / the placeholder · queue-lint flag
+hash backfill / the placeholder · queue-lint flag · close-out
 ```
+
+("Close-out" earns its place from a real leak: the /plan close-out step was
+retired into the /done close, but the word kept being said, and a user was left
+unable to tell whether running /done alone skipped something. Say what happens
+— "run /done and I'll record and commit this" — never the step's name.)
 
 Translate or omit when narrating: "the loop" → "the next item"; "Step 2 comes
 next" → say what happens next, or just do it. Quoting an artifact the user
@@ -1016,18 +1030,40 @@ premise is broken       ->  halt and course-correct
 ## Consumer feedback channel
 
 A user will sometimes hit a problem with the *method itself* — a skill
-misbehaving, a hook misfiring, a rule that produced a bad outcome. That isn't
-work on their app, so it routes **out** to **flintcraft.tech/report**, not into
-their QUEUE. Never use Claude Code's built-in `/bug` — that reports Claude Code
-problems to Anthropic, not third-party plugin issues to this plugin's author.
+misbehaving, a hook misfiring, a rule that produced a bad outcome — or with
+**Claude Code itself**, the surrounding tool the method runs inside. Neither is
+work on their app, so neither goes into their QUEUE; each routes out to its own
+destination. Never use Claude Code's built-in `/bug` for a method problem —
+that reports Claude Code problems to Anthropic, not third-party plugin issues
+to this plugin's author.
 
 ```
-the discriminator:  is this about how the METHOD works,
-                    or about what I'm BUILDING with it?
-    method   ->  flintcraft.tech/report
-    my app   ->  an ordinary capture in my QUEUE
-    unsure   ->  ask the user; don't guess
+the discriminator:  which thing is misbehaving?
+    my app       ->  an ordinary capture in my QUEUE
+    the method   ->  flintcraft.tech/report
+    Claude Code  ->  a GitHub issue on anthropics/claude-code
+        (the harness: the app itself, its viewer, links,
+         hooks machinery, sidebar — not this plugin's rules)
+    unsure       ->  ask the user; don't guess between the three
 ```
+
+**The Claude Code branch, and its guards — each earned in a real filing:**
+
+- **Offer to file it directly** when `gh` is installed and authenticated:
+  Claude drafts the issue, shows the exact text, and posts it only on an
+  explicit yes. When `gh` is absent or unauthenticated, fall back to drafting
+  text for the user to paste on GitHub themselves — the offer never just fails.
+- **Approval-before-post is non-negotiable.** A GitHub issue is public and
+  permanent under the user's identity. Show the full text; post on an explicit
+  yes; never auto-submit.
+- **Duplicate-check first — it shapes the report, not just avoids repeats.**
+  Search existing issues before drafting. In the first real use, the search
+  split one report into a comment strengthening an existing issue plus a new
+  issue for the genuinely novel half — better output, not just less noise.
+- **Scrub by construction, and note the counter-intuitive case:** a report is
+  *about* sensitive content more often than it contains some. Describe the
+  sensitivity ("a project name that shouldn't appear on a shared screen")
+  without demonstrating it. No app names, file contents, or secrets.
 
 ```
 user-raised     ->  always fine to draft a report
@@ -1043,9 +1079,11 @@ step, the method version, and generic repro steps.
 **Scrubbed by construction.** Never include app names, file contents, secrets,
 QUEUE/SPEC content, or any project specifics beyond describing the issue.
 
-**Claude drafts, the user sends.** Show the paste-ready block; the user reviews
-and pastes it themselves. Never auto-submit — this is outward-facing, so the
-user's own review is the required backstop on the scrubbing.
+**Claude drafts, the user sends** (the method-report flow — the Claude Code
+branch above carries its own posting rule). Show the paste-ready block; the
+user reviews and pastes it themselves. Never auto-submit — this is
+outward-facing, so the user's own review is the required backstop on the
+scrubbing.
 
 **Red flag — scrubbing is non-negotiable.** A submitted report can become a
 public GitHub issue downstream, so a leak of app details or secrets into one is a
