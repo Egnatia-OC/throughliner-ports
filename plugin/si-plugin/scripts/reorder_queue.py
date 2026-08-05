@@ -335,10 +335,22 @@ def main():
         else:
             die("--move position must be TOP, BOTTOM, BEFORE, or AFTER, got: " + move_pos)
     if len(args) < 2:
+        # The usage message lists EVERY form the script supports. It used to
+        # print only two of the four, and the reader who hit an error learned
+        # the tool was less capable than it is — a real close restated a full
+        # 23-slug order twice when two relative moves would have done it.
         die("usage: reorder_queue.py <queue_path> <section> <slug...> "
             "[--marker-after <slug|TOP|BOTTOM>]\n"
             "   or: reorder_queue.py <queue_path> <section> --move <slug> "
-            "<TOP|BOTTOM> [--marker-after ...]")
+            "<TOP|BOTTOM> [--marker-after ...]\n"
+            "   or: reorder_queue.py <queue_path> <section> --move <slug> "
+            "<BEFORE|AFTER> <anchor-slug> [--marker-after ...]\n"
+            "   or: reorder_queue.py <queue_path> --move-section <slug> "
+            "<FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> "
+            "[anchor-slug]]\n"
+            "For one or two items out of place, a relative --move is the "
+            "cheap form; the full slug list is only needed when the whole "
+            "section genuinely re-sorts.")
     queue_path, section = args[0], args[1]
     desired = args[2:]  # empty in --move mode; derived from the file below
     if move_slug is not None and desired:

@@ -2,6 +2,12 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — docs-b/plan.md + done-plan.md + plugin-behaviour.md — below-line revisit and lift-condition recording gain the downstream-action test: an awaited event downstream of an unfiled user action files a [user] work item instead of recurring as a chat question; same-person questions consolidate into one walkthrough → 2026-08-05-revisit-converts-unfiled-user-work-into-a-question.md
+- [HASH] — docs-b/done.md Recommend next — fresh-chat advice folded into the ladder rungs' own sentences (the wrapper form kept dropping); each recommendation now carries "start a new chat, then run X" as its content → 2026-08-05-closing-advice-drops-the-fresh-chat-half.md
+- [HASH] — docs-b/done.md Recommend next — /done scoped out of the fresh-chat shape: it closes the session you're in, never a fresh one → 2026-08-05-closing-advice-misfires-onto-done.md
+- [HASH] — scripts/reorder_queue.py + docs-b/done-plan.md — mover usage message lists all four forms; reorder step leads with the cheap relative-move invocation for small changes, full-order reserved for genuine re-sorts → 2026-08-05-plan-close-reorder-latency.md
+- [HASH] — docs-b/plugin-behaviour.md file safety — disk-change warnings on method docs halt work: git status + re-read before the next write, never an inferred cause → 2026-08-05-disk-change-warning-should-halt.md
+
 - [HASH] — plugin/si-plugin/hooks/pre_tool_use.py — subagent ask-gate now matches both tool names "Task" and "Agent" (docstrings updated), restoring the gate under the harness's current Agent tool name → 2026-08-05-subagent-gate-tool-name-stale.md
 - [HASH] — post_tool_use.py + next.md (both docsets) — lint gains readiness-marker checks (missing/duplicate/drifted) and an orphaned-prose check; /next now fails closed on a missing marker: nothing cleared → 2026-08-05-lint-blind-to-readiness-marker.md
 - [HASH] — docs-b/plan.md + docs-b/done-plan.md — below-line revisit gains a "spent" outcome; lift-conditions must name repeatable future events; close gains a Blocked-by clearing step (backwards-pointing surfaced, never auto-cleared) → 2026-08-05-lift-conditions-anchored-to-spent-events.md

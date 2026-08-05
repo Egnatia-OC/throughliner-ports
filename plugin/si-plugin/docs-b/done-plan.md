@@ -78,10 +78,19 @@ locate:  scripts/reorder_queue.py under the PLUGIN ROOT
          # directory (.../<plugin-root>/skills/<skill>). Derive it from there
          # so it resolves wherever the plugin is installed — never hardcode.
 
-invoke:  python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+invoke:  # SMALL CHANGE (one or two items out of place) — the cheap form,
+         # and under the change-scoped rule it is the common case:
+         python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+             <Processed|Unprocessed> --move <slug> <BEFORE|AFTER> <anchor-slug>
+         # (--move <slug> <TOP|BOTTOM> for the ends)
+
+         # WHOLE-SECTION RE-SORT — only when the order is genuinely wrong
+         # throughout; restating a long order for a one-item fix is the
+         # expensive path a real close took twice for no gain:
+         python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
              <Processed|Unprocessed> <slug1> <slug2> …
-         # give the section's full desired top-to-bottom slug order
-         # for Processed, place the marker with:
+
+         # either form: for Processed, place the marker with
          #     --marker-after <slug|TOP|BOTTOM>
          # omit it to keep the marker where it currently sits
 
@@ -151,6 +160,15 @@ condition can never be satisfied as written — while reading to the revisit
 exactly like a condition still waiting its turn. Two items sat in that state
 for weeks, unanswerable and invisible. The revisit's *spent* outcome (plan.md)
 finds ones already written; this rule stops new ones being written.
+
+**And a user-only condition passes the downstream-action test before it is
+written:** is the awaited event downstream of an action the user must take
+first? An event that can't happen until the user acts ("the collaborator
+replies" — to a message not yet sent) is not a recordable condition: the
+action files as a `[user]` work item and the condition waits on *it*. Only a
+genuinely external event — a restart, a release, someone else's unprompted
+move — stands as written. This fires here first because the close is where
+conditions get written; the revisit re-applies it at every read (plan.md).
 
 **A lift-condition may no longer name another queue item.** "Cleared once [slug]
 is built" is a dependency on queued work, and that has its own field now:

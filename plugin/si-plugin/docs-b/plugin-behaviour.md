@@ -474,7 +474,11 @@ real and equally bad; neither warning may be louder than the other.
   must eventually be *done*, so everything must be *tracked*. When "can Claude do
   this at all?" returns **no**, file a `[user]` work item. This is the quieter, more
   common failure — the over-tag rule is loud, so the instinct is to minimize it
-  and walk straight into this one.
+  and walk straight into this one. It has a second face: a lift-condition
+  awaiting an event that can't happen until the user acts ("the collaborator
+  replies" — to a message never sent) is under-filing too, and the below-line
+  revisit's downstream-action test (plan.md) exists to catch it — the action
+  files as a `[user]` work item; the condition waits on it, not on the event.
 - **A `[user]` work item carries a walkthrough** — which steps, in what order, what to
   check — because that's what lets /next *lead* with them. But "can't fully
   script it yet" is **not** a reason to withhold the line: file it with a rough
@@ -1136,6 +1140,18 @@ never  git push without asking          ->  and never --force
 never  git reset --hard
 always check for secrets before committing
 ```
+
+**A "file modified on disk since you last read it" warning on a method doc
+stops work — never reason past it.** On that warning for QUEUE.md, SPEC.md or
+LOG/, establish what changed before the next write: a cheap `git status` and a
+re-read. Never infer the cause, however plausible the innocent explanation —
+the queue mover really does rewrite the file, which is exactly what makes the
+warning reliably dismissible, and a dismissed warning has already let a
+concurrent session's corruption ride two further edits into a commit. The
+innocent case trains the response to the dangerous one. Deliberately narrow to
+the method's own documents, where the session is reasoning over the whole
+artifact and a silent change invalidates that reasoning — a blanket rule for
+every file would fire constantly and get ignored, the same failure again.
 
 **Uncommitted changes you didn't make are the user's own work, not breakage.**
 Read them as expected handmade work; confirm with the user and fold them in.

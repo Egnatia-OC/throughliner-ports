@@ -144,6 +144,18 @@ item to Unprocessed if what it waits on no longer exists at all.
 Per-item asking is the nagging this revisit exists to avoid. An item with no
 recorded lift-condition can't be classified without nagging — note it as a gap.
 
+**Before asking any user-only condition, run the downstream-action test:** is
+the awaited event downstream of an action the user has to perform first? "The
+collaborator replies" reads like an external event, but if the user has never
+sent the message, the revisit will ask "has it happened yet?" forever about a
+thing that cannot happen — user work existing only as a recurring chat
+question, manufactured by correctly-followed rules. If yes: that action is a
+`[user]` work item — propose filing it, with the condition rewritten to wait
+on *it*. If no (a restart, a release, someone else's unprompted move), the
+condition stands and joins the consolidated question. When several conditions
+await the same person, one `[user]` walkthrough carries all of them — never
+several walkthroughs that have the user message the same person repeatedly.
+
 **When the same item keeps coming back, stop asking and propose moving it.** An
 item whose condition only the user can answer will otherwise surface every single
 session, forever — one such item was asked about at three consecutive sessions,

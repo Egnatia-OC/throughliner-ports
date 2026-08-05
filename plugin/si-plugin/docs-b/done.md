@@ -643,29 +643,41 @@ The clean case is a plain assessment, not a hedge — "Three items are waiting t
 sorted; none touches the next piece of work, so nothing blocks it," never "there
 may be overlap worth checking."
 
-**Always advise a fresh chat first.** Whatever this step recommends, it names
-**two** things in order: start a new chat, *then* run the skill. Both halves,
-every time — a standing shape, not a hint and not conditional on who's reading.
-A novice reads "run /plan next" as an instruction to run it right here, and
-carries a spent conversation into the next piece of work. Say the action the user
-actually takes — "start a new chat" — never the background term for it.
+**The fresh-chat half lives inside each rung's sentence, not around it.** Every
+recommendation names **two** things in order: start a new chat, *then* run the
+skill — because a novice reads "run /plan next" as an instruction to run it
+right here, and carries a spent conversation into the next piece of work. This
+used to be a standing wrapper the speaking step had to remember to apply, and
+it dropped exactly when the recommendation's content was in hand — so the
+ladder's rungs now carry both halves as their own words, and the
+recommendation *is* the sentence with the fresh chat in it. Say the action the
+user actually takes — "start a new chat" — never the background term for it.
+
+**The one exception is /done itself: it closes the session you're in, never a
+fresh one.** The two-halves shape applies to the *next* skill after a close.
+When any step of the method recommends running /done — mid-session, at a
+build's completion, anywhere — it never says to start a new chat first: /done
+records the current session's work, so advising a fresh chat for it sends the
+user to close from a session with none of the work in view. A real session
+made exactly that misfire; this sentence is its scope line.
 
 **Queue-state ladder.** When nothing blocks. The distinction rungs 2 and 3 turn
 on is **the readiness line**: /next can only build work sitting *above* it, so
-work below the line is not something /next can act on at all.
+work below the line is not something /next can act on at all. Each rung's
+recommendation sentence carries the fresh-chat half itself:
 
 ```
 1. captures appended this session that affect the next work
-       ->  recommend a new chat, then /plan; name the blocker
+       ->  "Start a new chat and run /plan there" — and name the blocker
 2. work sits ABOVE the readiness line
-       ->  name the next item, and recommend starting a new chat and running
-           /next there. If a reorder applies, offer to reorder first so that
-           /next picks the right item.
+       ->  name the next item: "start a new chat and run /next there — it
+           picks up [the item]." If a reorder applies, offer to reorder first
+           so that /next picks the right item.
 3. Processed holds work, but ALL of it is below the readiness line
-       ->  recommend a new chat, then /plan — there is work waiting, but none
-           of it is ready to build yet, so /next would open and immediately
-           have nothing to do. Say that plainly: work is waiting, it just
-           needs a planning session to green-light something first.
+       ->  "Start a new chat and run /plan there" — there is work waiting, but
+           none of it is ready to build yet, so /next would open and
+           immediately have nothing to do. Say that plainly: work is waiting,
+           it just needs a planning session to green-light something first.
 4. Processed empty
        ->  "Queue is clear. Start a new chat and run /plan when you have more."
 ```
