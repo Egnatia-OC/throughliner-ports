@@ -162,7 +162,7 @@ def content_stamp(root):
     CLAUDE_PLUGIN_ROOT) here; in the self-hosting dev project /plan computes
     the target's stamp by calling this same function over plugin/si-plugin/,
     and equal stamps mean the installed host matches the current target. A
-    version number can't answer this — a build batch edits host-side files
+    version number can't answer this — a build edits host-side files
     without bumping any version — so the stamp is a content question, not a
     version one.
     """
@@ -663,7 +663,7 @@ def main() -> int:
             "test has gone live, instead of asking the user what's installed."
         )
         # Content stamp of the installed host's own files. The version number
-        # alone can't tell whether host-side changes are live — a build batch
+        # alone can't tell whether host-side changes are live — a build
         # edits a hook or a doc without bumping any version, so the installed
         # host and the target can show the same version while the host is stale.
         # The stamp answers the real (content) question. In the self-hosting dev

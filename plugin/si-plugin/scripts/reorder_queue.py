@@ -14,7 +14,8 @@ Contract:
   python reorder_queue.py <queue_path> <section> <slug1> <slug2> ... [--marker-after <slug|TOP|BOTTOM>]
   python reorder_queue.py <queue_path> <section> --move <slug> <TOP|BOTTOM> [--marker-after ...]
   python reorder_queue.py <queue_path> <section> --move <slug> <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
-  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> [anchor-slug]]
+  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM>]
+  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug>
 
   <section>  one of: Processed | Unprocessed
   <slug...>  the FULL desired order of that section's work-item slugs, top to
@@ -37,8 +38,12 @@ Contract:
              whole block byte-for-byte from one section to the other — the
              Unprocessed → Processed keep-move is /plan's most frequent
              structural write, and without this it was hand-retyped. Default
-             lands at the BOTTOM of the target section; --position overrides
-             (TOP, BOTTOM, or BEFORE/AFTER an anchor slug in the target). The
+             lands at the BOTTOM of the target section — which in Processed is
+             BELOW the cleared-to-run marker, so an item moved there because it
+             was cleared needs --position (or a follow-up --marker-after) or
+             the file reads as though nothing was cleared. --position takes
+             TOP or BOTTOM alone, or BEFORE/AFTER followed by an anchor slug
+             in the target section as its next bare word. The
              heading text is NOT rewritten — a processed item's new description
              is a separate deliberate edit, made after the mechanical move.
   --marker-after (Processed only): where the `--- Cleared to run above this
@@ -299,15 +304,30 @@ def main():
             except IndexError:
                 die("--position needs a value: TOP, BOTTOM, BEFORE, or AFTER")
             if position in ('BEFORE', 'AFTER'):
+                # The anchor is POSITIONAL — it follows the direction word with
+                # no flag of its own. Naming that here is the point: a session
+                # that gets this wrong reaches for `--anchor <slug>` next, which
+                # used to be swallowed as the anchor itself and then surface as
+                # the generic usage line, two turns from the real problem.
                 try:
                     anchor = rest[p + 2]
                 except IndexError:
-                    die("--position %s needs an anchor slug" % position)
+                    die("--position %s needs an anchor slug straight after it: "
+                        "--position %s <anchor-slug>" % (position, position))
+                if anchor.startswith('-'):
+                    die("--position %s takes the anchor as a bare slug, not a "
+                        "flag: --position %s <anchor-slug> (got %r)"
+                        % (position, position, anchor))
                 rest = rest[:p] + rest[p + 3:]
             elif position in ('TOP', 'BOTTOM'):
                 rest = rest[:p] + rest[p + 2:]
             else:
-                die("--position must be TOP, BOTTOM, BEFORE, or AFTER, got: " + position)
+                die("--position must be TOP, BOTTOM, BEFORE, or AFTER, got: "
+                    + position
+                    + "\nTOP and BOTTOM take nothing after them; BEFORE and "
+                      "AFTER each take an anchor slug as the next bare word: "
+                      "--position AFTER <anchor-slug>. There is no numeric "
+                      "position.")
         if len(rest) != 1:
             die("usage: reorder_queue.py <queue_path> --move-section <slug> "
                 "<FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> [anchor]]")
@@ -328,12 +348,22 @@ def main():
             try:
                 move_anchor = args[k + 3]
             except IndexError:
-                die("--move %s needs an anchor slug" % move_pos)
+                die("--move %s needs an anchor slug straight after it: "
+                    "--move <slug> %s <anchor-slug>" % (move_pos, move_pos))
+            if move_anchor.startswith('-'):
+                die("--move %s takes the anchor as a bare slug, not a flag: "
+                    "--move <slug> %s <anchor-slug> (got %r)"
+                    % (move_pos, move_pos, move_anchor))
             args = args[:k] + args[k + 4:]
         elif move_pos in ('TOP', 'BOTTOM'):
             args = args[:k] + args[k + 3:]
         else:
-            die("--move position must be TOP, BOTTOM, BEFORE, or AFTER, got: " + move_pos)
+            die("--move position must be TOP, BOTTOM, BEFORE, or AFTER, got: "
+                + move_pos
+                + "\nTOP and BOTTOM take nothing after them; BEFORE and AFTER "
+                  "each take an anchor slug as the next word: "
+                  "--move <slug> AFTER <anchor-slug>. There is no numeric "
+                  "position.")
     if len(args) < 2:
         # The usage message lists EVERY form the script supports. It used to
         # print only two of the four, and the reader who hit an error learned
@@ -346,8 +376,10 @@ def main():
             "   or: reorder_queue.py <queue_path> <section> --move <slug> "
             "<BEFORE|AFTER> <anchor-slug> [--marker-after ...]\n"
             "   or: reorder_queue.py <queue_path> --move-section <slug> "
-            "<FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> "
-            "[anchor-slug]]\n"
+            "<FromSection> <ToSection> [--position <TOP|BOTTOM>]\n"
+            "   or: reorder_queue.py <queue_path> --move-section <slug> "
+            "<FromSection> <ToSection> --position <BEFORE|AFTER> "
+            "<anchor-slug>\n"
             "For one or two items out of place, a relative --move is the "
             "cheap form; the full slug list is only needed when the whole "
             "section genuinely re-sorts.")

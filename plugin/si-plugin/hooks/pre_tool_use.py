@@ -9,7 +9,7 @@ PreToolUse hook — enforces four rules:
    no Files: section = no enforcement (but it says so — see rule 4);
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
-   when it's explicitly listed in Files: — a batch that needs to change
+   when it's explicitly listed in Files: — a build that needs to change
    SPEC lists it; a feature build that doesn't name SPEC can't touch it,
    so scope-lock alone keeps SPEC read-only for any build that doesn't
    name it.
@@ -154,7 +154,7 @@ def _parse_build_files(build_path: str) -> list[str] | None:
     (method docs only), or the listed paths.
 
     Robust to a stray, content-bearing `Files: a, b, c` line — e.g. one
-    copied into the Entry field from a batch's own text. Such a line used
+    copied into the Entry field from a work item's own text. Such a line used
     to shadow the real section: the parser latched onto the FIRST line
     starting with `Files:`, found no bare-path bullets beneath it, broke at
     the next prose line, and returned an empty list — which locked the build
@@ -323,9 +323,16 @@ def _fire_once(cwd: str, marker_name: str, scope: str = "") -> bool:
     path alone, the marker was never cleared, so an advisory fired once for the
     project's entire life — the second unscoped build a week later got nothing,
     restoring exactly the invisibility the advisory exists to fix. The caller
-    passes something that changes per occasion (for the unscoped-build advisory,
-    _build.md's creation time), so each new occasion fires afresh while repeats
-    within one occasion stay quiet.
+    passes something that changes per occasion, so each new occasion fires
+    afresh while repeats within one occasion stay quiet.
+
+    For the unscoped-build advisory that occasion-key is _build.md's `Run:`
+    line: stable across the build's own progress ticks, different for each new
+    run. Both timestamps were considered and rejected — ctime means
+    inode-change off Windows, so ticks would re-arm it, and mtime re-arms on
+    every tick. Stated here because this docstring previously named creation
+    time, contradicting the caller two hundred lines below, which is the worst
+    place for a wrong contract to sit.
 
     Fails OPEN — any error returns True, so the advisory fires again rather
     than going quiet. A note repeated is noise; a note lost is the invisibility
