@@ -1,0 +1,13 @@
+# [HASH] — Blitz plan rewritten as one reusable document: both runs' learnings folded into the phases, capture quota gone
+
+`resources/overnight-blitz-plan.md` had grown a two-tier shape — the phases, then two "Learnings from the Nth run" sections amending them from the bottom. A third run would have had to read the plan and then re-read it against thirteen numbered amendments to know what the plan actually said. The user asked for the findings folded into the plan itself.
+
+**What moved where.** Seven mechanical learnings became a new **Run mechanics** section sitting before Phase 1 (page large reads to completion; name standing lint noise once; reach for `reorder_queue.py` before scripting; `--move-section` lands at the bottom of Processed; run bulk passes before targeted edits; delete `_build.md` before writing the commit-message file; run `hook_schema_check.py` only after committing). The judgment learnings went into the phase each one governs: Phase 1 gained the out-of-bounds-step-inside-a-cleared-item rule and the audit-findings-feed-the-owning-item rule; Phase 2 gained the durable-hold-reasons rule; Phase 3's holds gained the fragment-inside-an-undesigned-item rule. Phase 5's soak-before-merge kept its content and lost its "corrected after the first run" scaffolding. Both learnings sections are deleted.
+
+**The capture quota is fully gone.** The user removed the "roughly 2–3x more captures" phrase from the Context paragraph herself, with the third run's goal stated plainly: reduce the queue rather than hold it level. Phase 2 now carries that as its own paragraph — no number anywhere, the two runs' honest sweep results (5, then 2, against an original ~10–15) given as the evidence, and the run's success measure named as the queue getting shorter, not more captures filed. Phase 3's build-cap sentence was reworded to match.
+
+**Stale run-1 specifics generalised**, since the document's whole claim is reusability: the branch is `overnight-blitz-<date>`, the pre-branch commit step no longer names four particular files, Phase 1 no longer lists the five items that run already built, Phase 2's candidate and hold lists are shapes rather than slugs, and two hard boundaries that named spent slugs became the conditions they were standing for.
+
+Also riding this commit: the previous session's post-close tail — README's tested-environment list naming Opus 5 and Fable 5, and that session's LOG entry recording the Remote Control bug filed as anthropics/claude-code#84225.
+
+FAQ: not needed because the blitz plan is a host-only development artifact, not shipped in the plugin package and never met by a consumer.
