@@ -121,6 +121,9 @@ By Claude. This is the post-merge dogfooding check — it replaces the fork's ~9
 
 ## Unprocessed
 
+#### Last session advises reviewing the overnight blitz branch first, then the history rewrite as its own session [advisory-review-blitz-branch]
+The overnight blitz of 2026-08-05 ran on branch `overnight-blitz-2026-08-05`: the five cleared items built, twelve more Unprocessed items triaged under your softened bar and built, both audits run, five fresh captures filed, and a test build (1.17.0-test1) installed from the branch. Start the next /plan by deciding the branch's fate — merge it (`git merge overnight-blitz-2026-08-05` from main, then push at a close, which fires the release check) or reject it (checkout main, re-snapshot the host, restart). The blitz-close LOG entry (`2026-08-05-overnight-blitz-close.md`) carries the per-item hold reasons and the new captures. The FAQ rebuild recommendation in [faq-backfill] and the five new captures are the most decision-shaped things waiting. Clears once the branch decision is made.
+
 #### Last session advises running the five cleared items, then doing the history rewrite as its own session [advisory-cleared-run-then-history-rewrite]
 The 2026-08-04 planning session agreed a priority order. Top of it is [history-rewrite-third-party-scrub] — the only exposure in this queue that is actively growing rather than sitting still in a design. It is deliberately below the readiness line and must stay there: it force-pushes a rewrite of the entire history and needs the user present, so it must never be reachable by an unattended run. Open a session for it deliberately.
 Before that, the five cleared items are worth running: two of them correct the worktree and file-map facts the rewrite depends on for its branch-coverage decision, so running them first shrinks that decision rather than delaying it.
