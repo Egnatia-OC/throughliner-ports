@@ -1,4 +1,4 @@
-# [HASH] — the close's commit-message file moved from the project root to the session scratchpad
+# 7a161aa — the close's commit-message file moved from the project root to the session scratchpad
 
 Every procedure-following close raised a permission popup at its commit step, and
 the cause was our own safety check rather than anything in the app. The commit

@@ -1,4 +1,4 @@
-# [HASH] — every stop's text must now name the replies that let it proceed, both sides of any binary
+# 7a161aa — every stop's text must now name the replies that let it proceed, both sides of any binary
 
 The reply suggestions Claude Code puts in the input box are the app's, not the
 method's. They are generated from conversation context, they can be switched off,

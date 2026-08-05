@@ -1,4 +1,4 @@
-# [HASH] — the reorder script's error paths now name the argument shape, not just the vocabulary
+# 6088ec7 — the reorder script's error paths now name the argument shape, not just the vocabulary
 
 Moving a work item into Processed at a chosen position had cost three attempts in
 a real close, and the error messages were why. `--position 4` was told the valid

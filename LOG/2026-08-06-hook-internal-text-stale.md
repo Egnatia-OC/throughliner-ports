@@ -1,4 +1,4 @@
-# [HASH] — retired "batch" vocabulary cleared out of the hooks, and a docstring corrected against its own caller
+# 6088ec7 — retired "batch" vocabulary cleared out of the hooks, and a docstring corrected against its own caller
 
 Found by the overnight blitz's cross-doc consistency sweep. None of it changes
 behaviour, and that is the argument for doing it: a comment is what a later
