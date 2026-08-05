@@ -1,4 +1,4 @@
-# [HASH] — Second overnight blitz close: 14 items shipped across two runs, 3 captures filed, test build 1.18.0-test1 installed, soak-before-merge recommended
+# c51dee5 — Second overnight blitz close: 14 items shipped across two runs, 3 captures filed, test build 1.18.0-test1 installed, soak-before-merge recommended
 
 The second run of `resources/overnight-blitz-plan.md`, on branch `overnight-blitz-2026-08-05b`, executed under the plan's three sanctioned departures (approvals deferred to branch review; autonomous processing under the softened bar, this time with the bar's per-item calls recorded below; no push and no release overnight). The complete reviewable delta is `git log main..overnight-blitz-2026-08-05b` — three commits, each with per-item LOG entries.
 
