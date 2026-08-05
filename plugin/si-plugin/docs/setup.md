@@ -110,7 +110,7 @@ Session entries are written by /done, each as its own file in LOG/ — nothing e
 
 **resources/research/ folder:** Create the `resources/research/` directory (empty — no files). It's the home for research notes: when a web search or external lookup yields a finding worth keeping, Claude files it here as `resources/research/<topic>.md`. Creating it at setup means research notes have a place from day one rather than the folder being conjured on first use.
 
-**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries an Editor field left as `not recorded`, a Working mode field defaulting to `local`, a Model field, and a Repo visibility field; Step 4 fills them from Q6, Q7, Q8, and the Step 3b visibility detection.
+**CLAUDE.md:** If no CLAUDE.md exists, scaffold one from the template at `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-TEMPLATE.md`. If one already exists (Case B), append the method block rather than overwriting. The template carries a Model field and a Repo visibility field; Step 4 fills them from Q6 and the Step 3b visibility detection.
 
 **.si-version:** Write the current plugin version (from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`) to a file called `.si-version` in the project root. session_start reads it to detect when the plugin has been updated and the project needs re-scaffolding.
 
@@ -131,15 +131,9 @@ The interview is an **adaptive discovery**, not a fixed script. Its job is to re
 
 **The first work item** — whichever answer names the first thing to build — creates one rough work item in QUEUE.md's Unprocessed section: a `#### ` heading in the user's words, with a kebab-case `[slug]` at the end of that heading line and a "captured by you" note beneath it. Use the user's words verbatim. No expansion, no illustrative examples, no parentheticals drawn from visible context — even examples in parentheses read as commitments the user agreed to. Scope decisions belong in /plan (which is where this item gets processed). If examples would clarify what's in scope, ask a follow-up instead of smuggling them into the entry.
 
-**The three settings questions (Q6, Q7, Q8) are fixed, not adaptive** — they're project settings, not discovery, so ask them the same way each time, one message of its own, after the discovery has reached its stopping point. They're optional; the user can skip any.
+**The settings question (Q6) is fixed, not adaptive** — it's a project setting, not discovery, so ask it the same way each time, in a message of its own, after the discovery has reached its stopping point. It's optional; the user can skip it.
 
-**Q6 (optional). When you open a `.md` file — like these project docs — what do you usually open it in?**
-→ Identifies your default `.md` app. Knowing it lets Claude point you to one of your project docs with a link that opens in that app — but the link is only useful if you keep a default `.md` reader open alongside Claude. If you'd rather not set this, just say skip — that's a plain option for anyone, not only "if you're unsure." The trade-off of skipping: when Claude needs to show you a doc, it writes the doc's text out into the chat instead, which costs tokens each time and adds up over a project's life. (Doc links also aren't much use while Claude is driving your screen remotely — a minor caveat, not a reason to skip.) Fills the Editor field in the generated CLAUDE.md. Asked once, no nag, never again. If the user names an editor, record it in CLAUDE.md's Editor field; if they skip, write `not recorded` there so the field is present but empty.
-
-**Q7 (optional). Will you usually be working from your computer, or driving Claude from your phone?**
-→ Sets your working mode. Two options, explained once here: **local** means you're at your desktop, where an edited file opens instantly — so Claude points you to text in your docs with a link. **remote** means you're driving Claude from your phone, where opening an edited file is awkward — so Claude pastes the text straight into chat instead. Defaults to **local** if you skip. Fills the Working mode field in the generated CLAUDE.md, and you can switch anytime just by telling Claude ("I'm remote today") — it holds for that session and reverts after. Asked once, no nag.
-
-**Q8 (optional). Which Claude model do you mostly run — the newest generation, or an older one?**
+**Q6 (optional). Which Claude model do you mostly run — the newest generation, or an older one?**
 → Claude follows instructions better when they're written for the model actually running, so the plugin keeps two sets of its own working instructions and picks whichever fits. This question is only ever about which model the user runs — something they know — never about which set of instructions they want, which is background machinery they should never have to meet. Name the current models plainly and let them pick; if they don't know, or skip, say the safe default is assumed and move on. Fills the Model field in the generated CLAUDE.md. Asked once, no nag.
 
 ## Step 3b: Repo visibility, licensing, and publishing
@@ -157,10 +151,8 @@ Three things, in this order. The first is a **safety input** rather than a prefe
 Once discovery has reached a buildable understanding (or the user says "build from what we have"), write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
 1. Fill SPEC.md with the interview answers.
 2. Write one work item in QUEUE.md's Unprocessed section from the first-thing-to-build answer — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
-2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
-2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
-2c. Fill the Model field in CLAUDE.md from Q8 — the model the user named, or leave the safe default if it was skipped.
-2d. Fill the Repo visibility field in CLAUDE.md from the Step 3b detection — or from the user's stated answer, marked as user-stated rather than detected.
+2a. Fill the Model field in CLAUDE.md from Q6 — the model the user named, or leave the safe default if it was skipped.
+2b. Fill the Repo visibility field in CLAUDE.md from the Step 3b detection — or from the user's stated answer, marked as user-stated rather than detected.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:

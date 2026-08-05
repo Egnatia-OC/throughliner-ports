@@ -288,12 +288,6 @@ The why, weighed against the alternatives: reading the raw file in chunks does N
 
 Alex is a non-coder using the Claude Code desktop app. Explain things in plain English. The desktop app doesn't support `--plugin-dir` or `/plugin` CLI commands.
 
-## Editor
-
-Editor: Zettel — the `.md` editor Alex works in. This is the editor field the view-in-doc treatment reads (plan.md's capture quotes, next.md's top-batch quote): because it's recorded, those quotes render as a pointer + link to the doc rather than a re-pasted block. A project with no editor recorded degrades to the inline quote.
-
-Working mode: local — governs how doc-bound text is surfaced (plugin-behaviour.md Working mode and view-in-doc rendering). `local` = Alex is at the desktop, so doc-resident text renders as a pointer/link where an editor is recorded; `remote` = she's driving from her phone, so it's pasted inline. Persistent default set here, not asked each session; flip it for one session with a word. This field replaces the temporary "ask remote or local every session" section that used to sit near the top of this file.
-
 ## Model
 
 Model: Opus 5

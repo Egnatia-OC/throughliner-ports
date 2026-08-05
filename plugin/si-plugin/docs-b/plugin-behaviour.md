@@ -99,8 +99,8 @@ Active in every session where the plugin is installed and the project is set up.
   naming the content type (**Capture draft:**, **Commit message:**,
   **Log entry:**). End the message with an explicit ask naming the decision needed
   — a draft with no ask isn't actionable. Doc-destined text is written to its doc
-  first and approved there instead; see the working-mode rule below for which is
-  which.
+  first and approved there instead; see the doc-bound-text rule below for which
+  is which.
 - **Offer a fresh-session handoff when the user reports the session degrading.**
   You have no gauge of context filling — the trigger is always the user's report
   ("this is getting long", "you're making more mistakes"). Then offer both: to
@@ -109,42 +109,37 @@ Active in every session where the plugin is installed and the project is set up.
   This fires wherever the user gives the signal — in plain conversation as much
   as inside a command, since a session wears thin either way.
 
-### Working mode and view-in-doc rendering
+### Doc-bound text — write it, point at it, summarise it short
 
 The canonical rule for how doc-bound text is rendered. Other docs point here.
+There is **no location setting and no local/remote branch**: one default serves
+the desk and the phone alike. (The stored `Working mode:` field that used to
+branch this is retired — its one measured user answered `local` regardless of
+location because it meant less text to read, so the field recorded reading
+appetite, not location. Don't reintroduce a mode; a stale field is ignored per
+the stale-fields note below.)
 
-**Working mode** is a stored project setting (a `Working mode:` field in the
-project's CLAUDE.md, set at /setup), not a session-start question:
+**Write it first.** Approval-time text whose destination is one of this method's
+docs — a capture, a work item, a LOG entry, a SPEC or CLAUDE.md edit — is
+written to that doc *first*, and the user approves it there, in its final
+position rather than as a chat paste.
 
-```
-local   ->  user is at the desktop; an edited file opens instantly
-remote  ->  user is on their phone; opening a file means navigating Drive
-```
-
-The user flips it for one session with a word ("I'm remote today"). If the field
-is unset, ask once, naming the two options plainly.
-
-**Write it first, then point at it.** Approval-time text whose destination is one
-of this method's docs — a capture, a work item, a LOG entry, a SPEC or CLAUDE.md
-edit — is written to that doc *first*, and the user approves it there, reading it
-in its final position rather than as a chat paste.
-
-This **deletes a branch rather than adding one**, which is the reason to prefer
-it. The old rule had two cases: doc-resident text got a pointer, and not-yet-
-written text was always pasted inline "since there's nothing to point at". Write
-it and it's resident. One case remains:
+**Then the chat message carries three things:**
 
 ```
-local   ->  write, verify, then point: a link to the file plus the target's
-            exact heading text
-remote  ->  write, verify, then paste the text inline as well — on a phone,
-            opening the file means navigating Drive, so a link alone strands
-            the user with nothing to read
+1. a SHORT summary of what was written    # a few sentences — enough to decide
+                                          # without opening anything
+2. a pointer: a link to the file plus     # the summary is what makes the
+   the target's exact heading text        # pointer survivable — see below
+3. the ask, in focus                      # the decision the user must make
 ```
 
-Note what is *not* keyed on any more: the pointer no longer depends on an editor
-being recorded. Links open in the desktop app's own viewer whatever the `Editor:`
-field says, so a project with no editor recorded still gets pointers.
+and closes with an offer to show the full text right here on request. The full
+text is one word away, never front-loaded. This shape is acceptable at a desk
+and on a phone alike, which is why no mode is needed. It costs more tokens than
+a bare pointer and fewer than a full inline paste; the expand-on-request offer
+keeps the heavy path opt-in, which is the default that serves users on
+constrained plans too.
 
 **Doc-destined text only.** Not every approval-time output is headed for a file.
 A commit message isn't (Claude runs the commit), and neither is a recommendation
@@ -157,6 +152,13 @@ the file — always at the top, never at a line. **A `.md` link with a `:N` line
 suffix is dead:** the click does nothing, and it fails silently while still
 looking clickable, so never emit one. Code files (`.py`, `.json`, …) do honour
 their line anchors and keep them.
+
+**The pointer's weaknesses are real and are not fixed by any of this.** The link
+lands at the top of the file; searching for the heading text can flip the viewer
+into code mode; the viewer can serve a stale snapshot. The short summary is what
+makes the pointer *survivable*: the user can act on the summary without
+following the link at all. That is mitigation, not a fix — never describe the
+navigation problem as solved.
 
 **So every pointer to a doc carries the target's exact heading text**, because a
 markdown link can only reach a file and never a position. This is not decoration:
@@ -181,14 +183,22 @@ for explicitly here. The residual cost, stated plainly: there is a short window 
 which a tracked file holds text the user hasn't approved, and a crash or a
 concurrent session landing in that window leaves it there.
 
-### A stale `Completion mode:` line is ignored, never an error
+### Stale retired fields are ignored, never an error
 
-Projects set up before 2026-08 carry a `Completion mode:` field in their
-CLAUDE.md. The setting it controlled no longer exists — `[user]` items are never
-asked about, in any session — so the line governs nothing. **Ignore it silently.**
-Don't act on it, don't flag it, don't ask the user to remove it, and never treat
-it as a broken project. No migration reaches every project, so this line will
-keep turning up for a long time.
+Projects set up before their fields were retired still carry them in CLAUDE.md,
+and no migration reaches every project, so these lines will keep turning up for
+a long time. For every one of them: **ignore it silently.** Don't act on it,
+don't flag it, don't ask the user to remove it, and never treat it as a broken
+project.
+
+```
+Completion mode:   the setting it controlled no longer exists — [user] items
+                   are never asked about, in any session
+Working mode:      the local/remote rendering split is retired; the one
+                   write-point-summarise-short default above replaced it
+Editor:            nothing reads it — links open in the desktop app's own
+                   viewer whatever it says
+```
 
 ### Vocabulary — background-only terms
 
@@ -298,6 +308,11 @@ CLI tools exist, so can't know to ask.
 Guards: name the candidate tool and what it does before using it (don't install
 blind); downloads, commands and device access stay under their existing
 confirm-first rules; don't presume the user has a terminal.
+
+This rule has a second firing site: the moment work is about to be tagged
+`[user]` (the over-tag guard in the `[user]` flavor rules). Work that sounds
+browser-shaped is exactly where a CLI path goes unconsidered — run the
+capability check there, not just when helping with a task in hand.
 
 ### When a tool misbehaves, check yourself first
 
@@ -418,8 +433,9 @@ keep isn't a temp file — route it per the triage above.
 A capture is unprocessed work: one work item appended to QUEUE.md's
 **Unprocessed** section. Capturing is how any session puts a new idea, discovery
 or task into the queue without stopping to work it. Write the wording into
-QUEUE.md and put it in front of the user for approval — in place if local, pasted
-inline if remote (see the working-mode rule above) — and remove it if they say no.
+QUEUE.md and put it in front of the user for approval — a short summary plus a
+pointer to it, full text on request (see the doc-bound-text rule above) — and
+remove it if they say no.
 Include the reasoning, not just what was noticed.
 
 **Line format** — this exact shape is what all three hooks parse. Emitting a work
@@ -467,6 +483,17 @@ real and equally bad; neither warning may be louder than the other.
   a push or restart) is an **ordering** concern: place it below the cleared-to-run
   line with a lift-condition. The test is "can Claude do this at all?", not "can
   Claude do this right now?".
+
+  **And the test is a check, not a judgment: before tagging `[user]`, name the
+  tool that would do the work and confirm it is absent or unauthenticated.**
+  Reasoning from what the task *sounds like* is exactly what has failed live —
+  "create a GitHub repo" sounded browser-shaped and was handed to the user,
+  when `gh` was installed, authenticated, and did it in seconds. A one-line
+  capability check ("is `gh` authenticated?") passes or fails and can't be
+  talked into the wrong answer; where no tool plausibly exists, that is itself
+  the answer and the check costs nothing. This is the reach-for-a-CLI rule
+  (Research and evidence filing) applied at the tagging moment — the two rules
+  sit either side of the same failure, so each names the other.
 - **Don't under-file.** Genuine user work MUST become a `[user]` work item — never a
   live chat question, never "separate work you'd do yourself". The failure mode
   is **user-work evaporation**: floated as a question or waved off as an aside,
@@ -529,6 +556,9 @@ off-ramp never reaches "the order is agreed", which left the advisory stale.
 
 ```
 clear IF it actually oriented this session   # whether or not it was followed
+clear IF the user set aside the action it recommends   # the reroute IS its
+      # answer — a persist-condition never outlives a not-now (see the
+      # set-aside marker)
 keep  IF it names a persist-condition that hasn't been met
       # e.g. "persist until the cleared builds ship"
 ```
@@ -841,6 +871,19 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
 - **Completion is inferred, never asked.** An item walked to its end this session
   is done; an item whose lift-condition visibly hasn't cleared isn't; and the user
   saying they did one is the third way it can be known. Nothing else counts.
+- **Where completion has an observable result, check the world before recording
+  it.** The never-ask rule forbids asking the USER; it never forbade checking
+  the WORLD — a cheap mechanical check is literally the session seeing, which
+  is what inference already means. A file present or absent, a branch gone, a
+  folder deleted, a URL responding: when the item's walkthrough can name such
+  a check, it records it, and the close runs it rather than accepting the
+  report. This exists because a real item was logged complete on the user's
+  word and the work hadn't happened — an OS lock had defeated their intent,
+  and the residue sat unnoticed for months when one `git branch -r` would have
+  caught it. A failed check produces a plain statement of what was found and
+  leaves the item in place — it never becomes "are you sure you did this?".
+  Where nothing observable exists, nothing changes: the item stays until the
+  user mentions it, the deliberate gap above.
 - **The gap this leaves is deliberate: leave the item in place.** An item the user
   completed on their own, with nothing observable to show for it, will sit in
   Processed until they mention it — and mentioning it is already a supported path.
@@ -850,6 +893,72 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
   remove it from Processed. Lives in **both** /done (the user runs /done right
   after finishing) and /plan (they completed it async and mention it).
 - **Re-clearing dependents** is the below-the-line revisit's job, not the close's.
+
+## Set aside — the method's name for "not now"
+
+The user saying *not now* is a state change, and this marker is where it lands.
+Without it, every surfacing channel — a close's recommendation, a forward
+advisory, a revisit's question — is blind to the others and raises the same
+thing again, each one behaving correctly. The marker rides the work item where
+it sits, exactly like `Red flag · State:` — nothing moves, no new shelf, no new
+state. The item stays in its section; it gains a recorded line.
+
+```
+Set aside · <date> · "<the user's words that triggered it>"
+    — reached: <what was done, if anything>
+    — stopped by: <what stopped it, if known>
+    — retry: <what would make it worth retrying, if named>
+```
+
+One line in the item's block (wrap as needed); only the date and the quoted
+trigger are always present — the three tails carry whatever the session
+actually witnessed. Progress lives in this line, never as strike-through inside
+the item's walkthrough text: the walkthrough is content that gets rewritten
+when the item is refined, and state tangled into content is lost on the first
+rewrite.
+
+**Two triggers, both anchored to the user:**
+
+```
+the user stops or reroutes         ->  they halt a walk-through ("I'll try at
+                                       home"), decline an offer with a reroute
+                                       ("capture it for plan"), or otherwise
+                                       say not-now in their own words
+a lift-condition they report       ->  the revisit asked, and the answer was
+    unmoved                            "no change" — that answer IS the signal
+```
+
+**The guards, and they are the design — Claude models are shelf-happy, and this
+marker must not become the shelf:**
+
+- **Recorded only on an explicit user signal, quoting their words.** Claude
+  never sets an item aside on its own read of the situation — not because it's
+  hard, large, or awkward. That pull is the same one the no-dedicated-pass
+  anti-pattern names.
+- **Never proposed.** Claude may not suggest setting something aside. The user
+  says not-now first, or it doesn't happen.
+- **It changes when an item is *raised*, never whether it is *processed*.** A
+  set-aside item is still worked at /plan when its turn comes. What stops is
+  the unsolicited re-offering: the close's recommend-next skips it, a forward
+  advisory naming it is cleared rather than persisted, the revisit stops asking
+  about it, and no follow-up suggestion re-offers it.
+- **It suppresses recommendations and offers only — never warnings.** An
+  uncleared red flag, a security concern, a broken premise keep surfacing
+  however often they are waved off. The method's risk posture depends on that.
+- **Nothing is quiet forever.** When the queue has nothing else to offer — no
+  cleared work to run and nothing unprocessed except set-aside items — the
+  set-aside items are raised again, plainly. That condition is mechanically
+  checkable, so every set-aside item eventually surfaces on its own and there
+  is no path to permanent silence. The user raising the item themselves lifts
+  the marker at any time; a fresh not-now re-records it with the new words.
+- **Never a completion ask.** Progress in the marker comes from what the
+  session witnessed or what the user volunteered — the marker must never
+  become a reason to ask what got done.
+
+A part-walked `[user]` item is the canonical case: the marker records which
+steps were reached, so the next /next resumes from there instead of restarting
+at step one — the never-ask-if-it's-done rule removes the *question*, and this
+line supplies the *knowledge* it depends on.
 
 ## Below-the-line revisit
 
@@ -876,13 +985,15 @@ provably still-waiting   ->  skip silently
 The batching is what keeps the revisit from nagging. Lifting is narrated, not
 asked.
 
-- **An item that keeps coming back and keeps not moving gets a way out.** After
-  the same user-only condition has been asked about across several sessions with
-  no change, stop asking and **propose returning it to the bottom of Unprocessed**
-  instead — one line, the user's call, declining is fine. Without a sanctioned way
-  to stop, the question repeats forever on work the user has plainly deprioritised,
-  and the pressure produces an invented shelf. The bottom of Unprocessed is the
-  only postpone there is.
+- **An item whose condition the user reports unmoved goes quiet, not back into
+  the question.** "No change" is a set-aside signal (see the set-aside marker
+  above): record the marker from that answer, and leave the item out of later
+  sessions' consolidated question. It surfaces again when the queue has nothing
+  else to offer, or when the user raises it — so stopping the ask never loses
+  the work. This replaces the older way out (asking across several sessions,
+  then proposing a return to Unprocessed): two overlapping stop-mechanisms
+  would fight, and the marker is the preventive one — it stops the nagging at
+  the first "no change" instead of after several.
 
 ## Why-pipeline
 
@@ -967,6 +1078,22 @@ is the test; the Files: list is the guardrail.
 /next **self-scopes**: it reads the Claude-work items it's about to build and
 derives the scope from them. Work outside the described work is appended to
 Unprocessed, not folded in.
+
+_build.md holds the whole run from scope-lock, but queue items leave QUEUE.md
+one at a time, each at its completion tick — so mid-run, the queue always shows
+exactly the work not yet done, and an abandoned run leaves the truth behind
+rather than an emptied queue.
+
+**Compare, never explain — the rule for any check on your own past changes.**
+Ask "does this artifact match that one?" (a diff against a description, an
+output against a spec) — never "why did I make this change?" or "was this
+deliberate or accidental?". A model asked to recover its own intent reliably
+produces a coherent answer whether or not it holds one — generating plausible
+rationale is easy and "I don't know" is not the default shape — and the risk
+is a property of the question, not of how carefully the edits were made. So
+every such check carries its escape route: **"this change is here and I cannot
+account for it" is a sanctioned, expected output**, stated plainly and routed
+as a finding, never papered over with an invented reason.
 
 ## Routing and discipline
 
@@ -1131,6 +1258,15 @@ privacy breach.
   ownership.
 - **The user owns whether an item is kept or deleted**, and whether a build
   expands its scope.
+- **Merging agreed work into other agreed work is Claude's call when it widens
+  nothing — the Files list is the test.** A merge that adds no files to the
+  run changes *where* work lands, not *what* gets built, so it is narrated and
+  done, not asked; a merge that adds files is a widening and still asks. Name
+  the scope effect in the same line either way ("this adds no files" / "this
+  adds two files") — the narration is what lets the user object before scope
+  compounds. The test is mechanical on purpose: scope drift here is
+  one-directional (merges are always accepted, so scope only ever grows), and
+  the file list is where that cost actually lands.
 
 ## File safety
 

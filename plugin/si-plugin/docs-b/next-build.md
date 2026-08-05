@@ -36,11 +36,11 @@ Why it's worth surfacing: the exact wording is produced here in /next and was
 never seen in /plan, which agreed only the intent. This is the first time the user
 meets the real words.
 
-**How the reveal renders** follows the working-mode rule (plugin-behaviour.md).
-The text is doc-resident by the time it's revealed, so: local → a link to the
-edited file plus the exact heading text of the section that changed; remote →
-paste the new wording inline as a wrapped block as well. Never line-anchor a link
-to a `.md` file — that form is dead in the desktop app. Either way, only after the
+**How the reveal renders** follows the doc-bound-text rule (plugin-behaviour.md).
+The text is doc-resident by the time it's revealed, so: a short summary of what
+the new wording does, plus a link to the edited file with the exact heading text
+of the section that changed, and the full new text on request. Never line-anchor
+a link to a `.md` file — that form is dead in the desktop app. And only after the
 write is confirmed by a re-read.
 
 **A small mid-build tweak to a just-surfaced readable edit is in scope**
@@ -59,6 +59,8 @@ worked — routes out via Scope management below.
 3. if readable content -> reveal the new text (informational, no ask)
    if code             -> stay silent
 4. tick it: - [x] item description — done
+5. remove the item from QUEUE.md           # tick first, then remove —
+                                           # destination-first at every step
 ```
 
 **A check Claude can run is part of building, not a separate test.** Run whatever
@@ -73,6 +75,9 @@ a check needing the user ->  a [user] work item, which /plan would have set as
 
 If mid-build you discover the work needs a user-run check that isn't already a
 `[user]` item, route it (see Course-correction) — don't invent a deferral here.
+The one sanctioned "not now" is the set-aside marker (plugin-behaviour.md, Set
+aside), and it exists only for the user's own stop — it is never yours to
+reach for.
 
 ## File structure — split by independent unit
 
@@ -123,8 +128,8 @@ walkthrough anyway.
 ```
 1. write the capture into Unprocessed, placed per the Captures placement rule
    (narrate the placement)
-2. put the wording in front of the user for approval — local: a link plus the
-   heading text; remote: pasted inline. Remove it if they say no.
+2. put the wording in front of the user for approval — a short summary plus a
+   link with the heading text, full text on request. Remove it if they say no.
 3. ask "anything else?" — repeat until no
 4. resume the build
 ```

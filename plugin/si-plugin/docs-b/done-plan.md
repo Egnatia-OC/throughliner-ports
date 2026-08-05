@@ -238,6 +238,9 @@ survived.
 ```
 it oriented this session          ->  DELETE it from Unprocessed now, whether or
                                       not the recommendation was followed
+the user set aside what it advises   ->  DELETE it — their not-now is its
+                                      answer, and a persist-condition never
+                                      outlives it (plugin-behaviour.md, Set aside)
 it names an unmet persist-condition  ->  LEAVE it in place
     ("persist until the cleared builds ship")
 no advisory present               ->  say nothing

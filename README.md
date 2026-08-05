@@ -33,6 +33,8 @@ The plugin also tunes itself to the Claude model you're running. It ships two ve
 
 Some pieces of work are yours to do rather than Claude's — sending something, checking a screen, a decision only you can make. Claude walks you through those live, one step at a time, when they come up. It never asks you whether you've already done them.
 
+Saying "not now" sticks. If you stop partway through something or tell Claude to shelve a suggestion, that gets recorded on the item — including how far you got — and Claude stops re-offering it session after session. The work isn't lost: it comes back when the queue has nothing else left, or the moment you mention it. Warnings are the exception — a security concern keeps surfacing until it's dealt with, however often it's waved off.
+
 When something misbehaves, Claude routes the report to the right place: a problem in your app goes into your queue, a problem with the method itself becomes a scrubbed report you paste at flintcraft.tech/report, and a problem with Claude Code (the app the method runs inside) can be filed as a GitHub issue — Claude offers to file it for you where your GitHub tooling is set up, always showing you the exact text and posting only on your yes.
 
 ## How to use it

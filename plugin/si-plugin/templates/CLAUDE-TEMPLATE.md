@@ -30,18 +30,6 @@ This project uses the Sovereign Implementer method.
 
 Language: English
 
-## Editor
-
-Editor: not recorded
-
-<!-- The app you'd open a project doc in to change something yourself, from the optional /setup question. Claude's links open docs in Claude's own viewer, which shows the text but won't let you edit it — so this field is about editing by hand, not reading. It doesn't affect whether you get links; you get those either way. Left as `not recorded` if you skipped the question, which is a perfectly normal answer. -->
-
-## Working mode
-
-Working mode: local
-
-<!-- Where you work from, set at /setup. Claude writes text into your docs first and then shows you where it landed, so this decides how it shows you. `local` = at your desktop, where a file opens instantly, so you get a link. `remote` = driving Claude from your phone, where opening a file means navigating Drive, so Claude pastes the text into chat as well. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
-
 ## Model
 
 Model: not recorded

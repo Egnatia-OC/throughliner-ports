@@ -241,9 +241,8 @@ no CLAUDE.md exists  ->  scaffold from
 one already exists   ->  APPEND the method block; never overwrite
 ```
 
-The template carries an Editor field (`not recorded`), a Working mode field
-(default `local`), a Model field, and a Repo visibility field; Step 4 fills them
-from Q6, Q7, Q8 and the visibility detection.
+The template carries a Model field and a Repo visibility field; Step 4 fills
+them from Q6 and the visibility detection.
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
@@ -311,28 +310,11 @@ from visible context            commitments the user agreed to
 Scope decisions belong in /plan, which is where this item gets processed. If
 examples would clarify scope, ask a follow-up rather than smuggling them in.
 
-**The three settings questions are fixed, not adaptive** — they're project
-settings, not discovery. Ask them the same way each time, one message each, after
-discovery reaches its stopping point. All optional; the user can skip any.
+**The settings question is fixed, not adaptive** — it's a project setting, not
+discovery. Ask it the same way each time, in its own message, after discovery
+reaches its stopping point. Optional; the user can skip it.
 
-**Q6 (optional). If you wanted to change something in one of these project docs
-yourself, what would you open it in?**
-→ Records the app you'd edit in. Claude's links open the file in Claude's own
-viewer, which shows the text but won't let you change it — so this is only about
-where you'd go to make an edit by hand. **Plenty of people never do, so skipping
-this is completely normal** — say skip and nothing else changes: you still get
-links, and Claude still does the writing. Named editor → record it; skipped →
-write `not recorded` so the field is present but empty. Asked once, no nag.
-
-**Q7 (optional). Will you usually be working from your computer, or driving Claude
-from your phone?**
-→ Sets your working mode. **local** = you're at your desktop, where an edited file
-opens instantly, so Claude points you to text with a link. **remote** = you're on
-your phone, where opening a file is awkward, so Claude pastes the text into chat.
-Defaults to **local**. Switch anytime by telling Claude ("I'm remote today") — it
-holds for that session and reverts. Asked once, no nag.
-
-**Q8 (optional). Which Claude model do you mostly run — the newest generation, or
+**Q6 (optional). Which Claude model do you mostly run — the newest generation, or
 an older one?**
 → Claude works better with instructions written for the model actually running, so
 the plugin keeps two sets and picks the one that fits. Name the current models
@@ -405,10 +387,8 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
 2.  write ONE work item in Unprocessed from the first-thing-to-build answer
     # the user's words, a [slug] at its end, a "captured by you" note.
     # Not multiple scoped entries.
-2a. fill CLAUDE.md's Editor field from Q6         (or `not recorded`)
-2b. fill CLAUDE.md's Working mode field from Q7   (or `local`)
-2c. fill CLAUDE.md's Model field from Q8            (or leave the safe default)
-2d. fill CLAUDE.md's Repo visibility field from the detection (or the stated
+2a. fill CLAUDE.md's Model field from Q6            (or leave the safe default)
+2b. fill CLAUDE.md's Repo visibility field from the detection (or the stated
     fallback answer, marked as user-stated)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files

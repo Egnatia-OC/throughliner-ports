@@ -91,16 +91,15 @@ deliberate human checkpoint before /next runs unattended-in-practice: a last
 chance to change scope or reorder. Frame it as that.
 
 ```
-render(run):                    # full rule: plugin-behaviour.md, working mode
-    local   ->  one-line pointer naming the items, linking to QUEUE.md,
-                carrying each item's exact heading text
-    remote  ->  one-line preamble, then the items verbatim
+render(run):                    # full rule: plugin-behaviour.md, doc-bound text
+    a short list naming each item (its exact heading text, or a faithful
+    shortening when headings run long), plus a link to QUEUE.md; the full
+    item text is offered on request, never front-loaded
 ```
 
-The pointer is the token-saving path; remote gets the inline quote because
-opening the file on a phone isn't practical. These items already exist in
-QUEUE.md, so confirm the link resolves before sending it — and link to the file
-only, never with a line number, which is dead for `.md` in the desktop app.
+These items already exist in QUEUE.md, so confirm the link resolves before
+sending it — and link to the file only, never with a line number, which is dead
+for `.md` in the desktop app.
 
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
@@ -212,16 +211,26 @@ bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.
 
-**4. Remove the run's Claude-work items from QUEUE.md** now that _build.md holds
-them — the queue is free for other sessions.
+**4. Leave the queue in place — items are removed one at a time as they build,
+not here.** _build.md now holds the whole run (written in full at scope-lock,
+before anything is removed), but each Claude-work item stays in QUEUE.md until
+the moment it is ticked complete in Step 3. The queue visibly shrinks as the
+run progresses, and it always tells the truth: an item still showing means not
+built yet. This is also the safer shape on abandonment — a run that dies
+partway leaves the queue holding exactly the work that was never done, instead
+of having stripped everything up front into a file the close deletes.
 
 ```
-Claude-work items  ->  moved to _build.md, REMOVED from QUEUE.md
-[user] items       ->  STAY in QUEUE.md
+Claude-work items  ->  in _build.md AND QUEUE.md while the run works;
+                       removed from QUEUE.md at each item's completion tick
+[user] items       ->  STAY in QUEUE.md throughout
 ```
 
-**A run removes items from Processed and never inserts them.** This removal
-(and the close's marker repositioning) is /next's whole write access to
+The duplication window is harmless — _build.md is the crash-recovery source of
+truth throughout.
+
+**A run removes items from Processed and never inserts them.** The per-item
+removal (and the close's marker repositioning) is /next's whole write access to
 Processed. New work found mid-run is captured to Unprocessed; moving anything
 *into* Processed is processing, which is /plan's, because that decision is the
 user's. The queue lint backstops this — a heading inserted under Processed
@@ -229,9 +238,7 @@ while a build is active gets flagged.
 
 A `[user]` item is walked through in Step 3, not built, and is closed later by
 /done or /plan. Extracting it into _build.md would strand it, since _build.md is
-deleted at close. The ordering here is deliberately destination-first: items are
-written into _build.md *before* being removed, so the run survives an interruption
-between the two.
+deleted at close.
 
 **5. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: _build.md is
 the build's working file — it carries the run's work while QUEUE.md stays free,
@@ -260,8 +267,10 @@ build item (no tag)  ->  read and follow next-build.md
 ```
 
 Between build items, keep going autonomously — the user confirmed the whole run
-at the Step 1 off-ramp, so there's no per-item re-confirmation. Tick each item in
-_build.md Progress before starting the next.
+at the Step 1 off-ramp, so there's no per-item re-confirmation. As each item
+completes: **tick it in _build.md Progress first, then remove it from
+QUEUE.md**, then start the next. Tick-then-remove preserves destination-first at
+every step — there is never a moment when an item exists in neither file.
 
 **Resuming from a mid-run pause**  [PROMPT]. Some work items build in a deliberate
 stop — switch models here, have the user judge this, check that before continuing.
@@ -286,10 +295,27 @@ Once the Claude-work is built (or if the run had none), walk the user through ea
 the run — it's the last pass of a run whose Claude work is already done.
 
 **One item at a time — never bundled.** Each in its own message, led by its own
-walk-through. Finish one fully — or record that the user deferred it — before
-moving to the next. (This is *not* the [SEQUENCE] bulk-approval inversion: that's
-for a deterministic result set the user reads and accepts in one pass. A
-walk-through is an action driven live.)
+walk-through. Finish one fully — or record the user's stop — before moving to
+the next. (This is *not* the [SEQUENCE] bulk-approval inversion: that's for a
+deterministic result set the user reads and accepts in one pass. A walk-through
+is an action driven live.)
+
+**When the user stops mid-walk-through, record it as a set-aside** — the marker
+defined in plugin-behaviour.md (Set aside). Write the `Set aside ·` line into
+the item's block in QUEUE.md: the date, their words quoted, which steps were
+reached, what stopped it, and what would make it retryable where they said so.
+That line is what lets the next run resume at the right step instead of
+restarting — and it is recorded only on the user's own stop, never proposed
+because a step looks hard. Resuming a part-walked item later, start from the
+marker's reached-line, not from step one.
+
+**Before leading with the walk-through, re-run the capability check** — the last
+line of defence, and nearly free because the run is about to act on the tag: name
+the tool that would do this work and confirm it is absent or unauthenticated
+(plugin-behaviour.md, the `[user]` flavor rules). A wrongly-tagged item stops an
+unattended run dead for work nobody needed the user to do — if the check finds
+Claude can do it after all, say so, do it as ordinary work, and note the
+correction for the close.
 
 **Lead with the walk-through, and drive it live — one step, then wait.** Run
 whatever parts you can, give the **first** concrete step the item records, and
@@ -310,7 +336,8 @@ steps, don't mention /done, don't frame the item as "handed over", don't recomme
 recording it. Mentioning the close mid-walk-through is what once demoted this to a
 mere offer.
 
-**Once an item's walk-through is complete (or deferred), name its close.** A
+**Once an item's walk-through is complete (or set aside on the user's word),
+name its close.** A
 `[user]` item stays in the queue for a later session, so it won't record or remove
 itself:
 
@@ -319,7 +346,7 @@ run /done                ->  logs it under its slug, removes it from the queue
 raise it at the next /plan  ->  if the user would rather mention it there
 ```
 
-When every `[user]` item has been walked through or deferred, tell the user the
+When every `[user]` item has been walked through or set aside, tell the user the
 whole run is complete — Claude-work built, user steps addressed — and recommend
 /done.
 

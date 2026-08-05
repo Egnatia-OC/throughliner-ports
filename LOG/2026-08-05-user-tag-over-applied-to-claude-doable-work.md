@@ -1,0 +1,9 @@
+# [HASH] — [user] tagging now requires naming the tool and confirming it absent or unauthenticated, at the /plan keep-step and again at /next's hand-off
+
+A live session filed "create a private GitHub repo" as a `[user]` walk-through because the work *sounded* browser-shaped — and `gh` was installed, authenticated, and did it in seconds once the user pushed back. The over-tag guard's test ("can Claude do this at all?") was never actually run, which says the problem was never warning volume: nothing prompted a capability check at the moment of tagging. The fix is stated as a check, not a judgment — before `[user]` stands, name the tool that would do the work and confirm it is absent or unauthenticated; a one-line check passes or fails and can't be talked into the wrong answer, and where no tool plausibly exists, that is itself the answer at zero cost.
+
+It fires in two places doing different jobs: the /plan keep-step, where the tag is settled and a wrong one is cheapest to prevent; and /next's pre-hand-off, the last line of defence and nearly free since the run is about to act on the tag — a wrong `[user]` item stops an unattended run dead for work nobody needed the user to do, and if the check catches one there, the work is done as ordinary work with the correction noted for the close. The two rules that both missed the live failure — reach-for-a-CLI-before-a-GUI and the over-tag guard — now cross-reference each other at their own sites, since the failure lives exactly where they meet.
+
+**Files touched:** docs-b/plugin-behaviour.md ([user] flavor rules + the CLI rule's second firing site), docs-b/plan.md (keep-step), docs-b/next.md (pre-hand-off).
+**Routed to Captures:** none for this item.
+FAQ: not needed because the change removes wrong hand-offs rather than adding anything a consumer would meet and question.

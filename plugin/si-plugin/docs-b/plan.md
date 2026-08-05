@@ -28,9 +28,9 @@ gets built first — through discussion, not silently.
 - **Approval attaches to exact text, never to a described shape.** A
   recommendation, however concrete, is not a draft, and "I'll add a line that does
   X" is not the entry. What changes is *where* the user reads that text: write it
-  into QUEUE.md first, then point them at it, and they approve it in its final
-  position (plugin-behaviour.md's working-mode rule — remote mode still gets it
-  pasted inline). If they say no, take out exactly what was written, re-read to
+  into QUEUE.md first, then give a short summary plus a pointer to it, full text
+  on request (plugin-behaviour.md's doc-bound-text rule), and they approve it in
+  its final position. If they say no, take out exactly what was written, re-read to
   confirm it's gone, and say so. The rule keys to the *write* either way, so it
   holds even when a compacted session has lost track of which beat it's on: no
   QUEUE.md line stands without the user having read those exact words and agreed.
@@ -113,7 +113,9 @@ session that ends via an off-ramp.
 **No completion sweep for `[user]` work.** /plan never asks whether Processed's
 `[user]` items are already done — that ask is gone from the method entirely, and
 so is the setting that used to toggle it. If the user mentions having done one,
-close it at this session's /done (log under its slug, remove from Processed);
+close it at this session's /done (log under its slug, remove from Processed) —
+and where the item names an observable result, the close checks the world
+rather than accepting the report (plugin-behaviour.md, the `[user]` lifecycle);
 otherwise leave them alone and say nothing about them.
 
 **Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
@@ -123,6 +125,10 @@ read the lift-condition its prose records and classify:
 ```
 mechanically checkable    ->  check silently; if cleared, propose lifting
     (a dependency built per LOG, a push done, a file now present)
+set aside                 ->  skip silently. The user's "no change" or "not
+    (the item carries a           now" already answered this question; it
+     Set aside · line)            re-surfaces only at queue exhaustion, or
+                                  when the user raises it themselves.
 user-only                 ->  DON'T ask per item. Gather every user-only
     (an external event            condition into ONE consolidated question,
      only the user knows)         asked once this session.
@@ -132,6 +138,13 @@ SPENT                     ->  surface it for a rewrite, don't skip it.
      already passed, so the         written, so "has it happened yet?" will
      condition can never clear)     return "no" forever.
 ```
+
+When the consolidated question comes back "no change" for an item, that answer
+is a set-aside signal: record the `Set aside ·` line on the item
+(plugin-behaviour.md, Set aside), quoting the answer, so later sessions skip it
+instead of re-asking. **Queue exhaustion is the guaranteed way back:** when the
+queue offers nothing else — no cleared work, nothing unprocessed but set-aside
+items — raise them plainly; nothing is quiet forever.
 
 The spent outcome exists because a dead anchor reads exactly like a live one:
 the revisit asks "has it happened yet", which silently returns "no" both for a
@@ -156,24 +169,20 @@ condition stands and joins the consolidated question. When several conditions
 await the same person, one `[user]` walkthrough carries all of them — never
 several walkthroughs that have the user message the same person repeatedly.
 
-**When the same item keeps coming back, stop asking and propose moving it.** An
-item whose condition only the user can answer will otherwise surface every single
-session, forever — one such item was asked about at three consecutive sessions,
-and the user's irritation was entirely fair: it was never a priority, it was just
-unsilenceable. So the revisit gets a legitimate way to stop:
+**The set-aside marker is what stops the repeat-ask** — it replaced the older
+escape (asking across several sessions, then proposing a return to Unprocessed).
+One such item was asked about at three consecutive sessions, and the user's
+irritation was entirely fair: it was never a priority, it was just
+unsilenceable. Now the first "no change" records the marker and the asking
+stops there, with queue exhaustion as the guaranteed way back. The marker is
+recorded from the user's own answer, never proposed by Claude.
 
-```
-asked about across MULTIPLE sessions and still not moving
-    ->  don't ask again. Propose returning it to the BOTTOM of Unprocessed,
-        in one line, as this session's suggestion.
-    ->  the user accepts or declines. Declining is fine — it just means keep
-        asking about this one.
-```
-
-The bottom of Unprocessed is the **only** legitimate way to postpone something.
-Do not invent an alternative — a new state, a "lift when you raise it" condition,
-a quiet shelf — no matter how much pressure the repetition creates. Those aren't
-postponing, they're losing the item somewhere nothing will look again.
+The bottom of Unprocessed and the set-aside marker are the **only** legitimate
+ways to postpone something — a queue move, and a raise-suppression that moves
+nothing. Do not invent an alternative — a new state, a "lift when you raise it"
+condition, a quiet shelf — no matter how much pressure the repetition creates.
+Those aren't postponing, they're losing the item somewhere nothing will look
+again.
 
 That last point generalises, and it's worth stating plainly because it has now
 gone wrong three separate ways: **wherever this method forbids something at a
@@ -351,13 +360,14 @@ closing the interview:
                                    sub-step 2 carry the recommendation
 ```
 
-**View-in-doc.** The item already exists in QUEUE.md, so in `local` mode lead with
-a one-line pointer instead of the pasted quote — `First item — **[work-slug]** —
-is in [QUEUE.md](QUEUE.md) under Unprocessed, the heading beginning "<the item's
-exact opening words>".` — then the analysis in that same message. Carry the
-heading text: the link lands at the top of the file, so it is what turns a scan
-into a search. The confirm re-read still runs in its pointer form (a
-resolves-check, not a text-match). Remote → keep the inline quote.
+**View-in-doc.** The item already exists in QUEUE.md, so lead with a short
+summary of what it says and a one-line pointer instead of the full pasted quote —
+`First item — **[work-slug]** — is in [QUEUE.md](QUEUE.md) under Unprocessed,
+the heading beginning "<the item's exact opening words>".` — then the analysis
+in that same message, with the item's full text on request. Carry the heading
+text: the link lands at the top of the file, so it is what turns a scan into a
+search. The confirm re-read still runs in its pointer form (a resolves-check,
+not a text-match).
 
 **2. Recommend**  [PROMPT]
 
@@ -418,11 +428,47 @@ repairs consolidate into one work item with numbered points; a finding carrying
 a design call stays standalone. Still discussed one at a time — the rule sets
 where kept work lands, never how it's decided.
 
+*Merging or folding one piece of work into another follows the Files-list test,
+not an ask* (plugin-behaviour.md, dependency ownership):
+
+```
+merge does NOT widen the Files list  ->  free. Narrate it and proceed.
+merge DOES add files to the run      ->  a widening. Still asks.
+```
+
+Whenever a merge is narrated or proposed, name what it does to scope in the
+same line ("this adds no files" / "this adds two files") — the narration is the
+catch-point that lets the user object before scope compounds.
+
+*Group scope-siblings when placing kept items* — items whose Files lists
+overlap process and build better together (one coherent pass over a file
+instead of two sequential ones). Two hard bounds. Sharing a file scope is
+**not** a readiness test: a sibling still passes the keep-step on its own
+merits, or it stays unprocessed — "it touches the same file" is never a route
+for undesigned work to reach a build. And clustering is a **preference, never a
+gate** — a run is never limited to siblings, and an array of misfits is
+sometimes the only option and must still run. Precedence is fixed:
+
+```
+1. dependencies       ->  a blocker runs on its dependency order, whatever its
+                          file scope. Never displaced by clustering.
+2. unblock-potential  ->  the existing ordering principle, unchanged.
+3. sibling clustering ->  a TIE-BREAKER only, applied where it is free.
+```
+
+Grouping happens here at processing, where Files lists are firmed up — capture
+time is usually too early to know an item's scope; record a rough guess at
+capture where it's known.
+
 *When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
 user-only (work Claude can run but can't run *yet* is Claude-work shelved below
 the line — the over-tag guard); and **don't under-file** — genuine user work must
 become a `[user]` work item, never a live chat question or a "you'd do that yourself"
-aside. Then draft the walkthrough into the item's prose. Not being able to script
+aside. **The over-tag half is a check, not a judgment: name the tool that would
+do the work and confirm it is absent or unauthenticated before the tag stands**
+(plugin-behaviour.md, the `[user]` flavor rules) — a browser-sounding task with
+a working CLI path is Claude-work, and this is the cheapest moment to catch it.
+Then draft the walkthrough into the item's prose. Not being able to script
 every step is **not** a reason to withhold the line: file it with a rough
 walkthrough and sharpen it here.
 
@@ -591,9 +637,9 @@ dedicated-pass state; the only defer is this skip.** The sharpen-first is part o
 the move: capture whatever design progress was made into the item's prose so the
 next /plan starts further along.
 
-**View-in-doc applies here too** — in local mode, lead with a one-line pointer to
-the next item (carrying its heading text) in place of its verbatim, off-ramps
-below it unchanged.
+**View-in-doc applies here too** — lead with a short summary and a one-line
+pointer to the next item (carrying its heading text) in place of its verbatim,
+full text on request, off-ramps below it unchanged.
 
 ### Process-now offer after a user-filed capture  [PROMPT]
 

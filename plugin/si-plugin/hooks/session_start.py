@@ -484,9 +484,26 @@ def main() -> int:
     # does appear, and never weakens the no-strand guarantee.
     _record_payload_once(cwd, data)
     docset = _docset_for_model(_model_id(data) or _recorded_model(cwd))
+    # If the selected docset's folder is missing from the installed plugin, fall
+    # back to docset A — but never silently. The directive's own SELF-CHECK (the
+    # session telling the user the docs-b path isn't there) ships only WITH the
+    # directive, and this branch suppresses the directive — so without this
+    # state line the one guard against a mispackaged install is the very thing
+    # that goes quiet when it happens.
+    docset_fallback_note = ""
     if docset != _DOCSET_A and plugin_root and not os.path.isdir(
         os.path.join(plugin_root, docset)
     ):
+        docset_fallback_note = (
+            "[Sovereign Implementer] This session picked the lighter instruction "
+            f"set ({docset}), but that folder is missing from the installed "
+            "plugin — not from your project; the plugin's own installation looks "
+            "incomplete. The session runs on the fuller instruction set "
+            f"({_DOCSET_A}) instead and everything still works; it will just be "
+            "more verbose than intended. Reinstalling or updating the plugin "
+            "should restore the missing folder. Mention this state line to the "
+            "user plainly, once."
+        )
         docset = _DOCSET_A
     docset_directive = _docset_directive(docset)
 
@@ -579,6 +596,8 @@ def main() -> int:
         # session ran docset B.
         if docset_directive:
             msg += "\n\n" + docset_directive
+        if docset_fallback_note:
+            msg += "\n\n" + docset_fallback_note
 
         output = {
             "hookSpecificOutput": {
@@ -622,6 +641,8 @@ def main() -> int:
 
     if docset_directive:
         context_parts.append(docset_directive)
+    if docset_fallback_note:
+        context_parts.append(docset_fallback_note)
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
@@ -717,22 +738,12 @@ def main() -> int:
     # the user's answer; a setting that needs no answer would be added silently with
     # a note (none yet — the list is built to hold both kinds).
     missing_settings = []
-    setting_checks = [
-        {
-            "file_present": bool(claude_md_content),
-            "marker": "## Editor",
-            "instruction": (
-                "Your CLAUDE.md is missing the Editor setting, added to the method "
-                "since this project was set up. It records the .md editor you work "
-                "in, which lets the plugin save tokens by pointing at a doc instead "
-                "of re-pasting it. Open your first reply by asking, in one line, "
-                "which editor the user works in here (they can say to skip if they "
-                "don't use one). Then write their answer into a new '## Editor' "
-                "section of CLAUDE.md, matching the template's format. Add only that "
-                "section — change nothing else the user has written."
-            ),
-        },
-    ]
+    # No checks currently. The Editor check that used to live here was retired
+    # with the Editor field itself (nothing reads it — links open in the desktop
+    # app's own viewer regardless); a project still carrying an `## Editor` or
+    # `## Working mode` section is ignored, never flagged. The list shape stays
+    # so future settings join by adding one entry.
+    setting_checks = []
     for check in setting_checks:
         if check["file_present"] and check["marker"] not in claude_md_content:
             missing_settings.append(check["instruction"])

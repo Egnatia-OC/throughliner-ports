@@ -85,6 +85,10 @@ Nothing leaves active flow without one of these — prose alone isn't enough for
 
 It's a planning checkpoint Claude placed between batches. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
+## I told Claude "not now" about something. Why did it stop coming up — and will it come back?
+
+When you set something aside — you stop partway through a step, tell Claude to shelve a suggestion, or answer "no change" about something the work was waiting on — Claude records that on the item itself, quoting your words and noting how far things got. From then on it stops re-offering that item in its recommendations and check-ins, so you're not asked the same thing every session. Two guarantees keep this safe. Nothing is lost: the work stays exactly where it is in your queue, and it comes back up on its own when the queue has nothing else left to offer — or the moment you mention it yourself. And warnings never go quiet: a security concern or an unaddressed risk keeps surfacing until it's dealt with, no matter how often it's waved off. One more thing worth knowing: Claude never sets anything aside on its own judgment — only your say-so does it. If you stopped a step partway, the recorded progress means a later session picks up from where you left off rather than starting over.
+
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file.
@@ -97,23 +101,21 @@ Both versions describe the same method: the same four commands, the same queue, 
 
 If the plugin can't tell which model is running, it uses the fuller version — the one it's been tested on longest.
 
-## /setup asked me which editor I use. What does that actually change?
+## /setup used to ask which editor I use, and whether I work from my computer or my phone. Where did those questions go?
 
-Less than the question used to suggest, and skipping it is fine.
-
-When Claude gives you a link to one of your project docs, that link opens the file in Claude's own viewer. That happens whatever you answered — the editor setting has nothing to do with it. What the viewer *won't* let you do is change the text. So the editor field records where you'd go if you ever wanted to edit a doc by hand yourself.
-
-Plenty of people never do that, because Claude does the writing. If that's you, say skip. You'll still get links, and nothing else about the method changes. If the question was worded to you as being about *reading* docs, that was the old wording and it was wrong.
+Both were removed, deliberately. The editor question recorded which app you'd open a doc in to edit it by hand — but nothing actually used the answer, since Claude's links open in its own viewer either way. The computer-or-phone question set a "working mode" that decided whether Claude showed you doc text as a link (at your desk) or pasted it into chat (on your phone). In practice that split just made people pick whichever meant less text, so it's gone: Claude now always gives a short summary plus a link, with the full text on request — a shape that works the same at a desk and on a phone. If your CLAUDE.md still has an `Editor:` or `Working mode:` line from an earlier version, it's simply ignored; you don't need to remove it.
 
 ## Claude wrote a draft straight into my queue before I approved it. Is that meant to happen?
 
-Yes. Text headed for one of your project docs — a new queue item, a log entry, an edit to SPEC — gets written into the file first, and then Claude points you at it so you can read it where it actually lives, in its final position rather than as a chat message.
+Yes. Text headed for one of your project docs — a new queue item, a log entry, an edit to SPEC — gets written into the file first, and then Claude tells you in chat what it wrote: a short summary you can act on, a link to the file with the exact heading to look for, and the question you're being asked. If you'd rather read the whole thing in chat, just say so — the full text is always one word away.
 
 You still approve it. Nothing is committed to your project's history until you do, and if you say no, Claude takes the text back out and confirms it's gone.
 
 Two reasons it works this way. You read the item as it will actually appear, next to the items around it, which catches things a chat paste hides. And Claude doesn't have to write every draft twice — once in chat and once in the file — which costs tokens on longer sessions.
 
-If you're driving Claude from your phone, this flips: opening a file on a phone is awkward, so Claude pastes the text into the chat as well. That's what the working-mode setting is for.
+## Claude merged two pieces of work together without asking me. Is that allowed?
+
+Yes, within a strict boundary. When two agreed pieces of work belong together, merging them changes *where* the work is recorded, not *what* gets built — so if the merge doesn't add any files to what the next build is allowed to touch, Claude just does it and tells you, naming the scope effect in the same breath ("this adds no files"). If a merge *would* add files — meaning the build would reach further than what you agreed — Claude still asks first. You can always object to a narrated merge; saying so un-merges it. Relatedly, planning sessions prefer to group work that touches the same files so one build session can clear more at once — but that's only a tie-breaker: work never jumps the queue or skips vetting just because it touches the same file as something else.
 
 ## Claude suggested adding a note to CLAUDE.md about where I post updates. Why?
 

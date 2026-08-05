@@ -83,6 +83,13 @@ It also runs inside a /plan close when the user mentions async-completed items.
    # the routing test above already identified them. Don't ask, and don't
    # list the other [user] items still sitting in Processed — an item whose
    # completion isn't visible simply stays where it is.
+1a. verify, don't accept, where the result is observable
+   # if the item's walkthrough names an observable result — a file present or
+   # absent, a branch gone, a URL responding — run that check against the
+   # world now (plugin-behaviour.md, the [user] lifecycle). Check passes ->
+   # proceed. Check fails -> state plainly what was found, leave the item in
+   # place, and never turn it into "are you sure you did this?". No observable
+   # result named -> proceed on the report as before.
 2. write a LOG entry per completed item, named after its slug
    # records what the user did and its outcome; draft and show for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
@@ -94,6 +101,14 @@ It also runs inside a /plan close when the user mentions async-completed items.
 
 A remote-gated push offer applies as normal — a completed `[user]` item is real
 project progress, not bookkeeping.
+
+**The part-walked sibling.** An item the user stopped partway through carries a
+`Set aside ·` line (plugin-behaviour.md, Set aside), written at the moment they
+stopped. At this close it is not completed and not removed: leave it in place
+with its marker, make sure the marker actually holds what the session witnessed
+(steps reached, what stopped it), and note the stop in the session's LOG entry.
+The marker is what the next run resumes from — and it keeps this close's
+recommendation from re-offering the very thing the user just set aside.
 
 ## Standalone handmade-work close  [BRIEF, PROMPT]
 
@@ -298,11 +313,12 @@ the judgment project-specific ground to stand on. Propose it on noticing the
 pattern, not at every close, and take a no for an answer.
 
 **The approval frame, identical for every flavor.** Write the entry to its LOG
-file, then put the wording in front of the user for approval — a link plus the
-entry's heading text in local mode, pasted inline in remote (plugin-behaviour.md's
-working-mode rule). If they reject it, remove exactly what was written and confirm
-by re-reading. The commit message is the exception the rule already names: it has
-no doc to live in, so it is shown inline as before.
+file, then put the wording in front of the user for approval — a short summary of
+what the entry records, plus a link carrying the entry's heading text, full text
+on request (plugin-behaviour.md's doc-bound-text rule). If they reject it, remove
+exactly what was written and confirm by re-reading. The commit message is the
+exception the rule already names: it has no doc to live in, so it is shown inline
+as before.
 
 ```
 run shipped ONE item     ->  this approval ALSO covers the commit message: title
@@ -511,7 +527,10 @@ leaving every close with a dirty tree. The test (plugin-behaviour.md, the
 advisory section): the advisory must carry something queue position cannot — a
 decision that isn't a work item, the reasoning behind an ordering, a state
 fact. A generic recommendation files nothing, and so does "process [top-slug]
-next", which restates queue position. Its content derives entirely from queue
+next", which restates queue position. **And an action the user set aside this
+session files nothing either** (plugin-behaviour.md, Set aside) — their
+not-now was the answer, and an advisory carrying it forward is precisely the
+re-raising the marker exists to stop. Its content derives entirely from queue
 state that is already settled; nothing about it needs the commit to exist.
 Recommend next then only *presents* the recommendation — it files nothing.
 
@@ -627,6 +646,12 @@ Every sub-doc's final step points here, adding only its flavor delta.
 **Plain-language guard.** Narrate the queue situation in everyday words — never
 the background section-bookkeeping phrasing. Keep it accurate: **don't say the
 queue is clear when work is still waiting to be sorted.**
+
+**Set-aside items don't get recommended.** Anything the user set aside
+(plugin-behaviour.md, Set aside) is skipped by this step — no recommending it,
+no "when you're ready" reminder of it. It comes back only when the queue has
+nothing else to offer, and that state is named plainly if this close meets it.
+Warnings are exempt as always: an uncleared red flag is surfaced regardless.
 
 **Overlap scan.** Before recommending, scan the still-unprocessed work for overlap
 with the top processed item — work that contradicts, invalidates, or would benefit
