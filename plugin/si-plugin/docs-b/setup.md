@@ -343,8 +343,8 @@ nag.
 
 ## Step 3b: Repo visibility, licensing, and publishing
 
-Three things, in this order. The first is a **safety input**, not a preference,
-and it applies to every project including one with no interest in publishing.
+Four things, in this order. The first two are **safety inputs**, not preferences,
+and they apply to every project including one with no interest in publishing.
 
 **1. Detect whether the repo is public — don't ask.** A recorded answer to this
 goes stale silently, and silently is exactly how it hurts: one project's
@@ -363,14 +363,34 @@ private information (plugin-behaviour.md) — a public repo makes that urgent ra
 than theoretical, and a private one can be shared or made public later without
 anything re-checking.
 
-**2. Ask about the licence** [PROMPT] — in plain terms: does the user want others
+**2. Name the commit identity, before the first commit exists** [BRIEF; PROMPT
+only if the user wants the change]. Run `git config user.email` and tell the user
+in one line what address every commit will carry — and that GitHub offers a
+`noreply` address if they'd rather not publish a real one. This runs on **every**
+branch, not just the public ones: a private repo can go public later and nothing
+re-checks its history. The timing is the whole point — before this session's
+close makes the first commit, fixing this is one `git config` line; after it,
+it's a full history rewrite, because commit metadata can't be edited out of the
+files. If the user wants the `noreply` address, set it now (`git config
+user.email <their-noreply>`); if they're happy as-is, say nothing more and move
+on.
+
+**3. Ask about the licence** [PROMPT] — in plain terms: does the user want others
 free to use and build on this, or do they want to keep it to themselves? Write
 their answer as a LICENSE file. Recommend one rather than asking cold.
 
-**3. Offer public-repo setup, framed off the licence** [PROMPT] — "since you chose
+**4. Offer public-repo setup, framed off the licence** [PROMPT] — "since you chose
 this licence, would you like this on your GitHub? We can do it now, or note it for
 a later planning session." **Offer, never push.** The note-it-for-later branch is
 the graceful decline, and it's a real option, not a formality.
+
+**State what publishing actually shows, in one sentence, when making that offer:**
+most of what a visitor to the repo will find is the planning record itself — the
+spec, the queue and the session log, which carry every decision, the rejected
+alternatives and why they lost, and the fact that the project is built with an AI
+method. Not a leak — some projects publish exactly that deliberately — but a
+decision worth making consciously, and without that sentence it gets made by
+default.
 
 For a user who wants the most private posture available, offer to add every
 project doc to `.gitignore` so none of it is ever committed.

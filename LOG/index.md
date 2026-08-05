@@ -2,6 +2,12 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — FAQ/faq.md vs templates/faq-template.md — audit: project copy is the fossil (8 of 22 entries describe retired machinery), template current; recommends rebuild-by-replacement + grouped index; findings consolidated into [faq-backfill]'s block → 2026-08-05-faq-audit-wrong-missing-and-shape.md
+- [HASH] — docs-b/setup.md Step 3b, faq-template.md, SPEC.md — /setup now names the commit email (noreply option, every branch, before the first commit) and states that the planning record is what a repo visitor finds → 2026-08-05-setup-creates-unnamed-public-exposures.md
+- [HASH] — docs-b/plugin-behaviour.md + plan.md + next.md + faq-template.md + SPEC.md — private-information rule retitled and widened to three rules: third parties, a solicitation clause (don't ask for identifiers an item doesn't need), and a self-disclosure rephrase clause; sweep declared prevention-only for self-disclosure → 2026-08-05-private-info-rule-scope-rewrite.md
+- [HASH] — CLAUDE.md + .git/worktrees — folder-move recovery corrected (this folder is main), merged queue-redesign worktree deregistered (folder + remote branch left for the user), worktree list recorded in the file map → 2026-08-05-claude-md-worktree-claim-wrong-and-stale-trees.md
+- [HASH] — AGENTS.md + CLAUDE.md — AGENTS.md gutted to a three-line pointer at CLAUDE.md (drifted Codex-era copy, tool shelved); file map lists it → 2026-08-05-agents-md-undocumented-duplicate.md
+
 - a7bb165 — QUEUE.md + resources/research — /plan: reprioritised around the public-history exposure, consolidated the privacy-rule scope defect, split the FAQ work into audit-then-build, and cleared five items to run → 2026-08-05-plan.md
 
 - bf838bf — docs-b/done.md, plugin-behaviour.md's evidence triage, CLAUDE-TEMPLATE.md, SPEC.md — LOG scope redefined by an artifact test covering the session's own outputs (an announcement, a piece of writing), drawn by artifact and never by topic because a topic judgment goes wrong in a public repo; plus Claude proposing a standing CLAUDE.md entry when outward-facing work recurs → 2026-08-04-log-scope-adjacent-work.md

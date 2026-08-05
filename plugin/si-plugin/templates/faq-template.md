@@ -52,13 +52,15 @@ You might reasonably ask why Claude can't just tell which model it's running. So
 
 ## Why does setup check whether my code is public, and what are the licence and publishing questions?
 
-Three related things, and the first is a safety check rather than a preference.
+Four related things, and the first two are safety checks rather than preferences.
 
 **Is your repository public?** Claude checks this rather than asking, because an answer typed once goes out of date without anyone noticing. It matters because everything in your project docs gets committed — and a commit is permanent, even if the text is deleted later. If the repository is public, everything written in these docs is readable by anyone, straight away and for good. Knowing that, Claude holds a firmer line about never writing other people's names or private circumstances into your notes, queue, or logs. (It holds that line either way — a private repository can be shared or made public later, and nothing re-checks what's already in it.)
 
+**What email address will your saves carry?** Every save (commit) is stamped with an author email address, and if your project is ever published, those stamps are visible to anyone — they're the one thing that can't be fixed later by editing a file, only by rewriting the project's entire history. So before the very first save, Claude tells you which address yours will carry, and mentions that GitHub offers a free "noreply" address if you'd rather not publish a real one. Changing it at this moment is one line; changing it later is a major operation.
+
 **What licence do you want?** In plain terms: are you happy for other people to use and build on this, or would you rather keep it to yourself? Claude recommends one and writes it as a LICENSE file.
 
-**Do you want this on GitHub?** Offered off the back of the licence choice, and only as an offer — "we can do it now, or note it down for later" is a real answer, not a polite formality. If you'd rather the opposite, Claude can also set things up so none of your project docs are ever committed at all.
+**Do you want this on GitHub?** Offered off the back of the licence choice, and only as an offer — "we can do it now, or note it down for later" is a real answer, not a polite formality. One thing Claude states plainly when offering: most of what a visitor to your repository will find is the planning record itself — your spec, your queue, and your session logs, with every decision and the reasons behind it. Plenty of projects publish exactly that on purpose; it's just a choice worth making with your eyes open rather than by default. If you'd rather the opposite, Claude can also set things up so none of your project docs are ever committed at all.
 
 ## Can Claude find things in my notes that shouldn't be public?
 
@@ -333,3 +335,11 @@ Not for anything you have to do. The plugin ships two versions of its own instru
 Both versions describe the same method: the same four commands, the same queue, the same rules about what Claude will and won't do without asking you. The only difference is how much explaining sits around each rule, because different Claude models follow instructions best at different lengths. So your project behaves the same way whichever model you build it on, and switching models between sessions is fine.
 
 If the plugin can't tell which model is running, it uses the fuller version — the one it's been tested on longest.
+
+## Why won't Claude ask me for my email address, account numbers, or other personal details?
+
+Everything written into your project's planning docs gets saved into your project's history — and if your project is ever shared or made public, that history goes with it, even for text that was later deleted. So the method keeps sensitive details out of the docs in the first place, in three ways.
+
+First, Claude doesn't write other people's names or private circumstances into your docs — "a client", "a third party" carries the same point without the exposure. Second, Claude doesn't *ask* you for sensitive identifiers — email addresses, account numbers, keys, payment details — when writing up a piece of work. A work item like "fix the account that's under the wrong email" is complete without the actual addresses: you'll have those to hand when you do the work, and they never need to sit in a saved doc. Third, when Claude records something about you — say, why a piece of work was set aside — it writes the decision and its reason ("set aside: needs specialist help"), not a personal assessment of you.
+
+If a detail like that genuinely is needed for the work itself, you can always give it — this is about Claude not soliciting it into documents that keep it forever.

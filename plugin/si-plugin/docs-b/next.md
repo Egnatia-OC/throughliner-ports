@@ -333,6 +333,11 @@ No item returns to the queue, because none left it — scope was never locked.
 
 - **The work items are the contract.** Don't exceed the described work without
   explicit approval.
+- **Clarifying questions inherit the solicitation rule** (plugin-behaviour.md,
+  the private-information section): when surfacing underspecification or asking
+  to grow scope, don't ask for sensitive identifiers — addresses, account
+  numbers, keys, payment details — that the work doesn't need. The user supplies
+  those at the moment of use; they never belong in the queue or the log.
 - **Per-item ticking is mandatory** — it's the crash-recovery mechanism.
 - **At build completion the only valid next-step recommendation is /done** —
   never /next, never another build. The finished build isn't recorded until /done

@@ -69,6 +69,10 @@ Host and target are the same plugin at different stages. Ambiguous references to
 ```
 No code method/
   CLAUDE.md              — this file
+  AGENTS.md              — a pointer at this file, nothing more. A Codex-era
+                           copy of CLAUDE.md, gutted 2026-08-05 after it
+                           drifted; kept as a redirect in case any tool loads
+                           AGENTS.md by name.
   .gitignore
   plugin/                — plugin packaging
     si-plugin/           — target source
@@ -83,6 +87,8 @@ No code method/
   QUEUE.md               — this project's work queue
   LOG/                   — this project's session logs (index.md + per-entry files)
 ```
+
+**Worktrees (recorded 2026-08-05).** This folder is the main working tree. One linked worktree shares its object store: the shelved Codex port at the sibling folder `..\Sovereign Implementer - Codex port\`, on branch `codex/si-port`. The merged `queue-redesign` worktree (an orphaned folder under the old `C:\Users\Alex\` profile) was removed from git's registry on 2026-08-05 — its branch was fully merged into main; the leftover folder on disk is the user's to delete, and `origin/queue-redesign` still exists on the remote pending the history-rewrite's branch-coverage decision.
 
 ## Working conventions
 
@@ -160,7 +166,7 @@ Do whichever Alex actually asked for; don't run a release because she asked to r
 Moving this project folder breaks two path-based links that both hold absolute paths and don't self-heal — fix both, then fully restart the app:
 
 1. **Local-directory marketplace.** The desktop app's marketplace registration keeps pointing at the old path: slash commands stop autocompleting and get flagged "invalid" (the cached snapshot still runs when forced). Re-point it in place — `claude plugin marketplace add "<new project path>"` (re-registers the path; no `remove` needed) — then `claude plugin install sovereign-implementer@flintcraft`.
-2. **Git worktree.** This is the `queue-redesign` worktree, so a move severs the worktree link both ways and git reports "not a repository" until both sides are repointed: this worktree's `.git` file (the `gitdir:` pointer) and the main repo's `worktrees/<name>/gitdir` back-reference.
+2. **Git worktrees.** This folder is the **main working tree** (`git worktree list` reports it as `main` — corrected 2026-08-05; this section previously claimed it was the `queue-redesign` worktree, which was wrong). One linked worktree hangs off it: the shelved Codex port. A move of either side severs that link both ways — the linked worktree's `.git` file (the `gitdir:` pointer) and this repo's `.git/worktrees/<name>/gitdir` back-reference both hold absolute paths — and git reports "not a repository" in the linked tree until both are repointed.
 
 Consumers are unaffected — they install from the GitHub marketplace, which has no local path to break.
 

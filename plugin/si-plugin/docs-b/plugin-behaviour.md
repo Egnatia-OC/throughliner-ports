@@ -703,19 +703,45 @@ The decision moment is **processing**, not ship. At ship the flag is already
 cleared, so the close doesn't re-decide it: it carries the cleared flag into the
 LOG entry, and stops if it ever meets one still reading uncleared.
 
-## Other people's private information — don't write it down
+## Private information — don't write it down, don't ask for it
 
 Project docs get committed, and a commit is forever even if the text is later
-deleted. So the protection that actually works is **not writing it in the first
-place**, not removing it afterwards.
+deleted. So the protection that actually works is **upstream of any review**:
+not writing private information in the first place, and not asking for it in the
+first place. Nothing looks wrong at the moment of writing — the sentence is
+accurate and reads as unremarkable — which is exactly why these are write-time
+and ask-time rules rather than review gates. Three rules, one per way private
+information reaches a doc.
 
-**The rule.** When recording something in SPEC, QUEUE or a LOG entry, don't name
-third parties or their private circumstances. A person's name, the details of
-someone's case or dispute, the nature of a private matter that isn't the user's
-own — none of it is ever needed for the point being recorded. "A consumer
-project", "a third party", "an external user" carries the same lesson with none
-of the exposure. This removes the judgment call rather than adding one, which is
-why it's the primary defence.
+**Other people's — don't name them.** When recording something in SPEC, QUEUE or
+a LOG entry, don't name third parties or their private circumstances. A person's
+name, the details of someone's case or dispute, the nature of a private matter
+that isn't the user's own — none of it is ever needed for the point being
+recorded. "A consumer project", "a third party", "an external user" carries the
+same lesson with none of the exposure. This removes the judgment call rather than
+adding one, which is why it's the primary defence.
+
+**Don't ask for what the item doesn't need.** Before asking the user for a
+sensitive identifier to put into a capture, work item or log entry — an email
+address, an account number, a key, a token, a payment detail, or their
+neighbours — apply one test: **is the work item actionable without it?** It
+almost always is, because the user is holding the details at the moment they do
+the work. "The account is under the wrong email" is a complete work item; the
+actual addresses are needed only when the user acts, and then they're in the
+user's hands, not in a committed doc. This clause is the one protection that can
+fire early enough: every other rule here governs writing, and by the time a
+write-time rule could catch a solicited identifier the user has already been
+asked and has probably answered.
+
+**The user's own — keep the decision, drop the assessment.** When recording
+context about the user themselves — why something was deferred, what help is
+needed — write the decision and its reason ("deferred: needs specialist help"),
+never a characterisation of the person. A candid assessment of the user's own
+limits, written unprompted into a doc that gets committed, is an exposure the
+user never chose. This is a rephrase rule, not a prohibition: the planning
+context is real and the record needs it — the same move the third-party rule
+makes, keep the lesson, drop the exposure. The user's own information is theirs
+to publish deliberately; the point is that Claude doesn't author it for them.
 
 **Repo visibility makes this urgent rather than theoretical, and it is recorded
 at /setup.** Read the recorded visibility and let it set the stakes:
@@ -740,7 +766,11 @@ it. To find what's already there, run the scrub sweep script — it greps every
 tracked file for known names and surfaces unexplained proper nouns for a human to
 look at. Offer it when third-party exposure comes up, and before making a repo
 public. Mechanical search is genuinely better than a judgment pass here: once a
-name is known, a grep finds every instance instantly and completely.
+name is known, a grep finds every instance instantly and completely. The sweep's
+limit, stated plainly: it finds names, and a self-disclosure is a
+characterisation no grep can match — so for the user's-own rule above,
+prevention at write time is the whole defence, and that is why the rule is
+write-time rather than sweep-backed.
 
 **Deleting the text doesn't remove it from history.** If something has already
 been committed, say so plainly and let the user decide between rewriting history,

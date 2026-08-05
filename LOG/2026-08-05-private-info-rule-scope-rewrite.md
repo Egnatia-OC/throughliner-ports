@@ -1,0 +1,13 @@
+# [HASH] — the private-information rule now covers what Claude asks for and what it writes about the user, not just third parties
+
+The rule's old title — "Other people's private information" — was doing the scoping, and it scoped out two failures seen three times in one day: Claude asking for sensitive identifiers to put into an item, and Claude writing candid assessments of the user into committed docs. Both fail upstream of any review (the sentence reads as unremarkable at write time), so both needed write-time/ask-time rules like the existing one.
+
+The section in docs-b/plugin-behaviour.md is retitled "Private information — don't write it down, don't ask for it" and now carries three rules, one per way private information reaches a doc: the existing third-party rule; a solicitation clause — don't ask for identifiers (emails, account numbers, keys, payment details) the item doesn't need, tested by "is the work item actionable without it?", which it almost always is because the user holds the details at the moment they do the work; and a self-disclosure clause written as a rephrase, not a prohibition — record the decision and its reason ("deferred: needs specialist help"), never a characterisation of the person, the same keep-the-lesson-drop-the-exposure move the third-party rule makes. The question the item asked to settle cheaply — whether the scrub sweep gains a self-disclosure pass — is settled as prevention-only, stated in the section: the sweep greps names, and a characterisation is a judgment no grep can match.
+
+Guard lines were added where the pull to ask lives: plan.md's interview follow-ups and keep-step drafting, and next.md's clarifying-questions rule. Docset A is frozen, so all procedure changes land in docs-b only. The item carried a red flag, cleared at processing (solicitation risk designed out by the clause; the user was told the fix bites only after ship+reinstall and chose to queue it) — carried through here per the lifecycle.
+
+Built in the overnight blitz of 2026-08-05 (autonomous run, approvals deferred — recorded departure).
+
+**Files touched:** plugin/si-plugin/docs-b/plugin-behaviour.md, docs-b/plan.md, docs-b/next.md, templates/faq-template.md, templates/faq-index-template.md, SPEC.md (private-information paragraph rewritten to the three-rule shape)
+**Routed to Captures:** none
+FAQ: updated — new template entry "Why won't Claude ask me for my email address, account numbers, or other personal details?" plus its index line. The project's own FAQ copy was deliberately not patched: the FAQ audit run this same night recommends replacing it wholesale from the template, so a hand-patch would be immediately superseded.

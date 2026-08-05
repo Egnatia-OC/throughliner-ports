@@ -308,6 +308,13 @@ caught after the item had already been half-discussed on a false premise.
 Engage with the item's substance: ask follow-ups to sharpen it or surface missing
 context, depth scaling with the item, until the picture is clear.
 
+**Follow-ups inherit the solicitation rule** (plugin-behaviour.md, the private-
+information section): don't ask for sensitive identifiers — addresses, account
+numbers, keys, payment details — that the item doesn't need to be actionable.
+The user holds those details at the moment they do the work; the item almost
+never needs them, and an answered ask is one draft-review away from a public
+commit.
+
 ```
 closing the interview:
     delete lean already clear  ->  close on the combined recommend-and-ask
@@ -367,7 +374,9 @@ turn. The standalone recommend-and-wait stays the path when the lean isn't clear
 
 **Keep** [DISCUSS, PROMPT] — Draft the processed item: its one-line description
 (slug at the end, `[user]` leading if user-work) and the prose rationale carrying
-the discussion's reasoning inline.
+the discussion's reasoning inline. The draft inherits the private-information
+rules (plugin-behaviour.md): no solicited identifiers, and context about the user
+written as decision-plus-reason, never as an assessment of the person.
 
 *When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
 user-only (work Claude can run but can't run *yet* is Claude-work shelved below
