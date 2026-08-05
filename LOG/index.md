@@ -2,7 +2,7 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — QUEUE.md + resources/research/claude-code-hook-events.md — merged the blitz branch (fast-forward); 18 items processed, 9 cleared to run; docset-A freeze settled as a rule (corrections permitted, development barred); provenance "you" replaced by a /setup identity field at the user's override; throughline nudge design resolved (a proposal, not a question); live tests proved the desktop viewer caches open files regardless of extension, killing the file-format switch's rationale — filed as claude-code#84017/#84018; a concurrent session destroyed an item's heading and was repaired, changing [concurrent-session-support]'s premise → 2026-08-05-plan-3.md
+- 5127f1c — QUEUE.md + resources/research/claude-code-hook-events.md — merged the blitz branch (fast-forward); 18 items processed, 9 cleared to run; docset-A freeze settled as a rule (corrections permitted, development barred); provenance "you" replaced by a /setup identity field at the user's override; throughline nudge design resolved (a proposal, not a question); live tests proved the desktop viewer caches open files regardless of extension, killing the file-format switch's rationale — filed as claude-code#84017/#84018; a concurrent session destroyed an item's heading and was repaired, changing [concurrent-session-support]'s premise → 2026-08-05-plan-3.md
 
 - 55108b3 — resources/overnight-blitz-plan.md + QUEUE.md — blitz-plan learnings recorded (soak-before-merge as the default, audits explicitly cleared, five run-observations) and the fresh-chat-closing-advice misfire captured as [closing-advice-misfires-onto-done] → 2026-08-05-plan-2.md
 
