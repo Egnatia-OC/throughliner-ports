@@ -1,4 +1,4 @@
-# [HASH] — The second blitz's branch merged into main and pushed, after all four guard conditions passed
+# 0ad5fa9 — The second blitz's branch merged into main and pushed, after all four guard conditions passed
 
 The run's last item, reached only after the eight items above it built clean. The guards converted "did this go well?" into checks the run could make, and all four passed: the run reached the item with no no-progress halt, every item above was built and ticked in _build.md, the working tree held no conflict or failure, and git status was clean apart from the run's own work plus the two known signatures (the plugin.json test suffix and the session-start hash backfill). main had not moved since the branch forked from the v1.18.0 release commit, so the merge was a pure fast-forward, `1b19d6b..a5f3111`.
 

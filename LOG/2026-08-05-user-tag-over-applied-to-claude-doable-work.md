@@ -1,4 +1,4 @@
-# [HASH] — [user] tagging now requires naming the tool and confirming it absent or unauthenticated, at the /plan keep-step and again at /next's hand-off
+# 0ad5fa9 — [user] tagging now requires naming the tool and confirming it absent or unauthenticated, at the /plan keep-step and again at /next's hand-off
 
 A live session filed "create a private GitHub repo" as a `[user]` walk-through because the work *sounded* browser-shaped — and `gh` was installed, authenticated, and did it in seconds once the user pushed back. The over-tag guard's test ("can Claude do this at all?") was never actually run, which says the problem was never warning volume: nothing prompted a capability check at the moment of tagging. The fix is stated as a check, not a judgment — before `[user]` stands, name the tool that would do the work and confirm it is absent or unauthenticated; a one-line check passes or fails and can't be talked into the wrong answer, and where no tool plausibly exists, that is itself the answer at zero cost.
 

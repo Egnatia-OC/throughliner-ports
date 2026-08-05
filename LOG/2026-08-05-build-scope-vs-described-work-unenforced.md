@@ -1,4 +1,4 @@
-# [HASH] — The build close gains a described-work check: each item's diff compared against its description, surfacing never blocking, with "I cannot account for this" sanctioned
+# 0ad5fa9 — The build close gains a described-work check: each item's diff compared against its description, surfacing never blocking, with "I cannot account for this" sanctioned
 
 The scope-lock holds a build to its file *list*; nothing held it to its described *work* — a build could stay inside every listed file, rewrite far past what its item described, and pass every layer. The judgment layer for that gap now lives in done-build.md as a new step riding a read that already happens (the close reads the diff to write the LOG entry): compare each item's diff against that item's description, with per-item ticks giving each item its boundary. It surfaces and never blocks — a blocking check on a fallible judgment trains sessions to route around it, the false-denial reasoning from the independently-built scope-lock tool.
 

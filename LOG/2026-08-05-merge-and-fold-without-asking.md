@@ -1,4 +1,4 @@
-# [HASH] — Merges that widen nothing are now narrated, not asked, with the Files list as the test; scope-sibling grouping added as a bounded tie-breaker
+# 0ad5fa9 — Merges that widen nothing are now narrated, not asked, with the Files list as the test; scope-sibling grouping added as a bounded tie-breaker
 
 Five merge proposals in one day, none refused, each costing a full turn — and the user's standing preference is always more per run. The rule that replaces the ask is mechanical on purpose: a merge that adds no files to the run changes *where* agreed work lands, not *what* gets built, so it is narrated and done; a merge that adds files is a widening and still asks. Either way the scope effect is named in the same line ("this adds no files" / "this adds two files"), because the drift this feeds is one-directional — the user always says yes, so scope only ever grows — and the narration is the catch-point that lets them object before it compounds. The user flagged this as their own judgment call, not a finding about all users, and a stored per-project setting was rejected at processing: working mode had just failed as exactly that shape.
 

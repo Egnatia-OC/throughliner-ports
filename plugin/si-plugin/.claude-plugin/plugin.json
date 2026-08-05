@@ -1,5 +1,5 @@
 {
   "name": "sovereign-implementer",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "Structured workflow for non-coders building apps with Claude Code. Four skills (/setup, /plan, /next, /done) and three hooks — two enforce scope and git safety, one advises on queue structure."
 }

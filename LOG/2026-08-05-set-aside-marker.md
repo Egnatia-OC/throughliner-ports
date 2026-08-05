@@ -1,4 +1,4 @@
-# [HASH] — The set-aside marker built: the method's name for "not now", riding a work item like the red flag, with user-signal-only guards and queue-exhaustion resurfacing
+# 0ad5fa9 — The set-aside marker built: the method's name for "not now", riding a work item like the red flag, with user-signal-only guards and queue-exhaustion resurfacing
 
 Three real instances — a mid-step stop, a part-walked item at a close, and a reroute re-offered three more times in one session — all traced to the same absence: the user saying *not now* changed no state anywhere, so every correctly-behaving channel raised the same thing again. The concept now lives in plugin-behaviour.md as its own section: a `Set aside · <date> · "<the user's words>"` line riding the item where it sits (nothing moves — no new state, no new shelf, so the anti-invention guardrail isn't tripped), with optional reached / stopped-by / retry tails carrying what the session witnessed. Progress lives in that line and never as strike-through in the walkthrough text, which gets rewritten when items are refined.
 
