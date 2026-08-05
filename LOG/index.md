@@ -2,7 +2,9 @@
 
 One-line summaries of each session. Newest first.
 
-- [HASH] — branch overnight-blitz-2026-08-05 + resources/overnight-blitz-plan.md — blitz close: 17 builds + 2 audits across two commits, 5 captures filed, queue 43→30 items, test build 1.17.0-test1 installed; per-item hold reasons and merge/reject instructions recorded → 2026-08-05-overnight-blitz-close.md
+- [HASH] — resources/overnight-blitz-plan.md + QUEUE.md — blitz-plan learnings recorded (soak-before-merge as the default, audits explicitly cleared, five run-observations) and the fresh-chat-closing-advice misfire captured as [closing-advice-misfires-onto-done] → 2026-08-05-plan-2.md
+
+- 39f2048 — branch overnight-blitz-2026-08-05 + resources/overnight-blitz-plan.md — blitz close: 17 builds + 2 audits across two commits, 5 captures filed, queue 43→30 items, test build 1.17.0-test1 installed; per-item hold reasons and merge/reject instructions recorded → 2026-08-05-overnight-blitz-close.md
 - d9162e4 — Codex-port QUEUE (read-only) vs main docs — handoff audit: ladder rung + multi-item /next already landed; advisory-retire argument and whole-queue fail-closed read rule never did, filed as captures → 2026-08-05-codex-port-handoff-debt-audit.md
 - d9162e4 — docs-b/plugin-behaviour.md + SPEC.md + README.md + faq-template.md — feedback channel now three-way: app → queue, method → flintcraft.tech/report, Claude Code → GitHub issue via gh with approval-before-post, duplicate-check, scrub guards → 2026-08-05-feedback-channel-claude-code-direction.md
 - d9162e4 — docs-b/plan.md + plugin-behaviour.md — "close out" retired from user-facing narration: Step 3 heading renamed to "Point at /done", term added to background vocabulary; no reassurance line added → 2026-08-05-retired-plan-closeout-still-produced.md

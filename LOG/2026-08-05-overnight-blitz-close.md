@@ -1,4 +1,4 @@
-# [HASH] — overnight blitz close: 17 items built, 1 audit run twice over, 5 captures filed, queue cut from 43 items to 30, test build installed
+# 39f2048 — overnight blitz close: 17 items built, 1 audit run twice over, 5 captures filed, queue cut from 43 items to 30, test build installed
 
 The whole night ran as one autonomous session on branch `overnight-blitz-2026-08-05`, under departures the user authorized at plan time (the plan is committed at `resources/overnight-blitz-plan.md` for reuse): approvals deferred to morning review; Unprocessed captures meeting a softened bar — practically already designed, or strawman-choice-only — processed and built without a live /plan; no push and no release, everything local. Each departure is named in the entries it touched.
 

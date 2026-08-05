@@ -1,5 +1,9 @@
 # Overnight autonomous queue blitz
 
+> Reusable plan, first run 2026-08-05 (branch `overnight-blitz-2026-08-05`). The
+> "Learnings from the first run" section at the bottom amends the phases it
+> names — read it before rerunning.
+
 ## Context
 
 Alex wants an unattended overnight run: clear the queue's cleared-to-run region, generate roughly 2–3x more captures of the blitz's own, build the safe subset of those, and leave the contentious ones for her /plan tomorrow. The work lands on a branch that is a perfect copy of current state, easy to test and merge (or discard) in the morning. The night ends with a test rezip installed so she can trial the new build on app restart.
@@ -15,7 +19,7 @@ Work happens on a new branch **`overnight-blitz-2026-08-05`** checked out in the
 The behaviour rules require per-item approval, one-item-at-a-time delivery, and reserve processing for /plan with the user present. An overnight run can't wait on approvals, so these run in an autonomous mode **Alex is authorizing here**, recorded as a departure in each LOG entry:
 
 1. **Approvals deferred.** Captures, LOG entries, and commits proceed without live approval; everything is reviewable in the branch diff and the LOG tomorrow.
-2. **Autonomous processing under a softened bar (Alex's rule, set at plan approval).** The blitz may process and build **any** Unprocessed capture — pre-existing or blitz-generated — that is *practically already designed* (the build is describable, files are known, no open fork) **or** whose presented choices are a *strawman* (one option is obviously right and the alternatives exist only to be rejected). Genuine design forks, user-owned decisions, and anything red-flagged-uncleared stay for her /plan. Reducing the queue's length is an explicit goal of the run.
+2. **Autonomous processing under a softened bar (Alex's rule, set at plan approval).** The blitz may process and build **any** Unprocessed capture — pre-existing or blitz-generated — that is *practically already designed* (the build is describable, files are known, no open fork) **or** whose presented choices are a *strawman* (one option is obviously right and the alternatives exist only to be rejected). **`[audit]` items are explicitly cleared under this bar** (confirmed after the first run): an audit reads and reports, edits nothing, and its findings wait for approval anyway — the safest possible blitz work, so run every reachable one by default. Genuine design forks, user-owned decisions, and anything red-flagged-uncleared stay for her /plan. Reducing the queue's length is an explicit goal of the run.
 3. **No push, no release, overnight.** Routine push and the mechanical release trigger are suspended for this run: everything stays local on the branch. Publishing unreviewed autonomous work to the public repo overnight contradicts the branch's provisional framing (and outward publication needs per-action approval anyway). The release check fires normally at the first /done after she merges.
 
 ## Hard boundaries (never touched overnight)
@@ -69,9 +73,22 @@ No hard cap on build count — clearing the queue is the goal — but each build
 
 ## Phase 5 — Close and handoff
 
+**Closing is /done, run at the end of each run and again at the end of the night — logging happens there, not along the way.** Each /next-style run finishes with its own /done close: that close is where the LOG entries are written (one per built item, per the method), where captures ride into the record, and where the run's commit lands. The night's final close is a /done too, producing the blitz-close LOG entry below. Nothing waits for the morning to be logged — by the time Alex reads the branch, every run is already recorded and committed exactly as an attended session's would be.
+
 - **Save this plan for reuse:** commit a copy as `resources/overnight-blitz-plan.md` on the branch (host-only dev artifact), so a future blitz can rerun it without re-deriving the structure and departures.
 - Final /done-family close on the branch: LOG entry for the blitz's tail, forward advisory at the top of Unprocessed orienting tomorrow's /plan.
-- Handoff (in the final LOG entry + final chat message): what was built (by slug), what captures were generated, which were auto-built vs held and why, the departures exercised, merge instructions (`git checkout main && git merge overnight-blitz-2026-08-05`), reject instructions (checkout main, re-run `claude.exe plugin update` to re-snapshot main, restart app), and the reminder: **fully quit and relaunch the app** to load the test build.
+- Handoff (in the final LOG entry + final chat message): what was built (by slug), what captures were generated, which were auto-built vs held and why, the departures exercised, the branch instructions below, and the reminder: **fully quit and relaunch the app** to load the test build.
+- **Recommend a soak, not an immediate merge (corrected after the first run).** The branch's whole point is that Alex can run on the blitzed state for a day or two — the test build is snapshotted from the branch, so daily sessions exercise the new behaviour with main untouched — before deciding. So the handoff and the forward advisory present **soak first** as the default: stay on the branch, work normally, and merge (`git checkout main && git merge overnight-blitz-<date>`) once it has earned trust, or revert (checkout main, re-run the plugin update to re-snapshot main, restart) if it hasn't. Merge-on-morning-one remains available but is named as the gamble it is, never the recommendation — the first run's advisory pushed straight to merge and that was wrong as general practice. One honest caveat to state in the handoff: work done during the soak lands on the branch, so a late revert discards the soak days' work too — the decision gate covers blitz-plus-soak together, and the longer the soak runs well, the more the decision has already made itself.
+
+## Learnings from the first run (2026-08-05) — amendments to the phases above
+
+1. **Audits are explicitly cleared work** — folded into departure 2 above. Both audits run that night were unambiguously right to run.
+2. **Soak before merge** — folded into Phase 5 above. The branch exists so the blitzed state can be lived on for a day or two via the test build before the merge/revert call; the first run's advisory recommended immediate merge, which is a gamble, not a default.
+3. **Page the queue to completion before triaging.** Large-file reads come back capped in the desktop app; the first run's own opening queue read was truncated and needed explicit paging. A triage from a partial read silently sees a different queue. Read the whole file first, every time (relates to the [queue-chunked-read-fail-closed-unlanded] capture).
+4. **The capture target is a ceiling of honesty, not a quota.** The first run targeted ~10–15 new captures and honestly found 5 — the docs were healthier than assumed. Never manufacture findings to look productive; report the clean sweep as the finding it is.
+5. **Run `hook_schema_check.py` only after committing, never between entry-writing and commit.** It drives the real `session_start`, which performs the actual hash backfill as a side effect — benign after a commit (the backfill resolves correctly), corrupting if it fires while `[HASH]` entries are still meant to be pending.
+6. **Reach for `reorder_queue.py` before scripting.** The first run had to write a throwaway block-removal script; the mover now has `--move-section` and relative `--move`, so future blitzes script only what the mover genuinely can't do (bulk removals at scope-lock remain the one scripted case).
+7. **Name standing lint noise once, at the start.** A pre-existing advisory flag fired on every queue edit all night. Note it in the first narration and ignore it thereafter, so real flags stay visible.
 
 ## Verification
 
