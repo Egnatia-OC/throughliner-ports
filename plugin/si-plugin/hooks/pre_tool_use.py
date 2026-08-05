@@ -15,12 +15,14 @@ PreToolUse hook — enforces four rules:
    name it.
 2. Git safety: block git reset --hard, git push --force, blanket
    staging (git add -A / --all / .), and git commit -a / -am.
-3. Subagent cost ask-gate: the Task tool (spawning a subagent) returns
-   permissionDecision "ask" — never "deny" — so the user is always
-   prompted before a subagent runs, but keeps full choice. A subagent
-   burns tokens fast and a single run can exhaust the user's usage, so
-   the spawn must never be silent. Fires wherever the plugin is
-   installed, independent of project adoption.
+3. Subagent cost ask-gate: the subagent-spawning tool (named "Task" in
+   older harness builds, "Agent" in current ones — both are matched,
+   since the docs confirm neither and the name has changed once already)
+   returns permissionDecision "ask" — never "deny" — so the user is
+   always prompted before a subagent runs, but keeps full choice. A
+   subagent burns tokens fast and a single run can exhaust the user's
+   usage, so the spawn must never be silent. Fires wherever the plugin
+   is installed, independent of project adoption.
 4. Planning-session file gate: with NO active build there is no agreed
    file list, so a write outside the files a planning session touches by
    design (QUEUE.md, SPEC.md, LOG/, _plan.md, and the always-editable
@@ -32,7 +34,7 @@ Rules 1 and 4 are complementary halves of one question — during a build the
 file list is enforced; outside one it is surfaced. Neither leaves a session
 editing the repo unobserved.
 
-For Task: checks rule 3 (cost ask-gate).
+For Task/Agent (subagent spawn): checks rule 3 (cost ask-gate).
 For Edit/Write/MultiEdit: checks rule 1 during a build, rule 4 outside one.
 For Bash/PowerShell: checks rule 2 (git safety) only.
 """
@@ -354,13 +356,23 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     and LOG/ are covered by _is_method_doc; SPEC.md is added here because /plan
     edits it by design (a SPEC change decided in planning is made in that same
     session), even though it is deliberately NOT a method doc for the build
-    scope-lock. The memory, research and scratchpad exemptions ride along:
-    they pass silently everywhere else, and prompting for them only here would
-    be inconsistent noise.
+    scope-lock. FAQ/ is added because the close's FAQ-sync disposition is a
+    MANDATED edit — scaffolded method material, same family as LOG/ — and a
+    required step that prompts every time trains the user to click through
+    the ask that matters. templates/ is deliberately NOT here: editing a
+    template changes what every future consumer receives, which is exactly
+    the class of change this gate exists to surface — the asymmetry is a
+    decision, not an unfinished job. The memory, research and scratchpad
+    exemptions ride along: they pass silently everywhere else, and prompting
+    for them only here would be inconsistent noise.
     """
     if _is_method_doc(filepath, cwd):
         return True
     if _normalise(filepath) == _normalise(os.path.join(cwd, "SPEC.md")):
+        return True
+    faq_dir = _normalise(os.path.join(cwd, "FAQ"))
+    norm = _normalise(filepath)
+    if norm == faq_dir or norm.startswith(faq_dir + os.sep):
         return True
     return (
         _is_memory_dir(filepath)
@@ -395,7 +407,7 @@ def main() -> int:
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
 
-    # --- Task (subagent): cost ask-gate ---
+    # --- Task/Agent (subagent): cost ask-gate ---
     # A subagent run burns tokens fast and a single run can exhaust the
     # user's usage, so every spawn gets a permission prompt before it starts.
     # "ask", never "deny": the user keeps full choice — the cost just stops
@@ -404,7 +416,11 @@ def main() -> int:
     # an unadopted folder as an adopted one. Pairs with the hardened
     # "Tool use" rule in plugin-behaviour.md — the rule steers, the gate
     # guarantees.
-    if tool_name == "Task":
+    # Both names are matched deliberately: older harness builds send "Task",
+    # current desktop builds present the tool as "Agent", and the hook docs
+    # name neither for PreToolUse. Matching both is correct under either
+    # payload and costs nothing if only one ever arrives.
+    if tool_name in ("Task", "Agent"):
         return _ask(
             "[Sovereign Implementer] Claude wants to start a subagent. "
             "Subagents burn tokens fast — a single run can use up your usage "

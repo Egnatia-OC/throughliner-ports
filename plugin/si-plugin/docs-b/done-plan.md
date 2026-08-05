@@ -51,7 +51,7 @@ Processed    ->  BUILD-ORDER. Build first what unblocks or reshapes the framing
                  later item sits above the one that needs it.
 ```
 
-**Within Processed, place `[user]` and `[audit]` lines end-preferred**, after
+**Within Processed, place `[user]` and `[audit]` items end-preferred**, after
 contiguous blocks of build work. Build-order is the primary sort; this is a
 tie-adjustment on top of it. Both flavors force /next to stop for the user — a
 step they must run, an audit whose findings they must approve — so one sitting
@@ -143,6 +143,15 @@ without a recorded condition, that revisit can't tell a still-waiting item from 
 now-ready one without nagging. **An item held below with no recordable
 lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
 
+**A lift-condition names a repeatable future event, never one occasion to
+piggyback on.** "At the next rezip and restart, whenever one happens" clears
+the next time that event occurs; "at the emergency's rezip" points at one
+specific occasion, and if that occasion passes without the check running, the
+condition can never be satisfied as written — while reading to the revisit
+exactly like a condition still waiting its turn. Two items sat in that state
+for weeks, unanswerable and invisible. The revisit's *spent* outcome (plan.md)
+finds ones already written; this rule stops new ones being written.
+
 **A lift-condition may no longer name another queue item.** "Cleared once [slug]
 is built" is a dependency on queued work, and that has its own field now:
 `Blocked by: [slug]`, checked by the queue lint. Lift-conditions are for
@@ -170,6 +179,26 @@ pending prerequisite keeps it below. This lives in the /plan close rather than
 readiness check of its own. Narrate it when a `[user]` item moves above the marker
 — one line naming which is now ready.
 
+## Dependency-rot pass  [SILENT when clean; BRIEF when clearing]
+
+A dependency statement can outlive its truth, and nothing routine acted on that
+until this pass: stale `Blocked by:` lines were flagged by the queue lint on
+every edit across multiple sessions, and only a human eventually noticing the
+repetition cleared them. So the close acts:
+
+```
+a Blocked by: line whose named slug no longer resolves in the queue
+    ->  REMOVE the line, and narrate the removal in one line.
+        If the item still waits on something, that something is an external
+        wait — record it as a lift-condition instead, so the clearing never
+        silently strands an item.
+
+a Blocked by: line pointing at an item BELOW the blocked one
+    ->  NEVER cleared automatically. The dependency is real and the ORDER is
+        wrong, so removing the line would delete true information. Surface it
+        for a decision.
+```
+
 ## Completed `[user]` items  [SILENT when none; BRIEF when closing one]
 
 If the user mentioned during this session that they'd completed a `[user]` item,
@@ -196,9 +225,15 @@ it names an unmet persist-condition  ->  LEAVE it in place
 no advisory present               ->  say nothing
 ```
 
-Narrate in one line when clearing. Distinct from "Recommend next", which *files a
-fresh* advisory after the commit — clearing the consumed one and filing the next
-are two different advisories.
+Narrate in one line when clearing. Distinct from filing the *fresh* advisory,
+which the commit core does **before staging** so it rides this session's commit
+(done.md) — Recommend next then only presents it. Clearing the consumed one and
+filing the next are two different advisories.
+
+**A partly-spent advisory is rewritten, not cleared or kept whole.** When part
+of what it advises has been consumed (the work ran, the state changed) and part
+persists under its condition, rewrite it at this close to only what still
+stands — a half-true note orients the next session wrongly in both directions.
 
 ## 1. Write LOG entry  [DISCUSS, PROMPT]
 

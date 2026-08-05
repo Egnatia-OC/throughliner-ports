@@ -124,7 +124,7 @@ ask** — don't guess and overwrite.
 The ad-hoc form of this checklist passed cleanly in a consumer project (host
 1.15.0-test6): the QUEUE header prose was re-copied from setup.md rather than
 regenerated (rule 3 fired unprompted); empty Red-flags / Deferred-tests / Parked
-placeholders were dropped; a Batches › Build item became a `[user]` line; four
+placeholders were dropped; a Batches › Build item became a `[user]` work item; four
 Captures became `#### ` work items with slug + provenance, full rationale
 preserved; approval-before-write was honoured; the lint ran clean; no content was
 lost.

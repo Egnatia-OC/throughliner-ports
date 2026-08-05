@@ -50,7 +50,7 @@ Changes:
 
 These sections elaborate the discovery decision rule in plugin-behaviour.md (Routing and discipline): work needed to complete the item is added or split; work not needed is captured and the session continues. The cases below are how that rule plays out during a build.
 
-**When a mid-build discovery is work only the user can run — a rename Claude can't do, an account action, a device step — file it as a `[user]` line, never float it as a live question.** This is the don't-under-file rule (plugin-behaviour.md Captures, Flavor marker): genuine user work must become a tracked `[user]` line so it can't evaporate when the session ends. The failure to avoid is waving such work off as "separate work you'd handle yourself" or asking a yes/no question about it instead of filing it — that leaves real work living only in chat. If you can't yet script every step, file the line with a rough walkthrough anyway; not-yet-scriptable is not a reason to withhold it.
+**When a mid-build discovery is work only the user can run — a rename Claude can't do, an account action, a device step — file it as a `[user]` work item, never float it as a live question.** This is the don't-under-file rule (plugin-behaviour.md Captures, Flavor marker): genuine user work must become a tracked `[user]` work item so it can't evaporate when the session ends. The failure to avoid is waving such work off as "separate work you'd handle yourself" or asking a yes/no question about it instead of filing it — that leaves real work living only in chat. If you can't yet script every step, file the line with a rough walkthrough anyway; not-yet-scriptable is not a reason to withhold it.
 
 ### User raises something out of scope [PROMPT]
 

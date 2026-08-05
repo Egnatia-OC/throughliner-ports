@@ -53,8 +53,15 @@ Read Processed top-down and take everything above the marker.
 ```
 early exits:
     Processed[top] == marker      ->  NOTHING_CLEARED
+    marker MISSING from Processed ->  NOTHING_CLEARED   # fail closed
     run has no build/[audit] item ->  ALL_WALKTHROUGHS
 ```
+
+**A missing marker means nothing is cleared — never everything.** The run is
+defined as everything above the marker, so with no marker the range has no
+terminator; reading that as "all of Processed" would hand an unattended run
+work nobody cleared, including work deliberately held below the line. Tell the
+user the marker is missing, recommend /plan to restore it, and stop.
 
 **On NOTHING_CLEARED** [BRIEF] — tell the user the next work isn't cleared to run
 yet, recommend /plan to vet it, and stop.
@@ -149,9 +156,9 @@ Two situations must not be conflated:
 
 ```
 you CAN'T tell which files THIS item's       ->  underspecification
-    described work would change                  SURFACE IT. The only case
-                                                 that halts — building it means
-                                                 inventing scope the user never
+    described work would change, OR the          SURFACE IT. The only case
+    item names files but not what changes        that halts — building it means
+    INSIDE them                                  inventing scope the user never
                                                  agreed to.
 
 you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
@@ -159,6 +166,12 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
                                                  decided scope. Never a blocking
                                                  scope-ask.
 ```
+
+The test has two limbs because the first alone doesn't discriminate: design
+work almost always names files — "Files (rough): plugin-behaviour.md, plan.md"
+is exactly what an undesigned item looks like — so a files-only test passes it
+and the run proceeds with a file list and nothing to build from. An item is
+buildable only when it says what changes *inside* the files it names.
 
 A blocking ask on adjacent work both defeats the unattended run and reopens a
 scope decision reserved for /plan. The extra look self-scoping gives is preserved
@@ -206,6 +219,13 @@ them — the queue is free for other sessions.
 Claude-work items  ->  moved to _build.md, REMOVED from QUEUE.md
 [user] items       ->  STAY in QUEUE.md
 ```
+
+**A run removes items from Processed and never inserts them.** This removal
+(and the close's marker repositioning) is /next's whole write access to
+Processed. New work found mid-run is captured to Unprocessed; moving anything
+*into* Processed is processing, which is /plan's, because that decision is the
+user's. The queue lint backstops this — a heading inserted under Processed
+while a build is active gets flagged.
 
 A `[user]` item is walked through in Step 3, not built, and is closed later by
 /done or /plan. Extracting it into _build.md would strand it, since _build.md is

@@ -94,6 +94,10 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 ## Step 1: Read state and entry question
 
 Read QUEUE.md (both sections) and SPEC.md. Check whether Unprocessed has items.
+The read is governed by the page-to-completion rule (plugin-behaviour.md): when
+the file comes back capped, page it to the end before any queue-wide reasoning —
+ordering, dependencies, the readiness line, duplicates, the below-line revisit
+all need the whole queue in view.
 
 Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
@@ -123,7 +127,19 @@ user-only                 ->  DON'T ask per item. Gather every user-only
     (an external event            condition into ONE consolidated question,
      only the user knows)         asked once this session.
 provably still-waiting    ->  skip silently
+SPENT                     ->  surface it for a rewrite, don't skip it.
+    (the anchoring event has        The condition can no longer happen as
+     already passed, so the         written, so "has it happened yet?" will
+     condition can never clear)     return "no" forever.
 ```
+
+The spent outcome exists because a dead anchor reads exactly like a live one:
+the revisit asks "has it happened yet", which silently returns "no" both for a
+condition still waiting its turn and for one whose occasion is already gone. An
+item in that state sits below the line forever with the revisit reporting
+nothing wrong. When one surfaces, propose rewriting its condition to a
+repeatable future event — the recording rule in done-plan.md — or returning the
+item to Unprocessed if what it waits on no longer exists at all.
 
 Per-item asking is the nagging this revisit exists to avoid. An item with no
 recorded lift-condition can't be classified without nagging — note it as a gap.
@@ -341,9 +357,15 @@ delete  remove it. If already decided (check LOG/index.md), state the prior
 
 **A keep recommendation must describe what would actually get built**, in terms
 the user recognizes as the work product — which files change, what gets added,
-removed or rewritten, not just the topic. *Forcing function:* if the interview
-hasn't yielded enough to describe the work concretely, the recommendation isn't
-ready — return to interviewing.
+removed or rewritten, not just the topic. **This is a blocking check, not a
+prompt to try harder:** before recommending keep, state the build in both limbs
+— the files that change AND what changes inside them — and if either limb can't
+be stated, the keep cannot proceed. Naming files alone is not passing: "Files
+(rough): plugin-behaviour.md, plan.md" is exactly what undesigned work looks
+like, and items in that shape have reached Processed and stalled a /next run
+that had a file list and nothing to build from. An item that can't pass both
+limbs gets sharpened further in the interview, or skip-to-deferred with its
+design progress written into its prose — never kept.
 
 Part of keeping is settling who does it and how: Claude-work by default or
 `[user]`; and for Claude-work, its flavor. Claude places the item in Processed by
@@ -387,7 +409,7 @@ where kept work lands, never how it's decided.
 *When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
 user-only (work Claude can run but can't run *yet* is Claude-work shelved below
 the line — the over-tag guard); and **don't under-file** — genuine user work must
-become a `[user]` line, never a live chat question or a "you'd do that yourself"
+become a `[user]` work item, never a live chat question or a "you'd do that yourself"
 aside. Then draft the walkthrough into the item's prose. Not being able to script
 every step is **not** a reason to withhold the line: file it with a rough
 walkthrough and sharpen it here.
@@ -398,7 +420,7 @@ Claude-work buried inside:
 
 ```
 Claude-doable parts  ->  build item(s)
-the irreducible user action  ->  a single [user] line, reduced to ONLY that
+the irreducible user action  ->  a single [user] work item, reduced to ONLY that
                                  action, cross-referenced by slug
 ```
 
@@ -449,7 +471,7 @@ next, not why, so a reorder silently undoes it.
 
 *Split out a buried user-only prerequisite before keeping.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
-When found buried in prose, split it into its own `[user]` line with its own slug
+When found buried in prose, split it into its own `[user]` work item with its own slug
 and reference that slug from the original. A gating action left embedded is
 invisible as next-work — its next-ness survives only in the memory of whoever read
 the prose.

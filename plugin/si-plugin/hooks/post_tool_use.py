@@ -23,6 +23,28 @@ two-section work-item model:
      conditions naming another item's slug, where nothing could check
      them. Position can't carry a dependency either — it expresses order,
      not why the order is what it is, so a reorder silently inverts it.
+  5. The cleared-to-run marker itself. /next's whole run bound is the
+     `--- Cleared to run above this line ---` line, and no other check
+     looked at it: a queue with no marker, or with two, linted clean.
+     Flagged: zero markers while Processed holds work items; more than
+     one marker anywhere; a marker sitting in Unprocessed. (The read-side
+     protection is next.md's fail-closed rule — no marker means NOTHING
+     is cleared; this check is the write-side advisory half.)
+  6. Orphaned prose — a non-blank line inside Processed or Unprocessed
+     that belongs to no #### work-item block. Every other check validates
+     items it can SEE; delete a heading and the item doesn't fail
+     validation, it stops existing, its rationale indistinguishable from
+     the previous item's. A concurrent session did exactly that — a
+     capture write landed on an existing item's heading line and the
+     damage reached a commit unnoticed. This check catches it at the
+     moment of the write. Not concurrency-specific: any bad edit landing
+     on a heading produces it.
+  7. A #### heading newly inserted under Processed while a build is
+     active (_build.md exists). A /next run REMOVES items from Processed
+     and never inserts them — inserting is processing, which is /plan's,
+     and a run that meets undesigned work has capture-and-continue as its
+     sanctioned move. Checked from the edit's own new/old strings, so it
+     only fires on Edit/MultiEdit insertions it can actually attribute.
 
 Provenance is NOT linted. The old model required every work item to
 carry a "captured by you" / "by Claude" label; that requirement is
@@ -77,6 +99,17 @@ BLOCKED_BY = re.compile(r"^Blocked by:\s*(.*)$", re.IGNORECASE)
 # Slug references inside a Blocked by: line. More than one is allowed —
 # each is resolved and positioned independently.
 SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\]")
+
+# The readiness marker /next runs on. Matched exactly: this literal is the
+# run bound, and near-misses are deliberately not recognised as markers —
+# a mangled marker reads as missing (check 5 flags it) rather than as a
+# second, looser marker format the docs never defined.
+CLEARED_MARKER = "--- Cleared to run above this line ---"
+
+# Structural non-item lines that legitimately sit inside a work section
+# without belonging to any #### block: the readiness marker and the
+# planning-gate marker (`--- Plan session here: <reason> ---`).
+STRUCTURAL_LINE = re.compile(r"^---\s.*---$")
 
 
 def _normalise(path: str) -> str:
@@ -230,7 +263,143 @@ def _check_blocked_by(blocks, warnings):
                     )
 
 
-def lint(content: str) -> list[str]:
+def _check_readiness_marker(annotated, blocks, warnings):
+    """Check 5: exactly one readiness marker, in Processed, when work exists.
+
+    The marker is the single boundary /next runs on, so its absence or
+    duplication is a structural fault even though every item validates.
+    Flagged, not repaired — advisory like the rest. The dangerous half of
+    the failure (a missing marker silently clearing everything) is closed
+    read-side in next.md, which now treats no-marker as nothing-cleared;
+    this check is what makes the fault visible at the moment of the write.
+    """
+    marker_lines = [
+        (i, h2) for i, line, h2, _ih in annotated if line == CLEARED_MARKER
+    ]
+    processed_has_items = any(
+        h2 == "Processed" and WORKLINE_HEADING.match(line)
+        for _i, line, h2, _ih in annotated
+    )
+    if len(marker_lines) > 1:
+        lines_shown = ", ".join(str(i + 1) for i, _s in marker_lines)
+        warnings.append(
+            f"lines {lines_shown}: the cleared-to-run marker appears "
+            f"{len(marker_lines)} times — there must be exactly one; /next "
+            "runs on a single boundary and two markers make the run bound "
+            "ambiguous."
+        )
+    elif not marker_lines and processed_has_items:
+        warnings.append(
+            "Processed holds work items but the '--- Cleared to run above "
+            "this line ---' marker is missing — /next treats a missing "
+            "marker as NOTHING cleared, so no work will run until the "
+            "marker is restored."
+        )
+    for i, h2 in marker_lines:
+        if h2 == "Unprocessed":
+            warnings.append(
+                f"line {i + 1}: the cleared-to-run marker sits in Unprocessed "
+                "— it belongs in Processed, where it bounds what /next may "
+                "run."
+            )
+
+
+def _check_orphaned_prose(annotated, warnings):
+    """Check 6: every non-blank line in a work section belongs to a block.
+
+    A line is orphaned when it sits inside Processed or Unprocessed with no
+    #### heading above it (since the section started, or since a non-item
+    heading ended the previous block). Structural `--- ... ---` marker lines
+    are exempt. One flag per contiguous orphan run, so a destroyed heading
+    yields one warning rather than one per rationale line.
+    """
+    in_block = False
+    flagged_run = False
+    for i, line, h2, is_heading in annotated:
+        if h2 not in WORK_SECTIONS:
+            in_block = False
+            flagged_run = False
+            continue
+        if WORKLINE_HEADING.match(line):
+            in_block = True
+            flagged_run = False
+            continue
+        if is_heading:
+            # A section heading or stray sub-heading ends any block.
+            in_block = False
+            flagged_run = False
+            continue
+        if not line or STRUCTURAL_LINE.match(line):
+            flagged_run = False if not line else flagged_run
+            continue
+        if not in_block and not flagged_run:
+            warnings.append(
+                f"line {i + 1}: prose belongs to no work item — the text "
+                f"starting {line[:50]!r} has no #### heading above it in this "
+                "section. A destroyed or missing heading leaves an item's "
+                "rationale orphaned like this; check whether an item's "
+                "heading line was overwritten."
+            )
+            flagged_run = True
+
+
+def _added_headings(tool_name: str, tool_input: dict) -> list[str]:
+    """Work-item headings this edit ADDED, from its own old/new strings.
+
+    Only Edit and MultiEdit can be diffed this way; a Write replaces the
+    whole file and its additions can't be attributed, so it contributes
+    nothing (deny-list design: missed cases pass silently).
+    """
+    pairs = []
+    if tool_name == "Edit":
+        pairs.append(
+            (tool_input.get("old_string") or "", tool_input.get("new_string") or "")
+        )
+    elif tool_name == "MultiEdit":
+        for e in tool_input.get("edits") or []:
+            if isinstance(e, dict):
+                pairs.append(
+                    (e.get("old_string") or "", e.get("new_string") or "")
+                )
+    added = []
+    for old, new in pairs:
+        old_heads = {
+            ln.strip() for ln in old.splitlines() if WORKLINE_HEADING.match(ln.strip())
+        }
+        for ln in new.splitlines():
+            s = ln.strip()
+            if WORKLINE_HEADING.match(s) and s not in old_heads:
+                added.append(s)
+    return added
+
+
+def _check_processed_insert_during_build(
+    annotated, added_headings, has_active_build, warnings
+):
+    """Check 7: a run never inserts into Processed.
+
+    Fires only when a build is active AND this edit's own strings show a
+    heading being added AND that heading now sits under Processed. A /next
+    run removes its items from Processed at scope-lock and appends captures
+    to Unprocessed; inserting into Processed is processing, which belongs
+    to /plan. (A parallel /plan session editing the queue while a build
+    runs elsewhere can trip this — advisory, so the session judges it.)
+    """
+    if not has_active_build or not added_headings:
+        return
+    added = {h for h in added_headings}
+    for i, line, h2, _ih in annotated:
+        if h2 == "Processed" and line in added:
+            warnings.append(
+                f"line {i + 1}: a work item was INSERTED under Processed while "
+                "a build is active — a run removes items from Processed and "
+                "never adds them; new work goes to Unprocessed as a capture, "
+                "and moving items into Processed is /plan's."
+            )
+
+
+def lint(content: str, tool_name: str = "", tool_input: dict | None = None,
+         has_active_build: bool = False) -> list[str]:
     annotated = _annotate(content)
     blocks = _workline_blocks(annotated)
     warnings = []
@@ -238,6 +407,14 @@ def lint(content: str) -> list[str]:
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
     _check_blocked_by(blocks, warnings)
+    _check_readiness_marker(annotated, blocks, warnings)
+    _check_orphaned_prose(annotated, warnings)
+    _check_processed_insert_during_build(
+        annotated,
+        _added_headings(tool_name, tool_input or {}),
+        has_active_build,
+        warnings,
+    )
     return warnings
 
 
@@ -273,7 +450,8 @@ def main() -> int:
     except (OSError, UnicodeDecodeError):
         return 0
 
-    warnings = lint(content)
+    has_active_build = os.path.isfile(os.path.join(cwd, "_build.md"))
+    warnings = lint(content, tool_name, tool_input, has_active_build)
     if not warnings:
         return 0
 

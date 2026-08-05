@@ -413,7 +413,7 @@ def _uncleared_red_flags(queue_path):
     A red flag is an ordinary work item (a #### heading) with a
     `Red flag · State: <state>` marker beneath it. This returns the cleaned
     heading text of every such line whose state is uncleared, so session
-    start can surface unaddressed risks first-thing. The two-section work-line
+    start can surface unaddressed risks first-thing. The two-section work-item
     model has no pinned Red flags section, so this scan is what keeps an
     uncleared risk unmissable. Returns [] on any error or when none are
     uncleared.

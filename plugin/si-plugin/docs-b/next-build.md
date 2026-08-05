@@ -112,7 +112,7 @@ Changes:
 ## Scope management
 
 **When a mid-build discovery is work only the user can run** — a rename you can't
-do, an account action, a device step — **file it as a `[user]` line, never float
+do, an account action, a device step — **file it as a `[user]` work item, never float
 it as a live question.** The failure to avoid is waving it off as "separate work
 you'd handle yourself" or asking a yes/no about it: that leaves real work living
 only in chat. If you can't yet script every step, file the line with a rough

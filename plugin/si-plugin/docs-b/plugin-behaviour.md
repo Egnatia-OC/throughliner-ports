@@ -271,6 +271,15 @@ steps and conversation outside skills.
   to write out as inline lookups — and get a yes first.
 - **A plain research request gets inline reading and searching first.** Treat
   "look into X" as a request to Read and Grep directly.
+- **Page to completion before any queue-wide reasoning.** Large files come back
+  from the read tool capped, with only a page in view. Ordering, dependencies,
+  the readiness line, duplicate detection and the below-line revisit all
+  require the complete queue — a session that reasons queue-wide from a
+  truncated read silently sees a different queue than the file holds. Chunked
+  reads are legitimate as transport: page to the end, then reason. Where the
+  whole queue genuinely cannot be assembled, say so plainly and don't reason
+  queue-wide — never proceed quietly on a partial view. (This lives here
+  rather than in one skill because /plan, /next and /done all read the queue.)
 
 ## Research and evidence filing
 
@@ -395,7 +404,7 @@ wait.
 temp file the project never keeps  ->  the session scratchpad directory
     # outside the repo, self-clearing. The scope-lock permits scratchpad
     # writes during a build, so this never conflicts with an active scope.
-temp file that MUST live in the    ->  the work line states a specific
+temp file that MUST live in the    ->  the work item states a specific
     project for a while                 delete-time ("delete after the
                                         migration is verified")
 ```
@@ -458,19 +467,19 @@ real and equally bad; neither warning may be louder than the other.
   a push or restart) is an **ordering** concern: place it below the cleared-to-run
   line with a lift-condition. The test is "can Claude do this at all?", not "can
   Claude do this right now?".
-- **Don't under-file.** Genuine user work MUST become a `[user]` line — never a
+- **Don't under-file.** Genuine user work MUST become a `[user]` work item — never a
   live chat question, never "separate work you'd do yourself". The failure mode
   is **user-work evaporation**: floated as a question or waved off as an aside,
   the work exists only in chat and vanishes when the session ends. Everything
   must eventually be *done*, so everything must be *tracked*. When "can Claude do
-  this at all?" returns **no**, file a `[user]` line. This is the quieter, more
+  this at all?" returns **no**, file a `[user]` work item. This is the quieter, more
   common failure — the over-tag rule is loud, so the instinct is to minimize it
   and walk straight into this one.
-- **A `[user]` line carries a walkthrough** — which steps, in what order, what to
+- **A `[user]` work item carries a walkthrough** — which steps, in what order, what to
   check — because that's what lets /next *lead* with them. But "can't fully
   script it yet" is **not** a reason to withhold the line: file it with a rough
   walkthrough flagged for refinement at the keep-step. The only thing that keeps
-  work out of a `[user]` line is genuine uncertainty that it's user-work at all —
+  work out of a `[user]` work item is genuine uncertainty that it's user-work at all —
   and that routes to Unprocessed as an ordinary capture, still tracked.
 
 **Authoring standard.** Keep everything — facts, references, conditions, the
@@ -522,6 +531,17 @@ keep  IF it names a persist-condition that hasn't been met
 
 Filed only on concrete recommendations. A generic "run /plan when you have more"
 files nothing.
+
+**An advisory must carry something queue position cannot.** That is the
+earns-its-place test, and it filters more than the generic case: "process
+[top-slug] next" restates queue position and adds nothing, so it files nothing
+too — the same treatment. What earns filing: a decision that isn't a work item
+(a state fact with a recommendation attached), the *reasoning* behind an
+ordering, or anything else the queue's order can't say on its own.
+
+**A partly-spent advisory is rewritten at the close to only what persists** —
+never cleared whole (losing the half that still stands) or kept whole (letting
+a half-true note orient the next session).
 
 ## Work-item states — the canonical four
 
@@ -796,7 +816,7 @@ undoes the exposure.
 Without the back half, a finished `[user]` item strands in Processed and the next
 /next presents it again as if unbuilt.
 
-- **A `[user]` line is walked through, and that is all.** There is **no completion
+- **A `[user]` work item is walked through, and that is all.** There is **no completion
   ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
   leading, not trailing, not as a light aside. Never ask whether one is already
   done. This is a standing rule with no exceptions and no mode that turns it back
@@ -977,7 +997,7 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   doc.** /next runs the queue and only the queue; it never reads a side document
   to find steps. A side doc of steps is invisible to /next and silently falls
   through. A task mixing Claude-work and user moments **decomposes into queue
-  items**: build items for Claude's parts, `[user]` lines for the user's — not one
+  items**: build items for Claude's parts, `[user]` work items for the user's — not one
   item with user-touchpoints buried inside a build.
 
 ```
@@ -1011,7 +1031,7 @@ premise is broken       ->  halt and course-correct
   it's a concrete action gating other work — survives only in memory. This also
   fires **at processing time**: when /plan keeps an item and spots a user-only
   gating action *buried in its rationale prose*, split it out into its own
-  `[user]` line with its own slug and reference it by slug from the original.
+  `[user]` work item with its own slug and reference it by slug from the original.
 - **A new build or design directive arising during a close routes out.** /done
   records and commits finished work; it isn't a build session. A redesign, a new
   feature, a change to something that already worked → a fresh /next, or

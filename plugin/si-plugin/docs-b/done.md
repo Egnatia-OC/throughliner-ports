@@ -505,12 +505,15 @@ accepts fold into this same commit.
 
 **File the forward-recommendation advisory before staging.** Derive the
 next-step recommendation now — Recommend next's overlap scan and queue-state
-ladder — and when it is *concrete*, write the advisory capture at the top of
-Unprocessed here, so it rides this commit instead of leaving every close with a
-dirty tree. Its content derives entirely from queue state that is already
-settled; nothing about it needs the commit to exist. Recommend next then only
-*presents* the recommendation — it files nothing. (A generic recommendation
-still files nothing at all.)
+ladder — and when it passes the earns-its-place test, write the advisory
+capture at the top of Unprocessed here, so it rides this commit instead of
+leaving every close with a dirty tree. The test (plugin-behaviour.md, the
+advisory section): the advisory must carry something queue position cannot — a
+decision that isn't a work item, the reasoning behind an ordering, a state
+fact. A generic recommendation files nothing, and so does "process [top-slug]
+next", which restates queue position. Its content derives entirely from queue
+state that is already settled; nothing about it needs the commit to exist.
+Recommend next then only *presents* the recommendation — it files nothing.
 
 **Shipped-slug cross-check (work-item closes).** When this session shipped work
 items, cross-check each shipped slug named in this session's LOG entries against
