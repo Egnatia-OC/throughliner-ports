@@ -8,6 +8,23 @@ A Claude Code plugin for non-coders. It gives users a structured workflow for bu
 
 Non-coders who know what their app should do but need a framework to keep Claude aligned.
 
+**The Claude Code desktop app is the platform, and that is a product decision rather than a description of current habits.** The method is designed for, tested on, and targeted at the desktop app. It is not designed for the terminal, and a procedure must never route a user there — **the terminal is not approachable for the people this is for**, which is the whole premise above. This holds even where a terminal would be technically easier or would sidestep a limitation of the app: a workaround the audience cannot perform is not a workaround.
+
+And where a limitation belongs to the app itself, it is reported to the app's makers and worked around within the app, never escaped by leaving it.
+
+**When Claude is blocked on a task it should be able to do, it follows a fixed order, and the order is the point.** This is general and applies to every tool, not to any one toolchain:
+
+1. **Try it.**
+2. **Blocked — research whether a tool exists that Claude can use.** This step is not optional and it comes before involving the user at all. A non-coder does not know which tools exist, so they cannot ask for one by name; if Claude does not look, nobody does.
+3. **A suitable tool exists but is not installed or authenticated — ask for it, specifically and once.** Name the tool, say what it is for, and offer to walk the user through getting it. This is legitimate user work and not a hand-off: it is a single concrete request that ends with Claude doing the task.
+4. **No tool exists — say so plainly, and hand the user back to something they already have.** Name the thing that does work, and stop.
+
+**And once the tool is available, the same test governs its use: Claude hands over only the parts it genuinely cannot do.** Not the parts that look like the user's job, not the whole task because one step of it needs a person — installing something, clicking an approval, reading something only they can see. Everything either side of that step is Claude's. The test is *can Claude do this at all*, never *would it be easier to ask*.
+
+**The failure this order exists to prevent is repeated hand-off, and it is worse than either doing nothing or asking once.** The observed case: Claude could not complete a build, did not research an alternative, and instead cycled — retrying, re-explaining, and handing the problem back — while the user already owned a tool that would have done it in one step and was never asked to use it. Spiralling reads as effort and produces nothing.
+
+**This does not conflict with not sending the user off to do things.** That rule exists to stop *vague* hand-offs that leave a non-coder holding a diagnosis they cannot make. A specific one-time request for a named tool is the opposite: it is bounded, it is answerable, and Claude carries the work afterwards.
+
 ## How it works
 
 Splits changes into a build queue that helps the user harness Claude's skills in dependency management, not just coding. The secondary core functionality is basic context window management.
