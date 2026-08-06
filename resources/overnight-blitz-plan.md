@@ -89,7 +89,29 @@ No hard cap on build count — a shorter queue is the goal — but each build ru
 2. Delete `__pycache__` folders under `plugin/si-plugin/`.
 3. Prune the plugin cache to current + 3 most recent.
 4. CLI check by full path (`~/.local/bin/claude.exe --version` vs app; update CLI first if behind), then `claude.exe plugin update sovereign-implementer@flintcraft` — snapshots the branch's checked-out state, which is exactly what she's testing.
-5. Run `python resources/testing/hook_schema_check.py` (shape check). The delivery check ("what actually arrived in context") is hers in the first session tomorrow — stated in the handoff.
+5. Run `python resources/testing/hook_schema_check.py` (shape check). The delivery check ("what actually arrived in context") cannot run tonight — it needs the restart — so it is handed to the next session rather than to Alex's memory; see the delivery check below.
+6. **Record the expected host version everywhere the next session will look.** Write the exact `-testN` string just installed (e.g. `1.19.0-test1`) into the blitz-close LOG entry *and* the forward advisory, as a literal to compare against. This is the artifact the delivery check compares to; without it the next session has nothing to check against and the question collapses into "does this look right?", which invites a plausible reconstruction instead of an observation.
+
+## The delivery check — the next /plan runs it, not Alex
+
+**Alex always runs /plan after a blitz.** So the delivery check belongs at the opening of that session, as something it does, not as something she has to remember. Framed as her job in the morning it rolled forward across two blitzes unrun — the same failure the status-line probe hit, and the same fix: **don't wait for someone to catch the moment; put the check where the next run cannot miss it.**
+
+So the blitz's forward advisory and closing message both state it as an instruction to the *next session*, in these terms:
+
+```
+the next /plan opens by:
+    quoting its own session-start lines VERBATIM     # what arrived, not a
+                                                     # summary of what arrived
+    comparing the reported host version against the
+      -testN string recorded in the blitz-close entry
+    saying plainly which it found
+```
+
+**It is a comparison, never a self-assessment.** The session is matching one string against a recorded one — the compare-never-explain shape — so there is nothing for it to reconstruct. Never word it as "confirm the state lines look right": a session that received nothing can rebuild plausible-looking lines from CLAUDE.md, and that reconstruction is indistinguishable from success. Ask what arrived.
+
+**A mismatch is a finding, stated plainly and not worked around.** An older version means the restart did not take — on Windows a normal quit can leave the process running — and the run is testing the wrong build. This has already happened once: a restart silently left 1.18.0 live while 1.19.0 sat installed, and nothing noticed until the next advisory chased it. Say which version was found, name the likely cause, and offer the full quit-and-relaunch before the session goes further.
+
+Worked on 2026-08-06: the /plan following the blitz opened by reporting host `1.19.0-test1`, matching the recorded string, and the delivery question was answered in the session's first message without Alex doing anything.
 
 ## Phase 5 — Close and handoff
 
@@ -106,4 +128,5 @@ No hard cap on build count — a shorter queue is the goal — but each build ru
 - Queue lint (post_tool_use) advisories heeded after every QUEUE.md edit.
 - `hook_schema_check.py` passes before the night ends.
 - Nothing pushed: `git status` shows branch ahead of nothing remote; no `gh release` calls made.
-- Morning test: Alex restarts the app, first session confirms the docs-b directive and state lines actually arrived in context.
+- Delivery check: carried by the next /plan, not by Alex's memory — it quotes its own session-start lines verbatim and compares the host version against the `-testN` string recorded in the blitz-close entry (see "The delivery check" above). The blitz's own job is only to *record the expected string* and *state the instruction* in the advisory; the checking happens in the session that has the evidence.
+- **Any check the blitz cannot finish tonight follows the same rule: leave the next session an instruction and something to compare against, never a reminder for Alex.** Two checks have now rolled forward across multiple blitzes because they were written as moments to catch — the delivery check, and the status-line probe. A check that depends on someone remembering is a check that does not happen.

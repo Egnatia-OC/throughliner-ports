@@ -1,4 +1,4 @@
-# [HASH] — overnight blitz close: four items built, three captures filed, every unprocessed item triaged
+# d4f49bd — overnight blitz close: four items built, three captures filed, every unprocessed item triaged
 
 The third run of `resources/overnight-blitz-plan.md`, on branch
 `overnight-blitz-2026-08-06`. `main` is untouched and nothing was pushed.
