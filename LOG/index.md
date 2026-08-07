@@ -2,6 +2,8 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — QUEUE.md + LOG — **overnight blitz close (2026-08-08)**: fourteen items built across two runs, six Unprocessed holds triaged with reasons, spent advisories cleared, forward advisory filed carrying the delivery check against host `1.19.0-test3`; #83475 correction and FAQ untrack held for the user. → 2026-08-08-overnight-blitz-close.md
+
 - [HASH] — docs-b/plugin-behaviour.md — clause on it-ran-vs-it-worked: a **zero search result** is confirmed against a known-non-zero case before it counts; prefer the literal search over the composed one. → 2026-08-08-verification-tooling-can-lie-confidently.md
 - [HASH] — scripts/reorder_queue.py, test_reorder_queue.py — `--move-section` now **reports which side of the readiness marker** the item landed on (ABOVE/cleared vs BELOW/waiting); the observed shelve-instead-of-clear defect pinned as two test cases. → 2026-08-08-mover-after-last-cleared-item-crosses-marker.md
 - [HASH] — CLAUDE.md — branch-cycle gains the **written soak-end sequence** (7 steps), its two recurring blockers (backfill dirt aborts checkout; stale-host-regenerated files block the merge), and the deferred-merge exposure inversion; two sub-questions stated open. → 2026-08-08-soak-end-sequence-needs-mechanics.md
