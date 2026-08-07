@@ -199,6 +199,112 @@ def test_slug_set_mismatch_refuses():
     check("mismatch: file unchanged", new == original)
 
 
+# --- the delete operation -----------------------------------------------------
+
+def test_delete_clean():
+    """A plain delete removes exactly one block and leaves the rest byte-exact."""
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n\n"
+        "#### Third item [gamma]\nRationale for gamma.\n"
+    )
+    rc, err, new = run(build_queue(body), "--delete", "beta", "Processed")
+    check("delete-clean: exits 0", rc == 0, err)
+    check("delete-clean: item gone", "[beta]" not in new, repr(order_of(new)))
+    check("delete-clean: its rationale gone too", "Rationale for beta." not in new)
+    check("delete-clean: order otherwise intact",
+          order_of(new) == ["alpha", MARKER, "gamma"], repr(order_of(new)))
+    check("delete-clean: surviving blocks byte-for-byte",
+          "#### First item [alpha]\nRationale for alpha." in new
+          and "#### Third item [gamma]\nRationale for gamma." in new)
+    check("delete-clean: other section untouched", "#### Later thing [later]" in new)
+    check("delete-clean: names the heading it removed",
+          "First item" not in err and "Second item [beta]" in err, err)
+
+
+def test_delete_unknown_slug_refuses():
+    """An unresolvable slug changes nothing and exits non-zero."""
+    body = "#### First item [alpha]\nRationale for alpha.\n\n" + MARKER + "\n"
+    text = build_queue(body)
+    rc, err, new = run(text, "--delete", "nosuchthing", "Processed")
+    check("delete-unknown: exits non-zero", rc != 0, err)
+    check("delete-unknown: file unchanged", new == text)
+    check("delete-unknown: says it refuses rather than guessing",
+          "refuses rather than guessing" in err, err)
+
+
+def test_delete_last_item_in_section():
+    """Deleting the only item leaves a valid, empty section with its marker."""
+    body = "#### Only item [solo]\nRationale for solo.\n\n" + MARKER + "\n"
+    rc, err, new = run(build_queue(body), "--delete", "solo", "Processed")
+    check("delete-last: exits 0", rc == 0, err)
+    check("delete-last: item gone", "[solo]" not in new)
+    check("delete-last: marker survives", new.count(MARKER) == 1, str(new.count(MARKER)))
+    check("delete-last: intro prose untouched",
+          "Intro prose that must survive untouched." in new)
+
+
+def test_delete_marker_anchor_reanchors():
+    """Deleting the item the marker sits after must not lose the marker.
+
+    The dangerous case: the marker is anchored to the deleted item, so a naive
+    rebuild drops it — and a queue with no marker reads as nothing cleared,
+    silently unclearing every item above the line.
+    """
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n\n"
+        "#### Third item [gamma]\nRationale for gamma.\n"
+    )
+    rc, err, new = run(build_queue(body), "--delete", "beta", "Processed")
+    check("delete-anchor: marker survives", new.count(MARKER) == 1, str(new.count(MARKER)))
+    check("delete-anchor: marker keeps its position",
+          order_of(new) == ["alpha", MARKER, "gamma"], repr(order_of(new)))
+
+
+def test_delete_first_item_when_marker_anchored_to_it():
+    """Deleting the only item above the marker re-anchors the marker to TOP."""
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        + MARKER + "\n\n"
+        "#### Second item [beta]\nRationale for beta.\n"
+    )
+    rc, err, new = run(build_queue(body), "--delete", "alpha", "Processed")
+    check("delete-first: exits 0", rc == 0, err)
+    check("delete-first: marker survives at the top",
+          order_of(new) == [MARKER, "beta"], repr(order_of(new)))
+
+
+def test_delete_block_containing_heading_like_lines():
+    """A block whose rationale contains #### text must delete whole and alone."""
+    body = (
+        "#### First item [alpha]\n"
+        "Rationale mentioning a heading shape: '#### Not a real item [fake]'.\n"
+        "More rationale.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n"
+    )
+    rc, err, new = run(build_queue(body), "--delete", "beta", "Processed")
+    check("delete-headinglike: exits 0", rc == 0, err)
+    check("delete-headinglike: beta gone", "[beta]" not in new)
+    check("delete-headinglike: alpha's heading-shaped prose survives",
+          "'#### Not a real item [fake]'" in new)
+
+
+def test_delete_from_unprocessed():
+    """The other section works the same way — /plan's most frequent delete."""
+    rc, err, new = run(
+        build_queue("#### Kept [alpha]\nRationale.\n\n" + MARKER + "\n"),
+        "--delete", "later", "Unprocessed",
+    )
+    check("delete-unprocessed: exits 0", rc == 0, err)
+    check("delete-unprocessed: item gone", "[later]" not in new)
+    check("delete-unprocessed: Processed untouched",
+          order_of(new) == ["alpha", MARKER], repr(order_of(new)))
+
+
 def main():
     print("reorder_queue.py regression tests")
     for fn in (
@@ -210,6 +316,13 @@ def main():
         test_section_with_no_marker,
         test_no_marker_with_marker_after_warns,
         test_slug_set_mismatch_refuses,
+        test_delete_clean,
+        test_delete_unknown_slug_refuses,
+        test_delete_last_item_in_section,
+        test_delete_marker_anchor_reanchors,
+        test_delete_first_item_when_marker_anchored_to_it,
+        test_delete_block_containing_heading_like_lines,
+        test_delete_from_unprocessed,
     ):
         print(fn.__name__)
         fn()

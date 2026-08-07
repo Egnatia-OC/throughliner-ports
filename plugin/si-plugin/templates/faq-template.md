@@ -125,11 +125,11 @@ Because it can often do a job itself with a small command-line tool instead of w
 
 ## Do I need to use the terminal to install or update SI?
 
-No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintCraftTech/sovereign-implementer` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
+No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintcraftTech/throughliner` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. (Those two names not matching is expected — the repository is called `throughliner` and the plugin inside it is called `sovereign-implementer`.) Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
 
 ## How do I find out when there's a new version of the plugin?
 
-GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintCraftTech/sovereign-implementer`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
+GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintcraftTech/throughliner`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
 
 ## I just updated the plugin — how do I check it still works?
 
@@ -213,7 +213,7 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 ## What if my project already has planning docs from another tool or an older version?
 
-/setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the method doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
+/setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the project doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
 
 ## Claude says my project is "out of date" and offers to run /setup. What does that do?
 
@@ -359,3 +359,175 @@ Claude Code sometimes puts suggested replies in your typing box — faint grey t
 The method now requires every question Claude asks you to be answerable from the message itself. Where there are two ways to reply, both are named in the text — "tell me any numbers to drop, or say keep them all" rather than just the first half. You should never have to guess the other option, and you can always just say what you want in your own words; the named replies are there to save you thinking about it, not to limit what you can say.
 
 If you do hit a question you can't see how to answer, saying so is a fine reply — Claude will restate it. And it's worth reporting, since it means a question somewhere is still leaning on the suggestions.
+
+## I typed /plan and got something else, or an error saying "plan is a UI command, not a skill". What's wrong?
+
+Nothing's broken — the short name is taken, and there's a longer form that always works.
+
+Claude Code has a planning mode of its own, and it owns the bare name `plan`. So depending on your setup, typing `/plan` can reach Claude Code's own command instead of this plugin's, or fail with `plan is a UI command, not a skill`.
+
+**Use the fully-qualified form instead:**
+
+`/sovereign-implementer:plan`
+
+That's the plugin's own planning command and it engages normally. It's also the form Claude Code offers from its own command menu, so you can pick it from there rather than typing it out.
+
+The other three commands — `/setup`, `/next`, `/done` — don't clash with anything, though the qualified form works for those too if you prefer being explicit.
+
+## Claude asked whether I'm developing the method itself. What was that about?
+
+A one-time question, and answering it either way means you're never asked again.
+
+Some of what the plugin reports at the start of a session only makes sense for someone using it to build their own project — for instance, telling you your plugin has been updated. In the unusual case where the project *is* the plugin, that report is not just unhelpful, it's permanently wrong and would appear at the top of every session forever.
+
+Claude can tell that shape apart by looking, but it can't tell whether you *want* to be treated that way. So it asks once and writes your answer into your project's CLAUDE.md. Say no and it never comes up again; say yes and the reports that don't apply to you stop appearing — silently, without announcing each time that something was skipped.
+
+If you're building your own project and got this question, "no" is the right answer and nothing else changes.
+
+## Why isn't my FAQ folder saved with the rest of my project?
+
+Because it isn't part of your project — it's a copy of this plugin's own help, sitting where Claude can reach it.
+
+Everything else the method sets up is genuinely yours: what you're building, what to work on next, what happened in each session. The FAQ is different. It explains how somebody else's tool works, and saving it into your project's history means carrying that around forever as clutter in something you might share or publish.
+
+So setup adds the folder to your `.gitignore`, which tells your project's history to skip it.
+
+**The important half is what comes with that:** the FAQ is put back whenever it's missing. If you clone your project onto another machine and the folder isn't there, running setup restores it from the plugin. You never end up without it — which matters, because it's what Claude is pointed at every session when a workflow question comes up.
+
+If your project already has the FAQ saved in its history from an earlier version, Claude will offer to stop tracking it. That leaves the files exactly where they are on disk and only changes what your project's history carries. It's your call, and Claude won't do it without asking.
+
+## Claude grouped several pieces of work together and moved them all at once. Why?
+
+Because they touch the same files, and doing them together is genuinely better than doing them one after another.
+
+When Claude works through your unprocessed ideas, it notices which ones would change the same files. Those get gathered into a group — and the group is what moves into your ready list, and what gets built, as a unit. You make one decision instead of three, and Claude makes one coherent pass over a file instead of three separate ones that each have to re-read what the last one did.
+
+The groups aren't something you have to name or maintain. They're worked out from the files each piece of work says it'll change. When a build run starts, Claude tells you the group and what it has in common, in a line.
+
+**Two things this deliberately doesn't do.** It never overrides ordering that matters more: if one piece of work has to wait for another, that comes first regardless of which group either belongs to. And **being in a group is not a shortcut to being ready** — every piece of work in it is still checked on its own before it goes anywhere. Touching the same file as something well-thought-out doesn't make a half-formed idea ready to build.
+
+## I get the same kind of thing arriving over and over — receipts, documents, photos. How do I handle that without setting it up from scratch each time?
+
+You run a planning session per batch, and that's the intended answer rather than a workaround.
+
+Building only ever works from your queue. Claude doesn't watch a folder and invent work for itself when something lands in it — that's deliberate, because work reaching a build without you having agreed to it is exactly what the whole method is arranged to prevent. So each new batch needs a quick /plan to put it in the queue, then /next to do it.
+
+What makes that cheap rather than tedious: **the piece of work can be written so it's re-added rather than re-thought.** Once you and Claude have worked out how a batch of receipts gets handled, that item says so in enough detail that next month's batch is the same item again — a copy, not a fresh design conversation.
+
+There's no separate mechanism for this, and that's on purpose. If you find yourself wanting one, say so — but the two-command rhythm is the answer, not a stopgap.
+
+## A session opened by asking me a setup-ish question out of nowhere. Why, and why doesn't it happen any more?
+
+Because the check that asked it was running at the wrong moment, and it's been moved.
+
+When the method adds a new setting, projects set up before that don't have it — and nothing would tell you, so the project quietly drifts. A check existed to catch that, and it ran at the very start of every session.
+
+The trouble is that a start-of-session check runs *before anything knows what the session is for*. So its question couldn't pick a sensible moment; it just latched onto whichever command you ran first. That produced two bad outcomes: an unrelated question wedged into the middle of closing a session, and — worse — a whole queued build run held up behind a question about a setting that had since been retired and that nothing read any more.
+
+The check now runs when you start a planning session, which already looks over your project's state and can't be holding a build up. And if it does ask you something, it has to say what the setting is for and what changes once you answer — the question that failed was unanswerable as well as badly timed, because neither you nor Claude could say what the answer would do.
+
+If you're on an older installed version you may still see the old behaviour until you update.
+
+## What's the difference between my "project docs" and "my own files"?
+
+Two categories, and they're worth telling apart early because they behave differently.
+
+**Your project docs** are the three documents the method keeps: SPEC.md (what you're building), QUEUE.md (what to work on), and the LOG folder (what happened). Claude writes those with you, and they're about the work rather than being the work.
+
+**Your own files** are everything else — the actual content your project is made of. The photos, the drafts, the recipes, the scanned documents, the code. Claude only touches those as part of a piece of work that says it will.
+
+The distinction matters most during a build. Claude is held to the file list that build agreed to, and your own files are only editable when they're on it. Alongside them, a few things stay editable throughout — the queue, the log, and the build's own working notes — because Claude needs to record progress as it goes. **SPEC.md is deliberately not in that group:** a build can only change what your project *is* if it explicitly said it would.
+
+You may still see the phrase "method docs" in older notes. It's been dropped, because it could mean any of three things and one of the readings was misleading enough to matter.
+
+## Why does Claude show me a short summary instead of what it actually wrote?
+
+Because the two of you need different things from the same text, and the summary is the point rather than a shortcut.
+
+Items in your queue are written long on purpose — all the facts, the conditions, the options that were considered and rejected and why. That detail is for Claude: it's what stops a later session re-deciding something you already settled, or building on a reason nobody wrote down. You don't need to read any of it. You need enough to decide whether you're happy with what's being recorded.
+
+So Claude writes the full thing into the file, then gives you a short summary, a link, and the question it needs answered. **The full text is always one word away** — say "show me" and you get it right there in the chat.
+
+There's no length limit on the summary. It's as long as it needs to be for you to understand what you're approving, and no longer. Two other approaches were considered and dropped: a setting where you pick how much detail you want (people just pick whichever means less reading, which tells Claude nothing useful), and automatically scaling the summary to the size of the text (that's an arbitrary limit wearing a disguise).
+
+If a summary ever leaves you unsure what you're agreeing to, say so — that's a fault in the summary, not in you.
+
+## I asked Claude to prioritise some work and it didn't move anything. Why not?
+
+Because it almost certainly didn't need to, and moving things is the expensive way to do what you asked.
+
+When you say "focus on these first" or "leave the ones I have to do myself", Claude takes that as the order for *this session* — it says the order back to you once, works it, and skips what doesn't match as it comes to them. Nothing in your queue file changes. You get exactly what you asked for and nothing is rewritten.
+
+Rewriting the queue means physically moving every item into a new arrangement, which is slow and costs a lot for something a session can simply remember for the length of a conversation.
+
+If you genuinely want the file itself reordered — so the new order sticks for future sessions — say so and Claude will do it. It'll ask one question first about what you're actually trying to get to, because that often turns out to be "build this next", which there's a cheaper way to reach. But the reorder is yours to have; the question is a check, not a refusal.
+
+One thing you'll see either way: when Claude works an order different from the file's, it says so in a line. The file keeps the lasting order for anyone picking the project up cold, and the session's own order is never left unsaid.
+
+## Claude was blocked from running a command that would have written to a file. What happened?
+
+A safety check stopped it, and it's a specific one worth understanding.
+
+During a build, Claude is held to the list of files that build agreed to touch. That check runs on Claude's own editing tools — but a *command* can also write to a file, and until recently commands went unchecked. So the lock could be on, the session could believe it was contained, and one route walked around it.
+
+Now, during a build, a command that writes to a file through a script gets stopped if that file isn't in the build's list. The message names what to use instead: the ordinary editing tools, or — where the edit is a big awkward one, like removing a whole item from your queue — the purpose-built tool that does exactly that job safely.
+
+**Two honest things about this check.** It only recognises writes where the target file is spelled out in the command. If a command works out its target while running, the check doesn't see it — that's a gap, not a permitted route around the rule. And it's deliberately narrow rather than clever: a check that guessed would produce wrong refusals, and wrong refusals teach everyone to work around the check, which is worse than the thing it was protecting against.
+
+If the file genuinely belongs in the build, Claude stops and asks you before adding it — which is the normal way scope grows.
+
+## Why does Claude write "(checked by…)" next to things it says it can do in my CLAUDE.md?
+
+Because otherwise a guess and a tested fact look identical on the page — forever.
+
+When Claude records something about what can be done in your project — "Claude can run the build here", "this tool works from inside Claude" — it writes, in the same sentence, what it actually ran and what came back. That one clause is the difference between a claim you can judge and a claim you have to take on trust.
+
+The reason it exists is a real cost. A session once concluded it could run a project's build, wrote that into CLAUDE.md as settled fact, and moved on. The evidence was a single command that happened to be the one command that couldn't detect the failure. The claim then sat in the doc looking exactly as solid as a properly-tested one, a later session planned real work on top of it, and that work collapsed the moment it ran. Two sessions gone.
+
+So the rule has a second half worth knowing: **a claim like that with no evidence recorded is treated as unverified**, and Claude will re-check rather than build on it. If you see a bare capability claim in your docs from an older session, that's how it'll be read.
+
+It only applies to claims about what *can be done* here — not to every sentence in your docs, which would be noise.
+
+## Claude says it can't run my Java, Android or Gradle build. Why, and what do I do?
+
+Because of how the Claude desktop app is packaged, not because of anything on your machine or in your project.
+
+The app is installed as a Windows Store–style package, which means everything it starts runs inside a locked-down sandbox. That sandbox blocks one specific thing: opening a connection to a kind of local socket that Java's build machinery depends on. Every Gradle build needs it, so every Gradle build fails. The same limit hits anything else that needs that operation — it isn't a Gradle-specific problem, Gradle is just where you notice it.
+
+**The error you see points away from the cause, which is the worst part.** It reads `Unable to establish loopback connection`, which sounds like a network or firewall problem. It isn't — ordinary local network connections work fine from Claude's commands. One project lost two full sessions to this: one session concluded the build worked (on the strength of `gradlew --version`, the one Gradle command that doesn't need the blocked operation), and a later session took the failure apart properly.
+
+**What you do:** build in whatever you already use — Android Studio, IntelliJ, your IDE's Build command — and paste the errors back to Claude, which fixes them. That's the normal way to work here, not a workaround. Android Studio runs at full trust, which is why it compiles the same project fine, side by side with Claude's failures.
+
+**Already tried and ruled out, so nobody re-attempts them:** the sandbox override in both PowerShell and Bash, `--no-daemon`, forcing the older Java selector, pointing the temp directory somewhere else, and launching Gradle as a fully detached process. All of them still start inside the sandbox, which is why none of them changed anything.
+
+This is confirmed by three independent reports — [Microsoft's own support thread on Java NIO selectors in packaged apps](https://learn.microsoft.com/en-us/answers/questions/5599711/microsoft-technical-support-request-java-nio-selec), [anthropics/claude-code#41432](https://github.com/anthropics/claude-code/issues/41432), and [PortSwigger/mcp-server#82](https://github.com/PortSwigger/mcp-server/issues/82).
+
+## Claude asked whether I have a particular program installed, and wrote my answer into CLAUDE.md. Why?
+
+So you never have to say it twice.
+
+Facts about your setup — that you have Android Studio, that you build with a particular tool, that a device is already connected — matter to how Claude works on your project. But said in conversation, they vanish when the session ends, and the next session may not have that conversation at all. So the answer goes into CLAUDE.md, under **Your tools**, and from then on Claude just knows.
+
+The question is deliberately specific and asked only when it matters — "do you have Android Studio installed?" rather than a general "what tools do you have?" at setup. A general version fails twice over: it's hard to know what counts as an answer, and whatever you say goes out of date.
+
+Two things worth knowing about that section. It's a record of what's **available**, not a list of the only tools allowed — nothing is being restricted. And each entry says how it was checked, because a list of "what can be done here" is exactly the kind of note that goes wrong and then gets built on. Something you told Claude is recorded as you having told it; something Claude says it can do is recorded with what it actually ran. An entry with nothing recorded is treated as unconfirmed rather than taken at face value.
+
+## Claude stopped building something and told me to use a program I already have. Is that right?
+
+Yes, and it's deliberate.
+
+Claude will normally try to do things itself rather than send you off — that's the default, and it's the right one. But it overshoots in a specific way: it can spend a long time building its own route to something you can already do in one step, in a program you use every day. From the outside that looks like Claude being stuck; it's actually a wrong decision made much earlier.
+
+So there are two moments where it stops and checks. Starting something new, if there's a standard tool that sets up that kind of project properly, Claude uses it instead of assembling the same thing by hand — the fiddly configuration part is exactly what those tools get right and what hand-building gets wrong. And at any point, if what the work is trying to achieve is already achieved by something you have, Claude stops there rather than building a second way to get the same result.
+
+If the step is one only you can run, it becomes a proper step in your queue with Claude walking you through it — not a suggestion left hanging. The check decides whether to build at all; it never decides to hand you the whole job.
+
+## There's a `.throughliner` folder in my project. What is it, and can I delete it?
+
+It's a signal for other apps, and yes — deleting it is completely safe.
+
+While Claude is writing to one of your files, it drops a small file in there saying "a write is happening right now, to this file". That exists so another application you have open on the same document — a Markdown reader or editor you're reading and typing in — can hold off for a moment instead of the two of you landing on top of each other mid-sentence. Without it, an app watching your files can see *that* something changed but not *who* changed it, and guessing wrong means being locked out of your own document while you're writing in it.
+
+Two things make it safe rather than fiddly. Every entry carries a timestamp, and an app reading it treats anything more than about half a minute old as "nothing is happening" — so if a session crashes mid-write, nothing stays stuck. And an app that finds no folder at all simply carries on as normal, which is what happens in every project that doesn't use this plugin.
+
+The folder is not committed to your project's history — setup adds it to your `.gitignore` — because it's about what's happening right now on this machine, not part of what you're building. If you delete it, the next write recreates it.

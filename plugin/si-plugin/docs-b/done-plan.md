@@ -4,13 +4,13 @@ docset: B
 note: >
   Close-out for planning sessions. Reached from done.md's router when no
   _build.md exists — /plan sessions, /setup sessions, and any session that
-  changed only the method docs.
+  changed only the project docs.
 ---
 
 # Plan close-out
 
 Every step below runs at every plan-type /done close — a /plan session, a /setup
-session, and a session that changed only the method docs. The reorder, the marker
+session, and a session that changed only the project docs. The reorder, the marker
 placement and the `[user]`-placement step each reach all three; none is /plan-only.
 
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
@@ -98,6 +98,23 @@ trust the self-check:  exits non-zero -> NOTHING was written. A slug-set
                        mismatch usually means the queue changed under you —
                        re-read it, rebuild the order, re-run.
 ```
+
+**The reorder is group-aware.** Where kept items share a file scope, keep the
+group contiguous rather than scattering its members across the section — the
+group is the unit work moves and runs in, so an order that splits it throws away
+the coherent single pass that is the whole point. The precedence above it is
+unchanged and comes first: dependencies, then unblock-potential, then the group.
+A blocking item runs on its dependency order whatever group it belongs to.
+
+**Any in-place edits to a block come BEFORE its move, never after.** The mover
+rewrites the whole file, so an Edit that follows it trips the "file modified on
+disk since you last read it" warning — always innocently, and often enough to
+train the response to the dangerous case, which is the one occurrence that
+matters (a concurrent session's write once destroyed an item heading and reached
+a commit). Editing first removes the collision rather than excusing it, so no
+exception has to be carved into a safety rule. The one constraint: the `[slug]`
+at the end of the heading line must survive the edit, since that is what the
+mover addresses blocks by. Slugs are immutable by design, so this costs nothing.
 
 ```
 narration scales:
@@ -274,7 +291,7 @@ have to be reconstructed from memory.
 
 ## 2. Commit
 
-Run the commit core in done.md. Staged paths are the changed method docs
+Run the commit core in done.md. Staged paths are the changed project docs
 (QUEUE.md, SPEC.md, LOG/) — planning sessions touch nothing else.
 
 **Override the commit core's push offer: a planning session commits and doesn't

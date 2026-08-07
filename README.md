@@ -4,15 +4,19 @@ A Claude Code plugin that lets you build the project you have in mind — an app
 
 ## Install
 
-**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintCraftTech/sovereign-implementer` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintCraftTech/sovereign-implementer` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
+**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
+
+Those two names not matching is expected, not a mistake: the code lives in a repository called `throughliner`, and the plugin you install from it is still called `sovereign-implementer`. Both commands are correct as written.
+
+One naming quirk to know up front: Claude Code has a planning mode of its own and owns the short name, so `/plan` may reach that instead of this plugin's command, or fail with "plan is a UI command, not a skill". Type `/sovereign-implementer:plan` instead — or pick it from Claude Code's own command menu, which offers that form. The other three commands don't clash.
 
 If Claude reports that the `claude` command can't be found, that's a known snag on some setups and not a broken install — ask it to find the `claude` program on your machine and run the same commands using its full path. Needs Claude Code **2.1.193 or later**; if yours is older, update Claude Code first.
 
-**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
+**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintcraftTech/throughliner/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
 
 ## Get notified of new versions
 
-Want an email when a new version ships? GitHub can send you one. On the [plugin's GitHub page](https://github.com/FlintCraftTech/sovereign-implementer), click **Watch** (near the top right), choose **Custom**, tick **Releases**, and click **Apply**. From then on you get an email each time a new release is published. This needs a free GitHub account — signing up costs nothing.
+Want an email when a new version ships? GitHub can send you one. On the [plugin's GitHub page](https://github.com/FlintcraftTech/throughliner), click **Watch** (near the top right), choose **Custom**, tick **Releases**, and click **Apply**. From then on you get an email each time a new release is published. This needs a free GitHub account — signing up costs nothing.
 
 ## Who it's for
 
@@ -30,6 +34,10 @@ The plugin splits your project into a build queue and walks you through it. Four
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. Planning sessions have no file list to lock to, so they get a lighter guard instead: a change to anything beyond your queue, spec and log asks you first. It asks, never refuses — the point is that nothing gets changed without you seeing it.
 
 The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. Setup asks which model you mostly use, in one optional question, and that's the whole of it: both versions do the same thing, so your project works the same way whichever model you use.
+
+When Claude hits something it can't do, it follows a fixed order rather than handing the problem back: try it, and if that's blocked, go and find out whether a tool exists that would work — before involving you at all, since you can't ask for a tool by name you've never heard of. If one exists and isn't installed, Claude asks for that one thing, specifically and once. If nothing exists, it says so plainly and points you at something you already have. The failure this replaces is the one that costs whole sessions: Claude retrying, re-explaining and handing the problem back while you already own the tool that does the job in one step.
+
+The same check runs in the other direction. Claude won't hand-assemble what a standard tool generates properly, and if what a piece of work is trying to achieve is already achieved by something you have, it stops there instead of building itself a second route to the same result.
 
 Some pieces of work are yours to do rather than Claude's — sending something, checking a screen, a decision only you can make. Claude walks you through those live, one step at a time, when they come up. It never asks you whether you've already done them.
 
@@ -49,7 +57,7 @@ The habit that matters: always /done before /clear, so each session is saved bef
 ## Operating conditions
 
 **Prerequisites** — do these once per project:
-- Run `/setup` in your project folder to scaffold the method docs
+- Run `/setup` in your project folder to scaffold the project docs
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
 - Claude Opus 4.8, all effort levels tested OK — the plugin's fuller instruction set is built and tested against this model

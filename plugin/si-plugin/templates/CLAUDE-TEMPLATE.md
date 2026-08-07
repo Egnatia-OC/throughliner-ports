@@ -9,7 +9,7 @@ This project uses the Sovereign Implementer method.
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
 - **QUEUE.md** — your work, in two sections. **Processed** work is vetted and ready to build, worked top-to-bottom; a `--- Cleared to run above this line ---` line marks how far down is greenlit (below it is decided but not ready yet). **Unprocessed** work is captured ideas and tasks not yet fully processed. Each piece of work is one line: a `#### ` heading naming the work, with a `[slug]` at the end of that heading line and a short rationale beneath it, plus a `captured by you` credit on items you personally raised (anything else is unmarked — Claude is the default author). A work item can carry a leading flavor tag: none means a build (Claude edits files), `[audit]` a review pass (Claude reads and reports), `[user]` a step only you can run. A security or privacy risk Claude surfaces becomes a work item carrying a `Red flag · State: cleared/uncleared` marker — surfaced first each session while uncleared, until it's cleared (either designed out, or you're told the risk plainly and choose to accept it).
 - **LOG/** — session records: what was built, tested, decided. One file per session entry, plus index.md one-line summaries naming each entry file.
-- **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md.
+- **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md. This folder is a local copy of the plugin's own help, not part of your project's work, so it's deliberately not committed — it's restored from the plugin whenever it's missing.
 
 ## Workflow
 
@@ -35,6 +35,27 @@ Language: English
 Model: not recorded
 
 <!-- Which Claude model you mostly run, from the optional /setup question. Claude follows instructions better when they're written for the model actually running, so the plugin keeps two sets of its own working instructions and uses this to pick. Left as `not recorded` if you skipped — the safe default is used. Change it by telling Claude. -->
+
+## Your tools
+
+<!-- What's installed and working on this machine for this project — Android Studio, a
+     particular editor, a command-line tool, a device you build to. Claude adds an entry
+     here the first time it matters, asking one specific question ("Do you have Android
+     Studio installed?") rather than a standing "what tools do you have?", which nobody
+     can answer usefully and which goes stale anyway. Once it's written down, it isn't
+     asked again — that's the whole point: saying it in conversation doesn't survive the
+     session, and having to repeat it every time is the thing this fixes.
+
+     This is a record of what's AVAILABLE, not a list of the only tools allowed.
+
+     Every entry says how it was checked, in one clause — because this is a list of
+     claims about what can be done here, and that's exactly the kind of note that goes
+     wrong and then gets built on. A tool you say you have is evidenced by your saying
+     so. A tool Claude says it can drive is evidenced by Claude having actually driven
+     it — "the command ran" is not "the thing worked". An entry with no evidence
+     recorded is treated as unverified. -->
+
+(nothing recorded yet)
 
 ## Repo visibility
 

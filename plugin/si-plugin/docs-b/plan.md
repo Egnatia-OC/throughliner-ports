@@ -63,6 +63,34 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   A default, not an absolute. The test is "can /plan resolve this with what it has
   right now."
 
+- **Research is never queued for /next.** Its only output is knowledge —
+  findings, corrected premises, better-informed designs — never a build. So
+  research that turns out to be needed in /plan is conducted **then and there**,
+  in /plan.
+
+  **The tell: a work item whose first step is "research X" is the sign that
+  /plan skipped its own job.** Queuing it defers the very information the
+  planning discussion needed, so the item gets designed on an unverified premise
+  and the research arrives later as a stale errand.
+
+  Two boundaries, both stated because the prohibition creates real pressure and
+  a prohibition with no named alternative reliably produces an invented one:
+
+```
+"does anything survive this work    ->  the discriminator. YES = it is a BUILD,
+  except knowledge?"                     whatever its subject. A measurement
+                                         harness leaves a runner, scenarios and
+                                         checkers behind — that is infrastructure,
+                                         not research, and the rule must not
+                                         swallow every investigative-sounding item.
+
+a genuinely MULTI-SESSION           ->  it stays in Unprocessed, and its
+  investigation                         PROCESSING is the research — across as
+                                        many /plan sessions as it takes. It never
+                                        becomes /next work and needs no new
+                                        container.
+```
+
 ## Capture and processing discipline
 
 - **Two sections, one move between them.** The only move is Unprocessed →
@@ -109,6 +137,27 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 "Last session recommends starting with [slug]." Orientation, not a command. The
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
+
+**Missing-setting catch-up** [SILENT when nothing is missing; BRIEF otherwise].
+Read the project's CLAUDE.md and check it carries the settings the current
+templates add. Missing one → **add only what's missing**, never rewriting or
+clobbering anything the user wrote. Where a setting needs an answer, ask for it
+in one line here.
+
+**This lives in /plan, and its location is the fix rather than a detail.** It
+used to run from the session-start hook, which fires before anything knows what
+the session is for — so its question could not pick a good moment and simply
+attached itself to whichever command came first. It wedged an unrelated ask into
+a close, and on another occasion held a queued /next run behind a question about
+a setting the method had since retired. /plan already reads project state,
+already folds what it finds into one opening narration, and cannot hold a build
+run — which is the whole point of it being here.
+
+**Whatever asks must say why it wants the answer.** Name the setting, what reads
+it, and what changes once it is answered. The question that failed did so on two
+counts and only one was timing: *"Which .md editor do you work in here?"* was
+also unanswerable, because neither the user nor the session asking could say
+what the answer was for.
 
 **No completion sweep for `[user]` work.** /plan never asks whether Processed's
 `[user]` items are already done — that ask is gone from the method entirely, and
@@ -284,6 +333,46 @@ Word the floor as a recommendation, not a cap: "Ordered to process the biggest
 unblockers first — recommend processing at least N before your next /next." It's a
 planning-throughput target, not a context-budget count.
 
+**Position in the file sets the durable DEFAULT order — the order anyone
+resuming cold inherits — not an order this session is bound to.** A session may
+work its own order at the user's request; the file stays authoritative for
+everyone else.
+
+**So when the user asks for prioritisation, default to a session-local focus
+order rather than rewriting the queue.** Rewriting pays a full mechanical
+rewrite for something a session can simply hold as an order of attention, and
+where the user's real want is *which work gets attention next*, the cheap answer
+already satisfies it in full.
+
+```
+"focus on X first" / "do the      ->  SESSION-LOCAL FOCUS ORDER: state the
+   design forks" / "leave the          order, work it, skip what doesn't match
+   user items"                         as you reach it. Narrate it ONCE.
+                                       Move nothing.
+
+"reorder the queue"               ->  don't just execute it. First ask what
+   (an explicit request)               outcome they want — usually about the
+                                       next build or two — then name a
+                                       non-reorder route that reaches it AND
+                                       offer the reorder anyway with its cost
+                                       named. Their call either way.
+```
+
+**The second branch is not a refusal.** The reorder is still honoured on
+request; what changes is that it stops being taken as a bare instruction. One
+question is cheap, and it frequently reveals the want is "build this next",
+which the readiness line or a focus order already delivers. Offering the reorder
+in the same breath is what keeps this from reading as talking the user out of
+what they asked for.
+
+**Narrate the divergence when you work a focus order** — one line, at the point
+you adopt it. The objection this answers is real and was nearly fatal to the
+rule: a session that silently works a different order from the file leaves the
+real order living only in `_plan.md`, which the close deletes. Declaring it as
+sanctioned and session-scoped is what fixes that — the defect was never a
+session having its own order, it was the order being undeclared while the doc
+claimed otherwise.
+
 ### For each item
 
 **1. Present and interview**  [DISCUSS, PROMPT]
@@ -344,6 +433,25 @@ caught after the item had already been half-discussed on a false premise.
 
 Engage with the item's substance: ask follow-ups to sharpen it or surface missing
 context, depth scaling with the item, until the picture is clear.
+
+**When the user asks how their work maps onto the method, read the doc before
+answering.** /plan is where domain-mapping questions land, and it is where a
+claim about what a skill, hook or queue mechanism does gets made with the most
+authority and the least checking. The claim to be most careful with is the one
+made in passing — a clause inside an answer to a different question, which is
+exactly the shape that has gone wrong here. And don't build an inference on such
+a claim and present it as a finding before the claim itself is checked
+(plugin-behaviour.md, the diagnosis-order rule turned inward).
+
+**Resolving a check in-session is right; DRIVING a verification that already has
+a home is not.** Before running or walking the user through a test, ask one
+question: **does this work already exist as a tracked item?** If it does, stop —
+route it to /next, which walks a `[user]` item live and carries its findings
+through the proper close, rather than scattering them as loose captures. If
+nothing is tracked, the file gate already governs the write, so do it here and
+now: deferring a small instrument that unsticks the discussion re-creates the
+cycling it would have fixed. Full rule in plugin-behaviour.md, under the
+routing-and-discipline rules.
 
 **Follow-ups inherit the solicitation rule** (plugin-behaviour.md, the private-
 information section): don't ask for sensitive identifiers — addresses, account
@@ -440,25 +548,51 @@ Whenever a merge is narrated or proposed, name what it does to scope in the
 same line ("this adds no files" / "this adds two files") — the narration is the
 catch-point that lets the user object before scope compounds.
 
-*Group scope-siblings when placing kept items* — items whose Files lists
-overlap process and build better together (one coherent pass over a file
-instead of two sequential ones). Two hard bounds. Sharing a file scope is
-**not** a readiness test: a sibling still passes the keep-step on its own
-merits, or it stays unprocessed — "it touches the same file" is never a route
-for undesigned work to reach a build. And clustering is a **preference, never a
-gate** — a run is never limited to siblings, and an array of misfits is
-sometimes the only option and must still run. Precedence is fixed:
+*Group items by shared scope, and let the GROUP be the unit that moves.* Items
+whose Files lists overlap process and build better together — one coherent pass
+over a file instead of three sequential ones — and where a group is agreed
+together, it moves into Processed as a unit and runs as one. That is one
+decision instead of three.
+
+This **promotes** clustering from where it used to sit. It was a tie-breaker
+applied only where it was free; it is now the unit work actually moves in. What
+does not change is the precedence, and it must survive intact or a blocking item
+gets starved because it belongs to a different group:
 
 ```
 1. dependencies       ->  a blocker runs on its dependency order, whatever its
-                          file scope. Never displaced by clustering.
+                          file scope. NEVER displaced by grouping.
 2. unblock-potential  ->  the existing ordering principle, unchanged.
-3. sibling clustering ->  a TIE-BREAKER only, applied where it is free.
+3. shared-scope group ->  the unit work moves in — applied after the two above.
 ```
 
-Grouping happens here at processing, where Files lists are firmed up — capture
-time is usually too early to know an item's scope; record a rough guess at
-capture where it's known.
+**The grouping changes the packaging, never the standard.** This is the risk the
+old tie-breaker bound was written to prevent, and promoting clustering does not
+retire it: **sharing a scope is not evidence that work is ready.** Every item in
+a group still passes the keep-step on its own merits — files named, and what
+changes inside them — or it does not go. The group moves; the standard stays
+per-item. Without that, an undesigned item rides in on a well-designed sibling's
+coat-tails because it happens to touch the same file.
+
+Clustering also stays a **preference, never a gate**: a run is never limited to
+one group, and an array of misfits is sometimes the only option and must still
+run.
+
+Groups are drawn from Files lists, which is mechanical — nothing has to be named
+or refreshed by hand. Grouping happens here at processing, where Files lists are
+firmed up; capture time is usually too early to know an item's scope, so record
+a rough guess there where it's known.
+
+
+*When the work would start something from scratch, ask whether a generator
+exists for it* — the Android Studio new-project wizard, `cargo new`,
+`npm create vite`, `django-admin startproject`, `dotnet new`. Scoping is where
+this is cheapest to catch, because it decides whether the item is
+"hand-assemble these files" or "run the generator, then edit what it made".
+Hand-assembly fails hardest at build configuration, which is exactly what a
+generator gets right. Where only the user can run the generator, that becomes
+its own `[user]` work item with a real walkthrough, not a recommendation left
+hanging (plugin-behaviour.md, the don't-hand-build counterweight).
 
 *When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
 user-only (work Claude can run but can't run *yet* is Claude-work shelved below
@@ -483,20 +617,41 @@ the irreducible user action  ->  a single [user] work item, reduced to ONLY that
 ```
 
 Show the draft as a blockquote under **Work item:**. Don't write until approved.
-On approval, make the move **via the mechanical mover, then edit in place** —
-the same never-retype rule the close-out reorder already follows: only the
-decision passes through you, never the prose.
+On approval, **edit in place first, then move mechanically** — the never-retype
+rule still holds: only the decision passes through you, never the prose.
 
 ```
-1. MOVE the block mechanically:
+1. EDIT the block in place, where it still sits in Unprocessed, to the
+   approved draft
+   # the heading rewrite and rationale re-author are deliberate edits; the
+   # [slug] at the end of the heading line stays exactly as it is
+2. MOVE the block mechanically:
        python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
            --move-section <slug> Unprocessed Processed [--position ...]
    # relocates the whole block byte-for-byte; the item is never visible in
    # both sections, and nothing is hand-retyped
-2. EDIT the moved block in place to the approved draft
-   # the heading rewrite and rationale re-author are deliberate edits made
-   # AFTER the mechanical move, never a reason to retype the whole block
 ```
+
+**Edit-then-move, and the order is the point.** The mover rewrites the whole
+file, so editing a moved block afterwards trips the "file modified on disk since
+you last read it" warning — on nearly every kept item. That warning is a real
+safety mechanism (a concurrent session's write once destroyed an item heading
+and reached a commit), and the file-safety rule is right to forbid reasoning
+past it. But a warning that fires several times a session, always innocently, is
+training the response to the dangerous case on schedule: one session ran the
+mover on seventeen dispositions, checked every occurrence properly, found every
+one benign — and recorded that by the fourth the pull to skip the check was
+noticeable.
+
+Reversing the sequence spends nothing, because it **removes the collision
+instead of excusing it**. No exception has to be written on a safety rule, and
+no judgment has to be made about whether this occurrence is the innocent kind.
+
+**The one constraint, and it is narrow rather than fatal: don't change the slug
+in step 1.** The mover addresses blocks by the `[slug]` at the end of the
+heading line, so that token must survive the edit. Slugs are immutable by design
+and survive reorders and renames anyway, so the ordinary keep — rewrite the
+description and the rationale, slug untouched — is safe.
 
 If the raw capture had no slug, give it one (an in-place edit in Unprocessed)
 before the move — the mover addresses blocks by slug. Report "moved to Processed
@@ -542,7 +697,21 @@ informed consent — what they were warned about and that they chose to go ahead
 An item only moves into Processed with its flag cleared; if it can't be cleared,
 return it to the bottom of Unprocessed.
 
-**Delete** — Remove the item from Unprocessed. **Relocate before removing when the
+**Delete** — Remove the item from Unprocessed, **via the mechanical mover**, the
+same never-retype rule the keep-move and the skip already follow:
+
+```
+python <plugin-root>/scripts/reorder_queue.py QUEUE.md --delete <slug> Unprocessed
+# removes the whole block, addressed by slug. It refuses rather than guessing
+# when the slug resolves to nothing or to more than one item, prints the
+# heading it removed, and keeps the readiness marker where it was.
+```
+
+Hand-editing a long block away with exact-string replace is what makes a scripted
+shell splice start to look cheaper — the move this method forbids and that has
+been reached for anyway. The command removes the reason.
+
+**Relocate before removing when the
 content belongs elsewhere.** Delete means "not worth doing," so routing a fold
 through a plain delete risks dropping content the user wanted kept. When the
 content belongs in another home — a SPEC sentence, a LOG entry, another item's

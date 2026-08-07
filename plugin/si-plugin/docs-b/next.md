@@ -101,6 +101,18 @@ These items already exist in QUEUE.md, so confirm the link resolves before
 sending it — and link to the file only, never with a line number, which is dead
 for `.md` in the desktop app.
 
+**Where the run's items share a file scope, name the group and its shared scope
+in ONE line** — "these three all change the behaviour rules, so they build as
+one pass." That line *is* the explanation of the order: the ordering unit is the
+group, and the group's reason is derivable from the Files lists on the spot, so
+no handoff artifact and no second advisory has to carry it.
+
+**It must stay one line.** This step is `[BRIEF]` and carries the deliberate
+passage below forbidding caveats, warnings and proposed pause points, on the
+stated grounds that the expense is not the warning but the negotiation it
+invites. A group explanation that grows into a paragraph is the same cost in
+different clothes.
+
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
 
@@ -149,7 +161,7 @@ planned /done reuses it verbatim, if scope shifts /done re-authors it.
 **2. Self-scope.** Read each Claude-work item's description and rationale, work
 out which files it will change, and list them. `[audit]` items name no files —
 an audit reads and reports — so a run of only audit items gets an empty Files
-list, locking the session to method docs.
+list, locking the session to the queue, the log, and its own working file.
 
 Two situations must not be conflated:
 
@@ -206,7 +218,9 @@ Changes:
 ````
 
 The `Files:` section feeds the scope-lock: pre_tool_use allows edits only to
-those files plus the method docs, and denies everything else. **Lines must be
+those files plus the queue, the log, and this session's own working file, and
+denies everything else — SPEC.md is not in that set, so a build edits it only by
+listing it here. **Lines must be
 bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.

@@ -439,6 +439,135 @@ def _uncleared_red_flags(queue_path):
     return uncleared_flags
 
 
+_SELF_HOSTING_MARKER = "Self-hosting:"
+
+
+def self_hosting_state(cwd: str, claude_md: str) -> str:
+    """Is this project developing the method itself? 'yes' / 'no' / 'unknown'.
+
+    The TRIGGER is the plugin package living inside the repo the session was
+    opened in — the shape only a self-hosting project has.
+
+    The PAYLOAD is suppression, and that is the one thing detection can do that
+    ambient CLAUDE.md cannot. Every other candidate payload (a self-hosting
+    banner, guarding host/target confusion) is information that could simply be
+    written into CLAUDE.md prose. Prose cannot stop a program printing a line.
+
+    The line being stopped: the version-drift report exists to tell a consumer
+    their plugin updated. In the project that PRODUCES the versions it is
+    meaningless and permanently wrong — .si-version records the version that ran
+    /setup while plugin.json carries the current one, and the two can never
+    agree again, because every rezip widens the gap by design. So it fired at
+    the top of every session, forever, carrying no information.
+
+    Returns 'unknown' when the shape matches but nothing is recorded, so the
+    caller can ask ONCE and record the answer. A recorded 'no' is honoured
+    permanently — that cleanly covers detected-but-not-wanted, and is what turns
+    a would-be per-session nag into a single ask.
+    """
+    try:
+        for line in claude_md.splitlines():
+            s = line.strip()
+            if s.lower().startswith(_SELF_HOSTING_MARKER.lower()):
+                value = s[len(_SELF_HOSTING_MARKER):].strip().lower()
+                if value.startswith("yes"):
+                    return "yes"
+                if value.startswith("no"):
+                    return "no"
+        # No recorded answer — does the shape match?
+        for root, dirs, files in os.walk(cwd):
+            dirs[:] = [d for d in dirs if d not in (".git", "node_modules", "__pycache__")]
+            if "plugin.json" in files and os.path.basename(root) == ".claude-plugin":
+                # The plugin's own manifest lives inside this project.
+                return "unknown"
+            # Don't descend further than a few levels; the package sits near the
+            # top in every real layout and a deep walk costs more than it earns.
+            if root[len(cwd):].count(os.sep) >= 3:
+                dirs[:] = []
+        return "no"
+    except Exception:
+        return "no"
+
+
+def jvm_toolchain_note(cwd: str) -> str:
+    """One state line where a JVM/Gradle toolchain is present in the project.
+
+    The desktop app is an MSIX-packaged Windows application, so everything it
+    launches inherits a package sandbox that permits *binding* an AF_UNIX
+    socket but refuses *connecting* to one — exactly what Java's NIO selector
+    needs, and therefore what every Gradle build needs. Plain TCP loopback
+    works, which is why the error that surfaces ("Unable to establish loopback
+    connection") points away from the real cause, and why one project spent two
+    whole sessions on it: one declaring victory on a false positive, one taking
+    the failure apart properly.
+
+    The line names the constraint AND THE HAND-OFF IN THE SAME BREATH, because
+    the failure here was never a missing explanation. The user did not need the
+    sandbox explained; they needed to hear "I can't build this — build it in
+    Android Studio" and move on. An explanation delivered at the moment of
+    being blocked is what produced the spiralling.
+
+    Worded CONDITIONALLY — "if you're running in the Claude desktop app" — so
+    the hook never has to detect its own surface, which is the one genuinely
+    undesigned piece here. That costs a clause and sidesteps a guess.
+    """
+    markers = ("gradlew", "gradlew.bat", "build.gradle", "build.gradle.kts", "pom.xml")
+    try:
+        if not any(os.path.isfile(os.path.join(cwd, m)) for m in markers):
+            return ""
+    except OSError:
+        return ""
+    return (
+        "[Sovereign Implementer] This project uses a JVM build tool (Gradle or "
+        "Maven). If this session is running inside the Claude desktop app, "
+        "Claude cannot run that build: the app's sandbox blocks a socket "
+        "operation every JVM toolchain depends on, and the error it produces "
+        "(\"Unable to establish loopback connection\") points away from the "
+        "real cause. This is a known, already-diagnosed constraint — do not "
+        "spend a session rediscovering it, and do not try to work around it. "
+        "Hand the build back to whatever the user already builds with (Android "
+        "Studio, IntelliJ, their IDE's Build command), ask them to paste back "
+        "any errors, and fix those. Say this plainly the first time it comes "
+        "up, in one sentence, together with what to do instead — never as a "
+        "diagnosis for the user to act on. The full explanation is in the FAQ "
+        "for anyone who wants it."
+    )
+
+
+def sweep_stale_editing_markers(cwd: str) -> None:
+    """Delete editing-state marker files left behind by dead sessions.
+
+    `.throughliner/editing-<session-id>.json` is written per session by the
+    pre/post tool-use hooks. A session that crashes never writes its closing
+    marker, so the file survives. This is housekeeping and nothing more — the
+    SAFETY is the staleness rule a reader applies (an old timestamp means "not
+    editing" whatever the flag says), so nothing depends on this sweep running.
+    It exists only so crashed sessions stop leaving litter.
+
+    An hour is deliberately far longer than any reader's staleness window
+    (~30 seconds), so this can never delete a marker a live session is still
+    refreshing. Errors are swallowed: tidying must never break a session start.
+    """
+    try:
+        import time
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        if not os.path.isdir(marker_dir):
+            return
+        cutoff = time.time() - 3600
+        for name in os.listdir(marker_dir):
+            if not (name.startswith("editing-") and name.endswith(".json")):
+                continue
+            path = os.path.join(marker_dir, name)
+            try:
+                if os.path.getmtime(path) < cutoff:
+                    os.remove(path)
+            except OSError:
+                continue
+    except Exception:
+        return
+
+
 def main() -> int:
     try:
         data = json.load(sys.stdin)
@@ -448,6 +577,8 @@ def main() -> int:
     cwd = data.get("cwd", "")
     if not cwd or not os.path.isdir(cwd):
         return 0
+
+    sweep_stale_editing_markers(cwd)
 
     spec_path = os.path.join(cwd, "SPEC.md")
     queue_path = os.path.join(cwd, "QUEUE.md")
@@ -599,6 +730,24 @@ def main() -> int:
         if docset_fallback_note:
             msg += "\n\n" + docset_fallback_note
 
+        # The behaviour-rules directive reaches an unadopted folder too, by the
+        # same reasoning the docset directive above already accepts.
+        #
+        # The exemption this removes had a stated reason that is now obsolete:
+        # the rules "aren't loaded yet" described the OLD delivery model, where
+        # this hook inlined them into an adopted project's context. It doesn't
+        # any more — it emits a directive telling the session to READ
+        # plugin-behaviour.md from the installed plugin, and that file ships
+        # with the plugin, readable whether or not anything has been adopted.
+        # So the rules were absent not because they were unavailable, but
+        # because this branch didn't point at them.
+        #
+        # The window matters more than its size suggests: it is the moment a
+        # folder is adopted and files are created — the highest-consequence
+        # moment in the method, and the only one a brand-new user ever sees.
+        if behaviour_directive:
+            msg += "\n\n" + behaviour_directive
+
         output = {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
@@ -643,6 +792,13 @@ def main() -> int:
         context_parts.append(docset_directive)
     if docset_fallback_note:
         context_parts.append(docset_fallback_note)
+
+    # Placed high: it is short, load-bearing, and its whole job is to be read
+    # BEFORE a session starts trying to build. Arriving late would be arriving
+    # after the two sessions it exists to save.
+    jvm_note = jvm_toolchain_note(cwd)
+    if jvm_note:
+        context_parts.append(jvm_note)
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
@@ -712,19 +868,39 @@ def main() -> int:
             "asked, because a note the user never reads leaves the project drifting."
         )
 
-    # Content-level top-up: a scaffolded file exists but is missing a setting the
-    # current templates add. This is distinct from missing_scaffold above (whole
-    # files/folders absent) — here the file is present but predates a newer setting,
-    # so a project set up weeks ago silently misses it and the user never knows to
-    # re-run setup. Add-only by design: the injected instruction tells Claude to
-    # *add* the missing setting, never to rewrite or clobber what the user wrote.
-    # Built as a list so future settings join by adding one entry. The risky case —
-    # rewriting content whose template wording changed — is deliberately excluded
-    # (parked as [scaffolding-resync]). The missing-file path (missing_scaffold)
-    # owns a project with no CLAUDE.md at all, so we don't double-flag: each check
-    # only fires when its host file is present.
-    claude_md_path = os.path.join(cwd, "CLAUDE.md")
+    # The content-level setting top-up USED TO LIVE HERE and has been removed
+    # deliberately — it is now /plan's opening read (docs-b/plan.md).
+    #
+    # Not a retiming: a session-start hook fires BEFORE anything knows what the
+    # session is for, so its question cannot choose a good moment. It can only
+    # attach itself to whichever command comes first — and it did, repeatedly.
+    # The text it injected said "bring it up to date now, before /next or /plan",
+    # so it wedged an unrelated question into a close, and on another occasion
+    # held a queued /next run (four builds and a walk-through) behind an ask
+    # about a setting the method had since retired. That was the mechanism doing
+    # exactly what it instructed, which is why retiming it in place would have
+    # meant writing a rule telling the hook not to do the thing its position
+    # makes it do.
+    #
+    # The capability is kept rather than dropped: it is the only thing that
+    # reaches a project set up weeks ago when the method later adds a setting.
+    # It now runs in /plan's opening read, which already reads project state,
+    # already folds what it finds into one narration, and is structurally
+    # incapable of holding a /next run.
+    #
+    # The PRESENCE-based missing_scaffold check above stays exactly as it is:
+    # it detects whole files or folders absent, is a different check, and gates
+    # nothing.
+
+    # Self-hosting detection and its one payload: suppression. In the project
+    # that produces the versions, the version-drift report below is meaningless
+    # and permanently wrong, so it is not run at all.
+    #
+    # Suppressed means SILENT — not "reported as suppressed". The behaviour
+    # rules are explicit that a silenced check contributes nothing to the
+    # opening narration, including no mention that it was silenced.
     claude_md_content = ""
+    claude_md_path = os.path.join(cwd, "CLAUDE.md")
     if os.path.isfile(claude_md_path):
         try:
             with open(claude_md_path, "r", encoding="utf-8") as f:
@@ -732,37 +908,28 @@ def main() -> int:
         except OSError:
             pass
 
-    # Each entry: the file that must already exist, its loaded content, the marker
-    # whose absence means the setting is missing, and the plain-English instruction
-    # to inject. "needs_answer" instructions open with a one-line question and write
-    # the user's answer; a setting that needs no answer would be added silently with
-    # a note (none yet — the list is built to hold both kinds).
-    missing_settings = []
-    # No checks currently. The Editor check that used to live here was retired
-    # with the Editor field itself (nothing reads it — links open in the desktop
-    # app's own viewer regardless); a project still carrying an `## Editor` or
-    # `## Working mode` section is ignored, never flagged. The list shape stays
-    # so future settings join by adding one entry.
-    setting_checks = []
-    for check in setting_checks:
-        if check["file_present"] and check["marker"] not in claude_md_content:
-            missing_settings.append(check["instruction"])
-
-    if missing_settings:
+    self_hosting = self_hosting_state(cwd, claude_md_content)
+    if self_hosting == "unknown":
+        # Ask ONCE and record the answer. The recorded sign is what turns this
+        # from a per-session nag into a single question, and it covers the
+        # detected-but-not-wanted case cleanly: a recorded "no" is permanent.
         context_parts.append("")
         context_parts.append(
-            "PROJECT MISSING NEWER SETTINGS — this project was set up before the "
-            "method added one or more settings it now expects. Bring it up to date "
-            "now, before /next or /plan, adding only what's missing:"
+            "[Sovereign Implementer] This project contains the plugin's own "
+            "package, which is the shape a project has when it is being used to "
+            "develop the method itself rather than to build an app. Ask the user "
+            "once, in plain language — \"this looks like you're developing the "
+            "method itself rather than building your own project; is that "
+            "right?\" — and record the answer in CLAUDE.md as a line reading "
+            "`Self-hosting: yes` or `Self-hosting: no`. Once it is recorded this "
+            "is never asked again, whichever way they answer."
         )
-        for instruction in missing_settings:
-            context_parts.append("- " + instruction)
 
     # Version-change report: the retained "a plugin update just happened" signal
     # (see version_mismatch above). This is NOT the drift warning — that is
     # presence-based above. Kept as a plain line: the old queue-inspecting
     # confirm nudge is gone, so the report no longer scans the queue.
-    if version_mismatch:
+    if version_mismatch and self_hosting != "yes":
         context_parts.append("")
         context_parts.append(
             "[Sovereign Implementer] Plugin version changed since this project was "

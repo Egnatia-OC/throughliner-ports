@@ -116,6 +116,43 @@ def _normalise(path: str) -> str:
     return os.path.normcase(os.path.normpath(path))
 
 
+def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool) -> None:
+    """Clear the editing-state signal after a write. Never raises.
+
+    The closing half of the heartbeat pre_tool_use starts: same file, same
+    shape, `active` false and a fresh timestamp, keeping the last-written path
+    so a reader can see which document was touched. Kept as a full rewrite
+    rather than a patch of the existing file, so a marker left behind by a
+    crashed session is replaced wholesale rather than merged with.
+
+    The timestamp still leads on safety: even if this never runs — the session
+    dies, the write is denied — the reader treats the stale marker as "not
+    editing". Same never-fail rule as the pre-write half: any error here is
+    swallowed, because a companion-app convenience must not be able to break
+    the user's actual work.
+    """
+    try:
+        import datetime
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        os.makedirs(marker_dir, exist_ok=True)
+        safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        payload = {
+            "version": 1,
+            "active": bool(active),
+            "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "files": [os.path.abspath(filepath)] if filepath else [],
+            "session": session_id or "",
+            "pid": os.getpid(),
+        }
+        with open(
+            os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(payload, f)
+    except Exception:
+        return
+
+
 def _annotate(content: str):
     """Yield (index, stripped line, current h2, is_heading) per line.
 
@@ -437,6 +474,11 @@ def main() -> int:
     filepath = tool_input.get("file_path", "")
     if not filepath or not cwd:
         return 0
+
+    # Close the editing-state heartbeat for this write, whatever file it
+    # touched — this runs before the QUEUE.md gate below, because the signal
+    # covers every edited document, not just the queue.
+    write_editing_marker(cwd, data.get("session_id", ""), filepath, False)
 
     # Only the project-root QUEUE.md, only in adopted projects.
     if _normalise(filepath) != _normalise(os.path.join(cwd, "QUEUE.md")):

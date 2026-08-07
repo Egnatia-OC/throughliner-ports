@@ -2,34 +2,44 @@
 name: setup
 docset: B
 note: >
-  /setup procedure. Runs BEFORE a project is adopted, so the behaviour rules
-  aren't loaded yet — this doc carries no response-shape tags and states its own
-  plain-language guard.
+  /setup procedure. The behaviour rules ARE read here, like any other session's;
+  this doc carries no response-shape tags and states its own plain-language
+  guard.
 ---
 
 # /setup procedure
 
 You are setting up a project folder with the Sovereign Implementer method.
 
-**This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
-markers other procedure docs use). /setup runs before a project is adopted, so the
-behaviour rules that define those tags aren't loaded yet — here the prose in each
-step carries the behaviour directly. **Don't add tags back**; they'd be undefined
-tokens in this doc.
+**The behaviour rules govern this skill too, and are read like any other
+session's.** The session-start hook points an unadopted folder at
+`plugin-behaviour.md` exactly as it does an adopted one — that file ships with
+the plugin, so it is readable whether or not anything has been set up yet. (An
+earlier version of this doc said the rules "aren't loaded yet". That described a
+delivery model the method no longer uses and was simply untrue.)
+
+**This doc still carries no response-shape tags** (the bracketed `[BRIEF]`-style
+markers other procedure docs use) — the prose in each step carries the behaviour
+directly instead. **Don't add tags back.**
+
+**/setup's own local rules stay, and are not made redundant by inheriting the
+behaviour rules.** Leave the user's content untouched, never overwrite, never
+blind-rename, use the user's words verbatim. They are specific to adopting a
+stranger's folder, and belt-and-braces is the right posture at the
+highest-consequence moment in the method — the one where files get created, and
+the only one a brand-new user ever sees.
 
 **Plain-language guard.** Everything you say during /setup is read by a non-coder
 who may be brand new to all of this. Keep internal terms out of what they see — no
 hook filenames, no `_build.md`, no "scope-lock," "method docs," or "Case B"
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
-migration," not "this is Case B." This needs saying here because the
-plain-language behaviour rule loads only once a project is adopted, and /setup runs
-before that.
+migration," not "this is Case B."
 
 ## Step 1: Detect folder state
 
 ```
 Case A  no content            the folder is empty or nearly so. Fresh start.
-Case B  content, no SPEC.md   the user's own files exist but no method docs.
+Case B  content, no SPEC.md   the user's own files exist but no project docs.
                               Either a true fresh start OR a MIGRATION.
 Case C  already set up        SPEC.md exists.
 ```
@@ -65,7 +75,7 @@ Ask cold and you miss context the folder already gave you; pre-answer and the sp
 fills with your words instead of the user's.
 
 **2. Leave it untouched; name it at close.** Pre-existing content is not edited,
-moved, or reorganized during scaffolding — scaffolding only adds the method docs.
+moved, or reorganized during scaffolding — scaffolding only adds the project docs.
 In the closing message, name that content explicitly as source material the user
 can refer back to.
 
@@ -229,6 +239,36 @@ FAQ/faq.md    <-  ${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md
 FAQ/index.md  <-  ${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md
 ```
 
+**The FAQ is a LOCAL COPY of something that ships with the plugin — not a
+document in the user's project.** That framing decides two things together, and
+shipping either half alone is a regression:
+
+```
+never committed  ->  add `FAQ/` to the project's .gitignore (create the file if
+                     absent; don't duplicate an existing entry). These files
+                     explain how the METHOD works — they are not part of what
+                     the user is building, and they read as clutter in the
+                     user's own repository.
+
+always restored  ->  restore FAQ/faq.md and FAQ/index.md from the shipped
+                     templates WHENEVER THEY ARE MISSING, not only at first
+                     adoption. Without this the ignore rule is a regression: a
+                     fresh clone on another machine would have no FAQ at all,
+                     and the FAQ is what session_start points every session at.
+```
+
+**An already-tracked FAQ needs an action, not a rule.** Adding a `.gitignore`
+entry does nothing to files git is already tracking. Detect that case and
+**offer** the untracking — `git rm --cached FAQ/`, which removes it from
+tracking while leaving the files on disk — explaining in plain English what it
+does and does not change. It alters what is in the user's repository, so it is
+theirs to approve, not something to do silently or leave half-done.
+
+**Scope: this reaches the FAQ and nothing else.** SPEC.md, QUEUE.md and LOG/ are
+the user's own record and belong in their history; their CLAUDE.md is theirs
+too. The FAQ is the only scaffolded artifact that is purely an explanation of
+somebody else's tool, so there is no slope here to slide down.
+
 **resources/research/ folder** — create it empty. It's the home for research notes
 (`resources/research/<topic>.md`). Creating it at setup means research notes have a
 place from day one rather than the folder being conjured on first use.
@@ -247,6 +287,18 @@ them from Q6 and the visibility detection.
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
 detect when the plugin has been updated.
+
+**.gitignore** — create it if absent, and make sure it carries entries for
+`.throughliner/` and `FAQ/` (don't duplicate ones already there).
+
+`FAQ/` is covered above: it is a local copy of the plugin's own help, restored
+whenever missing, so it never belongs in the user's history.
+
+That folder holds the editing-state signal: while Claude is writing a file, the
+hooks drop a small file in there saying so, so a Markdown reader or editor open
+on the same document can hold off rather than the two of you typing over each
+other. It is transient state about the session running right now, and it carries
+absolute paths from this machine, so it must never be committed.
 
 **Git repository** — if the folder isn't already one, run `git init`, silently and
 mechanically like the rest of the scaffold. Without a repository there is nothing

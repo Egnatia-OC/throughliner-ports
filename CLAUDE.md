@@ -296,7 +296,11 @@ The model this project mostly runs. `session_start.py` uses it to choose which d
 
 ## Repo visibility
 
-Repo visibility: public — verified 2026-08-03 via `gh repo view` against `FlintCraftTech/sovereign-implementer`, and re-confirmed as a deliberate choice.
+Repo visibility: public — verified 2026-08-06 via `gh api` and `gh repo view` against `FlintcraftTech/throughliner`, and re-confirmed as a deliberate choice.
+
+**The project's GitHub identity changed outside the method on 2026-08-06, and these are the current values.** The repo is `FlintcraftTech/throughliner` (public), owned by an organisation. The user's own login is now `its-coughfee`, numeric id `283077209` — the old username was given up to create an organisation holding that name. The local remote was repointed at the user's instruction and verified reachable, so this working tree no longer depends on GitHub's redirect from the old path; everyone else's clone still does, and nobody has verified what that redirect does now the old username belongs to an organisation. **Check that rather than assuming it.**
+
+Two consequences worth keeping here. The plugin's own identity is deliberately unchanged — plugin name `sovereign-implementer`, marketplace id `flintcraft`, install target `sovereign-implementer@flintcraft` — so the install instructions read slightly oddly (add a marketplace at `throughliner`, install something called `sovereign-implementer`) and that is correct rather than broken; renaming the product is [rename-to-throughliner]'s job. And [history-rewrite-third-party-scrub] requires setting `git config user.email` to the account's GitHub no-reply address *before* the rewrite, or the next commit reintroduces what the rewrite removed — on today's values that is `283077209+its-coughfee@users.noreply.github.com`, but re-derive it with `gh api user` at build time, since the id isn't guessable and the login has changed once already.
 
 This is a safety input, not a preference. Everything committed to this repo — LOG entries included — is readable by anyone, permanently, and deleting text later does not remove it from git history. It is what makes the never-write-other-people's-private-details rule urgent here rather than theoretical. Re-check it rather than trusting this line if anything depends on it.
 

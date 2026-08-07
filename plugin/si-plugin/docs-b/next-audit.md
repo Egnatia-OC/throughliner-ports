@@ -15,8 +15,8 @@ output. The shape is the same regardless: **read many, propose many.**
 
 An audit item names no files to edit, so it contributes nothing to the run's
 `Files:` list. A run of only audit items has an empty list, holding the session to
-the method docs — the strictest setting, matching a session that edits no source
-files.
+the queue, the log, and its own working file — the strictest setting, matching a
+session that edits no source files.
 
 ## If the audit item directs a write into a document, stop and ask  [PROMPT]
 
@@ -101,7 +101,7 @@ drop    ->  remove it
 Wait for the user's call on each before presenting the next. Every finding they
 didn't contest is approved as-is.
 
-## Route the approved set to Unprocessed
+## Route the approved set to Unprocessed  [BRIEF]
 
 Append the approved findings to Unprocessed, written to the capture-authoring
 standard. **Destination follows the consolidation rule** (plugin-behaviour.md's

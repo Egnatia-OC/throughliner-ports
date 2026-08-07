@@ -41,7 +41,35 @@ NO _build.md      ->  three shapes:
     standalone handmade work  ->  Standalone handmade-work close (below)
         (no planning either, and the tree holds uncommitted edits the
          session didn't make)
+
+    the POST-CLOSE TAIL       ->  done-plan.md, and this case is NAMED rather
+        (this session already         than inferred
+         committed at a /done,
+         and has since filed
+         captures or notes)
 ```
+
+**The post-close tail is its own case, and naming it is the whole of this
+routing change.** A session that has already closed and then keeps going — six
+captures filed to QUEUE.md after the commit is the recorded instance — used to
+have to work out from scratch what kind of session it had become, and landed on
+"a session that changed only the project docs" by inference. It still routes
+there; it just no longer has to derive that.
+
+**At most one line of awareness, and it is bounded.** Say that captures filed
+after the commit are on disk and will ride the next session's commit. **It must
+never read as "you must run /done again."** Durability is already handled by the
+captures-filed-after-commit mechanism; this exists to let the tail happen
+gracefully, never to add a re-close requirement. That bound is written beside
+the cue deliberately, so a later edit doesn't harden a cue into a prerequisite.
+
+**Containment after a close: nothing is blocked, but writes are visible.** With
+no active build the file scope-lock is off — that has not changed. What has is
+that the planning-session file gate now covers the stretch: a write outside the
+files planning touches by design returns *ask*, never *deny*. So the tail is
+covered like any other unbuilt stretch, and the item's original complaint — that
+it had neither containment nor visibility — is answered on the visibility half.
+Don't reopen this as a containment question.
 
 Detect a completed `[user]` item **from what the session can already see — never
 by asking.** A `[user]` item is walked through, and that is all; no step of its
@@ -93,8 +121,13 @@ It also runs inside a /plan close when the user mentions async-completed items.
 2. write a LOG entry per completed item, named after its slug
    # records what the user did and its outcome; draft and show for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
-3. remove each completed item from Processed
-   # this is what stops it being re-presented
+3. remove each completed item from Processed, via the mechanical mover:
+       python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
+           --delete <slug> Processed
+   # this is what stops it being re-presented. The command removes the whole
+   # block byte-exactly, refuses rather than guessing on an unresolvable or
+   # ambiguous slug, and leaves the readiness marker where it was — so a long
+   # item never has to be hand-edited away line by line.
 4. run the wind-down re-scan, then the commit core
    # staging QUEUE.md and the LOG changes
 ```
@@ -417,6 +450,23 @@ Scope it by shape, not by file: an ordinary planning write that merely happened 
 prompt (moving a research note at the user's request) needs no entry. A shipped
 hook edited mid-planning does.
 
+## Recording a memory write  [SILENT when none; BRIEF when recording]
+
+When this session saved something to memory, the LOG entry carries **one line**:
+that a cross-project fact was saved, and roughly what it concerns.
+
+**Never the content.** The content lives in memory; duplicating it here would
+re-create exactly the double record the memory-boundary rule exists to prevent.
+The line's job is to be a thread back — enough that a human reading the log can
+see the destination was used and go looking.
+
+Why it earns a step: memory is the one destination the user cannot read and no
+session can enumerate, so a fact saved there is uncorrectable by default. That
+stopped being theoretical when a diagnosis Claude offered to save turned out,
+two sessions later, to be wrong in exactly the dimension that made it look
+cross-project in the first place. The trace is not a copy of the fact — it is
+the only route back to one that may later need correcting.
+
 ## Recording a cleared red flag
 
 A red flag is cleared at *processing* — the /plan moment its item is judged ready.
@@ -556,7 +606,12 @@ items, cross-check each shipped slug named in this session's LOG entries against
 Processed and confirm it's been removed. A work item is normally removed when
 /next locks scope, so the slug should already be gone — this is the safety net. If
 a shipped slug is still sitting in Processed as active work, surface it in one line
-and remove it (or halt and ask) before committing.
+and remove it (or halt and ask) before committing — with the mover's `--delete`,
+never by hand-editing the block away:
+
+```
+python <plugin-root>/scripts/reorder_queue.py QUEUE.md --delete <slug> Processed
+```
 
 A prior multi-item run shipped fourteen work items but left one in QUEUE.md —
 genuinely built, never removed — so it re-presented the next session as unbuilt.
@@ -565,7 +620,7 @@ unattended closes. A planning close names no shipped slug, so there's nothing to
 check. **Silent unless a stray slug is found.**
 
 **1. Stage explicitly — name each path:** files this session changed (from
-_build.md Changes), method docs updated during the session or close-out (QUEUE.md,
+_build.md Changes), project docs updated during the session or close-out (QUEUE.md,
 SPEC.md, LOG/), and the _build.md deletion where one was removed.
 
 **2. Detect out-of-scope dirty paths.** Run `git status --porcelain` and compare

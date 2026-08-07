@@ -16,6 +16,7 @@ Contract:
   python reorder_queue.py <queue_path> <section> --move <slug> <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
   python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM>]
   python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug>
+  python reorder_queue.py <queue_path> --delete <slug> <Section>
 
   <section>  one of: Processed | Unprocessed
   <slug...>  the FULL desired order of that section's work-item slugs, top to
@@ -46,6 +47,16 @@ Contract:
              in the target section as its next bare word. The
              heading text is NOT rewritten — a processed item's new description
              is a separate deliberate edit, made after the mechanical move.
+  --delete <slug> <Section>  remove one item's whole block, addressed by slug.
+             The removal every /plan keep-or-delete decision and every close
+             clearing shipped work needs — and the one operation this script
+             used to lack, which is exactly why removals fell back to
+             hand-editing long blocks. Refuses rather than guessing when the
+             slug resolves to nothing or to more than one block, prints the
+             heading line it removed, and re-anchors the readiness marker if
+             the deleted item was what the marker sat after. Adding is
+             deliberately not offered: an append needs no existing block
+             reproduced, so it was never the dangerous case.
   --marker-after (Processed only): where the `--- Cleared to run above this
              line ---` marker lands — after the named slug, or TOP / BOTTOM of
              the section. Omit to keep the marker in its current relative spot
@@ -198,6 +209,84 @@ def elements_with_marker(new_blocks, had_marker, pref):
     return elements
 
 
+def delete_item(queue_path, slug, section):
+    """Remove one work item's whole block, addressed by slug.
+
+    Why this exists at all: removing an item was the ONE queue write the mover
+    couldn't do, so every removal fell back to hand-editing a long prose block
+    with exact-string replace — and that is precisely the moment a scripted
+    shell splice starts looking cheaper than the sanctioned path. It was
+    reached for three times, once in an unattended run with the warning about
+    it sitting in the very file being edited. The fix is not a louder rule: it
+    is making the safe path the cheap path, so there is nothing to be tempted
+    away from.
+
+    Refuses rather than guesses: a slug resolving to nothing, or to more than
+    one block, exits non-zero and changes nothing. Prints the heading line it
+    removed, so the deletion is visible in the transcript and in a later read
+    of the session rather than being a silent shrinkage of the file.
+
+    Adding is deliberately NOT here. A capture is an append of fresh text with
+    no existing block to reproduce, so Edit handles it cleanly and there is no
+    shortcut to be tempted by. The danger is specific to removal.
+    """
+    if section not in ('Processed', 'Unprocessed'):
+        die("section must be Processed or Unprocessed, got: " + section)
+
+    with open(queue_path, 'r', encoding='utf-8', newline='') as f:
+        lines = f.read().splitlines(keepends=True)
+    sections = parse(lines)
+    if section not in sections:
+        die("section '%s' not found in %s" % (section, queue_path))
+
+    start, end = sections[section]
+    preamble, blocks, marker_after, had_marker = split_blocks(lines[start:end])
+
+    matches = [s for s, _ in blocks if s == slug]
+    if not matches:
+        die("--delete slug '%s' is not a work item in section %s. Check the "
+            "spelling, and check the other section — the script refuses rather "
+            "than guessing." % (slug, section))
+    if len(matches) > 1:
+        die("--delete slug '%s' matches %d work items in section %s. Refusing: "
+            "two items sharing a slug is itself a fault, and deleting the wrong "
+            "one is unrecoverable from here. Fix the duplicate first."
+            % (slug, len(matches), section))
+
+    removed_heading = next(b[0].rstrip('\n') for s, b in blocks if s == slug)
+    new_blocks = [(s, b) for s, b in blocks if s != slug]
+
+    # Re-anchor the readiness marker if it was anchored to the item being
+    # removed. Left alone, its anchor slug would resolve to nothing and the
+    # marker would silently vanish — clearing every shelved item below it. The
+    # marker keeps its POSITION: it still follows whatever item now precedes it.
+    pref = 'TOP' if marker_after is None else marker_after
+    if had_marker and pref == slug:
+        order = [s for s, _ in blocks]
+        idx = order.index(slug)
+        preceding = [s for s in order[:idx] if s != slug]
+        pref = preceding[-1] if preceding else 'TOP'
+
+    out = assemble_section(preamble,
+                           elements_with_marker(new_blocks, had_marker, pref))
+    new_lines = lines[:start] + out + lines[end:]
+
+    # ---- Self-checks: refuse to write on any failure ----
+    out_text = ''.join(out)
+    for s, blk in new_blocks:
+        if ''.join(blk) not in out_text:
+            die("self-check failed: block for [%s] changed content" % s)
+    if had_marker != any(MARKER_RE.match(l) for l in out):
+        die("self-check failed: marker presence changed")
+    if lines[:start] != new_lines[:start] or lines[end:] != new_lines[start + len(out):]:
+        die("self-check failed: content outside the section changed")
+
+    with open(queue_path, 'w', encoding='utf-8', newline='') as f:
+        f.write(''.join(new_lines))
+    sys.stderr.write("reorder_queue: deleted from %s: %s\n"
+                     % (section, removed_heading))
+
+
 def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
     """Move one item's block byte-for-byte between sections.
 
@@ -288,6 +377,19 @@ def main():
         except IndexError:
             die("--marker-after needs a value (a slug, TOP, or BOTTOM)")
         args = args[:k] + args[k + 2:]
+
+    if '--delete' in args:
+        k = args.index('--delete')
+        try:
+            del_slug, del_section = args[k + 1], args[k + 2]
+        except IndexError:
+            die("--delete needs two values: <slug> <Section>")
+        rest = args[:k] + args[k + 3:]
+        if len(rest) != 1:
+            die("usage: reorder_queue.py <queue_path> --delete <slug> "
+                "<Processed|Unprocessed>")
+        delete_item(rest[0], del_slug, del_section)
+        return
 
     if '--move-section' in args:
         k = args.index('--move-section')
@@ -380,6 +482,8 @@ def main():
             "   or: reorder_queue.py <queue_path> --move-section <slug> "
             "<FromSection> <ToSection> --position <BEFORE|AFTER> "
             "<anchor-slug>\n"
+            "   or: reorder_queue.py <queue_path> --delete <slug> "
+            "<Processed|Unprocessed>\n"
             "For one or two items out of place, a relative --move is the "
             "cheap form; the full slug list is only needed when the whole "
             "section genuinely re-sorts.")

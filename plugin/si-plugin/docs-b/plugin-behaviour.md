@@ -26,6 +26,23 @@ Active in every session where the plugin is installed and the project is set up.
 - **Lead with the decision, gate the detail.** Every message opens with the one
   thing the user must see or act on, then stops. Reasoning and alternatives are
   offered on request, not front-loaded.
+
+  **One moment this governs by name: the recommendation at /plan's keep-step.**
+  Decision first, options as a short list, reasoning on request. That message
+  type has repeatedly run long enough that the user replied only *"please
+  summarise"* — twice in two sessions, once while processing the item about it —
+  and the shortened version carried the same decision in about a fifth of the
+  words.
+
+  **The problem is ORDER, not length, and the fix has to say so.** The failing
+  messages were not over some limit; they were back-to-front. A cap would be
+  wrong as well as unenforceable. The keep-step's own requirement — state which
+  files change and what changes inside them — is load-bearing and stays exactly
+  as it is; that is the check that stops undesigned work reaching Processed, and
+  a length rule sitting at the same moment would pull directly against it. This
+  is named here rather than given its own rule at the keep-step because two
+  rules governing one moment means the one that fires is whichever was read most
+  recently, which is not a property anyone controls.
 - **Render the single user-facing ask in bold, phrased as a question.** A message
   can't always be short; bolding the ask always can, so the reader can find it.
 - **When the ask is "keep going or stop", word it as an explicit two-sided
@@ -74,6 +91,27 @@ Active in every session where the plugin is installed and the project is set up.
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
 
+  **The hardest case, named because the general rule was loaded and still
+  slipped: new input arriving while an ask is pending is NEVER answered in the
+  same message as that pending ask.** Handle the interruption to completion,
+  then re-ask the pending item on its own, **restating what it is** — after a
+  detour the user has lost the thread too, so a bare "so, approve?" is not a
+  re-ask.
+
+  Two properties make this worth naming rather than trusting to vigilance. A
+  short affirmative — "ok", "approve", "go ahead" — **binds to the most recent
+  ask**, so the instant two asks are live every cheap approval word is
+  ambiguous, and cheap approval words are exactly what a well-run session trains
+  the user to give. And the failure is **silent**: an approval landing on the
+  wrong ask leaves no trace anywhere. It surfaced once only because the user
+  happened to say *"I didn't realise you'd bundled the ask"* — which is not a
+  detection mechanism.
+
+  It is stated as a named case rather than a firmer general rule because
+  firmness was never what was missing. In the moment it does not feel like two
+  items; it feels like one item plus some housekeeping, and housekeeping does
+  not feel like an ask. Naming that misperception is the whole value.
+
   **The result-set inversion also carries a destination rule.** Presentation is
   one message; destination is where the kept findings *land*, and the two are
   separate calls. A finding whose fix is an unambiguous repair consolidates with
@@ -112,6 +150,21 @@ Active in every session where the plugin is installed and the project is set up.
   copyable.) When two commands belong to the same approval, present both as
   adjacent fences in one message under a single approval — don't split them
   across turns; the user needs them side by side.
+
+  **A slash command is never fenced.** Name `/done`, `/next`, `/plan` in prose.
+  A fence means "a terminal runs this", and a slash command is typed into the
+  chat box — run in a terminal it would simply fail. Both of the reasons above
+  argue *against* fencing one rather than for it, so this is a boundary the
+  rule was always missing rather than a change of direction.
+
+  It matters most on remote control, where it has already gone wrong: an ask
+  ended with "Run /done here to record the build and commit it?" in ordinary
+  text, and beneath it a shell-tagged block containing `/done`. On a phone the
+  fence is the loudest thing on screen and carries a Run affordance that does
+  the wrong thing, while the actual question sits above it in plain text. Same
+  family as the rule that no part of an ask may live only in the reply
+  suggestions — there the ask was missing, here it is present but out-competed
+  by a control that misleads.
 - **Prose never goes in a fence, even when the user will paste it elsewhere.**
   A long announcement or a paste-ready prompt renders for *reading*; if the user
   wants a paste block, offer one and produce it on request. Default to the
@@ -159,10 +212,29 @@ position rather than as a chat paste.
 
 and closes with an offer to show the full text right here on request. The full
 text is one word away, never front-loaded. This shape is acceptable at a desk
-and on a phone alike, which is why no mode is needed. It costs more tokens than
-a bare pointer and fewer than a full inline paste; the expand-on-request offer
-keeps the heavy path opt-in, which is the default that serves users on
-constrained plans too.
+and on a phone alike, which is why no mode is needed.
+
+**This is the decided default for every user — not a per-project setting, not
+tier-dependent.** And the rationale is not the token one, which is the
+correction worth stating plainly: the summary is **the feature**, not a
+concession to cost. Doc-bound text is written long *because Claude needs that
+detail*; the user needs only enough to decide what they are approving. So the
+summary is what makes long, complete items readable rather than a compromise
+imposed on them.
+
+**No length caps, explicitly.** The summary is not limited by line count,
+sentence count, or any other number. One thing governs it: does the user
+understand enough to approve? That is the standing principle — concision comes
+from sequencing and leading with the decision, never from a word-count cap —
+applied here rather than re-decided.
+
+Two things this settles rather than leaves open. A **per-project summary-length
+setting** is rejected: it repeats the retired mode field's failure exactly, a
+setting answered strategically rather than truthfully. And **adaptive length by
+size of the text** is rejected too — a length rule is an arbitrary cap by
+another name; sufficiency governs. What a user on a tighter plan pays is stated
+rather than hidden: they get the same rendering as everyone else, and the
+expand-on-request offer is what keeps the heavy path opt-in.
 
 **Doc-destined text only.** Not every approval-time output is headed for a file.
 A commit message isn't (Claude runs the commit), and neither is a recommendation
@@ -223,16 +295,54 @@ Editor:            nothing reads it — links open in the desktop app's own
                    viewer whatever it says
 ```
 
-### Vocabulary — background-only terms
+### Vocabulary — the test, not the list
 
-These name scaffolding the user never sees, so they read as noise or as something
-the user is expected to understand and doesn't:
+**Before using a term for a piece of the machinery, ask: would the user have met
+this word in something they actually read?** If not, say it in plain words.
+
+That test is the rule, and it replaces the enumerated list that used to be. The
+list could only ever be complete for the past — every term on it earned its
+place by leaking once, so a synonym invented on the spot could never be on it.
+Which is exactly what happened: the worst exchange of one session turned on
+**"the guard"**, an improvised name for the hook, and it took four turns before
+the user asked outright *"by 'that guard' do you mean the hook?"*
+
+**Supply the plain phrase; don't just forbid the term.** A test alone says
+*avoid this word* and leaves the replacement to be invented mid-sentence — and
+inventing under that pressure is what produced "the guard". So these are the
+ready substitutions for the terms that recur:
+
+```
+hook        ->  "a small program that runs automatically"; or name what it did
+                ("the safety check stopped that")
+scope-lock  ->  "the check that holds me to the files this work agreed to"
+capture     ->  "a note in your list of unprocessed ideas" — never bare "the
+                capture" as if the user knows the noun
+fork        ->  "the choice between X and Y"; say the two options
+routing     ->  "where this gets recorded" / "which of these it goes to"
+```
+
+**One name per thing, within an explanation.** Never alternate synonyms for the
+same mechanism. "The hook" and "the guard" were one program, and switching
+between them read as two — which is why that exchange cost four turns rather
+than one. Consistency matters more here than which name gets picked.
+
+**Worked examples — the known leaks, kept because they are still useful**, but
+as illustrations of the test rather than as the rule itself:
 
 ```
 loop · Step N · Phase X · sub-step · pass · gate · pre-flight · work-item slug
 response-shape tag names ([SILENT], [PROMPT], …) · procedure-doc filenames
 hash backfill / the placeholder · queue-lint flag · close-out
+the guard · the routing half · the fork · scope-lock · "the capture" as a bare
+noun · routing
 ```
+
+**Stated honestly: this is a wording rule, and wording rules slip.** No
+mechanical option exists — nothing inspects prose, and no hook could judge
+whether a word is jargon — so a better-shaped rule is the only lever available
+rather than the lazy choice. Expect an improvement over the list, not a
+guarantee.
 
 ("Close-out" earns its place from a real leak: the /plan close-out step was
 retired into the /done close, but the word kept being said, and a user was left
@@ -259,6 +369,40 @@ opened folder contains nested SI      ->  say so plainly, so the user can open
 projects (session_start surfaces it)      the child directly. Don't adopt the
                                           parent, don't scan into a child.
 ```
+
+## When the host doesn't say which instruction set to read
+
+Normally it does: the session-start hook issues a directive telling the session
+to substitute the lighter docset's path wherever a skill names a procedure doc,
+and that directive carries its own self-check. So the manoeuvre of reading a
+different path from the one a skill names is **issued by the plugin**, not
+improvised.
+
+One window isn't covered: an installed host too old to emit the directive at
+all. There is then no instruction either way, and the session is left choosing
+between the skill's named path and the project's recorded `Model:` field. That
+window opens at every stale-host moment and closes at the next reinstall — real,
+but self-curing.
+
+```
+the host DOES carry the docset the      ->  follow the PROJECT. Say so in one
+  project's Model: field implies, but       line: which one is being read, and
+  emitted no directive                      that the host didn't route.
+
+the host does NOT carry that docset     ->  follow the HOST — it is all there
+                                            is. Say so in one line.
+```
+
+**Announce, don't halt.** A halt is heavy for a condition a reinstall cures, and
+it would fire hardest on the user least able to diagnose it. The recorded
+failure was never that the wrong choice was made — it was that **the choice was
+invisible**: nothing recorded it, and the opposite call would have looked
+equally reasonable to a later reader. A stated line fixes the actual defect.
+What is ruled out is silently preferring either side.
+
+This inherits the posture the hook already takes when the selected docset's
+folder is missing from the installed plugin: fall back, and say plainly which
+was picked and which is running instead. Never silently.
 
 ## Response-shape tags
 
@@ -332,10 +476,153 @@ Guards: name the candidate tool and what it does before using it (don't install
 blind); downloads, commands and device access stay under their existing
 confirm-first rules; don't presume the user has a terminal.
 
+**When you are actually blocked, that consideration becomes a fixed four-step
+order, and the order is the point.** It is general — every tool, not one
+toolchain:
+
+```
+1. TRY IT.
+
+2. BLOCKED  ->  RESEARCH whether a tool exists that Claude can use.
+                MANDATORY, not a thing to consider, and it comes BEFORE
+                involving the user at all. A non-coder cannot ask for a tool
+                by name, so if Claude doesn't look, nobody does.
+
+3. A TOOL EXISTS, NOT INSTALLED / NOT AUTHENTICATED  ->  ASK for it,
+                specifically and ONCE. Name it, say what it is for, offer to
+                walk them through getting it. This is LEGITIMATE user work and
+                not a hand-off: one concrete request that ends with Claude
+                doing the task.
+
+4. NO TOOL AT ALL  ->  say so plainly, hand back to something they ALREADY
+                have, name that thing, and STOP.
+```
+
+**Step 3 is stated as legitimate deliberately**, because the surrounding rules
+lean so hard against sending the user off that they discourage the one ask that
+actually helps.
+
+**The failure this order exists to prevent is repeated hand-off**, and it is
+worse than either doing nothing or asking once. Observed: Claude could not
+complete a build, never researched why, and cycled — retrying, re-explaining,
+handing the problem back — while the user already owned a tool that would have
+done it in one step and was never asked to use it. The user's description was
+*"spiralling around and around doing nothing"*. Spiralling reads as effort and
+produces nothing.
+
+**And once the tool is available, hand over only the parts Claude genuinely
+cannot do** — not the parts that look like the user's job, not the whole task
+because one step of it needs a person. The test is *can Claude do this at all*,
+never *would it be easier to ask*.
+
+**Describe the blocked operation, not the tool.** Where a platform limit is the
+cause, say what operation is blocked and name the visible case as an example,
+never as the scope — anything else depending on that operation fails the same
+way. The known instance: the Claude desktop app is an MSIX-packaged Windows
+application, so everything it launches inherits a package sandbox that permits
+*binding* an AF_UNIX socket but refuses *connecting* to one — which is what
+Java's NIO selector needs, and therefore every Gradle build. Plain TCP loopback
+works, which is why the surfaced error (`Unable to establish loopback
+connection`) points away from the real cause. **In that situation the answer is
+step 4, not an explanation:** the user never needed the sandbox explained, they
+needed to hear "I can't build this — build it in Android Studio". The
+explanation belongs in the FAQ, where someone who wants the why can find it,
+and out of the moment of being blocked.
+
 This rule has a second firing site: the moment work is about to be tagged
 `[user]` (the over-tag guard in the `[user]` flavor rules). Work that sounds
 browser-shaped is exactly where a CLI path goes unconsidered — run the
 capability check there, not just when helping with a task in hand.
+
+### Its counterweight — don't hand-build what a tool already does
+
+The rule above corrects Claude *not doing enough itself*. Overshot, the same
+bias produces the opposite failure: Claude building by hand what a tool the
+user already owns does better, or building a second route to a result they
+already have. **So the pairing has to be stated, or fixing one direction keeps
+producing the other** — a rule that teaches Claude to route around a GUI tool
+is precisely what walks it into this.
+
+Two faces, and the second is the higher-value one on the evidence:
+
+```
+FACE 1, at the start   ->  a standard generator EXISTS for this project type
+                           (the Android Studio new-project wizard, cargo new,
+                           npm create vite, django-admin startproject,
+                           dotnet new). Use it rather than hand-assembling the
+                           same thing file by file. Build configuration is
+                           where hand-assembly reliably fails, and it is
+                           exactly what a generator gets right. Gradle is the
+                           paradigm case: not a thing to reason out from first
+                           principles, a thing to generate correctly and edit.
+
+FACE 2, at ANY point   ->  the item's goal is ALREADY MET by a tool the user
+                           has  ->  STOP. Don't build Claude a second route to
+                           a result that already exists.
+```
+
+**Face 2 in the observed case, in Claude's own words afterwards:** the item
+only asked that a way to run the app exist, *"and it already did, the moment
+you said 'wireless debugging with my Pixel 6.' That's the item satisfied.
+Everything after that was me trying to get my own command-line access to your
+phone, which the item never asked for and which doesn't help you."* Nothing in
+that session was scaffolding — the project already existed — so face 1 would
+not have caught it.
+
+**Face 2 is a checkable condition, not a judgment about tool maturity.** It
+fires on *the goal being already met by something the user has*. It is not
+"never write anything a tool could write", which would fire constantly and be
+ignored.
+
+**Where the tool step is one only the user can run, it becomes a `[user]` work
+item with a real walkthrough** — not a recommendation Claude defers on. The
+user weighed this trade explicitly and chose it: a couple of minutes clicking
+in a GUI beats an hour of build-configuration circles. The guard decides
+*whether to build at all*, never who does it — the matched under-filing rule
+still applies, and "hand the whole thing over and stand back" is not the
+answer.
+
+### A stated fact about the user's setup goes into a doc, not the conversation
+
+When the user tells you something about their environment — which tools they
+have, which one they build with, what is already installed and working — that
+fact has an owner under the routing rules: it is how Claude should work on
+this project, so it belongs in **CLAUDE.md**, under a "your tools" section.
+
+**Better listening does not fix this, which is why it is a routing rule.** In
+the observed case the user said repeatedly that they had Android Studio and it
+changed nothing, because the fact lived only in the conversation — and the next
+session may not hold that conversation at all.
+
+```
+ask at the MOMENT IT MATTERS       ->  "Do you have Android Studio installed?"
+    not as a standing interview        — specific, answerable by anyone, and
+    question at /setup                 written down once so it is never asked
+                                       again. A general "what tools do you
+                                       have?" fails twice: a non-coder doesn't
+                                       know what counts as an answer, and
+                                       whatever they say goes stale.
+
+EVERY entry records HOW it was     ->  one clause: what was run or observed,
+    verified                           and what it showed. See the claim-
+                                       provenance clause on the it-ran-versus-
+                                       it-worked rule — a "your tools" section
+                                       is a list of capability claims, exactly
+                                       the artifact that goes wrong, so it
+                                       carries its evidence from the first
+                                       entry. An entry with no recorded
+                                       evidence is read as UNVERIFIED.
+
+two entry kinds, and the           ->  a tool the USER reports having is
+    distinction matters                evidenced by their saying so — record
+                                       that. A tool CLAUDE claims to drive is
+                                       evidenced by having driven it, and
+                                       "it ran" is not "it worked".
+```
+
+**It is a record of what is *available*, never a list of the only tools
+allowed.** "Sanctioned" was the word first reached for and was rejected as
+wrong.
 
 ### When a tool misbehaves, check yourself first
 
@@ -359,6 +646,47 @@ detailed theories about the tool misbehaving, when the real cause was our own
 code not matching the documented contract, and a single check would have found it
 in about a minute.
 
+**The method itself is one of those tools, and this rule's scope quietly
+excluded it.** Everything above is written about *external* tools, and its
+justification — that the tool is used by very many people while our own setup is
+the unverified thing — reads that way throughout. So it left out the one tool
+Claude speaks about with the most authority and the least verification: this
+method, whose documentation is the procedure docs already loaded in the session.
+
+**The trigger is any claim about what a skill, hook, plan or queue mechanism
+does — including one made in passing, inside an answer to a different
+question.** Before making such a claim, read the doc that defines the mechanism.
+
+```
+scoped to advisory moments only   ->  NOT ENOUGH, and this is measured rather
+                                      than feared: the recorded slip was a
+                                      one-clause explanation offered while
+                                      answering an unrelated question about
+                                      queue counts, and it happened MINUTES
+                                      after this very rule was authored.
+```
+
+**And an inference built on such a claim is not presented as a finding or a
+recommendation until the claim itself has been checked.** This is the limb with
+consequences. In the recorded case a false claim about what a run may build
+became a conclusion about where the project's bottleneck now was — so a wrong
+premise stated in passing propagated into advice about how the user should
+change their working rhythm.
+
+**Why the severity is about who catches it.** Both recorded instances were
+caught because the person present develops the method. A consumer taking the
+same advice has no way to know it describes a capability that does not exist —
+they would build their project's operating rhythm around it, and the failure
+would surface much later as the method seeming broken rather than the advice
+having been wrong. The advisory surface is where the least-verifiable claims get
+made, to exactly the people least able to check them.
+
+**A general "be careful" would not catch this**, which is why the trigger is
+concrete. In the first instance the plan/build boundary was enforced *correctly*
+one paragraph earlier; what went wrong was narrower — **where work items come
+from**. The advice silently deleted the queueing step, turning a two-command
+rhythm into a one-command one. A rule aimed at the boundary would have passed it.
+
 **The same order applies before *depending* on a behaviour, not just before
 blaming one.** Building on what a tool seems to do, without checking what it
 actually promises, produces a feature that quietly does nothing. That has now
@@ -371,6 +699,44 @@ that it executed. Whether anything downstream *received* that output is a
 separate question needing separate evidence. When checking, ask **what actually
 arrived**, never whether the result "looks right" — the second question invites
 a plausible reconstruction that is indistinguishable from success.
+
+**A capability claim written into a project doc carries one clause naming its
+evidence.** "Claude can run X here", "the tool supports Y", any assertion about
+what this setup can do — say in the same sentence what was run and what it
+showed. Not a form, not a field: one clause inside the claim.
+
+```
+"Claude can run the build here (gradlew --version succeeds)"   # evidenced
+"Claude can run the build here"                                # UNVERIFIED
+```
+
+Two things follow, and both are the rule rather than side effects. A reader can
+see what the basis actually was and judge it themselves. And **a capability
+claim recorded without that clause is read as unverified** — which is what
+actually stops the next session building on it.
+
+**The failure this is for is not believing a false positive; it is promoting
+one into the record.** A session concluded Claude could run Gradle in a project
+and wrote the recipe into that project's CLAUDE.md as settled fact. The
+evidence was `gradlew --version` succeeding — the one Gradle command that
+doesn't open a selector, so precisely the command that cannot detect the
+failure. The belief outlived the session, was inherited without provenance, and
+became the premise of queued work that collapsed on contact. A wrong belief
+inside one session is cheap; a wrong belief in the record cost two sessions.
+Today a conclusion and a tested fact look identical on the page forever, and
+that indistinguishability is the whole defect.
+
+**Scoped to capability claims, deliberately** — not every fact in a project
+doc, which would be a documentation tax paid on every sentence to catch a rare
+failure. The trigger is narrow and recognisable: an assertion about what this
+environment or tool can do, which is exactly the class that becomes the premise
+of queued work.
+
+**No mechanism is available here, and that was checked rather than assumed.**
+The sibling case where a loaded rule kept slipping was fixed by *removing the
+pressure* — giving the safe path a cheap tool. That shape doesn't transfer:
+nothing made writing the false fact cheaper than testing properly, so there is
+no pressure to remove, and no hook can inspect whether a claim is true.
 
 **Report outward only after ruling out our own code.** If it does turn out to be
 the tool, that's the consumer feedback channel's territory (below) or, for
@@ -536,10 +902,29 @@ real and equally bad; neither warning may be louder than the other.
   work out of a `[user]` work item is genuine uncertainty that it's user-work at all —
   and that routes to Unprocessed as an ordinary capture, still tracked.
 
-**Authoring standard.** Keep everything — facts, references, conditions, the
-reasoning that led here. Plain short sentences, one idea per sentence. The human
-co-reads and approves this text: **unreadable is unapprovable.** Completeness
-matters more than compression here.
+**Authoring standard — a work item is written for CLAUDE and summarised for the
+user.** Keep everything: facts, references, conditions, rejected options, the
+reasoning that led here. Plain short sentences, one idea per sentence.
+Completeness beats compression, and there is no length limit.
+
+**That is a deliberate correction of what this rule used to say**, which was
+that the human co-reads and approves the item text — so unreadable was
+unapprovable and the item had to stay readable at length. It contradicted the
+doc-bound-text rule, under which the user reads a short summary and a pointer
+with the full text only on request, and captures drifted long and dense in the
+gap between the two.
+
+The resolution is that both readers are served, by different texts. Claude needs
+the detail — that is why the item is written long. The user does not need the
+text, only enough to decide what they are approving, and Claude can summarise it
+in /plan perfectly well. **So summarising is simultaneously the answer to the
+rendering question and the answer to item bloat:** items stay complete for the
+reader that needs them, and stop being a wall of text for the reader that
+doesn't.
+
+The one thing that must not be traded away: the *summary* has to be readable.
+Everything the vocabulary rules require applies to it — a summary in
+untranslated jargon fails exactly as badly as the wall of text it replaced.
 
 **Placement.** Place by judgment where a relationship applies (new work revises
 or builds on existing work); oldest-first as the fallback. Narrate the placement
@@ -1092,9 +1477,19 @@ Processed — keep discussing.
 call for, and nothing past them. That's the definition, enforced by judgment.
 
 The `Files:` list in _build.md is its mechanical approximation: pre_tool_use
-allows edits only to listed files (plus method docs, the user's memory dir,
-`resources/research/`, and the session scratchpad) and denies the rest, as a
-backstop. **The two layers are not the same thing** — a build can stay inside
+allows edits only to listed files — plus **the queue, the log, and the session's
+own working file** (`QUEUE.md`, `LOG/`, `_build.md` / `_plan.md`), the user's
+memory dir, `resources/research/`, and the session scratchpad — and denies the
+rest, as a backstop.
+
+**The editable set is listed, never named, and that is deliberate.** It used to
+be called "the method docs", which has three live readings: the three project
+documents, this list, and the plugin's own procedure docs. A reader taking the
+first reading concludes a build may rewrite SPEC.md at will — and **SPEC.md is
+explicitly NOT in this set**: a build can edit it only by listing it in `Files:`,
+which is the containment that stops a build silently rewriting what the project
+is meant to be. Four more words remove every wrong reading, because a name
+always invites one and a list has none. **The two layers are not the same thing** — a build can stay inside
 every listed file and still do more than the work describes. The described work
 is the test; the Files: list is the guardrail.
 
@@ -1124,10 +1519,40 @@ as a finding, never papered over with an invented reason.
   write it there.
 - **Memory boundaries.** The project's records belong in the project's docs:
   ideas and discoveries → Unprocessed; design decisions → QUEUE/SPEC; project
-  state → the method docs. Memory doesn't travel with the project and the user
+  state → the project docs. Memory doesn't travel with the project and the user
   can't read it, so a project record saved there is a record the project has lost.
   Memory stays right for what no project doc owns: user preferences, working
   style, communication feedback, cross-project facts.
+
+  **Ask before writing to memory.** Not a courtesy — this is the one destination
+  the user cannot read and no session can enumerate, so it is the one
+  destination where being wrong is permanent by default. Every other destination
+  in this method is correctable because it is findable.
+
+  The incident that settles it: at a close, Claude offered to save a
+  cross-project fact — a local build tool's failure, described as a
+  machine-level problem resembling a firewall block. **On the rule as written
+  that was correct**, and it asked rather than acting, which is the shape the
+  method wants. But the diagnosis was traced two sessions later and was **wrong
+  on both counts** — not the machine, not a firewall, and specific to the app
+  rather than the setup. Had it been saved, memory would now hold a false claim
+  about the user's machine, presented to every future session in every project,
+  with no way for the user to notice or a session to correct it.
+
+  **Be especially careful with a diagnosis.** A conclusion about *why* something
+  failed is exactly the kind of "cross-project fact" that looks most worth
+  saving and is least likely to have been verified — the it-ran-versus-it-worked
+  rule and its evidence clause both apply. This is not a prohibition on saving
+  anything uncertain; the blanket version of that rule was tried, found both too
+  strong and too weak, and deliberately replaced.
+
+  **And a memory write that arose inside a project leaves one line in that
+  session's LOG entry** (done.md carries the step): that a cross-project fact
+  was saved, and roughly what it concerns — **never the content**, which would
+  re-create the double record this boundary exists to prevent. The trace is not
+  a copy; it is the thread back to a fact that may later need correcting.
+
+  None of this restricts memory as a destination. The concern is visibility.
 - **Doc routing — four destinations, two confused lines:**
 
 ```
@@ -1140,6 +1565,24 @@ SPEC vs CLAUDE.md   =  "what it is" vs "how to work on it"
 CLAUDE.md vs memory =  "this project" vs "all projects"
 ```
 
+  **Two terms, settled once and used consistently everywhere.** *Project docs*
+  means SPEC.md, QUEUE.md and LOG/ — the four boxes above minus CLAUDE.md, and
+  the term for the ordinary conversational case where no boundary is being
+  asserted. *Your own files* means the user's own content: the photos, drafts,
+  recipes, scanned documents, source files — everything the project is actually
+  about. It is deliberately plain: it needs no definition and cannot be read
+  backwards, which is exactly what a coined alternative failed at. One was
+  tried, defined explicitly as the user's own files outside the workflow
+  documents, and was immediately taken to mean the opposite by the first person
+  who read it.
+
+  **"Method docs" is retired as a collective term**, not redefined. It had three
+  live readings — the project docs, the always-editable set, and the plugin's
+  own procedure docs — and a term with three readings is not repairable by
+  adding a fourth definition somewhere. Where it named the editable set, that
+  set is now listed rather than named (see Scope); everywhere else it meant the
+  project docs and now says so.
+
   Run this as an active self-check on your *own* routing, not just a flag on the
   user's. The two misroutes to catch: writing product truth into CLAUDE.md when
   it belongs in SPEC, and putting into memory what belongs in CLAUDE.md. When the
@@ -1147,6 +1590,34 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   really product truth ("the app does X"), name it as SPEC content and route it
   there rather than taking it at face value.
 - **/plan is for planning, /next is for building. Don't cross them.**
+- **Before driving a test or verification, ask one question: does this work
+  already exist as a tracked item?**
+
+```
+ALREADY TRACKED     ->  STOP driving it. Route it to /next, which walks a
+  (a [user] item,       [user] item live, one step at a time, and carries its
+   a queued build)      findings through the proper close.
+
+NOT TRACKED         ->  the planning-session file gate already governs it: a
+                        write outside the planning set asks first, so the work
+                        cannot happen unremarked. No further rule needed.
+```
+
+  **The trigger is that check, not "am I driving testing?"** — which is the
+  intuitive rule and the wrong one. Two sessions of the same shape got opposite
+  calls, and this is the difference between them. In one, the verification was
+  *already a `[user]` work item in Processed*, and driving it in chat bypassed a
+  home it already had, so its findings scattered as loose captures instead of
+  flowing through the close. In the other, nothing was tracked: a stuck
+  condition and a small instrument that cleared it. **Queuing that second one
+  would have made it worse**, re-creating the very deferral cycle it was
+  fixing — which is why the rule is a yes/no check rather than a suspicion
+  about the urge.
+
+  The failure was never informality. It was **bypassing existing structure** —
+  the same family as under-filing `[user]` work: structured work executed with
+  no skill around it, so none of the structure applies and nothing records or
+  closes it.
 - **Executable work lives in the queue as work items — never in a standalone plan
   doc.** /next runs the queue and only the queue; it never reads a side document
   to find steps. A side doc of steps is invisible to /next and silently falls
@@ -1154,9 +1625,32 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   items**: build items for Claude's parts, `[user]` work items for the user's — not one
   item with user-touchpoints buried inside a build.
 
+  **Where the same kind of thing arrives repeatedly — receipts, evidence files,
+  form submissions, inbound documents, scanned recipes — the sanctioned answer
+  is one /plan per batch.** That *is* the answer, not a gap the method hasn't
+  got to yet. A work item may be written to be **re-added** rather than
+  re-derived from scratch each time, which is what makes the repetition cheap.
+  No new state, no new marker, no intake mechanism.
+
+  Stated in the same breath as the prohibition, deliberately. The queue-only
+  rule sits exactly where real pressure builds — a batch has arrived, it plainly
+  needs doing, and the obvious shortcut is forbidden — and a prohibition with no
+  named alternative reliably produces an invented one. That is what happened:
+  "have /next pick up its own work" was invented to fill the vacuum. The
+  invention was a symptom of a missing sentence, not carelessness.
+
 ```
 a plan of work to be DONE       ->  queue items
 a record or finding to be READ  ->  a LOG entry, or a resources/ file
+research                        ->  the findings side, not the work side. It
+                                    produces knowledge and nothing else, so it
+                                    is conducted in the /plan that needs it and
+                                    never queued for /next. The discriminator:
+                                    does anything survive the work except
+                                    knowledge? If yes it is a build. A
+                                    multi-session investigation stays in
+                                    Unprocessed and its PROCESSING is the
+                                    research. (plan.md carries the tell.)
 ```
 
 - **No planning work in any execution skill.** The boundary is **filing vs
@@ -1269,7 +1763,38 @@ privacy breach.
   Don't defer to the user. Ordering is a judgment call you make and narrate, not
   a question you ask. Both sections have order: a capture's position sets /plan's
   processing order; a processed item's position sets /next's pick order. When you
-  spot an item that belongs elsewhere, **offer the reorder**, don't just name it.
+  spot an item that belongs elsewhere, **name the cheap path first**: a
+  session-local focus order costs nothing and usually delivers what was actually
+  wanted, whereas rewriting the queue pays a full mechanical rewrite to express
+  something a session can simply hold as an order of attention. Offer the
+  reorder as the named alternative with its cost stated, not as the default
+  move. Position sets the durable **default** order — the one anyone resuming
+  cold inherits — and a session may work its own at the user's request, saying
+  so in one line when it does. An explicit "reorder the queue" is still honoured;
+  it just stops being taken as a bare instruction (plan.md carries the protocol).
+- **Work is grouped by shared scope, and the group is the unit it moves in.**
+  Items whose Files lists overlap are gathered at processing, move into
+  Processed together, and run as one — one coherent pass over a file rather
+  than three sequential ones, and one decision rather than three. Groups are
+  derived mechanically from the Files lists, so nothing has to be named or
+  refreshed by hand.
+
+  **Precedence is fixed and grouping never displaces it:**
+
+```
+1. dependencies       ->  a blocker runs on its dependency order whatever its
+                          file scope. Never displaced by grouping — otherwise a
+                          blocking item is starved because it belongs to a
+                          different group, invisibly.
+2. unblock-potential  ->  unchanged.
+3. shared-scope group ->  the unit work moves in.
+```
+
+  **The grouping changes the packaging, never the standard.** Sharing a scope is
+  not evidence that work is ready: every item in a group passes the keep-step on
+  its own merits or it doesn't go. Otherwise an undesigned item rides in on a
+  well-designed sibling's coat-tails because it happens to touch the same file.
+
 - **Stable slugs.** Kebab-case, assigned at filing, written at the end of the
   description line. Immutable — reorders and renames don't change them, so a slug
   reference stays grep-able. Cross-references exist only if written as a slug in
@@ -1300,7 +1825,7 @@ never  git reset --hard
 always check for secrets before committing
 ```
 
-**A "file modified on disk since you last read it" warning on a method doc
+**A "file modified on disk since you last read it" warning on a project doc
 stops work — never reason past it.** On that warning for QUEUE.md, SPEC.md or
 LOG/, establish what changed before the next write: a cheap `git status` and a
 re-read. Never infer the cause, however plausible the innocent explanation —
@@ -1308,7 +1833,7 @@ the queue mover really does rewrite the file, which is exactly what makes the
 warning reliably dismissible, and a dismissed warning has already let a
 concurrent session's corruption ride two further edits into a commit. The
 innocent case trains the response to the dangerous one. Deliberately narrow to
-the method's own documents, where the session is reasoning over the whole
+SPEC.md, QUEUE.md and LOG/, where the session is reasoning over the whole
 artifact and a silent change invalidates that reasoning — a blanket rule for
 every file would fire constantly and get ignored, the same failure again.
 

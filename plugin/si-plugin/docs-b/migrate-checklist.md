@@ -88,7 +88,7 @@ the user can run
 **3. Method-shipped boilerplate is refreshed by re-copy, never regenerated from
 guesses.** FAQ files, the QUEUE.md header prose, CLAUDE-TEMPLATE scaffolding — copy
 the *current shipped template* over the stale file rather than rewriting it from
-the method docs.
+the project docs.
 
 ```
 per-file discriminator:
@@ -96,7 +96,7 @@ per-file discriminator:
     method boilerplate    ->  re-copy the template
 ```
 
-(Observed: a session nearly rewrote a project's FAQ from the method docs when a
+(Observed: a session nearly rewrote a project's FAQ from the project docs when a
 verbatim re-copy was correct.)
 
 **4. Approval before write.** Draft, show, get the okay, then write.

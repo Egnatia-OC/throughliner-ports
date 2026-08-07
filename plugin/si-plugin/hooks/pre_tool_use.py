@@ -3,16 +3,25 @@
 PreToolUse hook — enforces four rules:
 
 1. During a build, _build.md's Files: section governs which files are
-   editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
-   memory dir, resources/research/, and the session scratchpad dir are
-   always editable). Tri-state:
+   editable. Always editable alongside the listed files: the queue
+   (QUEUE.md), the log (LOG/), the session's own working file
+   (_build.md / _plan.md), the user's memory dir, resources/research/,
+   and the session scratchpad dir.
+
+   That set is ENUMERATED rather than named, deliberately. It used to be
+   called "the method docs", a term with three live readings — the three
+   project documents, this list, and the plugin's own procedure docs —
+   and one of them is dangerously wrong: a reader taking "method docs are
+   always editable" to mean the project documents concludes a build may
+   rewrite SPEC.md at will. A name always invites a wrong reading; a list
+   has none. Tri-state:
    no Files: section = no enforcement (but it says so — see rule 4);
-   section present but empty = method docs only; entries listed = only
-   those files. SPEC.md is not a method doc, so a build can edit it only
-   when it's explicitly listed in Files: — a build that needs to change
-   SPEC lists it; a feature build that doesn't name SPEC can't touch it,
-   so scope-lock alone keeps SPEC read-only for any build that doesn't
-   name it.
+   section present but empty = the always-editable set only; entries
+   listed = only those files. SPEC.md is NOT in that set, so a build can
+   edit it only when it's explicitly listed in Files: — a build that needs
+   to change SPEC lists it; a feature build that doesn't name SPEC can't
+   touch it, so scope-lock alone keeps SPEC read-only for any build that
+   doesn't name it.
 2. Git safety: block git reset --hard, git push --force, blanket
    staging (git add -A / --all / .), and git commit -a / -am.
 3. Subagent cost ask-gate: the subagent-spawning tool (named "Task" in
@@ -68,6 +77,39 @@ COMMIT_ALL = re.compile(r"\bgit\b.*\bcommit\b.*\s(?:-a\b|-am\b|--all\b)")
 # Order in the alternation matters: the two-char operators (`&&`, `||`) come
 # before the single-char ones so `&&` isn't split as two empty `&` halves.
 SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
+
+# --- Structured shell-write detection ---
+#
+# The scope-lock's one real hole: file enforcement runs for Edit/Write/MultiEdit
+# and never for Bash/PowerShell, so a shell command reaches the disk outside the
+# agreed file list while the session believes it is contained. That is worse than
+# the lock simply being off — it is the lock being ON and one tool class walking
+# around it.
+#
+# It has been walked through three times, always the same shape: a work item is
+# being removed from a long QUEUE.md, Edit demands reproducing a large block
+# exactly, and a heredoc'd Python script that reads the file, splices out a range
+# and writes it back looks cheaper. The third time was inside an UNATTENDED /next
+# run, with no user present and no harness classifier in the way, while the
+# session was editing the very file holding the capture warning about it.
+#
+# So this catches the STRUCTURED forms only — a write whose target path is
+# literally present and extractable. General shell parsing was considered and
+# rejected: it is fragile, and false denials train workarounds, which is the
+# worse failure. Anything that does not parse cleanly PASSES, and that limit is
+# stated in the denial text rather than hidden.
+#
+# Matched: a Python invocation (heredoc or -c) containing a write-mode open() or
+# a pathlib write_text/write_bytes on a LITERAL path. A computed path — a
+# variable, an f-string, a concatenation — is exactly the ambiguity this fails
+# open on.
+PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-[0-9]")
+PY_OPEN_WRITE = re.compile(
+    r"""\bopen\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
+)
+PY_PATH_WRITE = re.compile(
+    r"""\bPath\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*\)\s*\.\s*write_(?:text|bytes)\s*\("""
+)
 
 # Appended to every git-safety denial: the patterns match command text,
 # not intent, so a denial can fire on a command that only carries the
@@ -151,14 +193,15 @@ def _parse_build_files(build_path: str) -> list[str] | None:
 
     Returns None when no Files: section exists (no enforcement),
     an empty list when a section exists but lists nothing
-    (method docs only), or the listed paths.
+    (the always-editable set only), or the listed paths.
 
     Robust to a stray, content-bearing `Files: a, b, c` line — e.g. one
     copied into the Entry field from a work item's own text. Such a line used
     to shadow the real section: the parser latched onto the FIRST line
     starting with `Files:`, found no bare-path bullets beneath it, broke at
     the next prose line, and returned an empty list — which locked the build
-    out of its own files (method docs only). Two changes fix that, and the
+    out of its own files (the always-editable set only). Two changes fix that,
+    and the
     pair is the fail-safe choice (a malformed file can never silently turn
     the lock off):
 
@@ -230,7 +273,11 @@ def _normalise(path: str) -> str:
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """Check if a path is a method doc (QUEUE.md, LOG/, _build.md, _plan.md)."""
+    """True for the always-editable set: QUEUE.md, LOG/, _build.md, _plan.md.
+
+    The function name is internal and kept; what a reader relies on is the
+    enumerated contract in this module's header, not this name.
+    """
     norm = _normalise(filepath)
 
     for doc in ("QUEUE.md", "_build.md", "_plan.md"):
@@ -362,7 +409,8 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     boundary: everything else ASKS, nothing is forbidden. QUEUE.md, _plan.md
     and LOG/ are covered by _is_method_doc; SPEC.md is added here because /plan
     edits it by design (a SPEC change decided in planning is made in that same
-    session), even though it is deliberately NOT a method doc for the build
+    session), even though it is deliberately NOT in the always-editable set
+    for the build
     scope-lock. FAQ/ is added because the close's FAQ-sync disposition is a
     MANDATED edit — scaffolded method material, same family as LOG/ — and a
     required step that prompts every time trains the user to click through
@@ -386,6 +434,80 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
         or _is_research_dir(filepath, cwd)
         or _is_scratchpad_dir(filepath, cwd)
     )
+
+
+def structured_write_targets(command: str) -> list[str]:
+    """Literal file paths a structured shell write names as its target.
+
+    Deliberately narrow. Returns paths only where the command is recognisably a
+    Python invocation AND the write call carries a literal quoted path. Anything
+    else returns nothing and the command passes — a form that does not parse
+    cleanly is never guessed at.
+    """
+    if not PY_INVOCATION.search(command):
+        return []
+    targets = []
+    for pattern in (PY_OPEN_WRITE, PY_PATH_WRITE):
+        for m in pattern.finditer(command):
+            path = m.group("path").strip()
+            # A path carrying substitution syntax is computed, not literal —
+            # the ambiguity case, so it is dropped rather than resolved.
+            if path and "$" not in path and "{" not in path:
+                targets.append(path)
+    return targets
+
+
+def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool) -> None:
+    """Publish the editing-state signal a companion app reads. Never raises.
+
+    A live Markdown reader/editor open on the same file as Claude needs to know
+    when Claude is writing, so the two don't land on each other mid-sentence.
+    Inferring that from file-modification times was rejected: a watcher can see
+    THAT a file changed but not WHO changed it, and can never tell "finished"
+    from "paused to think" — and a wrong guess locks the user out of their own
+    document.
+
+    So this is a HEARTBEAT, not a lock. The marker always carries a fresh
+    timestamp, and a reader treats a stale marker as "not editing" whatever the
+    flag says. That staleness rule is the safety property: a session that
+    crashes between starting a write and finishing one leaves a flag stuck on,
+    and without staleness the reader would lock the user out permanently —
+    reintroducing the exact harm the timing-guess approach was rejected for.
+
+    One file PER SESSION, `editing-<session-id>.json`, because two Claude
+    sessions in one project is a supported shape. With a single shared file,
+    session A finishing a write would clear the flag while session B was still
+    writing. Per-session files make the reader's rule trivially correct:
+    editing is happening if ANY file here is active and fresh.
+
+    Errors are swallowed in full: a companion-app convenience must never be able
+    to block or fail the user's actual work.
+    """
+    try:
+        import datetime
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        os.makedirs(marker_dir, exist_ok=True)
+        safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        payload = {
+            # `version` leads and is non-negotiable: another application is
+            # built against this contract, so it must be able to recognise a
+            # format it doesn't understand and fall back safely.
+            "version": 1,
+            "active": bool(active),
+            "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            # Absolute paths, so a reader can hold off typing in the affected
+            # document only, rather than blocking everything.
+            "files": [os.path.abspath(filepath)] if filepath else [],
+            "session": session_id or "",
+            "pid": os.getpid(),
+        }
+        with open(
+            os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(payload, f)
+    except Exception:
+        return
 
 
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
@@ -496,6 +618,49 @@ def main() -> int:
                     + PATTERN_AS_DATA_NOTE
                 )
 
+        # Structured shell writes, during a build only. Outside a build there is
+        # no agreed file list to check against, and the planning gate already
+        # covers that case for the edit tools; adding a shell check there would
+        # be enforcement where the method deliberately chose visibility.
+        if has_active_build:
+            build_files = _parse_build_files(build_path)
+            if build_files is not None:
+                for target in structured_write_targets(command):
+                    resolved = target if os.path.isabs(target) else os.path.join(
+                        cwd, target
+                    )
+                    if (
+                        _is_method_doc(resolved, cwd)
+                        or _is_memory_dir(resolved)
+                        or _is_research_dir(resolved, cwd)
+                        or _is_scratchpad_dir(resolved, cwd)
+                    ):
+                        continue
+                    if build_files and _is_build_file(resolved, cwd, build_files):
+                        continue
+                    return _deny(
+                        "[Sovereign Implementer] BLOCKED: this command writes to "
+                        f"a file through a script rather than through the editing "
+                        f"tools.\n\nTarget: {target}\n\n"
+                        "That route walks around the scope-lock — the file check "
+                        "runs on Edit and Write, not on shell commands — and it "
+                        "reads the file through a mount that can hold a stale "
+                        "view, so it can silently overwrite work.\n\n"
+                        "Use Edit or Write instead. If the edit is a large or "
+                        "awkward one (removing a whole work item from the queue "
+                        "is the usual case), there is a purpose-built tool for "
+                        "it: scripts/reorder_queue.py moves and deletes queue "
+                        "items byte-for-byte, addressed by slug.\n\n"
+                        "If the file genuinely belongs in this build, halt and "
+                        "add it to _build.md's Files: section with the user's "
+                        "approval.\n\n"
+                        "Note the honest limit of this check: it recognises "
+                        "script writes whose target path is written out "
+                        "literally. A command whose target is computed at "
+                        "runtime is not detected — it is not a permitted "
+                        "workaround, it is a gap."
+                    )
+
         return 0
 
     # --- Edit/Write/MultiEdit: file-scope enforcement ---
@@ -506,8 +671,15 @@ def main() -> int:
     if not filepath:
         return 0
 
+    # Publish the editing-state signal: a write is about to happen, on this
+    # file, now. Placed before the scope checks so the marker is up before the
+    # write, which is the whole point; if the write is then denied, the marker
+    # simply goes stale and the reader treats it as not-editing. Cannot block
+    # or fail the tool call — see write_editing_marker.
+    write_editing_marker(cwd, data.get("session_id", ""), filepath, True)
+
     # Rule 1: _build.md's Files: section governs editability. Tri-state:
-    # no section = skip enforcement, present but empty = method docs only,
+    # no section = skip enforcement, present but empty = always-editable set only,
     # entries listed = enforce the list.
     if has_active_build:
         build_files = _parse_build_files(build_path)

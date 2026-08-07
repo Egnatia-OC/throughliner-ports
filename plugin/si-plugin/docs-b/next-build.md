@@ -63,6 +63,19 @@ worked — routes out via Scope management below.
                                            # destination-first at every step
 ```
 
+**Before building, and again whenever the work stalls: is this item's goal
+already met by a tool the user has?** If it is, stop building — say so plainly,
+name the thing that already works, and tick the item. Don't build a second
+route to a result that already exists (plugin-behaviour.md, the
+don't-hand-build counterweight). This fires *mid-build*, not only at the start,
+because that is where it was actually needed: a run spent most of its length
+trying to obtain Claude's own command-line route to two capabilities the user
+already had working, until the user stopped it with *"why are we doing it this
+way? why can't i just use android studio like i always do?"*
+
+The condition is checkable rather than a judgment: the goal is met by something
+the user has. It is not "never write anything a tool could write".
+
 **A check Claude can run is part of building, not a separate test.** Run whatever
 verification you can — read the code back, run a command, inspect output, check
 file content — as part of getting the item right.
@@ -140,21 +153,49 @@ work *easier to find later*, add it to _build.md as part of this item's work
 (appending any files it names to `Files:`) and continue. Evaluate against the
 coherence rules, not user convenience. **When uncertain, capture.**
 
-### Scope grows during the build  [PROMPT]
+### Scope grows during the build
 
-The trigger is growth against **the described work**, not the Files: list. Name
-the new work and the files it needs, then:
+The trigger is growth against **the described work**, not the Files: list. And
+the first question is which of two things happened, because they get different
+answers:
 
 ```
-minor        ->  ask to add it: "This needs [work], which means editing [file] —
-(1-2 files)      add it to scope?" Once approved, append any unlisted file to
-                 _build.md's Files: BEFORE editing it — the scope-lock denies
-                 edits to unlisted files.
+THE WORK GREW               ->  WIDEN AND NARRATE, then CONTINUE.
+  the described work is         Append the file to _build.md's Files: list, say
+  clear; it turns out to        in one line which file you added and why, and
+  need a file the list          carry on. The addition rides into the commit,
+  didn't name                   where it is as readable as any other change.
 
-significant  ->  propose splitting. Finish what's scoped, /done to close, then
-(many files,     /plan to queue the rest.
- design
- uncertainty)
+THE ITEM WAS UNDERSPECIFIED ->  HALT and surface it  [PROMPT].
+  you can't tell what the       Building it means inventing scope the user never
+  described work changes        agreed to, and no amount of narration fixes
+  inside the files it names     that. This is the same seam /next self-scoping
+                                already uses.
+```
+
+**Widening is permitted because the mechanism always permitted it — the halt was
+instruction, not enforcement.** `_build.md` is classed alongside the queue and
+the log, so a build has always been able to write to its own Files list; the
+hook's own denial text says as much. So this costs no hook change, and the
+scope file being editable is not a new risk being taken on.
+
+**The narration limb is NOT optional, and it is what makes this safe.** An
+expansion that is permitted but unannounced is strictly worse than one that
+halts: the check becomes a human reading a diff, and that only works if the
+change is visible where they are looking. One line, at the moment you add the
+file.
+
+**Why the halt was worth trading away.** /next is unattended in practice, so
+every legitimate scope discovery ended a run that could have continued. That is
+not hypothetical — a real build's self-scoping caught a genuine ripple and could
+only report it by halting mid-run, which is exactly the interruption an
+unattended run should not need.
+
+```
+significant  ->  still propose splitting. Finish what's scoped, /done to close,
+(many files,     then /plan to queue the rest. Widening covers a file or two the
+ design          work turns out to need; it is not a licence to absorb a second
+ uncertainty)    piece of work.
 ```
 
 **A SPEC change the build discovers it needs is a legitimate scope-grow.** Name
