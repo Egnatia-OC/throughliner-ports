@@ -66,11 +66,7 @@ Every held item gets a one-line triage note **in the blitz-close LOG entry** say
 
 **Generate new captures** via systematic sweeps, filed as proper captures in Unprocessed. **There is no capture target, and deliberately no number here.** Two runs swept honestly and found 5, then 2, against an original "~10–15" — the docs were simply healthier than assumed, and a number reads as a quota no matter what qualifier sits beside it. Never manufacture findings to look productive; a clean sweep is the finding. The run's success measure is the queue getting *shorter*, not more captures filed.
 
-Sweeps:
-
-- **Method compliance sweep** over `docs-b/` using `resources/method-compliance-audit-checklist.md` (authoring compliance, response-shape tag placement, narration drift).
-- **Cross-doc consistency greps**: retired terms (push marker, batch types, `Completion mode`), stale cross-references, hook-enforced literals vs docs, template-vs-procedure drift.
-- **Hook code read**: `session_start.py`, `pre_tool_use.py`, `post_tool_use.py` for defects of the kind already found (fail-open holes, once-ever markers).
+Sweeps: **the systematic consistency sweeps have one home now — the soak-end differential audit** (`resources/consistency-audit-plan.md`), which runs over the whole branch just before the merge and covers what the three sweep bullets that used to sit here covered (compliance checklist, cross-doc consistency greps, hook code read) with a fuller pass list. Running them on blitz night too would double the work and produce findings the night's own later builds immediately stale. The blitz's capture generation is what its builds and triage surface in course, not a standing sweep.
 
 ## Phase 3 — Build everything that passes the bar
 
@@ -120,6 +116,7 @@ Worked on 2026-08-06: the /plan following the blitz opened by reporting host `1.
 - **Save this plan for reuse:** commit a copy as `resources/overnight-blitz-plan.md` on the branch (host-only dev artifact), so a future blitz can rerun it without re-deriving the structure and departures.
 - Final /done-family close on the branch: LOG entry for the blitz's tail, forward advisory at the top of Unprocessed orienting tomorrow's /plan.
 - Handoff (in the final LOG entry + final chat message): what was built (by slug), what captures were generated, which were auto-built vs held and why, the departures exercised, the branch instructions below, and the reminder: **fully quit and relaunch the app** to load the test build.
+- **The soak ends with the differential audit, and the audit is what "earned trust" means.** Before the merge is offered, run the differential consistency audit (`resources/consistency-audit-plan.md`) over the whole branch — blitz plus soak in one span — and clear its repair captures through one /plan + /next. The full cycle: branch → blitz builds → soak → differential audit → reconcile → merge → branch again. A merge offered before the audit has run and reconciled is the gamble, not the default.
 - **Recommend a soak, not an immediate merge.** The branch's whole point is that Alex can run on the blitzed state for a day or two — the test build is snapshotted from the branch, so daily sessions exercise the new behaviour with main untouched — before deciding. So the handoff and the forward advisory present **soak first** as the default: stay on the branch, work normally, and merge (`git checkout main && git merge overnight-blitz-<date>`) once it has earned trust, or revert (checkout main, re-run the plugin update to re-snapshot main, restart) if it hasn't. Merge-on-morning-one remains available but is named as the gamble it is, never the recommendation — the first run's advisory pushed straight to merge and that was wrong as general practice. One honest caveat to state in the handoff: work done during the soak lands on the branch, so a late revert discards the soak days' work too — the decision gate covers blitz-plus-soak together, and the longer the soak runs well, the more the decision has already made itself.
 
 ## Verification

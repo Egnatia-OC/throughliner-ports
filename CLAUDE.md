@@ -294,6 +294,10 @@ Model: Opus 5
 
 The model this project mostly runs. `session_start.py` uses it to choose which docset a session loads, layered under the payload's `model` field where that arrives — which, in the desktop app, it doesn't. Before this field existed the choice was made from that field alone, so docset B was inert here despite being fully built. Change it by saying so.
 
+**Claude cannot read its own context level in the desktop app, by any route.** The status line was the only one, and the desktop app **silently ignores the `statusLine` setting** — reported as `anthropics/claude-code#41456`. [statusline-context-reader] was built as a probe against exactly this and deleted on its own pre-agreed condition once the setting was found to be ignored, taking the probe and the setting with it.
+
+This lives here rather than only in the LOG because the question has already come back twice: once as that item, and again when the editor-switch route was considered partly for this reason and then closed (the desktop app is the platform — SPEC.md, Who it's for). So any design reaching for context-awareness — a compaction guard, a size-the-run heuristic, a "context is filling" warning — has no input to read and must not be built as though it might. The one available signal is the user's own report that a session is degrading, which the behaviour rules already treat as the trigger for offering a fresh-session handoff.
+
 ## Repo visibility
 
 Repo visibility: public — verified 2026-08-06 via `gh api` and `gh repo view` against `FlintcraftTech/throughliner`, and re-confirmed as a deliberate choice.
