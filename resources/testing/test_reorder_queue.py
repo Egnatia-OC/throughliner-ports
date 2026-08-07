@@ -375,6 +375,34 @@ def test_delete_from_unprocessed():
           order_of(new) == ["alpha", MARKER], repr(order_of(new)))
 
 
+def test_move_section_after_last_cleared_reports_below():
+    """AFTER the marker's own anchor item lands the block BELOW the marker —
+    the observed 2026-08-07 defect. The mover now REPORTS which side the item
+    ended on, so the ambiguity is visible at the moment it happens."""
+    rc, err, new = run(
+        build_queue("#### Kept [alpha]\nRationale.\n\n" + MARKER + "\n"),
+        "--move-section", "later", "Unprocessed", "Processed",
+        "--position", "AFTER", "alpha",
+    )
+    check("move-section-after-anchor: exits 0", rc == 0, err)
+    check("move-section-after-anchor: lands below the marker",
+          order_of(new)[:3] == ["alpha", MARKER, "later"], repr(order_of(new)))
+    check("move-section-after-anchor: reports BELOW",
+          "BELOW the cleared-to-run marker" in err, err)
+
+
+def test_move_section_top_reports_above():
+    """--position TOP lands above the marker and the mover says so."""
+    rc, err, new = run(
+        build_queue("#### Kept [alpha]\nRationale.\n\n" + MARKER + "\n"),
+        "--move-section", "later", "Unprocessed", "Processed",
+        "--position", "TOP",
+    )
+    check("move-section-top: exits 0", rc == 0, err)
+    check("move-section-top: reports ABOVE",
+          "ABOVE the cleared-to-run marker" in err, err)
+
+
 def main():
     print("reorder_queue.py regression tests")
     for fn in (
@@ -396,6 +424,8 @@ def main():
         test_delete_first_item_when_marker_anchored_to_it,
         test_delete_block_containing_heading_like_lines,
         test_delete_from_unprocessed,
+        test_move_section_after_last_cleared_reports_below,
+        test_move_section_top_reports_above,
     ):
         print(fn.__name__)
         fn()

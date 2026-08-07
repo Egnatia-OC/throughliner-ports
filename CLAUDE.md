@@ -175,6 +175,27 @@ Work on this project runs in cycles, and the cycle has a shape worth writing dow
 
 **This is a convention, not a mechanism — and that distinction is the risk.** Nothing enforces this gate. No hook checks it, no script blocks a merge, no lint flags a branch that skipped it. That is precisely the shape of the **retired push marker**: documented in two docs, implemented in neither, silently letting work run against a stale host until the wrong results read as the design being wrong rather than the sequencing having failed. This gate escapes that fate only because **the merge is itself a queue item whose prose carries the gate**, and this section is what tells whoever writes the *next* merge item to include it. If a merge item is ever written without it, nothing will notice. Don't mistake the convention for enforcement.
 
+### The soak-end sequence — the merge-and-rebranch mechanics, written down
+
+The rhythm above names the phases; this is how the merge-and-rebranch moment is actually run, recorded from the first merge that completed (2026-08-08) so it is repeated rather than rediscovered:
+
+```
+1. commit everything on the branch, INCLUDING the hash backfill
+2. git checkout main
+3. git merge <branch>                    # fast-forward when nothing landed on main
+4. verify: git branch --merged main      # the branch appears
+           queue structure survives      # item count, both sections, ONE marker
+5. git push
+6. git checkout -b <next-branch>         # the "branch again" step — easy to skip,
+                                         # and skipping it lands the next blitz
+                                         # straight onto main
+7. rezip + FULL app restart              # so sessions run the build being tested
+```
+
+**Two blockers recur at every soak-end, and both are the method's own mechanisms colliding with a branch switch.** First, the hash backfill dirties `LOG/index.md` every session by design, and an uncommitted backfill aborts `git checkout` because that file differs between branches — the error names a file the user has no reason to connect to the hook, so step 1 commits it first, always. Second, a file the branch deletes but the *stale installed host* still writes gets regenerated untracked and blocks the checkout (the payload-sample file did exactly this); move it to the scratchpad and let the merge remove it from main for good. One inversion worth keeping in mind: a merge can be what *removes* an exposure from main — main carried the tracked payload sample publicly for as long as that branch went unmerged, so holding a merge is not automatically the cautious option.
+
+Two things deliberately left open rather than decided here: whether the blockers deserve mechanical help (a pre-merge check reporting "these files will block the switch" would be cheap and fire once per cycle), and whether step 7 rightly follows the merge — the first run did it before, by accident rather than design.
+
 **A release fires from `main` after the merge, never from the branch.** The Release ritual's trigger carries a branch condition (see the Push ritual's release check below) written as this gate's reciprocal: the two were originally written without each other in view, which is how a branch close once ran the release check thirteen commits ahead of main and had to be held by hand. When a held release contains an actively-spreading fix, the escape is to expedite the merge, not to release from the branch.
 
 `resources/overnight-blitz-plan.md` defers to this: its own sweeps now name the soak-end differential audit as their one home, and its handoff names the audit-then-reconcile gate as what "earned trust" means before a merge is offered.

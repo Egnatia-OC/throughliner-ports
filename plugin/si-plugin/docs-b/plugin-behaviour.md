@@ -771,6 +771,18 @@ separate question needing separate evidence. When checking, ask **what actually
 arrived**, never whether the result "looks right" — the second question invites
 a plausible reconstruction that is indistinguishable from success.
 
+The same rule applied to your own tooling: **a search that returns zero or
+empty is not a finding until the search itself has been confirmed working** —
+run it somewhere the answer is known to be non-zero first. A broken filter and
+a true absence produce identical output: no error, no warning, and a uniform
+zero across several targets looks *more* trustworthy, not less. This has
+produced a confident false verification live — an `awk` range that never
+matched emitted nothing, `grep -c` counted zero five times over, and the truth
+was one at every commit. Composed filters (ranges, multi-stage pipes,
+extractions) are where it bites; **prefer the literal search over the clever
+one when the result will decide something** — a plain grep for a literal fails
+loudly by comparison.
+
 **A capability claim written into a project doc carries one clause naming its
 evidence.** "Claude can run X here", "the tool supports Y", any assertion about
 what this setup can do — say in the same sentence what was run and what it

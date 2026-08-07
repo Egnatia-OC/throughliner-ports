@@ -2,6 +2,9 @@
 
 One-line summaries of each session. Newest first.
 
+- [HASH] — docs-b/plugin-behaviour.md — clause on it-ran-vs-it-worked: a **zero search result** is confirmed against a known-non-zero case before it counts; prefer the literal search over the composed one. → 2026-08-08-verification-tooling-can-lie-confidently.md
+- [HASH] — scripts/reorder_queue.py, test_reorder_queue.py — `--move-section` now **reports which side of the readiness marker** the item landed on (ABOVE/cleared vs BELOW/waiting); the observed shelve-instead-of-clear defect pinned as two test cases. → 2026-08-08-mover-after-last-cleared-item-crosses-marker.md
+- [HASH] — CLAUDE.md — branch-cycle gains the **written soak-end sequence** (7 steps), its two recurring blockers (backfill dirt aborts checkout; stale-host-regenerated files block the merge), and the deferred-merge exposure inversion; two sub-questions stated open. → 2026-08-08-soak-end-sequence-needs-mechanics.md
 - [HASH] — docs-b/plugin-behaviour.md — Captures rule added: a capture correcting an existing work item must **disarm** it in the same act (amend / move below line / delete, three routes named). → 2026-08-08-correction-must-disarm-the-corrected-item.md
 - [HASH] — docs-b/plan.md — resolve-vs-capture gains the routing clause: a blocking question /plan can't settle **cheaply** files as its own `[audit]` item naming the blocked item; keep-step points at it. → 2026-08-08-route-audit-shaped-questions-to-the-audit.md
 - [HASH] — resources/testing/test_pre_tool_use_shell_writes.py (new), docs-b/plugin-behaviour.md, CLAUDE.md — shell-write matcher test suite (6 green) wired into the rezip ritual; file-safety gains the append-to-tail and multi-site-edit routes. FINDING: the matcher passes **in-scope** targets, so it would have caught neither real slip → captured. → 2026-08-08-shell-heredoc-write-immediately-after-authoring-the-rule.md

@@ -366,6 +366,28 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
     sys.stderr.write("reorder_queue: moved [%s] %s -> %s (%s)\n"
                      % (slug, sec_from, sec_to, position or 'BOTTOM'))
 
+    # Report which side of the readiness marker the item landed on. The marker
+    # is a line, not an item, so "AFTER <the last cleared item>" is ambiguous:
+    # positionally the marker sits between that item and the next, and a move
+    # intended to CLEAR an item has landed it below the marker — shelved, not
+    # cleared — with a normal success line and nothing else noticing (a live
+    # defect, 2026-08-07). Stating the side makes the ambiguity visible at the
+    # moment it happens rather than removing it.
+    if t_had:
+        marker_i = item_i = None
+        for i, l in enumerate(t_out):
+            if MARKER_RE.match(l):
+                marker_i = i
+            elif heading_slug(l) == slug:
+                item_i = i
+        if marker_i is not None and item_i is not None:
+            side = "ABOVE" if item_i < marker_i else "BELOW"
+            state = ("cleared to run" if side == "ABOVE"
+                     else "waiting, NOT cleared to run")
+            sys.stderr.write(
+                "reorder_queue: [%s] now sits %s the cleared-to-run marker "
+                "in %s (%s)\n" % (slug, side, sec_to, state))
+
 
 def main():
     args = sys.argv[1:]
