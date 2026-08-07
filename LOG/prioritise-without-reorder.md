@@ -1,4 +1,4 @@
-# [HASH] — A prioritisation ask now takes a session-local focus order; position sets the durable default, not a binding order
+# 96166c6 — A prioritisation ask now takes a session-local focus order; position sets the durable default, not a binding order
 
 The user watched a session state it would take the design forks first and simply skip the non-forks as it reached them, without moving anything, and asked for that judgment to become a rule. Their reasoning: reordering is very token-expensive. Rewriting the queue to express "do these first" pays a full mechanical rewrite for something a session can hold as an order of attention — and where the real want is *which work gets attention next*, the cheap answer already satisfies it in full.
 

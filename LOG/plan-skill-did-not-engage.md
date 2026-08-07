@@ -1,4 +1,4 @@
-# [HASH] — Documented the /plan name clash with Claude Code's own plan command, and named the qualified form that works
+# 96166c6 — Documented the /plan name clash with Claude Code's own plan command, and named the qualified form that works
 
 **Diagnosed at processing: it was never a silent failure — the harness said what was wrong and the message was read as noise.** The session's error was *"plan is a UI command, not a skill."* That is Claude Code stating that the bare name `plan` resolves to one of its own built-in commands — it has a plan mode of its own. The plugin's skill was not skipped silently; its short name was taken.
 

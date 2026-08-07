@@ -1,4 +1,4 @@
-# [HASH] — Replied to and closed the OpenCode-port PR, and the user's edits to the draft changed what the reply had to be
+# 96166c6 — Replied to and closed the OpenCode-port PR, and the user's edits to the draft changed what the reply had to be
 
 PR #1 had been open since 2 July with zero comments and `updatedAt` identical to `createdAt` — five weeks of total silence on a 2,815-line contribution. The pressing part was social rather than technical: the project had invited this person as a collaborator on another repo and had a queued item sending him collaboration questions, so it was asking him for things while his contribution sat unacknowledged.
 

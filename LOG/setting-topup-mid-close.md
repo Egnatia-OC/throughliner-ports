@@ -1,4 +1,4 @@
-# [HASH] — Deleted the session-start setting top-up and rehomed the catch-up in /plan's opening read
+# 96166c6 — Deleted the session-start setting top-up and rehomed the catch-up in /plan's opening read
 
 The top-up told a session to open its first reply with a missing-setting question. Three sightings: it wedged *"Which .md editor do you work in here?"* into an already stop-heavy close; it fired in this project the same day; and on remote control it opened a fresh session's `/next` and **held a queued run — four builds plus a walk-through — behind it.** The user's reaction is the design input: *"why do you need to know that?"* — the ask solicited a setting whose purpose they no longer even remembered, which is what an execution-gating question must never be.
 

@@ -1,4 +1,4 @@
-# [HASH] — Sent the behaviour rules to unadopted folders, and gave /setup the precedence line its siblings carry
+# 96166c6 — Sent the behaviour rules to unadopted folders, and gave /setup the precedence line its siblings carry
 
 **The exemption's stated reason had evaporated, confirmed by reading the hook rather than assumed.** Both docsets' `setup.md` justified omitting the behaviour rules by saying they "aren't loaded yet" because /setup runs before adoption. That described the **old delivery model**, where the hook inlined the rules into the session's context. It no longer does: the hook emits a directive telling the session to **read** `plugin-behaviour.md` from the installed plugin, and that file ships with the plugin, readable whether or not anything has been adopted. So the rules were absent not because they were unavailable, but because the unadopted branch did not point at them.
 

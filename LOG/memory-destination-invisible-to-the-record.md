@@ -1,4 +1,4 @@
-# [HASH] — Made asking before a memory write explicit, and gave a memory write a one-line trace in the LOG
+# 96166c6 — Made asking before a memory write explicit, and gave a memory write a one-line trace in the LOG
 
 At a close in another project, Claude surfaced a discovery — a local build tool's daemon producing a loopback error that reads as a firewall block — reasoned that it was a fact about **the machine** rather than that project, noted it was recorded in that project's CLAUDE.md where no other project would ever see it, and offered to save it to memory as the one place that travels. It asked rather than acting.
 

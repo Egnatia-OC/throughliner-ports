@@ -1,4 +1,4 @@
-# [HASH] — Said which docset wins when a stale host emits no routing directive, and made the choice visible rather than silent
+# 96166c6 — Said which docset wins when a stale host emits no routing directive, and made the choice visible rather than silent
 
 Most of this item was already resolved by shipped work: the session-start hook now emits a docset directive on every 5-series session, carrying its own self-check. So the manoeuvre the original capture recorded as a judgment call nothing permits — the skill naming one path and Claude reading another — is now issued by the plugin itself.
 

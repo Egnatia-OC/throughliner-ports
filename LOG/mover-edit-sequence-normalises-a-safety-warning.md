@@ -1,4 +1,4 @@
-# [HASH] — Reversed the mover sequence to edit-then-move, so the file-changed-on-disk warning stops firing benignly
+# 96166c6 — Reversed the mover sequence to edit-then-move, so the file-changed-on-disk warning stops firing benignly
 
 Twice in one session an Edit to QUEUE.md returned *"the file had been modified on disk since you last read it"*, both times caused by that same session's earlier mover run, which rewrites the whole file. Both were benign and both were verified benign.
 

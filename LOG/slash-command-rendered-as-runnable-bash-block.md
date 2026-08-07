@@ -1,4 +1,4 @@
-# [HASH] — Slash commands are named in prose, never fenced
+# 96166c6 — Slash commands are named in prose, never fenced
 
 Reported from remote control with two screenshots: a session ended two messages — *"Run /done here to record the build and commit it?"* — and beneath each put a fenced block tagged **Bash** containing `/done`.
 

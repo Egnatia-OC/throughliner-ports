@@ -1,4 +1,4 @@
-# [HASH] — Turned the check-the-documentation rule inward onto the method itself, including claims made in passing
+# 96166c6 — Turned the check-the-documentation rule inward onto the method itself, including claims made in passing
 
 The rule to extend already existed and was quietly scoped wrong. The diagnosis-order rule says to check what a tool documents about itself before depending on its behaviour — and it is written throughout in terms of *external* tools, its justification reading that the tool is used by very many people while our own setup is the unverified thing. So it excluded the one tool Claude speaks about with the most authority and the least verification: **the method itself**, whose documentation is the procedure docs already loaded in the session. Nobody noticed the exclusion until the advice went wrong.
 

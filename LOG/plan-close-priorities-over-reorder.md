@@ -1,4 +1,4 @@
-# [HASH] — Promoted shared-scope grouping from a tie-breaker to the unit work moves and runs in
+# 96166c6 — Promoted shared-scope grouping from a tie-breaker to the unit work moves and runs in
 
 The item arrived as a cost complaint about the close reorder and was reframed by the user into something better founded: **group by shared scope, not by priority.** Work items whose file lists overlap are gathered so the group **moves into Processed together and runs as one unit**.
 

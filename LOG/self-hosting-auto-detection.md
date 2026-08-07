@@ -1,4 +1,4 @@
-# [HASH] — Detected self-hosting at session start and suppressed the version-drift check, silently
+# 96166c6 — Detected self-hosting at session start and suppressed the version-drift check, silently
 
 The item's long-standing crux — what would detection switch on that ambient CLAUDE.md cannot? — was answered by an observed instance rather than by argument. A planning session opened with `session_start` reporting *"Plugin version changed since this project was last set up (1.12.0 → 1.19.0-test1) — an update has been installed."* That check exists for a consumer, to tell someone building their own app that their plugin updated. **In this project it is meaningless and permanently wrong**: `.si-version` records the version that ran /setup while `plugin.json` carries the current one, and the two can never agree again, because this is the project that produces the versions. Every rezip widens the gap by design, so the line fires at the top of every session, forever, carrying no information.
 

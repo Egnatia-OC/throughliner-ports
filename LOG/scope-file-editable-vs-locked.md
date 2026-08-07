@@ -1,4 +1,4 @@
-# [HASH] — A run may widen its own Files list and narrate it; underspecification still halts
+# 96166c6 — A run may widen its own Files list and narrate it; underspecification still halts
 
 **The capture's premise was corrected at processing, and the correction dissolved the fork as written.** `_build.md` is already editable during a build — `pre_tool_use.py` classes it alongside the queue and the log, and the hook's own denial text says as much. So the framing that this method locks its scope file where an independently-built tool deliberately leaves its own editable is **wrong about this method**. Mechanically the two designs already agree: the scope file is writable and an expansion lands in the diff where a human can read it. Verified by reading the hook rather than inferred.
 

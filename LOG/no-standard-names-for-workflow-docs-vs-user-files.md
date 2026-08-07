@@ -1,4 +1,4 @@
-# [HASH] — Enumerated the editable set instead of naming it, and retired "method docs" as a collective term
+# 96166c6 — Enumerated the editable set instead of naming it, and retired "method docs" as a collective term
 
 The capture's central claim — that "project docs" and "method docs" denote the same set — was checked at processing and is **false**, and what is actually true is worse. They denote two different sets, and they differ on the one file that matters: "project docs" means SPEC.md, QUEUE.md and LOG/, while the hook's always-editable set is QUEUE.md, LOG/ and the session's working file, with **SPEC.md explicitly excluded**. That exclusion is the containment which stops a build silently rewriting what the project is meant to be.
 

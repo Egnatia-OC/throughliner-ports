@@ -1,4 +1,4 @@
-# [HASH] — Added a claim-provenance clause: a capability claim in a project doc names its evidence, or is read as unverified
+# 96166c6 — Added a claim-provenance clause: a capability claim in a project doc names its evidence, or is read as unverified
 
 A session concluded that Claude could run Gradle in a project and wrote the recipe into that project's CLAUDE.md as settled fact. The evidence was `gradlew --version` succeeding — the one Gradle command that does not open a selector, so precisely the command that cannot detect the failure. A later session built a work item on the recorded fact and it collapsed the moment it ran.
 

@@ -1,4 +1,4 @@
-# [HASH] — Named the post-/done tail in the close routing, with a bounded cue and the safety half recorded as closed
+# 96166c6 — Named the post-/done tail in the close routing, with a bounded cue and the safety half recorded as closed
 
 Two halves, and one was already fixed before the build started.
 

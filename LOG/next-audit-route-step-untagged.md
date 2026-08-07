@@ -1,4 +1,4 @@
-# [HASH] — Tagged the audit close's routing step [BRIEF], and the tie broke on a rule rather than on preference
+# 96166c6 — Tagged the audit close's routing step [BRIEF], and the tie broke on a rule rather than on preference
 
 In `next-audit.md`, three of four sibling steps carry response-shape tags. Between them sat "Route the approved set to Unprocessed", carrying nothing — and it is not a silent step: it appends captures to Unprocessed, and the placement rule requires narrating placement in one line where judgment is exercised. So its output behaviour was left to chance in a doc where every neighbour's is pinned.
 

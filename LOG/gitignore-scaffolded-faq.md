@@ -1,4 +1,4 @@
-# [HASH] — The scaffolded FAQ is a local copy of the plugin's help: never committed, and restored whenever missing
+# 96166c6 — The scaffolded FAQ is a local copy of the plugin's help: never committed, and restored whenever missing
 
 /setup copies the FAQ templates into every adopted project. Those files explain how the **method** works — they are not part of what the user is building, and they get committed into the user's own repo where they read as clutter.
 

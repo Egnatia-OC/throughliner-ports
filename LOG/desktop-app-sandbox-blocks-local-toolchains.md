@@ -1,4 +1,4 @@
-# [HASH] — Built the blocked-capability ladder — try, research, ask once, hand back — with the MSIX sandbox as its worked example
+# 96166c6 — Built the blocked-capability ladder — try, research, ask once, hand back — with the MSIX sandbox as its worked example
 
 The finding underneath this was established by isolating a failure layer by layer rather than by inference: the Claude desktop app is an MSIX-packaged Windows application, so everything it launches inherits a package sandbox that permits *binding* an AF_UNIX socket but refuses *connecting* to one. That is exactly what Java's NIO selector needs, and therefore what every Gradle build needs. Plain TCP loopback works, which is why the surfaced error — `Unable to establish loopback connection` — points away from the real cause.
 

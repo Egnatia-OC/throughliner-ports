@@ -1,4 +1,4 @@
-# [HASH] — Corrected the project's GitHub identity to FlintcraftTech/throughliner after the rename happened outside the method
+# 96166c6 — Corrected the project's GitHub identity to FlintcraftTech/throughliner after the rename happened outside the method
 
 The user mentioned in passing that their GitHub username had changed because they needed the name for a new organisation. Checking rather than taking the heads-up at face value found more than it covered: the repo itself had already been renamed to `throughliner`, and the old username now belongs to an organisation.
 

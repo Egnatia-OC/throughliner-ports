@@ -1,4 +1,4 @@
-# [HASH] — Named the keep-step recommendation on the lead-with-the-decision rule, as an ordering fix rather than a length cap
+# 96166c6 — Named the keep-step recommendation on the lead-with-the-decision rule, as an ordering fix rather than a length cap
 
 After a recommendation message presenting three response options with reasoning for each, the user replied only *"please summarise"* — and the shortened version conveyed the same decision in about a fifth of the words. Earlier in the same session they twice asked for plain summaries because the analysis was not readable on its own, and once said *"I just do not get anything you are talking about here."*
 

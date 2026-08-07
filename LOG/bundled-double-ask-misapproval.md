@@ -1,4 +1,4 @@
-# [HASH] — An interrupted pending ask is re-asked alone, never bundled with the interruption's handling
+# 96166c6 — An interrupted pending ask is re-asked alone, never bundled with the interruption's handling
 
 Mid-session, Claude put a fresh capture confirmation and a pending work-item approval into one message. The user's "approve" was meant for the capture, and the work item was executed on it — caught only because the user said so: *"I didn't realise you'd bundled the ask."* The one-item-at-a-time rule was loaded and explicit, and it still slipped at exactly the moment it protects: two live asks in flight after an interruption.
 

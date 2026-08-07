@@ -1,4 +1,4 @@
-# [HASH] — Caught structured shell writes in the scope-lock, and corrected SPEC's overstated containment claim
+# 96166c6 — Caught structured shell writes in the scope-lock, and corrected SPEC's overstated containment claim
 
 `pre_tool_use.py` returned early for every tool that is not Edit/Write/MultiEdit, so file enforcement never ran for Bash or PowerShell — those reached the git-safety checks only, which consult the build's file list not at all. The hook documented this about itself in its own header.
 

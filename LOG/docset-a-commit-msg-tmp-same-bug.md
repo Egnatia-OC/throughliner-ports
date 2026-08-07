@@ -1,4 +1,4 @@
-# [HASH] — Corrected docset A's commit-message temp file to the session scratchpad, and removed a false claim about the scope-lock
+# 96166c6 — Corrected docset A's commit-message temp file to the session scratchpad, and removed a false claim about the scope-lock
 
 `docs/done.md` told a closing session to write `COMMIT_MSG.tmp` into the project root, justified by a sentence saying the scope-lock is not active there once `_build.md` has been deleted. That sentence is **false about `pre_tool_use.py`**, the hook both docsets run underneath: the file scope-lock is indeed inactive with no active build, but the planning-session file gate then applies, and a write outside the small set a session touches by design returns *ask*. So the instruction produced a permission prompt at every close, on a step with nothing for the user to decide, at the very end of a session — where an unexplained prompt costs most, because there is no way to tell a routine mechanism from something going wrong.
 

@@ -1,4 +1,4 @@
-# [HASH] — Recorded summarise-for-the-human as the decided default for all users, and fixed the authoring standard that contradicted it
+# 96166c6 — Recorded summarise-for-the-human as the decided default for all users, and fixed the authoring standard that contradicted it
 
 The user settled this: the short-summary-plus-pointer rendering is the default for **every** user — not a per-project setting and not tier-dependent. Their reason, in their own framing: the fight for working links to lines in files may never be won, so the method needs *something*, and this has to be it.
 

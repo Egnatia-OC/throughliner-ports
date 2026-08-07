@@ -1,4 +1,4 @@
-# [HASH] — Published a versioned `.throughliner/` editing-state signal other apps can read, as a heartbeat rather than a lock
+# 96166c6 — Published a versioned `.throughliner/` editing-state signal other apps can read, as a heartbeat rather than a lock
 
 A separate project of the user's — mdreader, a Markdown reader and writer — needs to know when Claude is writing a file it has open, so the two don't land on the same document mid-sentence. Inferring that from file-modification times was rejected at design and the reasoning is what shaped the build: a watcher can see *that* a file changed but not *who* changed it, and can never tell "finished" from "paused to think", so a wrong guess locks the user out of their own document.
 

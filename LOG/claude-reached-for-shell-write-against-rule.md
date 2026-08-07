@@ -1,4 +1,4 @@
-# [HASH] — Gave the queue mover a `--delete` operation, so removing a work item stops being the moment a shell write looks cheaper
+# 96166c6 — Gave the queue mover a `--delete` operation, so removing a work item stops being the moment a shell write looks cheaper
 
 Three recorded slips all took one shape: a work item was being removed from a long QUEUE.md, `Edit` demanded reproducing a large block exactly, and a heredoc'd Python splice looked cheaper. The third happened inside an unattended `/next` run with no user present and no harness classifier in the way, while the session was editing the very file holding the capture warning about it.
 

@@ -1,4 +1,4 @@
-# [HASH] — Before driving a verification, check whether it already exists as tracked work — a yes/no test, not a suspicion
+# 96166c6 — Before driving a verification, check whether it already exists as tracked work — a yes/no test, not a suspicion
 
 The trigger is a check with a yes/no answer, not a judgment about whether an urge is suspect. Before driving or walking through a test: **does this work already exist as a tracked item?** Already tracked → stop driving it and route it to /next, which walks a `[user]` item live and carries its findings through the proper close. Not tracked → the planning-session file gate already governs it, so the work cannot happen unremarked, and no new rule is needed.
 

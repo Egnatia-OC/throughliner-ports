@@ -1,4 +1,4 @@
-# [HASH] — Paired a don't-hand-build counterweight onto the reach-for-a-CLI rule, and routed stated setup facts into CLAUDE.md
+# 96166c6 — Paired a don't-hand-build counterweight onto the reach-for-a-CLI rule, and routed stated setup facts into CLAUDE.md
 
 Two failures were tangled together in one reported pain — Claude getting stuck in Gradle configuration on a new Android project while the user repeatedly said they had Android Studio and it changed nothing — and they needed separating before either could be fixed.
 

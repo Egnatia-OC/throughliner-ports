@@ -1,4 +1,4 @@
-# [HASH] — Named "one /plan per batch" as the sanctioned answer for recurring intake, beside the rule that forbids the shortcut
+# 96166c6 — Named "one /plan per batch" as the sanctioned answer for recurring intake, beside the rule that forbids the shortcut
 
 Split from the check-the-documentation item at its processing: that one is the rule half, and this is the **pressure** that produced the invention in the first place.
 

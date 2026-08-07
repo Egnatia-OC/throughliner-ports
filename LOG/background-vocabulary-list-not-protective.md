@@ -1,4 +1,4 @@
-# [HASH] — Made the background-vocabulary rule a test rather than a list, and supplied the plain substitutions
+# 96166c6 — Made the background-vocabulary rule a test rather than a list, and supplied the plain substitutions
 
 Across one session Claude used, without defining: **"the guard"** (an improvised synonym for the hook, which cost four turns to untangle — the user finally asked outright *"by 'that guard' do you mean the hook?"*), **"the routing half"** (*"half of what"*), **"the fork"**, **"scope-lock"**, **"the capture"** as a bare noun, and **"routing"** generally. Twice the user asked for a plain summary of an item because the analysis was not readable on its own, and once said plainly *"I just do not get anything you are talking about here."*
 

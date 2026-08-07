@@ -1,4 +1,4 @@
-# [HASH] — Research is never queued for /next: it can only produce knowledge, so it happens in the /plan that needs it
+# 96166c6 — Research is never queued for /next: it can only produce knowledge, so it happens in the /plan that needs it
 
 The user's rule, raised while processing a different item whose draft carried "research first" as its opening step: research must never be planned as next-work, because its only output is findings — captures, corrected premises, informed designs — never a build. Queuing it defers the very information the planning discussion needed, so the item gets designed on an unverified premise and the research lands later as a stale errand.
 
