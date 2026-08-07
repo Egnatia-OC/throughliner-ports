@@ -207,24 +207,25 @@ Three project docs structure each project:
 
 ## Processed
 
-Vetted work, ready to build — worked top to bottom. Each piece of work is one
-item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and
-a short rationale beneath. A leading flavor tag names how it runs — none for a
-build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only
-you can do. A security or privacy risk Claude surfaces lives here too, as a work
-item carrying a `Red flag · State: cleared` marker — work reaches this section
-only once its risk has been dealt with, so `cleared` is the only state you will
-see here. An uncleared one waits in Unprocessed. The line below marks
-how far down is cleared to build; anything below it is decided but not ready yet.
+> Vetted work, ready to build — worked top to bottom. Each piece of work is one
+> item: a `#### ` heading naming it, a `[slug]` at the end of that heading line,
+> and a short rationale beneath. A leading flavor tag names how it runs — none
+> for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a
+> step only you can do. A security or privacy risk Claude surfaces lives here
+> too, as a work item carrying a `Red flag · State: cleared` marker — work
+> reaches this section only once its risk has been dealt with, so `cleared` is
+> the only state you will see here. An uncleared one waits in Unprocessed. The
+> line below marks how far down is cleared to build; anything below it is
+> decided but not ready yet.
 
 --- Cleared to run above this line ---
 
 ## Unprocessed
 
-Captured ideas and tasks not yet fully processed. The next /plan session goes
-through these with you and decides each one's fate — keep it (move it up to
-Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows
-up in an editor's outline.
+> Captured ideas and tasks not yet fully processed. The next /plan session goes
+> through these with you and decides each one's fate — keep it (move it up to
+> Processed) or drop it. Each is filed as its own `#### ` heading, so the list
+> shows up in an editor's outline.
 
 [the first piece of work, from the interview — one `#### ` heading with a [slug] at the end of the line and a short rationale beneath]
 ````

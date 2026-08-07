@@ -146,13 +146,26 @@ def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool)
         marker_dir = os.path.join(cwd, ".throughliner")
         os.makedirs(marker_dir, exist_ok=True)
         safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        # Version-2 shape, kept field-for-field with pre_tool_use's opening
+        # half: project-relative `files` (forward slashes, no leading "./",
+        # absolute fallback for a file outside the project), `written_at` for
+        # diagnosis-not-freshness, `producer` constant, pid/session dropped.
+        if filepath:
+            rel = os.path.relpath(os.path.abspath(filepath), cwd)
+            marker_path = (
+                os.path.abspath(filepath)
+                if rel.startswith("..")
+                else rel.replace(os.sep, "/")
+            )
+            files = [marker_path]
+        else:
+            files = []
         payload = {
-            "version": 1,
+            "version": 2,
             "active": bool(active),
-            "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            "files": [os.path.abspath(filepath)] if filepath else [],
-            "session": session_id or "",
-            "pid": os.getpid(),
+            "written_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "files": files,
+            "producer": "throughliner",
         }
         with open(
             os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
@@ -356,8 +369,13 @@ def _check_orphaned_prose(annotated, warnings):
     A line is orphaned when it sits inside Processed or Unprocessed with no
     #### heading above it (since the section started, or since a non-item
     heading ended the previous block). Structural `--- ... ---` marker lines
-    are exempt. One flag per contiguous orphan run, so a destroyed heading
-    yields one warning rather than one per rationale line.
+    are exempt, and so are blockquote lines (`> ...`): /setup scaffolds each
+    work section's description paragraph as a blockquote immediately under the
+    section heading — positionally identical to a destroyed first item's
+    stranded rationale, so position cannot discriminate; form does. A stranded
+    work-item rationale is never a blockquote. One flag per contiguous orphan
+    run, so a destroyed heading yields one warning rather than one per
+    rationale line.
     """
     in_block = False
     flagged_run = False
@@ -375,7 +393,7 @@ def _check_orphaned_prose(annotated, warnings):
             in_block = False
             flagged_run = False
             continue
-        if not line or STRUCTURAL_LINE.match(line):
+        if not line or STRUCTURAL_LINE.match(line) or line.startswith(">"):
             flagged_run = False if not line else flagged_run
             continue
         if not in_block and not flagged_run:

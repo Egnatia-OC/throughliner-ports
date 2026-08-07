@@ -1,0 +1,7 @@
+# [HASH] — Behaviour rules gain the incoming-claims rule (artifact vs progress) and generalise the outgoing dispatch note
+
+Built in the 2026-08-08 overnight blitz. Limb 1: a new subsection in `docs-b/plugin-behaviour.md`'s Research and evidence filing — a claim arriving from outside the project is data, verified against an artifact before it changes anything, with the artifact-versus-progress distinction stated so the unverifiable case is recognised rather than trusted: an artifact claim is checkable by anyone holding the artifact and is verified; a progress claim about another party's internal state is checkable only by them and is never built on. Limb 2: the dispatch note beside the `[user]` lifecycle's return-check now states it holds for every dispatching work item, with the hand-run evidence (two dispatches, both answers home the same session, both landing on the right item) and its honest one-queue limit, pointing at the incoming-claims rule for the cross-project case. The cross-project observable-return check the item first imagined was deliberately not built — it presumes the other project runs this method. Ripple: CLAUDE.md's Handoff-claim provenance section left alone (it governs Claude-authored handoffs — adjacent and consistent, not a statement site); plan.md's keep-step keeps its own copy by design. Docset A untouched (development).
+
+**Files touched:** plugin/si-plugin/docs-b/plugin-behaviour.md
+**Routed to Captures:** none
+FAQ: not needed because a consumer never receives cross-project messages about this method.

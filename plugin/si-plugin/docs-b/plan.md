@@ -70,6 +70,22 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   A default, not an absolute. The test is "can /plan resolve this with what it has
   right now."
 
+  **A question that blocks an item and can't be settled cheaply files as its own
+  `[audit]` work item naming the item it blocks — not as a plain capture.** A
+  question is a claim about the world some command or document would settle, and
+  a plain capture loses that at filing: it reads as a thought to be weighed, so
+  the next session meets it as undesigned work rather than an errand. The
+  `[audit]` flavor already is the errand shape — read and report, edit nothing —
+  and its findings come home as ordinary captures, landing back on the item that
+  named it. The blocked item records the audit's slug and waits, or is skipped
+  with its design banked. Two bounds, both from the session that shaped this:
+  **"cheaply" is doing the work** — resolve-now has settled five such questions
+  inline in seconds each, and routing two documentation reads to an audit once
+  cost a full session cycle for answers /plan could have had in a minute, so the
+  clause fires only after resolve-now has genuinely failed; and a question
+  **unanswerable from inside any session** — needing the user, or a live
+  experiment — is `[user]` work or an experiment, never an audit.
+
 - **Research is never queued for /next.** Its only output is knowledge —
   findings, corrected premises, better-informed designs — never a build. So
   research that turns out to be needed in /plan is conducted **then and there**,
@@ -457,6 +473,11 @@ caught it, and the fact it establishes was already written in the project's own
 CLAUDE.md. A recommendation is made at exactly the moment a confident answer is
 most welcome and least examined, which is why the remedy is an action taken
 *before* speaking rather than a restraint applied while speaking.
+
+When a check turns out not to be cheap — the claim blocks the item and settling
+it needs more than the session can give it here — the routing rule in the Ground
+rules applies: it files as its own `[audit]` work item naming the blocked item,
+not as a plain capture.
 
 Cheap by construction: one item, one check, and only when the item makes such a
 claim — so the cost scales with the work being done, not with the size of the

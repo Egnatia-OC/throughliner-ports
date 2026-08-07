@@ -1,0 +1,9 @@
+# [HASH] — Editing-state marker version 2 shipped: relative paths, written_at, producer; pid and session dropped
+
+Built in the 2026-08-08 overnight blitz. The consolidated version-2 change set, as processed with Understudy's two design reviews, landed in both hooks and SPEC. The item carried a **cleared** red flag (designed out at processing 2026-08-07: relative paths remove the identifying payload entirely); carried through here per the lifecycle — the exposure this closes was the folder syncing absolute paths (with the account name) to Drive, which gitignore never touched.
+
+The shipped shape, verified live by driving both hooks and reading the produced marker: `version: 2`; `files` project-relative to the directory containing `.throughliner/`, forward slashes on every platform, no leading `./`, one path per marker, absolute fallback for a file outside the project (a marker must never lie about which file is edited — a judgment call made in-build, recorded here); `updated` renamed `written_at` (named for what it is safe to use for — diagnosis, not freshness); `pid` and `session` dropped (written by the hooks, read by nothing); `producer: "throughliner"` added, the format's own name so [rename-to-throughliner] never breaks a published value. The timestamp format is unchanged and was already correct. SPEC's contract updated: the fields bullet, the version story, and the transience sentence now claims only what gitignore delivers, naming sync as the route it never covered. Tell Understudy the version number once this reaches them via a release.
+
+**Files touched:** plugin/si-plugin/hooks/pre_tool_use.py, plugin/si-plugin/hooks/post_tool_use.py, SPEC.md
+**Routed to Captures:** none
+FAQ: not needed because the contract's audience is companion-app developers, served by SPEC; a consumer never reads marker files.

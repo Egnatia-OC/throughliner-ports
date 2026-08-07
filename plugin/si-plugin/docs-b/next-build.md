@@ -40,7 +40,8 @@ meets the real words.
 The text is doc-resident by the time it's revealed, so: a short summary of what
 the new wording does, plus a link to the edited file with the exact heading text
 of the section that changed, and the full new text on request. Never line-anchor
-a link to a `.md` file — that form is dead in the desktop app. And only after the
+a link to a `.md` file — the desktop app opens it at the top and silently
+ignores the anchor, so the link promises a position it won't deliver. And only after the
 write is confirmed by a re-read.
 
 **A small mid-build tweak to a just-surfaced readable edit is in scope**

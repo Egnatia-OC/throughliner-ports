@@ -108,8 +108,8 @@ render(run):                    # full rule: plugin-behaviour.md, doc-bound text
 ```
 
 These items already exist in QUEUE.md, so confirm the link resolves before
-sending it — and link to the file only, never with a line number, which is dead
-for `.md` in the desktop app.
+sending it — and link to the file only, never with a line number, which the
+desktop app silently ignores on `.md` files (the file still opens, at the top).
 
 **Where the run's items share a file scope, name the group and its shared scope
 in ONE line** — "these three all change the behaviour rules, so they build as

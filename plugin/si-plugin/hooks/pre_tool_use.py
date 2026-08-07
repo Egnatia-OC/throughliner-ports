@@ -489,18 +489,45 @@ def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool)
         marker_dir = os.path.join(cwd, ".throughliner")
         os.makedirs(marker_dir, exist_ok=True)
         safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        # Project-relative path, forward slashes, no leading "./" — version 2's
+        # contract. Relative paths carry no account name (the privacy reason
+        # this changed: the folder syncs, and gitignore never stopped that) and
+        # resolve correctly against a synced copy on another machine. A file
+        # outside the project falls back to its absolute path — a marker must
+        # never lie about which file is being edited.
+        if filepath:
+            rel = os.path.relpath(os.path.abspath(filepath), cwd)
+            marker_path = (
+                os.path.abspath(filepath)
+                if rel.startswith("..")
+                else rel.replace(os.sep, "/")
+            )
+            files = [marker_path]
+        else:
+            files = []
         payload = {
             # `version` leads and is non-negotiable: another application is
             # built against this contract, so it must be able to recognise a
-            # format it doesn't understand and fall back safely.
-            "version": 1,
+            # format it doesn't understand and fall back safely. Bumped to 2
+            # when `files` went project-relative — a version-1 reader would
+            # resolve relative paths against the wrong root and mis-hold.
+            "version": 2,
             "active": bool(active),
-            "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            # Absolute paths, so a reader can hold off typing in the affected
-            # document only, rather than blocking everything.
-            "files": [os.path.abspath(filepath)] if filepath else [],
-            "session": session_id or "",
-            "pid": os.getpid(),
+            # Named for what it is safe to use it for: diagnosis. Freshness
+            # comes from the marker file's own local mtime, never this field —
+            # a synced marker carries another machine's clock, and comparing
+            # that against the local clock fails closed (a dead session looks
+            # permanently current). The old name `updated` invited exactly
+            # that comparison.
+            "written_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "files": files,
+            # A format constant naming what wrote the marker, deliberately the
+            # format's own name rather than the plugin slug so a product
+            # rename never breaks a published value. `pid` and `session` were
+            # dropped at version 2: written by these hooks, read by nothing —
+            # pid is unusable across machines and redundant on one, session
+            # restates the filename.
+            "producer": "throughliner",
         }
         with open(
             os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
