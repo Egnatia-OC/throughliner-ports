@@ -1,4 +1,4 @@
-# [HASH] — Overnight blitz 2026-08-08 close: fourteen items built across two runs, six holds triaged, host rezipped to 1.19.0-test3
+# 6f87d40 — Overnight blitz 2026-08-08 close: fourteen items built across two runs, six holds triaged, host rezipped to 1.19.0-test3
 
 The blitz ran per `resources/overnight-blitz-plan.md` on branch `overnight-blitz-2026-08-08`. **Departures exercised, recorded per the override rule:** approvals deferred (captures, LOG entries and commits proceeded without live approval — everything reviewable in the branch diff); three Unprocessed captures processed and built autonomously under the softened bar; no push, no release, nothing outward-facing.
 

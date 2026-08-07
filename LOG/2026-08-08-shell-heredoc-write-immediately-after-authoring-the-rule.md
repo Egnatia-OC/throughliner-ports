@@ -1,4 +1,4 @@
-# [HASH] — Shell-write matcher test suite added and wired into the rezip ritual; file-safety gains the two missing routes
+# 3633c7d — Shell-write matcher test suite added and wired into the rezip ritual; file-safety gains the two missing routes
 
 Built in the 2026-08-08 overnight blitz. Both limbs of the item shipped, and its test did exactly the job it was built for.
 

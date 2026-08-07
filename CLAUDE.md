@@ -2,6 +2,8 @@
 
 Claude Code auto-loads this file on session start.
 
+Self-hosting: yes
+
 ## The two-section redesign is merged in — this is main
 
 The `queue-redesign` fork has been merged back into `main` (see LOG `execute-merge-to-main.md`). Main now carries the full two-section work-item model — Processed / Unprocessed, build/audit flavors with `[user]` walk-through, red flags as tagged state-carrying lines — with main's original plugin identity kept (`sovereign-implementer` / `flintcraft`, not the fork's `-x` rename). The reconciliation started from main's drained `QUEUE.md` and folded forward the still-relevant fork items by judgment; the fork's bloat and shipped work were left in git history. The founding decision and reasoning are in QUEUE.md's history under `[adopt-queue-redesign]` and LOG `fable-goal-queue-drain-adopt.md`.

@@ -1,4 +1,4 @@
-# [HASH] — Editing-state marker version 2 shipped: relative paths, written_at, producer; pid and session dropped
+# 3633c7d — Editing-state marker version 2 shipped: relative paths, written_at, producer; pid and session dropped
 
 Built in the 2026-08-08 overnight blitz. The consolidated version-2 change set, as processed with Understudy's two design reviews, landed in both hooks and SPEC. The item carried a **cleared** red flag (designed out at processing 2026-08-07: relative paths remove the identifying payload entirely); carried through here per the lifecycle — the exposure this closes was the folder syncing absolute paths (with the account name) to Drive, which gitignore never touched.
 
