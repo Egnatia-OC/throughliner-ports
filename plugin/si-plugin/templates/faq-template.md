@@ -109,7 +109,7 @@ There's no separate "test" flavor. Checking is just part of building: any check 
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
-Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit item that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
+Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into **Unprocessed**, the second section of your queue, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit item that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
 
 ## Where does Claude put research findings and test results?
 
@@ -221,7 +221,7 @@ It means the plugin has been updated and now creates a file or folder your proje
 
 ## A session opened by saying my project was missing something — what happened?
 
-The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. A setting that needs an answer from you gets asked in one line, and you can say to skip it; settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
+The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. When you run **/plan**, its first step checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. A setting that needs an answer from you gets asked in one line, and you can say to skip it; settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
 
 ## What happens if Claude needs to touch something outside the current work item?
 
@@ -264,10 +264,6 @@ But equally, a planning session quietly rewriting parts of your project isn't so
 
 If you approve something out of the ordinary, Claude also notes it in the session log, so there's a record of what was changed outside the usual shape and why.
 
-## What does a "Plan session here" line in the queue mean?
-
-It's a planning checkpoint Claude placed between work items. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
-
 ## I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?
 
 Yes. When a piece of work is parked below the line because it's waiting on something — a step you have to do, another piece of work being finished and checked, a restart — Claude records right there in the item what it's waiting for ("once X is done", "after a restart"). Then at the start of every planning session, Claude goes back over everything parked below the line and re-checks those conditions. Anything it can confirm by itself — a piece of work that's now finished and verified, a file that's now there — it offers to move up above the line so it's ready to build. Anything only *you* can confirm — did the restart happen, did you set the thing up — it rolls into a single question asked once, rather than pestering you item by item. The point is that parked work gets picked back up when its wait actually clears, instead of relying on you to remember it was there.
@@ -278,7 +274,7 @@ When you set something aside — you stop partway through a step, tell Claude to
 
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
-It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
+It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session, and tells you where it sits **whenever it moves** — when the line hasn't shifted, it confirms that silently rather than repeating the same boundary at you every session. So you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
 
 ## Why did /next stop before finishing everything?
 
@@ -318,7 +314,7 @@ So the routing test has three answers: about what you're *building* → your que
 
 That's a forward-recommendation note — the previous session's suggestion for where to focus next. It's there so you don't have to remember what the last session recommended; the recommendation sits right where the next /plan session sees it first.
 
-It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Once you and Claude have agreed on the processing or build order for the session, the note is deleted automatically. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
+It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. The note is deleted automatically when you run /done at the end of that session. (It used to clear as soon as you and Claude had agreed an order for the session — but a session that ended some other way never reached that moment, so the note survived and went on orienting sessions it no longer described. The close always runs, so that's where the clearing lives now.) It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
 ## Claude offered to delete some files when I closed a session. What's that?
 
@@ -338,11 +334,11 @@ Check LOG/. `index.md` has one-line summaries with commit hashes (newest first),
 
 ## Does it matter which Claude model I'm using?
 
-Not for anything you have to do. The plugin ships two versions of its own instructions — a fuller one and a lighter one — and works out which to use at the start of every session, from the model you're running. There's no setting for it and no message about it.
+Almost nothing you have to do. The plugin ships two versions of its own instructions — a fuller one and a lighter one — and picks one at the start of every session. It prefers to read the running model directly from the app, but the desktop app doesn't pass that along, so setup asks you one optional question — *which model do you mostly run* — and remembers the answer in your project's CLAUDE.md. That's the whole of it; you're never asked to choose a version of the instructions, only which model you use.
 
 Both versions describe the same method: the same four commands, the same queue, the same rules about what Claude will and won't do without asking you. The only difference is how much explaining sits around each rule, because different Claude models follow instructions best at different lengths. So your project behaves the same way whichever model you build it on, and switching models between sessions is fine.
 
-If the plugin can't tell which model is running, it uses the fuller version — the one it's been tested on longest.
+If neither the app nor your recorded answer tells it which model is running, it uses the fuller version — the one it's been tested on longest. A wrong guess in that direction only costs you some extra wordiness.
 
 ## Why won't Claude ask me for my email address, account numbers, or other personal details?
 
@@ -531,3 +527,41 @@ While Claude is writing to one of your files, it drops a small file in there say
 Two things make it safe rather than fiddly. Every entry carries a timestamp, and an app reading it treats anything more than about half a minute old as "nothing is happening" — so if a session crashes mid-write, nothing stays stuck. And an app that finds no folder at all simply carries on as normal, which is what happens in every project that doesn't use this plugin.
 
 The folder is not committed to your project's history — setup adds it to your `.gitignore` — because it's about what's happening right now on this machine, not part of what you're building. If you delete it, the next write recreates it.
+
+## Someone else is contributing to my project and they don't use this. Does that break anything?
+
+No — but one part of your record will be thinner where their work lands, and it's worth knowing why.
+
+Your project keeps a running record of *why* things are the way they are: every decision, and the reasoning behind it, written down as you and Claude go. That works because Claude is there for the whole conversation. Someone contributing from outside — a collaborator, a contractor, anyone sending you changes — isn't in that conversation, so their changes arrive with the code but not the thinking.
+
+Claude won't invent the missing reasoning. It could produce something that reads perfectly well, and that's exactly the problem: a made-up reason is indistinguishable from a real one, and you'd have no way to tell which parts of your own record you can trust. So Claude names the gap instead.
+
+What actually helps is one ask you can make of them: **get their own AI tool to write the reasoning into the pull request before they open it.** That needs nothing from them beyond asking — no subscription, no method, no discipline — and it's the only thing that keeps up, because the reasoning gets produced by the same tool producing the changes. Writing it by hand doesn't scale: a paragraph over a few hundred lines of machine-written change flattens fifty small decisions into one sentence.
+
+If that doesn't happen, the fallback is to give them an area of the project to own. The thin history is then in one place you can point at, rather than mixed through everything.
+
+And the honest part: some of a shared project will always have less history than the rest. That's the price of the help, not something to fix. Anyone who tells you a process solves it is describing a process nobody follows.
+
+## I said I was going to send someone a log entry and Claude warned me about what was in it. Why?
+
+Because you can't be expected to remember what a document written weeks ago contains, and by the time you're sharing it, every other safeguard has already happened.
+
+Claude is careful about what goes *into* your project's files — it won't write down other people's names or private circumstances, won't ask you for account numbers or keys to put in a work item, and won't record judgements about you. All of that happens at the moment of writing.
+
+Sharing is a different moment. The text is already written and you already approved it, probably a while ago. What you're about to send might contain a file path with your computer account name in it, a reference to someone else, the name of a service you use — things that were completely fine sitting in your own project and are a different matter in a message, a forum post, or a bug report.
+
+So when you say you're going to share something, Claude tells you what's specifically in *that* text. Not a general "be careful" — the actual things it found. A warning that doesn't tell you what it found is one you'd learn to skip.
+
+It only fires once when you say you're sharing, and it says nothing at all when there's nothing worth mentioning. Most of the time you'll never see it.
+
+## Can I use this with a different AI model, or a different tool?
+
+Not really — and the reason is more interesting than "it isn't supported yet".
+
+This method is mostly *writing*. The rules that keep Claude on track are worded a particular way because that wording is what makes a particular model actually follow them. Change the model and the same sentence stops landing: the model reads it, agrees with it, and behaves differently anyway. You find out by watching things go subtly wrong, then pulling at the prose to work out why.
+
+That's not a guess. This plugin already ships its instructions **twice** — one wording for one family of models, a lighter wording for another — because a single version genuinely didn't serve both. And a version for a different tool entirely was built once. It didn't behave right, and fixing it meant rewriting rule after rule until it wasn't the same method any more, just something with the same name.
+
+So the honest position: the two shipped versions carry the same method because somebody deliberately keeps them in step — one author, one target, and a check that catches them drifting apart. A port to somewhere else has nobody doing that, and no "neutral" original version to keep in step *with*. Rewording changes the method unless someone is actively holding it together.
+
+If you want to work with someone who uses a different tool, the question you actually want is the one above about contributors — you don't both need to be running this.

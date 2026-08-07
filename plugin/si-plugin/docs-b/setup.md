@@ -59,9 +59,9 @@ version missing or outdated      ->  Step 2C (migration scaffolding)
 
 ## Case B: pre-existing content rules
 
-**1. Peek before Q1.** Read the pre-existing content before the first interview
-question, and use what you learn to *frame* that question — never to *pre-answer*
-it.
+**1. Peek before the first question.** Read the pre-existing content before the
+first interview question, and use what you learn to *frame* that question — never
+to *pre-answer* it.
 
 ```
 a clarifier INVITES the user's own answer:
@@ -118,14 +118,22 @@ close to a sentence or two.
 ```
 existing QUEUE.md uses an old multi-section shape
     (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow it,
-            drafting the converted queue and getting approval before writing
+        ->  load migrate-checklist.md from THIS docset's own folder — the
+            same directory this file is in — and follow it, drafting the
+            converted queue and getting approval before writing
 already two-section (## Processed / ## Unprocessed)
         ->  skip
 ```
 
 This is the one project doc that reliably falls behind as the method evolves; the
 checklist encodes judgment a find-and-replace can't make.
+
+**Approval-before-writing here is deliberate**, and is the one place this method
+departs from its own write-first rule. Everywhere else, text destined for a project
+doc is written to that doc first and approved in place. A queue conversion replaces
+an entire existing file speculatively, so a reject would mean restoring a document
+rather than editing one block back out. The checklist records the same reasoning at
+the step itself.
 
 **2. Retire REGISTRY.md if present.** No longer one of the method's docs, but
 **don't delete it on sight** — the user may have written real notes there. Read it
@@ -172,13 +180,13 @@ narrate each file as it's created** — the Step 4 close-out reports the full li
 # SPEC — [Project Name]
 
 ## What this is
-[filled by Q1]
+[from the interview: what the project is]
 
 ## Who it's for
-[filled by Q1]
+[from the interview: who it's for]
 
 ## How it works
-[filled by Q2]
+[from the interview: the core — what it produces, organises, or does]
 
 ## Project docs
 
@@ -189,7 +197,7 @@ Three project docs structure each project:
 - `LOG/` — per-session records of what was built, tested, and decided.
 
 ## Principles
-[filled by Q3]
+[from the interview: principles and constraints]
 ````
 
 **QUEUE.md:**
@@ -204,7 +212,9 @@ item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, a
 a short rationale beneath. A leading flavor tag names how it runs — none for a
 build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only
 you can do. A security or privacy risk Claude surfaces lives here too, as a work
-item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks
+item carrying a `Red flag · State: cleared` marker — work reaches this section
+only once its risk has been dealt with, so `cleared` is the only state you will
+see here. An uncleared one waits in Unprocessed. The line below marks
 how far down is cleared to build; anything below it is decided but not ready yet.
 
 --- Cleared to run above this line ---
@@ -216,7 +226,7 @@ through these with you and decides each one's fate — keep it (move it up to
 Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows
 up in an editor's outline.
 
-[filled by Q4]
+[the first piece of work, from the interview — one `#### ` heading with a [slug] at the end of the line and a short rationale beneath]
 ````
 
 **LOG/ folder** — create the directory with one file in it, `LOG/index.md`:
@@ -269,9 +279,12 @@ the user's own record and belong in their history; their CLAUDE.md is theirs
 too. The FAQ is the only scaffolded artifact that is purely an explanation of
 somebody else's tool, so there is no slope here to slide down.
 
-**resources/research/ folder** — create it empty. It's the home for research notes
-(`resources/research/<topic>.md`). Creating it at setup means research notes have a
-place from day one rather than the folder being conjured on first use.
+**resources/research/ and resources/testing/ folders** — create both empty.
+`resources/research/<topic>.md` is the home for research notes; `resources/testing/`
+holds evidence a later session has to re-read word-for-word. Those are the only two
+things `resources/` ever holds. Creating both at setup means each has a place from
+day one rather than the folder being conjured on first use — the same reasoning for
+both, which is why they are scaffolded together.
 
 **CLAUDE.md:**
 
@@ -304,7 +317,7 @@ absolute paths from this machine, so it must never be committed.
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
 
-## Step 3: Interview (adaptive discovery + three settings)
+## Step 3: Interview (adaptive discovery, plus one recorded setting)
 
 The interview is an **adaptive discovery, not a fixed script.** Its job is to reach
 a shared, buildable understanding — enough to fill SPEC's What / Who / How /

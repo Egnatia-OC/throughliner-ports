@@ -15,8 +15,8 @@ writing.**
 
 **When this applies.** A project's `QUEUE.md` format is the one project doc that
 reliably falls behind as the method evolves. LOG is already per-entry + index,
-CLAUDE.md is topped up by session_start, and SPEC is format-agnostic — so they need
-little or nothing.
+CLAUDE.md is topped up at /plan's first step, and SPEC is format-agnostic — so they
+need little or nothing.
 
 ```
 old multi-section shape  ->  convert with this checklist
@@ -34,8 +34,21 @@ narrate.**
 1. read the existing QUEUE.md; identify each old section and item
 2. convert each item per the rules below
 3. DRAFT the whole converted queue and show it for approval — never write first
-4. after writing, the post_tool_use lint confirms the new queue is well-formed
+4. after writing, the post_tool_use lint reports any structure problems it
+   recognises — it is a deny-list, so it flags known faults and passes
+   anything novel in silence. A clean run means "nothing it checks for went
+   wrong", never "the queue is confirmed well-formed". Read the result yourself.
 ```
+
+**Step 3 is deliberately show-first, and that is an exception to the method's
+general write-first rule rather than an oversight.** The doc-bound-text rule says
+approval-time text destined for one of these docs is written to the doc first and
+approved in place, and six step-level instructions were converted to match it. This
+one was left alone on purpose. Writing an entire speculatively-rewritten queue file
+before the user has approved it is a materially different risk from writing one
+work item: the whole document is replaced at once, and a reject means restoring a
+file rather than editing a block back out. Recorded here so the next audit finds
+the reasoning instead of reopening the question.
 
 ## The target shape
 
@@ -51,6 +64,8 @@ each work item becomes:
                                    AI is the default author, no AI label written.
     a red-flag marker              only if it carries a security/privacy risk:
                                    Red flag · State: cleared | uncleared
+                                   # but the state constrains the SECTION —
+                                   # see below
 ```
 
 ```
@@ -58,8 +73,17 @@ which section:
     Processed    vetted, agreed and ready (or designed and buildable).
                  Within it, --- Cleared to run above this line --- separates
                  greenlit-to-build (above) from not-yet-cleared (below).
+                 A red-flagged item here is ALWAYS `State: cleared`.
     Unprocessed  captured but not yet fully processed (still needs thought).
+                 The only section an `State: uncleared` item may sit in.
 ```
+
+**An uncleared red flag never lands in Processed, so a converted item carrying one
+goes to Unprocessed whatever the old queue implied about its readiness.** Clearing
+a flag is a decision the user makes at processing; a migration is not processing,
+so it cannot clear anything. If the old queue had a flagged item sitting among its
+ready work, that is exactly the case this rule exists for — route it to
+Unprocessed and say so when presenting the converted queue for approval.
 
 The current header prose for each section is shipped in setup.md's scaffold —
 **re-copy it rather than writing your own** (rule 3).

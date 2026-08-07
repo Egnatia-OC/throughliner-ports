@@ -264,6 +264,76 @@ def test_delete_marker_anchor_reanchors():
           order_of(new) == ["alpha", MARKER, "gamma"], repr(order_of(new)))
 
 
+def test_move_marker_anchor_does_not_drag_the_marker():
+    """Moving the item the marker sits after must NOT drag the marker with it.
+
+    The observed failure, 2026-08-06: `--move <anchor> AFTER <shelved-item>`
+    with no --marker-after given. The marker is stored as an anchor slug rather
+    than a position, so it followed its anchor down the section and a
+    deliberately-shelved item ended up ABOVE the line — cleared for an
+    unattended run nobody had authorised. The script reported only
+    "marker placed".
+
+    delete_item() had carried a re-anchor branch since it was written; the
+    reorder path (used by --move and the full-slug-list form) did not. The
+    discriminator is whether the moved item is the marker's anchor, NOT which
+    command name was used — a `--move-section` call can hit it too.
+    """
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n\n"
+        "#### Third item [gamma]\nDeliberately shelved.\n\n"
+        "#### Fourth item [delta]\nRationale for delta.\n"
+    )
+    rc, err, new = run(build_queue(body),
+                       "Processed", "--move", "beta", "AFTER", "gamma")
+    check("move-anchor: exits 0", rc == 0, err)
+    check("move-anchor: marker survives", new.count(MARKER) == 1,
+          str(new.count(MARKER)))
+    check("move-anchor: marker holds its position, gamma stays shelved",
+          order_of(new) == ["alpha", MARKER, "gamma", "beta", "delta"],
+          repr(order_of(new)))
+    check("move-anchor: the crossing is reported, not silent",
+          "crossed the readiness line" in err and "beta" in err, err)
+    check("move-anchor: the message states the marker's real position",
+          "above the line" in err, err)
+
+
+def test_move_non_anchor_leaves_marker_alone():
+    """A move that doesn't touch the anchor must leave the marker exactly where
+    it was — the negative half, so the re-anchor branch can't over-fire."""
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n\n"
+        "#### Third item [gamma]\nRationale for gamma.\n"
+    )
+    rc, err, new = run(build_queue(body),
+                       "Processed", "--move", "gamma", "TOP")
+    check("move-nonanchor: exits 0", rc == 0, err)
+    check("move-nonanchor: marker still sits after beta",
+          order_of(new) == ["gamma", "alpha", "beta", MARKER],
+          repr(order_of(new)))
+
+
+def test_move_explicit_marker_after_still_wins():
+    """An explicit --marker-after is the caller asking for the marker to move,
+    so the re-anchor branch must not override it."""
+    body = (
+        "#### First item [alpha]\nRationale for alpha.\n\n"
+        "#### Second item [beta]\nRationale for beta.\n\n"
+        + MARKER + "\n\n"
+        "#### Third item [gamma]\nRationale for gamma.\n"
+    )
+    rc, err, new = run(build_queue(body), "Processed",
+                       "--move", "beta", "BOTTOM", "--marker-after", "alpha")
+    check("move-explicit-marker: exits 0", rc == 0, err)
+    check("move-explicit-marker: honoured over the re-anchor",
+          order_of(new) == ["alpha", MARKER, "gamma", "beta"],
+          repr(order_of(new)))
+
+
 def test_delete_first_item_when_marker_anchored_to_it():
     """Deleting the only item above the marker re-anchors the marker to TOP."""
     body = (
@@ -320,6 +390,9 @@ def main():
         test_delete_unknown_slug_refuses,
         test_delete_last_item_in_section,
         test_delete_marker_anchor_reanchors,
+        test_move_marker_anchor_does_not_drag_the_marker,
+        test_move_non_anchor_leaves_marker_alone,
+        test_move_explicit_marker_after_still_wins,
         test_delete_first_item_when_marker_anchored_to_it,
         test_delete_block_containing_heading_like_lines,
         test_delete_from_unprocessed,

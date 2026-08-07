@@ -106,9 +106,18 @@ SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]+)\]")
 # second, looser marker format the docs never defined.
 CLEARED_MARKER = "--- Cleared to run above this line ---"
 
-# Structural non-item lines that legitimately sit inside a work section
-# without belonging to any #### block: the readiness marker and the
-# planning-gate marker (`--- Plan session here: <reason> ---`).
+# Structural non-item lines that legitimately sit inside a work section without
+# belonging to any #### block. In practice that means the readiness marker.
+#
+# The pattern stays deliberately generic rather than being narrowed to the
+# readiness marker's exact text. It was written to cover a second marker
+# (`--- Plan session here: <reason> ---`) which was retired 2026-08-07 —
+# documented in six places and implemented in no procedure doc in either
+# docset, the same shape as the retired push marker. Narrowing the regex now
+# would make the orphaned-prose check stricter, which may be right, but it
+# would also flag any other structural line a queue legitimately grows, and
+# nothing has established that such lines don't exist. Left generic on
+# purpose; revisit only with evidence that the looseness costs something.
 STRUCTURAL_LINE = re.compile(r"^---\s.*---$")
 
 
@@ -475,15 +484,33 @@ def main() -> int:
     if not filepath or not cwd:
         return 0
 
+    # One SPEC.md check was doing two unrelated jobs here — "is this project
+    # adopted" and "does the queue lint apply" — and only the second one was
+    # gating anything, because it sat below the marker write. Separate them.
+    is_adopted = os.path.isfile(os.path.join(cwd, "SPEC.md"))
+
     # Close the editing-state heartbeat for this write, whatever file it
-    # touched — this runs before the QUEUE.md gate below, because the signal
-    # covers every edited document, not just the queue.
-    write_editing_marker(cwd, data.get("session_id", ""), filepath, False)
+    # touched — this still runs before the QUEUE.md gate below, because the
+    # signal covers every edited document, not just the queue. That placement
+    # is deliberate and unchanged.
+    #
+    # But it is now gated on adoption, matching pre_tool_use, which returns
+    # early with no SPEC.md and so writes the OPENING marker only in adopted
+    # projects. Without this the two hooks were asymmetric: an unadopted folder
+    # got a closing marker for a session that never opened one, so
+    # .throughliner/editing-<session>.json files accumulated in projects that
+    # have nothing to do with this plugin — uncovered by any .gitignore, since
+    # /setup is what adds that entry and those folders have never run it.
+    # SPEC states the intended behaviour outright ("the signal only exists
+    # where the plugin is installed and the project adopted"), so the
+    # documentation was right and the code was wrong.
+    if is_adopted:
+        write_editing_marker(cwd, data.get("session_id", ""), filepath, False)
 
     # Only the project-root QUEUE.md, only in adopted projects.
     if _normalise(filepath) != _normalise(os.path.join(cwd, "QUEUE.md")):
         return 0
-    if not os.path.isfile(os.path.join(cwd, "SPEC.md")):
+    if not is_adopted:
         return 0
 
     try:

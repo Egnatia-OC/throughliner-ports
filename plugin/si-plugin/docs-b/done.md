@@ -118,17 +118,22 @@ It also runs inside a /plan close when the user mentions async-completed items.
    # proceed. Check fails -> state plainly what was found, leave the item in
    # place, and never turn it into "are you sure you did this?". No observable
    # result named -> proceed on the report as before.
-2. write a LOG entry per completed item, named after its slug
-   # records what the user did and its outcome; draft and show for approval
+2. run the wind-down re-scan FIRST, before drafting anything
+   # scan-before-entry, the same order every close uses — its captures have
+   # to be in hand before the entry is written, or the entry's
+   # "Routed to Captures:" line is wrong at the moment it is approved
+3. write a LOG entry per completed item, named after its slug
+   # records what the user did and its outcome; write it to its LOG file
+   # first, re-read to confirm, then summarise-and-point for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
-3. remove each completed item from Processed, via the mechanical mover:
+4. remove each completed item from Processed, via the mechanical mover:
        python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
            --delete <slug> Processed
    # this is what stops it being re-presented. The command removes the whole
    # block byte-exactly, refuses rather than guessing on an unresolvable or
    # ambiguous slug, and leaves the readiness marker where it was — so a long
    # item never has to be hand-edited away line by line.
-4. run the wind-down re-scan, then the commit core
+5. run the commit core
    # staging QUEUE.md and the LOG changes
 ```
 
@@ -156,7 +161,12 @@ the session didn't make are most likely the user's expected work. Run `git statu
 user that these are theirs and meant to be saved. **Never report them as a broken
 repo, and never try to undo them.**
 
-**2. Decide LOG granularity by judgment.**
+**2. Run the wind-down re-scan**, before anything is drafted. Scan-before-entry is
+the order every close uses, and it is load-bearing rather than cosmetic: the
+scan's captures have to be in hand before the entry is written, or the entry's
+"Routed to Captures:" line is wrong at the moment the user approves it.
+
+**3. Decide LOG granularity by judgment.**
 
 ```
 one coherent change     ->  a single entry: LOG/<YYYY-MM-DD>-handmade.md
@@ -165,12 +175,14 @@ several distinct        ->  a separate entry per logical change
 logical changes             # better recall than one lumped entry
 ```
 
-Draft each entry's one-liner and its rationale and **show them for approval before
-writing** — this close is reached by sessions with no build and no planning behind
-them, so the shared LOG-entry approval frame is a doc away. Step 3's "the commit
-message is the approved entry" refers to this approval.
+**Write each entry to its LOG file first**, re-read to confirm it landed, then put
+a short summary plus a pointer in front of the user for approval — the same
+approval frame every other close uses, restated here because this close is reached
+by sessions with no build and no planning behind them, so that frame is otherwise a
+doc away. Reject means editing the entry back out and confirming the removal. Step
+4's "the commit message is the approved entry" refers to this approval.
 
-**3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
+**4. Run the commit core**, staging the hand-edited
 files explicitly. The commit message is the approved entry; for several entries,
 the title names the handmade-work close and the body carries each entry's summary.
 Unlike a planning close, this one **does** offer push when a remote exists — it's
@@ -335,6 +347,18 @@ which is ordinary project reasoning; one that produced nothing durable is simply
 absent, not excluded. And judging by topic would mean asking "was that too
 personal to write down?" — a judgment that will eventually be got wrong in a
 public repo. The artifact test never asks it.
+
+**An outside contributor's own recorded reasoning folds into the entry, credited to
+them.** Where someone working outside this method has written their reasoning down
+— most usefully in the pull request itself, which is the ask
+`plugin-behaviour.md`'s why-pipeline recommends making — carry it into the entry's
+rationale rather than leaving the entry silent about half of what landed. Fold in
+what they actually wrote; never reconstruct reasoning they didn't record, which the
+compare-never-explain rule forbids. Where they recorded nothing, say so plainly in
+the entry: an honest gap reads correctly to a later session, an invented rationale
+does not. The **format** of the credit is not settled here and is not this step's to
+invent — a single stored identity field would credit their work to the user, which
+is the exact failure crediting exists to prevent.
 
 **When external work recurs, propose a standing entry in CLAUDE.md** [PROMPT].
 When a project shows *ongoing* outward-facing work — a Discord server, a
@@ -518,10 +542,13 @@ the user thought out loud but never flagged.
 # routing is planning, /plan's alone
 ```
 
-Present all candidates as ONE numbered set of fully-drafted captures for a single
-approval; the user contests by number, and only contested items go one at a time.
-Append the approved ones to Unprocessed; the LOG entry drafted next then carries
-them in its "Routed to Captures:" line from the start.
+**Write the candidates into Unprocessed first**, then present them as ONE numbered
+set for a single approval — the doc-bound-text rule, applied to a result set. The
+message carries a short summary of each, a link to QUEUE.md and the headings to
+search for, and the ask; the full text is offered on request. The user contests by
+number, and only contested items go one at a time; a contested candidate is edited
+back out and the removal confirmed by re-read. The LOG entry written next then
+carries the surviving ones in its "Routed to Captures:" line from the start.
 
 **Name both replies in the ask itself** (plugin-behaviour.md, stop
 self-sufficiency): "**tell me any numbers to drop, or say keep them all**". The

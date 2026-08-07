@@ -745,12 +745,14 @@ def main() -> int:
         if not build_files:
             return _deny(
                 "[Sovereign Implementer] BLOCKED: this session's _build.md "
-                "lists no editable files, so only QUEUE.md, LOG/, and "
-                "_build.md can be edited. Audit and test sessions "
-                "don't edit source files — route findings to Captures in "
-                "QUEUE.md instead. If a file genuinely needs editing, halt "
-                "and add it to _build.md's Files: section with the user's "
-                "approval."
+                "lists no editable files, so the only writable paths are "
+                "QUEUE.md, LOG/, the session's own working file "
+                "(_build.md / _plan.md), your memory directory, "
+                "resources/research/, and the session scratchpad. An audit "
+                "reads and reports rather than editing source — route its "
+                "findings to QUEUE.md's Unprocessed section instead. If a "
+                "file genuinely needs editing, halt and add it to "
+                "_build.md's Files: section with the user's approval."
             )
 
         if not _is_build_file(filepath, cwd, build_files):

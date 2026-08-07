@@ -1,13 +1,13 @@
 # CLAUDE.md
 
-<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
+<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated when you run /setup. ▼ -->
 
 This project uses the Sovereign Implementer method.
 
 ## Project docs
 
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
-- **QUEUE.md** — your work, in two sections. **Processed** work is vetted and ready to build, worked top-to-bottom; a `--- Cleared to run above this line ---` line marks how far down is greenlit (below it is decided but not ready yet). **Unprocessed** work is captured ideas and tasks not yet fully processed. Each piece of work is one line: a `#### ` heading naming the work, with a `[slug]` at the end of that heading line and a short rationale beneath it, plus a `captured by you` credit on items you personally raised (anything else is unmarked — Claude is the default author). A work item can carry a leading flavor tag: none means a build (Claude edits files), `[audit]` a review pass (Claude reads and reports), `[user]` a step only you can run. A security or privacy risk Claude surfaces becomes a work item carrying a `Red flag · State: cleared/uncleared` marker — surfaced first each session while uncleared, until it's cleared (either designed out, or you're told the risk plainly and choose to accept it).
+- **QUEUE.md** — your work, in two sections. **Processed** work is vetted and ready to build, worked top-to-bottom; a `--- Cleared to run above this line ---` line marks how far down is greenlit (below it is decided but not ready yet). **Unprocessed** work is captured ideas and tasks not yet fully processed. Each piece of work is one line: a `#### ` heading naming the work, with a `[slug]` at the end of that heading line and a short rationale beneath it, plus a `captured by you` credit on items you personally raised (anything else is unmarked — Claude is the default author). A work item can carry a leading flavor tag: none means a build (Claude edits files), `[audit]` a review pass (Claude reads and reports), `[user]` a step only you can run. A security or privacy risk Claude surfaces becomes a work item carrying a `Red flag · State: ...` marker — an uncleared one waits in Unprocessed and is surfaced first each session; it reaches Processed only once cleared (either designed out, or you're told the risk plainly and choose to accept it), so anything in Processed reads `cleared`.
 - **LOG/** — session records: what was built, tested, decided. One file per session entry, plus index.md one-line summaries naming each entry file.
 - **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md. This folder is a local copy of the plugin's own help, not part of your project's work, so it's deliberately not committed — it's restored from the plugin whenever it's missing.
 
@@ -26,9 +26,18 @@ This project uses the Sovereign Implementer method.
 - State problems plainly. Don't hide them or silently fix unrelated things.
 - Route discoveries to QUEUE.md's Unprocessed section rather than acting on them immediately — a later /plan decides their fate.
 
-## Language
+## Self-hosting
 
-Language: English
+<!-- Only relevant if this project contains the plugin's own source. In that
+     case a session asks you once whether you're developing the method itself,
+     and records the answer here as `yes` or `no`. What it changes is one thing:
+     the "your plugin has been updated" report is switched off, because in the
+     project that produces the versions that report is permanently wrong and
+     carries no information. A recorded `no` is honoured for good, so the
+     question is asked once and never again. Absent from an ordinary project,
+     where nothing detects the shape and nothing asks. -->
+
+Self-hosting: not recorded
 
 ## Model
 

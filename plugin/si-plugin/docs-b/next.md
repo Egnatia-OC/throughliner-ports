@@ -54,6 +54,8 @@ Read Processed top-down and take everything above the marker.
 early exits:
     Processed[top] == marker      ->  NOTHING_CLEARED
     marker MISSING from Processed ->  NOTHING_CLEARED   # fail closed
+    an item reads
+      Red flag · State: uncleared ->  UNCLEARED_FLAG    # stop; never build it
     run has no build/[audit] item ->  ALL_WALKTHROUGHS
 ```
 
@@ -65,6 +67,14 @@ user the marker is missing, recommend /plan to restore it, and stop.
 
 **On NOTHING_CLEARED** [BRIEF] — tell the user the next work isn't cleared to run
 yet, recommend /plan to vet it, and stop.
+
+**On UNCLEARED_FLAG** [BRIEF] — stop the run and state the risk in plain English.
+An uncleared flag in Processed should be impossible: a red flag is cleared at
+processing, and an item that can't clear one goes back to Unprocessed rather than
+forward. So meeting one means something went wrong upstream, and building past it
+would ship the exact thing the flag exists to prevent. Surface it, don't fix it —
+naming and routing the risk is the method's job here, deciding what to do about it
+is the user's.
 
 **On ALL_WALKTHROUGHS** [PROMPT] — there's nothing to build, so skip Step 2's
 build scaffolding entirely and go straight to Step 3's walk-through branch.
@@ -127,7 +137,8 @@ confirm beat is the redundant gate this collapses.
 **Don't size the run.** Present every cleared item. Don't warn the run is long,
 don't suggest splitting it, don't propose building half now and half later, and
 don't hedge the off-ramp with a caveat about how much will fit. The canonical
-rule is in plugin-behaviour.md (Context awareness) and in next-build.md: **the
+rule is in plugin-behaviour.md's fresh-session-handoff bullet (Communication) and
+in next-build.md's Context management section: **the
 trigger for any context conversation is the user's report, never you noticing on
 its own.** It is restated here because this is where the impulse actually fires —
 the canonical statements sit in context-management sections that answer *what to
@@ -247,8 +258,12 @@ truth throughout.
 removal (and the close's marker repositioning) is /next's whole write access to
 Processed. New work found mid-run is captured to Unprocessed; moving anything
 *into* Processed is processing, which is /plan's, because that decision is the
-user's. The queue lint backstops this — a heading inserted under Processed
-while a build is active gets flagged.
+user's. The queue lint backstops this only partly — it flags a heading inserted
+under Processed during an active build **when it sees the edit**, which means an
+`Edit` to QUEUE.md. A `Write` that replaces the whole file goes past it by design,
+because the lint compares what an edit changed rather than auditing the file
+wholesale. So this is a rule you keep, with a check that catches the common
+mistake — not a guarantee.
 
 A `[user]` item is walked through in Step 3, not built, and is closed later by
 /done or /plan. Extracting it into _build.md would strand it, since _build.md is
@@ -330,6 +345,15 @@ the tool that would do this work and confirm it is absent or unauthenticated
 unattended run dead for work nobody needed the user to do — if the check finds
 Claude can do it after all, say so, do it as ordinary work, and note the
 correction for the close.
+
+**And check whether the item's answer has already come back.** Where the item
+dispatched a question outward and records what its return looks like, run that
+check here — same moment, same reasoning, same near-zero cost as the capability
+check above. If the answer appears to have returned, **do not walk the user
+through the item.** State plainly what you found, leave the item exactly where it
+is, and file it for /plan. **Halt rather than amend:** rewriting a work item is
+processing, and /next does not process. Where the item records no return-check,
+there is nothing to run and nothing changes.
 
 **Lead with the walk-through, and drive it live — one step, then wait.** Run
 whatever parts you can, give the **first** concrete step the item records, and

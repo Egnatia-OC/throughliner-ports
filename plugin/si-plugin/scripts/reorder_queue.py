@@ -544,6 +544,32 @@ def main():
         marker_line = "--- Cleared to run above this line ---\n"
         pref = marker_pref if marker_pref is not None else (
             'TOP' if marker_after is None else marker_after)
+
+        # Re-anchor when the MOVED item is the marker's anchor.
+        #
+        # The marker is not stored as a position: split_blocks records it as an
+        # anchor slug — the item directly above it — and elements_with_marker
+        # re-inserts it after that same item, WHEREVER that item has moved to.
+        # So without this branch the marker follows its anchor around the
+        # section instead of holding its place, and a plain --move of the
+        # anchor silently drags the readiness boundary with it. That is not a
+        # cosmetic reshuffle: the marker sets how much work an unattended /next
+        # run may build without the user present, so moving it as a side effect
+        # of an unrelated request silently widens what an autonomous run is
+        # allowed to do. Observed live: moving the anchor below a deliberately
+        # shelved item cleared that item to run, and the script reported only
+        # "marker placed".
+        #
+        # delete_item() has carried this protection since it was written; the
+        # reorder path — used by both --move and the full-slug-list form — never
+        # got it. The marker keeps its POSITION: it re-anchors to whatever item
+        # now precedes it in the original order. An explicit --marker-after
+        # always wins, because that is the caller asking for the marker to move.
+        if marker_pref is None and move_slug is not None and pref == move_slug:
+            idx = have.index(move_slug)
+            preceding = [s for s in have[:idx] if s != move_slug]
+            pref = preceding[-1] if preceding else 'TOP'
+
         if pref not in ('TOP', 'BOTTOM') and pref not in desired:
             die("--marker-after slug '%s' is not in the section" % pref)
     elif marker_pref is not None:
@@ -576,9 +602,39 @@ def main():
 
     with open(queue_path, 'w', encoding='utf-8', newline='') as f:
         f.write(new_text)
+
+    # Report the marker's ACTUAL position, not merely that one was written.
+    # "marker placed" read as reassurance and said nothing: it appeared
+    # identically whether the boundary held still or moved under an unrelated
+    # request. What a reader needs is how much work now sits above the line.
+    note = ""
+    if had_marker:
+        def _above(order, anchor):
+            if anchor == 'TOP':
+                return []
+            if anchor == 'BOTTOM':
+                return list(order)
+            return order[:order.index(anchor) + 1]
+
+        was = _above(have, 'TOP' if marker_after is None else marker_after)
+        now = _above(desired, pref)
+        note = ", %d item%s above the line" % (len(now),
+                                               "" if len(now) == 1 else "s")
+        # Moving an item across the line is a legitimate way to clear or shelve
+        # work, so this reports rather than refuses — refusing would force a
+        # two-step dance for an ordinary operation. But it must be visible.
+        crossed = [s for s in desired
+                   if (s in was) != (s in now)]
+        for s in crossed:
+            direction = ("now CLEARED to run" if s in now
+                         else "now BELOW the line, no longer cleared")
+            # ASCII only: this goes to stderr, and a Windows console under a
+            # legacy code page mangles non-ASCII into replacement characters.
+            note += "\nreorder_queue: [%s] crossed the readiness line: %s" \
+                    % (s, direction)
+
     sys.stderr.write("reorder_queue: %s reordered (%d items)%s\n"
-                     % (section, len(desired),
-                        "" if not had_marker else ", marker placed"))
+                     % (section, len(desired), note))
 
 
 if __name__ == '__main__':

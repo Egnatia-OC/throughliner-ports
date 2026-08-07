@@ -157,7 +157,7 @@ def content_stamp(root):
     in the zip, so they must not perturb the stamp. Returns "" on any error
     or a missing root.
 
-    This is the basis the deferred-test roll uses to tell whether host-side
+    This is the basis /plan's below-line revisit uses to tell whether host-side
     changes are actually live: the hook stamps the installed host (its own
     CLAUDE_PLUGIN_ROOT) here; in the self-hosting dev project /plan computes
     the target's stamp by calling this same function over plugin/si-plugin/,
@@ -256,24 +256,28 @@ def _recorded_model(cwd):
     return value
 
 
-def _record_payload_once(cwd, data):
-    """Write the received SessionStart payload to a research file, once.
-
-    Distinguishes an ABSENT field from a malformed one — the question that
-    turned a bug hunt into a design decision, and one nothing else can answer
-    after the fact. Written only if the file doesn't already exist, so it
-    records a real payload without growing each session. Silent on any error:
-    a recording step must never be able to break the hook it observes.
-    """
-    try:
-        target_dir = os.path.join(cwd, "resources", "research")
-        target = os.path.join(target_dir, "session-start-payload-sample.json")
-        if os.path.exists(target) or not os.path.isdir(target_dir):
-            return
-        with open(target, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, sort_keys=True, default=str)
-    except (OSError, TypeError, ValueError):
-        pass
+# REMOVED 2026-08-07: _record_payload_once(), which wrote the received
+# SessionStart payload to resources/research/session-start-payload-sample.json
+# in whatever project the hook was running in.
+#
+# It was a privacy exposure with no documentation anywhere. The payload carries
+# `cwd` — the absolute path of the project folder, including the account name —
+# and the write happened silently in any project that had a resources/research/
+# folder, with no SPEC entry, no FAQ entry, no procedure-doc mention, and no
+# gitignore covering it. So a user had every reason to commit it without ever
+# knowing it existed, and in this project it was committed to a public
+# repository.
+#
+# It is deleted rather than gitignored or gated behind a prompt because the
+# need it served was a genuine one-off: establishing whether the desktop app
+# omits the `model` field or sends it malformed. That question is answered and
+# the answer is recorded where it belongs — the payload carries exactly three
+# keys, `cwd`, `hook_event_name` and `source`, which is the basis of the
+# recorded `Model:` setting. A mechanism that keeps running after its one-off
+# need is met is pure exposure.
+#
+# If anything like this is ever wanted again, it must be documented in SPEC and
+# the FAQ, and must never write into a user's repository unasked.
 
 
 def _docset_for_model(model_id):
@@ -613,7 +617,6 @@ def main() -> int:
     #   3. docset A, the known-good fallback, when neither is available.
     # Layering costs nothing, keeps working automatically wherever the field
     # does appear, and never weakens the no-strand guarantee.
-    _record_payload_once(cwd, data)
     docset = _docset_for_model(_model_id(data) or _recorded_model(cwd))
     # If the selected docset's folder is missing from the installed plugin, fall
     # back to docset A — but never silently. The directive's own SELF-CHECK (the
@@ -808,7 +811,7 @@ def main() -> int:
     # running this session, test suffix included). This is the always-correct
     # source for "what host is installed?" — it runs inside the installed host,
     # unlike any hand-maintained record, which goes stale the moment the user
-    # reinstalls without Claude in the loop. Surfaced so the deferred-test roll
+    # reinstalls without Claude in the loop. Surfaced so /plan's below-line revisit
     # can resolve whether a host-side change has gone live mechanically instead
     # of interrogating the user. Version only — the host-vs-target comparison is
     # Claude's reasoning (a consumer project has no target to compare against).
@@ -823,7 +826,7 @@ def main() -> int:
         # edits a hook or a doc without bumping any version, so the installed
         # host and the target can show the same version while the host is stale.
         # The stamp answers the real (content) question. In the self-hosting dev
-        # project the deferred-test roll compares this against the target's stamp
+        # project /plan's below-line revisit compares this against the target's stamp
         # (computed the same way over plugin/si-plugin/); a consumer never has a
         # target to compare against, so this is informational there.
         host_stamp = content_stamp(plugin_root)

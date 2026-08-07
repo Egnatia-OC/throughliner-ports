@@ -169,6 +169,22 @@ without a recorded condition, that revisit can't tell a still-waiting item from 
 now-ready one without nagging. **An item held below with no recordable
 lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
 
+**Prefer a condition something can check over one only the user can answer.**
+Where the same waiting state can be expressed mechanically — a file present, a
+dependency built, a branch gone, a version installed — write it that way. A
+checkable condition is looked at silently every planning session and needs nothing
+from the user; a user-only one can only be asked, which means it can be
+suppressed, and a suppressed condition on a large queue is one nobody will return
+to.
+
+**And when an item carries both a `Set aside ·` marker and a user-only condition,
+disclose the silence in one line as the marker is recorded.** Nothing will raise
+that item again on its own — the consolidated question skips it, the close's
+recommendation skips it, and queue exhaustion will not arrive on a working
+backlog. The user mentioning it is the route back, so tell them that in the same
+breath. The behaviour is correct; without the line it is undiscoverable, which is
+how a user came to find out only by asking what would ever prompt them.
+
 **A lift-condition names a repeatable future event, never one occasion to
 piggyback on.** "At the next rezip and restart, whenever one happens" clears
 the next time that event occurs; "at the emergency's rezip" points at one
@@ -299,6 +315,15 @@ offer push.** Planning state is local bookkeeping, and push is reserved for
 shipping — in a self-hosting project a push fires the full push-and-rezip ritual
 off a commit that shipped nothing. Push stays available when the user asks for it
 or is deliberately backing up; a default, not a prohibition.
+
+**Where a planning close ALSO closes a completed `[user]` item, the push offer
+applies and this override yields.** That case is real — done.md supports it — and
+the two rules collided with no carve-out either side. It resolves toward offering,
+because the reason for suppressing is that a planning commit ships nothing, and a
+completed `[user]` item is not nothing: it is real project progress the user did,
+and leaving it unpushed is the outcome the suppression was never aimed at. So the
+test is whether the commit carries anything beyond planning bookkeeping. If it
+does, offer; if it is purely queue and log housekeeping, don't.
 
 **Delete `_plan.md`** if one exists, as part of the close — same lifecycle as
 _build.md. It was working state only and was never committed, so removing the file

@@ -45,6 +45,8 @@ Saying "not now" sticks. If you stop partway through something or tell Claude to
 
 When something misbehaves, Claude routes the report to the right place: a problem in your app goes into your queue, a problem with the method itself becomes a scrubbed report you paste at flintcraft.tech/report, and a problem with Claude Code (the app the method runs inside) can be filed as a GitHub issue — Claude offers to file it for you where your GitHub tooling is set up, always showing you the exact text and posting only on your yes.
 
+If you say you're about to share something out of your queue or your log, Claude tells you what's actually in that particular text first — a name, a file path with your account in it, an account or tool identifier, anything about someone other than you. It's easy to forget what a document written weeks ago contains. It fires once, and stays quiet when there's nothing worth mentioning.
+
 ## How to use it
 
 Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.

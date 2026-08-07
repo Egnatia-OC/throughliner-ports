@@ -17,8 +17,15 @@ gets built first — through discussion, not silently.
 - **Never build during /plan.** Want to write code? Queue it. Nothing mechanically
   stops you — there is no `_build.md` in a planning session, so the build
   scope-lock isn't engaged and every file in the project is writable. What you get
-  instead is a **prompt**: a write to anything outside QUEUE.md, SPEC.md, LOG/ and
-  this session's own notes asks the user first. It asks, it never denies, because
+  instead is a **prompt**: a write to anything outside the quiet-list asks the
+  user first. The quiet-list is QUEUE.md, SPEC.md, LOG/, this session's own
+  notes, and **FAQ/** — the close's FAQ-sync disposition is a mandated edit, and
+  a required step that prompts every time trains the user to click through the
+  ask that matters. Three more paths pass silently here as they do everywhere
+  else: the user's memory directory, `resources/research/`, and the session
+  scratchpad. `templates/` is deliberately **not** on the list — editing a
+  template changes what every future project receives, which is exactly the
+  class of change the gate exists to surface. It asks, it never denies, because
   in planning there is no agreed file list to drift from — the user is right there,
   and a legitimate write is authorised in one word. Treat the prompt as the point:
   it doesn't stop you doing something urgent, it stops you doing it unremarked.
@@ -168,16 +175,24 @@ rather than accepting the report (plugin-behaviour.md, the `[user]` lifecycle);
 otherwise leave them alone and say nothing about them.
 
 **Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
-lift; PROMPT only for the user-only batch]. Walk the below-line items; for each,
+lift; PROMPT only for the consolidated user-only question]. Walk the below-line
+items; for each,
 read the lift-condition its prose records and classify:
 
 ```
 mechanically checkable    ->  check silently; if cleared, propose lifting
     (a dependency built per LOG, a push done, a file now present)
-set aside                 ->  skip silently. The user's "no change" or "not
-    (the item carries a           now" already answered this question; it
-     Set aside · line)            re-surfaces only at queue exhaustion, or
-                                  when the user raises it themselves.
+set aside, retry is       ->  CHECK IT SILENTLY, exactly as the first row.
+    CHECKABLE                     The marker suppresses asking, not seeing. If
+    (the item carries a           it has cleared, propose lifting — a proposal
+     Set aside · line AND         on a condition that really cleared is news,
+     something could check        not a re-offer.
+     its condition)
+set aside, retry is       ->  skip silently. The user's "no change" or "not
+    USER-ONLY                     now" already answered this question; it
+    (the item carries a           re-surfaces only at queue exhaustion, or
+     Set aside · line and         when the user raises it themselves.
+     only they can say)
 user-only                 ->  DON'T ask per item. Gather every user-only
     (an external event            condition into ONE consolidated question,
      only the user knows)         asked once this session.
@@ -191,9 +206,18 @@ SPENT                     ->  surface it for a rewrite, don't skip it.
 When the consolidated question comes back "no change" for an item, that answer
 is a set-aside signal: record the `Set aside ·` line on the item
 (plugin-behaviour.md, Set aside), quoting the answer, so later sessions skip it
-instead of re-asking. **Queue exhaustion is the guaranteed way back:** when the
-queue offers nothing else — no cleared work, nothing unprocessed but set-aside
-items — raise them plainly; nothing is quiet forever.
+instead of re-asking.
+
+**And where that item's condition is one only the user can answer, say so in one
+line as you record it.** Nothing will raise this again on its own; the user
+mentioning it is the route back. The behaviour was already correct and completely
+undiscoverable — a user had to ask what would ever prompt them before anyone
+noticed. Disclosure costs a sentence at the one moment the user is looking.
+
+**Queue exhaustion is a way back, not a guarantee:** when the queue offers nothing
+else — no cleared work, nothing unprocessed but set-aside items — raise them
+plainly. On a working queue of dozens of items that condition will not arrive, so
+don't lean on it. The silent check above is what actually reaches.
 
 The spent outcome exists because a dead anchor reads exactly like a live one:
 the revisit asks "has it happened yet", which silently returns "no" both for a
@@ -257,8 +281,10 @@ staleness-and-cost trap the method fights. Outside the trigger state, say nothin
 
 On either entry, ask whether to derive **coarse milestones** or **granular
 per-feature items** — the user's call. Output goes to **Unprocessed, never
-Processed**: seeding fills the backlog, it never greenlights a build. Draft the
-items as ordinary captures, show for approval, append on approval.
+Processed**: seeding fills the backlog, it never greenlights a build. Write the
+items into Unprocessed as ordinary captures, re-read to confirm, then put a short
+summary plus a pointer in front of the user for approval — and edit back out
+whatever they reject.
 
 This step lives in /plan, never in /setup — /setup stays scaffolding + interview
 and never auto-spawns work.
@@ -418,6 +444,19 @@ load-bearing claim, not the category — that framing was tried and was too narr
 "the payload is N bytes"    ->  measure it
 "we can't do Z yet"         ->  check whether that's still true
 ```
+
+**The check's subject is any load-bearing claim in play, not only the item's.**
+Same test, same cheapness, one more subject: it applies to what *you* are about to
+assert as much as to what the item asserts. That widening is one word in scope and
+it closes a real hole — the verification rules all point at text somebody else
+wrote, so a recommendation's own premises are checked by nothing. The failure that
+earned it: asked a direct question, Claude recommended making the repository
+private, which would have ended every install and update, because the plugin is
+distributed from inside that same repository. One grep of README.md would have
+caught it, and the fact it establishes was already written in the project's own
+CLAUDE.md. A recommendation is made at exactly the moment a confident answer is
+most welcome and least examined, which is why the remedy is an action taken
+*before* speaking rather than a restraint applied while speaking.
 
 Cheap by construction: one item, one check, and only when the item makes such a
 claim — so the cost scales with the work being done, not with the size of the
@@ -616,16 +655,20 @@ the irreducible user action  ->  a single [user] work item, reduced to ONLY that
                                  action, cross-referenced by slug
 ```
 
-Show the draft as a blockquote under **Work item:**. Don't write until approved.
-On approval, **edit in place first, then move mechanically** — the never-retype
-rule still holds: only the decision passes through you, never the prose.
+**Write the item before showing it** — the doc-bound-text rule. Edit the block in
+place, where it still sits in Unprocessed, to the drafted wording; re-read to
+confirm it landed; then put a short summary plus a pointer (a link to QUEUE.md and
+the item's exact heading text) in front of the user, with the full text offered on
+request. If they reject it, edit the wording back out and confirm the removal by
+re-read. On approval, **move it mechanically** — the never-retype rule still
+holds: only the decision passes through you, never the prose.
 
 ```
 1. EDIT the block in place, where it still sits in Unprocessed, to the
-   approved draft
+   drafted wording — BEFORE showing it, then re-read to confirm
    # the heading rewrite and rationale re-author are deliberate edits; the
    # [slug] at the end of the heading line stays exactly as it is
-2. MOVE the block mechanically:
+2. MOVE the block mechanically, once the user has approved:
        python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
            --move-section <slug> Unprocessed Processed [--position ...]
    # relocates the whole block byte-for-byte; the item is never visible in
@@ -733,6 +776,13 @@ test is what routes between the two failures.
 After every item, present the next item and close on the off-ramps as the
 message's final, bold ask.
 
+**Read `_plan.md` before naming which item is next or how many remain**, and
+compose both from what it returned — not from what you remember of the session.
+The numbered list written at the start of processing is the record; conversation
+memory is not. This is the standing rule in plugin-behaviour.md's Context
+awareness section, firing at the one step that makes tracked-state claims every
+time it runs.
+
 ```
 message order:
     1. the NEXT item's verbatim (item only, no analysis)
@@ -767,7 +817,7 @@ every item would re-create the over-asking the method removed.
 ```
 on skip:
     move the item to the bottom of Unprocessed VIA THE MECHANICAL MOVER:
-        python plugin/si-plugin/scripts/reorder_queue.py QUEUE.md Unprocessed \
+        python <plugin-root>/scripts/reorder_queue.py QUEUE.md Unprocessed \
             --move <slug> BOTTOM
     # relocates the whole prose block byte-for-byte. The text is unchanged by a
     # skip, so hand-retyping it via Edit is pure corruption exposure.
@@ -851,10 +901,13 @@ whatever conversation is still in view, and a long session may have lost earlier
 discussion to compaction — so a surfaced-nothing result isn't read as "nothing was
 missed."
 
-Present all candidates as ONE numbered set of fully-drafted captures for a single
-approval; the user contests by number, and only contested items go one at a time.
-Approved candidates are filed to Unprocessed; processing them follows the normal
-flow, this session or later.
+**Write the candidates into Unprocessed first**, then present them as ONE numbered
+set for a single approval — the doc-bound-text rule, applied to a result set. The
+message carries a short summary of each, a link to QUEUE.md and the headings to
+search for, and the ask; the full text is one word away on request. The user
+contests by number, and only contested items go one at a time. A contested
+candidate is edited back out, and the removal confirmed by re-read. Processing the
+kept ones follows the normal flow, this session or later.
 
 This is a best-effort safety net behind the capture-at-the-moment-of-noticing
 rule. A non-coder who thinks out loud generates capturable material they never
