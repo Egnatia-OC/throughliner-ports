@@ -1,4 +1,4 @@
-# [HASH] — The Claude-runnable premise claims verified: the mover's contract confirmed whole, the post-rename install path settled, and one unanticipated route found
+# 5993a10 — The Claude-runnable premise claims verified: the mover's contract confirmed whole, the post-rename install path settled, and one unanticipated route found
 
 An audit: reads and reports, changes nothing. A failed claim becomes a fresh capture naming the rules that rest on it, because a claim failing may invalidate a rule rather than merely dating it.
 

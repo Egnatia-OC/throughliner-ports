@@ -1,4 +1,4 @@
-# [HASH] — The editing-state closing marker gated on adoption, by separating the two jobs one SPEC check was doing
+# 5993a10 — The editing-state closing marker gated on adoption, by separating the two jobs one SPEC check was doing
 
 **The asymmetry, verified by reading both hooks.** `pre_tool_use.py` returns early when `SPEC.md` is absent, so the **opening** marker is written only in adopted projects. `post_tool_use.py` wrote the **closing** marker *before* its `SPEC.md` check. So in a folder that never adopted the plugin, every edit left a closing marker for a session that never opened one — `.throughliner/editing-<session>.json` files accumulating in the user's unrelated projects, uncovered by any gitignore, since /setup is what adds that entry and those folders have never run it.
 

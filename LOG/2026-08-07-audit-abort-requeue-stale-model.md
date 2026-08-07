@@ -1,4 +1,4 @@
-# [HASH] — next-build.md's abort path aligned with the leave-in-place queue model: an aborted item was never removed, so there is nothing to return
+# 5993a10 — next-build.md's abort path aligned with the leave-in-place queue model: an aborted item was never removed, so there is nothing to return
 
 The audit flagged two incompatible models and said honestly that it could not tell which text was stale. **Reading docset A answered it in one grep, so this was never a design call.** A's `next.md` removes the run's Claude-work items from QUEUE.md **up front** — its own text gives "the queue free for other sessions" as the reason — so "return it to Processed" is coherent there, and A's `next-build.md` does not carry the phrase at all. Docset B changed the model in `next.md` to leave items in place until each one's completion tick, with its own reasoning recorded (a run that dies partway leaves the queue holding exactly the work never done), and did not carry that change through to `next-build.md`'s abort path. So `docs-b/next-build.md` was the stale text and there was no fork left to decide.
 

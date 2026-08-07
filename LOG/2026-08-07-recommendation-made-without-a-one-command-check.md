@@ -1,4 +1,4 @@
-# [HASH] — The load-bearing-claims check widened to cover Claude's own assertions, not only the item's
+# 5993a10 — The load-bearing-claims check widened to cover Claude's own assertions, not only the item's
 
 `docs-b/plan.md`'s keep-step already required verifying an item's load-bearing factual claims before discussing it on its own terms. Its subject is now any load-bearing claim in play — **what Claude is about to assert, as much as what the item asserts.** Same test ("would this change if the claim were false?"), same cheapness, one more subject.
 

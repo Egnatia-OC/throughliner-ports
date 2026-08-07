@@ -1,4 +1,4 @@
-# [HASH] — Departure recorded: the automatic release was held at a branch close, on the user's decision
+# c18f933 — Departure recorded: the automatic release was held at a branch close, on the user's decision
 
 **This is a departure from a ritual that fires mechanically, and it is written down because a departure that isn't recorded is indistinguishable from a violation.**
 

@@ -1,4 +1,4 @@
-# [HASH] — Six step-level show-first instructions converted to write-first, and the doc-bound rule given precedence and a composed-from clause
+# 5993a10 — Six step-level show-first instructions converted to write-first, and the doc-bound rule given precedence and a composed-from clause
 
 Two rules were live in docset B at once. `plugin-behaviour.md`'s doc-bound-text rule says approval-time text destined for one of the method's docs is **written to that doc first**, verified by re-read, then pointed at — while six step-level instructions still said the opposite. Step-level instructions govern the act, so what a session actually did was follow the step.
 

@@ -1,4 +1,4 @@
-# [HASH] — Ports don't preserve the method, stated in the form that survives the obvious counter
+# 5993a10 — Ports don't preserve the method, stated in the form that survives the obvious counter
 
 The user's own framing, from deciding what to say to a port's author: porting Throughliner means it *"doesn't respond right and you immediately have to start pulling threads and changing prose to find out why. it immediately becomes not Throughliner anymore… there is no method between that can be maintained perfectly. that doesn't exist, the codex port proved that."*
 

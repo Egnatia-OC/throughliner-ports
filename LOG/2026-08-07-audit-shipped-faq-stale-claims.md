@@ -1,4 +1,4 @@
-# [HASH] — Five places where the shipped FAQ told consumers something the procedures no longer do
+# 5993a10 — Five places where the shipped FAQ told consumers something the procedures no longer do
 
 All in `templates/faq-template.md`, the copy every project receives.
 

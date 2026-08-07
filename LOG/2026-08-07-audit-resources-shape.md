@@ -1,4 +1,4 @@
-# [HASH] — resources/ brought back to the shape its own rule states, the mover's test suite wired into the rezip ritual, and scrub_sweep given its path
+# 5993a10 — resources/ brought back to the shape its own rule states, the mover's test suite wired into the rezip ritual, and scrub_sweep given its path
 
 **The folder moved, not the rule.** `plugin-behaviour.md` says `resources/` holds research findings and re-read-later testing evidence and nothing else; `resources/captures/` existed with four files. The rule's stated reasoning is that `resources/` becomes a dumping ground without a hard limit, and a third folder of miscellaneous session artifacts is precisely that — so relaxing the rule would concede the thing the rule exists to prevent.
 

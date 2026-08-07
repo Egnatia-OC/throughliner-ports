@@ -1,4 +1,4 @@
-# [HASH] — The branch cycle recorded in CLAUDE.md, with the pre-merge audit stated as a gate and named honestly as a convention
+# 5993a10 — The branch cycle recorded in CLAUDE.md, with the pre-merge audit stated as a gate and named honestly as a convention
 
 CLAUDE.md gained a new section, sited beside the Rezip / Push / Release rituals because those are the other conventions governing how work leaves this project. It records the cycle the project actually runs — **branch → builds → soak → differential audit over the whole branch span → reconcile (one /plan + /next over its repair captures) → merge → branch again** — and states the gate: a branch does not merge to main until that audit has run and its repair captures are cleared, so main only ever receives a reconciled state.
 

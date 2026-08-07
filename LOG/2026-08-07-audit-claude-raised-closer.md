@@ -1,4 +1,4 @@
-# [HASH] — next-build.md's Claude-raised capture closer fixed, and the build loop's removal step pointed at the mover
+# 5993a10 — next-build.md's Claude-raised capture closer fixed, and the build loop's removal step pointed at the mover
 
 Two repairs on the same file, run as one pass.
 

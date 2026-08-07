@@ -1,4 +1,4 @@
-# [HASH] — /next got the red-flag backstop its behaviour rule already promised
+# 5993a10 — /next got the red-flag backstop its behaviour rule already promised
 
 `plugin-behaviour.md` says an uncleared flag in Processed should be impossible, so if /next meets one it stops and surfaces it rather than building. A grep found **zero** occurrences of "red flag" or "uncleared" across `next.md`, `next-build.md` and `next-audit.md` — **in both docsets**, so this was never implemented rather than implemented and lost. The /done side does carry it. The asymmetry was real and nothing on either side recorded why.
 

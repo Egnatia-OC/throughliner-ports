@@ -1,4 +1,4 @@
-# [HASH] — Drifted internal terminology anchored before the compression pass can collapse it wrongly
+# 5993a10 — Drifted internal terminology anchored before the compression pass can collapse it wrongly
 
 Four families, one anchoring passage each, at the canonical site. **The fix shape is anchoring sentences, not a rename sweep** — the variants are all in use, all correct in context, and rewriting them would be a large diff to no benefit. What was missing was anything saying they are the same thing.
 

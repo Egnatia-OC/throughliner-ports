@@ -1,4 +1,4 @@
-# [HASH] — A set-aside marker suppresses asking but never a silent mechanical check, and a user-only silence is now disclosed when it is created
+# 5993a10 — A set-aside marker suppresses asking but never a silent mechanical check, and a user-only silence is now disclosed when it is created
 
 The user asked what would actually prompt them with "are you back at the desktop yet?", and whether a lift-condition that is neither a capture nor an advisory is blessed by the method at all. **The answer to the question as asked is yes** — /plan's below-line revisit gathers user-only conditions into one consolidated question per planning session. But it stops being true the moment the same item also carries a `Set aside ·` marker, whose entire purpose is to take an item **out** of that question. An item carrying both has a condition that will never be asked about: the silent shelf the method spent months eliminating, arrived at by following two correct rules at once.
 

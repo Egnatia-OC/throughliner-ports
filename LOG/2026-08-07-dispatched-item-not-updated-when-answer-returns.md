@@ -1,4 +1,4 @@
-# [HASH] — A dispatching work item now records an observable return-check, and /next halts rather than walking the user through finished work
+# 5993a10 — A dispatching work item now records an observable return-check, and /next halts rather than walking the user through finished work
 
 A `[user]` item said, in effect, "open the other project, have the signal format designed, then bring it back." That happened. The format came back and was filed as a fresh capture. But **nothing updated the dispatching item**, which still read "go and design it" — so running its walk-through would have asked for work already done.
 

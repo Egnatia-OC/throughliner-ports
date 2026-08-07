@@ -1,4 +1,4 @@
-# [HASH] — The session working file rescoped from resume artifact to the standing source of tracked-state claims
+# 5993a10 — The session working file rescoped from resume artifact to the standing source of tracked-state claims
 
 Claude presented an item as the session's last with one still remaining, then corrected itself. The count was reconstructed from conversation memory while a numbered list of all sixteen items — written at the start of processing, for exactly this purpose — sat unread in `_plan.md`.
 

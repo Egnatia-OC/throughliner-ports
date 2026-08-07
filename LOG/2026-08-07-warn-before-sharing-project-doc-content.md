@@ -1,4 +1,4 @@
-# [HASH] — A share-time warning added as the sibling of the write-time private-information rules
+# 5993a10 — A share-time warning added as the sibling of the write-time private-information rules
 
 The user's rule, in their words: if they say they are going to share something from the log or elsewhere, Claude should warn against that. It survived on its own merits when the larger proposal it arrived inside ([make-project-docs-private]) was withdrawn — they judged the repo-privacy half not worth doing and this half fine.
 

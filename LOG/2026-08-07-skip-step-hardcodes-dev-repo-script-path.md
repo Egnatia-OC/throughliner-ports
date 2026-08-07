@@ -1,4 +1,4 @@
-# [HASH] — The queue mover's hardcoded repo path corrected in both docsets, including the frozen one
+# 5993a10 — The queue mover's hardcoded repo path corrected in both docsets, including the frozen one
 
 `plan.md`'s skip-to-defer step instructed `python plugin/si-plugin/scripts/reorder_queue.py …`. That path resolves only inside this development project. A consumer has no `plugin/` folder, so a session following the instruction literally fails.
 

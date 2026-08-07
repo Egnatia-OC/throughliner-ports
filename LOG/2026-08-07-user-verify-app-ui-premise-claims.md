@@ -1,4 +1,4 @@
-# [HASH] — Three app-behaviour claims checked with the user: two falsified, one confirmed, and a fourth answered by accident
+# 5993a10 — Three app-behaviour claims checked with the user: two falsified, one confirmed, and a fourth answered by accident
 
 A `[user]` item, walked through live at the end of the run. Each claim underpins a rule applied many times per session, and each was true when written and had never been re-checked. Two were wrong.
 

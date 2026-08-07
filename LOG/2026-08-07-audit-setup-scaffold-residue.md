@@ -1,4 +1,4 @@
-# [HASH] — Retired-interview residue cleared, the dead Language field removed after checking, and resources/testing/ added to the scaffold
+# 5993a10 — Retired-interview residue cleared, the dead Language field removed after checking, and resources/testing/ added to the scaffold
 
 `setup.md`'s SPEC and QUEUE scaffolds still carried `[filled by Q1]` through `[filled by Q4]`, and a step called "Peek before Q1", though Step 3 is now an adaptive interview whose only numbered question is Q6 — Q1 through Q5 exist nowhere. The placeholders now describe what fills them ("from the interview: what the project is") rather than pointing at questions that no longer exist, which is also more useful than the numbers ever were. The Step 3 heading promised "three settings" while the body carried one; corrected.
 

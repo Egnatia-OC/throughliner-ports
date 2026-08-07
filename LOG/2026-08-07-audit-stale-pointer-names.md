@@ -1,4 +1,4 @@
-# [HASH] — Eight cross-doc pointers repaired: four targets given the names they were already cited by, four citations corrected
+# 5993a10 — Eight cross-doc pointers repaired: four targets given the names they were already cited by, four citations corrected
 
 About fifty cross-doc pointers resolved clean in the audit; these did not. The repair splits two ways, and choosing which way per case is the whole of the work.
 

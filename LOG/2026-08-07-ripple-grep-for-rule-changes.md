@@ -1,4 +1,4 @@
-# [HASH] — The ripple-grep generalised from hook-enforced formats to any rule change, with the leave-alone line as its gate
+# 5993a10 — The ripple-grep generalised from hook-enforced formats to any rule change, with the leave-alone line as its gate
 
 CLAUDE.md already required that a change to a format or enum the hooks enforce trace its ripple by grepping the literal values. That rule now has a sibling immediately beside it, aimed at prose: **when a work item alters what a rule *says*, grep the rule's key terms and names across the corpus before the file list is finalised, and record every statement site found — each one either joins `Files:` or carries an explicit one-line `left alone because …`.**
 

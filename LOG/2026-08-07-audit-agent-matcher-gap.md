@@ -1,4 +1,4 @@
-# [HASH] — The subagent cost ask-gate was silently absent on this harness; hooks.json now matches both tool names
+# 5993a10 — The subagent cost ask-gate was silently absent on this harness; hooks.json now matches both tool names
 
 `pre_tool_use.py` matches `("Task", "Agent")` and its comment says both names occur across harness builds — but `hooks.json` registered only a `Task` matcher. On a harness that presents the subagent tool as "Agent", the hook never runs and the cost ask-gate silently does not exist.
 

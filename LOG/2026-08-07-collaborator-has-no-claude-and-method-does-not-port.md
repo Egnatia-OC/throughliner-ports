@@ -1,4 +1,4 @@
-# [HASH] — The outside-contributor rationale gap named, with the ask that scales and the honest statement that it cannot be closed
+# 5993a10 — The outside-contributor rationale gap named, with the ask that scales and the honest statement that it cannot be closed
 
 The why-pipeline assumes one person, working with Claude, recording rationale as they go. A second contributor working outside the method produces changes with **no rationale in the record at all** — and the obvious patch is already barred, because reconstructing intent from a diff is what the compare-never-explain rule rules out. So a shared project's record covers one person's half.
 

@@ -1,4 +1,4 @@
-# [HASH] — The docs reconciled against the hooks: four undocumented behaviours written down, four understatements corrected, three stale names fixed
+# 5993a10 — The docs reconciled against the hooks: four undocumented behaviours written down, four understatements corrected, three stale names fixed
 
 The reverse direction nobody looks for. The hooks stay as they are; the docs were wrong about them.
 

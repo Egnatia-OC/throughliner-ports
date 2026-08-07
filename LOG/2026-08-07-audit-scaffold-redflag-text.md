@@ -1,4 +1,4 @@
-# [HASH] — The scaffolded queue header stops telling every consumer that uncleared red flags live in Processed
+# 5993a10 — The scaffolded queue header stops telling every consumer that uncleared red flags live in Processed
 
 `setup.md` scaffolded the Processed-section header with *"a work item carrying a `Red flag · State: cleared/uncleared` marker"* — but the behaviour rules say an uncleared flag **never** sits in Processed: a flag is cleared at processing, and an item that cannot clear one returns to the bottom of Unprocessed rather than moving forward. So `cleared` is the only state that section ever carries.
 

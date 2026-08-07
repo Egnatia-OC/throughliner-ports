@@ -1,4 +1,4 @@
-# [HASH] — The "Plan session here" marker retired: six references removed, and the readiness line left as the only in-queue halt
+# 5993a10 — The "Plan session here" marker retired: six references removed, and the readiness line left as the only in-queue halt
 
 **Decided at processing: retire, the user's call.** The fork was implement-or-retire, and the two directions cost very differently. Implementing meant a new halt in `next.md` plus a place-and-remove step in `plan.md`, which the method then maintains and tests forever. Retiring meant deleting the references.
 

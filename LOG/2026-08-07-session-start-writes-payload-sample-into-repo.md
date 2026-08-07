@@ -1,4 +1,4 @@
-# [HASH] — A silent write of the user's absolute path into their repo removed, the tracked file deleted, and the published copies routed to the history rewrite
+# 5993a10 — A silent write of the user's absolute path into their repo removed, the tracked file deleted, and the published copies routed to the history rewrite
 
 **Red flag · State: cleared** — carried through from processing, where it was cleared by designing the fix and telling the user plainly what deleting the file does and does not achieve.
 

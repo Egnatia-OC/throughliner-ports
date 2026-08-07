@@ -1,4 +1,4 @@
-# [HASH] — The queue mover no longer drags the readiness marker when its anchor moves; crossings are reported and the marker's real position is printed
+# 5993a10 — The queue mover no longer drags the readiness marker when its anchor moves; crossings are reported and the marker's real position is printed
 
 **The defect, diagnosed at processing and reproduced here before the fix.** The marker is not stored as a position: `split_blocks()` records it as an **anchor slug** — the slug of the item directly above it — and `elements_with_marker()` re-inserts it after that same item, *wherever that item has moved to*. So the marker follows its anchor around the section rather than holding its place.
 

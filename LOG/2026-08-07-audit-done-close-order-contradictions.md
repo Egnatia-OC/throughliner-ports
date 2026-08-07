@@ -1,4 +1,4 @@
-# [HASH] — Three collisions inside the close family resolved: scan order, approval frame, and the push offer at a combined close
+# 5993a10 — Three collisions inside the close family resolved: scan order, approval frame, and the push offer at a combined close
 
 **Scan order.** `done.md` said in two places that the wind-down re-scan runs before the LOG entry is drafted, while the `[user]`-item close and the handmade close both ordered entry-then-scan. The ordering is load-bearing rather than cosmetic: the scan exists so its captures land in the entry's "Routed to Captures:" line, and running it after means amending that line as a working-tree edit *after* the user approved it. Both stragglers now run the scan first, with the reason stated at each site rather than left to the reader to infer. All four close paths now agree.
 

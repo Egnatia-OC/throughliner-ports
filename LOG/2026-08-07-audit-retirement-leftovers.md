@@ -1,4 +1,4 @@
-# [HASH] — Three retirements finished in live text, three inert artifacts deleted, one read before deleting
+# 5993a10 — Three retirements finished in live text, three inert artifacts deleted, one read before deleting
 
 **The batch-type rule was deleted outright rather than corrected.** CLAUDE.md's "A new batch type touches four places" named `ALLOWED_SUBHEADINGS` — a constant existing nowhere in code, deleted from the lint on 2026-07-04 — plus retired batch types, and routed wiring at `docs/` paths. Batch types are retired, so there is nothing left for the rule to govern: a corrected version would be a rule about a thing that does not exist. Its lesson survives in the sibling immediately below it, the hook-enforced-format ripple-grep, which this same run generalised.
 

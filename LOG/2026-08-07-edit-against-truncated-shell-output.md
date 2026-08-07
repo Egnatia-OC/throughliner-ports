@@ -1,4 +1,4 @@
-# [HASH] — Two file-safety clauses: an old_string comes from the file's bytes, and a method doc is never scratch space
+# 5993a10 — Two file-safety clauses: an old_string comes from the file's bytes, and a method doc is never scratch space
 
 Both land in `docs-b/plugin-behaviour.md`'s file-safety section, beside the modified-on-disk rule whose neighbours they belong among.
 
