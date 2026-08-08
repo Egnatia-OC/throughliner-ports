@@ -1,4 +1,4 @@
-# [HASH] — The differential consistency audit run properly as its own [audit] run over the merged 2026-08-08 span: three findings, and the run's own shape as the first instance of the corrected procedure
+# 34a229e — The differential consistency audit run properly as its own [audit] run over the merged 2026-08-08 span: three findings, and the run's own shape as the first instance of the corrected procedure
 
 The first differential audit run the way `resources/consistency-audit-plan.md` writes it, and the first run of any kind under the corrected shape [inline-audit-reconcile-procedure] demands — a queued `[audit]` item, cleared above the line, executed through /next with its own scope, its own report and its own LOG entry. The predecessor it replaces was the same audit run as greps inside a planning chat the evening before; the user's verdict on that was *"there was no audit of any shape, just one small thing was built."* This entry is the answer to that, and the procedure item now has a real instance to be written from.
 
