@@ -1,4 +1,4 @@
-# [HASH] — The scripted-shell-write denial stops consulting the file list, because its surviving reason never depended on one
+# c4cf5af — The scripted-shell-write denial stops consulting the file list, because its surviving reason never depended on one
 
 The hook that denies scripted file-writes from the shell only fired when the target sat *outside* the active build's agreed file list. The first run of the test suite built for it established what that missed: both recorded live slips — a heredoc append to a FAQ template, a multi-site substitution in a procedure doc — wrote files that were **in scope** for their run. So the mechanical check caught neither, and the only thing standing between those writes and the disk was the doc rules, which had slipped three times in one day.
 

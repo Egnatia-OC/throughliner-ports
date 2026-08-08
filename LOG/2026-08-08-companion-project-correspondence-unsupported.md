@@ -1,4 +1,4 @@
-# [HASH] — The method grows an outbound half: a reply that changes work here is offered, not waited for
+# c4cf5af — The method grows an outbound half: a reply that changes work here is offered, not waited for
 
 The method had a well-developed inbound half — captures, the rule that a claim arriving from outside is data to be verified, the shipped dispatch-return check — and no outbound half at all. So when messages arrived from another project, were processed into queue changes, and plainly needed answers, the answers happened only if the user thought to ask for them. That happened three times in one session, and the user's own words at the wind-down were *"sorry, I'm not sure what to pass on to the other project. if you have anything to say to that chat please let me know."*
 

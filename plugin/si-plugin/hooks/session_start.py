@@ -165,6 +165,14 @@ def content_stamp(root):
     deferring a merge on the grounds that the branch's plugin changes were not
     live, when they were.
 
+    It is a DIRECTORY holding one marker file per live session, not a single
+    file, and it is excluded on both limbs because the first attempt excluded
+    only the filename and therefore did nothing — the walk descended into it
+    and hashed its contents, so the stamp then moved with the number of open
+    sessions. That shipped and was reported as verified, because the test
+    accompanying it created `.in_use` as a file: it asserted the assumption
+    rather than the world. The test now builds the real shape.
+
     This is the basis /plan's below-line revisit uses to tell whether host-side
     changes are actually live: the hook stamps the installed host (its own
     CLAUDE_PLUGIN_ROOT) here; in the self-hosting dev project /plan computes
@@ -180,7 +188,9 @@ def content_stamp(root):
     try:
         collected = []
         for dirpath, dirnames, filenames in os.walk(root):
-            dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+            dirnames[:] = [
+                d for d in dirnames if d not in ("__pycache__", ".in_use")
+            ]
             for filename in filenames:
                 if filename.endswith(".pyc") or filename == ".in_use":
                     continue

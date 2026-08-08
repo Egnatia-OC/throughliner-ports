@@ -1,4 +1,4 @@
-# [HASH] — Docset A is retired: one docset, no model detection, and no fallback left to lean on
+# c4cf5af — Docset A is retired: one docset, no model detection, and no fallback left to lean on
 
 The plugin shipped its procedure and behaviour docs twice — docset A (`docs/`), the heavy prescriptive set the method was built on for Opus 4.8, and docset B (`docs-b/`), authored from it by subtraction for the 5-series. A was frozen on 2026-08-02 as a known-good fallback so a bad migration could never strand the project with no working plugin, a guarantee the user called non-negotiable at the time. It is now removed from the package, and with it the model detection, the recorded-model setting that fed it, and the runtime directive that redirected skills between the two folders.
 

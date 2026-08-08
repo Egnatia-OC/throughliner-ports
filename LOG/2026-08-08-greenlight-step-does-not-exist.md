@@ -1,4 +1,4 @@
-# [HASH] — The cycle-status greenlight ask becomes a real close step, with a logged disposition as its teeth
+# c4cf5af — The cycle-status greenlight ask becomes a real close step, with a logged disposition as its teeth
 
 The user reported trying to greenlight a merge across several sessions and it never happening. The investigation found why, and the finding is the uncomfortable kind: every individual session behaved correctly. Seven queue items said "greenlight it at any /plan close" and `done-plan.md`'s close carried no such step — in either docset. The only place a greenlight could be raised was plan.md Step 1's opening question, which is the wrong shape at the wrong end of the session: a greenlight is a judgment about whether things have gone well enough, not an external event that has or hasn't happened, and the opening is where a session holds the least evidence to make it with.
 

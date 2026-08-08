@@ -1,4 +1,4 @@
-# [HASH] — The host-liveness build stamp stops counting a CLI bookkeeping file, and a test pins it
+# c4cf5af — The host-liveness build stamp stops counting a CLI bookkeeping file, and a test pins it
 
 The session-start hook reports a build stamp — a content hash of the installed plugin's files — so a session can tell whether host-side changes are actually live by comparing it against the target's stamp. It was lying, and it lied in the direction that causes real damage.
 

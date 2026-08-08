@@ -1,4 +1,4 @@
-# [HASH] — Both remote-control rendering checks answered: fences don't wrap there, chips didn't appear on either surface
+# c4cf5af — Both remote-control rendering checks answered: fences don't wrap there, chips didn't appear on either surface
 
 Walked through with the user during a /next run. The item's design paid off in a way worth recording: it was written to be run *opportunistically*, with no special trip, and it was — the user happened to have both surfaces in front of them (watching on a phone while at the computer), which made the comparison simultaneous rather than remembered.
 

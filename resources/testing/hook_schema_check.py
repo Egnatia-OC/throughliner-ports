@@ -383,13 +383,36 @@ def test_content_stamp_ignores_the_cli_in_use_marker():
     check("content_stamp: produces a stamp for a plugin-shaped directory",
           bool(before), repr(before))
 
-    with open(os.path.join(d, ".in_use"), "w", encoding="utf-8") as fh:
-        fh.write("some-session-id\n")
+    # The REAL shape, and getting this wrong is why the first version of this
+    # fix shipped broken: `.in_use` is a DIRECTORY holding one marker file per
+    # live session, not a single file. A test that created it as a file passed
+    # against an exclusion that did nothing.
+    in_use = os.path.join(d, ".in_use")
+    os.makedirs(in_use, exist_ok=True)
+    with open(os.path.join(in_use, "3260"), "w", encoding="utf-8") as fh:
+        fh.write("")
     after = session_start.content_stamp(d)
-    check("content_stamp: an .in_use marker does NOT move the stamp",
+    check("content_stamp: an .in_use DIRECTORY does NOT move the stamp",
           before == after, "before=%r after=%r" % (before, after))
 
-    os.remove(os.path.join(d, ".in_use"))
+    # A second session adds a second marker file inside it. Without the
+    # directory exclusion the stamp moves with the number of open sessions.
+    with open(os.path.join(in_use, "8168"), "w", encoding="utf-8") as fh:
+        fh.write("")
+    check("content_stamp: a SECOND session marker still doesn't move it",
+          session_start.content_stamp(d) == before,
+          "the stamp is tracking how many sessions are open")
+
+    # Belt and braces: the flat-file form is excluded too, in case the CLI
+    # ever writes it that way.
+    import shutil
+    shutil.rmtree(in_use)
+    with open(in_use, "w", encoding="utf-8") as fh:
+        fh.write("some-session-id\n")
+    check("content_stamp: a flat .in_use file doesn't move it either",
+          session_start.content_stamp(d) == before)
+
+    os.remove(in_use)
     check("content_stamp: removing the marker leaves the stamp unchanged too",
           session_start.content_stamp(d) == before)
 
