@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PreToolUse hook — enforces four rules:
+PreToolUse hook — enforces five rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable. Always editable alongside the listed files: the queue
@@ -39,9 +39,19 @@ PreToolUse hook — enforces four rules:
    Visibility, not containment: such a write should not be stopped, it
    should be impossible to make unremarked.
 
+5. Structured shell writes: a shell command whose literal target is a file
+   inside the project is DENIED — always, not only out of scope and not
+   only during a build. The reason is staleness rather than scope: the
+   shell reads through a mount that can hold an out-of-date view, so a
+   scripted write can silently clobber work the editing tools would have
+   refused to. The scratchpad, the memory dir and anything outside the
+   project still pass, and a computed target path is a deliberate
+   fail-open.
+
 Rules 1 and 4 are complementary halves of one question — during a build the
 file list is enforced; outside one it is surfaced. Neither leaves a session
-editing the repo unobserved.
+editing the repo unobserved. Rule 5 sits across both, because its reason
+does not depend on either.
 
 For Task/Agent (subagent spawn): checks rule 3 (cost ask-gate).
 For Edit/Write/MultiEdit: checks rule 1 during a build, rule 4 outside one.
@@ -323,6 +333,18 @@ def _is_research_dir(filepath: str, cwd: str) -> bool:
     norm = _normalise(filepath)
     research_dir = _normalise(os.path.join(cwd, "resources", "research"))
     return norm.startswith(research_dir + os.sep) or norm == research_dir
+
+
+def _is_inside(filepath: str, cwd: str) -> bool:
+    """Check if a path sits inside the project folder.
+
+    Used by the structured-shell-write check, which denies a scripted write to
+    any project file rather than consulting the build's Files list. Paths
+    outside the project are somebody else's business and pass.
+    """
+    norm = _normalise(filepath)
+    root = _normalise(cwd)
+    return norm == root or norm.startswith(root + os.sep)
 
 
 def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
@@ -645,48 +667,56 @@ def main() -> int:
                     + PATTERN_AS_DATA_NOTE
                 )
 
-        # Structured shell writes, during a build only. Outside a build there is
-        # no agreed file list to check against, and the planning gate already
-        # covers that case for the edit tools; adding a shell check there would
-        # be enforcement where the method deliberately chose visibility.
-        if has_active_build:
-            build_files = _parse_build_files(build_path)
-            if build_files is not None:
-                for target in structured_write_targets(command):
-                    resolved = target if os.path.isabs(target) else os.path.join(
-                        cwd, target
-                    )
-                    if (
-                        _is_method_doc(resolved, cwd)
-                        or _is_memory_dir(resolved)
-                        or _is_research_dir(resolved, cwd)
-                        or _is_scratchpad_dir(resolved, cwd)
-                    ):
-                        continue
-                    if build_files and _is_build_file(resolved, cwd, build_files):
-                        continue
-                    return _deny(
-                        "[Sovereign Implementer] BLOCKED: this command writes to "
-                        f"a file through a script rather than through the editing "
-                        f"tools.\n\nTarget: {target}\n\n"
-                        "That route walks around the scope-lock — the file check "
-                        "runs on Edit and Write, not on shell commands — and it "
-                        "reads the file through a mount that can hold a stale "
-                        "view, so it can silently overwrite work.\n\n"
-                        "Use Edit or Write instead. If the edit is a large or "
-                        "awkward one (removing a whole work item from the queue "
-                        "is the usual case), there is a purpose-built tool for "
-                        "it: scripts/reorder_queue.py moves and deletes queue "
-                        "items byte-for-byte, addressed by slug.\n\n"
-                        "If the file genuinely belongs in this build, halt and "
-                        "add it to _build.md's Files: section with the user's "
-                        "approval.\n\n"
-                        "Note the honest limit of this check: it recognises "
-                        "script writes whose target path is written out "
-                        "literally. A command whose target is computed at "
-                        "runtime is not detected — it is not a permitted "
-                        "workaround, it is a gap."
-                    )
+        # Structured shell writes to any file inside the project — whatever the
+        # active build's Files list says, and whether or not a build is active.
+        #
+        # This used to fire only on OUT-OF-SCOPE targets during a build, and the
+        # first run of the shell-write test suite showed what that missed: both
+        # recorded live slips wrote files that were IN scope for their run, so
+        # the mechanical check caught neither and the doc rules — which slipped
+        # three times in one day — were the only protection.
+        #
+        # The denial had two reasons and they come apart. The scope-lock reason
+        # genuinely does not apply to an in-scope target. The stale-view reason
+        # does: a shell's view of a file can be stale, so a scripted write can
+        # silently clobber work the edit tools would have refused to. That half
+        # is unconditional, which is why the check now is too.
+        #
+        # What still passes, by construction: the session scratchpad (outside
+        # the repo, sanctioned scratch space), the user's memory directory, and
+        # anything outside the project. The queue mover is untouched because its
+        # write target is computed at runtime and this check only ever sees
+        # literal paths — the deliberate fail-open, unchanged.
+        for target in structured_write_targets(command):
+            resolved = target if os.path.isabs(target) else os.path.join(
+                cwd, target
+            )
+            if _is_memory_dir(resolved) or _is_scratchpad_dir(resolved, cwd):
+                continue
+            if not _is_inside(resolved, cwd):
+                continue
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: this command writes to a file "
+                f"through a script rather than through the editing tools.\n\n"
+                f"Target: {target}\n\n"
+                "The shell reads the file through a mount that can hold a stale "
+                "view, so a scripted write can silently overwrite work the "
+                "editing tools would have refused to clobber. That is true "
+                "whatever the file is and whether or not it is in this build's "
+                "scope, which is why this check does not consult the Files "
+                "list.\n\n"
+                "Use Edit or Write instead. If the edit is a large or awkward "
+                "one (removing a whole work item from the queue is the usual "
+                "case), there is a purpose-built tool for it: "
+                "scripts/reorder_queue.py moves and deletes queue items "
+                "byte-for-byte, addressed by slug. If you genuinely need "
+                "scratch space, the session scratchpad sits outside the repo "
+                "and still passes.\n\n"
+                "Note the honest limit of this check: it recognises script "
+                "writes whose target path is written out literally. A command "
+                "whose target is computed at runtime is not detected — it is "
+                "not a permitted workaround, it is a gap."
+            )
 
         return 0
 

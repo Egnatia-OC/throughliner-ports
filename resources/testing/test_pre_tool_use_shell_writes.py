@@ -15,14 +15,18 @@ and the matcher that would deny that shape was built in the same run — so its
 coverage had never been tested against the commands that actually slipped.
 This suite drives those exact shapes.
 
-The finding the first run of this suite established, pinned here so it is not
-re-derived: the matcher denies a scripted write only when the target is OUTSIDE
-the build's Files list (its denial text names the scope-lock as its reason).
-Both real slips wrote files that were IN scope for their run, so the matcher
-as built would NOT have caught them. That is asserted below as current
-behaviour, not endorsed as correct — whether in-scope scripted writes should
-also be denied (the stale-mount overwrite reason applies to them too) is a
-hook-behaviour design call routed to the queue, not decided by a test.
+The finding the first run of this suite established, and what was done about it
+([shell-write-matcher-blind-to-in-scope-targets]): the matcher used to deny a
+scripted write only when the target was OUTSIDE the build's Files list, and
+both real slips wrote files that were IN scope for their run — so the matcher
+as built would not have caught either of them. The denial's two reasons come
+apart: the scope-lock reason does not apply to an in-scope target, but the
+stale-view reason (the shell can read a stale copy and silently clobber work)
+applies to every scripted write regardless of scope. So the scope condition was
+dropped. A detectable scripted write to ANY file inside the project is now
+denied, build or no build; the scratchpad, the memory directory and anything
+outside the project still pass, and a computed target path is still the
+deliberate fail-open.
 """
 
 import json
@@ -137,26 +141,58 @@ def main():
         "got: " + decision(d, COMPUTED_PATH),
     )
 
-    # 4. CURRENT BEHAVIOUR, not endorsement: the same slipped shape against a
-    #    file IN the build's Files list passes — which means the matcher would
-    #    not have caught the two real slips, whose targets were in scope.
-    #    Design question routed to the queue; if the hook is later changed to
-    #    deny in-scope scripted writes too, flip this assertion deliberately.
+    # 4. The case this suite's first run exposed, now flipped: the same slipped
+    #    shape against a file IN the build's Files list is denied. Both real
+    #    slips were of exactly this shape, so this is the assertion that says
+    #    the matcher would now catch them.
     d2 = make_project(
         build_files=["plugin/si-plugin/templates/faq-template.md"]
     )
     check(
-        "in-scope scripted write currently passes (pinned, see header)",
-        decision(d2, HEREDOC_APPEND) == "pass",
+        "in-scope scripted write denied (scope condition dropped)",
+        decision(d2, HEREDOC_APPEND) == "deny",
         "got: " + decision(d2, HEREDOC_APPEND),
     )
 
-    # 5. No active build -> no structured-write check at all.
+    # 5. No active build -> still denied. The stale-view reason does not depend
+    #    on a build being open, and the user's standing instruction forbids
+    #    shell file-writes unconditionally.
     d3 = make_project(build_files=None)
     check(
-        "no active build: scripted write passes (check is build-scoped)",
-        decision(d3, HEREDOC_APPEND) == "pass",
+        "no active build: scripted write still denied",
+        decision(d3, HEREDOC_APPEND) == "deny",
         "got: " + decision(d3, HEREDOC_APPEND),
+    )
+
+    # 5b. A scripted write to a method doc is denied too — the old exemption for
+    #     detectable shapes is gone. QUEUE.md is exactly the corruption route the
+    #     queue mover exists to prevent.
+    QUEUE_WRITE = (
+        "python - <<'PY'\n"
+        "open('QUEUE.md', 'w').write('clobbered')\n"
+        "PY"
+    )
+    check(
+        "scripted write to QUEUE.md denied (method-doc exemption removed)",
+        decision(d3, QUEUE_WRITE) == "deny",
+        "got: " + decision(d3, QUEUE_WRITE),
+    )
+
+    # 5c. The scratchpad carve-out stays: sanctioned scratch space, outside the
+    #     repo, and named in the denial text as the route when scratch is what
+    #     you actually need.
+    scratch = os.path.join(
+        tempfile.gettempdir(), "claude", "proj", "sess", "scratchpad", "note.md"
+    )
+    SCRATCH_WRITE = (
+        "python - <<'PY'\n"
+        "open(%r, 'w').write('x')\n"
+        "PY" % scratch.replace("\\", "/")
+    )
+    check(
+        "scratchpad scripted write still passes",
+        decision(d3, SCRATCH_WRITE) == "pass",
+        "got: " + decision(d3, SCRATCH_WRITE),
     )
 
     # 6. A plain non-writing python invocation passes.

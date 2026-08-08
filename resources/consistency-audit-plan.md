@@ -40,11 +40,14 @@ and its detection; it does not promise to catch everything once.
   QUEUE.md's Unprocessed; the full report becomes a LOG entry. Repairs
   consolidate into grouped capture items; genuine design calls file standalone
   so they can be ordered or dropped on their own.
-- **Audit docset B only.** `docs/` is docset A — the frozen 4.8 fallback, NOT
-  retired (retirement proposed and declined 2026-08-05). Never diff A against B.
-  The one docs/-related check: report references resolving into `docs/` —
-  EXCEPT the five `skills/*/SKILL.md` files, whose hardcoded `docs/` paths are
-  the deliberate session-start redirect mechanism.
+- **There is one docset, `docs-b/`, and it is the whole audit surface.** Docset A
+  (`docs/`) was retired 2026-08-08 and its folder is gone, so the old
+  "audit B only, never diff A against B" instruction has nothing left to
+  exclude. What replaces it is a plain error check: **any reference resolving
+  into `docs/` is now a finding**, with no exceptions — the `skills/*/SKILL.md`
+  files used to be the deliberate exception, because a session-start directive
+  rewrote their paths at runtime, and they now name `docs-b/` directly like
+  everything else. A surviving `docs/` path points at nothing.
 - **Verify the brief's premises against the repo before running**, whoever wrote
   it. Handoff-claim provenance applies to audit briefs too.
 - **Verify before shipping:** every finding's cited lines are re-read by the

@@ -336,6 +336,10 @@ Editor:            nothing reads it — links open in the desktop app's own
                    viewer whatever it says
 Language:          scaffolded but never filled by any step and never read by
                    anything; removed from the template 2026-08-07
+Model:             chose between the two sets of working instructions the
+                   plugin used to ship. One set now, so nothing reads it;
+                   /setup stopped asking and the template stopped carrying it
+                   2026-08-08
 ```
 
 ### Vocabulary — the test, not the list
@@ -650,6 +654,35 @@ One day supplied three live instances that sort cleanly into those two rows,
 in both directions — outside reports said work was outstanding when it had
 shipped here, and shipped there when it had not. The distinction is what makes
 the unverifiable case *recognisable* rather than trusted.
+
+#### And the reply going back is offered, not waited for — the outbound half
+
+The rule above is the inbound half, and it was the only half. So a message
+that arrived, got processed into queue changes, and plainly needed an answer
+produced no answer unless the user thought to ask for one. That is the same
+evaporation the `[user]` under-filing rule exists to prevent, except here it is
+Claude's own work evaporating: three messages from another project were
+processed in a single session and each reply had to be requested.
+
+```
+TRIGGER   a message from another project CHANGES WORK HERE
+          # narrower than "a message arrived" — an FYI needs no reply
+OFFER     in the SAME session, unprompted: draft the reply for approval.
+          Never auto-send; the user carries it across themselves.
+RECORD    the sent text lands in this session's LOG entry IN FULL, and the
+          item the exchange touched records what the returning answer looks
+          like (the dispatch-return check above)
+```
+
+**Why the full text rather than a summary.** It is the same single-home rule
+announcements follow: a later session matching a returning answer to what was
+actually asked needs the words, not a description of them. A commitment made
+about a format another application is being built against is exactly the case.
+
+**Any other project, not a designated companion.** The narrower "companion
+project" framing was rejected on the user's own correction — people building
+this way commonly have many projects at once, so cross-project exchange is the
+normal case in this method's audience rather than a special arrangement.
 
 ### A stated fact about the user's setup goes into a doc, not the conversation
 

@@ -38,13 +38,13 @@ There's one gap, and it's intentional: if you do a `[user]` step entirely on you
 
 If your CLAUDE.md still has a `Completion mode:` line from before, leave it. It doesn't do anything now and Claude ignores it.
 
-## Why does setup ask which Claude model I use?
+## Setup used to ask which Claude model I use. Why doesn't it any more?
 
-Because Claude follows instructions better when they're written for the model that's actually running. The plugin keeps two versions of its own working instructions — a fuller one and a lighter one — and uses your answer to pick. Newer models do better with less spelled out; the older one needs the fuller wording to follow a rule reliably.
+Because the answer no longer changes anything.
 
-You're only ever asked which model you use, never which version of the instructions you want — that's background machinery you shouldn't have to think about. The question is optional; skip it and the safer, fuller version is used, which costs you nothing but some extra words behind the scenes. Change it later by telling Claude.
+The plugin used to keep two versions of its own working instructions — a fuller one for an older Claude model, and a lighter one for the newer ones — and your answer picked between them. In August 2026 the older version was retired, so there's one set of instructions and nothing to choose. A question that changes no behaviour is worse than no question: it costs you a decision and suggests the setting matters.
 
-You might reasonably ask why Claude can't just tell which model it's running. Sometimes it can, and where that information is available it's used and this setting isn't needed. But it isn't always available — in the desktop app it isn't — so relying on it alone meant the whole feature quietly did nothing. Your answer is the reliable source.
+If your project's CLAUDE.md still has a `Model:` line from before, leave it. Nothing reads it and Claude ignores it.
 
 ## Why does setup check whether my code is public, and what are the licence and publishing questions?
 
@@ -334,11 +334,13 @@ Check LOG/. `index.md` has one-line summaries with commit hashes (newest first),
 
 ## Does it matter which Claude model I'm using?
 
-Almost nothing you have to do. The plugin ships two versions of its own instructions — a fuller one and a lighter one — and picks one at the start of every session. It prefers to read the running model directly from the app, but the desktop app doesn't pass that along, so setup asks you one optional question — *which model do you mostly run* — and remembers the answer in your project's CLAUDE.md. That's the whole of it; you're never asked to choose a version of the instructions, only which model you use.
+Use one of the Claude 5 models — Opus 5, Sonnet 5 or Fable 5. There's nothing to set up.
 
-Both versions describe the same method: the same four commands, the same queue, the same rules about what Claude will and won't do without asking you. The only difference is how much explaining sits around each rule, because different Claude models follow instructions best at different lengths. So your project behaves the same way whichever model you build it on, and switching models between sessions is fine.
+The plugin's own instructions are written for that generation. Opus 5 and Fable 5 have both run real sessions; Fable 5 works even at low reasoning effort. Sonnet 5 is expected to be fine but hasn't been separately put through its paces.
 
-If neither the app nor your recorded answer tells it which model is running, it uses the fuller version — the one it's been tested on longest. A wrong guess in that direction only costs you some extra wordiness.
+**Claude Opus 4.8 is no longer supported.** The plugin used to ship a second, fuller version of its instructions specifically for it, and pick between the two automatically. That version was retired in August 2026. The current instructions are deliberately lighter, which suits the newer models and suits 4.8 badly — so on 4.8 you should expect Claude to follow the rules less reliably.
+
+Switching between 5-series models mid-project is fine.
 
 ## Why won't Claude ask me for my email address, account numbers, or other personal details?
 
@@ -464,13 +466,15 @@ One thing you'll see either way: when Claude works an order different from the f
 
 A safety check stopped it, and it's a specific one worth understanding.
 
-During a build, Claude is held to the list of files that build agreed to touch. That check runs on Claude's own editing tools — but a *command* can also write to a file, and until recently commands went unchecked. So the lock could be on, the session could believe it was contained, and one route walked around it.
+A command that writes to one of your project's files through a script gets stopped, and Claude is pointed at the ordinary editing tools instead — or, where the edit is a big awkward one like removing a whole item from your queue, at the purpose-built tool that does exactly that job safely.
 
-Now, during a build, a command that writes to a file through a script gets stopped if that file isn't in the build's list. The message names what to use instead: the ordinary editing tools, or — where the edit is a big awkward one, like removing a whole item from your queue — the purpose-built tool that does exactly that job safely.
+**The reason is not about scope, it's about staleness.** When Claude writes through a command, it's reaching the file by a different route than its editing tools use — and that route can be working from an out-of-date copy. A write through it can quietly wipe out changes the editing tools would have refused to touch. That's true of any file in your project, whether or not the current piece of work was supposed to touch it, and whether or not a build is even running.
+
+This check used to only fire when the file was *outside* the agreed list. That turned out to be the wrong half: the two real incidents it was built after both wrote files that were inside the list, so it caught neither of them. The list condition was dropped.
 
 **Two honest things about this check.** It only recognises writes where the target file is spelled out in the command. If a command works out its target while running, the check doesn't see it — that's a gap, not a permitted route around the rule. And it's deliberately narrow rather than clever: a check that guessed would produce wrong refusals, and wrong refusals teach everyone to work around the check, which is worse than the thing it was protecting against.
 
-If the file genuinely belongs in the build, Claude stops and asks you before adding it — which is the normal way scope grows.
+If Claude genuinely needs somewhere to put a temporary file, there's scratch space outside your project that this check leaves alone — so nothing legitimate is blocked, it just has to take the safe route.
 
 ## Why does Claude write "(checked by…)" next to things it says it can do in my CLAUDE.md?
 
@@ -541,6 +545,21 @@ What actually helps is one ask you can make of them: **get their own AI tool to 
 If that doesn't happen, the fallback is to give them an area of the project to own. The thin history is then in one place you can point at, rather than mixed through everything.
 
 And the honest part: some of a shared project will always have less history than the rest. That's the price of the help, not something to fix. Anyone who tells you a process solves it is describing a process nobody follows.
+
+## I brought a message over from another one of my projects, and Claude offered to write a reply back. Why?
+
+Because if it didn't offer, the reply would only ever happen when you remembered to ask for one — and that's how real work quietly disappears.
+
+Claude was already careful about messages coming *in*: something you bring over from another project gets checked before it changes anything here. But there was nothing at all about what goes *back*. So a message would arrive, get turned into changes in your list of work, and then just stop there. The answer it obviously needed existed only if you thought to ask.
+
+Now, when a message from another project actually changes work here, Claude drafts the reply in the same session and shows it to you. Two things about that:
+
+- **It never sends anything.** You carry the reply across yourself, the same way you brought the message over. Claude writes it; you decide whether and where it goes.
+- **The message it needed no reply to doesn't get one.** The trigger is a message that *changes something here*, not every message that arrives.
+
+The reply also gets written into that session's record in full — not a summary of it. If an answer comes back weeks later, that's the only way anyone can tell what was actually promised.
+
+This applies to any project of yours, not some designated partner project. People building this way tend to have several on the go, so messages crossing between them is ordinary, not a special arrangement.
 
 ## I said I was going to send someone a log entry and Claude warned me about what was in it. Why?
 

@@ -295,8 +295,8 @@ no CLAUDE.md exists  ->  scaffold from
 one already exists   ->  APPEND the method block; never overwrite
 ```
 
-The template carries a Model field and a Repo visibility field; Step 4 fills
-them from Q6 and the visibility detection.
+The template carries a Repo visibility field; Step 4 fills it from the
+visibility detection.
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
@@ -380,14 +380,12 @@ examples would clarify scope, ask a follow-up rather than smuggling them in.
 discovery. Ask it the same way each time, in its own message, after discovery
 reaches its stopping point. Optional; the user can skip it.
 
-**Q6 (optional). Which Claude model do you mostly run — the newest generation, or
-an older one?**
-→ Claude works better with instructions written for the model actually running, so
-the plugin keeps two sets and picks the one that fits. Name the current models
-plainly and let the user pick; if they don't know or skip, say the safe default is
-assumed and move on. Record the answer, not a preference about the plugin's
-internals — the user should never meet the word for those two sets. Asked once, no
-nag.
+**Q6 is retired — don't ask it, and don't invent a replacement.** It asked which
+Claude model the user mostly runs, and its only job was picking between the two
+sets of working instructions the plugin used to ship. There is one set now, so
+there is nothing to pick and the answer would feed nothing. A question that
+changes no behaviour is worse than no question: it costs the user a decision and
+teaches them the setting matters.
 
 ## Step 3b: Repo visibility, licensing, and publishing
 
@@ -453,8 +451,7 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
 2.  write ONE work item in Unprocessed from the first-thing-to-build answer
     # the user's words, a [slug] at its end, a "captured by you" note.
     # Not multiple scoped entries.
-2a. fill CLAUDE.md's Model field from Q6            (or leave the safe default)
-2b. fill CLAUDE.md's Repo visibility field from the detection (or the stated
+2a. fill CLAUDE.md's Repo visibility field from the detection (or the stated
     fallback answer, marked as user-stated)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files

@@ -33,7 +33,7 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. Planning sessions have no file list to lock to, so they get a lighter guard instead: a change to anything beyond your queue, spec and log asks you first. It asks, never refuses — the point is that nothing gets changed without you seeing it.
 
-The plugin also tunes itself to the Claude model you're running. It ships two versions of its own instructions — a fuller one and a lighter one — and picks the right one at the start of every session. Setup asks which model you mostly use, in one optional question, and that's the whole of it: both versions do the same thing, so your project works the same way whichever model you use.
+The plugin's own instructions are written for the Claude 5 models, and there's nothing to configure. It used to ship two versions — a fuller one for Opus 4.8 and a lighter one written from it for the 5 models — and pick between them per session. The fuller one was retired in August 2026 once nobody was running 4.8, and the setup question that fed the choice went with it.
 
 When Claude hits something it can't do, it follows a fixed order rather than handing the problem back: try it, and if that's blocked, go and find out whether a tool exists that would work — before involving you at all, since you can't ask for a tool by name you've never heard of. If one exists and isn't installed, Claude asks for that one thing, specifically and once. If nothing exists, it says so plainly and points you at something you already have. The failure this replaces is the one that costs whole sessions: Claude retrying, re-explaining and handing the problem back while you already own the tool that does the job in one step.
 
@@ -62,8 +62,10 @@ The habit that matters: always /done before /clear, so each session is saved bef
 - Run `/setup` in your project folder to scaffold the project docs
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
-- Claude Opus 4.8, all effort levels tested OK — the plugin's fuller instruction set is built and tested against this model
-- The Claude 5 models (Opus 5, Sonnet 5, Fable 5) get the lighter instruction set automatically. Opus 5 and Fable 5 have both run real sessions on it tested OK — planning, building, and closing. The lighter set is still newer and less exercised than the 4.8 set; if a session goes oddly on a 5-series model, that's worth reporting
+- **Claude Opus 5** — the model the plugin is developed on. Tested OK across planning, building and closing.
+- **Claude Fable 5, including at low reasoning effort** — tested OK. This project's own development runs on it, so the evidence is real sessions rather than a trial.
+- **Claude Sonnet 5** — expected to work (it's a 5-series model and the instructions are written for the family), but not separately exercised.
+- **Claude Opus 4.8 is no longer supported.** The instruction set built for it was retired in August 2026. The current one is deliberately lighter, and 4.8 follows a rule less reliably without the fuller wording — so if you're on 4.8, expect worse rule-following, and that's worth reporting.
 - Auto mode enabled — optional; it spares you approving each step by hand. Turn it off if you'd rather confirm each action.
 - `/clear` after every `/done` (keeps each session's context clean)
 

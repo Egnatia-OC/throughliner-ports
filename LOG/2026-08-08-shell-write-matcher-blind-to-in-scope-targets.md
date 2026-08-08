@@ -1,0 +1,17 @@
+# [HASH] — The scripted-shell-write denial stops consulting the file list, because its surviving reason never depended on one
+
+The hook that denies scripted file-writes from the shell only fired when the target sat *outside* the active build's agreed file list. The first run of the test suite built for it established what that missed: both recorded live slips — a heredoc append to a FAQ template, a multi-site substitution in a procedure doc — wrote files that were **in scope** for their run. So the mechanical check caught neither, and the only thing standing between those writes and the disk was the doc rules, which had slipped three times in one day.
+
+**The fix follows from splitting the denial's two reasons apart.** The scope-lock reason genuinely does not apply to an in-scope target — the file was agreed, so no boundary is being crossed. The stale-view reason does apply: the shell reads a file through a mount that can hold an out-of-date copy, so a scripted write can silently overwrite work the editing tools would have refused to clobber. That second reason has nothing to do with scope, and the user's own standing instruction already forbids shell file-writes unconditionally on exactly those grounds. The hook now enforces what the instruction always said.
+
+**The cost was checked rather than assumed, and it is effectively nothing.** The queue mover survives untouched because its write target is computed at runtime and this check only ever sees literal paths — the deliberate fail-open, unchanged. The editing tools serve every project file. The scratchpad carve-out stays, sits outside the repo, and is now named in the denial text as the route when scratch space is genuinely what's wanted. No legitimate use of a heredoc into a project file could be named that the editing tools don't serve better.
+
+**The method-doc exemption went with the scope condition.** A detectable scripted write to QUEUE.md is precisely the corruption route the queue mover exists to prevent, so exempting it was backwards.
+
+One thing this session demonstrated in passing: the scope-lock did its job on this very build. Four skill files needed editing during the docset retirement and were refused until they were added to the file list with a stated reason — the check working exactly as designed, on the session that was extending its sibling.
+
+**Files touched:** `plugin/si-plugin/hooks/pre_tool_use.py` (scope condition and method-doc exemption removed from the structured-write check; new `_is_inside()` helper; denial text reworded to lead with the stale-view reason and name the editing tools, the queue mover and the scratchpad; module docstring gains a fifth rule), `resources/testing/test_pre_tool_use_shell_writes.py` (header rewritten to record the finding and its resolution; the pinned in-scope case flipped to expect a denial; the no-active-build case flipped; new cases for a scripted QUEUE.md write and a scratchpad write), `SPEC.md` (the shell-write limit passage corrected — not a scope check, reason is staleness, fires build or no build, scratchpad excepted).
+
+**FAQ:** updated "Claude was blocked from running a command that would have written to a file. What happened?" — rewritten around the staleness reason, recording that the check used to be scope-conditional and caught neither real incident, and ending on the scratchpad so nothing legitimate reads as blocked. The index line needed no change; the question is still the question.
+
+**Routed to Captures:** none from this item.

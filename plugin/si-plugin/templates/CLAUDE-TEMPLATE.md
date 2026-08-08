@@ -39,12 +39,6 @@ This project uses the Sovereign Implementer method.
 
 Self-hosting: not recorded
 
-## Model
-
-Model: not recorded
-
-<!-- Which Claude model you mostly run, from the optional /setup question. Claude follows instructions better when they're written for the model actually running, so the plugin keeps two sets of its own working instructions and uses this to pick. Left as `not recorded` if you skipped — the safe default is used. Change it by telling Claude. -->
-
 ## Your tools
 
 <!-- What's installed and working on this machine for this project — Android Studio, a

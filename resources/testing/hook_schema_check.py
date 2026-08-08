@@ -351,6 +351,55 @@ def test_post_tool_use_lint_shape():
     assert_envelope("PostToolUse (lint)", out, "PostToolUse", ["additionalContext"])
 
 
+def test_content_stamp_ignores_the_cli_in_use_marker():
+    """A runtime bookkeeping file must not move the build stamp.
+
+    The plugin CLI writes `.in_use` into whichever installed build is active
+    and removes it again. While `content_stamp()` hashed it, the installed
+    host's stamp moved between two session starts with no reinstall between
+    them, and a host byte-identical to the target reported as stale — a false
+    reading that was acted on, arguing to defer a merge because the branch's
+    plugin changes supposedly weren't live. They were.
+
+    This asserts the shape of the fix rather than the one filename: any future
+    CLI artifact of the same kind should be caught here, by the pre-restart
+    check in the Rezip and Release rituals, rather than by another multi-day
+    investigation.
+    """
+    sys.path.insert(0, HOOKS)
+    try:
+        import session_start
+    finally:
+        sys.path.pop(0)
+
+    d = tempfile.mkdtemp(prefix="si-stamp-")
+    with open(os.path.join(d, "hook.py"), "w", encoding="utf-8") as fh:
+        fh.write("print('hello')\n")
+    os.makedirs(os.path.join(d, "docs-b"), exist_ok=True)
+    with open(os.path.join(d, "docs-b", "plan.md"), "w", encoding="utf-8") as fh:
+        fh.write("# plan\n")
+
+    before = session_start.content_stamp(d)
+    check("content_stamp: produces a stamp for a plugin-shaped directory",
+          bool(before), repr(before))
+
+    with open(os.path.join(d, ".in_use"), "w", encoding="utf-8") as fh:
+        fh.write("some-session-id\n")
+    after = session_start.content_stamp(d)
+    check("content_stamp: an .in_use marker does NOT move the stamp",
+          before == after, "before=%r after=%r" % (before, after))
+
+    os.remove(os.path.join(d, ".in_use"))
+    check("content_stamp: removing the marker leaves the stamp unchanged too",
+          session_start.content_stamp(d) == before)
+
+    # The exclusion must be narrow: a real package file still moves it.
+    with open(os.path.join(d, "docs-b", "next.md"), "w", encoding="utf-8") as fh:
+        fh.write("# next\n")
+    check("content_stamp: a genuine package file DOES move the stamp",
+          session_start.content_stamp(d) != before)
+
+
 def test_post_tool_use_non_queue_edit_is_silent():
     d = _queue_project("# QUEUE\n\n## Processed\n\n## Unprocessed\n")
     rc, out, err = drive("post_tool_use.py",
@@ -376,6 +425,7 @@ def main():
         test_pre_tool_use_in_scope_is_silent,
         test_pre_tool_use_git_safety_denies,
         test_pre_tool_use_subagent_asks,
+        test_content_stamp_ignores_the_cli_in_use_marker,
         test_post_tool_use_lint_shape,
         test_post_tool_use_non_queue_edit_is_silent,
     ):
