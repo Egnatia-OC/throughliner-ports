@@ -417,39 +417,16 @@ projects (session_start surfaces it)      the child directly. Don't adopt the
                                           parent, don't scan into a child.
 ```
 
-## When the host doesn't say which instruction set to read
+## When the installed plugin is missing its procedure docs
 
-Normally it does: the session-start hook issues a directive telling the session
-to substitute the lighter docset's path wherever a skill names a procedure doc,
-and that directive carries its own self-check. So the manoeuvre of reading a
-different path from the one a skill names is **issued by the plugin**, not
-improvised.
-
-One window isn't covered: an installed host too old to emit the directive at
-all. There is then no instruction either way, and the session is left choosing
-between the skill's named path and the project's recorded `Model:` field. That
-window opens at every stale-host moment and closes at the next reinstall — real,
-but self-curing.
-
-```
-the host DOES carry the docset the      ->  follow the PROJECT. Say so in one
-  project's Model: field implies, but       line: which one is being read, and
-  emitted no directive                      that the host didn't route.
-
-the host does NOT carry that docset     ->  follow the HOST — it is all there
-                                            is. Say so in one line.
-```
-
-**Announce, don't halt.** A halt is heavy for a condition a reinstall cures, and
-it would fire hardest on the user least able to diagnose it. The recorded
-failure was never that the wrong choice was made — it was that **the choice was
-invisible**: nothing recorded it, and the opposite call would have looked
-equally reasonable to a later reader. A stated line fixes the actual defect.
-What is ruled out is silently preferring either side.
-
-This inherits the posture the hook already takes when the selected docset's
-folder is missing from the installed plugin: fall back, and say plainly which
-was picked and which is running instead. Never silently.
+There is one set of procedure docs, `docs-b/`, and every skill names it
+directly — there is no choice to make and no routing directive to wait for. The
+one failure shape left is a mispackaged or incomplete install where `docs-b/`
+is missing from the installed plugin. The session-start hook reports that state
+plainly — naming that it concerns the *installed* copy rather than the
+project — and there is nothing to fall back to: a session in that state has no
+procedure docs at all. Tell the user so and recommend reinstalling the plugin.
+Never proceed silently as though the docs had loaded.
 
 ## Response-shape tags
 
