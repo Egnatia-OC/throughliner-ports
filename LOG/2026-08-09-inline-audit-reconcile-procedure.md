@@ -1,4 +1,4 @@
-# [HASH] — The differential audit becomes a queued [audit] run: both "inline" wordings removed, and the plan doc gains a queue-item form section
+# 7a4b377 — The differential audit becomes a queued [audit] run: both "inline" wordings removed, and the plan doc gains a queue-item form section
 
 The shape this item originally praised failed on first contact with the user, and
 the build is the correction.

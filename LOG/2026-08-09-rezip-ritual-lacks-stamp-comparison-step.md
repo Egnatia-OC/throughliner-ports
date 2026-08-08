@@ -1,4 +1,4 @@
-# [HASH] — The rezip and release rituals gain a target-versus-installed stamp comparison, and it was used for real later in the same run
+# 7a4b377 — The rezip and release rituals gain a target-versus-installed stamp comparison, and it was used for real later in the same run
 
 The step that caught a shipped bug was the one nothing required. Now it is
 required.

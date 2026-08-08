@@ -1,4 +1,4 @@
-# [HASH] — Four doc-vs-hook mismatches repaired: the shell-write matcher's real scope, the red-flag scan's real owner, the git-push half-claim, and two inert leftovers
+# 7a4b377 — Four doc-vs-hook mismatches repaired: the shell-write matcher's real scope, the red-flag scan's real owner, the git-push half-claim, and two inert leftovers
 
 All four came from the 2026-08-08 differential audit, and all four are the docs
 overstating or misattributing what the hooks do. The code was consistent

@@ -1,4 +1,4 @@
-# [HASH] — A throwaway PostCompact probe registered and rezipped, so the one unknown blocking compaction re-injection can finally be answered
+# 7a4b377 — A throwaway PostCompact probe registered and rezipped, so the one unknown blocking compaction re-injection can finally be answered
 
 Fifteen lines of hook and one registration entry, to settle a question that had
 been quietly stalling a queued design for three planning sessions.

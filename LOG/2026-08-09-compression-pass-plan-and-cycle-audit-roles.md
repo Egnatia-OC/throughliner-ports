@@ -1,4 +1,4 @@
-# [HASH] — resources/compression-pass-plan.md written: the first standing procedure in this project whose output is shorter documents rather than findings
+# 7a4b377 — resources/compression-pass-plan.md written: the first standing procedure in this project whose output is shorter documents rather than findings
 
 The capture that produced this came from a confusion that was itself the evidence.
 Asked what the differential audit had yielded, the user described what they had

@@ -1,4 +1,4 @@
-# [HASH] — The session-start test renamed off the retired model-field framing, keeping the robustness assertion underneath it
+# 7a4b377 — The session-start test renamed off the retired model-field framing, keeping the robustness assertion underneath it
 
 Small, and the interesting part is what the item got wrong about it.
 

@@ -1,4 +1,4 @@
-# [HASH] — The compliance checklist's two live lenses folded into the consistency-audit plan as full-corpus passes, and the checklist file deleted
+# 7a4b377 — The compliance checklist's two live lenses folded into the consistency-audit plan as full-corpus passes, and the checklist file deleted
 
 Three standing audit documents became two, and the two plans now own all the audit
 criteria.

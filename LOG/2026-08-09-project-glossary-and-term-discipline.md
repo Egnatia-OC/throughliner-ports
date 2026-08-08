@@ -1,4 +1,4 @@
-# [HASH] — The project glossary built: GLOSSARY.md scaffolded at /setup, the vocabulary rule rewritten around define-and-record, and the mirroring correction
+# 7a4b377 — The project glossary built: GLOSSARY.md scaffolded at /setup, the vocabulary rule rewritten around define-and-record, and the mirroring correction
 
 The largest item of the run, and the only one consumers meet directly. Three
 threads, one design — the glossary is the mechanism the other two need.

@@ -1,4 +1,4 @@
-# [HASH] — Both desk-written rendering claims in the fencing rules corrected: the no-wrapping reason narrowed to remote control, and the copy-affordance note restated as a two-sided trade
+# 7a4b377 — Both desk-written rendering claims in the fencing rules corrected: the no-wrapping reason narrowed to remote control, and the copy-affordance note restated as a two-sided trade
 
 Two rendering claims in adjacent rules, both written from the desk, both false on
 the other surface. They were folded into one item at the user's approval because

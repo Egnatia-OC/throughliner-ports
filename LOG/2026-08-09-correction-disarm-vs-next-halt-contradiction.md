@@ -1,4 +1,4 @@
-# [HASH] — The disarm-vs-halt contradiction settled by a third route: a build session appends one dated line and nothing more
+# 7a4b377 — The disarm-vs-halt contradiction settled by a third route: a build session appends one dated line and nothing more
 
 A direct contradiction found by the 2026-08-08 differential audit, filed standalone
 because which rule wins was a design call rather than a repair. The settlement gave

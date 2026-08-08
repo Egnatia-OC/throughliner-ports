@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md gains the self-built-fixture rule: a fixture standing in for another program's artifact is built from the real thing once, or says it encodes an assumption
+# 7a4b377 — CLAUDE.md gains the self-built-fixture rule: a fixture standing in for another program's artifact is built from the real thing once, or says it encodes an assumption
 
 Three sentences of new rule, and the brevity was itself the decision.
 

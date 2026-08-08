@@ -1,4 +1,4 @@
-# [HASH] — The authoring heuristic's 4.8 pass deleted and its three model-agnostic checks promoted, leaving a doc that is true rather than one carrying a tombstone
+# 7a4b377 — The authoring heuristic's 4.8 pass deleted and its three model-agnostic checks promoted, leaving a doc that is true rather than one carrying a tombstone
 
 The capture that produced this item asked for a 5-series authoring pass to be
 written. Processing reversed the direction to a deletion, and the build carried

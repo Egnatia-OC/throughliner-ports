@@ -1,4 +1,4 @@
-# [HASH] — FAQ/ added to the planning gate's quiet path in both SPEC and the hook's own ask message
+# 7a4b377 — FAQ/ added to the planning gate's quiet path in both SPEC and the hook's own ask message
 
 Noticed during the 2026-08-08 differential audit's pass 9 but outside its span, so
 it was recorded rather than filed as an audit finding, then filed at that close so

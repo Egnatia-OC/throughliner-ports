@@ -1,4 +1,4 @@
-# [HASH] — The merge cycle becomes queue machinery: rebranch seeds three standing items, and the branch-cycle section gains a which-audit-at-which-phase table
+# 7a4b377 — The merge cycle becomes queue machinery: rebranch seeds three standing items, and the branch-cycle section gains a which-audit-at-which-phase table
 
 The user's closing question the day before was whether the cycle would ever be "a
 designed and built thing rather than me constantly having to explain how it works".
