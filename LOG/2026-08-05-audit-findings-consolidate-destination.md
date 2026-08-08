@@ -1,7 +1,0 @@
-# d9162e4 — the bulk-approval inversion gains a destination clause: repairs consolidate, design calls stay standalone
-
-The inversion governed presentation only, so twelve one-sentence repairs still became twelve drafts, approvals, scope-locks, log entries and close cycles. Adopted the boundary the user endorsed live on 2026-08-02: a finding whose fix is an unambiguous repair consolidates with its fellows into one work item with numbered points; a finding carrying a design call the user must make stays standalone so it can be ordered, deferred or dropped on its own. What must not change is stated in every home: each finding is still discussed and decided one at a time — consolidation sets where kept work lands, never how it's decided, and bulk-keep stays forbidden. Landed in plugin-behaviour.md (the clause on the inversion), plan.md's keep-step (destination at processing), and next-audit.md's routing step. The counterweight the item named — a consolidated item widens the Files list and can't be dropped point-by-point — is carried by the design-call exclusion. Processed-and-built in the overnight blitz of 2026-08-05 under the softened bar; autonomous run — recorded departure.
-
-**Files touched:** plugin/si-plugin/docs-b/plugin-behaviour.md, docs-b/plan.md, docs-b/next-audit.md
-**Routed to Captures:** none
-FAQ: not needed because the user-facing audit flow (numbered set, contest by number) is unchanged; only where kept findings land.

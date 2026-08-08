@@ -41,54 +41,12 @@ NO _build.md      ->  three shapes:
     standalone handmade work  ->  Standalone handmade-work close (below)
         (no planning either, and the tree holds uncommitted edits the
          session didn't make)
-
-    the POST-CLOSE TAIL       ->  done-plan.md, and this case is NAMED rather
-        (this session already         than inferred
-         committed at a /done,
-         and has since filed
-         captures or notes)
 ```
 
-**The post-close tail is its own case, and naming it is the whole of this
-routing change.** A session that has already closed and then keeps going — six
-captures filed to QUEUE.md after the commit is the recorded instance — used to
-have to work out from scratch what kind of session it had become, and landed on
-"a session that changed only the project docs" by inference. It still routes
-there; it just no longer has to derive that.
-
-**At most one line of awareness, and it is bounded.** Say that captures filed
-after the commit are on disk and will ride the next session's commit. **It must
-never read as "you must run /done again."** Durability is already handled by the
-captures-filed-after-commit mechanism; this exists to let the tail happen
-gracefully, never to add a re-close requirement. That bound is written beside
-the cue deliberately, so a later edit doesn't harden a cue into a prerequisite.
-
-**Containment after a close: nothing is blocked, but writes are visible.** With
-no active build the file scope-lock is off — that has not changed. What has is
-that the planning-session file gate now covers the stretch: a write outside the
-files planning touches by design returns *ask*, never *deny*. So the tail is
-covered like any other unbuilt stretch, and the item's original complaint — that
-it had neither containment nor visibility — is answered on the visibility half.
-Don't reopen this as a containment question.
-
-Detect a completed `[user]` item **from what the session can already see — never
-by asking.** A `[user]` item is walked through, and that is all; no step of its
-life asks whether it's done.
-
-```
-walked through to its end in THIS session   ->  completed. Close it here.
-the user has said they did it               ->  completed. Close it here.
-anything else                               ->  leave it in Processed, silently
-```
-
-The gap this leaves is real and is meant to stay: an item the user completed on
-their own between sessions, with nothing observable to show for it, will sit in
-the queue until they mention it. **That is the fallback, not a hole to plug** —
-mentioning it is already a supported path, and a completion ask is exactly what
-this removed. Don't reintroduce one under any wording.
-
-This can coincide with a planning session; when it does, close the item through
-that section and let done-plan.md handle the rest.
+Detect a completed `[user]` item **by asking**: if Processed holds any `[user]`
+item, ask whether the user just completed one — a fresh chat won't remember it, so
+the ask is what surfaces it. This can coincide with a planning session; when it
+does, close the item through that section and let done-plan.md handle the rest.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -99,7 +57,7 @@ a `[user]` work item, which never enters a _build.md — so /done doesn't close 
 *as a build*, but once the user has run it, /done records its completion and
 removes it from the queue through the close below.
 
-## Completed `[user]`-item close  [BRIEF]
+## Completed `[user]`-item close  [BRIEF, PROMPT]
 
 A `[user]` item never entered a _build.md, so it isn't ticked and closed like a
 build. This is the close that records it and removes it from Processed, so a
@@ -107,46 +65,19 @@ finished item doesn't strand in the queue and get re-presented by the next /next
 It also runs inside a /plan close when the user mentions async-completed items.
 
 ```
-1. take the completed item(s) from what the session can see  [SILENT]
-   # the routing test above already identified them. Don't ask, and don't
-   # list the other [user] items still sitting in Processed — an item whose
-   # completion isn't visible simply stays where it is.
-1a. verify, don't accept, where the result is observable
-   # if the item's walkthrough names an observable result — a file present or
-   # absent, a branch gone, a URL responding — run that check against the
-   # world now (plugin-behaviour.md, the [user] lifecycle). Check passes ->
-   # proceed. Check fails -> state plainly what was found, leave the item in
-   # place, and never turn it into "are you sure you did this?". No observable
-   # result named -> proceed on the report as before.
-2. run the wind-down re-scan FIRST, before drafting anything
-   # scan-before-entry, the same order every close uses — its captures have
-   # to be in hand before the entry is written, or the entry's
-   # "Routed to Captures:" line is wrong at the moment it is approved
-3. write a LOG entry per completed item, named after its slug
-   # records what the user did and its outcome; write it to its LOG file
-   # first, re-read to confirm, then summarise-and-point for approval
+1. confirm WHICH [user] item(s) completed  [PROMPT]
+   # name those still in Processed; only confirmed-done ones close here
+2. write a LOG entry per completed item, named after its slug
+   # records what the user did and its outcome; draft and show for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
-4. remove each completed item from Processed, via the mechanical mover:
-       python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
-           --delete <slug> Processed
-   # this is what stops it being re-presented. The command removes the whole
-   # block byte-exactly, refuses rather than guessing on an unresolvable or
-   # ambiguous slug, and leaves the readiness marker where it was — so a long
-   # item never has to be hand-edited away line by line.
-5. run the commit core
+3. remove each completed item from Processed
+   # this is what stops it being re-presented
+4. run the wind-down re-scan, then the commit core
    # staging QUEUE.md and the LOG changes
 ```
 
 A remote-gated push offer applies as normal — a completed `[user]` item is real
 project progress, not bookkeeping.
-
-**The part-walked sibling.** An item the user stopped partway through carries a
-`Set aside ·` line (plugin-behaviour.md, Set aside), written at the moment they
-stopped. At this close it is not completed and not removed: leave it in place
-with its marker, make sure the marker actually holds what the session witnessed
-(steps reached, what stopped it), and note the stop in the session's LOG entry.
-The marker is what the next run resumes from — and it keeps this close's
-recommendation from re-offering the very thing the user just set aside.
 
 ## Standalone handmade-work close  [BRIEF, PROMPT]
 
@@ -161,12 +92,7 @@ the session didn't make are most likely the user's expected work. Run `git statu
 user that these are theirs and meant to be saved. **Never report them as a broken
 repo, and never try to undo them.**
 
-**2. Run the wind-down re-scan**, before anything is drafted. Scan-before-entry is
-the order every close uses, and it is load-bearing rather than cosmetic: the
-scan's captures have to be in hand before the entry is written, or the entry's
-"Routed to Captures:" line is wrong at the moment the user approves it.
-
-**3. Decide LOG granularity by judgment.**
+**2. Decide LOG granularity by judgment.**
 
 ```
 one coherent change     ->  a single entry: LOG/<YYYY-MM-DD>-handmade.md
@@ -175,14 +101,7 @@ several distinct        ->  a separate entry per logical change
 logical changes             # better recall than one lumped entry
 ```
 
-**Write each entry to its LOG file first**, re-read to confirm it landed, then put
-a short summary plus a pointer in front of the user for approval — the same
-approval frame every other close uses, restated here because this close is reached
-by sessions with no build and no planning behind them, so that frame is otherwise a
-doc away. Reject means editing the entry back out and confirming the removal. Step
-4's "the commit message is the approved entry" refers to this approval.
-
-**4. Run the commit core**, staging the hand-edited
+**3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
 files explicitly. The commit message is the approved entry; for several entries,
 the title names the handmade-work close and the body carries each entry's summary.
 Unlike a planning close, this one **does** offer push when a remote exists — it's
@@ -216,8 +135,8 @@ The build and plan close-outs point here. (Audits land no product changes, so an
 audit close has no spec-sync gate.)
 
 **Did this session's work change what SPEC says?** Apply the spec-entry trigger
-test **in plan.md's own wording** — quote it from there rather than keeping a copy
-here, so the two can't drift apart. Read against what this session landed.
+test: does any SPEC sentence go wrong or incomplete given what this session
+landed?
 
 If it fires, **stop the close — don't commit yet.** Surface the drift in plain
 words, naming which SPEC sentence the session made wrong, get approval to fix it,
@@ -236,10 +155,6 @@ plan close   ->  no scope-lock active: edit SPEC.md directly in-session.
                  Editing SPEC to match a decision the user already made this
                  session is RECORDING, not re-planning.
 ```
-
-The plan branch covers every plan-type close — a /plan session, a setup session,
-and a method-doc-only session alike. None of the three runs a scope-lock, so all
-three edit SPEC directly.
 
 A session that changed only queue ordering or captures touched no SPEC sentence
 and passes silently.
@@ -267,10 +182,6 @@ a pure pointer drift                     ->  mechanical. Fix it HERE, report in
 ## LOG entry files
 
 Every sub-doc's entry-writing step points here.
-
-**Run the wind-down re-scan first** (its own section below) — any captures it
-files belong in this entry's "Routed to Captures:" line, so the scan precedes
-the draft.
 
 **One text, several positions.** The session authors **two** texts, not four:
 
@@ -321,68 +232,8 @@ The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
 
-**What the entry covers: the session's outputs, judged by an artifact test.** The
-LOG records changes to the project, but that is not the whole of what a session
-produces. Work done *alongside* the build — an announcement written about the
-project, a piece of writing, research framed for an audience — is a session output
-too, and recording only the code changes is how such work gets lost. It has been
-lost: an announcement authored in one session had to be typed back in by hand
-later, because nothing anywhere held it.
-
-```
-the test:  is this a durable artifact the project might need to draw on again?
-    yes  ->  it belongs in the entry. Record its full text if a later session
-             would need the exact words; a description and a pointer otherwise.
-    no   ->  leave it out.
-```
-
-**A test, not a list.** External work is open-ended, so the entry can't enumerate
-what qualifies — the session judges it case by case.
-
-**Draw the line by artifact, never by topic.** The instinct is to sort by subject
-— project work in, personal work out — and it doesn't work: one conversation is
-often both, and there is no honest place to cut. The artifact test dissolves that.
-A supportive conversation that produced a decision is logged for the decision,
-which is ordinary project reasoning; one that produced nothing durable is simply
-absent, not excluded. And judging by topic would mean asking "was that too
-personal to write down?" — a judgment that will eventually be got wrong in a
-public repo. The artifact test never asks it.
-
-**An outside contributor's own recorded reasoning folds into the entry, credited to
-them.** Where someone working outside this method has written their reasoning down
-— most usefully in the pull request itself, which is the ask
-`plugin-behaviour.md`'s why-pipeline recommends making — carry it into the entry's
-rationale rather than leaving the entry silent about half of what landed. Fold in
-what they actually wrote; never reconstruct reasoning they didn't record, which the
-compare-never-explain rule forbids. Where they recorded nothing, say so plainly in
-the entry: an honest gap reads correctly to a later session, an invented rationale
-does not. The **format** of the credit is not settled here and is not this step's to
-invent — a single stored identity field would credit their work to the user, which
-is the exact failure crediting exists to prevent.
-
-**When external work recurs, propose a standing entry in CLAUDE.md** [PROMPT].
-When a project shows *ongoing* outward-facing work — a Discord server, a
-newsletter, a blog, a client the user reports to — offer to record in the
-project's CLAUDE.md where that work goes, whether its text is logged in full or by
-pointer, and what later draws on it. Without it, every session re-decides the same
-three things from scratch. The test stays a judgment call, as it must; this gives
-the judgment project-specific ground to stand on. Propose it on noticing the
-pattern, not at every close, and take a no for an answer.
-
-**The approval frame, identical for every flavor.** Write the entry to its LOG
-file, then put the wording in front of the user for approval — a short summary of
-what the entry records, plus a link carrying the entry's heading text, full text
-on request (plugin-behaviour.md's doc-bound-text rule). If they reject it, remove
-exactly what was written and confirm by re-reading. The commit message is the
-exception the rule already names: it has no doc to live in, so it is shown inline
-as before.
-
-**Name both replies where the ask lands** (plugin-behaviour.md, stop
-self-sufficiency): say what a yes looks like and what a change looks like — "**say
-go and I'll record and commit it, or tell me what to change**". This is the close's
-most-repeated stop and the one most likely to be read on a phone or relayed to
-someone else, where the app's reply suggestions aren't there to supply the missing
-half.
+**The approval frame, identical for every flavor.** Show the wording for approval
+before writing.
 
 ```
 run shipped ONE item     ->  this approval ALSO covers the commit message: title
@@ -458,39 +309,6 @@ move: if the closing session discovers a needed verification that isn't already 
 tracks it in a dedicated section, and **no LOG-only prose stands in for the queue
 line** — an unrun check recorded only in a log entry never surfaces again.
 
-## Recording an out-of-shape write  [SILENT when none; BRIEF when recording]
-
-A write the user approved through the file-gate prompt that **departs from the
-session's normal shape** gets named in the LOG entry: what was changed, and why it
-couldn't wait for a work item and a /next run. One or two sentences.
-
-This is what makes the departure auditable rather than invisible, and it is the
-half that has been missing. When a session edited seven files inline to scrub an
-active exposure, the call was right and would be made again — but there was no
-work item, no scope, and afterwards no record that it had happened at all. The
-gate now surfaces the ask; this records the answer.
-
-Scope it by shape, not by file: an ordinary planning write that merely happened to
-prompt (moving a research note at the user's request) needs no entry. A shipped
-hook edited mid-planning does.
-
-## Recording a memory write  [SILENT when none; BRIEF when recording]
-
-When this session saved something to memory, the LOG entry carries **one line**:
-that a cross-project fact was saved, and roughly what it concerns.
-
-**Never the content.** The content lives in memory; duplicating it here would
-re-create exactly the double record the memory-boundary rule exists to prevent.
-The line's job is to be a thread back — enough that a human reading the log can
-see the destination was used and go looking.
-
-Why it earns a step: memory is the one destination the user cannot read and no
-session can enumerate, so a fact saved there is uncorrectable by default. That
-stopped being theoretical when a diagnosis Claude offered to save turned out,
-two sessions later, to be wrong in exactly the dimension that made it look
-cross-project in the first place. The trace is not a copy of the fact — it is
-the only route back to one that may later need correcting.
-
 ## Recording a cleared red flag
 
 A red flag is cleared at *processing* — the /plan moment its item is judged ready.
@@ -524,16 +342,11 @@ cleared at processing, so the close does **not** re-decide it. Two things:
 
 ## Wind-down re-scan (file-only)  [BRIEF, PROMPT]
 
-Runs at **every** /done close regardless of session type — **before the LOG
-entry is drafted**, not inside the commit. Running it first means the entry's
-"Routed to Captures:" line is correct at approval time; the old
-after-the-entry order forced that line to be amended as a working-tree edit
-after approval, an amendment at least one session found it cleaner to avoid by
-simply re-ordering. (A capture raised in the post-commit tail still amends the
-line afterwards — no ordering eliminates that path.)
+Commit core points here, so it runs at **every** /done close regardless of session
+type.
 
-Re-read this session's own discussion and surface candidate captures — things
-the user thought out loud but never flagged.
+Before committing, re-read this session's own discussion and surface candidate
+captures — things the user thought out loud but never flagged.
 
 ```
 /done  ->  may FILE the surfaced captures
@@ -542,19 +355,10 @@ the user thought out loud but never flagged.
 # routing is planning, /plan's alone
 ```
 
-**Write the candidates into Unprocessed first**, then present them as ONE numbered
-set for a single approval — the doc-bound-text rule, applied to a result set. The
-message carries a short summary of each, a link to QUEUE.md and the headings to
-search for, and the ask; the full text is offered on request. The user contests by
-number, and only contested items go one at a time; a contested candidate is edited
-back out and the removal confirmed by re-read. The LOG entry written next then
-carries the surviving ones in its "Routed to Captures:" line from the start.
-
-**Name both replies in the ask itself** (plugin-behaviour.md, stop
-self-sufficiency): "**tell me any numbers to drop, or say keep them all**". The
-half that gets left out is the accept side, because it feels like the default and
-the app's reply suggestions used to supply it — which they don't on remote
-control, where this ask has read as a bare statement with nothing to answer.
+Present all candidates as ONE numbered set of fully-drafted captures for a single
+approval; the user contests by number, and only contested items go one at a time.
+Append the approved ones to Unprocessed, and add them to this session's LOG entry's
+"Routed to Captures:" line as a working-tree edit riding this commit.
 
 **Name the step's best-effort nature in plain words when it runs** — it re-reads
 whatever discussion is still in view, so a surfaced-nothing result is "nothing
@@ -594,51 +398,24 @@ untracked, or outside the repo               ->  NOT recoverable. Give a clear
                                                  warning before removing it.
 ```
 
-Name both replies on each offer (plugin-behaviour.md, stop self-sufficiency):
-"**say delete it, or keep it**" — a deletion offer that names only the delete side
-reads as an announcement that it's about to happen.
-
 If nothing session-created looks throwaway, say so in one line and move on.
 
 ## Commit core  [BRIEF, PROMPT]
 
 Every sub-doc's Commit step points here.
 
-**The wind-down re-scan has already run** — it fires before the LOG entry is
-drafted (see LOG entry files), so its captures are in the entry's "Routed to
-Captures:" line at approval time rather than amended in afterwards. If anything
-capturable surfaced *since* the entry was approved, file it now and update the
-entry's line — the ordinary captures-filed-after-commit move, just pre-commit.
+**Run the wind-down re-scan before staging** — it files any un-flagged captures
+from this session's discussion so they land in this same commit. File-only.
 
-**Run the session-file cleanup before staging**, so any deletions the user
+**Run the session-file cleanup before staging too**, so any deletions the user
 accepts fold into this same commit.
-
-**File the forward-recommendation advisory before staging.** Derive the
-next-step recommendation now — Recommend next's overlap scan and queue-state
-ladder — and when it passes the earns-its-place test, write the advisory
-capture at the top of Unprocessed here, so it rides this commit instead of
-leaving every close with a dirty tree. The test (plugin-behaviour.md, the
-advisory section): the advisory must carry something queue position cannot — a
-decision that isn't a work item, the reasoning behind an ordering, a state
-fact. A generic recommendation files nothing, and so does "process [top-slug]
-next", which restates queue position. **And an action the user set aside this
-session files nothing either** (plugin-behaviour.md, Set aside) — their
-not-now was the answer, and an advisory carrying it forward is precisely the
-re-raising the marker exists to stop. Its content derives entirely from queue
-state that is already settled; nothing about it needs the commit to exist.
-Recommend next then only *presents* the recommendation — it files nothing.
 
 **Shipped-slug cross-check (work-item closes).** When this session shipped work
 items, cross-check each shipped slug named in this session's LOG entries against
 Processed and confirm it's been removed. A work item is normally removed when
 /next locks scope, so the slug should already be gone — this is the safety net. If
 a shipped slug is still sitting in Processed as active work, surface it in one line
-and remove it (or halt and ask) before committing — with the mover's `--delete`,
-never by hand-editing the block away:
-
-```
-python <plugin-root>/scripts/reorder_queue.py QUEUE.md --delete <slug> Processed
-```
+and remove it (or halt and ask) before committing.
 
 A prior multi-item run shipped fourteen work items but left one in QUEUE.md —
 genuinely built, never removed — so it re-presented the next session as unbuilt.
@@ -647,7 +424,7 @@ unattended closes. A planning close names no shipped slug, so there's nothing to
 check. **Silent unless a stray slug is found.**
 
 **1. Stage explicitly — name each path:** files this session changed (from
-_build.md Changes), project docs updated during the session or close-out (QUEUE.md,
+_build.md Changes), method docs updated during the session or close-out (QUEUE.md,
 SPEC.md, LOG/), and the _build.md deletion where one was removed.
 
 **2. Detect out-of-scope dirty paths.** Run `git status --porcelain` and compare
@@ -663,14 +440,6 @@ RECOGNISE THE HASH-BACKFILL SIGNATURE FIRST — and skip the investigation:
         -> DON'T open a git diff. DON'T explain it file-by-file.
         -> fold it in with at most a one-line note
 
-RECOGNISE THE TEST-BUILD VERSION SIGNATURE TOO — and leave it alone:
-    a dirty plugin.json whose ONLY change is the version string, and only where
-    that new value carries a test suffix (a version ending -test<N>)
-        -> a local test build, deliberately never committed. The clean version
-           is set later, when the plugin is actually released.
-        -> DON'T mention it. DON'T offer to stage it. DON'T stage it as part of
-           anything else. Leave the file dirty.
-
 any OTHER out-of-scope dirty path
         -> full treatment: surface it in a one-line summary and offer to stage
            it, investigating where the change isn't self-evident
@@ -678,13 +447,6 @@ any OTHER out-of-scope dirty path
 
 This exact dirt appears every session and the answer is always "it's the backfill,
 stage it," so re-investigating it is pure delay for zero decision value.
-
-The test-build carve-out is stronger than the backfill one, and deliberately so.
-Merely not *asking* about that file would still let it be swept into a commit
-unremarked — which is exactly what happened once, publishing a test version as
-the released one. So the instruction is not "don't ask", it is **leave it dirty
-and never stage it**. Any other change to that file — anything beyond the version
-string — surfaces normally.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
 already approved at the entry step:
@@ -724,22 +486,12 @@ commit first (the safe, local action), THEN gate the outward push on consent:
 A sub-doc may override to fit its session shape — done-plan.md commits and doesn't
 offer push — but these commit-first mechanics stay canonical.
 
-**5. Pass the message shell-agnostically.** Write it to a file in the **session
-scratchpad** — never the project root — and commit with
-`git commit -F "<scratchpad path>"`. One mechanism on every machine: it sidesteps
-inline-quoting fragility (embedded newlines vary by shell, and a PowerShell
-here-string needs its closing token at column 0).
-
-**The scratchpad is the point, not an incidental detail.** A commit message file
-is exactly what the temp-file rule describes — something the project never keeps —
-and the scratchpad is its sanctioned home, exempt from every file gate and
-self-clearing, so there is no delete step to run and no stray file to tidy. Writing
-it to the project root instead used to raise a permission popup at every single
-close: the build scope-lock is indeed off by then, but that was never the only
-gate — with no active build, the planning file-gate asks on any project write
-outside its quiet-list, and a root temp file isn't on it. The popup read as the
-app ignoring auto-accept, when it was the method's own safety check firing exactly
-as designed on a file that shouldn't have been there.
+**5. Pass the message shell-agnostically.** Write it to a file in the project root
+(e.g. `COMMIT_MSG.tmp`), commit with `git commit -F COMMIT_MSG.tmp`, then delete
+the file. One mechanism on every machine — it sidesteps inline-quoting fragility
+(embedded newlines vary by shell, and a PowerShell here-string needs its closing
+token at column 0). The file is writable here because the sub-doc deletes _build.md
+before Commit, or none ever existed, so the scope-lock isn't active on the root.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
@@ -756,12 +508,6 @@ Every sub-doc's final step points here, adding only its flavor delta.
 the background section-bookkeeping phrasing. Keep it accurate: **don't say the
 queue is clear when work is still waiting to be sorted.**
 
-**Set-aside items don't get recommended.** Anything the user set aside
-(plugin-behaviour.md, Set aside) is skipped by this step — no recommending it,
-no "when you're ready" reminder of it. It comes back only when the queue has
-nothing else to offer, and that state is named plainly if this close meets it.
-Warnings are exempt as always: an uncleared red flag is surfaced regardless.
-
 **Overlap scan.** Before recommending, scan the still-unprocessed work for overlap
 with the top processed item — work that contradicts, invalidates, or would benefit
 it if sorted first. **State the result either way, not only when it blocks:**
@@ -777,56 +523,22 @@ The clean case is a plain assessment, not a hedge — "Three items are waiting t
 sorted; none touches the next piece of work, so nothing blocks it," never "there
 may be overlap worth checking."
 
-**The fresh-chat half lives inside each rung's sentence, not around it.** Every
-recommendation names **two** things in order: start a new chat, *then* run the
-skill — because a novice reads "run /plan next" as an instruction to run it
-right here, and carries a spent conversation into the next piece of work. This
-used to be a standing wrapper the speaking step had to remember to apply, and
-it dropped exactly when the recommendation's content was in hand — so the
-ladder's rungs now carry both halves as their own words, and the
-recommendation *is* the sentence with the fresh chat in it. Say the action the
-user actually takes — "start a new chat" — never the background term for it.
-
-**The one exception is /done itself: it closes the session you're in, never a
-fresh one.** The two-halves shape applies to the *next* skill after a close.
-When any step of the method recommends running /done — mid-session, at a
-build's completion, anywhere — it never says to start a new chat first: /done
-records the current session's work, so advising a fresh chat for it sends the
-user to close from a session with none of the work in view. A real session
-made exactly that misfire; this sentence is its scope line.
-
-**Queue-state ladder.** When nothing blocks. The distinction rungs 2 and 3 turn
-on is **the readiness line**: /next can only build work sitting *above* it, so
-work below the line is not something /next can act on at all. Each rung's
-recommendation sentence carries the fresh-chat half itself:
+**Queue-state ladder.** When nothing blocks:
 
 ```
 1. captures appended this session that affect the next work
-       ->  "Start a new chat and run /plan there" — and name the blocker
-2. work sits ABOVE the readiness line
-       ->  name the next item: "start a new chat and run /next there — it
-           picks up [the item]." If a reorder applies, offer to reorder first
-           so that /next picks the right item.
-3. Processed holds work, but ALL of it is below the readiness line
-       ->  "Start a new chat and run /plan there" — there is work waiting, but
-           none of it is ready to build yet, so /next would open and
-           immediately have nothing to do. Say that plainly: work is waiting,
-           it just needs a planning session to green-light something first.
-4. Processed empty
-       ->  "Queue is clear. Start a new chat and run /plan when you have more."
+       ->  recommend /plan, name the blocker
+2. Processed work exists
+       ->  name the next item, then ask whether the user is continuing into
+           another /next now. If yes and a reorder applies, offer to reorder
+           first so the next /next picks the right item.
+3. Processed empty
+       ->  "Queue is clear. Run /plan when you have more."
 ```
 
-Rung 3 exists because this state is easy to land in and easy to get wrong: a
-close that ships the last ready items leaves Processed *full* — so a "Processed
-empty" test doesn't catch it — while /next has nothing it can build. Pointing at
-/next there sends the user into a dead end.
-
-**The forward-recommendation advisory was already filed at the commit core**
-(pre-staging, so it rode this session's commit) — this step only presents the
-recommendation it carries. If this step's judgment has genuinely moved past what
-was filed — post-commit conversation changed the picture — update the advisory
-as a working-tree edit; that is then an ordinary post-commit tail write, the
-exception rather than the rule.
+**File the forward-recommendation advisory.** When this step made a *concrete*
+recommendation, file it as a capture at the top of Unprocessed, worded as advice,
+consumed and cleared by the next /plan. A generic recommendation files nothing.
 
 ```
 flavor deltas:
@@ -834,7 +546,7 @@ flavor deltas:
     audit close   ->  findings appended this session sit unprocessed, so the
                       DEFAULT is /plan, to sort them into work — name the count.
                       Only when nothing was appended does the overlap scan run
-                      and the ladder apply (its work-remaining rungs).
+                      and the ladder apply (steps 2–3).
     plan/setup    ->  a fresh setup session whose only work item is the rough
                       first build item recommends /plan to scope it, NEVER
                       /next — the interview wrote that item deliberately

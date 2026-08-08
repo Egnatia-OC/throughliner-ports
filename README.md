@@ -4,19 +4,13 @@ A Claude Code plugin that lets you build the project you have in mind — an app
 
 ## Install
 
-**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
+**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintCraftTech/sovereign-implementer` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintCraftTech/sovereign-implementer` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
 
-Those two names not matching is expected, not a mistake: the code lives in a repository called `throughliner`, and the plugin you install from it is still called `sovereign-implementer`. Both commands are correct as written.
-
-One naming quirk to know up front: Claude Code has a planning mode of its own and owns the short name, so `/plan` may reach that instead of this plugin's command, or fail with "plan is a UI command, not a skill". Type `/sovereign-implementer:plan` instead — or pick it from Claude Code's own command menu, which offers that form. The other three commands don't clash.
-
-If Claude reports that the `claude` command can't be found, that's a known snag on some setups and not a broken install — ask it to find the `claude` program on your machine and run the same commands using its full path. Needs Claude Code **2.1.193 or later**; if yours is older, update Claude Code first.
-
-**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintcraftTech/throughliner/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
+**New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintCraftTech/sovereign-implementer/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
 
 ## Get notified of new versions
 
-Want an email when a new version ships? GitHub can send you one. On the [plugin's GitHub page](https://github.com/FlintcraftTech/throughliner), click **Watch** (near the top right), choose **Custom**, tick **Releases**, and click **Apply**. From then on you get an email each time a new release is published. This needs a free GitHub account — signing up costs nothing.
+Want an email when a new version ships? GitHub can send you one. On the [plugin's GitHub page](https://github.com/FlintCraftTech/sovereign-implementer), click **Watch** (near the top right), choose **Custom**, tick **Releases**, and click **Apply**. From then on you get an email each time a new release is published. This needs a free GitHub account — signing up costs nothing.
 
 ## Who it's for
 
@@ -31,23 +25,7 @@ The plugin splits your project into a build queue and walks you through it. Four
 - `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one
 - `/done` — record what happened, commit
 
-Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. Planning sessions have no file list to lock to, so they get a lighter guard instead: a change to anything beyond your queue, spec and log asks you first. It asks, never refuses — the point is that nothing gets changed without you seeing it.
-
-The plugin's own instructions are written for the Claude 5 models, and there's nothing to configure. It used to ship two versions — a fuller one for Opus 4.8 and a lighter one written from it for the 5 models — and pick between them per session. The fuller one was retired in August 2026 once nobody was running 4.8, and the setup question that fed the choice went with it.
-
-When Claude hits something it can't do, it follows a fixed order rather than handing the problem back: try it, and if that's blocked, go and find out whether a tool exists that would work — before involving you at all, since you can't ask for a tool by name you've never heard of. If one exists and isn't installed, Claude asks for that one thing, specifically and once. If nothing exists, it says so plainly and points you at something you already have. The failure this replaces is the one that costs whole sessions: Claude retrying, re-explaining and handing the problem back while you already own the tool that does the job in one step.
-
-The same check runs in the other direction. Claude won't hand-assemble what a standard tool generates properly, and if what a piece of work is trying to achieve is already achieved by something you have, it stops there instead of building itself a second route to the same result.
-
-Your project gets a glossary — a record of the words that have been explained to you, and the names the project has settled on. Claude checks it before using a technical term, which gives you a guarantee that cuts both ways: it never re-explains what you already know, and never assumes you know something it hasn't told you. Entries are written the way the term was last explained to you, not as textbook definitions, so the glossary mirrors what you'd actually remember. It also covers your own words: pick a name for something and it goes in with your reasoning, and it's simply correct from then on. Where you've used the wrong word for a real technical thing, Claude names the standard one once and then just uses it — no repeated corrections, and no quietly adopting a word that would leave you exposed when you say it to someone else.
-
-Some pieces of work are yours to do rather than Claude's — sending something, checking a screen, a decision only you can make. Claude walks you through those live, one step at a time, when they come up. It never asks you whether you've already done them.
-
-Saying "not now" sticks. If you stop partway through something or tell Claude to shelve a suggestion, that gets recorded on the item — including how far you got — and Claude stops re-offering it session after session. The work isn't lost: it comes back when the queue has nothing else left, or the moment you mention it. Warnings are the exception — a security concern keeps surfacing until it's dealt with, however often it's waved off.
-
-When something misbehaves, Claude routes the report to the right place: a problem in your app goes into your queue, a problem with the method itself becomes a scrubbed report you paste at flintcraft.tech/report, and a problem with Claude Code (the app the method runs inside) can be filed as a GitHub issue — Claude offers to file it for you where your GitHub tooling is set up, always showing you the exact text and posting only on your yes.
-
-If you say you're about to share something out of your queue or your log, Claude tells you what's actually in that particular text first — a name, a file path with your account in it, an account or tool identifier, anything about someone other than you. It's easy to forget what a document written weeks ago contains. It fires once, and stays quiet when there's nothing worth mentioning.
+Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
 
 ## How to use it
 
@@ -61,13 +39,10 @@ The habit that matters: always /done before /clear, so each session is saved bef
 ## Operating conditions
 
 **Prerequisites** — do these once per project:
-- Run `/setup` in your project folder to scaffold the project docs
+- Run `/setup` in your project folder to scaffold the method docs
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
-- **Claude Opus 5** — the model the plugin is developed on. Tested OK across planning, building and closing.
-- **Claude Fable 5, including at low reasoning effort** — tested OK. This project's own development runs on it, so the evidence is real sessions rather than a trial.
-- **Claude Sonnet 5** — expected to work (it's a 5-series model and the instructions are written for the family), but not separately exercised.
-- **Claude Opus 4.8 is no longer supported.** The instruction set built for it was retired in August 2026. The current one is deliberately lighter, and 4.8 follows a rule less reliably without the fuller wording — so if you're on 4.8, expect worse rule-following, and that's worth reporting.
+- Claude Opus 4.8, all effort levels tested OK
 - Auto mode enabled — optional; it spares you approving each step by hand. Turn it off if you'd rather confirm each action.
 - `/clear` after every `/done` (keeps each session's context clean)
 

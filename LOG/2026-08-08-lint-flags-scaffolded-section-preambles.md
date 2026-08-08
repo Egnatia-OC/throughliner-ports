@@ -1,7 +1,0 @@
-# 3633c7d — Orphaned-prose lint discriminates by form: blockquote preambles exempt, and /setup scaffolds them as blockquotes
-
-Built in the 2026-08-08 overnight blitz. `post_tool_use.py`'s `_check_orphaned_prose` now exempts blockquote lines (`> ...`) the same way it exempts structural `--- … ---` lines, and both docsets' `setup.md` scaffold the Processed/Unprocessed section preambles as blockquotes. Form discriminates where position cannot: a destroyed first item's stranded rationale sits in exactly the preamble's position, but is never a blockquote — so the check keeps its teeth while the two per-edit false flags every consumer project has been seeing stop. Verified live: a synthetic queue with blockquote preambles plus one stranded prose line produced exactly one flag, on the stranded line. Docset A's setup.md edited as a **correction** (a scaffold that provokes the lint running underneath both docsets is A inconsistent with the hooks), in A's own single-paragraph register. Ripple traced: the mover carries preamble lines byte-for-byte (no change needed); CLAUDE-TEMPLATE.md and the FAQ pair carry no preamble text. Existing projects keep flagging until migrated — that step is already recorded on [setup-as-migration-home].
-
-**Files touched:** plugin/si-plugin/hooks/post_tool_use.py, plugin/si-plugin/docs-b/setup.md, plugin/si-plugin/docs/setup.md
-**Routed to Captures:** none
-FAQ: not needed because the change removes noise a consumer was never meant to see; the preamble now renders as a note, which explains itself.

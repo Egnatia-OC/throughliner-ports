@@ -1,7 +1,0 @@
-# d9162e4 — "close out" retired from user-facing narration; plan.md's emptied Step 3 heading renamed
-
-The /plan close-out step was retired into the /done close, but plan.md's Step 3 kept the heading "Close out", so Claude kept saying the word — and a user, hearing a name for a step they might have to ask for, couldn't tell whether running /done alone skipped something. It doesn't: done-plan.md runs everything, deliberately, at the one close that always fires. Fix per the item's own design note: the Step 3 heading is now "Point at /done" with an explicit never-say-close-out instruction and the plain-words alternative ("run /done and I'll record this and commit it"); "close-out" joins plugin-behaviour.md's background-only vocabulary with the leak recorded beside it. The done-family docs were scanned — their remaining uses are internal procedure prose or quoted negative examples, which the vocabulary rule permits. The tempting fix the item warned against — a reassuring "the close-out ran" line — was not added: the uncertainty was created by the word, not the silence, and the deliberate unnarrated routing stays. Processed-and-built in the overnight blitz of 2026-08-05 under the softened bar; autonomous run — recorded departure.
-
-**Files touched:** plugin/si-plugin/docs-b/plan.md (Step 3), docs-b/plugin-behaviour.md (vocabulary)
-**Routed to Captures:** none
-FAQ: not needed because the fix removes a confusing word rather than adding behaviour; the FAQ never used the term.

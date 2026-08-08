@@ -2,44 +2,34 @@
 name: setup
 docset: B
 note: >
-  /setup procedure. The behaviour rules ARE read here, like any other session's;
-  this doc carries no response-shape tags and states its own plain-language
-  guard.
+  /setup procedure. Runs BEFORE a project is adopted, so the behaviour rules
+  aren't loaded yet — this doc carries no response-shape tags and states its own
+  plain-language guard.
 ---
 
 # /setup procedure
 
 You are setting up a project folder with the Sovereign Implementer method.
 
-**The behaviour rules govern this skill too, and are read like any other
-session's.** The session-start hook points an unadopted folder at
-`plugin-behaviour.md` exactly as it does an adopted one — that file ships with
-the plugin, so it is readable whether or not anything has been set up yet. (An
-earlier version of this doc said the rules "aren't loaded yet". That described a
-delivery model the method no longer uses and was simply untrue.)
-
-**This doc still carries no response-shape tags** (the bracketed `[BRIEF]`-style
-markers other procedure docs use) — the prose in each step carries the behaviour
-directly instead. **Don't add tags back.**
-
-**/setup's own local rules stay, and are not made redundant by inheriting the
-behaviour rules.** Leave the user's content untouched, never overwrite, never
-blind-rename, use the user's words verbatim. They are specific to adopting a
-stranger's folder, and belt-and-braces is the right posture at the
-highest-consequence moment in the method — the one where files get created, and
-the only one a brand-new user ever sees.
+**This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
+markers other procedure docs use). /setup runs before a project is adopted, so the
+behaviour rules that define those tags aren't loaded yet — here the prose in each
+step carries the behaviour directly. **Don't add tags back**; they'd be undefined
+tokens in this doc.
 
 **Plain-language guard.** Everything you say during /setup is read by a non-coder
 who may be brand new to all of this. Keep internal terms out of what they see — no
 hook filenames, no `_build.md`, no "scope-lock," "method docs," or "Case B"
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
-migration," not "this is Case B."
+migration," not "this is Case B." This needs saying here because the
+plain-language behaviour rule loads only once a project is adopted, and /setup runs
+before that.
 
 ## Step 1: Detect folder state
 
 ```
 Case A  no content            the folder is empty or nearly so. Fresh start.
-Case B  content, no SPEC.md   the user's own files exist but no project docs.
+Case B  content, no SPEC.md   the user's own files exist but no method docs.
                               Either a true fresh start OR a MIGRATION.
 Case C  already set up        SPEC.md exists.
 ```
@@ -59,9 +49,9 @@ version missing or outdated      ->  Step 2C (migration scaffolding)
 
 ## Case B: pre-existing content rules
 
-**1. Peek before the first question.** Read the pre-existing content before the
-first interview question, and use what you learn to *frame* that question — never
-to *pre-answer* it.
+**1. Peek before Q1.** Read the pre-existing content before the first interview
+question, and use what you learn to *frame* that question — never to *pre-answer*
+it.
 
 ```
 a clarifier INVITES the user's own answer:
@@ -75,7 +65,7 @@ Ask cold and you miss context the folder already gave you; pre-answer and the sp
 fills with your words instead of the user's.
 
 **2. Leave it untouched; name it at close.** Pre-existing content is not edited,
-moved, or reorganized during scaffolding — scaffolding only adds the project docs.
+moved, or reorganized during scaffolding — scaffolding only adds the method docs.
 In the closing message, name that content explicitly as source material the user
 can refer back to.
 
@@ -118,22 +108,14 @@ close to a sentence or two.
 ```
 existing QUEUE.md uses an old multi-section shape
     (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load migrate-checklist.md from THIS docset's own folder — the
-            same directory this file is in — and follow it, drafting the
-            converted queue and getting approval before writing
+        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow it,
+            drafting the converted queue and getting approval before writing
 already two-section (## Processed / ## Unprocessed)
         ->  skip
 ```
 
 This is the one project doc that reliably falls behind as the method evolves; the
 checklist encodes judgment a find-and-replace can't make.
-
-**Approval-before-writing here is deliberate**, and is the one place this method
-departs from its own write-first rule. Everywhere else, text destined for a project
-doc is written to that doc first and approved in place. A queue conversion replaces
-an entire existing file speculatively, so a reject would mean restoring a document
-rather than editing one block back out. The checklist records the same reasoning at
-the step itself.
 
 **2. Retire REGISTRY.md if present.** No longer one of the method's docs, but
 **don't delete it on sight** — the user may have written real notes there. Read it
@@ -180,26 +162,24 @@ narrate each file as it's created** — the Step 4 close-out reports the full li
 # SPEC — [Project Name]
 
 ## What this is
-[from the interview: what the project is]
+[filled by Q1]
 
 ## Who it's for
-[from the interview: who it's for]
+[filled by Q1]
 
 ## How it works
-[from the interview: the core — what it produces, organises, or does]
+[filled by Q2]
 
 ## Project docs
 
-Four project docs structure each project:
+Three project docs structure each project:
 - `SPEC.md` — product truth. What the project is, who it's for, how it works.
 - `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work
   (captured ideas not yet fully processed).
 - `LOG/` — per-session records of what was built, tested, and decided.
-- `GLOSSARY.md` — the words that have been explained to you, and the names this
-  project has settled on.
 
 ## Principles
-[from the interview: principles and constraints]
+[filled by Q3]
 ````
 
 **QUEUE.md:**
@@ -209,30 +189,27 @@ Four project docs structure each project:
 
 ## Processed
 
-> Vetted work, ready to build — worked top to bottom. Each piece of work is one
-> item: a `#### ` heading naming it, a `[slug]` at the end of that heading line,
-> and a short rationale beneath. A leading flavor tag names how it runs — none
-> for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a
-> step only you can do. A security or privacy risk Claude surfaces lives here
-> too, as a work item carrying a `Red flag · State: cleared` marker — work
-> reaches this section only once its risk has been dealt with, so `cleared` is
-> the only state you will see here. An uncleared one waits in Unprocessed. The
-> line below marks how far down is cleared to build; anything below it is
-> decided but not ready yet.
+Vetted work, ready to build — worked top to bottom. Each piece of work is one
+item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and
+a short rationale beneath. A leading flavor tag names how it runs — none for a
+build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only
+you can do. A security or privacy risk Claude surfaces lives here too, as a work
+item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks
+how far down is cleared to build; anything below it is decided but not ready yet.
 
 --- Cleared to run above this line ---
 
 ## Unprocessed
 
-> Captured ideas and tasks not yet fully processed. The next /plan session goes
-> through these with you and decides each one's fate — keep it (move it up to
-> Processed) or drop it. Each is filed as its own `#### ` heading, so the list
-> shows up in an editor's outline.
+Captured ideas and tasks not yet fully processed. The next /plan session goes
+through these with you and decides each one's fate — keep it (move it up to
+Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows
+up in an editor's outline.
 
-[the first piece of work, from the interview — one `#### ` heading with a [slug] at the end of the line and a short rationale beneath]
+[filled by Q4]
 ````
 
-**LOG/ folder** — create the directory with one file in it, `LOG/index.md`:
+**LOG/index.md:**
 
 ````markdown
 # LOG Index
@@ -244,24 +221,6 @@ full entry file in this folder.
 Session entries are written by /done, each as its own file in LOG/ — nothing else
 to scaffold.
 
-**GLOSSARY.md** — copy it in from the shipped template:
-
-```
-GLOSSARY.md  <-  ${CLAUDE_PLUGIN_ROOT}/templates/GLOSSARY-TEMPLATE.md
-```
-
-**It is committed, unlike the FAQ, and the difference is whose record it is.**
-The FAQ is a local copy of the plugin's own help, the same for everyone. The
-glossary is the user's own record — what has been explained to *them* — so it
-belongs in the repository with SPEC.md and QUEUE.md rather than being restored
-from a template each time.
-
-It starts empty and fills as terms come up: any session using a general term
-defines it at the point of use and records it here, and any name this project
-settles on lands here too (plugin-behaviour.md, the Vocabulary rules). Don't
-pre-populate it at setup — an entry is a record that something was explained,
-so writing entries for terms nobody has mentioned makes the record lie.
-
 **FAQ/ folder** — create the directory **first**, then copy the templates in (the
 folder must exist before the copies, or they fail):
 
@@ -270,42 +229,9 @@ FAQ/faq.md    <-  ${CLAUDE_PLUGIN_ROOT}/templates/faq-template.md
 FAQ/index.md  <-  ${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md
 ```
 
-**The FAQ is a LOCAL COPY of something that ships with the plugin — not a
-document in the user's project.** That framing decides two things together, and
-shipping either half alone is a regression:
-
-```
-never committed  ->  add `FAQ/` to the project's .gitignore (create the file if
-                     absent; don't duplicate an existing entry). These files
-                     explain how the METHOD works — they are not part of what
-                     the user is building, and they read as clutter in the
-                     user's own repository.
-
-always restored  ->  restore FAQ/faq.md and FAQ/index.md from the shipped
-                     templates WHENEVER THEY ARE MISSING, not only at first
-                     adoption. Without this the ignore rule is a regression: a
-                     fresh clone on another machine would have no FAQ at all,
-                     and the FAQ is what session_start points every session at.
-```
-
-**An already-tracked FAQ needs an action, not a rule.** Adding a `.gitignore`
-entry does nothing to files git is already tracking. Detect that case and
-**offer** the untracking — `git rm --cached FAQ/`, which removes it from
-tracking while leaving the files on disk — explaining in plain English what it
-does and does not change. It alters what is in the user's repository, so it is
-theirs to approve, not something to do silently or leave half-done.
-
-**Scope: this reaches the FAQ and nothing else.** SPEC.md, QUEUE.md and LOG/ are
-the user's own record and belong in their history; their CLAUDE.md is theirs
-too. The FAQ is the only scaffolded artifact that is purely an explanation of
-somebody else's tool, so there is no slope here to slide down.
-
-**resources/research/ and resources/testing/ folders** — create both empty.
-`resources/research/<topic>.md` is the home for research notes; `resources/testing/`
-holds evidence a later session has to re-read word-for-word. Those are the only two
-things `resources/` ever holds. Creating both at setup means each has a place from
-day one rather than the folder being conjured on first use — the same reasoning for
-both, which is why they are scaffolded together.
+**resources/research/ folder** — create it empty. It's the home for research notes
+(`resources/research/<topic>.md`). Creating it at setup means research notes have a
+place from day one rather than the folder being conjured on first use.
 
 **CLAUDE.md:**
 
@@ -315,30 +241,19 @@ no CLAUDE.md exists  ->  scaffold from
 one already exists   ->  APPEND the method block; never overwrite
 ```
 
-The template carries a Repo visibility field; Step 4 fills it from the
-visibility detection.
+The template carries an Editor field (`not recorded`), a Working mode field
+(default `local`), and a Completion mode field (default `in-/next`); Step 4 fills
+them from Q6, Q7, Q8.
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
 detect when the plugin has been updated.
 
-**.gitignore** — create it if absent, and make sure it carries entries for
-`.throughliner/` and `FAQ/` (don't duplicate ones already there).
-
-`FAQ/` is covered above: it is a local copy of the plugin's own help, restored
-whenever missing, so it never belongs in the user's history.
-
-That folder holds the editing-state signal: while Claude is writing a file, the
-hooks drop a small file in there saying so, so a Markdown reader or editor open
-on the same document can hold off rather than the two of you typing over each
-other. It is transient state about the session running right now, and it carries
-absolute paths from this machine, so it must never be committed.
-
 **Git repository** — if the folder isn't already one, run `git init`, silently and
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
 
-## Step 3: Interview (adaptive discovery, plus one recorded setting)
+## Step 3: Interview (adaptive discovery + three settings)
 
 The interview is an **adaptive discovery, not a fixed script.** Its job is to reach
 a shared, buildable understanding — enough to fill SPEC's What / Who / How /
@@ -396,70 +311,39 @@ from visible context            commitments the user agreed to
 Scope decisions belong in /plan, which is where this item gets processed. If
 examples would clarify scope, ask a follow-up rather than smuggling them in.
 
-**The settings question is fixed, not adaptive** — it's a project setting, not
-discovery. Ask it the same way each time, in its own message, after discovery
-reaches its stopping point. Optional; the user can skip it.
+**The three settings questions are fixed, not adaptive** — they're project
+settings, not discovery. Ask them the same way each time, one message each, after
+discovery reaches its stopping point. All optional; the user can skip any.
 
-**Q6 is retired — don't ask it, and don't invent a replacement.** It asked which
-Claude model the user mostly runs, and its only job was picking between the two
-sets of working instructions the plugin used to ship. There is one set now, so
-there is nothing to pick and the answer would feed nothing. A question that
-changes no behaviour is worse than no question: it costs the user a decision and
-teaches them the setting matters.
+**Q6 (optional). When you open a `.md` file — like these project docs — what do you
+usually open it in?**
+→ Identifies your default `.md` app, so Claude can point you to a doc with a link
+that opens there. The link is only useful if you keep a default `.md` reader open
+alongside Claude. **If you'd rather not set this, just say skip** — a plain option
+for anyone, not only "if you're unsure." The trade-off of skipping: Claude writes
+the doc's text into the chat instead, which costs tokens each time and adds up.
+(Doc links also aren't much use while Claude is driving your screen remotely — a
+minor caveat, not a reason to skip.) Named editor → record it; skipped → write `not
+recorded` so the field is present but empty. Asked once, no nag.
 
-## Step 3b: Repo visibility, licensing, and publishing
+**Q7 (optional). Will you usually be working from your computer, or driving Claude
+from your phone?**
+→ Sets your working mode. **local** = you're at your desktop, where an edited file
+opens instantly, so Claude points you to text with a link. **remote** = you're on
+your phone, where opening a file is awkward, so Claude pastes the text into chat.
+Defaults to **local**. Switch anytime by telling Claude ("I'm remote today") — it
+holds for that session and reverts. Asked once, no nag.
 
-Four things, in this order. The first two are **safety inputs**, not preferences,
-and they apply to every project including one with no interest in publishing.
-
-**1. Detect whether the repo is public — don't ask.** A recorded answer to this
-goes stale silently, and silently is exactly how it hurts: one project's
-visibility was set long ago and nobody knew what it was until it was checked
-mid-session, six weeks into a live exposure. Detection costs one command and is
-never out of date.
-
-```
-GitHub remote + gh available  ->  detect it (`gh repo view`), record what you found
-no remote / no gh / not       ->  ask the user once, and record the answer AS a
-GitHub                            stated fallback, marked as such
-```
-
-Record it in CLAUDE.md. What consumes it: the write-time rule about other people's
-private information (plugin-behaviour.md) — a public repo makes that urgent rather
-than theoretical, and a private one can be shared or made public later without
-anything re-checking.
-
-**2. Name the commit identity, before the first commit exists** [BRIEF; PROMPT
-only if the user wants the change]. Run `git config user.email` and tell the user
-in one line what address every commit will carry — and that GitHub offers a
-`noreply` address if they'd rather not publish a real one. This runs on **every**
-branch, not just the public ones: a private repo can go public later and nothing
-re-checks its history. The timing is the whole point — before this session's
-close makes the first commit, fixing this is one `git config` line; after it,
-it's a full history rewrite, because commit metadata can't be edited out of the
-files. If the user wants the `noreply` address, set it now (`git config
-user.email <their-noreply>`); if they're happy as-is, say nothing more and move
-on.
-
-**3. Ask about the licence** [PROMPT] — in plain terms: does the user want others
-free to use and build on this, or do they want to keep it to themselves? Write
-their answer as a LICENSE file. Recommend one rather than asking cold.
-
-**4. Offer public-repo setup, framed off the licence** [PROMPT] — "since you chose
-this licence, would you like this on your GitHub? We can do it now, or note it for
-a later planning session." **Offer, never push.** The note-it-for-later branch is
-the graceful decline, and it's a real option, not a formality.
-
-**State what publishing actually shows, in one sentence, when making that offer:**
-most of what a visitor to the repo will find is the planning record itself — the
-spec, the queue and the session log, which carry every decision, the rejected
-alternatives and why they lost, and the fact that the project is built with an AI
-method. Not a leak — some projects publish exactly that deliberately — but a
-decision worth making consciously, and without that sentence it gets made by
-default.
-
-For a user who wants the most private posture available, offer to add every
-project doc to `.gitignore` so none of it is ever committed.
+**Q8 (optional). When there's a step only you can do — like sending something or
+checking a screen — do you prefer to do it together with Claude as it comes up, or
+handle those on your own between sessions?**
+→ Sets your completion mode. **in-/next** (default) = Claude walks you through each
+such step when it reaches it while building — nothing to remember or chase.
+**async** = you often do these on your own between sessions. The only thing it
+changes: in async mode, planning sessions ask up front whether you've already done
+any of these steps, so they get recorded; in the default mode they don't ask —
+you're doing those steps in /next anyway, so asking each planning session would
+just nag. Defaults to **in-/next**. Asked once, no nag.
 
 ## Step 4: Write the docs
 
@@ -471,8 +355,9 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
 2.  write ONE work item in Unprocessed from the first-thing-to-build answer
     # the user's words, a [slug] at its end, a "captured by you" note.
     # Not multiple scoped entries.
-2a. fill CLAUDE.md's Repo visibility field from the detection (or the stated
-    fallback answer, marked as user-stated)
+2a. fill CLAUDE.md's Editor field from Q6         (or `not recorded`)
+2b. fill CLAUDE.md's Working mode field from Q7   (or `local`)
+2c. fill CLAUDE.md's Completion mode field from Q8 (or `in-/next`)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files
 5.  teach the working rhythm (below)

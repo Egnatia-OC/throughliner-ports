@@ -1,6 +1,6 @@
 # 053c608 — next/next-build/done/done-plan/plan/plugin-behaviour + SPEC + FAQ: gave [user] handover items a full completion lifecycle
 
-Before this, once /next handed over a `[user]` item nothing detected it got done, recorded it, or removed it — so a finished handover stranded in Processed and the next /next re-handed it back as unbuilt (observed live in two consumer projects, 2026-07-20 and 2026-07-16). This build gave `[user]` items a complete lifecycle in three parts.
+Before this, once /next handed over a `[user]` item nothing detected it got done, recorded it, or removed it — so a finished handover stranded in Processed and the next /next re-handed it back as unbuilt (observed live: Metro-admin 2026-07-20, scrolly-thing 2026-07-16). This build gave `[user]` items a complete lifecycle in three parts.
 
 1. **Handover names its own close.** next.md's handover branch now tells the user how completion gets recorded — run /done to record it, or raise it at the next /plan — instead of just stopping.
 2. **A later session asks whether it's done.** next.md's pre-flight and plan.md's Step 1 now ask "have you already done this one?" when they meet a `[user]` item still in Processed, rather than silently re-handing it over. Detection is by asking, not by scanning the filesystem for a produced artifact — a handover can be a device check or a decision, not a file. The filesystem artifact-check was rejected as fragile (it needs each item to declare a produced file).

@@ -1,7 +1,0 @@
-# d9162e4 — the queue mover gains --move-section, and plan.md's keep-step now mandates it for the Unprocessed → Processed move
-
-/plan's most frequent structural write had no tool, so the keep-step had Claude retype whole prose blocks — the exact corruption exposure done-plan.md forbids for reorders, and the gap that produced throwaway per-move scripts in a real session. reorder_queue.py now moves one item's block byte-for-byte between sections (--move-section <slug> <From> <To>, default BOTTOM, --position TOP|BOTTOM|BEFORE|AFTER <anchor>), with the same refuse-to-write self-checks: block content identical, slug set conserved across both sections, marker presence preserved per section. The heading rewrite deliberately does not ride the move — a processed item's new description is a separate in-place edit after the mechanical relocation, so the mover never alters prose. plan.md's keep-step now instructs move-then-edit, replacing the hand-retyped remove-then-add. The shared assembly was factored into helpers both paths use. Exercised round-trip on a scratch copy of the real queue. Processed-and-built in the overnight blitz of 2026-08-05 under the softened bar; autonomous run — recorded departure.
-
-**Files touched:** plugin/si-plugin/scripts/reorder_queue.py, plugin/si-plugin/docs-b/plan.md (keep-step move instruction)
-**Routed to Captures:** none
-FAQ: not needed because the mover is internal machinery; the user-visible keep flow is unchanged.

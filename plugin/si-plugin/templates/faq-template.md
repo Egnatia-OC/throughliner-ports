@@ -18,65 +18,22 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 Each Sovereign Implementer project is its own folder — self-contained, with its own SPEC, QUEUE, and log. You can keep several of them side by side (for instance nested under one parent folder), but they stay separate projects; the method doesn't run one project across many folders. Claude always works on the exact folder you opened the session in, and never goes hunting through nearby folders or asks you to pick one — the folder you point it at is the project. So to work on a particular project, open that project's folder directly. If you accidentally open a parent folder that just contains your projects, Claude notices and tells you: it says the folder looks like it holds separate projects and suggests you open the one you meant, because running /setup there would set up the parent folder itself rather than the project inside it. Nothing gets adopted or changed until you choose — the heads-up is only so you don't set up the wrong folder by mistake.
 
-## How does Claude show me text it writes into my docs?
+## Why does setup ask which editor I use?
 
-Whenever Claude writes something that belongs in one of your project files — a new idea for the list, a session record, a changed piece of wording — it writes it into the file first, then tells you in chat what it wrote: a short summary you can act on, a link to the file with the exact heading to look for, and the question you're being asked. If you want to read the whole thing right there in chat, just say so — the full text is always one word away. The short summary matters because the link isn't perfect: it opens the file at the top rather than at the right spot, so the summary is what lets you decide without going hunting.
+So Claude knows your default `.md` app and can point you to a project doc with a link, instead of writing the doc's text out into the chat. When Claude needs to show you a captured idea or the next piece of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the app you open those files in, it can link you to the file — "it's in QUEUE.md" — and you read it there. The catch: a link only helps if you keep a default `.md` reader open alongside Claude, so the doc actually opens when you click it. The question is optional, and skipping is a fine choice for anyone — nothing breaks. The trade-off of skipping: when Claude needs to show you a doc, it writes the text out into the chat the way it always has, which costs some tokens each time and adds up over a project's life. It's asked once, during /setup, and never again.
 
-## Setup used to ask which editor I use, and whether I work from my computer or my phone. Where did those questions go?
+## Why does setup ask whether I work from my computer or my phone?
 
-Both were removed, deliberately. The editor question recorded which app you'd open a doc in to edit it by hand — but nothing actually used the answer, since Claude's links open in its own viewer either way. The computer-or-phone question set a "working mode" that decided whether Claude showed you doc text as a link (at your desk) or pasted it into chat (on your phone). In practice that split just made people pick whichever meant less text, so it's gone: Claude now always gives a short summary plus a link, with the full text on request — a shape that works the same at a desk and on a phone. If your CLAUDE.md still has an `Editor:` or `Working mode:` line from an earlier version, it's simply ignored; you don't need to remove it.
+To set your **working mode** — whether you're usually at your desktop or driving Claude from your phone. It changes one thing: how Claude shows you text that lives in your project files. Set it to **local** (at your computer) and Claude points you to that text with a link, since an edited file opens instantly for you — it saves re-typing the text into chat. Set it to **remote** (on your phone) and Claude pastes the text straight into chat instead, because opening a file on a phone means digging through Google Drive and re-downloading it, so a link would be no use. It's asked once at /setup and defaults to **local** if you skip. You're not locked in: tell Claude "I'm remote today" (or "back at my desk") any time and it switches for that session, reverting afterward. This works alongside the editor setting — a link only gets used when you're in local mode *and* you've told Claude which `.md` app you open your docs in.
 
-## Setup used to ask about my `[user]` steps. Where did that question go?
+## Why does setup ask whether I finish my `[user]` steps in /next or on my own?
 
-It was removed, deliberately. Setup used to ask whether you finish the steps only you can do (`[user]` steps) together with Claude, or on your own between sessions — a setting called completion mode. Its only job was to control whether planning sessions asked you, up front, "have you already done any of these?"
+To set your **completion mode** — a one-time preference for how you handle the `[user]` steps in your queue (the steps only you can do). There are two ways people work:
 
-That question is gone entirely. Claude no longer asks — in any session, at any point — whether one of your `[user]` steps is already done. It works it out instead: a step Claude just walked you through is done, and a step you mention having finished is done. That's it.
+- **in-/next (the default)** — you let Claude walk you through each `[user]` step when it comes up in /next. This is the relaxed, recommended way: you don't have to remember or chase these steps, you just do them together with Claude when you reach them.
+- **async** — you often do these steps on your own, between sessions.
 
-The reason for removing rather than softening it: being asked to account for work you haven't been walked through yet reads as being chased, and the earlier design had already tried twice to make it less annoying (moving it later in the message, adding this setting to switch it off in most projects) without questioning whether it should exist. It shouldn't.
-
-There's one gap, and it's intentional: if you do a `[user]` step entirely on your own and there's nothing for Claude to see, that item stays in your queue until you mention it. Mentioning it is enough — Claude records it and clears it out.
-
-If your CLAUDE.md still has a `Completion mode:` line from before, leave it. It doesn't do anything now and Claude ignores it.
-
-## Setup used to ask which Claude model I use. Why doesn't it any more?
-
-Because the answer no longer changes anything.
-
-The plugin used to keep two versions of its own working instructions — a fuller one for an older Claude model, and a lighter one for the newer ones — and your answer picked between them. In August 2026 the older version was retired, so there's one set of instructions and nothing to choose. A question that changes no behaviour is worse than no question: it costs you a decision and suggests the setting matters.
-
-If your project's CLAUDE.md still has a `Model:` line from before, leave it. Nothing reads it and Claude ignores it.
-
-## Why does setup check whether my code is public, and what are the licence and publishing questions?
-
-Four related things, and the first two are safety checks rather than preferences.
-
-**Is your repository public?** Claude checks this rather than asking, because an answer typed once goes out of date without anyone noticing. It matters because everything in your project docs gets committed — and a commit is permanent, even if the text is deleted later. If the repository is public, everything written in these docs is readable by anyone, straight away and for good. Knowing that, Claude holds a firmer line about never writing other people's names or private circumstances into your notes, queue, or logs. (It holds that line either way — a private repository can be shared or made public later, and nothing re-checks what's already in it.)
-
-**What email address will your saves carry?** Every save (commit) is stamped with an author email address, and if your project is ever published, those stamps are visible to anyone — they're the one thing that can't be fixed later by editing a file, only by rewriting the project's entire history. So before the very first save, Claude tells you which address yours will carry, and mentions that GitHub offers a free "noreply" address if you'd rather not publish a real one. Changing it at this moment is one line; changing it later is a major operation.
-
-**What licence do you want?** In plain terms: are you happy for other people to use and build on this, or would you rather keep it to yourself? Claude recommends one and writes it as a LICENSE file.
-
-**Do you want this on GitHub?** Offered off the back of the licence choice, and only as an offer — "we can do it now, or note it down for later" is a real answer, not a polite formality. One thing Claude states plainly when offering: most of what a visitor to your repository will find is the planning record itself — your spec, your queue, and your session logs, with every decision and the reasons behind it. Plenty of projects publish exactly that on purpose; it's just a choice worth making with your eyes open rather than by default. If you'd rather the opposite, Claude can also set things up so none of your project docs are ever committed at all.
-
-## Can Claude find things in my notes that shouldn't be public?
-
-Yes — ask for a scrub sweep and Claude will run one. It reads every committed file and reports two things: every occurrence of any name you tell it to look for, which is complete and exhaustive, and a list of other capitalised words that look like they could be people's names, which is a rough list for you to glance over rather than a definitive answer.
-
-Worth knowing up front: **deleting something from a file does not remove it from your project's history.** If a name has already been committed to a public repository, it has been readable, and it stays readable in the history. That's a decision only you can make — rewriting the history, removing it going forward only, or making the repository private — and Claude will lay out the options rather than implying an edit fixes it.
-
-The better protection is the one that runs all the time: Claude doesn't write other people's names or private details into your docs in the first place. A note about what happened never needs them.
-
-## What does `Blocked by:` mean on a piece of work?
-
-It means that piece of work can't start until another piece is finished, and it names which one. You'll see it as a line under the work's description, pointing at another item by its short name.
-
-It exists because the order things sit in isn't enough on its own. Order tells you what comes next; it doesn't remember *why*. So if the queue gets reordered — which happens routinely — a dependency held only by position quietly disappears, and something gets built before the thing it needed. Saying it outright survives any reorder.
-
-Claude checks these for you as an advisory: if a `Blocked by:` line names something that isn't in your queue, or names something sitting *below* it (which reads backwards), you'll see a note about it. It's a nudge, never a block.
-
-There's one near-neighbour, so you don't have to guess. `Blocked by:` is only for waiting on *another item in your queue*. Waiting on anything else — a restart, an event, a decision that's yours, or something needing to be released and running first — is written in plain words in the item's description, and the item sits below the readiness line until that clears.
-
-(If you've used this before and remember a "push marker" between items for the released-and-running case: that's gone. It was a third route that never actually worked — one part of the method placed it and the part that builds ignored it — so work that needed a released version could get built against the old one without anything noticing. The readiness line covers that case now, along with every other kind of waiting.)
+The setting changes one small thing: whether planning sessions ask you up front, "have you already done any of these `[user]` steps?" In the default in-/next mode they *don't* ask — you're doing those steps in /next anyway, so being asked every planning session would feel like being nagged about work you're correctly saving for later. In async mode they *do* ask, so a step you finished on your own gets recorded instead of sitting in your queue. It's asked once at /setup and defaults to in-/next; you can change it later by re-running /setup or just telling Claude. (Either way, if you finish a `[user]` step in /next, Claude still offers to record it right there — this setting only controls the separate up-front question in planning.)
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 
@@ -96,7 +53,7 @@ One related detail about *when* these show up: Claude only brings up a `[user]` 
 
 ## I did a `[user]` step Claude walked me through. How does it get recorded and cleared?
 
-Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first. And Claude never asks whether you've already done a step — not at the start, not as a closing aside, not in a planning session. If you *have* already done one, just say so and Claude records and clears it instead of walking you through it. Otherwise it walks you through it. The reason there's no such question anywhere: asking treats work that's ready for you as though it's probably already behind, and makes you push back before Claude will help. The walk-through is the point, so that's what you get.
+Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first. To catch a step you may have done in an earlier session, Claude keeps a light check — but it never leads with it. When it reaches a step, it leads straight into walking you through it; then, only for a step that could plausibly have been done before, it adds a closing note like "…or tell me if you've already done this and I'll just record it." Say you've done it and Claude records and clears it instead of walking you through it. (It asks rather than trying to detect it automatically, because a `[user]` step is often a check or a decision with no file to look for.) The reason it never opens with "have you already done this?" is that leading with it would treat ready work as probably-already-done and make you push back before Claude will help — the walk-through is the point, so it comes first.
 
 ## What are the build and audit flavors — and is there a separate "test"?
 
@@ -105,11 +62,11 @@ Every piece of Claude's work in the queue carries a flavor that says how Claude 
 - **Build** (no tag) — the normal kind: Claude makes changes to your files. Most work is this.
 - **`[audit]`** — a review pass: Claude reads something over and reports what it finds, without changing anything. The findings go into your queue for you to look over.
 
-There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` work item, which Claude walks you through rather than running. When Claude works down the cleared part of the queue, it builds all its own items first, routing each by its flavor, and then walks you through any `[user]` steps — so a `[user]` step no longer ends the run partway through, and cleared work waiting after it still gets built. (Your planning session usually places `[user]` steps at the end of a run, so in practice the build runs straight through and the walk-through comes last.)
+There's no separate "test" flavor. Checking is just part of building: any check Claude can run itself, it runs while building. A check only *you* can do — looking at a screen, tapping through your app — is its own `[user]` line, which Claude walks you through rather than running. When Claude works down the cleared part of the queue, it builds all its own items first, routing each by its flavor, and then walks you through any `[user]` steps — so a `[user]` step no longer ends the run partway through, and cleared work waiting after it still gets built. (Your planning session usually places `[user]` steps at the end of a run, so in practice the build runs straight through and the walk-through comes last.)
 
 ## Why did my audit file its findings as captures instead of writing them into a doc?
 
-Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into **Unprocessed**, the second section of your queue, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit item that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
+Because an audit's job is to find things and route them for review — not to write them anywhere durable yet. Everything an audit turns up goes into Captures, where the next /plan session and you look it over before any of it lands in a real document. That review step is the whole point: it keeps an unchecked finding from going straight into a doc you'll rely on. So if you want a lasting findings document — a report, or a summary for someone outside the project — that document is its own piece of work, built *after* the findings are vetted. The order is: the audit files findings as captures → /plan reviews them with you → a build session writes the document from the ones you kept. And if you happen to set up an audit item that points at a document to write into, Claude won't silently follow it — it'll notice the mismatch and ask which you meant: file the findings for review first, or run it as a build that writes the doc now.
 
 ## Where does Claude put research findings and test results?
 
@@ -125,11 +82,11 @@ Because it can often do a job itself with a small command-line tool instead of w
 
 ## Do I need to use the terminal to install or update SI?
 
-No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintcraftTech/throughliner` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. (Those two names not matching is expected — the repository is called `throughliner` and the plugin inside it is called `sovereign-implementer`.) Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
+No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintCraftTech/sovereign-implementer` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
 
 ## How do I find out when there's a new version of the plugin?
 
-GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintcraftTech/throughliner`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
+GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintCraftTech/sovereign-implementer`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
 
 ## I just updated the plugin — how do I check it still works?
 
@@ -181,7 +138,7 @@ Two quick tests sort almost everything. "What it is" vs "how to work on it" spli
 
 ## When Claude edits a doc or other writing during a build, do I see the new wording?
 
-Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude surfaces the change right after making the edit: a short summary of what the new wording does, plus a link to the file naming the section that changed, with the full new text shown in chat whenever you ask. So you meet the real words, not just the plan for them. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
+Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude surfaces the actual new wording right after making the edit, so you see what changed. How it surfaces follows your working mode: on your phone (remote) Claude pastes the new wording into chat; at your desktop (local, with an editor set) Claude links you to the spot in the file, since it opens instantly there. Either way you meet the real words, not just the plan for them. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
@@ -213,15 +170,15 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 ## What if my project already has planning docs from another tool or an older version?
 
-/setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the project doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
+/setup handles it as a migration. When it sees your folder has content but none of the method's own docs yet, it treats your existing planning or spec documents as a starting point rather than assuming a blank slate. With your help, it maps that content into the method's docs (SPEC.md, QUEUE.md, and the LOG folder), keeping them at the top level of your project. Before renaming anything, it checks that each old doc actually fits the method doc it's mapped to — and if something doesn't fit, it asks you rather than guessing. It won't blindly rename or overwrite your existing files.
 
 ## Claude says my project is "out of date" and offers to run /setup. What does that do?
 
 It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. The one exception is your **queue**: if an older version stored it in a different layout, /setup offers to convert it to the current format — and even then it drafts the converted queue and shows it to you before writing, so nothing changes without your okay. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
 
-## A session opened by saying my project was missing something — what happened?
+## A session opened by asking which editor I use, or saying my project was missing something — what happened?
 
-The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. When you run **/plan**, its first step checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. A setting that needs an answer from you gets asked in one line, and you can say to skip it; settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
+The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. Some settings need an answer from you: the first one is which .md editor you work in (it lets Claude point you to a doc instead of re-pasting its text, saving tokens), so Claude opens by asking that in one line — and you can say to skip it. Settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
 
 ## What happens if Claude needs to touch something outside the current work item?
 
@@ -252,29 +209,17 @@ One detail worth knowing: a risk counts as cleared the moment it's designed out 
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
 
-## In a planning session, Claude asked permission to change a file. Why?
+## What does a "Plan session here" line in the queue mean?
 
-Planning sessions are for talking things through and shaping your queue, so they normally only touch a few files: your queue, your spec, your session log, and Claude's own working notes. Those go through without interrupting you.
-
-Anything else, Claude asks about first — naming the file — and you say yes or no.
-
-The reason it asks rather than refusing: a planning session sometimes has a genuinely good reason to change something. You spot a problem that needs fixing now rather than in three sessions' time. You ask Claude to tidy a file while you're both looking at it. Something is exposed and shouldn't stay exposed for another day. Blocking those would just get in your way.
-
-But equally, a planning session quietly rewriting parts of your project isn't something that should be able to happen without you noticing. So the prompt splits the difference: nothing is forbidden, and nothing happens unremarked. **Declining is a completely normal answer** — it usually just means "capture that as a work item and build it properly later."
-
-If you approve something out of the ordinary, Claude also notes it in the session log, so there's a record of what was changed outside the usual shape and why.
+It's a planning checkpoint Claude placed between work items. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
 
 ## I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?
 
 Yes. When a piece of work is parked below the line because it's waiting on something — a step you have to do, another piece of work being finished and checked, a restart — Claude records right there in the item what it's waiting for ("once X is done", "after a restart"). Then at the start of every planning session, Claude goes back over everything parked below the line and re-checks those conditions. Anything it can confirm by itself — a piece of work that's now finished and verified, a file that's now there — it offers to move up above the line so it's ready to build. Anything only *you* can confirm — did the restart happen, did you set the thing up — it rolls into a single question asked once, rather than pestering you item by item. The point is that parked work gets picked back up when its wait actually clears, instead of relying on you to remember it was there.
 
-## I told Claude "not now" about something. Why did it stop coming up — and will it come back?
-
-When you set something aside — you stop partway through a step, tell Claude to shelve a suggestion, or answer "no change" about something the work was waiting on — Claude records that on the item itself, quoting your words and noting how far things got. From then on it stops re-offering that item in its recommendations and check-ins, so you're not asked the same thing every session. Two guarantees keep this safe. Nothing is lost: the work stays exactly where it is in your queue, and it comes back up on its own when the queue has nothing else left to offer — or the moment you mention it yourself. And warnings never go quiet: a security concern or an unaddressed risk keeps surfacing until it's dealt with, no matter how often it's waved off. One more thing worth knowing: Claude never sets anything aside on its own judgment — only your say-so does it. If you stopped a step partway, the recorded progress means a later session picks up from where you left off rather than starting over.
-
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
-It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session, and tells you where it sits **whenever it moves** — when the line hasn't shifted, it confirms that silently rather than repeating the same boundary at you every session. So you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
+It's a line Claude keeps in your queue showing which work is ready to build. Everything above it has been vetted in planning — discussed and agreed with you, and ready to build next. Everything below it still needs a planning pass before it's ready. Claude positions the line at the end of every planning session and tells you where it sits, so you never have to work out for yourself how much of the queue is safe to run. When /next runs several ready items in a row, it stops at this line — a clean finish, rather than running on into work that hasn't been vetted. You don't manage the line; Claude does.
 
 ## Why did /next stop before finishing everything?
 
@@ -294,27 +239,19 @@ At the end of a planning session, Claude checks whether either section of your q
 
 Claude owns this ordering and does it on its own — it tells you what it moved and why, but doesn't ask permission. That's because ordering is low-stakes and easy to undo (just say "move X back above Y"), and asking about every reorder would add ceremony to every planning close. The narration is the catch-point: if Claude moved something you disagree with, say so and it adjusts. A reorder that changes what gets built *next* is flagged clearly; a small tidy gets a one-line note.
 
-## Claude merged two pieces of work together without asking me. Is that allowed?
-
-Yes, within a strict boundary. When two agreed pieces of work belong together, merging them changes *where* the work is recorded, not *what* gets built — so if the merge doesn't add any files to what the next build is allowed to touch, Claude just does it and tells you, naming the scope effect in the same breath ("this adds no files"). If a merge *would* add files — meaning the build would reach further than what you agreed — Claude still asks first. You can always object to a narrated merge; saying so un-merges it. Relatedly, planning sessions prefer to group work that touches the same files so one build session can clear more at once — but that's only a tie-breaker: work never jumps the queue or skips vetting just because it touches the same file as something else.
-
 ## Claude tidied up the queue while committing, without asking me. Is that normal?
 
 Yes. Some queue housekeeping is Claude's to handle on its own — clearing a "waiting on" note once the thing it was waiting for is done, or fixing a pointer to a section that has moved. These change nothing you decide: they drop no work, reorder nothing, and don't alter any choice you've made — they're bookkeeping on entries that are otherwise fine. So Claude makes the fix and tells you it did, as part of the commit, rather than stopping to ask. Anything that's a real judgment call — dropping an item, rewriting it, or deciding whether to keep it — still waits for a planning session and your say. You always see what was tidied; you just aren't asked to approve the routine kind.
 
 ## Something about the method itself is broken or confusing — where does that go?
 
-Not into your project's queue — that queue is for your app, and a note about how Sovereign Implementer *itself* behaves would just clutter it. Method problems go to the plugin's author instead. If you hit one — a command doing something odd, a step that doesn't make sense, or a question this FAQ doesn't answer — tell Claude, and it drafts a short report you can send. Claude can also spot a method problem itself mid-session and offer once to draft the report. The report is scrubbed by design: it describes what the plugin did, which step, and the version — never your app's name, your files, or any secrets. Claude shows you the report and you paste it at flintcraft.tech/report yourself; Claude never sends it for you, so nothing leaves your machine without your eyes on it first.
-
-There's a third case: the problem is in **Claude Code itself** — the app the method runs inside, its viewer, its links, its sidebar — rather than in the method or your app. Those reports belong with Claude Code's makers, as an issue on their public GitHub project. Claude first searches the existing issues (if yours is already reported, adding your experience to that issue helps more than a duplicate), then drafts the issue text and shows it to you in full. If your computer has GitHub's command-line tool signed in, Claude can post it for you — only after you say yes to the exact text; otherwise it hands you the text to post yourself. Same scrubbing rule as always: the report describes the problem without exposing your project's names, files or secrets.
-
-So the routing test has three answers: about what you're *building* → your queue; about how the *method* works → flintcraft.tech/report; about *Claude Code the app* → a GitHub issue. If it's genuinely unclear which, Claude asks rather than guessing. (Claude Code's built-in `/bug` command reports to Anthropic privately — the GitHub route is used instead because it's public and trackable, and never for method problems, which belong to this plugin's author.)
+Not into your project's queue — that queue is for your app, and a note about how Sovereign Implementer *itself* behaves would just clutter it. Method problems go to the plugin's author instead. If you hit one — a command doing something odd, a step that doesn't make sense, or a question this FAQ doesn't answer — tell Claude, and it drafts a short report you can send. Claude can also spot a method problem itself mid-session and offer once to draft the report. The report is scrubbed by design: it describes what the plugin did, which step, and the version — never your app's name, your files, or any secrets. Claude shows you the report and you paste it at flintcraft.tech/report yourself; Claude never sends it for you, so nothing leaves your machine without your eyes on it first. The test Claude uses to tell the two apart: is this about how the method works, or about what you're building with it? The first goes to the author; the second stays in your queue as normal work. (This is not Claude Code's built-in `/bug` command — that reports Claude Code itself to Anthropic, not this plugin to its author.)
 
 ## Why is there a "Last session advises…" line at the top of my queue?
 
 That's a forward-recommendation note — the previous session's suggestion for where to focus next. It's there so you don't have to remember what the last session recommended; the recommendation sits right where the next /plan session sees it first.
 
-It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. The note is deleted automatically when you run /done at the end of that session. (It used to clear as soon as you and Claude had agreed an order for the session — but a session that ended some other way never reached that moment, so the note survived and went on orienting sessions it no longer described. The close always runs, so that's where the clearing lives now.) It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
+It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Once you and Claude have agreed on the processing or build order for the session, the note is deleted automatically. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
 ## Claude offered to delete some files when I closed a session. What's that?
 
@@ -331,273 +268,3 @@ When Claude captures an idea into your queue, it tags it with the last save-poin
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file. Each entry file's name starts with its date (`2026-06-09-…`), so if you browse the LOG folder itself, sorting the filenames in descending order lines them up newest-first — the same order the index reads.
-
-## Does it matter which Claude model I'm using?
-
-Use one of the Claude 5 models — Opus 5, Sonnet 5 or Fable 5. There's nothing to set up.
-
-The plugin's own instructions are written for that generation. Opus 5 and Fable 5 have both run real sessions; Fable 5 works even at low reasoning effort. Sonnet 5 is expected to be fine but hasn't been separately put through its paces.
-
-**Claude Opus 4.8 is no longer supported.** The plugin used to ship a second, fuller version of its instructions specifically for it, and pick between the two automatically. That version was retired in August 2026. The current instructions are deliberately lighter, which suits the newer models and suits 4.8 badly — so on 4.8 you should expect Claude to follow the rules less reliably.
-
-Switching between 5-series models mid-project is fine.
-
-## Why won't Claude ask me for my email address, account numbers, or other personal details?
-
-Everything written into your project's planning docs gets saved into your project's history — and if your project is ever shared or made public, that history goes with it, even for text that was later deleted. So the method keeps sensitive details out of the docs in the first place, in three ways.
-
-First, Claude doesn't write other people's names or private circumstances into your docs — "a client", "a third party" carries the same point without the exposure. Second, Claude doesn't *ask* you for sensitive identifiers — email addresses, account numbers, keys, payment details — when writing up a piece of work. A work item like "fix the account that's under the wrong email" is complete without the actual addresses: you'll have those to hand when you do the work, and they never need to sit in a saved doc. Third, when Claude records something about you — say, why a piece of work was set aside — it writes the decision and its reason ("set aside: needs specialist help"), not a personal assessment of you.
-
-If a detail like that genuinely is needed for the work itself, you can always give it — this is about Claude not soliciting it into documents that keep it forever.
-
-## Claude asked me something but I couldn't see how to answer it. What happened?
-
-Claude Code sometimes puts suggested replies in your typing box — faint grey text you can accept with the Tab key. They're generated by the app from the conversation, not written by Claude as part of its message. That matters, because they don't always appear: they're switchable off, they're reported to stop showing up for some people, and they don't render at all when you're driving a session from your phone or another device. So an answer that lived only in a suggestion simply isn't there for you.
-
-The method now requires every question Claude asks you to be answerable from the message itself. Where there are two ways to reply, both are named in the text — "tell me any numbers to drop, or say keep them all" rather than just the first half. You should never have to guess the other option, and you can always just say what you want in your own words; the named replies are there to save you thinking about it, not to limit what you can say.
-
-If you do hit a question you can't see how to answer, saying so is a fine reply — Claude will restate it. And it's worth reporting, since it means a question somewhere is still leaning on the suggestions.
-
-## I typed /plan and got something else, or an error saying "plan is a UI command, not a skill". What's wrong?
-
-Nothing's broken — the short name is taken, and there's a longer form that always works.
-
-Claude Code has a planning mode of its own, and it owns the bare name `plan`. So depending on your setup, typing `/plan` can reach Claude Code's own command instead of this plugin's, or fail with `plan is a UI command, not a skill`.
-
-**Use the fully-qualified form instead:**
-
-`/sovereign-implementer:plan`
-
-That's the plugin's own planning command and it engages normally. It's also the form Claude Code offers from its own command menu, so you can pick it from there rather than typing it out.
-
-The other three commands — `/setup`, `/next`, `/done` — don't clash with anything, though the qualified form works for those too if you prefer being explicit.
-
-## Claude asked whether I'm developing the method itself. What was that about?
-
-A one-time question, and answering it either way means you're never asked again.
-
-Some of what the plugin reports at the start of a session only makes sense for someone using it to build their own project — for instance, telling you your plugin has been updated. In the unusual case where the project *is* the plugin, that report is not just unhelpful, it's permanently wrong and would appear at the top of every session forever.
-
-Claude can tell that shape apart by looking, but it can't tell whether you *want* to be treated that way. So it asks once and writes your answer into your project's CLAUDE.md. Say no and it never comes up again; say yes and the reports that don't apply to you stop appearing — silently, without announcing each time that something was skipped.
-
-If you're building your own project and got this question, "no" is the right answer and nothing else changes.
-
-## Why isn't my FAQ folder saved with the rest of my project?
-
-Because it isn't part of your project — it's a copy of this plugin's own help, sitting where Claude can reach it.
-
-Everything else the method sets up is genuinely yours: what you're building, what to work on next, what happened in each session. The FAQ is different. It explains how somebody else's tool works, and saving it into your project's history means carrying that around forever as clutter in something you might share or publish.
-
-So setup adds the folder to your `.gitignore`, which tells your project's history to skip it.
-
-**The important half is what comes with that:** the FAQ is put back whenever it's missing. If you clone your project onto another machine and the folder isn't there, running setup restores it from the plugin. You never end up without it — which matters, because it's what Claude is pointed at every session when a workflow question comes up.
-
-If your project already has the FAQ saved in its history from an earlier version, Claude will offer to stop tracking it. That leaves the files exactly where they are on disk and only changes what your project's history carries. It's your call, and Claude won't do it without asking.
-
-## Claude grouped several pieces of work together and moved them all at once. Why?
-
-Because they touch the same files, and doing them together is genuinely better than doing them one after another.
-
-When Claude works through your unprocessed ideas, it notices which ones would change the same files. Those get gathered into a group — and the group is what moves into your ready list, and what gets built, as a unit. You make one decision instead of three, and Claude makes one coherent pass over a file instead of three separate ones that each have to re-read what the last one did.
-
-The groups aren't something you have to name or maintain. They're worked out from the files each piece of work says it'll change. When a build run starts, Claude tells you the group and what it has in common, in a line.
-
-**Two things this deliberately doesn't do.** It never overrides ordering that matters more: if one piece of work has to wait for another, that comes first regardless of which group either belongs to. And **being in a group is not a shortcut to being ready** — every piece of work in it is still checked on its own before it goes anywhere. Touching the same file as something well-thought-out doesn't make a half-formed idea ready to build.
-
-## I get the same kind of thing arriving over and over — receipts, documents, photos. How do I handle that without setting it up from scratch each time?
-
-You run a planning session per batch, and that's the intended answer rather than a workaround.
-
-Building only ever works from your queue. Claude doesn't watch a folder and invent work for itself when something lands in it — that's deliberate, because work reaching a build without you having agreed to it is exactly what the whole method is arranged to prevent. So each new batch needs a quick /plan to put it in the queue, then /next to do it.
-
-What makes that cheap rather than tedious: **the piece of work can be written so it's re-added rather than re-thought.** Once you and Claude have worked out how a batch of receipts gets handled, that item says so in enough detail that next month's batch is the same item again — a copy, not a fresh design conversation.
-
-There's no separate mechanism for this, and that's on purpose. If you find yourself wanting one, say so — but the two-command rhythm is the answer, not a stopgap.
-
-## A session opened by asking me a setup-ish question out of nowhere. Why, and why doesn't it happen any more?
-
-Because the check that asked it was running at the wrong moment, and it's been moved.
-
-When the method adds a new setting, projects set up before that don't have it — and nothing would tell you, so the project quietly drifts. A check existed to catch that, and it ran at the very start of every session.
-
-The trouble is that a start-of-session check runs *before anything knows what the session is for*. So its question couldn't pick a sensible moment; it just latched onto whichever command you ran first. That produced two bad outcomes: an unrelated question wedged into the middle of closing a session, and — worse — a whole queued build run held up behind a question about a setting that had since been retired and that nothing read any more.
-
-The check now runs when you start a planning session, which already looks over your project's state and can't be holding a build up. And if it does ask you something, it has to say what the setting is for and what changes once you answer — the question that failed was unanswerable as well as badly timed, because neither you nor Claude could say what the answer would do.
-
-If you're on an older installed version you may still see the old behaviour until you update.
-
-## What's the difference between my "project docs" and "my own files"?
-
-Two categories, and they're worth telling apart early because they behave differently.
-
-**Your project docs** are the three documents the method keeps: SPEC.md (what you're building), QUEUE.md (what to work on), and the LOG folder (what happened). Claude writes those with you, and they're about the work rather than being the work.
-
-**Your own files** are everything else — the actual content your project is made of. The photos, the drafts, the recipes, the scanned documents, the code. Claude only touches those as part of a piece of work that says it will.
-
-The distinction matters most during a build. Claude is held to the file list that build agreed to, and your own files are only editable when they're on it. Alongside them, a few things stay editable throughout — the queue, the log, and the build's own working notes — because Claude needs to record progress as it goes. **SPEC.md is deliberately not in that group:** a build can only change what your project *is* if it explicitly said it would.
-
-You may still see the phrase "method docs" in older notes. It's been dropped, because it could mean any of three things and one of the readings was misleading enough to matter.
-
-## Why does Claude show me a short summary instead of what it actually wrote?
-
-Because the two of you need different things from the same text, and the summary is the point rather than a shortcut.
-
-Items in your queue are written long on purpose — all the facts, the conditions, the options that were considered and rejected and why. That detail is for Claude: it's what stops a later session re-deciding something you already settled, or building on a reason nobody wrote down. You don't need to read any of it. You need enough to decide whether you're happy with what's being recorded.
-
-So Claude writes the full thing into the file, then gives you a short summary, a link, and the question it needs answered. **The full text is always one word away** — say "show me" and you get it right there in the chat.
-
-There's no length limit on the summary. It's as long as it needs to be for you to understand what you're approving, and no longer. Two other approaches were considered and dropped: a setting where you pick how much detail you want (people just pick whichever means less reading, which tells Claude nothing useful), and automatically scaling the summary to the size of the text (that's an arbitrary limit wearing a disguise).
-
-If a summary ever leaves you unsure what you're agreeing to, say so — that's a fault in the summary, not in you.
-
-## I asked Claude to prioritise some work and it didn't move anything. Why not?
-
-Because it almost certainly didn't need to, and moving things is the expensive way to do what you asked.
-
-When you say "focus on these first" or "leave the ones I have to do myself", Claude takes that as the order for *this session* — it says the order back to you once, works it, and skips what doesn't match as it comes to them. Nothing in your queue file changes. You get exactly what you asked for and nothing is rewritten.
-
-Rewriting the queue means physically moving every item into a new arrangement, which is slow and costs a lot for something a session can simply remember for the length of a conversation.
-
-If you genuinely want the file itself reordered — so the new order sticks for future sessions — say so and Claude will do it. It'll ask one question first about what you're actually trying to get to, because that often turns out to be "build this next", which there's a cheaper way to reach. But the reorder is yours to have; the question is a check, not a refusal.
-
-One thing you'll see either way: when Claude works an order different from the file's, it says so in a line. The file keeps the lasting order for anyone picking the project up cold, and the session's own order is never left unsaid.
-
-## Claude was blocked from running a command that would have written to a file. What happened?
-
-A safety check stopped it, and it's a specific one worth understanding.
-
-A command that writes to one of your project's files through a script gets stopped, and Claude is pointed at the ordinary editing tools instead — or, where the edit is a big awkward one like removing a whole item from your queue, at the purpose-built tool that does exactly that job safely.
-
-**The reason is not about scope, it's about staleness.** When Claude writes through a command, it's reaching the file by a different route than its editing tools use — and that route can be working from an out-of-date copy. A write through it can quietly wipe out changes the editing tools would have refused to touch. That's true of any file in your project, whether or not the current piece of work was supposed to touch it, and whether or not a build is even running.
-
-This check used to only fire when the file was *outside* the agreed list. That turned out to be the wrong half: the two real incidents it was built after both wrote files that were inside the list, so it caught neither of them. The list condition was dropped.
-
-**Two honest things about this check.** It only recognises writes where the target file is spelled out in the command. If a command works out its target while running, the check doesn't see it — that's a gap, not a permitted route around the rule. And it's deliberately narrow rather than clever: a check that guessed would produce wrong refusals, and wrong refusals teach everyone to work around the check, which is worse than the thing it was protecting against.
-
-If Claude genuinely needs somewhere to put a temporary file, there's scratch space outside your project that this check leaves alone — so nothing legitimate is blocked, it just has to take the safe route.
-
-## Why does Claude write "(checked by…)" next to things it says it can do in my CLAUDE.md?
-
-Because otherwise a guess and a tested fact look identical on the page — forever.
-
-When Claude records something about what can be done in your project — "Claude can run the build here", "this tool works from inside Claude" — it writes, in the same sentence, what it actually ran and what came back. That one clause is the difference between a claim you can judge and a claim you have to take on trust.
-
-The reason it exists is a real cost. A session once concluded it could run a project's build, wrote that into CLAUDE.md as settled fact, and moved on. The evidence was a single command that happened to be the one command that couldn't detect the failure. The claim then sat in the doc looking exactly as solid as a properly-tested one, a later session planned real work on top of it, and that work collapsed the moment it ran. Two sessions gone.
-
-So the rule has a second half worth knowing: **a claim like that with no evidence recorded is treated as unverified**, and Claude will re-check rather than build on it. If you see a bare capability claim in your docs from an older session, that's how it'll be read.
-
-It only applies to claims about what *can be done* here — not to every sentence in your docs, which would be noise.
-
-## Claude says it can't run my Java, Android or Gradle build. Why, and what do I do?
-
-Because of how the Claude desktop app is packaged, not because of anything on your machine or in your project.
-
-The app is installed as a Windows Store–style package, which means everything it starts runs inside a locked-down sandbox. That sandbox blocks one specific thing: opening a connection to a kind of local socket that Java's build machinery depends on. Every Gradle build needs it, so every Gradle build fails. The same limit hits anything else that needs that operation — it isn't a Gradle-specific problem, Gradle is just where you notice it.
-
-**The error you see points away from the cause, which is the worst part.** It reads `Unable to establish loopback connection`, which sounds like a network or firewall problem. It isn't — ordinary local network connections work fine from Claude's commands. One project lost two full sessions to this: one session concluded the build worked (on the strength of `gradlew --version`, the one Gradle command that doesn't need the blocked operation), and a later session took the failure apart properly.
-
-**What you do:** build in whatever you already use — Android Studio, IntelliJ, your IDE's Build command — and paste the errors back to Claude, which fixes them. That's the normal way to work here, not a workaround. Android Studio runs at full trust, which is why it compiles the same project fine, side by side with Claude's failures.
-
-**Already tried and ruled out, so nobody re-attempts them:** the sandbox override in both PowerShell and Bash, `--no-daemon`, forcing the older Java selector, pointing the temp directory somewhere else, and launching Gradle as a fully detached process. All of them still start inside the sandbox, which is why none of them changed anything.
-
-This is confirmed by three independent reports — [Microsoft's own support thread on Java NIO selectors in packaged apps](https://learn.microsoft.com/en-us/answers/questions/5599711/microsoft-technical-support-request-java-nio-selec), [anthropics/claude-code#41432](https://github.com/anthropics/claude-code/issues/41432), and [PortSwigger/mcp-server#82](https://github.com/PortSwigger/mcp-server/issues/82).
-
-## Claude asked whether I have a particular program installed, and wrote my answer into CLAUDE.md. Why?
-
-So you never have to say it twice.
-
-Facts about your setup — that you have Android Studio, that you build with a particular tool, that a device is already connected — matter to how Claude works on your project. But said in conversation, they vanish when the session ends, and the next session may not have that conversation at all. So the answer goes into CLAUDE.md, under **Your tools**, and from then on Claude just knows.
-
-The question is deliberately specific and asked only when it matters — "do you have Android Studio installed?" rather than a general "what tools do you have?" at setup. A general version fails twice over: it's hard to know what counts as an answer, and whatever you say goes out of date.
-
-Two things worth knowing about that section. It's a record of what's **available**, not a list of the only tools allowed — nothing is being restricted. And each entry says how it was checked, because a list of "what can be done here" is exactly the kind of note that goes wrong and then gets built on. Something you told Claude is recorded as you having told it; something Claude says it can do is recorded with what it actually ran. An entry with nothing recorded is treated as unconfirmed rather than taken at face value.
-
-## Claude stopped building something and told me to use a program I already have. Is that right?
-
-Yes, and it's deliberate.
-
-Claude will normally try to do things itself rather than send you off — that's the default, and it's the right one. But it overshoots in a specific way: it can spend a long time building its own route to something you can already do in one step, in a program you use every day. From the outside that looks like Claude being stuck; it's actually a wrong decision made much earlier.
-
-So there are two moments where it stops and checks. Starting something new, if there's a standard tool that sets up that kind of project properly, Claude uses it instead of assembling the same thing by hand — the fiddly configuration part is exactly what those tools get right and what hand-building gets wrong. And at any point, if what the work is trying to achieve is already achieved by something you have, Claude stops there rather than building a second way to get the same result.
-
-If the step is one only you can run, it becomes a proper step in your queue with Claude walking you through it — not a suggestion left hanging. The check decides whether to build at all; it never decides to hand you the whole job.
-
-## There's a `.throughliner` folder in my project. What is it, and can I delete it?
-
-It's a signal for other apps, and yes — deleting it is completely safe.
-
-While Claude is writing to one of your files, it drops a small file in there saying "a write is happening right now, to this file". That exists so another application you have open on the same document — a Markdown reader or editor you're reading and typing in — can hold off for a moment instead of the two of you landing on top of each other mid-sentence. Without it, an app watching your files can see *that* something changed but not *who* changed it, and guessing wrong means being locked out of your own document while you're writing in it.
-
-Two things make it safe rather than fiddly. Every entry carries a timestamp, and an app reading it treats anything more than about half a minute old as "nothing is happening" — so if a session crashes mid-write, nothing stays stuck. And an app that finds no folder at all simply carries on as normal, which is what happens in every project that doesn't use this plugin.
-
-The folder is not committed to your project's history — setup adds it to your `.gitignore` — because it's about what's happening right now on this machine, not part of what you're building. If you delete it, the next write recreates it.
-
-## Someone else is contributing to my project and they don't use this. Does that break anything?
-
-No — but one part of your record will be thinner where their work lands, and it's worth knowing why.
-
-Your project keeps a running record of *why* things are the way they are: every decision, and the reasoning behind it, written down as you and Claude go. That works because Claude is there for the whole conversation. Someone contributing from outside — a collaborator, a contractor, anyone sending you changes — isn't in that conversation, so their changes arrive with the code but not the thinking.
-
-Claude won't invent the missing reasoning. It could produce something that reads perfectly well, and that's exactly the problem: a made-up reason is indistinguishable from a real one, and you'd have no way to tell which parts of your own record you can trust. So Claude names the gap instead.
-
-What actually helps is one ask you can make of them: **get their own AI tool to write the reasoning into the pull request before they open it.** That needs nothing from them beyond asking — no subscription, no method, no discipline — and it's the only thing that keeps up, because the reasoning gets produced by the same tool producing the changes. Writing it by hand doesn't scale: a paragraph over a few hundred lines of machine-written change flattens fifty small decisions into one sentence.
-
-If that doesn't happen, the fallback is to give them an area of the project to own. The thin history is then in one place you can point at, rather than mixed through everything.
-
-And the honest part: some of a shared project will always have less history than the rest. That's the price of the help, not something to fix. Anyone who tells you a process solves it is describing a process nobody follows.
-
-## I brought a message over from another one of my projects, and Claude offered to write a reply back. Why?
-
-Because if it didn't offer, the reply would only ever happen when you remembered to ask for one — and that's how real work quietly disappears.
-
-Claude was already careful about messages coming *in*: something you bring over from another project gets checked before it changes anything here. But there was nothing at all about what goes *back*. So a message would arrive, get turned into changes in your list of work, and then just stop there. The answer it obviously needed existed only if you thought to ask.
-
-Now, when a message from another project actually changes work here, Claude drafts the reply in the same session and shows it to you. Two things about that:
-
-- **It never sends anything.** You carry the reply across yourself, the same way you brought the message over. Claude writes it; you decide whether and where it goes.
-- **The message it needed no reply to doesn't get one.** The trigger is a message that *changes something here*, not every message that arrives.
-
-The reply also gets written into that session's record in full — not a summary of it. If an answer comes back weeks later, that's the only way anyone can tell what was actually promised.
-
-This applies to any project of yours, not some designated partner project. People building this way tend to have several on the go, so messages crossing between them is ordinary, not a special arrangement.
-
-## I said I was going to send someone a log entry and Claude warned me about what was in it. Why?
-
-Because you can't be expected to remember what a document written weeks ago contains, and by the time you're sharing it, every other safeguard has already happened.
-
-Claude is careful about what goes *into* your project's files — it won't write down other people's names or private circumstances, won't ask you for account numbers or keys to put in a work item, and won't record judgements about you. All of that happens at the moment of writing.
-
-Sharing is a different moment. The text is already written and you already approved it, probably a while ago. What you're about to send might contain a file path with your computer account name in it, a reference to someone else, the name of a service you use — things that were completely fine sitting in your own project and are a different matter in a message, a forum post, or a bug report.
-
-So when you say you're going to share something, Claude tells you what's specifically in *that* text. Not a general "be careful" — the actual things it found. A warning that doesn't tell you what it found is one you'd learn to skip.
-
-It only fires once when you say you're sharing, and it says nothing at all when there's nothing worth mentioning. Most of the time you'll never see it.
-
-## Can I use this with a different AI model, or a different tool?
-
-Not really — and the reason is more interesting than "it isn't supported yet".
-
-This method is mostly *writing*. The rules that keep Claude on track are worded a particular way because that wording is what makes a particular model actually follow them. Change the model and the same sentence stops landing: the model reads it, agrees with it, and behaves differently anyway. You find out by watching things go subtly wrong, then pulling at the prose to work out why.
-
-That's not a guess. This plugin already ships its instructions **twice** — one wording for one family of models, a lighter wording for another — because a single version genuinely didn't serve both. And a version for a different tool entirely was built once. It didn't behave right, and fixing it meant rewriting rule after rule until it wasn't the same method any more, just something with the same name.
-
-So the honest position: the two shipped versions carry the same method because somebody deliberately keeps them in step — one author, one target, and a check that catches them drifting apart. A port to somewhere else has nobody doing that, and no "neutral" original version to keep in step *with*. Rewording changes the method unless someone is actively holding it together.
-
-If you want to work with someone who uses a different tool, the question you actually want is the one above about contributors — you don't both need to be running this.
-
-## There's a GLOSSARY.md in my project. What is it, and do I have to fill it in?
-
-You don't have to do anything with it. Claude fills it in as you go.
-
-It's a record of the words that have been explained to you, plus the names your project has settled on for its own things. Before Claude uses a technical term, it checks whether that word is in there. If it is, you've had it explained already, so Claude just uses it. If it isn't, Claude explains it at the moment it comes up and then writes it down.
-
-That gives you a guarantee that works in both directions: **Claude never re-explains something you already know, and never assumes you know a word it hasn't told you.** Before this existed, Claude had no way of knowing which was which — every session started blank, so it either over-explained or quietly used words you'd never met.
-
-A few things worth knowing about it:
-
-- **The entries are written the way it was last explained to you**, not as textbook definitions. The point is to mirror what you'd actually remember. Ask about any of them again at any time — Claude will explain it however fits the moment, and then update the entry.
-- **Your own words go in too.** If you pick a name for something in your project — especially if you had a reason — it goes in with that reasoning, and it's simply the right word here from then on.
-- **If you use the wrong word for a real technical thing, Claude will name the standard one once**, plainly, and then just use it. No repeated corrections. The reason it says anything at all is that quietly copying your word back to you would leave you using it somewhere it doesn't mean what you think.
-- **It's saved with your project**, unlike the FAQ you're reading. The FAQ is a copy of Claude's own help and is the same for everyone; the glossary is yours, and it's about you.
-
-You can edit it yourself if you want — delete an entry you don't recognise, or fix one that reads wrong. Nothing breaks either way.

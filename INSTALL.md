@@ -67,26 +67,16 @@ Once Claude Code is installed and the user is on a paid plan, the plugin install
 
 The install uses Claude Code's plugin marketplace. It's two commands — but the user does **not** have to type them. Instead, have them open a chat **inside Claude Code** and ask the Claude Code agent, in plain words, to install the plugin. Give them this to paste or say:
 
-> Please add the plugin marketplace `FlintcraftTech/throughliner` and then install the `sovereign-implementer@flintcraft` plugin from it.
+> Please add the plugin marketplace `FlintCraftTech/sovereign-implementer` and then install the `sovereign-implementer@flintcraft` plugin from it.
 
 The Claude Code agent will run the two commands itself:
 
 ```
-claude plugin marketplace add FlintcraftTech/throughliner
+claude plugin marketplace add FlintCraftTech/sovereign-implementer
 claude plugin install sovereign-implementer@flintcraft
 ```
 
-**The two names deliberately differ, and it's worth saying so before the user asks.** The repository holding the code is called `throughliner`; the plugin installed from it is called `sovereign-implementer`. Both lines above are correct as written — the mismatch is not a typo and nothing needs changing to make them agree.
-
 (If the user would rather run them by hand, those are the commands — but the default and easiest path is to let Claude Code run them.)
-
-**If the command isn't found, that's a known and easily-fixed snag — not a broken install.** Depending on how Claude Code was installed, the `claude` command may not be available under its bare name in the agent's shell, so the agent sees "command not found". The fix takes one line, and the user doesn't need to understand any of it. Give them this to paste or say:
-
-> That's expected on some setups. Please find the `claude` program on this machine and run those two commands using its full path instead. It's usually in a `.local/bin` folder in my home directory, or under `AppData/Roaming/Claude`.
-
-The agent can locate the file and re-run the commands from there. Nothing else about the install changes.
-
-**Minimum version: Claude Code 2.1.193 or later.** The plugin relies on marketplace behaviour that older versions don't have. If the agent reports an older version, have it update Claude Code first — that alone resolves a whole class of confusing install errors.
 
 After both succeed, the plugin activates on a full restart of Claude Code. Have the user fully quit and reopen the app, then run the smoke test in B.2 to confirm it took. If the marketplace-add or install errors — for example, the marketplace can't be found — have them tell the Claude Code agent the exact error and work it from there; the agent can retry or diagnose.
 
@@ -110,27 +100,11 @@ A note for real use later: `/setup` is also the command that sets up a real proj
 
 To update, have the user ask the Claude Code agent to run `claude plugin update sovereign-implementer@flintcraft` (Claude Code runs it — no terminal typing), then fully restart the app so the new version loads.
 
-### One naming clash to mention before they start using it
-
-Tell the user this once, at the end of the install, so they don't hit it cold:
-
-> One quirk worth knowing. Claude Code has a planning mode of its own and it owns the short name, so typing `/plan` may reach Claude Code's command instead of this plugin's — or fail with "plan is a UI command, not a skill". Type `/sovereign-implementer:plan` instead, or pick it from Claude Code's own command menu, which offers that longer form. The other three commands don't clash.
-
-This matters more than it sounds: a first-day user who types `/plan`, gets something unexpected, and has no idea why has no route to the answer — and nobody who already uses the plugin ever exercises the install path, so it can stay broken indefinitely.
-
-### One constraint worth knowing about up front
-
-If the project is a Java, Kotlin, Android, Gradle or Maven one, tell the user this plainly now rather than letting them discover it mid-build:
-
-> Claude can't run your build from inside the Claude desktop app. The app runs everything it starts in a locked-down sandbox, and that sandbox blocks something every Java-based build tool needs. You'll build in the program you already use — Android Studio, IntelliJ, whichever it is — and paste any errors back to Claude, which fixes them. That's a normal way to work, not a workaround.
-
-It matters because the error you'd otherwise hit says `Unable to establish loopback connection`, which points at your network and has nothing to do with it. One project lost two sessions to that. The full explanation is in the workflow FAQ once the plugin is installed.
-
 ## Step 2 — First-run pointer
 
 Once the plugin is installed and the `/setup` command is recognised, tell the user:
 
-> You're set up. To start a real project, open its folder in Claude Code (**File > Open Folder**, or create a new empty folder for it first) and run `/setup` to scaffold the project docs. From there, `/plan` to scope your first batch and `/next` to start building.
+> You're set up. To start a real project, open its folder in Claude Code (**File > Open Folder**, or create a new empty folder for it first) and run `/setup` to scaffold the method docs. From there, `/plan` to scope your first batch and `/next` to start building.
 
 Do not run /setup for them in this chat — they need to do it in their own desktop app, in their own project folder.
 

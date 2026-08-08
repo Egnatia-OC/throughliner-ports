@@ -36,13 +36,11 @@ Why it's worth surfacing: the exact wording is produced here in /next and was
 never seen in /plan, which agreed only the intent. This is the first time the user
 meets the real words.
 
-**How the reveal renders** follows the doc-bound-text rule (plugin-behaviour.md).
-The text is doc-resident by the time it's revealed, so: a short summary of what
-the new wording does, plus a link to the edited file with the exact heading text
-of the section that changed, and the full new text on request. Never line-anchor
-a link to a `.md` file — the desktop app opens it at the top and silently
-ignores the anchor, so the link promises a position it won't deliver. And only after the
-write is confirmed by a re-read.
+**How the reveal renders** follows the working-mode rule (plugin-behaviour.md).
+The text is now doc-resident, so: local + editor recorded → a line-anchored link
+to the edited location, falling back to an inline excerpt if the link won't
+resolve; remote or no editor → paste the new wording inline as a wrapped block.
+Either way, only after the write is confirmed.
 
 **A small mid-build tweak to a just-surfaced readable edit is in scope**
 [PROMPT]. Once the new text is visible the user may ask to change one bit. That
@@ -60,40 +58,7 @@ worked — routes out via Scope management below.
 3. if readable content -> reveal the new text (informational, no ask)
    if code             -> stay silent
 4. tick it: - [x] item description — done
-5. remove the item from QUEUE.md THROUGH THE MECHANICAL MOVER:
-       python <plugin-root>/scripts/reorder_queue.py QUEUE.md \
-           --delete <slug> Processed
-                                           # tick first, then remove —
-                                           # destination-first at every step
 ```
-
-**The removal goes through the mover, never a hand-edit and never a shell
-splice.** It removes the whole block byte-exactly, refuses rather than guessing on
-an unresolvable or ambiguous slug, and re-anchors the readiness marker if the
-removed item was what the marker sat after. This is the *highest-frequency*
-removal in the method — once per item, in every build loop — and the one that runs
-with no user present to notice a shortcut being taken, which is exactly why it
-must name the tool rather than leave the operation to judgment.
-
-**Read `_build.md` before stating anything about the run's progress**, and compose
-the statement from what it returned — how many items remain, which one is next,
-what was ticked. Not from memory of the run. `_build.md` is written to at every
-tick precisely so the run does not have to remember, and an unattended run is
-where a wrong state claim has nobody watching. This is the standing rule in
-plugin-behaviour.md's Context awareness section, firing here.
-
-**Before building, and again whenever the work stalls: is this item's goal
-already met by a tool the user has?** If it is, stop building — say so plainly,
-name the thing that already works, and tick the item. Don't build a second
-route to a result that already exists (plugin-behaviour.md, the
-don't-hand-build counterweight). This fires *mid-build*, not only at the start,
-because that is where it was actually needed: a run spent most of its length
-trying to obtain Claude's own command-line route to two capabilities the user
-already had working, until the user stopped it with *"why are we doing it this
-way? why can't i just use android studio like i always do?"*
-
-The condition is checkable rather than a judgment: the goal is met by something
-the user has. It is not "never write anything a tool could write".
 
 **A check Claude can run is part of building, not a separate test.** Run whatever
 verification you can — read the code back, run a command, inspect output, check
@@ -107,17 +72,10 @@ a check needing the user ->  a [user] work item, which /plan would have set as
 
 If mid-build you discover the work needs a user-run check that isn't already a
 `[user]` item, route it (see Course-correction) — don't invent a deferral here.
-The one sanctioned "not now" is the set-aside marker (plugin-behaviour.md, Set
-aside), and it exists only for the user's own stop — it is never yours to
-reach for.
 
 ## File structure — split by independent unit
 
-**Fires only when the build creates or grows the project's files and there's a
-genuine choice about how to split the work across them.** A build that only edits
-existing files raises no such choice, so it gets no file-structure recommendation.
-When it does fire, this is guidance you offer, not a hard rule — file structure
-stays case-by-case.
+Guidance you offer, not a hard rule, so file structure stays case-by-case.
 
 ```
 genuinely independent unit        ->  split into its own file
@@ -149,7 +107,7 @@ Changes:
 ## Scope management
 
 **When a mid-build discovery is work only the user can run** — a rename you can't
-do, an account action, a device step — **file it as a `[user]` work item, never float
+do, an account action, a device step — **file it as a `[user]` line, never float
 it as a live question.** The failure to avoid is waving it off as "separate work
 you'd handle yourself" or asking a yes/no about it: that leaves real work living
 only in chat. If you can't yet script every step, file the line with a rough
@@ -158,10 +116,8 @@ walkthrough anyway.
 ### User raises something out of scope  [PROMPT]
 
 ```
-1. write the capture into Unprocessed, placed per the Captures placement rule
-   (narrate the placement)
-2. put the wording in front of the user for approval — a short summary plus a
-   link with the heading text, full text on request. Remove it if they say no.
+1. draft the capture as a blockquote under **Capture draft:** — show before writing
+2. append to Unprocessed, placed per the Captures placement rule (narrate it)
 3. ask "anything else?" — repeat until no
 4. resume the build
 ```
@@ -169,54 +125,24 @@ walkthrough anyway.
 **Coherence exception** (narrow, keyed to why-pipeline coherence): if the item
 would share the built item's log entry and index line, and folding it in makes the
 work *easier to find later*, add it to _build.md as part of this item's work
-(appending any files it names to `Files:`) and continue. **The test is the two
-conditions named in this paragraph — one shared log entry and index line, and
-easier to find later — not user convenience** (there is no separate body of
-"coherence rules" to consult; this is it). **When uncertain, capture.**
+(appending any files it names to `Files:`) and continue. Evaluate against the
+coherence rules, not user convenience. **When uncertain, capture.**
 
-### Scope grows during the build
+### Scope grows during the build  [PROMPT]
 
-The trigger is growth against **the described work**, not the Files: list. And
-the first question is which of two things happened, because they get different
-answers:
+The trigger is growth against **the described work**, not the Files: list. Name
+the new work and the files it needs, then:
 
 ```
-THE WORK GREW               ->  WIDEN AND NARRATE, then CONTINUE.
-  the described work is         Append the file to _build.md's Files: list, say
-  clear; it turns out to        in one line which file you added and why, and
-  need a file the list          carry on. The addition rides into the commit,
-  didn't name                   where it is as readable as any other change.
+minor        ->  ask to add it: "This needs [work], which means editing [file] —
+(1-2 files)      add it to scope?" Once approved, append any unlisted file to
+                 _build.md's Files: BEFORE editing it — the scope-lock denies
+                 edits to unlisted files.
 
-THE ITEM WAS UNDERSPECIFIED ->  HALT and surface it  [PROMPT].
-  you can't tell what the       Building it means inventing scope the user never
-  described work changes        agreed to, and no amount of narration fixes
-  inside the files it names     that. This is the same seam /next self-scoping
-                                already uses.
-```
-
-**Widening is permitted because the mechanism always permitted it — the halt was
-instruction, not enforcement.** `_build.md` is classed alongside the queue and
-the log, so a build has always been able to write to its own Files list; the
-hook's own denial text says as much. So this costs no hook change, and the
-scope file being editable is not a new risk being taken on.
-
-**The narration limb is NOT optional, and it is what makes this safe.** An
-expansion that is permitted but unannounced is strictly worse than one that
-halts: the check becomes a human reading a diff, and that only works if the
-change is visible where they are looking. One line, at the moment you add the
-file.
-
-**Why the halt was worth trading away.** /next is unattended in practice, so
-every legitimate scope discovery ended a run that could have continued. That is
-not hypothetical — a real build's self-scoping caught a genuine ripple and could
-only report it by halting mid-run, which is exactly the interruption an
-unattended run should not need.
-
-```
-significant  ->  still propose splitting. Finish what's scoped, /done to close,
-(many files,     then /plan to queue the rest. Widening covers a file or two the
- design          work turns out to need; it is not a licence to absorb a second
- uncertainty)    piece of work.
+significant  ->  propose splitting. Finish what's scoped, /done to close, then
+(many files,     /plan to queue the rest.
+ design
+ uncertainty)
 ```
 
 **A SPEC change the build discovers it needs is a legitimate scope-grow.** Name
@@ -235,20 +161,11 @@ physical-device behaviour, a subjective judgment you can't verify — and it isn
 already a `[user]` item:
 
 ```
-1. append it to Unprocessed as a [user] work item (what needs checking, and why),
-   then put the wording in front of the user for approval where it now sits
-2. confirm and resume — name what you filed, then carry on
-   # "I noticed X, filed it, resuming." NOT "anything else?"
+1. append it to Unprocessed as a [user] work item (what needs checking, and why)
+   draft the wording, show before writing
+2. ask "anything else?" — repeat until no
 3. resume the build
 ```
-
-**Step 2 is confirm-and-resume, not an invitation for more, and the distinction is
-who raised it.** This procedure is Claude-raised by construction — you noticed the
-gap, the user didn't — so it closes by stating what was filed and continuing. The
-"anything else?" loop belongs to a *user*-raised capture, where asking respects
-that they were the one interrupting. Inviting more on something you raised yourself
-turns your own observation into an open-ended interruption of a build the user
-already approved.
 
 Don't attempt the check inline if it genuinely needs the user, and don't extend
 this item's scope to include it.
@@ -294,30 +211,21 @@ plan time.
 adjust scope      ->  drop the item, add a prerequisite, or change the approach.
                       Update _build.md to match.
 abort and requeue ->  if the item is unsalvageable:
-                        a. LEAVE IT WHERE IT IS — it was never ticked, so it
-                           is still sitting in Processed. Nothing to return.
+                        a. return it to QUEUE.md's Processed (placement is your
+                           call — original position or top, by what was learned)
                         b. append any captures surfaced during the attempt
                         c. append the reshape direction, naming the item's slug
                         d. tell the user to run /done
 ```
 
-**There is nothing to return, and step (a) says so rather than performing a
-move.** Items leave QUEUE.md one at a time, at each one's completion tick — so an
-aborted item never left. Read literally, an instruction to "return it to Processed"
-performs an *insertion*, which is not /next's to make: a run removes items from
-Processed and never inserts them, and the queue lint flags a heading appearing under
-Processed while a build is active. Repositioning is warranted only where what was
-learned during the attempt changes where the item should sit; that is a judgment
-about order, not a recovery step, and it goes through the mover like any other move.
-
-The reshape-direction trigger is mechanical: *abort + a reshape direction or
-learning the queue needs in conversation = capture needed.* Unrouted, it survives
-only in the LOG entry, which /plan doesn't read at planning time, so the item
-re-presents unchanged at the next /next.
+The reshape-direction trigger is mechanical: *abort + item returned + a reshape
+direction or learning the queue needs in conversation = capture needed.* Unrouted,
+it survives only in the LOG entry, which /plan doesn't read at planning time, so
+the item re-presents unchanged at the next /next.
 
 _build.md stays in place so /done's router still fires the build close-out. The
-difference: the LOG entry describes the attempt and why it was aborted, while the
-item itself simply stays in the queue, which is what the queue was already saying.
+differences: the LOG entry describes the attempt and why it was aborted, and the
+item returns to QUEUE.md rather than disappearing into the log.
 
 ## Context management
 

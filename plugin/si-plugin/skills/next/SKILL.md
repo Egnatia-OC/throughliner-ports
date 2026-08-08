@@ -9,6 +9,6 @@ user-invocable: true
 
 The user wants to execute the next piece of work from the queue.
 
-Plugin-wide behaviour rules at `${CLAUDE_PLUGIN_ROOT}/docs-b/plugin-behaviour.md` govern this skill at a level above the procedure below.
+Plugin-wide behaviour rules at `${CLAUDE_PLUGIN_ROOT}/docs/plugin-behaviour.md` govern this skill at a level above the procedure below.
 
-Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs-b/next.md`.
+Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs/next.md`.

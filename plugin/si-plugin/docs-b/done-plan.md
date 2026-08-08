@@ -4,14 +4,10 @@ docset: B
 note: >
   Close-out for planning sessions. Reached from done.md's router when no
   _build.md exists — /plan sessions, /setup sessions, and any session that
-  changed only the project docs.
+  changed only the method docs.
 ---
 
 # Plan close-out
-
-Every step below runs at every plan-type /done close — a /plan session, a /setup
-session, and a session that changed only the project docs. The reorder, the marker
-placement and the `[user]`-placement step each reach all three; none is /plan-only.
 
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
 
@@ -51,7 +47,7 @@ Processed    ->  BUILD-ORDER. Build first what unblocks or reshapes the framing
                  later item sits above the one that needs it.
 ```
 
-**Within Processed, place `[user]` and `[audit]` items end-preferred**, after
+**Within Processed, place `[user]` and `[audit]` lines end-preferred**, after
 contiguous blocks of build work. Build-order is the primary sort; this is a
 tie-adjustment on top of it. Both flavors force /next to stop for the user — a
 step they must run, an audit whose findings they must approve — so one sitting
@@ -78,19 +74,10 @@ locate:  scripts/reorder_queue.py under the PLUGIN ROOT
          # directory (.../<plugin-root>/skills/<skill>). Derive it from there
          # so it resolves wherever the plugin is installed — never hardcode.
 
-invoke:  # SMALL CHANGE (one or two items out of place) — the cheap form,
-         # and under the change-scoped rule it is the common case:
-         python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
-             <Processed|Unprocessed> --move <slug> <BEFORE|AFTER> <anchor-slug>
-         # (--move <slug> <TOP|BOTTOM> for the ends)
-
-         # WHOLE-SECTION RE-SORT — only when the order is genuinely wrong
-         # throughout; restating a long order for a one-item fix is the
-         # expensive path a real close took twice for no gain:
-         python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+invoke:  python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
              <Processed|Unprocessed> <slug1> <slug2> …
-
-         # either form: for Processed, place the marker with
+         # give the section's full desired top-to-bottom slug order
+         # for Processed, place the marker with:
          #     --marker-after <slug|TOP|BOTTOM>
          # omit it to keep the marker where it currently sits
 
@@ -98,23 +85,6 @@ trust the self-check:  exits non-zero -> NOTHING was written. A slug-set
                        mismatch usually means the queue changed under you —
                        re-read it, rebuild the order, re-run.
 ```
-
-**The reorder is group-aware.** Where kept items share a file scope, keep the
-group contiguous rather than scattering its members across the section — the
-group is the unit work moves and runs in, so an order that splits it throws away
-the coherent single pass that is the whole point. The precedence above it is
-unchanged and comes first: dependencies, then unblock-potential, then the group.
-A blocking item runs on its dependency order whatever group it belongs to.
-
-**Any in-place edits to a block come BEFORE its move, never after.** The mover
-rewrites the whole file, so an Edit that follows it trips the "file modified on
-disk since you last read it" warning — always innocently, and often enough to
-train the response to the dangerous case, which is the one occurrence that
-matters (a concurrent session's write once destroyed an item heading and reached
-a commit). Editing first removes the collision rather than excusing it, so no
-exception has to be carved into a safety rule. The one constraint: the `[slug]`
-at the end of the heading line must survive the edit, since that is what the
-mover addresses blocks by. Slugs are immutable by design, so this costs nothing.
 
 ```
 narration scales:
@@ -156,61 +126,13 @@ loop, so clearing one that rests on built-but-unverified work would let the run
 stack committed work on a foundation that might later fail its check. Narrate it
 when it holds an item back — one line naming which item waits on which.
 
-**Re-derive prerequisite state from LOG, not from memory.** Whether a dependency
-was built, and whether it was verified, is read off its LOG entry — this rule and
-the `[user]`-placement rule below both depend on that answer, and a fresh short
-session has no memory to fall back on.
-
 **Record the lift-condition when placing any item below the marker** — the
-specific **external** event that would lift it: "after a full computer restart",
-"once the user has published the page", "when the account is approved". Prose,
-not a hook-parsed field. This is the enabling half of the below-the-line revisit:
+specific event that would lift it: "cleared once [slug] is built and verified",
+"after a full computer restart", "once the manifest is pushed". Prose, not a
+hook-parsed field. This is the enabling half of the below-the-line revisit:
 without a recorded condition, that revisit can't tell a still-waiting item from a
 now-ready one without nagging. **An item held below with no recordable
 lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
-
-**Prefer a condition something can check over one only the user can answer.**
-Where the same waiting state can be expressed mechanically — a file present, a
-dependency built, a branch gone, a version installed — write it that way. A
-checkable condition is looked at silently every planning session and needs nothing
-from the user; a user-only one can only be asked, which means it can be
-suppressed, and a suppressed condition on a large queue is one nobody will return
-to.
-
-**And when an item carries both a `Set aside ·` marker and a user-only condition,
-disclose the silence in one line as the marker is recorded.** Nothing will raise
-that item again on its own — the consolidated question skips it, the close's
-recommendation skips it, and queue exhaustion will not arrive on a working
-backlog. The user mentioning it is the route back, so tell them that in the same
-breath. The behaviour is correct; without the line it is undiscoverable, which is
-how a user came to find out only by asking what would ever prompt them.
-
-**A lift-condition names a repeatable future event, never one occasion to
-piggyback on.** "At the next rezip and restart, whenever one happens" clears
-the next time that event occurs; "at the emergency's rezip" points at one
-specific occasion, and if that occasion passes without the check running, the
-condition can never be satisfied as written — while reading to the revisit
-exactly like a condition still waiting its turn. Two items sat in that state
-for weeks, unanswerable and invisible. The revisit's *spent* outcome (plan.md)
-finds ones already written; this rule stops new ones being written.
-
-**And a user-only condition passes the downstream-action test before it is
-written:** is the awaited event downstream of an action the user must take
-first? An event that can't happen until the user acts ("the collaborator
-replies" — to a message not yet sent) is not a recordable condition: the
-action files as a `[user]` work item and the condition waits on *it*. Only a
-genuinely external event — a restart, a release, someone else's unprompted
-move — stands as written. This fires here first because the close is where
-conditions get written; the revisit re-applies it at every read (plan.md).
-
-**A lift-condition may no longer name another queue item.** "Cleared once [slug]
-is built" is a dependency on queued work, and that has its own field now:
-`Blocked by: [slug]`, checked by the queue lint. Lift-conditions are for
-everything else — every wait outside the queue, *including* waiting for built
-work to be released and running, which is an ordinary external event and no
-longer has a marker of its own. If you find one naming a slug, rewrite it as `Blocked by:`
-while you're here — that's a pointer fix, not a fate decision, so it rides this
-close without an approval ask.
 
 **Place ready `[user]` walk-through work above the marker.** The marker is the
 single gate for walk-throughs as well as builds — /next walks a `[user]` item
@@ -230,35 +152,14 @@ pending prerequisite keeps it below. This lives in the /plan close rather than
 readiness check of its own. Narrate it when a `[user]` item moves above the marker
 — one line naming which is now ready.
 
-## Dependency-rot pass  [SILENT when clean; BRIEF when clearing]
-
-A dependency statement can outlive its truth, and nothing routine acted on that
-until this pass: stale `Blocked by:` lines were flagged by the queue lint on
-every edit across multiple sessions, and only a human eventually noticing the
-repetition cleared them. So the close acts:
-
-```
-a Blocked by: line whose named slug no longer resolves in the queue
-    ->  REMOVE the line, and narrate the removal in one line.
-        If the item still waits on something, that something is an external
-        wait — record it as a lift-condition instead, so the clearing never
-        silently strands an item.
-
-a Blocked by: line pointing at an item BELOW the blocked one
-    ->  NEVER cleared automatically. The dependency is real and the ORDER is
-        wrong, so removing the line would delete true information. Surface it
-        for a decision.
-```
-
 ## Completed `[user]` items  [SILENT when none; BRIEF when closing one]
 
-If the user mentioned during this session that they'd completed a `[user]` item,
-record and remove it now through done.md's
+If this session confirmed a `[user]` item was completed async (the Step 1
+completion-ask surfaced it), record and remove it now through done.md's
 **Completed `[user]`-item close**: a LOG entry per completed item named by its
 slug, and the item removed from Processed. Fold each entry into this session's
-records alongside the planning entry, and its slug into the commit. When nothing
-was mentioned, say nothing — **never ask** whether any are done. There is no
-completion ask anywhere in a `[user]` item's life.
+records alongside the planning entry, and its slug into the commit. When none was
+confirmed, say nothing.
 
 ## Clear the consumed forward-recommendation advisory  [SILENT when none; BRIEF when clearing]
 
@@ -271,23 +172,14 @@ survived.
 ```
 it oriented this session          ->  DELETE it from Unprocessed now, whether or
                                       not the recommendation was followed
-the user set aside what it advises   ->  DELETE it — their not-now is its
-                                      answer, and a persist-condition never
-                                      outlives it (plugin-behaviour.md, Set aside)
 it names an unmet persist-condition  ->  LEAVE it in place
     ("persist until the cleared builds ship")
 no advisory present               ->  say nothing
 ```
 
-Narrate in one line when clearing. Distinct from filing the *fresh* advisory,
-which the commit core does **before staging** so it rides this session's commit
-(done.md) — Recommend next then only presents it. Clearing the consumed one and
-filing the next are two different advisories.
-
-**A partly-spent advisory is rewritten, not cleared or kept whole.** When part
-of what it advises has been consumed (the work ran, the state changed) and part
-persists under its condition, rewrite it at this close to only what still
-stands — a half-true note orients the next session wrongly in both directions.
+Narrate in one line when clearing. Distinct from "Recommend next", which *files a
+fresh* advisory after the commit — clearing the consumed one and filing the next
+are two different advisories.
 
 ## 1. Write LOG entry  [DISCUSS, PROMPT]
 
@@ -307,7 +199,7 @@ have to be reconstructed from memory.
 
 ## 2. Commit
 
-Run the commit core in done.md. Staged paths are the changed project docs
+Run the commit core in done.md. Staged paths are the changed method docs
 (QUEUE.md, SPEC.md, LOG/) — planning sessions touch nothing else.
 
 **Override the commit core's push offer: a planning session commits and doesn't
@@ -315,15 +207,6 @@ offer push.** Planning state is local bookkeeping, and push is reserved for
 shipping — in a self-hosting project a push fires the full push-and-rezip ritual
 off a commit that shipped nothing. Push stays available when the user asks for it
 or is deliberately backing up; a default, not a prohibition.
-
-**Where a planning close ALSO closes a completed `[user]` item, the push offer
-applies and this override yields.** That case is real — done.md supports it — and
-the two rules collided with no carve-out either side. It resolves toward offering,
-because the reason for suppressing is that a planning commit ships nothing, and a
-completed `[user]` item is not nothing: it is real project progress the user did,
-and leaving it unpushed is the outcome the suppression was never aimed at. So the
-test is whether the commit carries anything beyond planning bookkeeping. If it
-does, offer; if it is purely queue and log housekeeping, don't.
 
 **Delete `_plan.md`** if one exists, as part of the close — same lifecycle as
 _build.md. It was working state only and was never committed, so removing the file

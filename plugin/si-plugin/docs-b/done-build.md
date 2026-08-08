@@ -60,40 +60,13 @@ conversation memory  ->  a same-session BONUS pass, never a source this step
 Append each finding to Unprocessed, placed per the Captures placement rule
 (narrate the placement). Append any fix a build check surfaced too.
 
-### 1.3 Described-work check  [SILENT] when the diff matches, [BRIEF] when surfacing
-
-The scope-lock holds a build to its file *list*; nothing mechanical holds it to
-its described *work* — a build can stay inside every listed file and still
-rewrite far past what its item described. This check is the judgment layer for
-that gap, and it rides a read that already happens: the close reads the diff to
-write the LOG entry, so compare each item's diff against that item's
-description while you're there (per-item ticks give each item its boundary).
-
-**It surfaces, it never blocks.** A mismatch is stated plainly and routed — a
-capture, or a note in the LOG entry — never a halt: the judgment is fallible,
-and a blocking check on a fallible judgment trains sessions to route around it,
-which is worse than the gap.
-
-**Compare, never explain.** The question is *"does this diff match the item's
-description?"* — two artifacts that both exist. Never ask yourself *why* a
-change was made or sort changes into deliberate and accidental: a model asked
-to recover intent reliably produces a coherent answer whether or not it holds
-one, and that risk is a property of the question, not of how carefully the
-edits were made.
-
-**"This change is in the diff and I cannot account for it" is a sanctioned,
-expected output** — say exactly that and route it as a finding. Unaccounted
-changes are normal (a concurrent session, a compacted context, a forgotten
-hunk); an escape route stated here is what keeps them from getting invented
-explanations.
-
-### 1.4 Spec-sync gate  [SILENT] when nothing drifts, [PROMPT] on drift
+### 1.3 Spec-sync gate  [SILENT] when nothing drifts, [PROMPT] on drift
 
 Run done.md's **Spec-sync gate** and apply its **Build close** delta: SPEC.md is
 scope-locked, so add SPEC.md to _build.md's `Files:` list before editing, then edit
 SPEC to match what the build landed and commit it in this same commit.
 
-### 1.5 Red-flag close  [SILENT] when no flag, [PROMPT] when an item carries one
+### 1.4 Red-flag close  [SILENT] when no flag, [PROMPT] when an item carries one
 
 Per built item: if it carries a `Red flag · State: …` marker, run done.md's
 **Red-flag lifecycle at close** before the item leaves the queue. Its flag was
