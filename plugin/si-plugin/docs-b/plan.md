@@ -18,10 +18,12 @@ gets built first — through discussion, not silently.
   stops you — there is no `_build.md` in a planning session, so the build
   scope-lock isn't engaged and every file in the project is writable. What you get
   instead is a **prompt**: a write to anything outside the quiet-list asks the
-  user first. The quiet-list is QUEUE.md, SPEC.md, LOG/, this session's own
-  notes, and **FAQ/** — the close's FAQ-sync disposition is a mandated edit, and
-  a required step that prompts every time trains the user to click through the
-  ask that matters. Three more paths pass silently here as they do everywhere
+  user first. The quiet-list is QUEUE.md, SPEC.md, LOG/, **GLOSSARY.md**, this
+  session's own notes, and **FAQ/**. The last two are on it for the same reason:
+  each is written by a step the method itself requires — the close's FAQ-sync
+  disposition, and define-and-record, which fires whenever a general term comes
+  up — and a required step that prompts every time trains the user to click
+  through the ask that matters. Three more paths pass silently here as they do everywhere
   else: the user's memory directory, `resources/research/`, and the session
   scratchpad. `templates/` is deliberately **not** on the list — editing a
   template changes what every future project receives, which is exactly the

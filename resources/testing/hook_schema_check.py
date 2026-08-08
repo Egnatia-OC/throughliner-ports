@@ -141,12 +141,16 @@ def test_session_start_unadopted():
                     ["additionalContext"])
 
 
-def test_session_start_survives_missing_model_field():
-    """`model` is documented as not guaranteed — its absence must not break the hook."""
+def test_session_start_survives_a_sparse_payload():
+    """A payload carrying only the three required keys must not break the hook.
+
+    The harness supplies optional fields inconsistently, so the hook has to cope
+    with a payload stripped to the minimum rather than assuming a full one.
+    """
     rc, out, err = drive("session_start.py",
                          {"hook_event_name": "SessionStart", "cwd": ROOT,
                           "source": "startup"})
-    check("SessionStart (no model field): still exits 0 with valid output",
+    check("SessionStart (sparse payload): still exits 0 with valid output",
           rc == 0 and _is_json(out), err[:500])
 
 
@@ -440,7 +444,7 @@ def main():
     for fn in (
         test_session_start_adopted,
         test_session_start_unadopted,
-        test_session_start_survives_missing_model_field,
+        test_session_start_survives_a_sparse_payload,
         test_session_start_payload_fits_under_the_cap,
         test_session_start_points_at_the_rules_rather_than_pasting_them,
         test_session_start_state_lines_lead_the_payload,

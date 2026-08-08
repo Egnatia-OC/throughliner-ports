@@ -147,9 +147,17 @@ Active in every session where the plugin is installed and the project is set up.
   would corrupt characters whose exactness *is* the substance, and the app
   attaches a Run button to shell-tagged blocks. (The reason this rule used to
   give — that the app's copy takes the whole message, so a fence is the only
-  clean copy affordance — is wrong, and is recorded here so it isn't restored:
-  people select the text they want and copy that. A blockquote is already
-  copyable.) When two commands belong to the same approval, present both as
+  clean copy affordance — is rejected, and is recorded here so it isn't
+  restored: a blockquote is copyable, and a paste block is one word away
+  whenever the user wants one. What that rejection must NOT rest on is
+  "selecting text is easy" — at a desk it is; on a phone it is press-and-hold,
+  two drag handles placed precisely in a scrolling view, often across the
+  screen boundary, and a copy menu that may itself be off-screen. So the honest
+  position is a trade rather than a winner: **on remote control a fence is easy
+  to copy and unreadable, while rendered prose is readable and genuinely fiddly
+  to copy.** Nothing is good at both. The escape is the offer below, not a
+  claim that one option has no cost.) When two commands belong to the same
+  approval, present both as
   adjacent fences in one message under a single approval — don't split them
   across turns; the user needs them side by side.
 
@@ -168,11 +176,24 @@ Active in every session where the plugin is installed and the project is set up.
   suggestions — there the ask was missing, here it is present but out-competed
   by a control that misleads.
 - **Prose never goes in a fence, even when the user will paste it elsewhere.**
-  A long announcement or a paste-ready prompt renders for *reading*; if the user
-  wants a paste block, offer one and produce it on request. Default to the
-  readable rendering. The failure this replaces: fences don't wrap in the app, so
-  a long draft ran off-screen — a user on remote control could not read the text
-  they were being asked to approve.
+  A long announcement or a paste-ready prompt renders for *reading*. Default to
+  the readable rendering.
+
+  **The reason is remote control specifically, and the narrowing is deliberate
+  rather than pedantic.** Tested live on both surfaces at once, 2026-08-08: a
+  ~300-character sentence in a plain fence **wrapped on the desktop and ran off
+  the side on the phone**. So "fences don't wrap in the app" is false at the
+  desk and true on remote control — which is the surface the original failure
+  happened on, where a long draft ran off-screen and the user could not read
+  what they were being asked to approve. The rule survives; its reason is much
+  narrower than it used to read.
+
+  **Where the text plainly exists in order to be pasted somewhere else — an
+  announcement, a report, a prompt destined for another app — offer the paste
+  block in the same breath, without waiting to be asked.** The trigger is the
+  text's *purpose*, not the user's device: nothing tells you which surface they
+  are on, and asking is the retired `Working mode:` field's recorded failure.
+  Purpose you can know.
 - **Approval-time outputs render for reading, as blockquotes with a bold lead-in**
   naming the content type (**Capture draft:**, **Commit message:**,
   **Log entry:**). End the message with an explicit ask naming the decision needed
@@ -342,7 +363,7 @@ Model:             chose between the two sets of working instructions the
                    2026-08-08
 ```
 
-### Vocabulary — the test, not the list
+### Vocabulary — the test, the glossary, and the two kinds of term
 
 **Before using a term for a piece of the machinery, ask: would the user have met
 this word in something they actually read?** If not, say it in plain words.
@@ -353,6 +374,80 @@ place by leaking once, so a synonym invented on the spot could never be on it.
 Which is exactly what happened: the worst exchange of one session turned on
 **"the guard"**, an improvised name for the hook, and it took four turns before
 the user asked outright *"by 'that guard' do you mean the hook?"*
+
+#### Two kinds of term, and they are governed differently
+
+```
+PROJECT-SPECIFIC   the project's own naming set — the words it coined or chose
+                   for its own things. Canonical, always usable. GLOSSARY.md is
+                   the authority on WHICH NAME is canonical when two are in
+                   circulation.
+
+GENERAL            jargon from the wider world, arriving from outside the
+                   project. Governed by define-and-record below.
+```
+
+The axis is **where a term comes from**, not where it appears — a general term
+is still technically "in" the project the moment it gets used, so an
+in-project/out-of-project cut would be wrong.
+
+#### Define-and-record — the mechanism, and GLOSSARY.md is what makes it work
+
+**When you use a general term, define it at the point of use, then add it to
+GLOSSARY.md.** The glossary is how you decide whether a term needs explaining at
+all:
+
+```
+term IS in the glossary       ->  already explained; use it freely, no
+                                  re-explanation
+term is NOT in the glossary   ->  define it now, in the same sentence, then
+                                  record it
+```
+
+**The two-sided guarantee that gives the user: Claude never re-explains what you
+know, and never assumes you know what it hasn't told you.** Both halves matter —
+the first is what stops the method nagging, the second is what stops it
+stranding someone — and one record delivers both. Without it there is no way to
+know what the user has been told; with it, at minimum, you know what has been
+explained to *them* before.
+
+This **extends** the test above rather than replacing it. An explained term is
+one the user has met, and the glossary is what makes that checkable across
+sessions instead of held in one session's memory.
+
+**How entries are written.** An entry carries the explanation **as it was last
+given to the user** — mirroring what they might actually remember, not a
+textbook definition. Each re-explanation may be worded however fits the moment;
+**after explaining a term, update its entry**, developing the definition rather
+than necessarily replacing it. Entries stay terse, as in any glossary.
+Update-after-explaining is also the staleness answer: explaining *is* the
+trigger, so the record cannot fall behind the conversation.
+
+**The glossary is not the banned-word list reborn.** That list was retired
+deliberately, because a list of forbidden words is only ever complete for the
+past. This is positive content — canonical names and explained terms — never an
+enumeration of what not to say. The test stays the rule; the glossary is its
+memory.
+
+#### Mirroring correction — name the standard term once, then just use it
+
+Models mirror the person they are talking to, so a not-quite-right technical
+term gets absorbed and repeated back indefinitely. Two cases:
+
+```
+the user CHOSE a nonstandard term,   ->  it goes in the glossary WITH that
+    especially with a reason             reasoning, as a deliberate
+                                         project-specific term. It is then
+                                         simply correct — use it.
+
+the user used the WRONG WORD for a   ->  name the standard term ONCE, plainly,
+    real technical thing                 then just use it. No correction
+                                         ritual, no repeats.
+```
+
+Silently adopting the wrong word leaves the user exposed the moment they use it
+somewhere professional — so saying it once is the help. The glossary entry is
+what stops it being said twice.
 
 **Supply the plain phrase; don't just forbid the term.** A test alone says
 *avoid this word* and leaves the replacement to be invented mid-sentence — and
@@ -920,11 +1015,12 @@ pointer to it, full text on request (see the doc-bound-text rule above) — and
 remove it if they say no.
 Include the reasoning, not just what was noticed.
 
-**Line format** — this exact shape is what the hooks parse (post_tool_use's queue
-lint and pre_tool_use's red-flag scan; session_start does not read work items). Emitting a work
-item as a bold line or a plain bullet reads fine to a person and silently breaks
-the queue lint, the red-flag scan, and the section keying, with no error
-surfaced. The `#### ` heading is load-bearing, not cosmetic.
+**Line format** — this exact shape is what the hooks parse: post_tool_use's queue
+lint, and session_start's red-flag scan, which reads `#### ` headings and their
+`Red flag · State: uncleared` markers to surface standing risks first thing.
+Emitting a work item as a bold line or a plain bullet reads fine to a person and
+silently breaks the queue lint, the red-flag scan, and the section keying, with
+no error surfaced. The `#### ` heading is load-bearing, not cosmetic.
 
 ```
 #### <one-line description> [slug]
@@ -1040,18 +1136,41 @@ beside an item does not disarm it, and if the corrected item is still cleared to
 run, it is still going to run. That has happened — a session found a cleared
 item unbuildable, filed the finding as a sibling capture, and a later run picked
 the item up, re-read the same documentation, reached the same conclusion and
-halted; a third run would have done the same. Three routes, and the filing
-names which one it took:
+halted; a third run would have done the same. Which route is available depends
+on whether you are in a planning session, and the filing names the one it took:
 
 ```
+IN /plan — all three routes:
+
 amend the corrected item   ->  write the correction into its block, so the next
                                reader meets it there
 move it below the line     ->  where the correction means it needs a planning
                                pass before it can run
-delete it                  ->  where the correction makes it moot — /plan's
-                               call, so outside /plan this route is a proposal,
-                               not an act
+delete it                  ->  where the correction makes it moot
+
+ANYWHERE ELSE (a build, an audit, ordinary conversation) — one route:
+
+append ONE dated line to   ->  "2026-08-08: correction filed, see [slug]" and
+the corrected item's block     nothing more. No prose rewritten, no readiness
+                               changed, nothing moved.
 ```
+
+**Why a build session gets the append and not the amend.** Both failure
+directions are real. Filing a correction *beside* an item disarms nothing — that
+is this rule's motivating incident, and it recurred after the rule shipped. But
+rewriting an item's prose or repositioning it against the readiness line is
+processing, which is /plan's because the decision is the user's; a run that
+repositions items is an unattended run editing the boundary that governs
+unattended runs. **A one-line append is the largest move that carries the first
+risk's fix without incurring the second's:** the next reader meets the correction
+at the item rather than beside it, which is the whole point of disarming.
+
+Deleting is /plan's in every case — outside /plan it is a proposal, not an act.
+
+This invents nothing, so it is not the escape the anti-invention guardrail
+forbids: the appended line is ordinary prose inside the item's existing block,
+and the item stays exactly where it is. An existing route is narrowed, not a new
+place to put things created.
 
 **Narration discipline.** State what was filed in one line and move on — don't
 narrate the shelving mechanics (why it's a capture, which section, how it'll be
@@ -1725,10 +1844,12 @@ Processed — keep discussing.
 call for, and nothing past them. That's the definition, enforced by judgment.
 
 The `Files:` list in _build.md is its mechanical approximation: pre_tool_use
-allows edits only to listed files — plus **the queue, the log, and the session's
-own working file** (`QUEUE.md`, `LOG/`, `_build.md` / `_plan.md`), the user's
-memory dir, `resources/research/`, and the session scratchpad — and denies the
-rest, as a backstop.
+allows edits only to listed files — plus **the queue, the log, the glossary, and
+the session's own working file** (`QUEUE.md`, `LOG/`, `GLOSSARY.md`,
+`_build.md` / `_plan.md`), the user's memory dir, `resources/research/`, and the
+session scratchpad — and denies the rest, as a backstop. The glossary is in that
+set because define-and-record fires unpredictably: any session may meet a term
+the user hasn't been given, and a build's agreed file list can't anticipate that.
 
 **The editable set is listed, never named, and that is deliberate.** It used to
 be called "the method docs", which has three live readings: the three project
@@ -2089,20 +2210,31 @@ never  git reset --hard
 always check for secrets before committing
 ```
 
-The first, second, third and fourth of those are **mechanically blocked** by
+The first, second and fourth of those are **mechanically blocked** by
 pre_tool_use, not merely asked of you — a blocked command exits with an
 explanation rather than running. `git commit -a` is on that list for the same
 reason as `git add -A`: it stages whatever happens to be dirty, which is how an
 unrelated file rides into a commit nobody reviewed. `--amend` and
 `--allow-empty` are not affected.
 
-**Scripted file-writes from the shell are mechanically denied too.** A Bash or
-PowerShell command whose effect is to write a file — a redirect, a heredoc into
-an interpreter, `Set-Content`, `sed -i` — is blocked, and the denial names the
-edit tools as the route. The reason is that the shell's view of a file can be
-stale, so a scripted write can silently overwrite work that the edit tools would
-have refused to clobber. This is the enforcement half of the never-scratch-space
-and old_string rules above.
+**The third row is only half-mechanical.** `--force` is blocked; a plain
+`git push` is neither blocked nor asked about, so "never push without asking"
+rests entirely on this written rule. Keep it anyway — nothing will stop you.
+
+**Some scripted file-writes from the shell are mechanically denied — the
+structured ones, and only those.** What the hook detects is a Python invocation
+(a heredoc or `python -c`) containing a write-mode `open()` or a
+`Path(...).write_text` / `write_bytes` on a **literal quoted path**; those are
+blocked, and the denial names the edit tools as the route. A command whose
+target is computed at runtime is not detected, and neither are shell redirects,
+`Set-Content` or `sed -i` — they pass straight through.
+
+**The rule against them is unchanged; only the enforcement is narrower than it
+reads.** Don't write files from the shell: the shell's view of a file can be
+stale, so a scripted write can silently overwrite work the edit tools would have
+refused to clobber. Read the honest limit as the reason to keep that discipline
+rather than as a loophole — where the mechanism doesn't reach, this written rule
+is the only protection there is.
 
 **A "file modified on disk since you last read it" warning on a project doc
 stops work — never reason past it.** On that warning for QUEUE.md, SPEC.md or

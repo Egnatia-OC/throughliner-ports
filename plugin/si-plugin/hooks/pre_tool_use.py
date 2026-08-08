@@ -4,9 +4,15 @@ PreToolUse hook — enforces five rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable. Always editable alongside the listed files: the queue
-   (QUEUE.md), the log (LOG/), the session's own working file
-   (_build.md / _plan.md), the user's memory dir, resources/research/,
-   and the session scratchpad dir.
+   (QUEUE.md), the log (LOG/), the glossary (GLOSSARY.md), the session's
+   own working file (_build.md / _plan.md), the user's memory dir,
+   resources/research/, and the session scratchpad dir.
+
+   GLOSSARY.md is in that set because define-and-record fires
+   unpredictably: any session may use a general term the user has not met,
+   which obliges it to explain the term and record it. A build's agreed
+   file list cannot anticipate that, so without this the rule would be
+   unfollowable inside a scoped build.
 
    That set is ENUMERATED rather than named, deliberately. It used to be
    called "the method docs", a term with three live readings — the three
@@ -34,7 +40,7 @@ PreToolUse hook — enforces five rules:
    is installed, independent of project adoption.
 4. Planning-session file gate: with NO active build there is no agreed
    file list, so a write outside the files a planning session touches by
-   design (QUEUE.md, SPEC.md, LOG/, _plan.md, and the always-editable
+   design (QUEUE.md, SPEC.md, LOG/, GLOSSARY.md, _plan.md, FAQ/, and the always-editable
    memory / research / scratchpad dirs) returns "ask" — never "deny".
    Visibility, not containment: such a write should not be stopped, it
    should be impossible to make unremarked.
@@ -55,7 +61,8 @@ does not depend on either.
 
 For Task/Agent (subagent spawn): checks rule 3 (cost ask-gate).
 For Edit/Write/MultiEdit: checks rule 1 during a build, rule 4 outside one.
-For Bash/PowerShell: checks rule 2 (git safety) only.
+For Bash/PowerShell: checks rule 2 (git safety) and rule 5 (structured shell
+writes), the latter unconditionally — in a build and outside one alike.
 """
 
 import json
@@ -283,14 +290,15 @@ def _normalise(path: str) -> str:
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """True for the always-editable set: QUEUE.md, LOG/, _build.md, _plan.md.
+    """True for the always-editable set: QUEUE.md, LOG/, GLOSSARY.md,
+    _build.md, _plan.md.
 
     The function name is internal and kept; what a reader relies on is the
     enumerated contract in this module's header, not this name.
     """
     norm = _normalise(filepath)
 
-    for doc in ("QUEUE.md", "_build.md", "_plan.md"):
+    for doc in ("QUEUE.md", "GLOSSARY.md", "_build.md", "_plan.md"):
         if norm == _normalise(os.path.join(cwd, doc)):
             return True
 
@@ -428,8 +436,8 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     """True for the files a planning session writes by design.
 
     The planning gate's quiet-list, and it is a quiet-list rather than a
-    boundary: everything else ASKS, nothing is forbidden. QUEUE.md, _plan.md
-    and LOG/ are covered by _is_method_doc; SPEC.md is added here because /plan
+    boundary: everything else ASKS, nothing is forbidden. QUEUE.md, _plan.md,
+    GLOSSARY.md and LOG/ are covered by _is_method_doc; SPEC.md is added here because /plan
     edits it by design (a SPEC change decided in planning is made in that same
     session), even though it is deliberately NOT in the always-editable set
     for the build
@@ -803,7 +811,7 @@ def main() -> int:
             return _deny(
                 "[Sovereign Implementer] BLOCKED: this session's _build.md "
                 "lists no editable files, so the only writable paths are "
-                "QUEUE.md, LOG/, the session's own working file "
+                "QUEUE.md, LOG/, GLOSSARY.md, the session's own working file "
                 "(_build.md / _plan.md), your memory directory, "
                 "resources/research/, and the session scratchpad. An audit "
                 "reads and reports rather than editing source — route its "
@@ -856,7 +864,7 @@ def main() -> int:
                 "[Sovereign Implementer] This session has no active build, so "
                 "there's no agreed file list — and this write is outside the "
                 "files a planning session normally touches (QUEUE.md, SPEC.md, "
-                "LOG/, and its own working notes).\n\n"
+                "LOG/, FAQ/, and its own working notes).\n\n"
                 f"File: {filepath}\n\n"
                 "That's often perfectly fine: fixing something urgent, or "
                 "tidying at your request. Approve if you asked for this or "

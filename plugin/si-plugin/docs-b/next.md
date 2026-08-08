@@ -2,9 +2,9 @@
 name: next
 docset: B
 note: >
-  Docset B is the light 5-series docset, authored by subtraction from docset A
-  (docs/). Register: structure in typed blocks, everything else in prose, tags
-  inline.
+  Docset B is the light 5-series docset, and the only one — it was authored by
+  subtraction from the heavier docset A, which retired in August 2026. Register:
+  structure in typed blocks, everything else in prose, tags inline.
 ---
 
 # /next procedure
@@ -172,7 +172,8 @@ planned /done reuses it verbatim, if scope shifts /done re-authors it.
 **2. Self-scope.** Read each Claude-work item's description and rationale, work
 out which files it will change, and list them. `[audit]` items name no files —
 an audit reads and reports — so a run of only audit items gets an empty Files
-list, locking the session to the queue, the log, and its own working file.
+list, locking the session to the queue, the log, the glossary, and its own
+working file.
 
 Two situations must not be conflated:
 
@@ -229,7 +230,7 @@ Changes:
 ````
 
 The `Files:` section feeds the scope-lock: pre_tool_use allows edits only to
-those files plus the queue, the log, and this session's own working file, and
+those files plus the queue, the log, the glossary, and this session's own working file, and
 denies everything else — SPEC.md is not in that set, so a build edits it only by
 listing it here. **Lines must be
 bare paths** — the hook matches each line as an exact path, so any annotation
@@ -351,9 +352,13 @@ dispatched a question outward and records what its return looks like, run that
 check here — same moment, same reasoning, same near-zero cost as the capability
 check above. If the answer appears to have returned, **do not walk the user
 through the item.** State plainly what you found, leave the item exactly where it
-is, and file it for /plan. **Halt rather than amend:** rewriting a work item is
-processing, and /next does not process. Where the item records no return-check,
-there is nothing to run and nothing changes.
+is, and file it for /plan. **Halt rather than rewrite it here:** reworking an
+item *around an answer that has come back* is processing — it decides what the
+item now asks for, which is the user's call — and /next does not process. That
+reason is specific to this check, and doesn't bar the one-line append the
+correction-disarms rule permits a build session (plugin-behaviour.md, Captures):
+noting *that* a correction exists changes no prose and moves nothing. Where the
+item records no return-check, there is nothing to run and nothing changes.
 
 **Lead with the walk-through, and drive it live — one step, then wait.** Run
 whatever parts you can, give the **first** concrete step the item records, and

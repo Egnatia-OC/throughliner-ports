@@ -584,3 +584,20 @@ That's not a guess. This plugin already ships its instructions **twice** — one
 So the honest position: the two shipped versions carry the same method because somebody deliberately keeps them in step — one author, one target, and a check that catches them drifting apart. A port to somewhere else has nobody doing that, and no "neutral" original version to keep in step *with*. Rewording changes the method unless someone is actively holding it together.
 
 If you want to work with someone who uses a different tool, the question you actually want is the one above about contributors — you don't both need to be running this.
+
+## There's a GLOSSARY.md in my project. What is it, and do I have to fill it in?
+
+You don't have to do anything with it. Claude fills it in as you go.
+
+It's a record of the words that have been explained to you, plus the names your project has settled on for its own things. Before Claude uses a technical term, it checks whether that word is in there. If it is, you've had it explained already, so Claude just uses it. If it isn't, Claude explains it at the moment it comes up and then writes it down.
+
+That gives you a guarantee that works in both directions: **Claude never re-explains something you already know, and never assumes you know a word it hasn't told you.** Before this existed, Claude had no way of knowing which was which — every session started blank, so it either over-explained or quietly used words you'd never met.
+
+A few things worth knowing about it:
+
+- **The entries are written the way it was last explained to you**, not as textbook definitions. The point is to mirror what you'd actually remember. Ask about any of them again at any time — Claude will explain it however fits the moment, and then update the entry.
+- **Your own words go in too.** If you pick a name for something in your project — especially if you had a reason — it goes in with that reasoning, and it's simply the right word here from then on.
+- **If you use the wrong word for a real technical thing, Claude will name the standard one once**, plainly, and then just use it. No repeated corrections. The reason it says anything at all is that quietly copying your word back to you would leave you using it somewhere it doesn't mean what you think.
+- **It's saved with your project**, unlike the FAQ you're reading. The FAQ is a copy of Claude's own help and is the same for everyone; the glossary is yours, and it's about you.
+
+You can edit it yourself if you want — delete an entry you don't recognise, or fix one that reads wrong. Nothing breaks either way.

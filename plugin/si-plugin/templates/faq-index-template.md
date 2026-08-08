@@ -87,3 +87,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I brought a message over from another one of my projects, and Claude offered to write a reply back. Why?](faq.md#i-brought-a-message-over-from-another-one-of-my-projects-and-claude-offered-to-write-a-reply-back-why)
 - [I said I was going to send someone a log entry and Claude warned me about what was in it. Why?](faq.md#i-said-i-was-going-to-send-someone-a-log-entry-and-claude-warned-me-about-what-was-in-it-why)
 - [Can I use this with a different AI model, or a different tool?](faq.md#can-i-use-this-with-a-different-ai-model-or-a-different-tool)
+- [There's a GLOSSARY.md in my project. What is it, and do I have to fill it in?](faq.md#theres-a-glossarymd-in-my-project-what-is-it-and-do-i-have-to-fill-it-in)

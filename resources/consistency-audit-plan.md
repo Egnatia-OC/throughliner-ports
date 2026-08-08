@@ -8,8 +8,9 @@ Two modes, one pass list:
 
 - **Differential** — the routine mode. Runs once per branch cycle, at **soak-end,
   immediately before the merge to main**, over the span `main...HEAD`. This is
-  the pre-merge gate: main only ever receives a reconciled state. Usually cheap
-  enough to run inline in one session.
+  the pre-merge gate: main only ever receives a reconciled state. **It runs as
+  its own queued `[audit]` work item, never inline in a planning chat** — see
+  *This audit's queue-item form* below.
 - **Full corpus** — the occasional mode. Every doc, every pass, regardless of
   span. Reserved for big boundaries: before a compression pass, after a large
   redesign, or when differential runs keep finding things. Heavy — the first run
@@ -19,8 +20,10 @@ Two modes, one pass list:
 decided 2026-08-07):
 
 ```
-branch → blitz builds → soak → DIFFERENTIAL AUDIT over the whole branch
-       → reconcile (one /plan + /next over the audit's repair captures)
+branch → blitz builds → soak → DIFFERENTIAL AUDIT — a queued [audit] item,
+                                run through /next over the whole branch span
+       → reconcile: /plan processes the audit's findings, /next builds the
+                    repairs it cleared
        → merge → branch again
 ```
 
@@ -59,6 +62,12 @@ and its detection; it does not promise to catch everything once.
   written. "This looks wrong and I can't account for it" is an expected output.
 - **No quotas.** A clean pass is the finding (the blitz plan's lesson holds
   here too).
+- **Search before reporting something missing.** "Absent entirely" and "present
+  elsewhere but unsignposted" are different findings with different fixes, and
+  they are indistinguishable without the search.
+- **Reconcile with the LOG before reporting already-shipped work as broken.**
+  The LOG carries the record of it being verified; a finding that contradicts
+  that record has to account for the contradiction rather than ignore it.
 
 ## The passes
 
@@ -93,12 +102,51 @@ file applying everything at once.
     says went, grep the tree for survivors, verdict COMPLETE/INCOMPLETE, rank
     survivors live vs inert. Also the reverse: looks-retired with no LOG entry.
 
+**Passes 11 and 12 are FULL-CORPUS ONLY.** Passes 1–10 ask whether the documents
+agree with each other and with the code; these two ask whether the documents are
+*well-made*. That is a quality sweep over standing text, not a question a span
+can scope, so a differential run skips them. Both were folded in from the retired
+`method-compliance-audit-checklist.md` on 2026-08-08.
+
+11. **Response-shape tag placement.** Each procedure step should carry the tag
+    that fits what it does (`[SILENT]` / `[BRIEF]` / `[DISCUSS]` / `[PROMPT]` /
+    `[SEQUENCE]`, defined in plugin-behaviour.md). Three failure modes:
+    **missing** — a step that produces output, withholds it, waits, or sequences
+    but carries no tag, so its output behaviour is left to chance; **wrong** — a
+    tag fighting what the step does, `[SILENT]` on a step that must ask,
+    `[DISCUSS]` on pure bookkeeping, `[BRIEF]` on a decision point needing room;
+    **prose where a tag belongs** — a step describing its output behaviour in a
+    sentence ("keep this short", "stop and wait") instead of carrying the tag
+    that encodes it. The tag is the mechanism; prose substitutes are what the
+    tags exist to replace.
+12. **Narration drift.** Check what each doc causes Claude to *say to the user*
+    against plugin-behaviour.md's communication rules. Three patterns:
+    **background vocabulary leaking into user-facing narration** — a structural
+    or bookkeeping term (loop, Step N, gate, pre-flight, slug, hash backfill and
+    the rest) appearing in text the user reads, when it belongs only in the
+    procedure prose Claude reads; **menu where a recommendation was due** — the
+    doc steering Claude to lay out flat options at a moment it actually has a
+    preference, instead of leading with the recommendation and offering the
+    alternatives as fallback; **unconsolidated openings** — a doc firing several
+    scans or narrations at one skill opening without consolidating them into one,
+    against the consolidate-the-scans rule.
+
+**A third lens returns here when it has something to point at.** The retired
+checklist's Lens 1 applied the authoring heuristic's per-model pass corpus-wide.
+That pass was deleted when docset A retired
+([authoring-heuristic-has-no-live-model-pass]), so the lens has nothing to check
+against. If a 5-series authoring pass is ever written, it comes back as pass 13,
+asking the corpus-wide question the per-text check cannot: **is the rule held to
+its own standard consistently across docs?** — a rule hardened in one doc but
+cited loosely in another is a finding even when each instance reads fine alone.
+
 **Differential scoping:** from `git diff --name-only $(git merge-base main
 HEAD)..HEAD`, list the rules/formats/names the span's commits touched; run
 passes 1, 2, 3, 4, 6 over those rules' statement sites corpus-wide (a touched
 rule's *other* sites are the point), pass 9 if hooks changed, pass 10 if the
 span retired anything. Passes 5, 7, 8 are full-corpus concerns — skip unless
-the span obviously implicates them.
+the span obviously implicates them. Passes 11 and 12 are full-corpus only and
+are always skipped here.
 
 ## Scope
 
@@ -113,7 +161,39 @@ Taskflowapp excluded (frozen old plugin; write-locked).
 - Full mode: subagent fan-out (one auditor per pass or pair, ~8 agents) with
   the corrected premises baked into every prompt; the main session verifies and
   compiles. Ask before spawning, per the behaviour rules.
-- Differential mode: usually inline; fan out only if the span is unusually wide.
+- Differential mode: run through /next as its own `[audit]` work item, in one
+  session, reading the changed files in full; fan out only if the span is
+  unusually wide, and ask first.
 - Output: full report → a LOG entry file; findings → `[audit-…]` captures in
   Unprocessed (repairs grouped, design calls standalone); the reconcile
   /plan + /next clears the repairs before the merge is offered.
+
+## This audit's queue-item form
+
+**The differential audit is a queued `[audit]` work item, run through /next. It
+is never run inline inside a planning chat.** /plan's role is to seed the item at
+rebranch, clear it at soak-end, and then process the findings the run brings
+home — not to be the run.
+
+Seeded below the readiness line at rebranch (CLAUDE.md's soak-end sequence, the
+"branch again" step), lifted at soak-end:
+
+```
+#### [audit] Differential consistency audit over this branch's span [differential-audit-<cycle>]
+Seeded at rebranch. Runs `resources/consistency-audit-plan.md` in differential
+mode over `main...HEAD`. Below the line until soak-end; lift-condition: the
+branch has stopped taking new work and the merge is the next thing due.
+This is the pre-merge gate — main only ever receives a reconciled state.
+```
+
+**Why it must be a run and not a chat, from the failure that settled it.** A
+differential audit was run inline in a /plan session on 2026-08-08 and the user's
+verdict on the result was *"there was no audit of any shape, just one small thing
+was built."* Two things went wrong and the second is the deeper one. **Invisible:**
+an inline run produces no `[audit]` item, no LOG entry at the time, and no sense
+that the cycle's gate fired — the user approved "keep and clear it" believing the
+*audit* was being queued, when what was queued was only its repair. **Shallow:**
+the inline run never read the three changed hooks in full (pass 9 as written) and
+skimmed the pointer and duplicate passes. "Cheap enough to run inline" licensed a
+light check to wear the audit's name; compression of effort followed compression
+of form.

@@ -190,11 +190,13 @@ narrate each file as it's created** — the Step 4 close-out reports the full li
 
 ## Project docs
 
-Three project docs structure each project:
+Four project docs structure each project:
 - `SPEC.md` — product truth. What the project is, who it's for, how it works.
 - `QUEUE.md` — processed work (vetted, ready to build) and unprocessed work
   (captured ideas not yet fully processed).
 - `LOG/` — per-session records of what was built, tested, and decided.
+- `GLOSSARY.md` — the words that have been explained to you, and the names this
+  project has settled on.
 
 ## Principles
 [from the interview: principles and constraints]
@@ -241,6 +243,24 @@ full entry file in this folder.
 
 Session entries are written by /done, each as its own file in LOG/ — nothing else
 to scaffold.
+
+**GLOSSARY.md** — copy it in from the shipped template:
+
+```
+GLOSSARY.md  <-  ${CLAUDE_PLUGIN_ROOT}/templates/GLOSSARY-TEMPLATE.md
+```
+
+**It is committed, unlike the FAQ, and the difference is whose record it is.**
+The FAQ is a local copy of the plugin's own help, the same for everyone. The
+glossary is the user's own record — what has been explained to *them* — so it
+belongs in the repository with SPEC.md and QUEUE.md rather than being restored
+from a template each time.
+
+It starts empty and fills as terms come up: any session using a general term
+defines it at the point of use and records it here, and any name this project
+settles on lands here too (plugin-behaviour.md, the Vocabulary rules). Don't
+pre-populate it at setup — an entry is a record that something was explained,
+so writing entries for terms nobody has mentioned makes the record lie.
 
 **FAQ/ folder** — create the directory **first**, then copy the templates in (the
 folder must exist before the copies, or they fail):

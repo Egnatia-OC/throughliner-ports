@@ -9,6 +9,18 @@
 
 Alex wants an unattended overnight run: clear the queue's cleared-to-run region, generate any captures needed of the blitz's own, build the safe subset of those, and leave the contentious ones for her /plan tomorrow. The work lands on a branch that is a perfect copy of current state, easy to test and merge (or discard) in the morning. The night ends with a test rezip installed so she can trial the new build on app restart.
 
+## This blitz's queue-item form
+
+**The blitz exists in the queue as a work item, seeded at rebranch** (CLAUDE.md's soak-end sequence, step 6a) alongside the cycle's audit and merge items. That is what stops a session needing the cycle explained to it: the phases are ordinary queue work a session can read, and /plan's below-the-line revisit tracks where the cycle stands.
+
+```
+#### Run the overnight blitz for this cycle [blitz-run-<cycle>]
+Runs `resources/overnight-blitz-plan.md`. Below the readiness line;
+lift-condition: you greenlight a blitz night at a /plan close.
+```
+
+**An ordinary build item, not `[user]`-flavored.** Claude can run a blitz — what Claude cannot do is decide that tonight is a blitz night, and that is a readiness question the readiness line already expresses. Tagging it `[user]` would confuse "Claude can't do this" with "Claude can't do this yet".
+
 ## Structure: branch in place, not a worktree
 
 Work happens on a new branch **`overnight-blitz-<date>`** (a `b` suffix if it's the night's second run) checked out in the main working tree — not a separate worktree. Reason: the local plugin marketplace registration points at this folder's path, so the end-of-night rezip snapshots whatever is checked out *here*. A worktree elsewhere would need the marketplace re-pointed (a config change to her setup) to be testable. A branch in place keeps rezip working and makes merge trivial (`git merge overnight-blitz-<date>` from main).
@@ -116,7 +128,7 @@ Worked on 2026-08-06: the /plan following the blitz opened by reporting host `1.
 - **Save this plan for reuse:** commit a copy as `resources/overnight-blitz-plan.md` on the branch (host-only dev artifact), so a future blitz can rerun it without re-deriving the structure and departures.
 - Final /done-family close on the branch: LOG entry for the blitz's tail, forward advisory at the top of Unprocessed orienting tomorrow's /plan.
 - Handoff (in the final LOG entry + final chat message): what was built (by slug), what captures were generated, which were auto-built vs held and why, the departures exercised, the branch instructions below, and the reminder: **fully quit and relaunch the app** to load the test build.
-- **The soak ends with the differential audit, and the audit is what "earned trust" means.** Before the merge is offered, run the differential consistency audit (`resources/consistency-audit-plan.md`) over the whole branch — blitz plus soak in one span — and clear its repair captures through one /plan + /next. The full cycle: branch → blitz builds → soak → differential audit → reconcile → merge → branch again. A merge offered before the audit has run and reconciled is the gamble, not the default.
+- **The soak ends with the differential audit, and the audit is what "earned trust" means.** Before the merge is offered, the differential consistency audit (`resources/consistency-audit-plan.md`) runs over the whole branch — blitz plus soak in one span — **as its own queued `[audit]` item through /next, never inline in a planning chat** — and its repair captures are cleared before the merge. The full cycle: branch → blitz builds → soak → differential audit → reconcile → merge → branch again. A merge offered before the audit has run and reconciled is the gamble, not the default.
 - **Recommend a soak, not an immediate merge.** The branch's whole point is that Alex can run on the blitzed state for a day or two — the test build is snapshotted from the branch, so daily sessions exercise the new behaviour with main untouched — before deciding. So the handoff and the forward advisory present **soak first** as the default: stay on the branch, work normally, and merge (`git checkout main && git merge overnight-blitz-<date>`) once it has earned trust, or revert (checkout main, re-run the plugin update to re-snapshot main, restart) if it hasn't. Merge-on-morning-one remains available but is named as the gamble it is, never the recommendation — the first run's advisory pushed straight to merge and that was wrong as general practice. One honest caveat to state in the handoff: work done during the soak lands on the branch, so a late revert discards the soak days' work too — the decision gate covers blitz-plus-soak together, and the longer the soak runs well, the more the decision has already made itself.
 
 ## Verification
