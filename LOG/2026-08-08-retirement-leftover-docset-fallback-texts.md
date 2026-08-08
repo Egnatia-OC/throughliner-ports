@@ -1,4 +1,4 @@
-# [HASH] — Two docset-A retirement leftovers repaired: the behaviour rules' docset-choice section and SPEC's fallback sentence
+# ffab488 — Two docset-A retirement leftovers repaired: the behaviour rules' docset-choice section and SPEC's fallback sentence
 
 Docset A retired earlier the same day, and the retirement build's grep covered path references but not prose describing the machinery. The 2026-08-08 differential consistency audit over the `overnight-blitz-2026-08-08` span found the two places where that prose survived, and this build is the audit's reconcile — both repairs are corrections to already-decided behaviour, with no design call in either.
 
