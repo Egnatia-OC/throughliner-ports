@@ -1,4 +1,4 @@
-# [HASH] — The `.in_use` exclusion shipped broken and was caught by the rezip's own stamp comparison
+# e711b9f — The `.in_use` exclusion shipped broken and was caught by the rezip's own stamp comparison
 
 A follow-up to the close immediately before this one, recorded separately because it corrects work that commit reported as verified.
 
