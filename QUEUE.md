@@ -182,6 +182,9 @@ Captured by you — filed after `b6f2344`; processed 2026-08-01. Split from the 
 
 ## Unprocessed
 
+#### Last session advises processing [below-line-revisit-nags-by-another-route] first, alongside or just after the [user]-line recovery builds [advisory-plan-2026-08-09]
+The 2026-08-09 /plan cleared six recoveries and filed three captures. Of those three, this one is the only one bearing on work already cleared: it records the below-the-line revisit nagging about user work through a route the completion-ask rules don't cover, observed in that session's own opening message. [user-line-design-recovery] is expected to fix it via the recovered downstream-action test, so the useful planning move is to check whether it actually did rather than to design anything new. The other two captures ([outbound-reply-not-offered-live], [revert-induced-doc-drift-sweep]) both fold naturally into [pre-revert-recovery-sweep] and need no separate handling. Persist-condition: leave in place until [user-line-design-recovery] has shipped, since the check it advises can't be made before then.
+
 #### [audit] Sweep the method's rule corpus against `self-authoring-rules.md` once it exists, and evict what fails admission [self-authoring-rules-compliance-audit]
 Captured by you, 2026-08-09, immediately after [self-authoring-rules] was processed.
 **The gap this closes.** [self-authoring-rules] builds the gate that governs *new* rules. It does nothing about the rules already written under the old heuristic — which is the entire existing corpus, authored across the period plugin-behaviour.md grew from 6,162 to 21,445 words, under a document that had no admission control and no eviction policy. A gate applied only to new arrivals leaves the accumulated stock untouched, and the stock is the problem.
