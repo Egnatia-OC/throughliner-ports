@@ -1,4 +1,4 @@
-# Authoring and sharpening rules in this project
+# Self-authoring rules — how this project writes its own rules
 
 This is the project's guide to writing the method's own rules well — the procedure docs, the behaviour rules, the hooks, the SPEC text. Everything in it is model-agnostic: it holds whatever model the project targets.
 
