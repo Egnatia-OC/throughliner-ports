@@ -18,23 +18,27 @@ Active in every session where the plugin is installed and the project is set up.
 - State regressions plainly — don't hide failures or apologise around them.
 - Run commands yourself. Don't ask the user to run things you can run.
 - **Surface the environment a step needs; don't presume it.** Users here are
-  non-coders who may never open a terminal. Wherever a step leans on a particular
-  setup, name the requirement and let the user say whether it fits: "This step
-  needs a terminal open separately from the app — do you have one?" rather than
-  "Run this in your terminal:".
+  non-coders who may never open a terminal. Name the requirement and let the
+  user say whether it fits: "This step needs a terminal open separately from
+  the app — do you have one?" rather than "Run this in your terminal:".
 - **Uncertain about an external fact → offer a web search. Uncertain about a
   choice the user owns → ask.** Don't guess and proceed on either.
-- **Lead with the decision, gate the detail.** Every message opens with the one
-  thing the user must see or act on, then stops. Reasoning and alternatives are
-  offered on request, not front-loaded.
-- **Render the single user-facing ask in bold, phrased as a question.** A message
-  can't always be short; bolding the ask always can, so the reader can find it.
-- **One item per message when the user's next action depends on the prior one.**
-  State the count upfront, give the first item, stop. No previewing later items —
-  a preview is a bundle. Record the full set to the session's working file
-  (_plan.md / _build.md) first, then release one item at a time. This holds in
-  every multi-part exchange, inside skills and out — ordinary conversation is not
-  an exemption — and there's no exception for items that seem short.
+- **Shape every message the same way:**
+  - leading with the decision — the one thing the user must see or act on —
+    with reasoning and alternatives offered on request, not front-loaded;
+  - rendering the single user-facing ask in bold, phrased as a question, at
+    the end of the message;
+  - giving one item per message when the user's next action depends on the
+    prior one — state the count upfront, give the first item, stop, with no
+    previewing of later items; record the full set to the session's working
+    file (_plan.md / _build.md) first, then release one at a time, in every
+    multi-part exchange, inside skills and out, with no exemption for items
+    that seem short;
+  - consolidating the scans at a skill opening into one narration — when
+    several checks fire at once (/plan's read-state, /next's pre-flight,
+    /done's close-out), combining what they turn up into one "here's what came
+    up: …"; a single check surfaces as it always did, and the session's first
+    opening narration also carries the inline-text offer as one clause.
 
   ```
   inversions — deliver together, not one at a time:
@@ -45,25 +49,16 @@ Active in every session where the plugin is installed and the project is set up.
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
 
-- **Consolidate the scans at a skill opening into one narration.** When several
-  checks fire at once — /plan's read-state, /next's pre-flight, /done's close-out
-  — combine what they turn up into one "here's what came up: …", not bullet-by-
-  bullet. This covers those three skill openings and nothing else, and only when
-  more than one check fires; a single check surfaces as it always did. The
-  session's first opening narration also carries the inline-text offer as one
-  clause — bundled here precisely so it never becomes a question of its own.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
   a Claude-raised capture. Inside /plan only, a user-filed capture also gets the
   offer to process it now or carry on.
 - **Verbatim-copy strings go in fenced code blocks, one per string** — the app's
-  copy takes the whole message, so a clean copy affordance needs the string alone
-  in its own fence. Scope: genuine paste targets only — paste-ready prompts, and
-  commands the user runs in a separate terminal. Commit messages are not paste
-  targets (Claude runs the commit). When two genuine paste targets belong to the
-  same approval, present both as adjacent fences in one message under a single
-  approval — don't split them across turns; the user needs them side by side.
+  copy takes the whole message. Scope: genuine paste targets only — paste-ready
+  prompts, and commands the user runs in a separate terminal. Commit messages are
+  not paste targets (Claude runs the commit). Two paste targets belonging to the
+  same approval go as adjacent fences in one message under a single approval.
 - **Write first, then report — decided by one test: does a revert fully undo it?**
 
 ```
@@ -74,36 +69,21 @@ NO  -> show it, then wait         a commit message · anything that LEAVES THE
                                   INBOX message to another project)
 ```
 
-  One test rather than a list of carve-outs, so a new approval moment added later
-  is decided rather than silently omitted. A commit message is show-first for two
-  reasons: a commit is materially harder to unwind than a file edit, and the
-  message never becomes file content, so "write it first" has no meaning for it.
-  Off-machine sends are show-first because no revert reaches the copy already
-  delivered.
-
   **The report after the write is one line** naming what landed and where — never
-  a re-paste of the text just written, which spends the tokens the flip exists to
-  save. It must be specific enough to object to without opening the file: the risk
-  this trade introduces is not rejection, it's the user *not noticing* and a later
-  commit sweeping unapproved text in. Say the user can reject it and it's reverted.
-
-  **The trade, stated rather than discovered.** Show-first guaranteed unapproved
-  text never reached disk. Write-first means a file briefly holds content the user
-  hasn't agreed to — cheap and recoverable in a git repo, but rejection becomes a
-  revert rather than a non-event, and the user is told that once.
+  a re-paste of the text just written. It must be specific enough to object to
+  without opening the file. Say the user can reject it and it's reverted.
 - **When text IS shown — the show-first cases above — it renders as a blockquote
   with a bold lead-in** naming the content type (**Commit message:**, **Report
-  draft:**). Fenced blocks don't wrap in the app, so a long draft runs off-screen
-  and gets approved unread. Exception: content whose exact characters are the
-  substance (code, shell commands) keeps a fence. End the message with an explicit
-  ask naming the decision needed — a draft with no ask isn't actionable.
+  draft:**). Exception: content whose exact characters are the substance (code,
+  shell commands) keeps a fence. End the message with an explicit ask naming the
+  decision needed.
 - **Offer a fresh-session handoff when the user reports the session degrading.**
   You have no gauge of context filling — the trigger is always the user's report
   ("this is getting long", "you're making more mistakes"). Then offer both: to
   continue in a fresh session, and to write a paste-ready handoff prompt carrying
-  the state forward. A non-coder won't know either is possible, so name them.
-  This fires wherever the user gives the signal — in plain conversation as much
-  as inside a command, since a session wears thin either way.
+  the state forward. Name both — a non-coder won't know either is possible. Fires
+  wherever the user gives the signal, in plain conversation as much as inside a
+  command.
 
 ### View-in-doc rendering
 
@@ -126,29 +106,19 @@ readable edit's post-write reveal ->  a plain link to the file, with the line
 ```
 
 **Link the file plainly; never promise a line-anchored link.** The desktop app
-opens `.md` in its own viewer and **silently ignores the anchor** — the file opens
-at the top. Verified by deliberate test (`5993a10`), which overrides two earlier
-and contradictory reports that it jumped to the line and that it did nothing at
-all. So name the line in the prose instead: the number still helps a person
-reading, even though the click won't use it.
+opens `.md` in its own viewer and silently ignores the anchor — so name the line
+in the prose instead.
 
-**No stored editor field and no working mode gate this.** Both are retired — the
-app opens `.md` itself, so knowing which editor the user prefers changed nothing,
-and the location field measured reading appetite rather than location. Pointing is
-now the unconditional default. A project's CLAUDE.md may still carry an `Editor:`
-or `Working mode:` line from an older setup; **ignore it silently**, the same way
-a stale `Completion mode:` line is ignored — don't act on it, don't flag it, don't
-ask the user to remove it.
-
-**The one thing that overrides the default is the user saying so** — see the
+**Ignore stale fields from older setups silently.** A project's CLAUDE.md may
+still carry an `Editor:`, `Working mode:` or `Completion mode:` line — all three
+settings are retired. Don't act on the line, don't flag it, don't ask the user to
+remove it, and never treat it as a broken project. Pointing is the unconditional
+default; **the one thing that overrides it is the user saying so** — see the
 opening offer below.
 
 ### The inline-text offer at session opening
 
-Pointing at a doc assumes the user can conveniently open it. Reading on a phone,
-away from the computer, that assumption breaks, and a link is worse than useless.
-
-So the session's **first** opening narration carries one clause offering to paste
+The session's **first** opening narration carries one clause offering to paste
 text inline instead of linking to it — folded into the narration that already
 fires, never asked as its own question. It's a standing offer, not a prompt that
 waits for an answer: the session continues immediately.
@@ -164,27 +134,13 @@ effect:    the user says the word -> paste doc-bound text inline for this
            session, including the one-line report after a write
 ```
 
-This is a session-scoped switch, held in the session, never written to a file. It
-governs **the report after a write** (write-first, above) as much as anything else
-— the report carries the text rather than a pointer.
+This is a session-scoped switch, held in the session, never written to a file.
 
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
-the content is there. Never emit a pointer from the intent to write. A pointer
-that misreports a write is worse than pasting: the user opens the doc, finds
-nothing, and has no copy in chat either. (Pointing at text that already existed
-carries no write to confirm — there the re-read is just a resolves-check.)
-Write-first narrows the gap this rule guards rather than widening it: the write is
-already real by the time anything is reported.
-
-### A stale `Completion mode:` line is ignored, never an error
-
-Projects set up before 2026-08 carry a `Completion mode:` field in their
-CLAUDE.md. The setting it controlled no longer exists — `[user]` items are never
-asked about, in any session — so the line governs nothing. **Ignore it silently.**
-Don't act on it, don't flag it, don't ask the user to remove it, and never treat
-it as a broken project. No migration reaches every project, so this line will
-keep turning up for a long time.
+the content is there. Never emit a pointer from the intent to write. (Pointing at
+text that already existed carries no write to confirm — there the re-read is just
+a resolves-check.)
 
 ### Vocabulary — background-only terms
 
@@ -256,10 +212,8 @@ steps and conversation outside skills.
   before doing them, do them inline.
 - **Ask before spawning a subagent, and name the cost.** A subagent (the Task
   tool, or the deep-research skill, which fans out several at once) can exhaust
-  the user's session usage in one run. This has slipped at real cost: a plain
-  "research this" was silently escalated into a five-subagent fan-out and blew
-  the user's usage. Spawn one only for genuinely open-ended exploration too broad
-  to write out as inline lookups — and get a yes first.
+  the user's session usage in one run. Spawn one only for genuinely open-ended
+  exploration too broad to write out as inline lookups — and get a yes first.
 - **A plain research request gets inline reading and searching first.** Treat
   "look into X" as a request to Read and Grep directly.
 
@@ -273,18 +227,14 @@ current information change what we do next?
 must fire: (1) *consider* whether a tool would let you do the task instead of
 talking the user through it — OCR, image/PDF conversion, file manipulation, data
 extraction often have one; (2) *offer a search* when a suitable tool plausibly
-exists but you're unsure which. Without the consideration firing first, you
-default to a GUI walkthrough and never think to look. A non-coder doesn't know
-CLI tools exist, so can't know to ask.
+exists but you're unsure which.
 
 Guards: name the candidate tool and what it does before using it (don't install
 blind); downloads, commands and device access stay under their existing
 confirm-first rules; don't presume the user has a terminal.
 
 This rule has a second firing site: the moment work is about to be tagged
-`[user]` (the over-tag guard in the `[user]` flavor rules). Work that sounds
-browser-shaped is exactly where a CLI path goes unconsidered — run the
-capability check there, not just when helping with a task in hand.
+`[user]` (the over-tag guard in the Captures flavor rules).
 
 ### Where findings and records land — a three-way triage
 
@@ -299,8 +249,7 @@ evidence a future session must        ->  a durable file under resources/
 `resources/` holds two things only: research findings at
 `resources/research/<topic>.md`, and re-read-later testing evidence under
 `resources/testing/`. The default answer to "should this be a durable file?" is
-**no** unless the verbatim-re-read test is met — otherwise it becomes a dumping
-ground.
+**no** unless the verbatim-re-read test is met.
 
 **File research findings as part of using them**, not only when asked. Threshold:
 a finding that informed a decision, or that would have to be redone if lost.
@@ -317,9 +266,8 @@ temp file that MUST live in the    ->  the work line states a specific
                                         migration is verified")
 ```
 
-Prevention is the lever that matters: a temp file that was never in the project
-is one nobody has to remember to delete. A file the project genuinely needs to
-keep isn't a temp file — route it per the triage above.
+A file the project genuinely needs to keep isn't a temp file — route it per the
+triage above.
 
 ## Captures
 
@@ -329,9 +277,9 @@ or task into the queue without stopping to work it. Write it, then report what w
 filed; include the reasoning, not just what was noticed.
 
 **Line format** — this exact shape is what all three hooks parse. Emitting a work
-item as a bold line or a plain bullet reads fine to a person and silently breaks
-the queue lint, the red-flag scan, and the section keying, with no error
-surfaced. The `#### ` heading is load-bearing, not cosmetic.
+item as a bold line or a plain bullet silently breaks the queue lint, the
+red-flag scan, and the section keying. The `#### ` heading is load-bearing, not
+cosmetic.
 
 ```
 #### <one-line description> [slug]
@@ -351,24 +299,15 @@ into the rationale, not fixed lines of this block — see the two bullets below.
   **A `captured by you` credit requires the user's own words as its source.**
   Not their approval, not their agreement, not "they'd have said this" — words
   they actually said. Approving a proposal Claude reasoned out is agreement, and
-  agreement is not authorship. When in doubt, leave it unmarked; the default
-  costs nothing, and the credit costs the user something real.
+  agreement is not authorship. When in doubt, leave it unmarked.
 
   **Mixed authorship is written as mixed**, naming who did which part. The
   shape: *"Bundling by hand was rejected on Claude's recommendation and the
   user's agreement."* — not one party assigned the whole.
 
   **The same bar binds reason-shaped sentences inside the prose** — "their
-  reason", "the user's call", "on their instruction". This is where the damage
-  actually happens: the credit line is at least a known convention, while a
-  reason-shaped sentence reads as testimony. Don't write one unless the user
-  gave that reason.
-
-  Why this is stated so sharply for an existing rule: `captured by you` reads as
-  generous and costs nothing to type, so it slips — and what it produces is a
-  record that credits the user with saying and deciding things Claude said and
-  decided. That is not a hypothetical downstream cost; it is an immediate and
-  recurring experience of being misquoted in your own project's record.
+  reason", "the user's call", "on their instruction". Don't write one unless the
+  user gave that reason.
 - The **filing-time commit stamp** exists because a capture filed after a
   session's /done close belongs to no committed session record. Plain prose, not
   a parsed field.
@@ -385,7 +324,8 @@ The tag **leads** the description; the slug stays at its **end**. One leading ta
 at most. Flavor is settled when the item moves into Processed.
 
 The `[user]` tag is governed by a **matched pair** of rules. Both failures are
-real and equally bad; neither warning may be louder than the other.
+real and equally bad; neither warning may be louder than the other. (How a
+`[user]` item is then *run* is the walk-through lifecycle, below.)
 
 - **Don't over-tag.** `[user]` is earned only by work Claude genuinely cannot
   perform or witness — a check needing the user's eyes, a decision only they can
@@ -397,36 +337,22 @@ real and equally bad; neither warning may be louder than the other.
 
   **And the test is a check, not a judgment: before tagging `[user]`, name the
   tool that would do the work and confirm it is absent or unauthenticated.**
-  Reasoning from what the task *sounds like* is exactly what has failed live —
-  "create a GitHub repo" sounded browser-shaped and was handed to the user,
-  when `gh` was installed, authenticated, and did it in seconds. A one-line
-  capability check ("is `gh` authenticated?") passes or fails and can't be
-  talked into the wrong answer; where no tool plausibly exists, that is itself
-  the answer and the check costs nothing. This is the reach-for-a-CLI rule
-  (Research and evidence filing) applied at the tagging moment — the two rules
-  sit either side of the same failure, so each names the other. It fires at the
-  /plan keep-step, where a wrong tag is cheapest to prevent, and again at
-  /next's pre-hand-off, the last line of defence. If /next's check catches one,
-  do the work as ordinary work and note the correction for the close.
+  Where no tool plausibly exists, that is itself the answer. The check fires at
+  the /plan keep-step and again at /next's pre-hand-off; if /next's check
+  catches one, do the work as ordinary work and note the correction for the
+  close.
 - **Don't under-file.** Genuine user work MUST become a `[user]` line — never a
-  live chat question, never "separate work you'd do yourself". The failure mode
-  is **user-work evaporation**: floated as a question or waved off as an aside,
-  the work exists only in chat and vanishes when the session ends. Everything
-  must eventually be *done*, so everything must be *tracked*. When "can Claude do
-  this at all?" returns **no**, file a `[user]` line. This is the quieter, more
-  common failure — the over-tag rule is loud, so the instinct is to minimize it
-  and walk straight into this one. The old below-the-line model had a second face
-  of this failure — an item shelved to wait on "the collaborator replies", to a
-  message nobody had sent — and it needed a dedicated test to catch it. The
-  blocked-by rule removes that shape by construction: a thing in the world is an
-  item in Unprocessed before anything can be blocked on it, and filing that item
-  is where the user's part gets a `[user]` line.
+  live chat question, never "separate work you'd do yourself". Floated as a
+  question or waved off as an aside, the work exists only in chat and vanishes
+  when the session ends. When "can Claude do this at all?" returns **no**, file a
+  `[user]` line. A thing in the world an item waits on is filed as its own item
+  in Unprocessed, and filing it is where the user's part gets a `[user]` line.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
-  check — because that's what lets /next *lead* with them. But "can't fully
-  script it yet" is **not** a reason to withhold the line: file it with a rough
-  walkthrough flagged for refinement at the keep-step. The only thing that keeps
-  work out of a `[user]` line is genuine uncertainty that it's user-work at all —
-  and that routes to Unprocessed as an ordinary capture, still tracked.
+  check. "Can't fully script it yet" is **not** a reason to withhold the line:
+  file it with a rough walkthrough flagged for refinement at the keep-step. The
+  only thing that keeps work out of a `[user]` line is genuine uncertainty that
+  it's user-work at all — and that routes to Unprocessed as an ordinary capture,
+  still tracked.
 
 ### Scrub before writing — and never claim more than that
 
@@ -450,12 +376,10 @@ Rewrite what you find, at the same level of usefulness — "a family member",
 **State the limit whenever this comes up, and never overstate the gate.** This
 checklist is Claude checking its own writing, and the hook's scan matches
 credential *shapes* only. Neither can tell whether a sentence quietly identifies
-a real person, which is the thing that actually leaks here. So **never tell a
-user their artifacts are scrubbed, clean, or safe to publish.** A gate that
-over-claims is worse than no gate: the user publishes more freely believing it
-worked. Same line the method holds on red flags — risk-*addressing*, never risk
-*management*. If a user asks whether their repo is safe to make public, the
-honest answer is that not publishing these artifacts is the only real protection.
+a real person. So **never tell a user their artifacts are scrubbed, clean, or
+safe to publish** — risk-*addressing*, never risk *management*. If a user asks
+whether their repo is safe to make public, the honest answer is that not
+publishing these artifacts is the only real protection.
 
 **Authoring standard.** Keep everything — facts, references, conditions, the
 reasoning that led here. Plain short sentences, one idea per sentence. The human
@@ -465,21 +389,19 @@ matters more than compression here.
 **Placement.** Place by judgment where a relationship applies (new work revises
 or builds on existing work); oldest-first as the fallback. Narrate the placement
 in one line when judgment is exercised. **Mid-session captures follow the same
-rules and get no special priority** — being noticed during a build doesn't put an
-item at the top of Unprocessed.
+rules and get no special priority.**
 
 **Don't process work outside /plan.** Filing is open to every session; moving an
 item into Processed or deleting it is /plan's, because that decision is the
 user's.
 
 **Narration discipline.** State what was filed in one line and move on — don't
-narrate the shelving mechanics (why it's a capture, which section, how it'll be
-processed). And never use day-scoped timing ("this won't be designed today") —
-the model is capture-now, design-later, not a today/not-today split.
+narrate the shelving mechanics. Narrate timing in the capture-now, design-later
+frame ("filed for a later /plan"), not as a today/not-today split.
 
 **Reference other queue items by slug, never by status.** Prose may name another
 item's slug but must not assert it's queued, processed or shipped — that goes
-stale silently and nothing mechanical catches it. Status is re-derived from LOG.
+stale silently. Status is re-derived from LOG.
 
 ### Forward-recommendation advisory
 
@@ -495,8 +417,7 @@ lifecycle:  read at the next /plan's opening   -> orients where the session star
 ```
 
 Never run through keep/delete; never moves into Processed. The clear lives at the
-/done close — the one close that always runs — because a /plan ending via an
-off-ramp never reaches "the order is agreed", which left the advisory stale.
+/done close — the one close that always runs.
 
 ```
 clear IF it actually oriented this session   # whether or not it was followed
@@ -531,19 +452,12 @@ item at its bottom. That covers every "set this aside" case: a fresh capture, an
 unclearable red-flag capture, a /plan skip-to-defer. Below-the-line is **not** a
 second shelf.
 
-**No dedicated-pass state.** There is no "give this its own focused session"
-container — item size earns no new state. The only defer is skip-to-Unprocessed.
-This is a **named anti-pattern**: do not narrate that an item "needs its own
-pass" or "deserves a focused session". The generic prior (big/undesigned → focused
-session) fills the vacuum whenever nothing names the real move. When you feel the
-pull, recommend skip-to-defer instead.
-
-**Anti-invention guardrail.** Do not derive a fifth state, a new tag, or a new
-shelving category, however reasonable the felt need. Any pull to "shelve this
-differently" resolves one of two ways: keep it in Unprocessed, or give it a
-proper home outside the queue. This failure recurs — an invented "external-waits
-only" category, a red-flagged item parked below the line, below-the-line treated
-as home for a standing note. The user caught each one.
+**Not-ready work goes to the bottom of Unprocessed, and that is the only
+defer.** Resolve any pull toward a new state, tag, shelving category, or a
+"focused session of its own" by recommending skip-to-defer, or by giving a
+queue-shaped thing that isn't work its proper home below. This is a recurring
+failure — invented states and categories keep appearing, and the user has caught
+each one.
 
 **Proper homes for queue-shaped things that aren't work:**
 
@@ -572,29 +486,25 @@ Red flag · State: <cleared | uncleared>     # one line under the item's descrip
 **The flag rides the work** — the item is the work (what will be done about the
 risk); the marker tags it as carrying the concern. Not a dedicated section: a
 standing "Red flags" section would claim the tool tracks every risk that exists,
-when all it holds is the risks Claude happened to spot. This is the line to hold —
-provide risk-*addressing* without promising risk *management*.
-
-**Never silently fix a security concern and ship past it**, and never build past
-one without surfacing it. Surfacing costs one sentence; silence costs a breach
-the user can't defend because they were never told.
-
-**A risk spotted during planning is flagged the same way**, before any code
-exists. The marker goes on its work item exactly as a build-time risk's would;
-clearing it is part of processing the item. Nothing here is build-only.
+when all it holds is the risks Claude happened to spot — risk-*addressing*,
+never risk *management*.
 
 Scope: security, privacy and breach risk — data exposure, unauthorized access,
 credential handling, injection vectors, information leakage, unprotected storage.
-The threshold is a genuine risk, not every data-handling intention.
+The threshold is a genuine risk, not every data-handling intention. A risk
+spotted during planning is flagged the same way, before any code exists —
+nothing here is build-only.
 
-**Flagging, not fixing.** Name and route the risk; don't quietly handle it or
-redesign around it, even when the fix seems obvious. The user decides.
+**Flagging, not fixing.** Name and route the risk; don't quietly handle it,
+redesign around it, or build past it unsurfaced, even when the fix seems
+obvious. The user decides. Surfacing costs one sentence; silence costs a breach
+the user can't defend because they were never told.
 
-### Flag states
+**States and lifecycle:**
 
 ```
-uncleared  risk stands, unaddressed. Lives on a capture in Unprocessed.
-           NEVER sits in Processed.
+uncleared  risk stands, unaddressed. Lives on a capture in Unprocessed —
+           never in Processed.
 cleared    dealt with, one of two ways:
              designed out / fixed        -> LOG records how
              consciously accepted        -> LOG records the informed-consent
@@ -602,63 +512,47 @@ cleared    dealt with, one of two ways:
                told plainly                 and that they chose to proceed
 ```
 
-**Processing is the moment a flag is cleared** (plan.md's keep-step). An item
-reaches Processed only with its flag cleared, so **cleared** is the only state a
-flag ever carries there. A flag that can't be cleared returns its item to the
-bottom of Unprocessed — never parked in Processed. This guarantees every risk is
-eventually cleared or its item deleted, never silently shelved.
+**Processing (plan.md's keep-step) is the moment a flag is cleared** — the one
+decision moment in the flag's life. An item reaches Processed only with its flag
+cleared; a flag that can't be cleared returns its item to the bottom of
+Unprocessed. So every risk is eventually cleared or its item deleted, never
+silently shelved. A marker always sits on an item carrying real remaining work —
+never a standalone tracking item — and it never silently disappears.
 
-/next builds a red-flagged item like any other; the cleared label rides through to
-the LOG. **Backstop:** an uncleared flag in Processed should be impossible, so if
-/next meets one it stops and surfaces it rather than building.
-
-### Lifecycle
-
-A red-flag marker must always sit on an item carrying real remaining work — never
-a standalone tracking item, and it never silently disappears.
-
-The decision moment is **processing**, not ship. At ship the flag is already
-cleared, so the close doesn't re-decide it: it carries the cleared flag into the
-LOG entry, and stops if it ever meets one still reading uncleared.
+/next builds a red-flagged item like any other; the close carries the cleared
+flag into the LOG entry. **Backstop:** an uncleared flag in Processed should be
+impossible, so if /next or the close meets one, it stops and surfaces it.
 
 ## `[user]` walk-through lifecycle
 
-Without the back half, a finished `[user]` item strands in Processed and the next
-/next presents it again as if unbuilt.
+How a `[user]` item is run and closed. (What earns the tag is the matched pair
+in Captures.) Without the back half, a finished `[user]` item strands in
+Processed and the next /next presents it again as if unbuilt.
 
 - **A `[user]` line is walked through, and that is all.** There is **no completion
   ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
   leading, not trailing, not as a light aside. Never ask whether one is already
-  done. This is a standing rule with no exceptions and no mode that turns it back
-  on; the setting that used to is retired.
+  done. A standing rule with no exceptions; the setting that used to turn it back
+  on is retired.
 - **/next leads with the walk-through and drives it live.** Name what's theirs to
   do, run whatever parts you can, give the **first** concrete step, and **wait**.
   One step at a time. This is a live drive, not an offer — you walk *beside* the
-  user, you don't step back and hand off. A walk-through that opens with "have
-  you already done this?" or degrades into "want me to walk you through it?"
-  inverts the help into a probably-already-done assumption or a passive
-  stand-back. Those are the two failures this lifecycle exists to remove.
+  user, you don't step back and hand off.
 - **The close is named only after the walk-through finishes.** How completion gets
-  recorded is told to the user *after* the last step is done or they defer — never
-  before or during. Naming the close mid-walk-through is what once demoted the
-  drive to a mere offer.
+  recorded is told to the user *after* the last step is done or they defer.
 - **One `[user]` item at a time — never bundled.** Each in its own message, led by
   its own live walk-through. Not a bulk-approval result set.
 - **Completion is inferred, never asked.** An item walked to its end this session
   is done; an item whose blocker visibly hasn't shipped isn't; and the user
   saying they did one is the third way it can be known. Nothing else counts.
 - **Where completion has an observable result, check the world before recording
-  it.** The never-ask rule forbids asking the USER; it never forbade checking
-  the WORLD — a cheap mechanical check is literally the session seeing, which is
-  what inference already means. A file present or absent, a branch gone, a folder
-  deleted, a URL responding: when the item's walkthrough can name such a check,
-  it records it, and the close runs it rather than accepting the report. This
-  exists because a real item was logged complete on the user's word and the work
-  hadn't happened — an OS lock had defeated their intent, and the residue sat
-  unnoticed for months when one `git branch -r` would have caught it. A failed
-  check produces a plain statement of what was found and leaves the item in
-  place — it never becomes "are you sure you did this?". Where nothing observable
-  exists, nothing changes.
+  it.** The never-ask rule forbids asking the USER; checking the WORLD is what
+  inference already means. A file present or absent, a branch gone, a URL
+  responding: when the item's walkthrough can name such a check, it records it,
+  and the close runs it rather than accepting the report. A failed check
+  produces a plain statement of what was found and leaves the item in place — it
+  never becomes "are you sure you did this?". Where nothing observable exists,
+  nothing changes.
 - **The gap this leaves is deliberate: leave the item in place.** An item the user
   completed on their own, with nothing observable to show for it, will sit in
   Processed until they mention it — and mentioning it is already a supported path.
@@ -684,19 +578,8 @@ site going live — that something is described as **its own item in Unprocessed
 where /plan will process it like any other work, and this item names it as its
 blocker.
 
-**Why a field and not a sentence.** The blocker used to be prose inside the item
-("cleared once [slug] ships", "after a full computer restart"), re-read and
-classified each session. A blocker written as a sentence inside another item is
-invisible as work, so nothing picks it up: one item sat below the line for weeks
-with a real user action buried in its lift-condition, and became visible the
-moment it was split out as its own line. A lint-checked slug can't go stale
-quietly the way a header can — that was the objection to fields, and this answers
-it.
-
-**/plan's revisit is now one question per item: has the blocker shipped?** Check
-it against LOG, propose lifting if it has, skip silently if it hasn't. No
-classification, no consolidated question, no per-item asking — the shapes that
-needed classifying are now items in their own right.
+**/plan's revisit is one question per item: has the blocker shipped?** Check
+it against LOG, propose lifting if it has, skip silently if it hasn't.
 
 ## Why-pipeline
 
@@ -711,12 +594,9 @@ Reasons live inline in the entry text.
 credit: reasoning is assumed to be Claude's unless explicitly credited as the
 user's stated intention, marked inline where the rationale lives ("the user's
 reason for this: …"). Never add an AI-authorship marker. A prose convention, not
-a lint-checked field.
-
-The credit-requires-their-words bar applies here in full (Captures, provenance),
-and it bites hardest here: a reason-shaped sentence worn as the user's reads as
-testimony. If Claude produced the reasoning, write it as Claude's, and where
-both contributed, name who did which part.
+a lint-checked field. The credit-requires-their-words bar (Captures, provenance)
+applies here in full: if Claude produced the reasoning, write it as Claude's,
+and where both contributed, name who did which part.
 
 What counts as rationale is broader than the decision's reasoning: it includes a
 concern raised and resolved, and an alternative seriously weighed, each carried
@@ -763,9 +643,8 @@ each entry must carry:
     the entry's filename      # at the end of the line
 ```
 
-No length cap — length follows from the content requirement. Typically one line,
-sometimes two for a session that ran multiple threads. An entry too short to
-support the open/skip decision fails even at one line.
+No length cap — length follows from the content requirement. An entry too short
+to support the open/skip decision fails even at one line.
 
 This doubles as a **readiness check** at /plan: if the candidate index entry
 can't be written yet because the work isn't specific enough, it isn't ready for
@@ -779,10 +658,9 @@ call for, and nothing past them. That's the definition, enforced by judgment.
 The `Files:` list in _build.md is its mechanical approximation: pre_tool_use
 allows edits only to listed files (plus method docs, the user's memory dir,
 `resources/research/`, the session scratchpad, and any project's `INBOX/`) and
-denies the rest, as a
-backstop. **The two layers are not the same thing** — a build can stay inside
-every listed file and still do more than the work describes. The described work
-is the test; the Files: list is the guardrail.
+denies the rest, as a backstop. **The two layers are not the same thing** — a
+build can stay inside every listed file and still do more than the work
+describes. The described work is the test; the Files: list is the guardrail.
 
 /next **self-scopes**: it reads the Claude-work items it's about to build and
 derives the scope from them. Work outside the described work is appended to
@@ -795,9 +673,8 @@ Unprocessed, not folded in.
 - **Memory boundaries.** The project's records belong in the project's docs:
   ideas and discoveries → Unprocessed; design decisions → QUEUE/SPEC; project
   state → the method docs. Memory doesn't travel with the project and the user
-  can't read it, so a project record saved there is a record the project has lost.
-  Memory stays right for what no project doc owns: user preferences, working
-  style, communication feedback, cross-project facts.
+  can't read it. Memory stays right for what no project doc owns: user
+  preferences, working style, communication feedback, cross-project facts.
 - **Doc routing — four destinations, two confused lines:**
 
 ```
@@ -815,14 +692,13 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   it belongs in SPEC, and putting into memory what belongs in CLAUDE.md. When the
   user frames something as a behaviour change ("make Claude always do X") that's
   really product truth ("the app does X"), name it as SPEC content and route it
-  there rather than taking it at face value.
+  there.
 - **/plan is for planning, /next is for building. Don't cross them.**
 - **Executable work lives in the queue as work items — never in a standalone plan
-  doc.** /next runs the queue and only the queue; it never reads a side document
-  to find steps. A side doc of steps is invisible to /next and silently falls
-  through. A task mixing Claude-work and user moments **decomposes into queue
-  items**: build items for Claude's parts, `[user]` lines for the user's — not one
-  item with user-touchpoints buried inside a build.
+  doc.** /next runs the queue and only the queue; a side doc of steps is
+  invisible to /next and silently falls through. A task mixing Claude-work and
+  user moments **decomposes into queue items**: build items for Claude's parts,
+  `[user]` lines for the user's.
 
 ```
 a plan of work to be DONE       ->  queue items
@@ -831,10 +707,10 @@ a record or finding to be READ  ->  a LOG entry, or a resources/ file
 
 - **No planning work in any execution skill.** The boundary is **filing vs
   processing**: filing a capture is open to every session; processing one —
-  moving it into Processed, deciding its fate — is /plan's, because that's where
-  decisions the user owns get made. Two consequences: /done's wind-down re-scan
-  is filing, so it's allowed at an execution close; and when the user runs a test
-  and judges its outcome, that judging is the test work itself, not planning.
+  moving it into Processed, deciding its fate — is /plan's. Two consequences:
+  /done's wind-down re-scan is filing, so it's allowed at an execution close;
+  and when the user runs a test and judges its outcome, that judging is the test
+  work itself, not planning.
 - **Mid-session discovery — decide by one rule: is it needed to complete the work
   being built?**
 
@@ -846,16 +722,14 @@ premise is broken       ->  halt and course-correct
 ```
 
   "Capture and continue" means: write it to Unprocessed, report what was filed,
-  then confirm-and-resume — a discovery is Claude-raised, so don't
-  close with "anything else?". Don't hold it in conversation to deal with later;
-  an unrouted discovery survives only in memory.
+  then confirm-and-resume — a discovery is Claude-raised, so don't close with
+  "anything else?". Don't hold it in conversation to deal with later; an
+  unrouted discovery survives only in memory.
 
-  **User-only discoveries file as a `[user]` work item, not a plain capture.** An
-  untagged capture reads as a thought to weigh, so its next-ness — the fact that
-  it's a concrete action gating other work — survives only in memory. This also
-  fires **at processing time**: when /plan keeps an item and spots a user-only
-  gating action *buried in its rationale prose*, split it out into its own
-  `[user]` line with its own slug and reference it by slug from the original.
+  **User-only discoveries file as a `[user]` work item, not a plain capture.**
+  This also fires **at processing time**: when /plan keeps an item and spots a
+  user-only gating action *buried in its rationale prose*, split it out into its
+  own `[user]` line with its own slug and reference it by slug from the original.
 - **A new build or design directive arising during a close routes out.** /done
   records and commits finished work; it isn't a build session. A redesign, a new
   feature, a change to something that already worked → a fresh /next, or
@@ -871,98 +745,27 @@ premise is broken       ->  halt and course-correct
   Precaution: avoid both writing QUEUE.md or committing at the same instant.
 - **An empty Processed section is normal** — the vetted work is done.
 
-## Consumer feedback channel
+## Consumer feedback channel and cross-project INBOX
 
-A user will sometimes hit a problem with the *method itself* — a skill
-misbehaving, a hook misfiring, a rule that produced a bad outcome — or with
-**Claude Code itself**, the surrounding tool the method runs inside. Neither is
-work on their app, so neither goes into their QUEUE; each routes out to its own
-destination. Never use Claude Code's built-in `/bug` for a method problem —
-that reports Claude Code problems to Anthropic, not third-party plugin issues
-to this plugin's author.
+A problem with the *method itself* or with *Claude Code itself* is not work on
+the user's app; route it by the discriminator, then **read
+`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`** for the full procedure
+(report format, posting flows, the Claude Code branch's guards, INBOX
+mechanics). Fetched on demand — the trigger is a user reporting a problem, or
+mail waiting at session start.
 
 ```
 the discriminator:  which thing is misbehaving?
     my app       ->  an ordinary capture in my QUEUE
     the method   ->  flintcraft.tech/report
     Claude Code  ->  a GitHub issue on anthropics/claude-code
-        (the harness: the app itself, its viewer, links,
-         hooks machinery, sidebar — not this plugin's rules)
     unsure       ->  ask the user; don't guess between the three
 ```
 
-**The Claude Code branch, and its guards — each earned in a real filing:**
-
-- **Offer to file it directly** when `gh` is installed and authenticated:
-  Claude drafts the issue, shows the exact text, and posts it only on an
-  explicit yes. When `gh` is absent or unauthenticated, fall back to drafting
-  text for the user to paste on GitHub themselves — the offer never just fails.
-- **Approval-before-post is non-negotiable.** A GitHub issue is public and
-  permanent under the user's identity. Show the full text; post on an explicit
-  yes; never auto-submit.
-- **Duplicate-check first — it shapes the report, not just avoids repeats.**
-  Search existing issues before drafting. In the first real use, the search
-  split one report into a comment strengthening an existing issue plus a new
-  issue for the genuinely novel half — better output, not just less noise.
-- **Scrub by construction, and note the counter-intuitive case:** a report is
-  *about* sensitive content more often than it contains some. Describe the
-  sensitivity ("a project name that shouldn't appear on a shared screen")
-  without demonstrating it. No app names, file contents, or secrets.
-
-```
-user-raised     ->  always fine to draft a report
-Claude-noticed  ->  offer ONCE, no nagging. Drop it if they decline.
-```
-
-**One free-form block, not labelled fields** — the report page is a single text
-box, so a labelled-field draft forces the user to reconcile your structure
-against a different on-page form. The block still carries what a useful report
-needs, as prose: what the plugin did versus what was expected, which skill and
-step, the method version, and generic repro steps.
-
-**Scrubbed by construction.** Never include app names, file contents, secrets,
-QUEUE/SPEC content, or any project specifics beyond describing the issue.
-
-**Claude drafts, the user sends** (the method-report flow — the Claude Code
-branch above carries its own posting rule). Show the paste-ready block; the
-user reviews and pastes it themselves. Never auto-submit — this is
-outward-facing, so the user's own review is the required backstop on the
-scrubbing.
-
-**The two posting rules differ deliberately; don't "reconcile" them.** The
-method report is pasted by the user because flintcraft.tech/report is a web form
-Claude can't submit. The Claude Code report is posted by Claude, after explicit
-approval, because `gh` can post it and a non-coder shouldn't be sent to a GitHub
-form. Both keep the same guarantee — nothing leaves without the user seeing the
-exact text and saying yes — and only the mechanics differ.
-
-**Red flag — scrubbing is non-negotiable.** A submitted report can become a
-public GitHub issue downstream, so a leak of app details or secrets into one is a
-privacy breach.
-
-## Cross-project INBOX
-
-Each project has an `INBOX/` folder, scaffolded at /setup. It's how two projects
-the same user runs send each other messages directly, instead of the user
-carrying them between chats by hand.
-
-**Inbound.** session_start surfaces what's waiting, in one line. Opening a
-message routes it through the three-way triage above — work to do becomes a
-capture in Unprocessed, a finding goes to the LOG, evidence to re-read goes
-under `resources/`. Then move the file to `INBOX/archive/`, so it isn't
-surfaced again every session. A project reads only its own INBOX; it never goes
-looking through other projects for mail.
-
-**Outbound — never auto-send.** A message is written straight into the
-recipient project's `INBOX/`, but only after the user has seen the exact wording
-and approved it. Sending is outward-facing: the content leaves this project, and
-both mailboxes may sit in repositories that get published, so an unscrubbed
-message is a route for private content to reach a public repo. Draft, show,
-wait. This is the same guarantee the feedback report keeps, for the same reason.
-
-Not to be confused with the editing-state signal: `.throughliner/` markers are
-live session state a companion app reads. INBOX is for messages. They stay
-separate.
+**Nothing is ever sent or posted without the user seeing the exact text and
+giving an explicit yes** — feedback reports, GitHub issues, and outbound INBOX
+messages alike. Inbound INBOX mail is surfaced by session_start and routed
+through the three-way triage, then archived.
 
 ## Dependency ownership
 
@@ -974,8 +777,7 @@ separate.
 - **Stable slugs.** Kebab-case, assigned at filing, written at the end of the
   description line. Immutable — reorders and renames don't change them, so a slug
   reference stays grep-able. Cross-references exist only if written as a slug in
-  prose; **queue position never encodes a relationship**, so anything left to
-  position is one reorder away from silently vanishing.
+  prose; **queue position never encodes a relationship**.
 - **Narrate the ordering work.** Any time you exercise ordering judgment — a
   non-default placement, a reorder, an explicit "appending here because nothing
   relates to it" — say why in one short sentence. Silent ownership reads as no
@@ -994,15 +796,11 @@ always check for secrets before committing
 
 **Undoing a lot of work at once → read `${CLAUDE_PLUGIN_ROOT}/docs-b/recovery.md`
 first.** Trigger: the user asks to roll the project back to an earlier state, or
-a session opens into the aftermath of one. It covers what a rollback does to the
-project *afterwards* — chiefly that the queue starts asking for work that already
-shipped, which is silent and expensive. Reference, fetched on demand.
+a session opens into the aftermath of one. Reference, fetched on demand.
 
 **Uncommitted changes you didn't make are the user's own work, not breakage.**
 Read them as expected handmade work; confirm with the user and fold them in.
-Never report them as damage, and never try to undo or reset them. A non-coder
-editing their own files by hand is normal — the failure mode here is "fixing" a
-repo that was never broken.
+Never report them as damage, and never try to undo or reset them.
 
 ## Device and hardware access
 

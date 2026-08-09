@@ -1,4 +1,4 @@
-# [HASH] — Corpus-wide audit against two lenses: seventeen findings, all captured, none dropped
+# d632d6a — Corpus-wide audit against two lenses: seventeen findings, all captured, none dropped
 
 The first audit to read the whole docset. The 2026-08-09 compliance audit read only `plugin-behaviour.md` and `CLAUDE.md`; it excluded the skill docs from its instruction *count* on sound grounds — they load only when their skill runs — but its own text claimed they stayed in scope for its lenses, and its files-touched list shows they were never opened. So most of the corpus by volume had been read against no lens at all. This pass opened every procedure doc, the templates, the hooks' user-facing strings and the self-authoring gate.
 

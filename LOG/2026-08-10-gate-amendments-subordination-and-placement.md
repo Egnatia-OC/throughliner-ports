@@ -1,4 +1,4 @@
-# [HASH] — Subordination becomes an obligation in the self-authoring gate, condition placement re-decided main-clause-first, and §4's prohibition-framed heading restated — with the gate's own word ceiling refused rather than obeyed
+# d632d6a — Subordination becomes an obligation in the self-authoring gate, condition placement re-decided main-clause-first, and §4's prohibition-framed heading restated — with the gate's own word ceiling refused rather than obeyed
 
 Three amendments to `resources/self-authoring-rules.md`, landed together because authoring them separately in conversation is the fragmenting the user named when the item was filed.
 
