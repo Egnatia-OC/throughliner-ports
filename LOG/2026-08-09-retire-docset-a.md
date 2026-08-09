@@ -1,4 +1,4 @@
-# [HASH] — Docset A deleted: 40,684 words gone, every skill repointed at `docs-b/`, and the two-docset world written out of the project's own instructions
+# f9326dc — Docset A deleted: 40,684 words gone, every skill repointed at `docs-b/`, and the two-docset world written out of the project's own instructions
 
 This re-applies a decision rather than making one. Docset A was retired at `c4cf5af` on 2026-08-08 and the emergency revert brought it back a day later, so the tree arrived at this build holding three mutually inconsistent statements: `CLAUDE.md` describing A as a frozen 4.8 fallback with session_start choosing between docsets, `resources/self-authoring-rules.md` stating A retired and 4.8 unsupported, and `plugin/si-plugin/docs/` physically present at 40,684 words.
 

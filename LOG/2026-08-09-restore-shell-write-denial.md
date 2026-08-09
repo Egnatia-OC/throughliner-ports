@@ -1,4 +1,4 @@
-# [HASH] — The structured-shell-write denial restored, and the sanctioned alternative restored alongside it so the guard has somewhere to send people
+# f9326dc — The structured-shell-write denial restored, and the sanctioned alternative restored alongside it so the guard has somewhere to send people
 
 `pre_tool_use.py` regains `PY_INVOCATION` / `PY_OPEN_WRITE` / `PY_PATH_WRITE`, `structured_write_targets()`, `_is_inside()` and the Bash-branch denial, taken from `c4cf5af` rather than re-derived. Its test suite was already present and unchanged, which made verification immediate: eight cases, all passing, including the two that define the guard's shape.
 

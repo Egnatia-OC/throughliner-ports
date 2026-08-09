@@ -1,4 +1,4 @@
-# [HASH] — A fourth branch for the below-line revisit's classifier: a lift-condition waiting on Claude's own work is done or reported, never asked about
+# f9326dc — A fourth branch for the below-line revisit's classifier: a lift-condition waiting on Claude's own work is done or reported, never asked about
 
 The user reported the symptom — being asked questions at the start of a planning session about below-line work they shouldn't have been asked about. The narrowing recorded here is Claude's, from reading the shipped docs and testing them against those three questions; the user approved it rather than reasoned it. That attribution is stated because this run also built `[rationale-misattribution]`, which named this very item as one of its three instances of a credit written without the user's words behind it.
 

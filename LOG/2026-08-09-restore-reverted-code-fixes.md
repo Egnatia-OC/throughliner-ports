@@ -1,4 +1,4 @@
-# [HASH] — Five reverted code-only fixes restored, and a sixth found: session_start's payload was correctly sized inside an envelope Claude Code discards
+# f9326dc — Five reverted code-only fixes restored, and a sixth found: session_start's payload was correctly sized inside an envelope Claude Code discards
 
 The emergency revert of 2026-08-09 took the whole tree back to 2026-08-02, and with it a set of repairs that had nothing to do with the doc bloat the revert was for. This restores them from the commits that made them rather than re-deriving them from their LOG entries — the item was explicit that taking a fix beats reconstructing one, and the session's own experience confirms it.
 

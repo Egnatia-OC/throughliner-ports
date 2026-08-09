@@ -1,4 +1,4 @@
-# [HASH] — Projects can now send each other messages directly, through an INBOX folder scanned at session start, with the user approving every outbound message
+# f9326dc — Projects can now send each other messages directly, through an INBOX folder scanned at session start, with the user approving every outbound message
 
 The user raised this in their own words: they run several projects on the method and want them able to talk to each other, with a working precedent from a project they share with their partner that uses a plain `inbox/` folder files get dropped into. The design below — the scaffold, the scan, the triage routing, the never-auto-send rule, the scope-lock exemption — is Claude's.
 

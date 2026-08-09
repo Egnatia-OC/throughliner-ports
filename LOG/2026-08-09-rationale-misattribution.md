@@ -1,4 +1,4 @@
-# [HASH] — A `captured by you` credit now requires the user's own words as its source, mixed authorship is written as mixed, and the same bar binds reason-shaped sentences in the prose
+# f9326dc — A `captured by you` credit now requires the user's own words as its source, mixed authorship is written as mixed, and the same bar binds reason-shaped sentences in the prose
 
 This item exists because of a correction the user made in discussion, and the failure is theirs to state: it is weird having Claude repeatedly credit you with saying and deciding things Claude itself said and decided. The record accuses you of authorship. Claude's initial assumption was different and wrong — that a misattributed why causes a bad decision downstream — and no instance of that could be found. The real cost is immediate and felt, not hypothetical and later. Recording the rejected framing matters here, because it is the intuitive one and would otherwise be re-proposed.
 
