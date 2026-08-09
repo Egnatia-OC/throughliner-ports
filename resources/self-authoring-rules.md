@@ -40,6 +40,8 @@ Without that constraint, distribution becomes a way of hiding bloat rather than 
 
 ## 4. Wording — write it as an action, not a prohibition
 
+**Anything that is described in terms of what not to do only means the rule of what TO do was never adequately described in the first place** (the user's words, 2026-08-09). A prohibition is therefore a signal to go back and specify the action, not a wording to polish. Where no action can be stated, that is the finding: the rule was never worked out.
+
 One check, and the drafting devices that serve it. All of them are forms of a single instruction: **express a qualification as structure, not as explanation.**
 
 - Avoid provisos. A rule followed by a swelling "provided that" is the habit this exists to break.

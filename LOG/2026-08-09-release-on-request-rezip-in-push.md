@@ -1,4 +1,4 @@
-# [HASH] — Releases now run only when asked for, the rezip moved ahead of the push, and the push cleans the test version on its way out
+# 4f5e167 — Releases now run only when asked for, the rezip moved ahead of the push, and the push cleans the test version on its way out
 
 The automatic release trigger is gone. From 2026-08-04 a release fired at any /done whose commits touched `plugin/si-plugin/`, and CLAUDE.md explicitly barred asking whether one was warranted, barred proposing to hold one back, and barred adding any condition. Alex stopped a release twice in her own words, most recently with "push and rezip only" — so following the document was producing exactly the behaviour she was interrupting.
 

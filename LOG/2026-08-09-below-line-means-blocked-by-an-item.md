@@ -1,4 +1,4 @@
-# [HASH] — Below the cleared-to-run line now means blocked by a named queue item and nothing else, enforced by a lint on a restored `Blocked by:` field
+# 4f5e167 — Below the cleared-to-run line now means blocked by a named queue item and nothing else, enforced by a lint on a restored `Blocked by:` field
 
 Alex's rule, in her own words: nothing is ever supposed to be below the line unless something in Unprocessed blocks it, and if the blocker is a thing in the world then it should be described in Unprocessed so that it actually gets asked about in /plan.
 

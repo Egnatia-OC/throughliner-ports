@@ -1,4 +1,4 @@
-# [HASH] — The always-loaded corpus counted for the first time: ~218 instructions against a 150–200 ceiling, with an approved eviction list that would bring it to ~170
+# 4f5e167 — The always-loaded corpus counted for the first time: ~218 instructions against a 150–200 ceiling, with an approved eviction list that would bring it to ~170
 
 The self-authoring gate has a binding limit — a *count of instructions*, not a word count — and no such count had ever been taken. Until it existed, "evict what fails admission" had no target and no stopping rule, so a sweep could only produce opinions. That is why the audit's first pass was a count and not a judgement.
 

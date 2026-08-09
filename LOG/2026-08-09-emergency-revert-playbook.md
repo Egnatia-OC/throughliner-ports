@@ -1,4 +1,4 @@
-# [HASH] — The revert record split: eight general findings shipped as an on-demand recovery doc, the self-hosting gotchas kept host-only
+# 4f5e167 — The revert record split: eight general findings shipped as an on-demand recovery doc, the self-hosting gotchas kept host-only
 
 The 2026-08-09 emergency revert wrote its own record. The /plan session that followed was the first real test of it, and the comparison was worth banking while both were fresh: the document is strong on *how to execute* a revert and near-silent on *what a revert does to the project afterwards*. That gap is what the shipped half now fills.
 

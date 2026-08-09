@@ -1,4 +1,4 @@
-# [HASH] — A stale document format now halts the session at start and points at /setup, with a format epoch kept deliberately separate from the plugin version
+# 4f5e167 — A stale document format now halts the session at start and points at /setup, with a format epoch kept deliberately separate from the plugin version
 
 The migration machinery already existed — /setup re-scaffolds on drift and loads `migrate-checklist.md`, and the SA consumer project validated that it works. What was missing was any way for a project to *find out* it needed migrating. Migration happened only if the user thought to run /setup, and Alex's reason for changing that stands: a project silently on an old format wastes every /plan and /next reasoning over stale scaffolding, and the person least able to spot the drift is the non-coder the method is for.
 

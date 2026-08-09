@@ -1,4 +1,4 @@
-# [HASH] — The shell-write guard now denies a computed target instead of passing it, and the queue lint fires after shell commands as well as edits
+# 4f5e167 — The shell-write guard now denies a computed target instead of passing it, and the queue lint fires after shell commands as well as edits
 
 The guard recognised a scripted write whose target path was written out literally and let through one whose target was worked out as the script ran. That was a deliberate fail-open, pinned as intended behaviour in the test suite so nobody would "fix" it — the reasoning being that guessing at a variable's value is fragile, and false denials train workarounds.
 

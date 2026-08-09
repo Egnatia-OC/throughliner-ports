@@ -1,4 +1,4 @@
-# [HASH] — /next now actually halts on an uncleared red flag, making true a guarantee SPEC and the behaviour rules had been asserting with no code path behind it
+# 4f5e167 — /next now actually halts on an uncleared red flag, making true a guarantee SPEC and the behaviour rules had been asserting with no code path behind it
 
 Both SPEC and the behaviour rules stated that an uncleared red flag reaching Processed should be impossible, and that if /next ever met one it would stop and surface it rather than building. A grep at `5993a10` found zero red-flag references anywhere in the /next family, and re-verification on 2026-08-09 confirmed it: `next.md`, `next-build.md` and `next-audit.md` contained no mention of red flags at all. The backstop was documentation. It had shipped once as an exit at the run-forming step and was lost to the emergency revert.
 

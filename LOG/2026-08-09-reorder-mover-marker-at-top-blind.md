@@ -1,4 +1,4 @@
-# [HASH] — Nothing built: the queue mover's marker-at-top fix was already shipped, and the queue had gone on asking for it
+# 4f5e167 — Nothing built: the queue mover's marker-at-top fix was already shipped, and the queue had gone on asking for it
 
 This item asked for `split_blocks` in `reorder_queue.py` to detect a cleared-to-run marker sitting above every work item, plus a test case for that shape. Both already exist. The function scans the section preamble and sets `marker_above_all`; the suite carries three dedicated cases — a plain reorder, an explicit `--marker-after`, and a `--move` — and all three pass. `LOG/index.md` records the work shipping at `f9326dc`, among "the queue mover's `--delete`, `--move-section`, BEFORE/AFTER anchors and two marker bugs".
 

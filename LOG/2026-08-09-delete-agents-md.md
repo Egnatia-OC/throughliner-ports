@@ -1,4 +1,4 @@
-# [HASH] — AGENTS.md deleted: 5,511 words of partly-maintained CLAUDE.md mirror, carrying a retired docset model and two commands that cannot run
+# 4f5e167 — AGENTS.md deleted: 5,511 words of partly-maintained CLAUDE.md mirror, carrying a retired docset model and two commands that cannot run
 
 `AGENTS.md` was the Codex port's mirror of CLAUDE.md. At deletion it was 5,511 words against CLAUDE.md's ~7,800, and its content had diverged in ways that made it actively misleading rather than merely old: it still described docset A as a frozen fallback with the session-start hook choosing between docsets, it pointed at five procedure files in a `docs/` folder that no longer exists, it stated that a retired model was the one the plugin is tuned for, and it twice instructed the reader to run `Codex plugin update sovereign-implementer@flintcraft` — there is no `Codex` executable, so both commands fail for anyone who follows them. That last one reads as a wholesale substitution that caught the word where it was a program name rather than the assistant's.
 

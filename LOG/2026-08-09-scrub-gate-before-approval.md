@@ -1,4 +1,4 @@
-# [HASH] — The scrub gate shipped: a mechanical secret-shape scan, a pre-write checklist, and an explicit refusal to claim more than either can deliver
+# 4f5e167 — The scrub gate shipped: a mechanical secret-shape scan, a pre-write checklist, and an explicit refusal to claim more than either can deliver
 
 This item carried a red flag, cleared at processing on 2026-08-09 by informed acceptance rather than by design — Alex was told plainly that queue items and log entries written between then and this build could carry revealing content into a repository that might be published, and chose to proceed with the fix queued rather than hold the work. That exposure was live until this shipped. It has now shipped.
 

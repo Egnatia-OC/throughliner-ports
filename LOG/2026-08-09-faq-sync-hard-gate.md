@@ -1,4 +1,4 @@
-# [HASH] — FAQ-sync reframed from a soft self-check into a hard close gate whose disposition has to be written into the LOG entry
+# 4f5e167 — FAQ-sync reframed from a soft self-check into a hard close gate whose disposition has to be written into the LOG entry
 
 The clause added on 2026-07-30 asked a session carrying a user-facing change to "confirm the FAQ entry was written". It failed on its first real test: `ea272f6` synced SPEC and not the FAQ, which is the exact case it was added for.
 

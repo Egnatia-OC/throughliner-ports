@@ -1,4 +1,4 @@
-# [HASH] — The four deleted rezip verification steps restored, the version-bump rule written down for the first time, and the three hook suites wired in
+# 4f5e167 — The four deleted rezip verification steps restored, the version-bump rule written down for the first time, and the three hook suites wired in
 
 The evidence for this was a whole session run on the wrong plugin. The 2026-08-09 /plan session loaded its procedure from an installed host predating `f9326dc`: that snapshot still contained the retired `docs/` folder and its skill files still pointed at it, so every procedure the session followed came from a docset that had been deleted two commits earlier. Nobody noticed for half the session, and then only because Alex thought to ask.
 
