@@ -27,12 +27,15 @@ gets built first — through discussion, not silently.
 - **A recommendation is not a decision. A draft is not a written line.** Both need
   the user's call.
 - **SPEC is a normal doc.** When a planning decision changes what SPEC says — a
-  new capability, a scope change, a reworded rule (the test: does any SPEC
-  sentence go wrong?) — edit SPEC in that same /plan session, with the user
-  present and approving. Don't defer it. Spec-driven development's contract is
-  that a change altering behaviour updates the spec in the same commit; the
-  /plan-close spec-sync gate enforces that atomicity. When a change touches no
-  SPEC sentence, none of this applies.
+  new capability, a scope change, a reworded rule (**the test: does any SPEC
+  sentence go wrong or incomplete?**) — edit SPEC in that same /plan session, with
+  the user present and approving. Don't defer it. Spec-driven development's
+  contract is that a change altering behaviour updates the spec in the same
+  commit; the /plan-close spec-sync gate enforces that atomicity. When a change
+  touches no SPEC sentence, none of this applies. Two other routes exist: a build
+  that discovers it needs a SPEC change asks, adds SPEC.md to its Files, and edits
+  it inline (next-build.md); and a large SPEC rework is its own piece of work,
+  naming SPEC.md among its files like any other build.
 - **/plan resolves what it can in-session; capture is only for what it can't.**
 
 ```
@@ -93,21 +96,11 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
 
-**Completion-ask for `[user]` work — only in async completion mode** [SILENT in
-the default in-/next mode, or when none in Processed; PROMPT when async and
-present].
-
-```
-completion mode = in-/next (default)  ->  SUPPRESSED ENTIRELY. Say nothing.
-    # detection falls to /next's trailing note at the natural moment;
-    # asking every session reads as "why haven't you done these?"
-completion mode = async               ->  ask once whether any Processed [user]
-                                          item is now complete
-```
-
-Detection is by asking, not by scanning for a produced file. For any the user
-confirms done, close it at this session's /done — log under its slug, remove from
-Processed.
+**No completion sweep for `[user]` work.** /plan never asks whether Processed's
+`[user]` items are already done — that ask is gone from the method entirely, and
+so is the setting that used to toggle it. If the user mentions having done one,
+close it at this session's /done (log under its slug, remove from Processed);
+otherwise leave them alone and say nothing about them.
 
 **Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
 lift; PROMPT only for the user-only batch]. Walk the below-line items; for each,
@@ -124,6 +117,23 @@ provably still-waiting    ->  skip silently
 
 Per-item asking is the nagging this revisit exists to avoid. An item with no
 recorded lift-condition can't be classified without nagging — note it as a gap.
+
+**Before asking any user-only condition, run the downstream-action test:** is
+the awaited event downstream of an action the user has to perform first? "The
+collaborator replies" reads like an external event, but if the user has never
+sent the message, the revisit will ask "has it happened yet?" forever about a
+thing that cannot happen — user work existing only as a recurring chat
+question, manufactured by correctly-followed rules. If yes: that action is a
+`[user]` work item — propose filing it, with the condition rewritten to wait
+on *it*. If no (a restart, a release, someone else's unprompted move), the
+condition stands and joins the consolidated question. When several conditions
+await the same person, one `[user]` walkthrough carries all of them — never
+several walkthroughs that have the user message the same person repeatedly.
+
+The test applies to the **whole** user-only branch, not only the collaborator
+case, and it fires again at the moment a lift-condition is *written* (the
+below-marker placement step in done-plan.md), which is the earliest point it can
+catch one.
 
 **Seed the queue from SPEC** [BRIEF, PROMPT in the trigger state; otherwise
 SILENT]. A rich SPEC can describe buildable features with no path into the queue —
@@ -253,7 +263,9 @@ when mode is `local` AND an editor is recorded, lead with a one-line pointer
 instead of the pasted quote — `First item — **[work-slug]** — is in
 [QUEUE.md](QUEUE.md) under Unprocessed.` — then the analysis in that same message.
 The confirm re-read still runs in its pointer form (a resolves-check, not a
-text-match). Remote or no editor → keep the inline quote.
+text-match). Remote or no editor → keep the inline quote. What counts as a
+recorded editor is defined once in plugin-behaviour.md's working-mode render
+rule — read it there rather than judging by eye.
 
 **2. Recommend**  [PROMPT]
 
@@ -340,6 +352,12 @@ When found buried in prose, split it into its own `[user]` line with its own slu
 and reference that slug from the original. A gating action left embedded is
 invisible as next-work — its next-ness survives only in the memory of whoever read
 the prose.
+
+*Before any `[user]` tag stands, run the capability check.* Name the tool that
+would do the work and confirm it is absent or unauthenticated (the over-tag
+guard, plugin-behaviour.md). Don't reason from what the task *sounds* like —
+"create a GitHub repo" sounded browser-shaped and went to the user when `gh`
+would have done it in seconds. This is the cheapest place to catch a wrong tag.
 
 **Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.

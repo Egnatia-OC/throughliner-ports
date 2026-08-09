@@ -26,14 +26,25 @@ So Claude knows your default `.md` app and can point you to a project doc with a
 
 To set your **working mode** — whether you're usually at your desktop or driving Claude from your phone. It changes one thing: how Claude shows you text that lives in your project files. Set it to **local** (at your computer) and Claude points you to that text with a link, since an edited file opens instantly for you — it saves re-typing the text into chat. Set it to **remote** (on your phone) and Claude pastes the text straight into chat instead, because opening a file on a phone means digging through Google Drive and re-downloading it, so a link would be no use. It's asked once at /setup and defaults to **local** if you skip. You're not locked in: tell Claude "I'm remote today" (or "back at my desk") any time and it switches for that session, reverting afterward. This works alongside the editor setting — a link only gets used when you're in local mode *and* you've told Claude which `.md` app you open your docs in.
 
-## Why does setup ask whether I finish my `[user]` steps in /next or on my own?
+## Will Claude ever ask whether I've already done one of my `[user]` steps?
 
-To set your **completion mode** — a one-time preference for how you handle the `[user]` steps in your queue (the steps only you can do). There are two ways people work:
+No. Not in a build session, not in a planning session, not at a close — and not as a passing aside at the end of a walk-through. A `[user]` step is something Claude walks you through, and that's the whole of it. Being asked "have you done these yet?" reads as being chased about work you're perfectly reasonably saving for later, so the question is gone from the method entirely.
 
-- **in-/next (the default)** — you let Claude walk you through each `[user]` step when it comes up in /next. This is the relaxed, recommended way: you don't have to remember or chase these steps, you just do them together with Claude when you reach them.
-- **async** — you often do these steps on your own, between sessions.
+Instead, Claude works out what's done from what it can actually see: a step it walked you through to the end this session is done; a step whose prerequisite plainly hasn't happened isn't; and you mentioning that you did one is the third way. Where a step leaves something checkable behind — a page that now loads, a file that's now gone — Claude checks that itself rather than asking you.
 
-The setting changes one small thing: whether planning sessions ask you up front, "have you already done any of these `[user]` steps?" In the default in-/next mode they *don't* ask — you're doing those steps in /next anyway, so being asked every planning session would feel like being nagged about work you're correctly saving for later. In async mode they *do* ask, so a step you finished on your own gets recorded instead of sitting in your queue. It's asked once at /setup and defaults to in-/next; you can change it later by re-running /setup or just telling Claude. (Either way, if you finish a `[user]` step in /next, Claude still offers to record it right there — this setting only controls the separate up-front question in planning.)
+There's one gap in that, and it's deliberate: if you quietly do a step on your own and it leaves nothing Claude can see, it'll stay in your queue until you mention it. Just say so and Claude records it and clears it. That's a better trade than being asked every session.
+
+(If your project was set up before this changed, you may still have a **Completion mode** line in your CLAUDE.md. It doesn't do anything any more. Leave it or delete it — Claude ignores it either way.)
+
+## There's a `.throughliner` folder in my project. What is it, and can I delete it?
+
+It's a signal for other apps, and yes — deleting it is completely safe.
+
+While Claude is writing to one of your files, it drops a small file in there saying "a write is happening right now, to this file". That exists so another application you have open on the same document — a Markdown reader or editor you're reading and typing in — can hold off for a moment instead of the two of you landing on top of each other mid-sentence. Without it, an app watching your files can see *that* something changed but not *who* changed it, and guessing wrong means being locked out of your own document while you're writing in it.
+
+Two things make it safe rather than fiddly. Every entry carries a timestamp, and an app reading it treats anything more than about half a minute old as "nothing is happening" — so if a session crashes mid-write, nothing stays stuck. And an app that finds no folder at all simply carries on as normal, which is what happens in every project that doesn't use this plugin.
+
+The folder is not committed to your project's history — setup adds it to your `.gitignore` — because it's about what's happening right now on this machine, not part of what you're building. If you delete it, the next write recreates it.
 
 ## What are the Processed and Unprocessed sections in QUEUE.md?
 
@@ -53,7 +64,9 @@ One related detail about *when* these show up: Claude only brings up a `[user]` 
 
 ## I did a `[user]` step Claude walked me through. How does it get recorded and cleared?
 
-Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first. To catch a step you may have done in an earlier session, Claude keeps a light check — but it never leads with it. When it reaches a step, it leads straight into walking you through it; then, only for a step that could plausibly have been done before, it adds a closing note like "…or tell me if you've already done this and I'll just record it." Say you've done it and Claude records and clears it instead of walking you through it. (It asks rather than trying to detect it automatically, because a `[user]` step is often a check or a decision with no file to look for.) The reason it never opens with "have you already done this?" is that leading with it would treat ready work as probably-already-done and make you push back before Claude will help — the walk-through is the point, so it comes first.
+Once you've finished the step, Claude tells you how to close it out: **run /done to record it**, or **mention it at your next /plan**. Either way, Claude writes it into your session log and removes it from your queue — so a finished step doesn't sit there. This matters because a `[user]` step doesn't clear itself: if nothing records it, the next time Claude works down the queue it would bring you the same step again, as if you'd never done it. Claude never talks about recording or /done *during* the walk-through — that comes only after the last step is done (or you choose to leave it), so the walk-through itself always finishes first.
+
+Claude won't ask whether you've already done a step, at any point — see the question above on that. If you finished one in an earlier session and it never got recorded, just say so and Claude records and clears it instead of walking you through it. And where the step leaves something Claude can check — a page that now loads, a branch that's now gone — Claude runs that check before recording it, rather than taking your word for it. That's not doubting you: a step has been logged as done once before when an unnoticed problem had actually stopped it, and the residue sat there for months. If a check comes back empty, Claude just tells you what it found and leaves the step in place.
 
 ## What are the build and audit flavors — and is there a separate "test"?
 
@@ -243,9 +256,23 @@ Claude owns this ordering and does it on its own — it tells you what it moved 
 
 Yes. Some queue housekeeping is Claude's to handle on its own — clearing a "waiting on" note once the thing it was waiting for is done, or fixing a pointer to a section that has moved. These change nothing you decide: they drop no work, reorder nothing, and don't alter any choice you've made — they're bookkeeping on entries that are otherwise fine. So Claude makes the fix and tells you it did, as part of the commit, rather than stopping to ask. Anything that's a real judgment call — dropping an item, rewriting it, or deciding whether to keep it — still waits for a planning session and your say. You always see what was tidied; you just aren't asked to approve the routine kind.
 
-## Something about the method itself is broken or confusing — where does that go?
+## Something is broken or confusing — where does it go?
 
-Not into your project's queue — that queue is for your app, and a note about how Sovereign Implementer *itself* behaves would just clutter it. Method problems go to the plugin's author instead. If you hit one — a command doing something odd, a step that doesn't make sense, or a question this FAQ doesn't answer — tell Claude, and it drafts a short report you can send. Claude can also spot a method problem itself mid-session and offer once to draft the report. The report is scrubbed by design: it describes what the plugin did, which step, and the version — never your app's name, your files, or any secrets. Claude shows you the report and you paste it at flintcraft.tech/report yourself; Claude never sends it for you, so nothing leaves your machine without your eyes on it first. The test Claude uses to tell the two apart: is this about how the method works, or about what you're building with it? The first goes to the author; the second stays in your queue as normal work. (This is not Claude Code's built-in `/bug` command — that reports Claude Code itself to Anthropic, not this plugin to its author.)
+There are three possible homes, and the question that picks between them is simply: **which thing is misbehaving?**
+
+- **Your app** — the thing you're building. That's ordinary work, and it stays in your queue as a capture, like anything else.
+- **The method** — a command doing something odd, a step that doesn't make sense, a rule that produced a bad outcome, or a question this FAQ doesn't answer. That's not work on your app, and a note about it would just clutter your queue, so it goes to the plugin's author at **flintcraft.tech/report**.
+- **Claude Code itself** — the app all of this runs inside: its viewer, its links, its own machinery. That belongs to Anthropic, not to this plugin, so it goes to a **GitHub issue on `anthropics/claude-code`**.
+
+If Claude genuinely can't tell which of the three it is, it asks you rather than guessing — a wrong guess either buries method feedback in your app's queue or pushes your own work out to a stranger.
+
+Both outward reports are scrubbed by design: they describe what happened, which step, and the version — never your app's name, your files, or any secrets. And nothing is ever sent without you reading the exact text first.
+
+The two differ only in who does the sending, and only because of what's possible. The method report goes to a web page Claude can't fill in for you, so Claude writes it out and you paste it. A Claude Code report can be filed from the command line, so if you have GitHub's `gh` tool installed and you're signed in, Claude offers to post it for you — showing you the full text and waiting for an explicit yes. If you don't have `gh`, Claude writes the report out for you to paste on GitHub yourself, so the offer never simply fails. Before drafting a Claude Code report, Claude searches the existing issues — partly to avoid repeating one, but mostly because knowing what's already been reported is what lets your report say something new.
+
+Either of you can start one: tell Claude when you hit something, or Claude may spot it mid-session and offer once, without nagging.
+
+(None of this is Claude Code's built-in `/bug` command. That reports Claude Code to Anthropic — fine for the third case, but it can't reach this plugin's author, so it's never the route for a method problem.)
 
 ## Why is there a "Last session advises…" line at the top of my queue?
 

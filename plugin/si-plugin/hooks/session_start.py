@@ -242,6 +242,43 @@ def _uncleared_red_flags(queue_path):
     return uncleared_flags
 
 
+def sweep_stale_editing_markers(cwd: str) -> None:
+    """Delete editing-state marker files left behind by dead sessions.
+
+    `.throughliner/editing-<session-id>.json` is written per session by the
+    pre/post tool-use hooks. A session that crashes never writes its closing
+    marker, so the file survives. This is housekeeping and nothing more — the
+    SAFETY is the staleness rule a reader applies (an old timestamp means "not
+    editing" whatever the flag says), so nothing depends on this sweep running.
+    It exists so crashed sessions stop leaving litter: a reader re-reads the
+    whole directory once a second per watched project, so unbounded growth is
+    unbounded work on a one-second timer, and the directory syncs even though
+    it is gitignored, so dead markers replicate rather than sitting locally.
+
+    An hour is deliberately far longer than any reader's staleness window
+    (~30 seconds), so this can never delete a marker a live session is still
+    refreshing. Errors are swallowed: tidying must never break a session start.
+    """
+    try:
+        import time
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        if not os.path.isdir(marker_dir):
+            return
+        cutoff = time.time() - 3600
+        for name in os.listdir(marker_dir):
+            if not (name.startswith("editing-") and name.endswith(".json")):
+                continue
+            path = os.path.join(marker_dir, name)
+            try:
+                if os.path.getmtime(path) < cutoff:
+                    os.remove(path)
+            except OSError:
+                continue
+    except Exception:
+        return
+
+
 def main() -> int:
     try:
         data = json.load(sys.stdin)
@@ -251,6 +288,8 @@ def main() -> int:
     cwd = data.get("cwd", "")
     if not cwd or not os.path.isdir(cwd):
         return 0
+
+    sweep_stale_editing_markers(cwd)
 
     spec_path = os.path.join(cwd, "SPEC.md")
     queue_path = os.path.join(cwd, "QUEUE.md")

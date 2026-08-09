@@ -27,6 +27,10 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed.
 
+When something goes wrong, Claude works out which of three things it was and sends it to the right place: your **app** stays as work in your own queue; a problem with **the method** goes to the plugin's author at flintcraft.tech/report; a problem with **Claude Code itself** goes to a GitHub issue on `anthropics/claude-code`. Both outward reports are scrubbed of your project's details, and nothing is ever sent without you seeing the exact text first.
+
+They also publish an **editing-state signal**: while Claude is writing to a file, a small marker in a `.throughliner/` folder says so, so another app you have open on the same document can hold off rather than the two of you typing over each other. It's a published contract other applications can read, it fails open where the plugin isn't installed, and the folder is gitignored — safe to delete at any time.
+
 ## How to use it
 
 Run **/setup** once, when you first set up a project. After that you work in sessions, and every session ends the same way: **/done** to record what happened, then **/clear** to start fresh.
@@ -40,6 +44,9 @@ The habit that matters: always /done before /clear, so each session is saved bef
 
 **Prerequisites** — do these once per project:
 - Run `/setup` in your project folder to scaffold the method docs
+
+**Optional software that unlocks a capability** — not needed to use the plugin:
+- `gh`, GitHub's command-line tool. If you have it and you're signed in, Claude can file a Claude Code bug report for you directly (after showing you the text and asking). Without it everything still works — Claude writes the report out and you paste it on GitHub yourself.
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
 - Claude Opus 4.8, all effort levels tested OK

@@ -8,7 +8,9 @@ Fable 5's instruction following is strong enough that most of the 4.8 compensati
 
 The guide's through-line: "Instruction-following is improved enough that you can steer most behaviors with a brief instruction rather than enumerating each behavior by name."
 
-## The 4.8 checklist (authoring-heuristic.md), item by item
+## The 4.8 checklist (the retired `authoring-heuristic.md`), item by item
+
+> **Note added 2026-08-09.** The checklist this section indexes is gone. `authoring-heuristic.md` was replaced by [`self-authoring-rules.md`](../self-authoring-rules.md), an admission-and-eviction gate whose only surviving wording check is item 6 below — inverted, since it now says *write it as an action* rather than treating action-framing as optional. This section stands as the record of the item-by-item assessment that informed that replacement; read it as history, not as live guidance. The "Carry the why with the rule" finding further down is the one this file contributed most directly: it is now settled policy that rationale lives outside the operative rule.
 
 1. **Quantify the target, don't adjective it** — no longer necessary. A short brevity instruction steers Fable as well as quantified targets. Harmless to keep, but it's weight the docs no longer need.
 2. **Show the shape (positive exemplar)** — still useful, still cheap. Exemplars remain a general prompting best practice; keep where they exist, stop requiring them everywhere.
@@ -30,6 +32,8 @@ The guide's through-line: "Instruction-following is improved enough that you can
 - **Unrequested actions** — Fable can occasionally act beyond the ask; explicit boundary statements still earn their place.
 
 ## Scope caveat for this project
+
+> **Superseded 2026-08-09.** Docset A retired on 2026-08-08 and 4.8 is no longer a supported model, so the "nothing can go until the project retargets" caveat below no longer holds — the project has retargeted. The over-prescription risk it names is now acted on rather than tolerated.
 
 The project's declared model target is Opus 4.8 (CLAUDE.md Model target, resolved 2026-06-15: "future models are adopted when they arrive"). Nothing in the 4.8-shaped text can "go" until the project decides to retarget (or dual-target) — and consumers of the plugin may run either model, so shipped docs face a mixed audience. The 4.8 techniques are mostly *harmless-but-heavy* on Fable, except the over-prescription risk, which is a genuine reason to slim rather than just tolerate.
 

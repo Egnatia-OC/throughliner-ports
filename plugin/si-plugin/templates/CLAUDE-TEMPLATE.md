@@ -42,12 +42,6 @@ Working mode: local
 
 <!-- Where you work from, set at /setup. `local` = at your desktop, where an edited file opens instantly, so Claude points you to text in your docs with a link. `remote` = driving Claude from your phone, where opening an edited file is awkward, so Claude pastes the text straight into chat instead. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
 
-## Completion mode
-
-Completion mode: in-/next
-
-<!-- How you handle the `[user]` steps only you can do, set at /setup. `in-/next` (the default) = you let Claude walk you through each such step when it comes up in /next, so planning sessions don't ask up front whether any are already done. `async` = you often do these on your own between sessions, so planning sessions do ask up front, to record any you finished. Change it by re-running /setup or just telling Claude. -->
-
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 
 ## Project rules

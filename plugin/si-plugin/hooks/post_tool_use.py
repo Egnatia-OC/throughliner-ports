@@ -61,6 +61,59 @@ WORK_SECTIONS = ("Processed", "Unprocessed")
 VALID_FLAG_STATES = {"cleared", "uncleared"}
 
 
+def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool) -> None:
+    """Clear the editing-state signal after a write. Never raises.
+
+    The closing half of the heartbeat pre_tool_use starts: same file, same
+    shape, `active` false and a fresh timestamp, keeping the last-written path
+    so a reader can see which document was touched. Kept as a full rewrite
+    rather than a patch of the existing file, so a marker left behind by a
+    crashed session is replaced wholesale rather than merged with.
+
+    The timestamp still leads on safety: even if this never runs — the session
+    dies, the write is denied — the reader treats the stale marker as "not
+    editing". Same never-fail rule as the pre-write half: any error here is
+    swallowed, because a companion-app convenience must not be able to break
+    the user's actual work.
+    """
+    try:
+        import datetime
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        os.makedirs(marker_dir, exist_ok=True)
+        safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        # Version-2 shape, kept field-for-field with pre_tool_use's opening
+        # half: project-relative `files` (forward slashes, no leading "./",
+        # absolute fallback for a file outside the project), `written_at` for
+        # diagnosis-not-freshness, `producer` constant, pid/session dropped.
+        # The version stamp and the path shape must move together — a marker
+        # carrying version 2's relative paths under a version-1 stamp resolves
+        # against the wrong root and holds nothing, with no error.
+        if filepath:
+            rel = os.path.relpath(os.path.abspath(filepath), cwd)
+            marker_path = (
+                os.path.abspath(filepath)
+                if rel.startswith("..")
+                else rel.replace(os.sep, "/")
+            )
+            files = [marker_path]
+        else:
+            files = []
+        payload = {
+            "version": 2,
+            "active": bool(active),
+            "written_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "files": files,
+            "producer": "throughliner",
+        }
+        with open(
+            os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(payload, f)
+    except Exception:
+        return
+
+
 def _normalise(path: str) -> str:
     return os.path.normcase(os.path.normpath(path))
 
@@ -189,10 +242,25 @@ def main() -> int:
     if not filepath or not cwd:
         return 0
 
+    is_adopted = os.path.isfile(os.path.join(cwd, "SPEC.md"))
+
+    # Clear the editing-state signal for whatever file was just written —
+    # every file, not only QUEUE.md, and before the QUEUE.md gate below.
+    #
+    # Gated on adoption to match pre_tool_use, which returns early with no
+    # SPEC.md and so writes the OPENING marker only in adopted projects.
+    # Without this the two hooks are asymmetric: an unadopted folder gets a
+    # closing marker for a session that never opened one, so marker files
+    # accumulate in projects that have nothing to do with this plugin — and
+    # no .gitignore covers them, since /setup is what adds that entry and
+    # those folders have never run it.
+    if is_adopted:
+        write_editing_marker(cwd, data.get("session_id", ""), filepath, False)
+
     # Only the project-root QUEUE.md, only in adopted projects.
     if _normalise(filepath) != _normalise(os.path.join(cwd, "QUEUE.md")):
         return 0
-    if not os.path.isfile(os.path.join(cwd, "SPEC.md")):
+    if not is_adopted:
         return 0
 
     try:

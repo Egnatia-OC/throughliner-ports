@@ -23,7 +23,9 @@ PreToolUse hook — enforces three rules:
    installed, independent of project adoption.
 
 For Task: checks rule 3 (cost ask-gate).
-For Edit/Write/MultiEdit: checks rule 1.
+For Edit/Write/MultiEdit: checks rule 1, and publishes the editing-state
+signal (see write_editing_marker) — not a rule, a side effect that can
+never block or fail a tool call.
 For Bash/PowerShell: checks rule 2 (git safety) only.
 """
 
@@ -281,6 +283,91 @@ def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
     return True
 
 
+def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool) -> None:
+    """Publish the editing-state signal a companion app reads. Never raises.
+
+    A live Markdown reader/editor open on the same file as Claude needs to know
+    when Claude is writing, so the two don't land on each other mid-sentence.
+    Inferring that from file-modification times was rejected: a watcher can see
+    THAT a file changed but not WHO changed it, and can never tell "finished"
+    from "paused to think" — and a wrong guess locks the user out of their own
+    document.
+
+    So this is a HEARTBEAT, not a lock. The marker always carries a fresh
+    timestamp, and a reader treats a stale marker as "not editing" whatever the
+    flag says. That staleness rule is the safety property: a session that
+    crashes between starting a write and finishing one leaves a flag stuck on,
+    and without staleness the reader would lock the user out permanently —
+    reintroducing the exact harm the timing-guess approach was rejected for.
+
+    One file PER SESSION, `editing-<session-id>.json`, because two Claude
+    sessions in one project is a supported shape. With a single shared file,
+    session A finishing a write would clear the flag while session B was still
+    writing. Per-session files make the reader's rule trivially correct:
+    editing is happening if ANY file here is active and fresh.
+
+    Errors are swallowed in full: a companion-app convenience must never be able
+    to block or fail the user's actual work.
+    """
+    try:
+        import datetime
+
+        marker_dir = os.path.join(cwd, ".throughliner")
+        os.makedirs(marker_dir, exist_ok=True)
+        safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        # Project-relative path, forward slashes, no leading "./" — version 2's
+        # contract. Relative paths carry no account name (the privacy reason
+        # this changed: the folder syncs, and gitignore never stopped that) and
+        # resolve correctly against a synced copy on another machine. A file
+        # outside the project falls back to its absolute path — a marker must
+        # never lie about which file is being edited.
+        if filepath:
+            rel = os.path.relpath(os.path.abspath(filepath), cwd)
+            marker_path = (
+                os.path.abspath(filepath)
+                if rel.startswith("..")
+                else rel.replace(os.sep, "/")
+            )
+            files = [marker_path]
+        else:
+            files = []
+        payload = {
+            # `version` leads and is non-negotiable: another application is
+            # built against this contract, so it must be able to recognise a
+            # format it doesn't understand and fall back safely. A reader that
+            # cannot parse this field defaults to 1, so version 2's
+            # project-relative paths MUST NOT ship under a version-1 stamp —
+            # they would resolve against the wrong root and hold nothing,
+            # silently. Bumped to 2 when `files` went project-relative.
+            "version": 2,
+            # Must be a real boolean. A reader skips the marker entirely if
+            # this is absent, the string "true", or 1.
+            "active": bool(active),
+            # Named for what it is safe to use it for: diagnosis. Freshness
+            # comes from the marker file's own local mtime, never this field —
+            # a synced marker carries another machine's clock, and comparing
+            # that against the local clock fails closed (a dead session looks
+            # permanently current). The old name `updated` invited exactly
+            # that comparison. Nothing reads this field.
+            "written_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            # Must be a list. Absent or non-list reads as empty.
+            "files": files,
+            # A format constant naming what wrote the marker, deliberately the
+            # format's own name rather than the plugin slug so a product
+            # rename never breaks a published value. `pid` and `session` were
+            # dropped at version 2: written by these hooks, read by nothing —
+            # pid is unusable across machines and redundant on one, session
+            # restates the filename.
+            "producer": "throughliner",
+        }
+        with open(
+            os.path.join(marker_dir, f"editing-{safe_id}.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(payload, f)
+    except Exception:
+        return
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -394,6 +481,14 @@ def main() -> int:
     filepath = tool_input.get("file_path", "")
     if not filepath:
         return 0
+
+    # Publish the editing-state signal: a write is about to happen, on this
+    # file, now. Placed before the scope checks so the marker is up before the
+    # write, which is the whole point; if the write is then denied, the marker
+    # simply goes stale and the reader treats it as not-editing. Cannot block
+    # or fail the tool call — see write_editing_marker. Reached only after the
+    # SPEC.md gate above, so the signal exists only in adopted projects.
+    write_editing_marker(cwd, data.get("session_id", ""), filepath, True)
 
     # Rule 1: _build.md's Files: section governs editability. Tri-state:
     # no section = skip enforcement, present but empty = method docs only,

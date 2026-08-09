@@ -43,10 +43,29 @@ NO _build.md      ->  three shapes:
          session didn't make)
 ```
 
-Detect a completed `[user]` item **by asking**: if Processed holds any `[user]`
-item, ask whether the user just completed one — a fresh chat won't remember it, so
-the ask is what surfaces it. This can coincide with a planning session; when it
-does, close the item through that section and let done-plan.md handle the rest.
+Detect a completed `[user]` item **from what the session can already see — never
+by asking.** A `[user]` item is walked through, and that is all; no step of its
+life asks whether it's done.
+
+```
+walked through to its end in THIS session   ->  completed. Close it here.
+the user has said they did it               ->  completed. Close it here.
+anything else                               ->  leave it in Processed, silently
+```
+
+Where the item's walkthrough names an observable check — a file present or
+absent, a branch gone, a URL responding — **run it before recording completion**,
+rather than taking the report at face value. Checking the world is not asking the
+user. A failed check is reported as what was found, and the item stays in place.
+
+The gap this leaves is real and is meant to stay: an item the user completed on
+their own between sessions, with nothing observable to show for it, will sit in
+the queue until they mention it. **That is the fallback, not a hole to plug** —
+mentioning it is already a supported path, and a completion ask is exactly what
+this removed. Don't reintroduce one under any wording.
+
+This can coincide with a planning session; when it does, close the item through
+that section and let done-plan.md handle the rest.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -57,7 +76,7 @@ a `[user]` work item, which never enters a _build.md — so /done doesn't close 
 *as a build*, but once the user has run it, /done records its completion and
 removes it from the queue through the close below.
 
-## Completed `[user]`-item close  [BRIEF, PROMPT]
+## Completed `[user]`-item close  [BRIEF]
 
 A `[user]` item never entered a _build.md, so it isn't ticked and closed like a
 build. This is the close that records it and removes it from Processed, so a
@@ -65,8 +84,11 @@ finished item doesn't strand in the queue and get re-presented by the next /next
 It also runs inside a /plan close when the user mentions async-completed items.
 
 ```
-1. confirm WHICH [user] item(s) completed  [PROMPT]
-   # name those still in Processed; only confirmed-done ones close here
+1. take the completed item(s) from what the session can see  [SILENT]
+   # the routing test above already identified them. Don't ask, and don't
+   # list the other [user] items still sitting in Processed — an item whose
+   # completion isn't visible simply stays where it is.
+   # where the walkthrough named an observable check, run it first
 2. write a LOG entry per completed item, named after its slug
    # records what the user did and its outcome; draft and show for approval
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
@@ -100,6 +122,11 @@ one coherent change     ->  a single entry: LOG/<YYYY-MM-DD>-handmade.md
 several distinct        ->  a separate entry per logical change
 logical changes             # better recall than one lumped entry
 ```
+
+Draft each entry's one-liner and its rationale and **show them for approval before
+writing** — this close is reached by sessions with no build and no planning behind
+them, so the shared LOG-entry approval frame is a doc away. Step 3's "the commit
+message is the approved entry" refers to this approval.
 
 **3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
 files explicitly. The commit message is the approved entry; for several entries,
@@ -135,8 +162,8 @@ The build and plan close-outs point here. (Audits land no product changes, so an
 audit close has no spec-sync gate.)
 
 **Did this session's work change what SPEC says?** Apply the spec-entry trigger
-test: does any SPEC sentence go wrong or incomplete given what this session
-landed?
+test **in plan.md's own wording** — quote it from there rather than keeping a copy
+here, so the two can't drift apart. Read against what this session landed.
 
 If it fires, **stop the close — don't commit yet.** Surface the drift in plain
 words, naming which SPEC sentence the session made wrong, get approval to fix it,
@@ -155,6 +182,10 @@ plan close   ->  no scope-lock active: edit SPEC.md directly in-session.
                  Editing SPEC to match a decision the user already made this
                  session is RECORDING, not re-planning.
 ```
+
+The plan branch covers every plan-type close — a /plan session, a setup session,
+and a method-doc-only session alike. None of the three runs a scope-lock, so all
+three edit SPEC directly.
 
 A session that changed only queue ordering or captures touched no SPEC sentence
 and passes silently.

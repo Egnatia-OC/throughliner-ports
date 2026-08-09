@@ -2,17 +2,25 @@
 
 The standing criteria for a periodic compliance audit of the method's own procedure docs — `plugin-behaviour.md`, `setup.md`, `plan.md`, the `next*` family, the `done*` family, and any procedure doc added later.
 
-**What this is for, and how it differs from the authoring heuristic.** [`authoring-heuristic.md`](authoring-heuristic.md) is a per-text check run *once, at authoring time* — you run it over a piece of text before that text ships. This checklist is the *corpus-wide periodic sweep*: you run it over docs that already shipped, to catch what drifted or was never checked. The un-hardened tool-use rule that slipped past for so long (the subagent-cost incident, 2026-06-24) is exactly the gap this exists to close — an authoring-time check never re-examines old rules, so without a periodic sweep, a rule authored before a standard existed never gets held to it.
+**What this is for, and how it differs from the authoring gate.** [`self-authoring-rules.md`](self-authoring-rules.md) is a per-rule check run *once, at authoring time* — you run it over a rule before that rule ships. This checklist is the *corpus-wide periodic sweep*: you run it over docs that already shipped, to catch what drifted or was never checked. The un-hardened tool-use rule that slipped past for so long (the subagent-cost incident, 2026-06-24) is exactly the gap this exists to close — an authoring-time check never re-examines old rules, so without a periodic sweep, a rule authored before a standard existed never gets held to it.
 
-It is a dev artifact. It audits the method's own docs, so it is host-only — not shipped in the plugin package, no FAQ, no SPEC entry — the same status as the authoring heuristic it builds on.
+It is a dev artifact. It audits the method's own docs, so it is host-only — not shipped in the plugin package, no FAQ, no SPEC entry — the same status as the gate it builds on.
 
 Run all three lenses over each doc in scope. One read of the doc serves all three. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
 
-## Lens 1 — 4.8 authoring-compliance
+## Lens 1 — self-authoring compliance
 
-Apply the seven points in the **4.8 — the authoring pass** section of [`authoring-heuristic.md`](authoring-heuristic.md) to each doc. They are the single source of truth — read them there, don't re-list them here, so the two never drift. In summary, they cover: quantified targets over adjectives, a positive exemplar of the wanted output, lead-with-the-decision, scope stated in words, the verbosity pattern named with its replacement, action-not-prohibition framing, and the guard against over-terseness.
+Apply the four parts of [`self-authoring-rules.md`](self-authoring-rules.md) — admission, eviction, distribution, wording — to each doc. That document is the single source of truth; read the tests there rather than re-listing them here, so the two never drift.
 
-The authoring heuristic is written for a single piece of text at authoring time. Reading it corpus-wide adds one question it doesn't ask: **is the rule held to its own standard consistently across docs?** A rule hardened in one doc but cited loosely in another, an exemplar present in one step and missing from its sibling — that inconsistency is a finding even when each instance reads fine alone.
+Read corpus-wide, the gate asks things it can't ask one rule at a time:
+
+- **Admission, retroactively.** Which rules here would not be admitted today? A rule with no pointed-to failure, one Claude follows unprompted, one that applies to only some sessions but is always loaded.
+- **Eviction debt.** Where does a rule sit alongside the earlier version it was meant to supersede? Consolidation that never repealed its priors is the signature.
+- **Distribution.** Which always-loaded rules are reference material that could be fetched on demand — and, the reverse error, which fetched material is a standing behavioural rule a session would never know to look for?
+- **Rationale placement.** Which operative statements still carry their why inline, and where should it go — the shipped FAQ if a consumer would want it, the deciding LOG entry if it's an authoring decision? When moving one, check the clause isn't *stating* a rule while arguing for it.
+- **Consistency.** Is a rule held to its own standard across docs? Hardened in one doc but cited loosely in another is a finding even when each instance reads fine alone.
+
+**Eviction has to happen in the run, not as a follow-up.** An audit that reports and removes nothing reproduces the failure it exists to fix.
 
 ## Lens 2 — tag placement
 

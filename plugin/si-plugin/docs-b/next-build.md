@@ -75,7 +75,11 @@ If mid-build you discover the work needs a user-run check that isn't already a
 
 ## File structure — split by independent unit
 
-Guidance you offer, not a hard rule, so file structure stays case-by-case.
+**Fires only when the build creates or grows the project's files and there's a
+genuine choice about how to split the work across them.** A build that only edits
+existing files raises no such choice, so it gets no file-structure recommendation.
+When it does fire, this is guidance you offer, not a hard rule — file structure
+stays case-by-case.
 
 ```
 genuinely independent unit        ->  split into its own file

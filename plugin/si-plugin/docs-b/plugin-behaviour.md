@@ -31,7 +31,9 @@ Active in every session where the plugin is installed and the project is set up.
 - **One item per message when the user's next action depends on the prior one.**
   State the count upfront, give the first item, stop. No previewing later items —
   a preview is a bundle. Record the full set to the session's working file
-  (_plan.md / _build.md) first, then release one item at a time.
+  (_plan.md / _build.md) first, then release one item at a time. This holds in
+  every multi-part exchange, inside skills and out — ordinary conversation is not
+  an exemption — and there's no exception for items that seem short.
 
   ```
   inversions — deliver together, not one at a time:
@@ -45,7 +47,8 @@ Active in every session where the plugin is installed and the project is set up.
 - **Consolidate the scans at a skill opening into one narration.** When several
   checks fire at once — /plan's read-state, /next's pre-flight, /done's close-out
   — combine what they turn up into one "here's what came up: …", not bullet-by-
-  bullet.
+  bullet. This covers those three skill openings and nothing else, and only when
+  more than one check fires; a single check surfaces as it always did.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
@@ -55,7 +58,9 @@ Active in every session where the plugin is installed and the project is set up.
   copy takes the whole message, so a clean copy affordance needs the string alone
   in its own fence. Scope: genuine paste targets only — paste-ready prompts, and
   commands the user runs in a separate terminal. Commit messages are not paste
-  targets (Claude runs the commit).
+  targets (Claude runs the commit). When two genuine paste targets belong to the
+  same approval, present both as adjacent fences in one message under a single
+  approval — don't split them across turns; the user needs them side by side.
 - **Approval-time outputs render as blockquotes with a bold lead-in** naming the
   content type (**Capture draft:**, **Commit message:**, **Log entry:**). Fenced
   blocks don't wrap in the app, so a long draft runs off-screen and gets approved
@@ -67,6 +72,8 @@ Active in every session where the plugin is installed and the project is set up.
   ("this is getting long", "you're making more mistakes"). Then offer both: to
   continue in a fresh session, and to write a paste-ready handoff prompt carrying
   the state forward. A non-coder won't know either is possible, so name them.
+  This fires wherever the user gives the signal — in plain conversation as much
+  as inside a command, since a session wears thin either way.
 
 ### Working mode and view-in-doc rendering
 
@@ -98,6 +105,13 @@ readable edit's post-write reveal          ->  line-anchored link if it resolves
                                            ->  inline excerpt if it won't
 ```
 
+**"Editor recorded" means the field holds a real editor.** An `Editor:` field
+carrying the literal `not recorded` is NOT a recorded editor, and neither is an
+absent field. /setup writes that exact string when the user skips the question,
+so reading it as a recorded editor sends a pointer to a file the user has no way
+to open — and, because it pointed, pastes nothing in chat. The user gets nothing
+at all. This is the one definition; other docs point here rather than restate it.
+
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
 the content is there. Never emit a pointer from the intent to write. A pointer
@@ -105,20 +119,14 @@ that misreports a write is worse than pasting: the user opens the doc, finds
 nothing, and has no copy in chat either. (Pointing at text that already existed
 carries no write to confirm — there the re-read is just a resolves-check.)
 
-### Completion mode — the `[user]`-item async check
+### A stale `Completion mode:` line is ignored, never an error
 
-A second stored setting (`Completion mode:` in the project's CLAUDE.md). It
-governs one thing: whether /plan sweeps Processed for already-done `[user]` items.
-
-```
-in-/next (default)  ->  /plan Step 1 sweep SUPPRESSED
-                        # asking every session reads as "why haven't you done
-                        # these?"; detection falls to /next's trailing note
-async               ->  /plan Step 1 sweep FIRES
-                        # user often completes [user] items between sessions
-```
-
-Unset (a project predating the field) → treat as `in-/next`.
+Projects set up before 2026-08 carry a `Completion mode:` field in their
+CLAUDE.md. The setting it controlled no longer exists — `[user]` items are never
+asked about, in any session — so the line governs nothing. **Ignore it silently.**
+Don't act on it, don't flag it, don't ask the user to remove it, and never treat
+it as a broken project. No migration reaches every project, so this line will
+keep turning up for a long time.
 
 ### Vocabulary — background-only terms
 
@@ -215,6 +223,11 @@ Guards: name the candidate tool and what it does before using it (don't install
 blind); downloads, commands and device access stay under their existing
 confirm-first rules; don't presume the user has a terminal.
 
+This rule has a second firing site: the moment work is about to be tagged
+`[user]` (the over-tag guard in the `[user]` flavor rules). Work that sounds
+browser-shaped is exactly where a CLI path goes unconsidered — run the
+capability check there, not just when helping with a task in hand.
+
 ### Where findings and records land — a three-way triage
 
 ```
@@ -266,8 +279,10 @@ surfaced. The `#### ` heading is load-bearing, not cosmetic.
 #### <one-line description> [slug]
 <prose rationale — the reasoning, in plain short sentences>
 Red flag · State: <cleared | uncleared>        # only if it carries one
-<"Captured by you — " >filed after `<hash>`    # hash = last commit at filing time
 ```
+
+The user-credit and the filing-time commit stamp are prose conventions written
+into the rationale, not fixed lines of this block — see the two bullets below.
 
 - The description **is** the heading text; the `[slug]` sits at the **end** of
   that same line. Slugs are for LOG traceability, nothing more.
@@ -300,6 +315,20 @@ real and equally bad; neither warning may be louder than the other.
   a push or restart) is an **ordering** concern: place it below the cleared-to-run
   line with a lift-condition. The test is "can Claude do this at all?", not "can
   Claude do this right now?".
+
+  **And the test is a check, not a judgment: before tagging `[user]`, name the
+  tool that would do the work and confirm it is absent or unauthenticated.**
+  Reasoning from what the task *sounds like* is exactly what has failed live —
+  "create a GitHub repo" sounded browser-shaped and was handed to the user,
+  when `gh` was installed, authenticated, and did it in seconds. A one-line
+  capability check ("is `gh` authenticated?") passes or fails and can't be
+  talked into the wrong answer; where no tool plausibly exists, that is itself
+  the answer and the check costs nothing. This is the reach-for-a-CLI rule
+  (Research and evidence filing) applied at the tagging moment — the two rules
+  sit either side of the same failure, so each names the other. It fires at the
+  /plan keep-step, where a wrong tag is cheapest to prevent, and again at
+  /next's pre-hand-off, the last line of defence. If /next's check catches one,
+  do the work as ordinary work and note the correction for the close.
 - **Don't under-file.** Genuine user work MUST become a `[user]` line — never a
   live chat question, never "separate work you'd do yourself". The failure mode
   is **user-work evaporation**: floated as a question or waved off as an aside,
@@ -307,7 +336,11 @@ real and equally bad; neither warning may be louder than the other.
   must eventually be *done*, so everything must be *tracked*. When "can Claude do
   this at all?" returns **no**, file a `[user]` line. This is the quieter, more
   common failure — the over-tag rule is loud, so the instinct is to minimize it
-  and walk straight into this one.
+  and walk straight into this one. It has a second face: a lift-condition
+  awaiting an event that can't happen until the user acts ("the collaborator
+  replies" — to a message never sent) is under-filing too, and the below-line
+  revisit's downstream-action test (plan.md) exists to catch it — the action
+  files as a `[user]` work item; the condition waits on it, not on the event.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
   check — because that's what lets /next *lead* with them. But "can't fully
   script it yet" is **not** a reason to withhold the line: file it with a rough
@@ -322,7 +355,9 @@ matters more than compression here.
 
 **Placement.** Place by judgment where a relationship applies (new work revises
 or builds on existing work); oldest-first as the fallback. Narrate the placement
-in one line when judgment is exercised.
+in one line when judgment is exercised. **Mid-session captures follow the same
+rules and get no special priority** — being noticed during a build doesn't put an
+item at the top of Unprocessed.
 
 **Don't process work outside /plan.** Filing is open to every session; moving an
 item into Processed or deleting it is /plan's, because that decision is the
@@ -432,6 +467,10 @@ provide risk-*addressing* without promising risk *management*.
 one without surfacing it. Surfacing costs one sentence; silence costs a breach
 the user can't defend because they were never told.
 
+**A risk spotted during planning is flagged the same way**, before any code
+exists. The marker goes on its work item exactly as a build-time risk's would;
+clearing it is part of processing the item. Nothing here is build-only.
+
 Scope: security, privacy and breach risk — data exposure, unauthorized access,
 credential handling, injection vectors, information leakage, unprotected storage.
 The threshold is a genuine risk, not every data-handling intention.
@@ -475,6 +514,11 @@ LOG entry, and stops if it ever meets one still reading uncleared.
 Without the back half, a finished `[user]` item strands in Processed and the next
 /next presents it again as if unbuilt.
 
+- **A `[user]` line is walked through, and that is all.** There is **no completion
+  ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
+  leading, not trailing, not as a light aside. Never ask whether one is already
+  done. This is a standing rule with no exceptions and no mode that turns it back
+  on; the setting that used to is retired.
 - **/next leads with the walk-through and drives it live.** Name what's theirs to
   do, run whatever parts you can, give the **first** concrete step, and **wait**.
   One step at a time. This is a live drive, not an offer — you walk *beside* the
@@ -488,12 +532,26 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
   drive to a mere offer.
 - **One `[user]` item at a time — never bundled.** Each in its own message, led by
   its own live walk-through. Not a bulk-approval result set.
-- **The already-done check is a trailing note, not the opener** — "…or tell me if
-  you've already done this and I'll just record it" — and only on an item that
-  could plausibly have been completed before. A freshly-cleared item carries no
-  such note.
-- **Detection is by asking, not scanning.** A `[user]` step can be a device check
-  or a decision, with no artifact to find.
+- **Completion is inferred, never asked.** An item walked to its end this session
+  is done; an item whose lift-condition visibly hasn't cleared isn't; and the user
+  saying they did one is the third way it can be known. Nothing else counts.
+- **Where completion has an observable result, check the world before recording
+  it.** The never-ask rule forbids asking the USER; it never forbade checking
+  the WORLD — a cheap mechanical check is literally the session seeing, which is
+  what inference already means. A file present or absent, a branch gone, a folder
+  deleted, a URL responding: when the item's walkthrough can name such a check,
+  it records it, and the close runs it rather than accepting the report. This
+  exists because a real item was logged complete on the user's word and the work
+  hadn't happened — an OS lock had defeated their intent, and the residue sat
+  unnoticed for months when one `git branch -r` would have caught it. A failed
+  check produces a plain statement of what was found and leaves the item in
+  place — it never becomes "are you sure you did this?". Where nothing observable
+  exists, nothing changes.
+- **The gap this leaves is deliberate: leave the item in place.** An item the user
+  completed on their own, with nothing observable to show for it, will sit in
+  Processed until they mention it — and mentioning it is already a supported path.
+  This is written down precisely so nobody later notices the hole and proposes an
+  ask to fill it. Don't.
 - **A completed `[user]` item has a defined close:** log it under its slug and
   remove it from Processed. Lives in **both** /done (the user runs /done right
   after finishing) and /plan (they completed it async and mention it).
@@ -691,18 +749,40 @@ premise is broken       ->  halt and course-correct
 ## Consumer feedback channel
 
 A user will sometimes hit a problem with the *method itself* — a skill
-misbehaving, a hook misfiring, a rule that produced a bad outcome. That isn't
-work on their app, so it routes **out** to **flintcraft.tech/report**, not into
-their QUEUE. Never use Claude Code's built-in `/bug` — that reports Claude Code
-problems to Anthropic, not third-party plugin issues to this plugin's author.
+misbehaving, a hook misfiring, a rule that produced a bad outcome — or with
+**Claude Code itself**, the surrounding tool the method runs inside. Neither is
+work on their app, so neither goes into their QUEUE; each routes out to its own
+destination. Never use Claude Code's built-in `/bug` for a method problem —
+that reports Claude Code problems to Anthropic, not third-party plugin issues
+to this plugin's author.
 
 ```
-the discriminator:  is this about how the METHOD works,
-                    or about what I'm BUILDING with it?
-    method   ->  flintcraft.tech/report
-    my app   ->  an ordinary capture in my QUEUE
-    unsure   ->  ask the user; don't guess
+the discriminator:  which thing is misbehaving?
+    my app       ->  an ordinary capture in my QUEUE
+    the method   ->  flintcraft.tech/report
+    Claude Code  ->  a GitHub issue on anthropics/claude-code
+        (the harness: the app itself, its viewer, links,
+         hooks machinery, sidebar — not this plugin's rules)
+    unsure       ->  ask the user; don't guess between the three
 ```
+
+**The Claude Code branch, and its guards — each earned in a real filing:**
+
+- **Offer to file it directly** when `gh` is installed and authenticated:
+  Claude drafts the issue, shows the exact text, and posts it only on an
+  explicit yes. When `gh` is absent or unauthenticated, fall back to drafting
+  text for the user to paste on GitHub themselves — the offer never just fails.
+- **Approval-before-post is non-negotiable.** A GitHub issue is public and
+  permanent under the user's identity. Show the full text; post on an explicit
+  yes; never auto-submit.
+- **Duplicate-check first — it shapes the report, not just avoids repeats.**
+  Search existing issues before drafting. In the first real use, the search
+  split one report into a comment strengthening an existing issue plus a new
+  issue for the genuinely novel half — better output, not just less noise.
+- **Scrub by construction, and note the counter-intuitive case:** a report is
+  *about* sensitive content more often than it contains some. Describe the
+  sensitivity ("a project name that shouldn't appear on a shared screen")
+  without demonstrating it. No app names, file contents, or secrets.
 
 ```
 user-raised     ->  always fine to draft a report
@@ -718,9 +798,18 @@ step, the method version, and generic repro steps.
 **Scrubbed by construction.** Never include app names, file contents, secrets,
 QUEUE/SPEC content, or any project specifics beyond describing the issue.
 
-**Claude drafts, the user sends.** Show the paste-ready block; the user reviews
-and pastes it themselves. Never auto-submit — this is outward-facing, so the
-user's own review is the required backstop on the scrubbing.
+**Claude drafts, the user sends** (the method-report flow — the Claude Code
+branch above carries its own posting rule). Show the paste-ready block; the
+user reviews and pastes it themselves. Never auto-submit — this is
+outward-facing, so the user's own review is the required backstop on the
+scrubbing.
+
+**The two posting rules differ deliberately; don't "reconcile" them.** The
+method report is pasted by the user because flintcraft.tech/report is a web form
+Claude can't submit. The Claude Code report is posted by Claude, after explicit
+approval, because `gh` can post it and a non-coder shouldn't be sent to a GitHub
+form. Both keep the same guarantee — nothing leaves without the user seeing the
+exact text and saying yes — and only the mechanics differ.
 
 **Red flag — scrubbing is non-negotiable.** A submitted report can become a
 public GitHub issue downstream, so a leak of app details or secrets into one is a

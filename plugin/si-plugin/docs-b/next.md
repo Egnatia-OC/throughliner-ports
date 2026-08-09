@@ -67,13 +67,19 @@ builds all the Claude-work, then Step 3 walks the `[user]` items. The two passes
 never interleave, so no cleared Claude-work is left unbuilt — even when a `[user]`
 item sits mid-run.
 
-**The already-done check rides Step 3; it never leads.** A `[user]` item may
-already have been done — run in a past session that never removed it from
-Processed. Handle that as a *trailing* note in Step 3, never as an opening
-question: leading with "have you already done this one?" treats ready work as
-probably-already-done and makes the user re-assert it before you'll help.
-Detection is by asking, not by scanning for an artifact — a `[user]` step can be a
-device check or a decision, with no file to find.
+**Never check whether a `[user]` item is already done.** Not up front, not in
+passing, not as a trailing note. A `[user]` item is walked through, and that is
+all — its whole lifecycle carries no completion ask. If the user has already done
+one, they'll say so, and that's the moment it gets recorded. Asking treats ready
+work as probably-already-done and makes the user re-assert it before you'll help.
+
+**Before handing a `[user]` item over, run the capability check.** Name the tool
+that would do the work and confirm it is absent or unauthenticated (the over-tag
+guard, plugin-behaviour.md). This is the last line of defence against a wrong
+tag, and it's nearly free — the run is about to act on that tag. If the check
+finds a tool that can do it, do the work as ordinary work and note the correction
+for the close; a wrong `[user]` item otherwise stops an unattended run dead for
+work nobody needed the user to do.
 
 ### 3. Present the run and offer the off-ramp  [BRIEF, PROMPT]
 
@@ -94,6 +100,8 @@ render(run):                    # full rule: plugin-behaviour.md, working mode
 
 The pointer is the token-saving path, the inline quote the safe default. These
 items already exist in QUEUE.md, so confirm the link resolves before sending it.
+What counts as a recorded editor is defined once in plugin-behaviour.md's
+working-mode render rule — read it there rather than judging by eye.
 
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
@@ -240,20 +248,23 @@ whatever parts you can, give the **first** concrete step the item records, and
 walking beside them, not dumping a list for them to work alone.
 
 Never say "want me to walk you through it?", and never satisfy this branch with
-"it stays open until you've done it". Never open with "have you already done this
-one?" — leading with the completion-ask treats ready work as probably-already-done
-and makes the user re-assert it before you'll help. That inversion is the bug this
-branch exists to remove.
+"it stays open until you've done it".
+
+**No completion ask, anywhere in this branch — not leading, not trailing.** Don't
+open with "have you already done this one?", and don't close with "…or tell me if
+you've already done it". A `[user]` item is walked through, full stop. If the user
+volunteers that it's done, take them at their word: don't walk it through, and
+recommend /done to record it. If they don't say anything, walk it through.
+
+**Where the item's walkthrough names an observable check, run it** — a file
+present or absent, a branch gone, a URL responding. Checking the world is not
+asking the user. A failed check is reported plainly as what was found, and the
+item stays in place; it never becomes "are you sure you did this?".
 
 **Say nothing about /done until the walk-through is complete.** While driving the
 steps, don't mention /done, don't frame the item as "handed over", don't recommend
 recording it. Mentioning the close mid-walk-through is what once demoted this to a
 mere offer.
-
-**The already-done check is a trailing note**, only on an item a past /next could
-plausibly have presented before: "…or let me know if you've already done this and
-I'll just record it." A freshly-cleared item carries no such note. If the user says
-it's done, don't walk it through — recommend /done to record it.
 
 **Once an item's walk-through is complete (or deferred), name its close.** A
 `[user]` item stays in the queue for a later session, so it won't record or remove

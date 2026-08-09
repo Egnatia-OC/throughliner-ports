@@ -209,7 +209,7 @@ up in an editor's outline.
 [filled by Q4]
 ````
 
-**LOG/index.md:**
+**LOG/ folder** — create the directory with one file in it, `LOG/index.md`:
 
 ````markdown
 # LOG Index
@@ -241,19 +241,27 @@ no CLAUDE.md exists  ->  scaffold from
 one already exists   ->  APPEND the method block; never overwrite
 ```
 
-The template carries an Editor field (`not recorded`), a Working mode field
-(default `local`), and a Completion mode field (default `in-/next`); Step 4 fills
-them from Q6, Q7, Q8.
+The template carries an Editor field (`not recorded`) and a Working mode field
+(default `local`); Step 4 fills them from Q6 and Q7.
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
 detect when the plugin has been updated.
 
+**.gitignore** — create it if absent, and make sure it carries an entry for
+`.throughliner/` (don't duplicate one already there).
+
+That folder holds the editing-state signal: while Claude is writing a file, the
+hooks drop a small file in there saying so, so a Markdown reader or editor open
+on the same document can hold off rather than the two of you typing over each
+other. It is transient state about the session running right now, so it must
+never be committed.
+
 **Git repository** — if the folder isn't already one, run `git init`, silently and
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
 
-## Step 3: Interview (adaptive discovery + three settings)
+## Step 3: Interview (adaptive discovery + two settings)
 
 The interview is an **adaptive discovery, not a fixed script.** Its job is to reach
 a shared, buildable understanding — enough to fill SPEC's What / Who / How /
@@ -334,17 +342,6 @@ your phone, where opening a file is awkward, so Claude pastes the text into chat
 Defaults to **local**. Switch anytime by telling Claude ("I'm remote today") — it
 holds for that session and reverts. Asked once, no nag.
 
-**Q8 (optional). When there's a step only you can do — like sending something or
-checking a screen — do you prefer to do it together with Claude as it comes up, or
-handle those on your own between sessions?**
-→ Sets your completion mode. **in-/next** (default) = Claude walks you through each
-such step when it reaches it while building — nothing to remember or chase.
-**async** = you often do these on your own between sessions. The only thing it
-changes: in async mode, planning sessions ask up front whether you've already done
-any of these steps, so they get recorded; in the default mode they don't ask —
-you're doing those steps in /next anyway, so asking each planning session would
-just nag. Defaults to **in-/next**. Asked once, no nag.
-
 ## Step 4: Write the docs
 
 Once discovery reaches a buildable understanding (or the user says "build from what
@@ -357,7 +354,6 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
     # Not multiple scoped entries.
 2a. fill CLAUDE.md's Editor field from Q6         (or `not recorded`)
 2b. fill CLAUDE.md's Working mode field from Q7   (or `local`)
-2c. fill CLAUDE.md's Completion mode field from Q8 (or `in-/next`)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files
 5.  teach the working rhythm (below)

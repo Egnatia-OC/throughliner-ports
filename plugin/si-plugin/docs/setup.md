@@ -139,9 +139,6 @@ The interview is an **adaptive discovery**, not a fixed script. Its job is to re
 **Q7 (optional). Will you usually be working from your computer, or driving Claude from your phone?**
 → Sets your working mode. Two options, explained once here: **local** means you're at your desktop, where an edited file opens instantly — so Claude points you to text in your docs with a link. **remote** means you're driving Claude from your phone, where opening an edited file is awkward — so Claude pastes the text straight into chat instead. Defaults to **local** if you skip. Fills the Working mode field in the generated CLAUDE.md, and you can switch anytime just by telling Claude ("I'm remote today") — it holds for that session and reverts after. Asked once, no nag.
 
-**Q8 (optional). When there's a step only you can do — like sending something or checking a screen — do you prefer to do it together with Claude as it comes up, or handle those on your own between sessions?**
-→ Sets your completion mode. Two options, explained once here: **in-/next** (the default) means you let Claude walk you through each such step when it reaches it while building — the relaxed way, nothing to remember or chase. **async** means you often do these on your own, between sessions. The only thing it changes: in async mode, planning sessions ask up front whether you've already done any of these steps (so they get recorded); in the default in-/next mode they don't ask — you're doing those steps in /next anyway, so being asked each planning session would just nag. Defaults to **in-/next** if you skip. Fills the Completion mode field in the generated CLAUDE.md; switch anytime by re-running /setup or just telling Claude. Asked once, no nag.
-
 ## Step 4: Write the docs
 
 Once discovery has reached a buildable understanding (or the user says "build from what we have"), write the docs, then close in a sentence or two — show what was created and recommend /done, then stop and wait for the user:
@@ -149,7 +146,6 @@ Once discovery has reached a buildable understanding (or the user says "build fr
 2. Write one work item in QUEUE.md's Unprocessed section from the first-thing-to-build answer — a `#### ` heading in the user's words with a `[slug]` at its end and a "captured by you" note, not multiple scoped entries.
 2a. Fill the Editor field in CLAUDE.md from Q6 — the named editor, or `not recorded` if it was skipped.
 2b. Fill the Working mode field in CLAUDE.md from Q7 — `local` or `remote` as answered, or `local` if it was skipped.
-2c. Fill the Completion mode field in CLAUDE.md from Q8 — `in-/next` or `async` as answered, or `in-/next` if it was skipped.
 3. Show the user what was created (file list + one-line summary of each).
 4. Recommend /done to record this setup and commit the new files. The file list above shows what appeared in the folder; the session's single summary — what was set up and why — is the LOG entry /done writes at close.
 5. Teach the working rhythm in plain words — a few short sentences so the user knows how sessions go from here:
