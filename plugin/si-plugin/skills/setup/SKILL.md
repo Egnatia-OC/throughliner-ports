@@ -9,4 +9,4 @@ user-invocable: true
 
 The user wants to bring this folder under the Sovereign Implementer method.
 
-Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs/setup.md`.
+Read and follow the procedure at `${CLAUDE_PLUGIN_ROOT}/docs-b/setup.md`.

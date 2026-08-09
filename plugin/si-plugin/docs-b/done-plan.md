@@ -150,6 +150,10 @@ message never sent — that action is the real work: file it as a `[user]` item
 and make the condition wait on *it*. Catching it here is cheaper than the
 revisit catching it every session afterwards.
 
+The same moment settles the other side: if the awaited action is one **Claude**
+can perform — a rezip, a reinstall, a command — say so in the condition, so the
+revisit reports it as pending Claude-work instead of asking the user about it.
+
 **Place ready `[user]` walk-through work above the marker.** The marker is the
 single gate for walk-throughs as well as builds — /next walks a `[user]` item
 through only when it sits above the marker.

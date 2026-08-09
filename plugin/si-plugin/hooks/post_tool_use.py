@@ -60,6 +60,11 @@ WORK_SECTIONS = ("Processed", "Unprocessed")
 
 VALID_FLAG_STATES = {"cleared", "uncleared"}
 
+# The single boundary /next runs on, and the shape of any structural
+# `--- ... ---` line that legitimately sits between work items.
+CLEARED_MARKER = "--- Cleared to run above this line ---"
+STRUCTURAL_LINE = re.compile(r"^---\s.*---$")
+
 
 def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool) -> None:
     """Clear the editing-state signal after a write. Never raises.
@@ -212,6 +217,91 @@ def _check_red_flag_states(annotated, warnings):
             )
 
 
+def _check_readiness_marker(annotated, blocks, warnings):
+    """Check 4: exactly one readiness marker, in Processed, when work exists.
+
+    The marker is the single boundary /next runs on, so its absence or
+    duplication is a structural fault even though every item validates.
+    Flagged, not repaired — advisory like the rest. The dangerous half of
+    the failure (a missing marker silently clearing everything) is closed
+    read-side in next.md, which now treats no-marker as nothing-cleared;
+    this check is what makes the fault visible at the moment of the write.
+    """
+    marker_lines = [
+        (i, h2) for i, line, h2, _ih in annotated if line == CLEARED_MARKER
+    ]
+    processed_has_items = any(
+        h2 == "Processed" and WORKLINE_HEADING.match(line)
+        for _i, line, h2, _ih in annotated
+    )
+    if len(marker_lines) > 1:
+        lines_shown = ", ".join(str(i + 1) for i, _s in marker_lines)
+        warnings.append(
+            f"lines {lines_shown}: the cleared-to-run marker appears "
+            f"{len(marker_lines)} times — there must be exactly one; /next "
+            "runs on a single boundary and two markers make the run bound "
+            "ambiguous."
+        )
+    elif not marker_lines and processed_has_items:
+        warnings.append(
+            "Processed holds work items but the '--- Cleared to run above "
+            "this line ---' marker is missing — /next treats a missing "
+            "marker as NOTHING cleared, so no work will run until the "
+            "marker is restored."
+        )
+    for i, h2 in marker_lines:
+        if h2 == "Unprocessed":
+            warnings.append(
+                f"line {i + 1}: the cleared-to-run marker sits in Unprocessed "
+                "— it belongs in Processed, where it bounds what /next may "
+                "run."
+            )
+
+
+def _check_orphaned_prose(annotated, warnings):
+    """Check 5: every non-blank line in a work section belongs to a block.
+
+    A line is orphaned when it sits inside Processed or Unprocessed with no
+    #### heading above it (since the section started, or since a non-item
+    heading ended the previous block). Structural `--- ... ---` marker lines
+    are exempt, and so are blockquote lines (`> ...`): /setup scaffolds each
+    work section's description paragraph as a blockquote immediately under the
+    section heading — positionally identical to a destroyed first item's
+    stranded rationale, so position cannot discriminate; form does. A stranded
+    work-item rationale is never a blockquote. One flag per contiguous orphan
+    run, so a destroyed heading yields one warning rather than one per
+    rationale line.
+    """
+    in_block = False
+    flagged_run = False
+    for i, line, h2, is_heading in annotated:
+        if h2 not in WORK_SECTIONS:
+            in_block = False
+            flagged_run = False
+            continue
+        if WORKLINE_HEADING.match(line):
+            in_block = True
+            flagged_run = False
+            continue
+        if is_heading:
+            # A section heading or stray sub-heading ends any block.
+            in_block = False
+            flagged_run = False
+            continue
+        if not line or STRUCTURAL_LINE.match(line) or line.startswith(">"):
+            flagged_run = False if not line else flagged_run
+            continue
+        if not in_block and not flagged_run:
+            warnings.append(
+                f"line {i + 1}: prose belongs to no work item — the text "
+                f"starting {line[:50]!r} has no #### heading above it in this "
+                "section. A destroyed or missing heading leaves an item's "
+                "rationale orphaned like this; check whether an item's "
+                "heading line was overwritten."
+            )
+            flagged_run = True
+
+
 def lint(content: str) -> list[str]:
     annotated = _annotate(content)
     blocks = _workline_blocks(annotated)
@@ -219,6 +309,8 @@ def lint(content: str) -> list[str]:
     _check_slugs(blocks, warnings)
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
+    _check_readiness_marker(annotated, blocks, warnings)
+    _check_orphaned_prose(annotated, warnings)
     return warnings
 
 

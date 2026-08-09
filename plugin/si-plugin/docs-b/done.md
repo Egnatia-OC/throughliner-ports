@@ -2,7 +2,7 @@
 name: done
 docset: B
 note: >
-  /done procedure, docset B. Routes to a per-flavor close-out and states the
+  /done procedure. Routes to a per-flavor close-out and states the
   shared close core once; the sub-docs carry the flavor-specific steps.
 ---
 
@@ -235,7 +235,10 @@ session start):
 
 [Prose rationale — re-authored from the work's rationale in _build.md (or, for a
 planning session, what motivated these queue changes), expanded with what was
-learned along the way. Inline prose, no `Why:` label.]
+learned along the way. Inline prose, no `Why:` label. Re-authoring is where
+reasoning gets re-attributed by accident: credit the user only for reasoning
+they gave in their own words, write mixed authorship as mixed, and don't wear
+Claude's reasoning as theirs (plugin-behaviour.md, rationale provenance).]
 
 [per-flavor body fields]
 ````

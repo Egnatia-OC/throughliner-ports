@@ -2,7 +2,8 @@
 name: plugin-behaviour
 docset: B
 note: >
-  Behaviour rules, docset B (5-series). Authored by subtraction from docset A.
+  Behaviour rules. The method's one docset, for the 5-series, originally
+  authored by subtraction from the now-retired heavy docset.
   Register: structure in typed blocks, everything else in prose, tags inline.
 ---
 
@@ -287,10 +288,30 @@ into the rationale, not fixed lines of this block — see the two bullets below.
 - The description **is** the heading text; the `[slug]` sits at the **end** of
   that same line. Slugs are for LOG traceability, nothing more.
 - **Provenance is asymmetric and default-AI.** An unmarked item is assumed to be
-  Claude's — never write an AI-authorship label. Write `captured by you` only
-  when the user personally raised, pushed through, or wrote the item. It tracks
-  who *stood behind* it, not who typed it. When in doubt, leave it unmarked. A
-  convention, not a lint-checked field.
+  Claude's — never write an AI-authorship label. A convention, not a lint-checked
+  field.
+
+  **A `captured by you` credit requires the user's own words as its source.**
+  Not their approval, not their agreement, not "they'd have said this" — words
+  they actually said. Approving a proposal Claude reasoned out is agreement, and
+  agreement is not authorship. When in doubt, leave it unmarked; the default
+  costs nothing, and the credit costs the user something real.
+
+  **Mixed authorship is written as mixed**, naming who did which part. The
+  shape: *"Bundling by hand was rejected on Claude's recommendation and the
+  user's agreement."* — not one party assigned the whole.
+
+  **The same bar binds reason-shaped sentences inside the prose** — "their
+  reason", "the user's call", "on their instruction". This is where the damage
+  actually happens: the credit line is at least a known convention, while a
+  reason-shaped sentence reads as testimony. Don't write one unless the user
+  gave that reason.
+
+  Why this is stated so sharply for an existing rule: `captured by you` reads as
+  generous and costs nothing to type, so it slips — and what it produces is a
+  record that credits the user with saying and deciding things Claude said and
+  decided. That is not a hypothetical downstream cost; it is an immediate and
+  recurring experience of being misquoted in your own project's record.
 - The **filing-time commit stamp** exists because a capture filed after a
   session's /done close belongs to no committed session record. Plain prose, not
   a parsed field.
@@ -571,13 +592,17 @@ the exact thing the queue exists to prevent.
 ```
 mechanically checkable   ->  check silently; propose lifting if cleared
     (a dependency built per LOG, a push, a file present)
+Claude-downstream        ->  never ask; do it now, or report it pending
+    (waiting on an action Claude can perform — a rezip, a reinstall, a command)
 user-only                ->  gather ALL into ONE consolidated question
     (an external event only the user knows)   # never one ask per item per session
 provably still-waiting   ->  skip silently
 ```
 
 The batching is what keeps the revisit from nagging. Lifting is narrated, not
-asked.
+asked. The Claude-downstream branch turns on the same capability test the
+`[user]` tag uses — **can Claude do this at all?** — and if the answer is yes,
+it is never a question for the user.
 
 ## Why-pipeline
 
@@ -593,6 +618,11 @@ credit: reasoning is assumed to be Claude's unless explicitly credited as the
 user's stated intention, marked inline where the rationale lives ("the user's
 reason for this: …"). Never add an AI-authorship marker. A prose convention, not
 a lint-checked field.
+
+The credit-requires-their-words bar applies here in full (Captures, provenance),
+and it bites hardest here: a reason-shaped sentence worn as the user's reads as
+testimony. If Claude produced the reasoning, write it as Claude's, and where
+both contributed, name who did which part.
 
 What counts as rationale is broader than the decision's reasoning: it includes a
 concern raised and resolved, and an alternative seriously weighed, each carried
@@ -654,7 +684,8 @@ call for, and nothing past them. That's the definition, enforced by judgment.
 
 The `Files:` list in _build.md is its mechanical approximation: pre_tool_use
 allows edits only to listed files (plus method docs, the user's memory dir,
-`resources/research/`, and the session scratchpad) and denies the rest, as a
+`resources/research/`, the session scratchpad, and any project's `INBOX/`) and
+denies the rest, as a
 backstop. **The two layers are not the same thing** — a build can stay inside
 every listed file and still do more than the work describes. The described work
 is the test; the Files: list is the guardrail.
@@ -814,6 +845,30 @@ exact text and saying yes — and only the mechanics differ.
 **Red flag — scrubbing is non-negotiable.** A submitted report can become a
 public GitHub issue downstream, so a leak of app details or secrets into one is a
 privacy breach.
+
+## Cross-project INBOX
+
+Each project has an `INBOX/` folder, scaffolded at /setup. It's how two projects
+the same user runs send each other messages directly, instead of the user
+carrying them between chats by hand.
+
+**Inbound.** session_start surfaces what's waiting, in one line. Opening a
+message routes it through the three-way triage above — work to do becomes a
+capture in Unprocessed, a finding goes to the LOG, evidence to re-read goes
+under `resources/`. Then move the file to `INBOX/archive/`, so it isn't
+surfaced again every session. A project reads only its own INBOX; it never goes
+looking through other projects for mail.
+
+**Outbound — never auto-send.** A message is written straight into the
+recipient project's `INBOX/`, but only after the user has seen the exact wording
+and approved it. Sending is outward-facing: the content leaves this project, and
+both mailboxes may sit in repositories that get published, so an unscrubbed
+message is a route for private content to reach a public repo. Draft, show,
+wait. This is the same guarantee the feedback report keeps, for the same reason.
+
+Not to be confused with the editing-state signal: `.throughliner/` markers are
+live session state a companion app reads. INBOX is for messages. They stay
+separate.
 
 ## Dependency ownership
 

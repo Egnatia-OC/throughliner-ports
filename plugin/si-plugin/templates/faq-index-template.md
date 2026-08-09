@@ -60,3 +60,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why did Claude split my project into several files (or keep it in one)?](faq.md#why-did-claude-split-my-project-into-several-files-or-keep-it-in-one)
 - [What is the filed-after note on one of my captured items?](faq.md#what-is-the-filed-after-note-on-one-of-my-captured-items)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
+- [What is the INBOX folder, and how do my projects send each other messages?](faq.md#what-is-the-inbox-folder-and-how-do-my-projects-send-each-other-messages)

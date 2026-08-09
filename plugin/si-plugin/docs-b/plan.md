@@ -2,7 +2,8 @@
 name: plan
 docset: B
 note: >
-  /plan procedure, docset B. Authored by subtraction from docset A.
+  /plan procedure. The method's one docset, originally authored by subtraction
+  from the now-retired heavy docset.
   Register: structure in typed blocks, everything else in prose, tags inline.
 ---
 
@@ -59,7 +60,12 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   Processed, made in /plan by discussing an item and agreeing to keep it. No third
   state, no parking.
 - **A work item carries a user-credit only when the user raised it.** Provenance is
-  asymmetric and default-AI; the credit stays on the item after processing.
+  asymmetric and default-AI; the credit stays on the item after processing. The
+  credit needs the user's **own words** as its source — approving what Claude
+  reasoned out is agreement, not authorship. Where both contributed, write it as
+  mixed and name who did which part. The same bar binds reason-shaped sentences
+  in the prose ("their reason", "the user's call"): don't write one unless the
+  user gave that reason.
 - **Who does the work, and how.** Work is Claude's to build by default.
 
 ```
@@ -109,11 +115,19 @@ read the lift-condition its prose records and classify:
 ```
 mechanically checkable    ->  check silently; if cleared, propose lifting
     (a dependency built per LOG, a push done, a file now present)
+Claude-downstream         ->  NEVER ask. Do it now, or report it as pending
+    (waiting on an action          Claude-work in the same one-line narration
+     Claude can perform)           the mechanical checks use.
 user-only                 ->  DON'T ask per item. Gather every user-only
     (an external event            condition into ONE consolidated question,
      only the user knows)         asked once this session.
 provably still-waiting    ->  skip silently
 ```
+
+The Claude-downstream branch turns on the same capability test the `[user]` tag
+uses: **can Claude do this at all?** If yes, it is never a question for the
+user. "Has the plugin been rezipped and reinstalled?" is Claude's own work — so
+Claude either runs it or reports it pending, and does not ask.
 
 Per-item asking is the nagging this revisit exists to avoid. An item with no
 recorded lift-condition can't be classified without nagging — note it as a gap.
@@ -125,8 +139,10 @@ sent the message, the revisit will ask "has it happened yet?" forever about a
 thing that cannot happen — user work existing only as a recurring chat
 question, manufactured by correctly-followed rules. If yes: that action is a
 `[user]` work item — propose filing it, with the condition rewritten to wait
-on *it*. If no (a restart, a release, someone else's unprompted move), the
-condition stands and joins the consolidated question. When several conditions
+on *it*. If no, check the Claude-downstream branch before letting the condition
+into the question: an event downstream of an action *Claude* can perform is
+never asked about. Only a genuinely external event (a restart, a release,
+someone else's unprompted move) joins the consolidated question. When several conditions
 await the same person, one `[user]` walkthrough carries all of them — never
 several walkthroughs that have the user message the same person repeatedly.
 

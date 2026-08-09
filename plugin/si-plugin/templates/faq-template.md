@@ -292,6 +292,16 @@ When Claude builds, it recommends how to divide your project across files by a s
 
 When Claude captures an idea into your queue, it tags it with the last save-point that existed at that moment — shown as a short "filed after …" note. It's a rough marker of *when* the item was captured. It matters most for ideas captured after a session was already recorded and saved, so there's still a trace of roughly when they came up rather than the timing being lost. You don't need to do anything with it — it's bookkeeping that helps place the item in time later.
 
+## What is the INBOX folder, and how do my projects send each other messages?
+
+If you run more than one project on this method, they can pass notes to each other instead of you carrying them between chats. Each project has an `INBOX/` folder. When another of your projects has something to tell this one, it writes a message file in there, and at the start of your next session Claude mentions in one line that something is waiting.
+
+When you open it, Claude sorts it the same way it sorts anything else: if it's work to do, it becomes a captured item in your queue; if it's just something worth knowing, it goes in the session record; if it's evidence you'll need to re-read word-for-word later, it's saved as a file. Then the message moves into `INBOX/archive/` so you're not told about it again every session.
+
+Going the other way, Claude will always show you the exact message and wait for your yes before writing it into another project. That's deliberate: a message takes this project's content somewhere else, and either project's folder might be published one day. Setup also asks once whether these messages should be saved into your project's history or kept out of it — keeping them out is the safe default.
+
+One thing this is *not*: the `.throughliner/` folder. That's a live "Claude is typing right now" signal for other apps. INBOX is for messages. They're separate.
+
 ## How do I know what was done in a previous session?
 
 Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file. Each entry file's name starts with its date (`2026-06-09-…`), so if you browse the LOG folder itself, sorting the filenames in descending order lines them up newest-first — the same order the index reads.

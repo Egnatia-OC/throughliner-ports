@@ -2,9 +2,9 @@
 name: next
 docset: B
 note: >
-  Docset B is the light 5-series docset, authored by subtraction from docset A
-  (docs/). Register: structure in typed blocks, everything else in prose, tags
-  inline.
+  /next procedure. This is the method's one docset — light, for the 5-series,
+  originally authored by subtraction from the now-retired heavy docset.
+  Register: structure in typed blocks, everything else in prose, tags inline.
 ---
 
 # /next procedure

@@ -233,6 +233,21 @@ FAQ/index.md  <-  ${CLAUDE_PLUGIN_ROOT}/templates/faq-index-template.md
 (`resources/research/<topic>.md`). Creating it at setup means research notes have a
 place from day one rather than the folder being conjured on first use.
 
+**INBOX/ folder** — create it empty, with an `INBOX/archive/` inside it. It's this
+project's mailbox: another project you run can drop a message file in here, and
+session_start surfaces anything waiting in one line. A project only ever reads its
+own INBOX — it never goes looking through other projects for mail.
+
+Then ask once whether it should be committed:
+
+> **Should messages other projects send you be committed to this repository, or
+> kept out of it?** If this repo is or might become public, keep them out — a
+> message written by another project carries that project's content into this one,
+> and anything committed is published. Keeping them out is the safe default.
+
+Keep-out → add `INBOX/` to `.gitignore`. Commit → add nothing. Ask plainly and
+take the answer; don't argue for either.
+
 **CLAUDE.md:**
 
 ```

@@ -4,8 +4,8 @@ PreToolUse hook — enforces three rules:
 
 1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
-   memory dir, resources/research/, and the session scratchpad dir are
-   always editable). Tri-state:
+   memory dir, resources/research/, the session scratchpad dir, and any
+   project's INBOX/ are always editable). Tri-state:
    no Files: section = no enforcement;
    section present but empty = method docs only; entries listed = only
    those files. SPEC.md is not a method doc, so a build can edit it only
@@ -62,6 +62,30 @@ SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
 # Appended to every git-safety denial: the patterns match command text,
 # not intent, so a denial can fire on a command that only carries the
 # pattern as data.
+# --- Structured shell writes ---
+#
+# A scripted write to a project file bypasses the editing tools entirely. It
+# has happened repeatedly here — a heredoc'd Python splice used to remove work
+# items from QUEUE.md because the edit looked too awkward to do by hand.
+#
+# So this catches the STRUCTURED forms only — a write whose target path is
+# literally present and extractable. General shell parsing was considered and
+# rejected: it is fragile, and false denials train workarounds, which is the
+# worse failure. Anything that does not parse cleanly PASSES, and that limit is
+# stated in the denial text rather than hidden.
+#
+# Matched: a Python invocation (heredoc or -c) containing a write-mode open() or
+# a pathlib write_text/write_bytes on a LITERAL path. A computed path — a
+# variable, an f-string, a concatenation — is exactly the ambiguity this fails
+# open on.
+PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-[0-9]")
+PY_OPEN_WRITE = re.compile(
+    r"""\bopen\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
+)
+PY_PATH_WRITE = re.compile(
+    r"""\bPath\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*\)\s*\.\s*write_(?:text|bytes)\s*\("""
+)
+
 PATTERN_AS_DATA_NOTE = (
     "\n\nNote: this check matches the command's text, not its intent — a "
     "command that merely contains the pattern as data (a test string, "
@@ -201,6 +225,39 @@ def _normalise(path: str) -> str:
     return os.path.normcase(os.path.normpath(path))
 
 
+def _is_inside(filepath: str, cwd: str) -> bool:
+    """Check if a path sits inside the project folder.
+
+    Used by the structured-shell-write check, which denies a scripted write to
+    any project file rather than consulting the build's Files list. Paths
+    outside the project are somebody else's business and pass.
+    """
+    norm = _normalise(filepath)
+    root = _normalise(cwd)
+    return norm == root or norm.startswith(root + os.sep)
+
+
+def structured_write_targets(command: str) -> list:
+    """Literal file paths a structured shell write names as its target.
+
+    Deliberately narrow. Returns paths only where the command is recognisably a
+    Python invocation AND the write call carries a literal quoted path. Anything
+    else returns nothing and the command passes — a form that does not parse
+    cleanly is never guessed at.
+    """
+    if not PY_INVOCATION.search(command):
+        return []
+    targets = []
+    for pattern in (PY_OPEN_WRITE, PY_PATH_WRITE):
+        for m in pattern.finditer(command):
+            path = m.group("path").strip()
+            # A path carrying substitution syntax is computed, not literal —
+            # the ambiguity case, so it is dropped rather than resolved.
+            if path and "$" not in path and "{" not in path:
+                targets.append(path)
+    return targets
+
+
 def _is_method_doc(filepath: str, cwd: str) -> bool:
     """Check if a path is a method doc (QUEUE.md, LOG/, _build.md, _plan.md)."""
     norm = _normalise(filepath)
@@ -248,6 +305,26 @@ def _is_research_dir(filepath: str, cwd: str) -> bool:
     norm = _normalise(filepath)
     research_dir = _normalise(os.path.join(cwd, "resources", "research"))
     return norm.startswith(research_dir + os.sep) or norm == research_dir
+
+
+def _is_inbox_dir(filepath: str) -> bool:
+    """Check if a path is inside any project's INBOX folder.
+
+    Two directions, and both must pass the scope-lock. Inbound: this project's
+    own `INBOX/`, where an arriving message is archived after being triaged.
+    Outbound: another project's `INBOX/`, which is where a message is delivered
+    — that path sits outside this project entirely, so no cwd-relative check
+    could recognise it. Matching on an `INBOX` path segment covers both.
+
+    The scope-lock is not what protects the user here. Every outbound message
+    is shown and approved before it is written (plugin-behaviour.md, the
+    cross-project INBOX channel) — a message leaving this project is an
+    outward-facing action, and the user's approval is the backstop, exactly as
+    it is for a feedback report.
+    """
+    norm = _normalise(filepath)
+    parts = norm.replace("/", os.sep).split(os.sep)
+    return _normalise("INBOX") in parts
 
 
 def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
@@ -394,7 +471,7 @@ def main() -> int:
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
 
-    # --- Task (subagent): cost ask-gate ---
+    # --- Subagent (Agent / Task): cost ask-gate ---
     # A subagent run burns tokens fast and a single run can exhaust the
     # user's usage, so every spawn gets a permission prompt before it starts.
     # "ask", never "deny": the user keeps full choice — the cost just stops
@@ -403,7 +480,12 @@ def main() -> int:
     # an unadopted folder as an adopted one. Pairs with the hardened
     # "Tool use" rule in plugin-behaviour.md — the rule steers, the gate
     # guarantees.
-    if tool_name == "Task":
+    #
+    # Both names are matched deliberately: current Claude Code names the
+    # subagent tool "Agent", older harnesses name it "Task". Matching only
+    # "Task" is how this gate was silently dead — registered, firing, and
+    # never recognising the tool it exists to guard.
+    if tool_name in ("Task", "Agent"):
         return _ask(
             "[Sovereign Implementer] Claude wants to start a subagent. "
             "Subagents burn tokens fast — a single run can use up your usage "
@@ -472,6 +554,51 @@ def main() -> int:
                     + PATTERN_AS_DATA_NOTE
                 )
 
+        # --- Structured shell writes to project files ---
+        #
+        # The denial had two reasons and they come apart. The scope-lock reason
+        # genuinely does not apply to an in-scope target. The stale-view reason
+        # does: a shell's view of a file can be stale, so a scripted write can
+        # silently clobber work the edit tools would have refused to. That half
+        # is unconditional, which is why this check is too — it does not consult
+        # the Files list.
+        #
+        # What still passes, by construction: the session scratchpad (outside
+        # the repo, sanctioned scratch space), the user's memory directory, and
+        # anything outside the project. The queue mover is untouched because its
+        # write target is computed at runtime and this check only ever sees
+        # literal paths — the deliberate fail-open, unchanged.
+        for target in structured_write_targets(command):
+            resolved = target if os.path.isabs(target) else os.path.join(
+                cwd, target
+            )
+            if _is_memory_dir(resolved) or _is_scratchpad_dir(resolved, cwd):
+                continue
+            if not _is_inside(resolved, cwd):
+                continue
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: this command writes to a file "
+                f"through a script rather than through the editing tools.\n\n"
+                f"Target: {target}\n\n"
+                "The shell reads the file through a mount that can hold a stale "
+                "view, so a scripted write can silently overwrite work the "
+                "editing tools would have refused to clobber. That is true "
+                "whatever the file is and whether or not it is in this build's "
+                "scope, which is why this check does not consult the Files "
+                "list.\n\n"
+                "Use Edit or Write instead. If the edit is a large or awkward "
+                "one (removing a whole work item from the queue is the usual "
+                "case), there is a purpose-built tool for it: "
+                "scripts/reorder_queue.py moves and deletes queue items "
+                "byte-for-byte, addressed by slug. If you genuinely need "
+                "scratch space, the session scratchpad sits outside the repo "
+                "and still passes.\n\n"
+                "Note the honest limit of this check: it recognises script "
+                "writes whose target path is written out literally. A command "
+                "whose target is computed at runtime is not detected — it is "
+                "not a permitted workaround, it is a gap."
+            )
+
         return 0
 
     # --- Edit/Write/MultiEdit: file-scope enforcement ---
@@ -509,6 +636,9 @@ def main() -> int:
             return 0
 
         if _is_scratchpad_dir(filepath, cwd):
+            return 0
+
+        if _is_inbox_dir(filepath):
             return 0
 
         if not build_files:
