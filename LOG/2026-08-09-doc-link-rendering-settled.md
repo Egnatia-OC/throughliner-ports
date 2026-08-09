@@ -1,4 +1,4 @@
-# [HASH] — The Editor field retired and the line-anchored-link promise dropped, settling three contradictory observations on one verified fact: the app opens the file and ignores the anchor
+# 115f851 — The Editor field retired and the line-anchored-link promise dropped, settling three contradictory observations on one verified fact: the app opens the file and ignores the anchor
 
 This consolidates and repeals two captures the user raised from live observation, `[desktop-native-md-open-vs-editor-field]` and `[line-anchored-link-dead-in-desktop-app]`. Neither premise survived checking, so a single item replaced them rather than leaving two items carrying contradictory claims about the same mechanism.
 

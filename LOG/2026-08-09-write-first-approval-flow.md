@@ -1,4 +1,4 @@
-# [HASH] — The approval flow inverted to write-first-then-report under one revert-undoes-it test, with commit messages and off-machine sends kept show-first, and the keep-step's move order reversed to match
+# 115f851 — The approval flow inverted to write-first-then-report under one revert-undoes-it test, with commit messages and off-machine sends kept show-first, and the keep-step's move order reversed to match
 
 The user asked for this on 2026-08-09, and it was adopted in practice from the moment they asked — so the method's text has been lagging the working practice until now. Their own stated want was simply to stop having drafts pasted into chat. The design below is Claude's, settled in the same session with the user's agreement; the distinction matters because the reasoning that follows is not theirs and should not be read as theirs.
 

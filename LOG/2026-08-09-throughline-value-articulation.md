@@ -1,4 +1,4 @@
-# [HASH] — Two FAQ entries written on what the recorded reasoning is for and what approving it buys, name-neutrally so the rename stays free to introduce its own term
+# 115f851 — Two FAQ entries written on what the recorded reasoning is for and what approving it buys, name-neutrally so the rename stays free to introduce its own term
 
 The user raised this on 2026-07-30 while drafting a Discord help article, and the problem they named has not changed: the existing framing — that you can sometimes ask why something is the case — reads as a minor lookup feature, and nobody accepts the cost of approving drafts and writing session records for a lookup feature. The value was being undersold by its own documentation.
 

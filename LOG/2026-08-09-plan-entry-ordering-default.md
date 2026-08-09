@@ -1,4 +1,4 @@
-# [HASH] — /plan's opening became two beats — drop, then one ordering question with most-unblocking-first as the stated default — with a five-rung internal fallback ladder behind it
+# 115f851 — /plan's opening became two beats — drop, then one ordering question with most-unblocking-first as the stated default — with a five-rung internal fallback ladder behind it
 
 The user raised this on 2026-08-09, and their wording for the ask was near-verbatim what shipped: *"is there anything else you want to prioritise, or are you ready to go through items in order of most unblocking first?"* The ladder and the beat structure below are Claude's design, settled in the same session.
 

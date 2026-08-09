@@ -1,4 +1,4 @@
-# [HASH] — Install instructions re-pointed at FlintcraftTech/throughliner, the org spelling matched to the remote, and the wrong "old history is on GitHub" claim corrected in both CLAUDE.md and AGENTS.md
+# 115f851 — Install instructions re-pointed at FlintcraftTech/throughliner, the org spelling matched to the remote, and the wrong "old history is on GitHub" claim corrected in both CLAUDE.md and AGENTS.md
 
 The repo rename happened on GitHub, not through the method, so no revert of ours could undo it — but `96166c6` had corrected the project's identity in README, INSTALL.md, marketplace.json, the FAQ template and CLAUDE.md, and the 2026-08-09 revert put the old name back. The shipped install instructions were therefore naming a repository that resolves only through GitHub's redirect. Not urgent, because the redirect works; worth doing before the next release, because the redirect is the only thing holding it up and nothing announces if it stops.
 
@@ -12,4 +12,4 @@ This was built last in the run deliberately: it must land before the next releas
 
 **Files touched:** `README.md` (the marketplace command in both the plain-English ask and the reference commands, both GitHub URLs, plus the names-differ note), `INSTALL.md` (the paste-ready prompt at line 70 and the command block at line 75, plus a names-differ note aimed at the Claude guiding the install), `.claude-plugin/marketplace.json` (owner name spelling), `plugin/si-plugin/templates/faq-template.md` (the install entry and the release-watch URL, with the names-differ note), `CLAUDE.md` and `AGENTS.md` (the old-plugin-history bullet in both).
 
-**Routed to Captures:** `[shell-write-guard-computed-path-gap]` — filed during this run, from a QUEUE.md corruption and repair rather than from this item's own work.
+**Routed to Captures:** `[shell-write-guard-computed-path-gap]` — filed during this run, from a QUEUE.md corruption and repair rather than from this item's own work. `[release-ritual-contradicts-intent]` — filed in the post-commit tail, after the user stopped a release the CLAUDE.md ritual mandates automatically and forbids asking about.

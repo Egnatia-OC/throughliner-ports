@@ -1,4 +1,4 @@
-# [HASH] — The stored working-mode field retired and replaced by one rendering default plus a bundled one-line inline-text offer in the session's opening narration
+# 115f851 — The stored working-mode field retired and replaced by one rendering default plus a bundled one-line inline-text offer in the session's opening narration
 
 The user asked for this on 2026-08-09, near-verbatim: *"let me know if you're on remote control and I'll present text in-line for your approval."* The design is Claude's, settled with the user's agreement in the same session. Two parts of their wording were deliberately changed, and both are named here rather than quietly altered.
 
