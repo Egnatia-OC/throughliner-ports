@@ -1,4 +1,4 @@
-# [HASH] — The `.throughliner/` editing-state signal restored at marker version 2 by surgical extraction, and two of the item's own instructions corrected by reading the source
+# 72f4fe9 — The `.throughliner/` editing-state signal restored at marker version 2 by surgical extraction, and two of the item's own instructions corrected by reading the source
 
 The only casualty of the 2026-08-09 revert with a consumer outside this repo. Everything else it removed sets back this project's own progress, recoverable at leisure from the tag; this one is a published contract another project (Understudy) is built against, and the capability would have disappeared at the next release with nothing announcing it. The state before this build was a split between source and installed, not broken versus working — the installed host was still writing markers while the source had none.
 

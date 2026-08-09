@@ -1,4 +1,4 @@
-# [HASH] — Docset B's twelve fidelity defects repaired from the discarded audit and its fixes, and the two changes that shipped alongside them deliberately not restored
+# 72f4fe9 — Docset B's twelve fidelity defects repaired from the discarded audit and its fixes, and the two changes that shipped alongside them deliberately not restored
 
 A recovery, not an audit. The audit this item originally asked for already ran, at `b931278` on the evening of 2026-08-02 — hours after the commit the emergency revert restored to — reading all eleven doc pairs against three criteria and producing twelve findings, all approved as drafted. The repairs landed the next day at `f37e332`. The revert discarded both, leaving docset B in the working tree as the pre-audit, pre-repair version carrying all twelve defects.
 

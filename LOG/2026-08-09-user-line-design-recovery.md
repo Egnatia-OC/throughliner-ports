@@ -1,4 +1,4 @@
-# [HASH] — The four-part `[user]`-line design recovered: no completion asks anywhere, completion inferred and checked against the world, name-the-tool before tagging, and the downstream-action test
+# 72f4fe9 — The four-part `[user]`-line design recovered: no completion asks anywhere, completion inferred and checked against the world, name-the-tool before tagging, and the downstream-action test
 
 Four changes built across three commits over two days, recovered together because they are one design — any one alone leaves the behaviour incoherent. The 2026-08-09 emergency revert unwound all four, and brought back the completion-mode setting they had retired.
 

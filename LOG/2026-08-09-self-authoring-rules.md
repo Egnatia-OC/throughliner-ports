@@ -1,4 +1,4 @@
-# [HASH] — The authoring heuristic replaced by `self-authoring-rules.md`, an admission-and-eviction gate, with rationale moved out of the operative rule and split by audience
+# 72f4fe9 — The authoring heuristic replaced by `self-authoring-rules.md`, an admission-and-eviction gate, with rationale moved out of the operative rule and split by audience
 
 `resources/authoring-heuristic.md` was in force for the entire period plugin-behaviour.md grew from 6,162 to 21,445 words, and it was applied honestly throughout — that is the whole diagnosis. Six of its seven checks either add text to each rule (quantify the target, show an exemplar, state the scope in words, name the pattern with its replacement) or actively resist cutting. Every addition passed its checks and the file grew anyway. More decisively, none of the seven asks whether a rule should exist at all, or what comes out to make room: it is a quality filter applied to text someone has already decided to add.
 

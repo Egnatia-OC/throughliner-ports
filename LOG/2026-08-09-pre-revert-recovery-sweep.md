@@ -1,4 +1,4 @@
-# [HASH] — Two-pass sweep of the 65 reverted commits: nine findings filed as five captures, three of them live safety gaps rather than design debt
+# 72f4fe9 — Two-pass sweep of the 65 reverted commits: nine findings filed as five captures, three of them live safety gaps rather than design debt
 
 The emergency revert unwound 65 commits carrying 214 shipped items and separately discarded 31 designed-but-unbuilt work items. Four recoveries had already been queued by hand, each found by chance when a queue item's premise turned out to be stale — which is not a method, it rediscovers the same loss one accident at a time. This audit replaces that with one pass.
 

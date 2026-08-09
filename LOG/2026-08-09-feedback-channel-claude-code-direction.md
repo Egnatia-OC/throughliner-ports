@@ -1,4 +1,4 @@
-# [HASH] — The feedback channel restored to three ways, with its four field-proven guards and the two posting rules scoped against each other, and `gh` named in the README as optional software
+# 72f4fe9 — The feedback channel restored to three ways, with its four field-proven guards and the two posting rules scoped against each other, and `gh` named in the README as optional software
 
 The design was settled, field-tested end-to-end on 2026-08-04 — a real report split into a strengthening comment on an existing issue plus one new issue — and built on 2026-08-05 at `d9162e4`. The emergency revert removed the build. The original capture survived because it predates the revert point, so the queue was asking for work that had already been done, which is the shape this whole run was recovering from.
 
