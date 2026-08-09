@@ -70,16 +70,17 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 Claude stops and asks. It stays within batch scope. If something else needs changing: "I need to edit [file] because [reason]. Add to scope?"
 
-## What does "Parked" mean in the queue?
+## What does it mean when work sits below the "cleared to run" line?
 
-Items you've decided not to work on now but don't want to lose. During /plan, parking moves an item to the Parked subsection until revisited. Dropping removes it entirely.
+It means one thing only: **another named item in your queue has to happen first.** There is no general "parked" or "set aside" state — the Parked subsection this question used to describe no longer exists.
 
-Parked items carry one of two reason lines that signal whether they come back automatically:
+A held item carries a line reading `Blocked by:` followed by the blocking item's name in square brackets. Claude checks that the name refers to a real item in your queue, so it can't quietly point at nothing.
 
-- `Blocked by: [slug] + condition` — a trigger exists. When the named item ships or the condition fires, Claude offers to unpark it during the next /plan or /next.
-- `Parked: short reason` — no trigger. The item stays parked until you bring it up; Claude won't auto-surface it.
+If work is waiting on something in the *world* rather than on other work — a restart, a website going live, someone getting back to you — that thing doesn't get written as a note inside the held item. It gets filed as **its own item in your queue**, so it comes up in planning and actually gets done, and the held item names it. That change came from a real failure: a step buried as a sentence inside another item sat unnoticed for weeks, because a sentence inside someone else's item is invisible as work.
 
-Nothing leaves active flow without one of these — prose alone isn't enough for Claude to track it mechanically.
+At the start of every planning session Claude asks one question per held item — has its blocker shipped? — and offers to move up the ones whose blockers have. It doesn't ask you anything, because the answer is in the record.
+
+If nothing in the queue blocks a piece of work, it doesn't belong below the line at all — it goes above it, ready to build.
 
 ## What does a "Plan session here" line in the queue mean?
 

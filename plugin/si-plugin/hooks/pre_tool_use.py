@@ -75,9 +75,32 @@ SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
 # stated in the denial text rather than hidden.
 #
 # Matched: a Python invocation (heredoc or -c) containing a write-mode open() or
-# a pathlib write_text/write_bytes on a LITERAL path. A computed path — a
-# variable, an f-string, a concatenation — is exactly the ambiguity this fails
-# open on.
+# a pathlib write_text/write_bytes.
+#
+# A LITERAL path is checked against the protected set and denied if it lands
+# inside the project. A COMPUTED path — a variable, an f-string, a concatenation
+# — used to fail open, and that fail-open was the whole cost of a real
+# corruption: `python -c` with `p='QUEUE.md'` assigned one line earlier slipped
+# straight past, matched a structural marker against the wrong occurrence, and
+# wrote a QUEUE.md with six work items still in it. A later heredoc against the
+# same file, this time with the path written out, was blocked correctly. One
+# variable assignment was the entire difference. The same slip then recurred in
+# the very session that diagnosed it, which is the strongest evidence available
+# that knowing about a gap does not close it.
+#
+# So a computed target now DENIES rather than passing. The reasoning is that the
+# guard cannot tell whether an unreadable target is protected, and "cannot tell"
+# must not resolve to "allow" for a check whose whole job is preventing a
+# silent clobber. It does not guess at the path — it says plainly that the
+# target is unreadable and names the two ways forward.
+#
+# Accepted cost, stated rather than discovered: a python script writing to the
+# session scratchpad with a computed path is denied too, and must write its path
+# out literally. That is a small, visible tax; the alternative was a silent hole.
+#
+# Invoking a SCRIPT FILE is unaffected — this check reads the command's text,
+# and `python scripts/reorder_queue.py QUEUE.md ...` contains no write call at
+# all. The mover stays the sanctioned route for awkward queue edits.
 PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-[0-9]")
 PY_OPEN_WRITE = re.compile(
     r"""\bopen\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
@@ -85,6 +108,13 @@ PY_OPEN_WRITE = re.compile(
 PY_PATH_WRITE = re.compile(
     r"""\bPath\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*\)\s*\.\s*write_(?:text|bytes)\s*\("""
 )
+
+# The same two shapes with the path left unconstrained. Used only to spot a
+# write call the literal patterns above could not read a path out of.
+PY_OPEN_WRITE_ANY = re.compile(
+    r"""\bopen\s*\(\s*(?P<arg>[^,()]+?)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
+)
+PY_WRITE_METHOD_ANY = re.compile(r"""\.\s*write_(?:text|bytes)\s*\(""")
 
 PATTERN_AS_DATA_NOTE = (
     "\n\nNote: this check matches the command's text, not its intent — a "
@@ -256,6 +286,42 @@ def structured_write_targets(command: str) -> list:
             if path and "$" not in path and "{" not in path:
                 targets.append(path)
     return targets
+
+
+def has_computed_write_target(command: str) -> bool:
+    """True if a Python invocation writes to a path this check cannot read.
+
+    The counterpart to structured_write_targets(): that function returns the
+    targets it CAN read, this one reports that a write call exists whose target
+    it CANNOT. A caller denies on either — one because the target is protected,
+    the other because whether it is protected is unknowable.
+
+    Deliberately does not attempt to resolve the path. Guessing at a variable's
+    value is the fragile general-parsing this module rejects; refusing to guess
+    and saying so is not.
+    """
+    if not PY_INVOCATION.search(command):
+        return False
+
+    for m in PY_OPEN_WRITE_ANY.finditer(command):
+        arg = m.group("arg").strip()
+        quoted = len(arg) >= 2 and arg[0] in "'\"" and arg[-1] == arg[0]
+        if not quoted:
+            return True
+        # A quoted string carrying shell or format substitution is computed
+        # too — the literal extractor drops these for the same reason.
+        if "$" in arg or "{" in arg:
+            return True
+
+    # Every literal Path("...").write_text( is also a .write_text( , so an
+    # excess of the general shape means at least one call on a receiver whose
+    # path could not be read.
+    if len(PY_WRITE_METHOD_ANY.findall(command)) > len(
+        PY_PATH_WRITE.findall(command)
+    ):
+        return True
+
+    return False
 
 
 def _is_method_doc(filepath: str, cwd: str) -> bool:
@@ -565,9 +631,11 @@ def main() -> int:
         #
         # What still passes, by construction: the session scratchpad (outside
         # the repo, sanctioned scratch space), the user's memory directory, and
-        # anything outside the project. The queue mover is untouched because its
-        # write target is computed at runtime and this check only ever sees
-        # literal paths — the deliberate fail-open, unchanged.
+        # anything outside the project — but only where the target is READABLE.
+        # A write call whose target cannot be read is denied outright below,
+        # scratchpad included, because an unreadable target cannot be shown to
+        # be safe. Invoking the queue mover is unaffected: the command text is
+        # just a script path and carries no write call.
         for target in structured_write_targets(command):
             resolved = target if os.path.isabs(target) else os.path.join(
                 cwd, target
@@ -593,10 +661,31 @@ def main() -> int:
                 "byte-for-byte, addressed by slug. If you genuinely need "
                 "scratch space, the session scratchpad sits outside the repo "
                 "and still passes.\n\n"
-                "Note the honest limit of this check: it recognises script "
-                "writes whose target path is written out literally. A command "
-                "whose target is computed at runtime is not detected — it is "
-                "not a permitted workaround, it is a gap."
+                "Note the honest limit of this check: it reads the command's "
+                "text, not its behaviour. A write buried inside a script FILE "
+                "this command merely invokes is not seen."
+            )
+
+        if has_computed_write_target(command):
+            return _deny(
+                "[Sovereign Implementer] BLOCKED: this command writes to a file "
+                "through a script, and the target path is computed at runtime "
+                "rather than written out, so this check cannot tell what it "
+                "writes to.\n\n"
+                "An unreadable target cannot be shown to be safe, so it is "
+                "denied rather than allowed. This is not a rule about where the "
+                "file is — it is that nobody can say where the file is.\n\n"
+                "Three ways forward. Use Edit or Write, which is the right "
+                "answer almost every time. If the edit is a large or awkward "
+                "one — removing a whole work item from the queue is the usual "
+                "case — scripts/reorder_queue.py moves and deletes queue items "
+                "byte-for-byte, addressed by slug. If you genuinely need a "
+                "script, write the target path out literally so it can be "
+                "checked; a scratchpad path written literally still passes.\n\n"
+                "Why this is strict: a computed target slipped past an earlier "
+                "version of this check and silently corrupted QUEUE.md, and the "
+                "only difference from the version that was correctly blocked "
+                "was one variable assignment."
             )
 
         return 0

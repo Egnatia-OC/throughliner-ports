@@ -17,6 +17,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What is _plan.md? Should I edit it?](faq.md#what-is-_planmd-should-i-edit-it)
 - [What if my project already has planning docs from another tool or an older version?](faq.md#what-if-my-project-already-has-planning-docs-from-another-tool-or-an-older-version)
 - [What happens if Claude needs to touch something outside the current batch?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-batch)
-- [What does "Parked" mean in the queue?](faq.md#what-does-parked-mean-in-the-queue)
+- [What does it mean when work sits below the "cleared to run" line?](faq.md#what-does-it-mean-when-work-sits-below-the-cleared-to-run-line)
 - [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)

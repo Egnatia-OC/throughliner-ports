@@ -2,6 +2,20 @@
 
 Executed 2026-08-09. Kept as the record of what was reverted, why, and how to get any of it back.
 
+**Host-only, and finalised 2026-08-09.** This file is the record of one specific revert of this repository. The *general* lessons it produced — what a rollback does to a project afterwards — were extracted into `plugin/si-plugin/docs-b/recovery.md`, which ships to consumers and is fetched on demand. Don't add general guidance here; add it there.
+
+**What stayed here rather than shipping, and why.** A consumer reverting their own project never reinstalls this plugin, so these three don't apply to them:
+
+- The "lowest available rather than small enough" reasoning *as it applies to this plugin's own docs* — the shipped doc carries the general form of the point without the word counts.
+- **The plugin CLI will not install backwards** (the gotcha below). A revert that lowers the version must bump *above* the installed one before an update takes.
+- **`claude` is not on PATH** in the desktop app's shell tools.
+
+The third gotcha — orphaned files after `git rm --cached` plus `checkout`, and rename-detected pairs escaping the deletion list — is general and did ship.
+
+**The first real test of this document, recorded 2026-08-09.** The /plan session that followed the revert used it and found it strong on *how to execute* a revert and near-silent on *what a revert does to the project afterwards*. That gap is what `recovery.md` now fills. Its lead finding — the queue keeps asking for work already done — has since been evidenced twice: seven instances in the session immediately after the revert, and once more during the /next run of 2026-08-09, where a queue item asked for a fix that had shipped at `f9326dc`.
+
+**The verification section below is the model to reuse**, and `[rezip-verification-steps-restored]` restored the same shape for rezips.
+
 ## Context
 
 plugin-behaviour.md had ballooned from 6,162 words (its birth, 2026-08-02, commit `6ba51d3`) to 21,445 words at HEAD. Alex called an emergency step back to that lowest point, accepting the loss of all work since — the docset-A retirement, cycle machinery, glossary, and the rest. Chosen scope: **whole repo**, not just the one file.

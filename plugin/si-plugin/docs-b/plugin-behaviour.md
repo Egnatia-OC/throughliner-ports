@@ -390,9 +390,10 @@ real and equally bad; neither warning may be louder than the other.
 - **Don't over-tag.** `[user]` is earned only by work Claude genuinely cannot
   perform or witness — a check needing the user's eyes, a decision only they can
   make, a physical action. Work Claude *can* run but can't run *yet* (blocked on
-  a push or restart) is an **ordering** concern: place it below the cleared-to-run
-  line with a lift-condition. The test is "can Claude do this at all?", not "can
-  Claude do this right now?".
+  a push or restart) is an **ordering** concern: file the thing it waits on as its
+  own queue item, and place this one below the cleared-to-run line naming that
+  item as its blocker. The test is "can Claude do this at all?", not "can Claude
+  do this right now?".
 
   **And the test is a check, not a judgment: before tagging `[user]`, name the
   tool that would do the work and confirm it is absent or unauthenticated.**
@@ -414,17 +415,47 @@ real and equally bad; neither warning may be louder than the other.
   must eventually be *done*, so everything must be *tracked*. When "can Claude do
   this at all?" returns **no**, file a `[user]` line. This is the quieter, more
   common failure — the over-tag rule is loud, so the instinct is to minimize it
-  and walk straight into this one. It has a second face: a lift-condition
-  awaiting an event that can't happen until the user acts ("the collaborator
-  replies" — to a message never sent) is under-filing too, and the below-line
-  revisit's downstream-action test (plan.md) exists to catch it — the action
-  files as a `[user]` work item; the condition waits on it, not on the event.
+  and walk straight into this one. The old below-the-line model had a second face
+  of this failure — an item shelved to wait on "the collaborator replies", to a
+  message nobody had sent — and it needed a dedicated test to catch it. The
+  blocked-by rule removes that shape by construction: a thing in the world is an
+  item in Unprocessed before anything can be blocked on it, and filing that item
+  is where the user's part gets a `[user]` line.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
   check — because that's what lets /next *lead* with them. But "can't fully
   script it yet" is **not** a reason to withhold the line: file it with a rough
   walkthrough flagged for refinement at the keep-step. The only thing that keeps
   work out of a `[user]` line is genuine uncertainty that it's user-work at all —
   and that routes to Unprocessed as an ordinary capture, still tracked.
+
+### Scrub before writing — and never claim more than that
+
+QUEUE.md, SPEC.md and LOG entries get committed, and a commit keeps the text
+even after it's deleted. Many users' repos are public.
+
+**At each of the three authoring moments — filing a capture, keeping a work
+item, writing a LOG entry — read what you're about to write against this list:**
+
+```
+personal names (the user's collaborators, clients, anyone not in the room)
+case or matter details that identify a real situation
+third-party data of any kind
+credentials, keys, tokens
+file paths that identify a person or an organisation
+```
+
+Rewrite what you find, at the same level of usefulness — "a family member",
+"the client's deadline" — rather than dropping the fact.
+
+**State the limit whenever this comes up, and never overstate the gate.** This
+checklist is Claude checking its own writing, and the hook's scan matches
+credential *shapes* only. Neither can tell whether a sentence quietly identifies
+a real person, which is the thing that actually leaks here. So **never tell a
+user their artifacts are scrubbed, clean, or safe to publish.** A gate that
+over-claims is worse than no gate: the user publishes more freely believing it
+worked. Same line the method holds on red flags — risk-*addressing*, never risk
+*management*. If a user asks whether their repo is safe to make public, the
+honest answer is that not publishing these artifacts is the only real protection.
 
 **Authoring standard.** Keep everything — facts, references, conditions, the
 reasoning that led here. Plain short sentences, one idea per sentence. The human
@@ -484,13 +515,14 @@ Unprocessed                    captured, not yet fully processed. Two kinds:
                                worth doing but not yet designed enough to say
                                what its build would change.
 Processed, above the line      kept and ready. /next picks work from here.
-Processed, below the line      designed and buildable, awaiting greenlight or
-                               something outside the queue.
+Processed, below the line      designed and buildable, blocked by a named
+                               queue item — and by nothing else.
 Deleted                        judged not worth doing. Git history keeps it.
 
 discriminator: can you describe what gets built?
-    no                  -> Unprocessed
-    yes, not greenlit   -> Processed below the line
+    no                        -> Unprocessed
+    yes, blocked by an item   -> Processed below the line, naming its blocker
+    yes, nothing blocks it    -> Processed above the line
 ```
 
 **One shelf, one shelving move.** There is exactly ONE holding place for
@@ -521,9 +553,11 @@ a durable finding                                     ->  resources/research, or
 a forward recommendation                              ->  the advisory (transient)
 ```
 
-Two things folded in, not kept as separate machinery: the cleared-to-run line
-**replaces** parking, and order within a section **replaces** dependencies. No
-`Depends on:` headers.
+The cleared-to-run line **replaces** parking. Order within a section carries
+build order and processing order; a *blocking* relationship is carried by the
+`Blocked by: [slug]` field, not by position — position alone is one reorder away
+from silently losing it. `Blocks:` and `Depends on:` headers stay retired: one
+field, in one direction, on the item that is held.
 
 ## Red flags
 
@@ -611,7 +645,7 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
 - **One `[user]` item at a time — never bundled.** Each in its own message, led by
   its own live walk-through. Not a bulk-approval result set.
 - **Completion is inferred, never asked.** An item walked to its end this session
-  is done; an item whose lift-condition visibly hasn't cleared isn't; and the user
+  is done; an item whose blocker visibly hasn't shipped isn't; and the user
   saying they did one is the third way it can be known. Nothing else counts.
 - **Where completion has an observable result, check the world before recording
   it.** The never-ask rule forbids asking the USER; it never forbade checking
@@ -635,31 +669,34 @@ Without the back half, a finished `[user]` item strands in Processed and the nex
   after finishing) and /plan (they completed it async and mention it).
 - **Re-clearing dependents** is the below-the-line revisit's job, not the close's.
 
-## Below-the-line revisit
+## Below the line means blocked by a named queue item
 
-Readiness is set once at processing and, without a routine that returns to it, is
-never revisited — so a correctly-shelved item depends on the user remembering it,
-the exact thing the queue exists to prevent.
-
-- **Every below-line item records its lift-condition in prose** — the specific
-  event that must clear ("cleared once [slug] is built and verified", "after a
-  full computer restart"). An item that can't state one belongs in Unprocessed.
-- **/plan revisits them each session:**
+Below the marker means exactly one thing: **a named queue item blocks this one.**
+There is no other reason to shelve work there.
 
 ```
-mechanically checkable   ->  check silently; propose lifting if cleared
-    (a dependency built per LOG, a push, a file present)
-Claude-downstream        ->  never ask; do it now, or report it pending
-    (waiting on an action Claude can perform — a rezip, a reinstall, a command)
-user-only                ->  gather ALL into ONE consolidated question
-    (an external event only the user knows)   # never one ask per item per session
-provably still-waiting   ->  skip silently
+Blocked by: [slug]      # one line in the item's block, lint-checked
 ```
 
-The batching is what keeps the revisit from nagging. Lifting is narrated, not
-asked. The Claude-downstream branch turns on the same capability test the
-`[user]` tag uses — **can Claude do this at all?** — and if the answer is yes,
-it is never a question for the user.
+If the item is designed and buildable and nothing in the queue blocks it, it goes
+**above** the line. If it waits on something in the world — a restart, a reply, a
+site going live — that something is described as **its own item in Unprocessed**,
+where /plan will process it like any other work, and this item names it as its
+blocker.
+
+**Why a field and not a sentence.** The blocker used to be prose inside the item
+("cleared once [slug] ships", "after a full computer restart"), re-read and
+classified each session. A blocker written as a sentence inside another item is
+invisible as work, so nothing picks it up: one item sat below the line for weeks
+with a real user action buried in its lift-condition, and became visible the
+moment it was split out as its own line. A lint-checked slug can't go stale
+quietly the way a header can — that was the objection to fields, and this answers
+it.
+
+**/plan's revisit is now one question per item: has the blocker shipped?** Check
+it against LOG, propose lifting if it has, skip silently if it hasn't. No
+classification, no consolidated question, no per-item asking — the shapes that
+needed classifying are now items in their own right.
 
 ## Why-pipeline
 
@@ -954,6 +991,12 @@ never  git push without asking          ->  and never --force
 never  git reset --hard
 always check for secrets before committing
 ```
+
+**Undoing a lot of work at once → read `${CLAUDE_PLUGIN_ROOT}/docs-b/recovery.md`
+first.** Trigger: the user asks to roll the project back to an earlier state, or
+a session opens into the aftermath of one. It covers what a rollback does to the
+project *afterwards* — chiefly that the queue starts asking for work that already
+shipped, which is silent and expensive. Reference, fetched on demand.
 
 **Uncommitted changes you didn't make are the user's own work, not breakage.**
 Read them as expected handmade work; confirm with the user and fold them in.

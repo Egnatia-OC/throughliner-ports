@@ -25,8 +25,16 @@ stale-view reason (the shell can read a stale copy and silently clobber work)
 applies to every scripted write regardless of scope. So the scope condition was
 dropped. A detectable scripted write to ANY file inside the project is now
 denied, build or no build; the scratchpad, the memory directory and anything
-outside the project still pass, and a computed target path is still the
-deliberate fail-open.
+outside the project still pass.
+
+The computed-target fail-open closed on 2026-08-09
+([shell-write-guard-computed-path-gap]). It used to be deliberate: a target the
+matcher could not read was allowed through. Two live corruptions came through
+that hole in a single day — one of them inside the very session that diagnosed
+it — so an unreadable target now denies, on the reasoning that "cannot tell
+whether this is protected" must not resolve to "allow". Cases 7-9 below cover
+it, and case 9 pins the deliberate remaining cost: the scratchpad carve-out
+survives only for a literally-written path.
 """
 
 import json
@@ -132,12 +140,14 @@ def main():
         "got: " + decision(d, HEREDOC_SUBSTITUTE),
     )
 
-    # 3. Computed path -> passes. The deliberate fail-open, pinned as intended
-    #    behaviour so it is not "fixed" by someone reading the denial as
-    #    incomplete.
+    # 3. Computed path -> denies. This case previously asserted the opposite,
+    #    pinning the fail-open as intended behaviour so nobody "fixed" it. That
+    #    was the right call on the evidence then available and the wrong one on
+    #    the evidence since: the hole was used twice in one day. The assertion
+    #    is flipped rather than deleted, so the reversal is visible here.
     check(
-        "computed path passes (deliberate fail-open)",
-        decision(d, COMPUTED_PATH) == "pass",
+        "computed path denies (fail-open closed 2026-08-09)",
+        decision(d, COMPUTED_PATH) == "deny",
         "got: " + decision(d, COMPUTED_PATH),
     )
 
@@ -195,12 +205,104 @@ def main():
         "got: " + decision(d3, SCRATCH_WRITE),
     )
 
-    # 6. A plain non-writing python invocation passes.
+    # 6. A plain non-writing python invocation passes. This is also the case
+    #    that keeps the queue mover usable: invoking a script file carries no
+    #    write call in the command text, so neither matcher sees anything.
     check(
         "non-writing python command passes",
         decision(d, "python plugin/si-plugin/scripts/reorder_queue.py QUEUE.md --delete x Processed")
         == "pass",
         "",
+    )
+
+    # 7. The exact shape of the first live corruption: the path assigned to a
+    #    variable one statement before the write. This passed before 2026-08-09
+    #    and wrote a QUEUE.md with six work items still in it.
+    VAR_PATH_WRITE = (
+        "python -c \"p='QUEUE.md'; "
+        "open(p, 'w').write('clobbered')\""
+    )
+    check(
+        "computed target via variable is denied",
+        decision(d3, VAR_PATH_WRITE) == "deny",
+        "got: " + decision(d3, VAR_PATH_WRITE),
+    )
+
+    # 7b. The second live instance, in the session that diagnosed the first:
+    #     a heredoc using io.open on the same variable.
+    IO_OPEN_WRITE = (
+        "python - <<'PY'\n"
+        "import io\n"
+        "p = 'QUEUE.md'\n"
+        "io.open(p, 'w', encoding='utf-8').write('x')\n"
+        "PY"
+    )
+    check(
+        "computed target via io.open in a heredoc is denied",
+        decision(d3, IO_OPEN_WRITE) == "deny",
+        "got: " + decision(d3, IO_OPEN_WRITE),
+    )
+
+    # 8. pathlib's side of the same gap: write_text on a receiver that is not a
+    #    literal Path(...). The literal form is matched by PY_PATH_WRITE; this
+    #    one is only visible as an excess of the general shape.
+    VAR_PATHLIB_WRITE = (
+        "python - <<'PY'\n"
+        "import pathlib\n"
+        "target = pathlib.Path('QUEUE.md')\n"
+        "target.write_text('clobbered')\n"
+        "PY"
+    )
+    check(
+        "computed pathlib write_text is denied",
+        decision(d3, VAR_PATHLIB_WRITE) == "deny",
+        "got: " + decision(d3, VAR_PATHLIB_WRITE),
+    )
+
+    # 8b. An f-string target is computed even though it is quoted — the quotes
+    #     make it look literal, which is exactly why it needs its own case.
+    FSTRING_WRITE = (
+        "python - <<'PY'\n"
+        "open(f'{d}/QUEUE.md', 'w').write('x')\n"
+        "PY"
+    )
+    check(
+        "f-string target is denied",
+        decision(d3, FSTRING_WRITE) == "deny",
+        "got: " + decision(d3, FSTRING_WRITE),
+    )
+
+    # 9. The accepted cost, pinned so nobody later "fixes" it as a bug: a
+    #    scratchpad write with a COMPUTED path is denied, even though the same
+    #    write with the path spelled out (case 5c) passes. Scratch space is
+    #    still available; it just has to be named.
+    SCRATCH_COMPUTED = (
+        "python - <<'PY'\n"
+        "import os\n"
+        "p = os.path.join(base, 'note.md')\n"
+        "open(p, 'w').write('x')\n"
+        "PY"
+    )
+    check(
+        "computed scratchpad path is denied (accepted cost)",
+        decision(d3, SCRATCH_COMPUTED) == "deny",
+        "got: " + decision(d3, SCRATCH_COMPUTED),
+    )
+
+    # 10. A read-only script is untouched. The rejected alternative to all of
+    #     the above was widening detection to "imports io/pathlib and names a
+    #     project doc", which would have denied this.
+    READ_ONLY = (
+        "python - <<'PY'\n"
+        "import io\n"
+        "p = 'QUEUE.md'\n"
+        "print(len(io.open(p).read()))\n"
+        "PY"
+    )
+    check(
+        "read-only script still passes",
+        decision(d3, READ_ONLY) == "pass",
+        "got: " + decision(d3, READ_ONLY),
     )
 
     print()

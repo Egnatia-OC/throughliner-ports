@@ -15,6 +15,41 @@ import re
 import subprocess
 import sys
 
+# --- Format epoch ---
+#
+# The shape of the project's own documents — QUEUE.md's two sections, the work-
+# item heading format, the fields the hooks parse. Bumped ONLY when a change
+# makes an older project's files structurally wrong, never for an ordinary
+# release.
+#
+# Deliberately separate from the plugin version, and that separation is the
+# whole point. The version bumps on every release, and most releases change no
+# format at all, so a version check cries wolf — which is exactly why the
+# user-facing "your project is behind" warning was already moved off it and onto
+# presence-of-scaffolding. The epoch is the signal a version number cannot give:
+# not "something shipped" but "your files are on an older shape".
+#
+# Why detection rather than a convenience. The migration machinery already
+# exists — /setup re-scaffolds and loads migrate-checklist.md — so nothing was
+# missing except a project ever finding out it needed it. Left to the user
+# noticing drift, a project silently on an old format spends every /plan and
+# /next reasoning over stale scaffolding, and the person least able to spot that
+# is the non-coder the method is for.
+#
+# Detection by structure ("does QUEUE.md LOOK two-section?") was rejected: it
+# guesses, and it guesses about a file users legitimately hand-edit. An explicit
+# marker either matches or does not.
+#
+# History, kept so a bump is never guessed at:
+#   1  the original single-section queue with Batches / Parked / Deferred tests
+#   2  the two-section Processed / Unprocessed recut, work items as `#### `
+#      headings with a trailing [slug], red flags as tagged state lines, and
+#      `Blocked by: [slug]` as the one dependency field
+FORMAT_EPOCH = 2
+
+# The project records its own epoch here, written by /setup on completion.
+FORMAT_EPOCH_FILE = ".si-format-epoch"
+
 # A placeholder counts only in hash position: an entry heading line
 # ("## [HASH] — title") or the start of an index line ("- [HASH] — text").
 # Body prose may mention the token literally and must never match — the
@@ -429,6 +464,23 @@ def main() -> int:
     # nothing a project needs, so a version check cries wolf.
     version_mismatch = has_spec and plugin_version and project_version != plugin_version
 
+    # --- Stale format epoch ---
+    #
+    # Read the project's recorded epoch. An adopted project with no marker at all
+    # predates the marker, so it is treated as epoch 1 rather than as an error —
+    # no migration reaches every project, and an unreadable or absent file must
+    # never be the thing that decides a project is fine.
+    project_epoch = 1
+    epoch_path = os.path.join(cwd, FORMAT_EPOCH_FILE)
+    if os.path.isfile(epoch_path):
+        try:
+            with open(epoch_path, "r", encoding="utf-8") as f:
+                project_epoch = int(f.read().strip() or 1)
+        except (OSError, ValueError):
+            project_epoch = 1
+
+    format_stale = has_spec and project_epoch < FORMAT_EPOCH
+
     # State 1: Not adopted
     if not has_spec:
         # Check if there's substantial work here (not an empty folder)
@@ -514,6 +566,30 @@ def main() -> int:
     # in the discarded remainder.
     context_parts = []
 
+    # A stale format epoch halts before anything else. It sits above even the
+    # red-flag scan, and that ordering is deliberate rather than a ranking of
+    # importance: every scan below reads the project's documents, and a stale
+    # project's documents are in a shape those readers were not written for. A
+    # red-flag scan over a format it cannot parse does not report a risk, it
+    # reports nothing — which reads exactly like "no risks found".
+    if format_stale:
+        context_parts.append(
+            "PROJECT FORMAT OUT OF DATE — this project's documents are on an "
+            f"older shape (format {project_epoch}) than the installed plugin "
+            f"expects (format {FORMAT_EPOCH}). STOP and say so in your first "
+            "reply, before running any skill and before answering anything else. "
+            "Tell the user plainly, in everyday language, that their project "
+            "files were set up under an older version of the workflow and need "
+            "bringing up to date, and that running /setup will do it — it "
+            "migrates the existing documents rather than replacing them, and "
+            "their work is not lost. Do NOT run /plan or /next first: both would "
+            "spend the session reasoning over documents in a shape this version "
+            "no longer reads correctly, and would report a confidently wrong "
+            "picture rather than an error. If the user tells you to carry on "
+            "anyway, that is their call — do it, and say once that the results "
+            "may be unreliable until the migration runs."
+        )
+
     # Uncleared red flags first-thing: the two-section model has no pinned Red
     # flags section, so this scan is what keeps an unaddressed data-exposure risk
     # unmissable at session start. Surfaced ahead of ordinary project state.
@@ -594,6 +670,14 @@ def main() -> int:
     if not os.path.isfile(si_version_path):
         missing_scaffold.append(
             "the .si-version marker (records which plugin version set the project up)"
+        )
+    # Not listed when the format-epoch halt is already firing — the halt says the
+    # same thing louder and with the migration attached, and two notices about
+    # one gap read as two problems.
+    if not os.path.isfile(epoch_path) and not format_stale:
+        missing_scaffold.append(
+            "the .si-format-epoch marker (records which document format the "
+            "project uses)"
         )
 
     if missing_scaffold:

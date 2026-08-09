@@ -2,7 +2,10 @@
 """
 PostToolUse hook — advisory lint of QUEUE.md structure after edits.
 
-Fires after Edit/Write/MultiEdit lands on the project's QUEUE.md. Reads
+Fires after Edit/Write/MultiEdit lands on the project's QUEUE.md, and after
+any Bash/PowerShell command in an adopted project — a shell write bypasses the
+editing tools entirely, so an edit-only trigger left that whole class unlinted.
+Reads
 the file from disk and flags known format violations against the
 two-section work-item model:
 
@@ -48,7 +51,7 @@ WORKLINE_HEADING = re.compile(r"^####\s+\S")
 
 # The trailing [slug] on a work-item heading: lowercase kebab, two chars
 # minimum, so a stray [x] tick or an [PROMPT]-style token never counts.
-SLUG_AT_END = re.compile(r"\[[a-z0-9][a-z0-9-]+\]\s*$")
+SLUG_AT_END = re.compile(r"\[([a-z0-9][a-z0-9-]+)\]\s*$")
 
 # A red-flag marker line: "Red flag · State: <state>". The middle dot is
 # U+00B7 and is matched leniently (optional) so a spacing slip still reads
@@ -159,7 +162,7 @@ def _workline_blocks(annotated):
         if WORKLINE_HEADING.match(line):
             if current:
                 blocks.append(current)
-            current = {"idx": i, "heading": line, "lines": [line]}
+            current = {"idx": i, "heading": line, "lines": [line], "section": h2}
         elif is_heading:
             # Any other heading (a section change, a stray sub-heading) ends
             # the current work-item block.
@@ -258,6 +261,105 @@ def _check_readiness_marker(annotated, blocks, warnings):
             )
 
 
+BLOCKED_BY_LINE = re.compile(r"^\*{0,2}Blocked by:?\*{0,2}\s*(.+)$", re.IGNORECASE)
+SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]")
+
+
+def _check_blocked_by(annotated, blocks, warnings):
+    """Check 5: below the line means blocked by a named queue item.
+
+    Below-the-line used to mean "shelved for any reason", with the reason
+    written as a prose lift-condition inside the item — a sentence like
+    "cleared once [slug] ships" or "after a full computer restart". That model
+    failed in a specific, repeated way: a blocker written as a sentence inside
+    another item's prose is invisible as work, so nothing ever picks it up. One
+    item sat below the line for weeks with a genuine user action buried in its
+    lift-condition; the moment it was split out as its own work item it became
+    visible immediately.
+
+    So the rule is now exactly one thing: an item sits below the marker if and
+    only if a NAMED queue item blocks it. Anything waiting on the world gets
+    described as its own item in Unprocessed, where /plan will process it, and
+    the blocked item names that item as its blocker. This check is what makes
+    the rule real rather than a convention sessions drift from — the below-line
+    population becomes derivable instead of remembered.
+
+    Advisory like every other check here: it reports, never blocks or repairs.
+
+    On "sits above": the queue item that decided this asked for a blocker that
+    "resolves and sits above the item", which reads naturally but cannot be
+    taken as literal file order — Unprocessed sits BELOW Processed in the file,
+    and an Unprocessed blocker is the rule's own recommended shape. So above-ness
+    is checked only where it means something: within Processed, where position
+    is build order. A blocker in Unprocessed is fine by construction.
+    """
+    marker_idx = next(
+        (i for i, line, _h2, _ih in annotated if line == CLEARED_MARKER), None
+    )
+    if marker_idx is None:
+        # A missing marker is already reported by the readiness check, and
+        # without one there is no below-the-line to check.
+        return
+
+    known = {}
+    for b in blocks:
+        m = SLUG_AT_END.search(b["heading"])
+        if m:
+            known[m.group(1)] = b
+
+    for b in blocks:
+        if b["section"] != "Processed":
+            continue
+        below = b["idx"] > marker_idx
+        refs = []
+        for line in b["lines"][1:]:
+            m = BLOCKED_BY_LINE.match(line)
+            if m:
+                refs.extend(SLUG_REF.findall(m.group(1)))
+
+        if not below:
+            if refs:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} sits ABOVE the "
+                    "cleared-to-run marker but carries a 'Blocked by:' line — "
+                    "cleared work has nothing blocking it. Either move it below "
+                    "the marker or drop the blocker."
+                )
+            continue
+
+        if not refs:
+            warnings.append(
+                f"line {b['idx'] + 1}: {b['heading'][:60]!r} sits below the "
+                "cleared-to-run marker with no 'Blocked by: [slug]' line. Below "
+                "the line means blocked by a named queue item and nothing else "
+                "— if nothing in the queue blocks it, move it above the marker; "
+                "if it waits on something in the world, file that as its own "
+                "item in Unprocessed and name it here."
+            )
+            continue
+
+        for slug in refs:
+            target = known.get(slug)
+            if target is None:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
+                    f"[{slug}], which is not a work item in this queue. A "
+                    "blocker must be a real item someone can pick up."
+                )
+            elif target["idx"] == b["idx"]:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} names itself "
+                    "as its own blocker."
+                )
+            elif target["section"] == "Processed" and target["idx"] > b["idx"]:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
+                    f"[{slug}], which sits BELOW it in Processed. Within "
+                    "Processed, position is build order, so a blocker must come "
+                    "first."
+                )
+
+
 def _check_orphaned_prose(annotated, warnings):
     """Check 5: every non-blank line in a work section belongs to a block.
 
@@ -310,8 +412,158 @@ def lint(content: str) -> list[str]:
     _check_sections(annotated, warnings)
     _check_red_flag_states(annotated, warnings)
     _check_readiness_marker(annotated, blocks, warnings)
+    _check_blocked_by(annotated, blocks, warnings)
     _check_orphaned_prose(annotated, warnings)
     return warnings
+
+
+# --- Secret-shape scan ---
+#
+# Runs over the project's own prose docs (QUEUE.md, SPEC.md, LOG/) because those
+# get committed, and a commit is permanent even if the text is deleted later.
+#
+# HIGH-CONFIDENCE SHAPES ONLY, and that narrowness is the design rather than a
+# limitation. This scan's only value is that it is deterministic: it either
+# matches a shape or it doesn't, so it never produces false confidence. The
+# moment it started guessing at whether prose is sensitive it would become
+# another judgment pass wearing a machine's authority.
+#
+# WHAT IT CANNOT DO, and this must never be sanded off. The thing that actually
+# leaks from these docs is ordinary prose about a real person or a real case,
+# and no pattern catches that. So this scan must never be described to a user as
+# "your files are scrubbed" — a gate that over-claims is worse than no gate,
+# because the user publishes more freely believing it worked. The same line the
+# method holds on red flags: provide risk-addressing, never promise risk
+# management. The prose half is a pre-write checklist Claude runs (see
+# plugin-behaviour.md), and the real protection for a public repo is not
+# publishing these artifacts at all.
+#
+# Advisory, like every check in this file. It reports; it never blocks or edits.
+#
+# Distinct from scripts/scrub_sweep.py, which is an on-demand, human-run,
+# whole-repo sweep for OTHER PEOPLE's names. Different question, different
+# trigger, and neither replaces the other.
+SECRET_SHAPES = (
+    (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "a private-key block"),
+    (re.compile(r"\bsk-ant-[A-Za-z0-9_\-]{16,}"), "an Anthropic API key"),
+    (re.compile(r"\bsk-[A-Za-z0-9]{32,}"), "an API key"),
+    (re.compile(r"\b(?:ghp|gho|ghu|ghs)_[A-Za-z0-9]{20,}"), "a GitHub token"),
+    (re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}"), "a GitHub fine-grained token"),
+    (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "an AWS access key id"),
+    (re.compile(r"\bxox[baprs]-[A-Za-z0-9\-]{10,}"), "a Slack token"),
+    (re.compile(r"\bAIza[0-9A-Za-z_\-]{35}\b"), "a Google API key"),
+    (re.compile(r"\b[0-9a-fA-F]{32,}\b"), "a long hex string"),
+    # No `/` in the class, and a digit and a capital are both required. Without
+    # those three constraints this matched an ordinary filesystem path in a LOG
+    # entry (`~/.claude/plugins/cache/flintcraft/sovereign-implementer`) — a run
+    # of forty-odd letters and slashes reads as base64 to a regex. Real base64
+    # secrets carry digits and mixed case; prose and paths usually don't.
+    (
+        re.compile(
+            r"\b(?=[A-Za-z0-9+]*[0-9])(?=[A-Za-z0-9+]*[A-Z])"
+            r"[A-Za-z0-9+]{40,}={0,2}\b"
+        ),
+        "a long base64-looking string",
+    ),
+    (
+        re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b"),
+        "an email address",
+    ),
+)
+
+SCANNED_DOCS = ("QUEUE.md", "SPEC.md")
+
+
+def _is_scannable_doc(filepath: str, cwd: str) -> bool:
+    norm = _normalise(filepath)
+    for doc in SCANNED_DOCS:
+        if norm == _normalise(os.path.join(cwd, doc)):
+            return True
+    log_dir = _normalise(os.path.join(cwd, "LOG"))
+    return norm.startswith(log_dir + os.sep)
+
+
+def _scan_secrets(path: str) -> list:
+    """Report high-confidence secret shapes in a project prose doc."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        return []
+
+    found = []
+    for n, line in enumerate(lines, 1):
+        for pattern, label in SECRET_SHAPES:
+            m = pattern.search(line)
+            if m:
+                snippet = m.group(0)
+                if len(snippet) > 12:
+                    snippet = snippet[:6] + "…" + snippet[-4:]
+                found.append(
+                    f"line {n}: {label} ({snippet}). This file gets committed, "
+                    "and a commit keeps the text even if you delete it later."
+                )
+                break
+    return found[:10]
+
+
+def _emit(message: str) -> int:
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "PostToolUse",
+            "additionalContext": message,
+        }
+    }
+    json.dump(output, sys.stdout)
+    return 0
+
+
+def _lint_queue(queue_path: str) -> int:
+    """Lint QUEUE.md at `queue_path` and emit any warnings as advisory context.
+
+    Shared by both entry paths — an edit that landed on QUEUE.md, and any shell
+    command in an adopted project. A missing or unreadable file is silently
+    fine: this hook is advisory and never fails a tool call.
+    """
+    try:
+        with open(queue_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except (OSError, UnicodeDecodeError):
+        return 0
+
+    sections = []
+    warnings = lint(content)
+    if warnings:
+        sections.append(
+            "[Sovereign Implementer] QUEUE.md structure lint (advisory). "
+            "These flag known violations only — novel structure is allowed "
+            "and never flagged. Judge each one: fix what's genuinely wrong "
+            "in a follow-up edit, leave what isn't.\n"
+            + "\n".join(f"- {w}" for w in warnings)
+        )
+
+    secrets = _scan_secrets(queue_path)
+    if secrets:
+        sections.append(_secret_message("QUEUE.md", secrets))
+
+    if not sections:
+        return 0
+    return _emit("\n\n".join(sections))
+
+
+def _secret_message(name: str, findings: list) -> str:
+    return (
+        f"[Sovereign Implementer] Possible secret in {name} (advisory). "
+        "These match known credential shapes only — deterministic, no "
+        "judgement. Tell the user plainly what was found and where, and let "
+        "them decide.\n"
+        + "\n".join(f"- {f}" for f in findings)
+        + "\n\nSay plainly, if it comes up, that this check finds credential "
+        "SHAPES and nothing else. It cannot tell whether ordinary prose here "
+        "names a real person or a real case, which is the thing that actually "
+        "leaks from these files — so never tell the user their docs are "
+        "scrubbed or safe to publish on the strength of it."
+    )
 
 
 def main() -> int:
@@ -327,14 +579,37 @@ def main() -> int:
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
 
-    if tool_name not in ("Edit", "Write", "MultiEdit"):
+    if tool_name not in ("Edit", "Write", "MultiEdit", "Bash", "PowerShell"):
         return 0
 
-    filepath = tool_input.get("file_path", "")
-    if not filepath or not cwd:
+    if not cwd:
         return 0
 
     is_adopted = os.path.isfile(os.path.join(cwd, "SPEC.md"))
+
+    # A shell command names no file, so there is nothing to compare against
+    # QUEUE.md — the lint simply runs over QUEUE.md whatever the command was.
+    #
+    # WHY THIS BRANCH EXISTS. The lint used to fire after Edit/Write/MultiEdit
+    # only, so a write that reached QUEUE.md through a shell bypassed it
+    # entirely. That is not hypothetical: a scripted write corrupted QUEUE.md
+    # on 2026-08-09 — duplicating a header fragment and leaving six built work
+    # items in place — and nothing surfaced it. It was found several steps
+    # later by an unrelated `git status`, and a close would otherwise have
+    # committed it. Firing here catches the damage whatever caused it, which is
+    # the point: the companion fix in pre_tool_use.py stops one route in, and
+    # this stops the class.
+    #
+    # The cost is one file read and one lint per shell command, and the lint
+    # stays ADVISORY exactly as it is after an edit — it reports, never blocks.
+    if tool_name in ("Bash", "PowerShell"):
+        if not is_adopted:
+            return 0
+        return _lint_queue(os.path.join(cwd, "QUEUE.md"))
+
+    filepath = tool_input.get("file_path", "")
+    if not filepath:
+        return 0
 
     # Clear the editing-state signal for whatever file was just written —
     # every file, not only QUEUE.md, and before the QUEUE.md gate below.
@@ -349,36 +624,22 @@ def main() -> int:
     if is_adopted:
         write_editing_marker(cwd, data.get("session_id", ""), filepath, False)
 
-    # Only the project-root QUEUE.md, only in adopted projects.
-    if _normalise(filepath) != _normalise(os.path.join(cwd, "QUEUE.md")):
-        return 0
     if not is_adopted:
         return 0
 
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
-    except (OSError, UnicodeDecodeError):
-        return 0
+    # Only the project-root QUEUE.md gets the structure lint. SPEC.md and LOG/
+    # entries get the secret scan alone — they have no structure to lint, but
+    # they are committed prose exactly like the queue.
+    if _normalise(filepath) == _normalise(os.path.join(cwd, "QUEUE.md")):
+        return _lint_queue(filepath)
 
-    warnings = lint(content)
-    if not warnings:
-        return 0
+    if _is_scannable_doc(filepath, cwd):
+        secrets = _scan_secrets(filepath)
+        if secrets:
+            return _emit(
+                _secret_message(os.path.basename(filepath), secrets)
+            )
 
-    message = (
-        "[Sovereign Implementer] QUEUE.md structure lint (advisory). "
-        "These flag known violations only — novel structure is allowed "
-        "and never flagged. Judge each one: fix what's genuinely wrong "
-        "in a follow-up edit, leave what isn't.\n"
-        + "\n".join(f"- {w}" for w in warnings)
-    )
-    output = {
-        "hookSpecificOutput": {
-            "hookEventName": "PostToolUse",
-            "additionalContext": message,
-        }
-    }
-    json.dump(output, sys.stdout)
     return 0
 
 

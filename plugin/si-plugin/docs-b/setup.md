@@ -135,6 +135,16 @@ Where their own content goes is the user's call, not yours.
 
 **3. Update `.si-version`** to the current plugin version.
 
+**3a. Write `.si-format-epoch`** — the document-format number this migration
+brings the project up to. Read it from `FORMAT_EPOCH` near the top of
+`${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py` and write that number, on its own,
+into `.si-format-epoch` at the project root.
+
+Do this **last among the migration edits**, once the conversions above have
+actually landed. It is what clears the session-start halt that sent the user
+here, so writing it early would silence the warning while the project was still
+on the old shape — and nothing else would ever raise it again.
+
 **4. Skip the interview** — the project is already described in SPEC.md.
 
 **5. Close state-aware.**
@@ -263,6 +273,13 @@ view-in-doc rendering).
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
 detect when the plugin has been updated.
+
+**.si-format-epoch** — write the document-format number, read from `FORMAT_EPOCH`
+near the top of `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py`. Separate from the
+version on purpose: the version changes at every release, the format number only
+when a change makes older projects' documents structurally wrong. session_start
+compares the two and halts the session when the project is behind, so a project
+on an old shape finds out instead of quietly running on stale scaffolding.
 
 **.gitignore** — create it if absent, and make sure it carries an entry for
 `.throughliner/` (don't duplicate one already there).

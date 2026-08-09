@@ -73,7 +73,8 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
           — a check needing the user's eyes, a decision only they can make,
             a physical action (tapping send, connecting a device)
           — work Claude can run but is BLOCKED on a push/restart stays
-            Claude-work: shelve it below the line with a lift-condition
+            Claude-work: file what it waits on as its own item, and shelve
+            this one below the line naming that item as its blocker
           — must carry a DESCRIBED walkthrough, settled at the keep-step
 
 (no tag)  a build — the default Claude-work flavor
@@ -109,47 +110,28 @@ close it at this session's /done (log under its slug, remove from Processed);
 otherwise leave them alone and say nothing about them.
 
 **Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
-lift; PROMPT only for the user-only batch]. Walk the below-line items; for each,
-read the lift-condition its prose records and classify:
+lift]. Every below-line item names its blocker as `Blocked by: [slug]`, so the
+revisit is one check per item:
 
 ```
-mechanically checkable    ->  check silently; if cleared, propose lifting
-    (a dependency built per LOG, a push done, a file now present)
-Claude-downstream         ->  NEVER ask. Do it now, or report it as pending
-    (waiting on an action          Claude-work in the same one-line narration
-     Claude can perform)           the mechanical checks use.
-user-only                 ->  DON'T ask per item. Gather every user-only
-    (an external event            condition into ONE consolidated question,
-     only the user knows)         asked once this session.
-provably still-waiting    ->  skip silently
+blocker shipped per LOG   ->  propose lifting the item above the marker
+blocker still open        ->  skip silently
+blocker missing or not
+    a real queue item     ->  a fault; surface it and fix it this session
 ```
 
-The Claude-downstream branch turns on the same capability test the `[user]` tag
-uses: **can Claude do this at all?** If yes, it is never a question for the
-user. "Has the plugin been rezipped and reinstalled?" is Claude's own work — so
-Claude either runs it or reports it pending, and does not ask.
+Read shipped-ness off LOG, never off memory — a fresh short session has none.
+**Nothing here is a question for the user.** Lifting is narrated; a still-blocked
+item says nothing at all.
 
-Per-item asking is the nagging this revisit exists to avoid. An item with no
-recorded lift-condition can't be classified without nagging — note it as a gap.
-
-**Before asking any user-only condition, run the downstream-action test:** is
-the awaited event downstream of an action the user has to perform first? "The
-collaborator replies" reads like an external event, but if the user has never
-sent the message, the revisit will ask "has it happened yet?" forever about a
-thing that cannot happen — user work existing only as a recurring chat
-question, manufactured by correctly-followed rules. If yes: that action is a
-`[user]` work item — propose filing it, with the condition rewritten to wait
-on *it*. If no, check the Claude-downstream branch before letting the condition
-into the question: an event downstream of an action *Claude* can perform is
-never asked about. Only a genuinely external event (a restart, a release,
-someone else's unprompted move) joins the consolidated question. When several conditions
-await the same person, one `[user]` walkthrough carries all of them — never
-several walkthroughs that have the user message the same person repeatedly.
-
-The test applies to the **whole** user-only branch, not only the collaborator
-case, and it fires again at the moment a lift-condition is *written* (the
-below-marker placement step in done-plan.md), which is the earliest point it can
-catch one.
+The four-way classifier this replaces — mechanically-checkable / Claude-downstream
+/ user-only / still-waiting — existed because a blocker used to be a prose
+sentence that had to be interpreted before it could be acted on, and the
+consolidated user-only question existed to stop that interpretation nagging. Both
+are gone with the sentences. So is the downstream-action test: an item can only be
+blocked by a queue item now, and a thing in the world becomes a queue item before
+anything blocks on it, so a condition waiting on an action nobody filed can no
+longer be written.
 
 **Seed the queue from SPEC** [BRIEF, PROMPT in the trigger state; otherwise
 SILENT]. A rich SPEC can describe buildable features with no path into the queue —
@@ -227,6 +209,11 @@ The skipped-slug record is what stops a skipped item re-surfacing later in the
 same session. The file survives compaction, gives an interrupted /plan a resume
 path, and hands /done a mechanical record instead of a reconstruction from memory.
 /done reads it at close and deletes it — same lifecycle as _build.md.
+
+**Run the scrub checklist before writing a kept item's text** (plugin-behaviour.md,
+Scrub before writing). Keeping an item is where a capture's rough wording becomes
+the version that ships into a committed doc, so it is the last cheap moment to
+rewrite a real name or a case detail out of it.
 
 **Process order.** Unprocessed top to bottom, then items raised in this session's
 own discussion. State the count upfront, counting both together ("5 items.
@@ -543,7 +530,7 @@ flag.
 
 The durable close work runs at the /done close (done-plan.md), not here —
 reordering both sections, positioning the cleared-to-run marker, holding back
-items that depend on unverified work, recording lift-conditions, and placing ready
+items that depend on unverified work, naming each held item's blocker, and placing ready
 `[user]` work above the marker. /done is the one close that always runs however a
 session ends, so consolidating there is what stops it being silently skipped. The
 spec-sync obligation is likewise the /done close's hard gate, not a duplicate here.

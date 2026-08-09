@@ -214,6 +214,12 @@ a pure pointer drift                     ->  mechanical. Fix it HERE, report in
 
 Every sub-doc's entry-writing step points here.
 
+**Run the scrub checklist before writing** (plugin-behaviour.md, Scrub before
+writing). A LOG entry gets committed, and a session that ran on someone's real
+situation is where a name or a case detail arrives without anyone noticing. Fix
+what you find at the same level of usefulness rather than dropping the fact — and
+don't tell the user the entry is clean afterwards, because you can't know that.
+
 **One text, several positions.** The session authors **two** texts, not four:
 
 ```

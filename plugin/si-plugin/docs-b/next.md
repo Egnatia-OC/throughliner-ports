@@ -53,11 +53,27 @@ Read Processed top-down and take everything above the marker.
 ```
 early exits:
     Processed[top] == marker      ->  NOTHING_CLEARED
+    an item in the run carries
+      `Red flag · State: uncleared` ->  UNCLEARED_FLAG
     run has no build/[audit] item ->  ALL_WALKTHROUGHS
 ```
 
 **On NOTHING_CLEARED** [BRIEF] — tell the user the next work isn't cleared to run
 yet, recommend /plan to vet it, and stop.
+
+**On UNCLEARED_FLAG** [BRIEF, PROMPT] — stop. Don't build the item, and don't
+build the rest of the run around it. Name the risk in plain English, say the item
+reached the ready region with its flag still uncleared, and recommend /plan to
+clear it. Then wait.
+
+This should be impossible: a flag is cleared at processing, so an item only
+reaches Processed with a cleared flag, and the cleared region is red-flag-safe by
+construction. That is exactly why the check is here. A backstop for an impossible
+case never fires, so nothing ever reveals it missing — and this one *was* missing,
+promised by SPEC and the behaviour rules while no code path implemented it. What
+it guards is real: without it, an unattended run would silently build work
+carrying an unaddressed data-exposure risk, which is the one thing the whole
+red-flag model exists to prevent.
 
 **On ALL_WALKTHROUGHS** [PROMPT] — there's nothing to build, so skip Step 2's
 build scaffolding entirely and go straight to Step 3's walk-through branch.

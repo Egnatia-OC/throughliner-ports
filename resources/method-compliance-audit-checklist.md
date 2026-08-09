@@ -8,6 +8,40 @@ It is a dev artifact. It audits the method's own docs, so it is host-only — no
 
 Run all three lenses over each doc in scope. One read of the doc serves all three. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
 
+## The instruction count — run this first
+
+The gate's binding limit is a **count of instructions**, not a word count, so a sweep that doesn't produce a number can only produce opinions: "evict what fails admission" has no target and no stopping rule without one. Count before disposing of anything.
+
+**Scope the count to the always-loaded corpus.** That is `plugin-behaviour.md` plus, in the dev project, `CLAUDE.md`. The skill docs (`plan.md`, `next.md`, `done.md`, `setup.md` and the flavor families) are excluded: they load only when their skill runs, and the ceiling is about what competes for attention in every session. Audit them under the three lenses below; don't count them against the ceiling.
+
+**Counting rule.** One instruction per discrete directive Claude must follow — a bolded rule statement, a bullet, or a decision block. Descriptive prose, rationale and worked examples score zero. Count per section and record the section totals, not just the sum: the sum tells you whether there is a problem, and the section totals tell you where it is.
+
+**Report the split by audience, not just the total.** A consumer loads only `plugin-behaviour.md`; the dev project loads both. Those are two different numbers against the same ceiling, and collapsing them hides which one is actually over.
+
+### Dispositions
+
+Every rule the inventory touches gets one:
+
+```
+keep                    admissible today, correctly placed, correctly worded
+recast                  amendments have accreted past legibility; repeal the
+                        whole thing and replace with one new text
+consolidate-and-repeal  merge the rules on a topic into one AND delete the
+                        priors — the repeal is the essential half
+evict                   delete outright: fails admission, or is stale
+relocate-rationale      the rule stays; its why moves out (consumer-facing why
+                        to the shipped FAQ, authoring decision to its LOG entry)
+```
+
+`relocate-rationale` saves no slot and is still worth doing: the ceiling counts instructions, but per-rule weight is the other half of what makes a corpus hard to follow.
+
+**Redistribution is a disposition the gate deliberately does not list, and it needs its own justification each time.** Moving a rule to a fetched doc removes it from the count without removing it from the method, which is how bloat gets hidden rather than cut. It is legitimate only where the rule has a trigger a session cannot miss — a word the user says, a hook that surfaces something. Record that reasoning per rule, never once for a batch.
+
+### Two things learned running this (2026-08-09, the first inventory)
+
+- **The eviction list is the audit's output, and it goes into the queue as build work cleared to run — not as findings awaiting a later planning session.** An audit that reports and removes nothing reproduces the failure it exists to fix, but the fix is not cramming a corpus rewrite into a review pass. Approve the list item by item during the run.
+- **An `[audit]` item that names a document to write into contradicts the audit contract and must be surfaced, not followed.** This checklist is named as the criteria home, which reads as a doc-write. The resolution that worked: the *findings* went to the queue, and only the *method* — this section — was written here.
+
 ## Lens 1 — self-authoring compliance
 
 Apply the four parts of [`self-authoring-rules.md`](self-authoring-rules.md) — admission, eviction, distribution, wording — to each doc. That document is the single source of truth; read the tests there rather than re-listing them here, so the two never drift.

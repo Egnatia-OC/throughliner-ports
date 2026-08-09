@@ -36,9 +36,10 @@ already right (the common case), is wasted work.
    # a changed item actually sits wrong  -> compute and apply, and narrate
 ```
 
-Do **not** reintroduce `Blocks:` / `Depends on:` headers or any dependency lint —
-the prose slug-references are the whole dependency signal, and they carry no
-stale-header risk.
+Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
+field that exists is `Blocked by: [slug]`, written on the item that is held, and
+it is lint-checked precisely so it can't go stale the way those headers did.
+Everything else stays prose slug-references.
 
 When a reorder *is* warranted:
 
@@ -135,24 +136,29 @@ was built, and whether it was verified, is read off its LOG entry — this rule 
 the `[user]`-placement rule below both depend on that answer, and a fresh short
 session has no memory to fall back on.
 
-**Record the lift-condition when placing any item below the marker** — the
-specific event that would lift it: "cleared once [slug] is built and verified",
-"after a full computer restart", "once the manifest is pushed". Prose, not a
-hook-parsed field. This is the enabling half of the below-the-line revisit:
-without a recorded condition, that revisit can't tell a still-waiting item from a
-now-ready one without nagging. **An item held below with no recordable
-lift-condition belongs in Unprocessed** (still needs thought), not shelved here.
+**Name the blocker when placing any item below the marker.** One line in the
+item's block:
 
-**Run the downstream-action test on the condition as you write it** (plan.md's
-below-the-line revisit holds the full test). If the event you're about to record
-can't happen until the user acts first — "once the collaborator replies", to a
-message never sent — that action is the real work: file it as a `[user]` item
-and make the condition wait on *it*. Catching it here is cheaper than the
-revisit catching it every session afterwards.
+```
+Blocked by: [slug]
+```
 
-The same moment settles the other side: if the awaited action is one **Claude**
-can perform — a rezip, a reinstall, a command — say so in the condition, so the
-revisit reports it as pending Claude-work instead of asking the user about it.
+The slug must resolve to a real work item in this queue — that is what the queue
+lint checks. Below the line means blocked by a named queue item and nothing else.
+
+```
+nothing in the queue blocks it   ->  it goes ABOVE the marker, not below
+it waits on something in the     ->  file that as its own item in Unprocessed
+    world (a restart, a reply,        first, then name it here. /plan will
+    a site going live)                process it like any other work.
+you can't yet say what it        ->  Unprocessed — it still needs thought
+    would build
+```
+
+This is the enabling half of the below-the-line revisit: with a slug the revisit
+is a single check per item, and with a sentence it was an interpretation. It also
+closes a failure the sentence version kept producing — an item waiting on
+something nobody had filed, so the wait could never end.
 
 **Place ready `[user]` walk-through work above the marker.** The marker is the
 single gate for walk-throughs as well as builds — /next walks a `[user]` item

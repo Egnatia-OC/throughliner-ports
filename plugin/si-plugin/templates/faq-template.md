@@ -62,7 +62,7 @@ It's work only you can do — a check that needs your eyes on the screen, a deci
 
 No — a `[user]` step isn't Claude dropping the task on you and stepping back. When Claude reaches one, it *leads* by walking you through it, live: it runs whatever parts it *can* (any commands or setup it can drive), then gives you the **first** step and waits while you do it, then the next, and so on — walking beside you one step at a time, not handing you a list to work alone. Helping you through it in real time is the whole point — it's a walk-through, not a hand-off. The `[user]` tag just marks who has to actually do or witness the step — usually because it needs your eyes on a screen, or a tool Claude can't reach. You're always welcome to say "just tell me what to do and I'll handle it," but the default is that Claude walks you through it, not that you're on your own. If there are several `[user]` steps, Claude takes them one at a time — it won't dump them all on you in one message.
 
-One related detail about *when* these show up: Claude only brings up a `[user]` step once the work it depends on is finished. A step that's waiting on something not built yet stays parked in your queue until it's ready — so when Claude does walk you through one, it's genuinely ready for you to do.
+One related detail about *when* these show up: Claude only brings up a `[user]` step once the work it depends on is finished. A step waiting on something not built yet sits below the "cleared to run" line, naming the item it's waiting for, until that item ships — so when Claude does walk you through one, it's genuinely ready for you to do.
 
 ## I did a `[user]` step Claude walked me through. How does it get recorded and cleared?
 
@@ -191,6 +191,36 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. The one exception is your **queue**: if an older version stored it in a different layout, /setup offers to convert it to the current format — and even then it drafts the converted queue and shows it to you before writing, so nothing changes without your okay. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
 
+## I want to undo a lot of work and go back to how the project was a while ago. What should I know?
+
+Ask Claude — it has a guide for exactly this and will read it before starting. The rolling-back part is straightforward. The part that catches people is what happens *afterwards*, so here is the headline.
+
+**Your queue will start asking for work that's already done.** Going back restores your files, but it can't restore the match between your queue and reality. Work that was finished before the point you're going back to is still finished in your project — but the queue entries describing it come back, because they were cleared away when that work was built. So the next few sessions get handed finished work, presented as ready to build, with nothing marking it. In one real case that happened seven times in a single session, and every one was caught by luck.
+
+So for the first few sessions after a big rollback, expect Claude to check the record before building anything, and don't be surprised when it says a piece of work is already done and removes it.
+
+A few other things the guide covers: bring back straight away anything that obviously wasn't the problem, rather than restoring it piecemeal later; if another project of yours was built against this one, it may quietly break; and going back undoes *deletions* too, so things you deliberately got rid of will reappear.
+
+## Does Claude check my queue and logs for private information before they get committed?
+
+Partly — and the honest answer to the second half of that question matters more than the first, so here it is up front: **you should never treat these files as checked and safe to publish.**
+
+Here's what actually happens. Two things run. A mechanical scan looks at QUEUE.md, SPEC.md and your log entries for things *shaped* like credentials — a private key, an API token, an email address. That scan is exact: it either matches a known shape or it doesn't, so it never guesses and never gives you false comfort. Separately, before writing a new item or a log entry, Claude reads what it's about to write against a short list — personal names, details that identify a real situation, other people's information, paths with someone's name in them — and rewrites what it spots.
+
+Now the limit. The second half is Claude checking its own writing, and the first half only knows credential shapes. Neither can tell whether an ordinary sentence quietly identifies a real person — and that, not a leaked password, is what actually gets exposed from files like these. So Claude will never tell you your files are scrubbed or clean, and you shouldn't infer it.
+
+This matters because these files get committed, and a commit keeps the text even after you delete it. If your repository is public, or might become public, the only real protection is not publishing these documents at all — keeping them out of the repository entirely, rather than trusting a check to have caught everything.
+
+## A session stopped and said my project's files are on an "older format". What is that, and is my work at risk?
+
+Your work is safe, and stopping is the point. The method occasionally changes the *shape* of your project's own documents — how the queue is laid out, what a piece of work looks like, which lines Claude reads for what. A project set up before such a change has files in the older shape.
+
+That is worse than a missing file, which is why it gets a full stop rather than a note. A missing file announces itself. A file that's *present* but on an old shape doesn't error at all — Claude reads it, gets a wrong picture, and carries on confidently. You'd get a session's worth of planning or building based on a misreading, with nothing anywhere saying so. Stopping first is the only way that doesn't happen quietly.
+
+The fix is to run `/setup`. It migrates what's there rather than replacing it: your work items, your notes, your reasoning all carry across into the new shape, and Claude shows you the converted version before writing anything. Once it's done, the project records the new format and sessions open normally again.
+
+Two details worth knowing. This is **not** the same as "the plugin has a new version" — the plugin updates often and almost none of those updates change the format, so you won't see this message routinely; it's reserved for the changes that genuinely affect your files. And if you'd rather press on, you can tell Claude to carry on anyway — it's your call. Claude will do it and mention once that what it tells you may not be reliable until the migration runs.
+
 ## A session opened by saying my project was missing something — what happened?
 
 The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. Most of the time it just adds what's needed and tells you in one line what changed; if something genuinely needs an answer from you, Claude asks it in one line and you can always say skip. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
@@ -230,7 +260,11 @@ It's a planning checkpoint Claude placed between work items. When /next reaches 
 
 ## I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?
 
-Yes. When a piece of work is parked below the line because it's waiting on something — a step you have to do, another piece of work being finished and checked, a restart — Claude records right there in the item what it's waiting for ("once X is done", "after a restart"). Then at the start of every planning session, Claude goes back over everything parked below the line and re-checks those conditions. Anything it can confirm by itself — a piece of work that's now finished and verified, a file that's now there — it offers to move up above the line so it's ready to build. Anything only *you* can confirm — did the restart happen, did you set the thing up — it rolls into a single question asked once, rather than pestering you item by item. The point is that parked work gets picked back up when its wait actually clears, instead of relying on you to remember it was there.
+Yes, and there's only one reason work can be sitting down there: **another item in your queue has to happen first.** Claude writes that other item's name right into the held one — a line reading `Blocked by:` followed by the name in square brackets — so what it's waiting for is never a vague note, it's a specific piece of work you can look at.
+
+That matters more than it sounds. Work often waits on something in the world rather than on other work — a restart, a website going live, somebody getting back to you. Those don't get written as a waiting-note inside the held item; they get written as **their own item in your queue**, which means they turn up in planning like everything else and actually get done. The old way buried them as a sentence inside another item, where nobody ever saw them — one piece of work sat waiting for weeks on a step that was never going to happen, because nothing had put that step anywhere you'd find it.
+
+Then at the start of every planning session, Claude goes down the held work and checks one thing per item: has the thing it's waiting for been finished? If yes, Claude offers to move it up above the line so it's ready to build. If not, it stays put and Claude says nothing about it — no repeated questions, because there's nothing to ask you: the answer is in the record, not in your memory.
 
 ## What does the "Cleared to run above this line" marker in the queue mean?
 
