@@ -1,4 +1,4 @@
-# [HASH] — plugin-behaviour.md cut by a quarter with a fetched doc split out, executing six approved eviction findings — and the doc's founding premise then rejected outright, so the compression is an interim and the doc's retirement is queued
+# 1e25a6f — plugin-behaviour.md cut by a quarter with a fetched doc split out, executing six approved eviction findings — and the doc's founding premise then rejected outright, so the compression is an interim and the doc's retirement is queued
 
 A freeform session, run outside /plan and /next at the user's instruction, on her framing of an emergency: doc bloat and token burn bad enough that sessions needed a lighter behaviour-rules file immediately rather than after the queue reached one. The queue already held the findings — six approved eviction and audit items naming exactly what to cut in `plugin-behaviour.md` — so nothing here was newly decided about *what* to remove. What the session did was execute the ones that live in that single file and leave the ones touching other docs standing.
 
