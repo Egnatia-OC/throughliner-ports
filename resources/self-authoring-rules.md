@@ -8,11 +8,24 @@ The binding limit is a **count of instructions**, not a word count. Models follo
 
 So every rule admitted degrades the rules already there. That is the cost this document exists to charge, and the reason it opens by stating it: each individual addition looks free, which is how the predecessor to this document was honestly applied all the way from 6,162 words to 21,445.
 
-Sources: [instruction-file-bloat-and-subtraction.md](research/instruction-file-bloat-and-subtraction.md), [legal-drafting-for-tight-rules.md](research/legal-drafting-for-tight-rules.md).
+Sources: [instruction-file-bloat-and-subtraction.md](research/instruction-file-bloat-and-subtraction.md), [legal-drafting-for-tight-rules.md](research/legal-drafting-for-tight-rules.md), [legislative-prose-syntax.md](research/legislative-prose-syntax.md).
 
 ## 1. Admission — does this rule get to exist?
 
 **First, name the parent: which existing rule does this amend?** Legislation distinguishes an amendment from a *freestanding* provision. That distinction maps onto the ceiling exactly: a freestanding rule consumes one of the slots a model follows reliably; an amendment consumes none, because it changes a rule already occupying its slot. A change that can't name a parent is either genuinely new territory or — far more often — a refinement whose parent was never looked for. Look for it.
+
+**Then write the rule as a subordinate unit of that parent, and ship it in that form if it holds.** Freestanding is what a rule falls back to when subordination fails, not the default. The test is syntactic:
+
+```
+genuinely subordinate when ALL hold:
+    at least two parallel units exist
+    each reads as a continuation of the parent's opening words
+    all share one grammatical function
+    every modifier points only at the opening words or at its own unit
+    none is a complete sentence
+```
+
+A complete sentence formatted as a nested bullet is a freestanding rule wearing a bullet, and spends a slot accordingly. The same test runs both directions: writing, try the fragment before the sentence; auditing, hunt for standing rules that should have been subordinate. A unit that won't convert without losing content is genuinely freestanding — forcing it is how a subordination pass deletes a rule.
 
 Then, four questions:
 
@@ -38,14 +51,14 @@ Routing works for reference material and fails for standing behavioural rules: a
 
 Without that constraint, distribution becomes a way of hiding bloat rather than removing it. The limit is recorded in [`LOG/2026-08-03-docset-b-progressive-disclosure.md`](../LOG/2026-08-03-docset-b-progressive-disclosure.md).
 
-## 4. Wording — write it as an action, not a prohibition
+## 4. Wording — state the action the rule requires
 
 **Anything that is described in terms of what not to do only means the rule of what TO do was never adequately described in the first place** (the user's words, 2026-08-09). A prohibition is therefore a signal to go back and specify the action, not a wording to polish. Where no action can be stated, that is the finding: the rule was never worked out.
 
 One check, and the drafting devices that serve it. All of them are forms of a single instruction: **express a qualification as structure, not as explanation.**
 
 - Avoid provisos. A rule followed by a swelling "provided that" is the habit this exists to break.
-- Signal an exception *before* the general rule, so it is never applied and then withdrawn.
+- Put the main clause first — the rule, then its conditions — especially where the conditions are long, since a reader needs a sentence's principal parts before it can place the rest.
 - Use `subject to <X>` as a cross-reference rather than restating the exception — a restatement costs a paragraph and creates a second copy that drifts.
 - Put multiple exceptions in their own subsection, referenced from the rule.
 - Use short connectives — but, except that, unless, so long as — not explanations.
