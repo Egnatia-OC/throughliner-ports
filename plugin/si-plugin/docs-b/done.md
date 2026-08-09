@@ -90,7 +90,7 @@ It also runs inside a /plan close when the user mentions async-completed items.
    # completion isn't visible simply stays where it is.
    # where the walkthrough named an observable check, run it first
 2. write a LOG entry per completed item, named after its slug
-   # records what the user did and its outcome; draft and show for approval
+   # records what the user did and its outcome; write it, then report it
    # if it carried a red-flag marker -> run Red-flag lifecycle at close
 3. remove each completed item from Processed
    # this is what stops it being re-presented
@@ -123,10 +123,10 @@ several distinct        ->  a separate entry per logical change
 logical changes             # better recall than one lumped entry
 ```
 
-Draft each entry's one-liner and its rationale and **show them for approval before
-writing** — this close is reached by sessions with no build and no planning behind
-them, so the shared LOG-entry approval frame is a doc away. Step 3's "the commit
-message is the approved entry" refers to this approval.
+Write each entry's one-liner and rationale, then **report what landed** — this
+close is reached by sessions with no build and no planning behind them, so the
+shared LOG-entry frame is a doc away. The commit message is the one thing here
+that is still shown before it is used (Step 3).
 
 **3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
 files explicitly. The commit message is the approved entry; for several entries,
@@ -266,20 +266,23 @@ The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
 
-**The approval frame, identical for every flavor.** Show the wording for approval
-before writing.
+**The frame, identical for every flavor.** Write the entry, then report in one
+line what landed and where. A revert undoes a LOG entry, so it doesn't wait on
+approval — the commit message does, because a commit is harder to unwind and
+never becomes file content.
 
 ```
-run shipped ONE item     ->  this approval ALSO covers the commit message: title
-                             and body derive verbatim from this entry, so the
-                             commit step reviews nothing new
+run shipped ONE item     ->  the commit message derives from this entry: title
+                             from the one-liner, body from the rationale. Show
+                             that message at the commit step — short, and the
+                             user has the entry to read behind it
 run shipped SEVERAL      ->  the commit message is a one-line summary of the
-                             whole run, drafted and approved at the commit step;
+                             whole run, shown and approved at the commit step;
                              each item's entry still stands on its own
 ```
 
 This entry is the session's summary — **there is no separate chat recap.** Before
-showing it, check whether this session raised and resolved a concern or weighed an
+writing it, check whether this session raised and resolved a concern or weighed an
 alternative that lost; if so, carry it with why it lost.
 
 **Reuse the pre-generated candidate** where one exists: if _build.md carries a
@@ -483,20 +486,22 @@ This exact dirt appears every session and the answer is always "it's the backfil
 stage it," so re-investigating it is pure delay for zero decision value.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
-already approved at the entry step:
+already written at the entry step. It is shown before the commit either way: a
+commit is harder to unwind than a file edit, and the message never becomes file
+content, so there is nothing to revert and nothing to read in the doc.
 
 ```
 ONE work item shipped        ->  the message IS that entry:
 (and plan/setup closes)          title = the index line's one-liner, verbatim
-                                 body  = the approved rationale, verbatim
-                                 # present by stating that identity plainly
+                                 body  = the written rationale, verbatim
+                                 # show it, stating that identity plainly
 
 SEVERAL work items shipped   ->  title = a one-line summary of what the run
 (a multi-item /next run)                 shipped across all its items
                                  body  = each shipped item's one-liner, one
                                          per line
-                                 # this roll-up IS genuinely new text — draft
-                                 # it and show it for approval
+                                 # this roll-up IS genuinely new text — show
+                                 # it for approval
 
 staged extras (backfills,    ->  the body appends ONE line naming them
 sweep edits, rolled-in user

@@ -49,7 +49,9 @@ Active in every session where the plugin is installed and the project is set up.
   checks fire at once — /plan's read-state, /next's pre-flight, /done's close-out
   — combine what they turn up into one "here's what came up: …", not bullet-by-
   bullet. This covers those three skill openings and nothing else, and only when
-  more than one check fires; a single check surfaces as it always did.
+  more than one check fires; a single check surfaces as it always did. The
+  session's first opening narration also carries the inline-text offer as one
+  clause — bundled here precisely so it never becomes a question of its own.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
@@ -62,12 +64,39 @@ Active in every session where the plugin is installed and the project is set up.
   targets (Claude runs the commit). When two genuine paste targets belong to the
   same approval, present both as adjacent fences in one message under a single
   approval — don't split them across turns; the user needs them side by side.
-- **Approval-time outputs render as blockquotes with a bold lead-in** naming the
-  content type (**Capture draft:**, **Commit message:**, **Log entry:**). Fenced
-  blocks don't wrap in the app, so a long draft runs off-screen and gets approved
-  unread. Exception: content whose exact characters are the substance (code,
-  shell commands) keeps a fence. End the message with an explicit ask naming the
-  decision needed — a draft with no ask isn't actionable.
+- **Write first, then report — decided by one test: does a revert fully undo it?**
+
+```
+YES -> write it, then report      queue items and captures · LOG entries ·
+                                  SPEC edits · ordinary file edits in a build
+NO  -> show it, then wait         a commit message · anything that LEAVES THE
+                                  MACHINE (the feedback report, an outbound
+                                  INBOX message to another project)
+```
+
+  One test rather than a list of carve-outs, so a new approval moment added later
+  is decided rather than silently omitted. A commit message is show-first for two
+  reasons: a commit is materially harder to unwind than a file edit, and the
+  message never becomes file content, so "write it first" has no meaning for it.
+  Off-machine sends are show-first because no revert reaches the copy already
+  delivered.
+
+  **The report after the write is one line** naming what landed and where — never
+  a re-paste of the text just written, which spends the tokens the flip exists to
+  save. It must be specific enough to object to without opening the file: the risk
+  this trade introduces is not rejection, it's the user *not noticing* and a later
+  commit sweeping unapproved text in. Say the user can reject it and it's reverted.
+
+  **The trade, stated rather than discovered.** Show-first guaranteed unapproved
+  text never reached disk. Write-first means a file briefly holds content the user
+  hasn't agreed to — cheap and recoverable in a git repo, but rejection becomes a
+  revert rather than a non-event, and the user is told that once.
+- **When text IS shown — the show-first cases above — it renders as a blockquote
+  with a bold lead-in** naming the content type (**Commit message:**, **Report
+  draft:**). Fenced blocks don't wrap in the app, so a long draft runs off-screen
+  and gets approved unread. Exception: content whose exact characters are the
+  substance (code, shell commands) keeps a fence. End the message with an explicit
+  ask naming the decision needed — a draft with no ask isn't actionable.
 - **Offer a fresh-session handoff when the user reports the session degrading.**
   You have no gauge of context filling — the trigger is always the user's report
   ("this is getting long", "you're making more mistakes"). Then offer both: to
@@ -76,42 +105,68 @@ Active in every session where the plugin is installed and the project is set up.
   This fires wherever the user gives the signal — in plain conversation as much
   as inside a command, since a session wears thin either way.
 
-### Working mode and view-in-doc rendering
+### View-in-doc rendering
 
 The canonical rule for how doc-bound text is rendered. Other docs point here.
 
-**Working mode** is a stored project setting (a `Working mode:` field in the
-project's CLAUDE.md, set at /setup), not a session-start question:
+**The render rule keys on doc-residency, and nothing else:**
 
 ```
-local   ->  user is at the desktop; an edited file opens instantly
-remote  ->  user is on their phone; opening a file means navigating Drive
+text NOT yet written              ->  inline
+    # the show-first cases only: a commit message, an off-machine send.
+    # Nothing exists to point at yet.
+
+text already doc-resident         ->  a plain link to the file, named in one line
+    # existing queue items; a capture or LOG entry after its Write succeeded.
+    # Under write-first this is the ordinary case, not the exception.
+
+readable edit's post-write reveal ->  a plain link to the file, with the line
+                                      named in the prose ("around line 40")
+                                   ->  an inline excerpt if the link won't resolve
 ```
 
-The user flips it for one session with a word ("I'm remote today"). If the field
-is unset, ask once, naming the two options plainly.
+**Link the file plainly; never promise a line-anchored link.** The desktop app
+opens `.md` in its own viewer and **silently ignores the anchor** — the file opens
+at the top. Verified by deliberate test (`5993a10`), which overrides two earlier
+and contradictory reports that it jumped to the line and that it did nothing at
+all. So name the line in the prose instead: the number still helps a person
+reading, even though the click won't use it.
 
-**The render rule keys on doc-residency first, then mode, then editor:**
+**No stored editor field and no working mode gate this.** Both are retired — the
+app opens `.md` itself, so knowing which editor the user prefers changed nothing,
+and the location field measured reading appetite rather than location. Pointing is
+now the unconditional default. A project's CLAUDE.md may still carry an `Editor:`
+or `Working mode:` line from an older setup; **ignore it silently**, the same way
+a stale `Completion mode:` line is ignored — don't act on it, don't flag it, don't
+ask the user to remove it.
+
+**The one thing that overrides the default is the user saying so** — see the
+opening offer below.
+
+### The inline-text offer at session opening
+
+Pointing at a doc assumes the user can conveniently open it. Reading on a phone,
+away from the computer, that assumption breaks, and a link is worse than useless.
+
+So the session's **first** opening narration carries one clause offering to paste
+text inline instead of linking to it — folded into the narration that already
+fires, never asked as its own question. It's a standing offer, not a prompt that
+waits for an answer: the session continues immediately.
 
 ```
-text NOT yet written                       ->  inline, in every mode
-    # approval-time drafts: captures, LOG entries, work-item drafts,
-    # recommendations. Nothing exists to point at yet.
-
-text already doc-resident                  ->  pointer  IF local AND editor recorded
-    # existing queue items; a capture or LOG entry after its Write succeeded
-                                           ->  inline   otherwise
-
-readable edit's post-write reveal          ->  line-anchored link if it resolves
-                                           ->  inline excerpt if it won't
+scope:     the session's FIRST opening narration only
+           # not repeated per skill invocation — that rebuilds the nag
+wording:   describe the situation, don't name a feature — "reading on your
+           phone", "away from your computer", "wherever opening a file is
+           awkward". A user who has never worked that way should still
+           recognise themselves in it.
+effect:    the user says the word -> paste doc-bound text inline for this
+           session, including the one-line report after a write
 ```
 
-**"Editor recorded" means the field holds a real editor.** An `Editor:` field
-carrying the literal `not recorded` is NOT a recorded editor, and neither is an
-absent field. /setup writes that exact string when the user skips the question,
-so reading it as a recorded editor sends a pointer to a file the user has no way
-to open — and, because it pointed, pastes nothing in chat. The user gets nothing
-at all. This is the one definition; other docs point here rather than restate it.
+This is a session-scoped switch, held in the session, never written to a file. It
+governs **the report after a write** (write-first, above) as much as anything else
+— the report carries the text rather than a pointer.
 
 **Write, then verify, then point — in that order.** A pointer to content written
 this turn goes out only after the Write returned success *and* a re-read confirms
@@ -119,6 +174,8 @@ the content is there. Never emit a pointer from the intent to write. A pointer
 that misreports a write is worse than pasting: the user opens the doc, finds
 nothing, and has no copy in chat either. (Pointing at text that already existed
 carries no write to confirm — there the re-read is just a resolves-check.)
+Write-first narrows the gap this rule guards rather than widening it: the write is
+already real by the time anything is reported.
 
 ### A stale `Completion mode:` line is ignored, never an error
 
@@ -268,8 +325,8 @@ keep isn't a temp file — route it per the triage above.
 
 A capture is unprocessed work: one work item appended to QUEUE.md's
 **Unprocessed** section. Capturing is how any session puts a new idea, discovery
-or task into the queue without stopping to work it. Draft the wording and show it
-before writing; include the reasoning, not just what was noticed.
+or task into the queue without stopping to work it. Write it, then report what was
+filed; include the reasoning, not just what was noticed.
 
 **Line format** — this exact shape is what all three hooks parse. Emitting a work
 item as a bold line or a plain bullet reads fine to a person and silently breaks
@@ -610,7 +667,7 @@ it is never a question for the user.
 field.**
 
 A reason travels capture → processed work → log as prose. At each stage
-re-author it to fit context and show the wording for approval before writing.
+re-author it to fit context, write it, and report where it landed.
 Reasons live inline in the entry text.
 
 **Rationale provenance is asymmetric and default-AI**, exactly like the work-item
@@ -751,8 +808,8 @@ NOT needed              ->  capture and continue    # the common case
 premise is broken       ->  halt and course-correct
 ```
 
-  "Capture and continue" means: draft the wording, show it, file it to
-  Unprocessed, then confirm-and-resume — a discovery is Claude-raised, so don't
+  "Capture and continue" means: write it to Unprocessed, report what was filed,
+  then confirm-and-resume — a discovery is Claude-raised, so don't
   close with "anything else?". Don't hold it in conversation to deal with later;
   an unrouted discovery survives only in memory.
 

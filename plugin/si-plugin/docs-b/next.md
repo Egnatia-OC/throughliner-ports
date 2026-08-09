@@ -92,16 +92,15 @@ deliberate human checkpoint before /next runs unattended-in-practice: a last
 chance to change scope or reorder. Frame it as that.
 
 ```
-render(run):                    # full rule: plugin-behaviour.md, working mode
-    local AND editor recorded  ->  one-line pointer naming the items,
+render(run):                        # full rule: plugin-behaviour.md, view-in-doc
+    default                    ->  one-line pointer naming the items,
                                    linking to QUEUE.md
-    remote OR no editor        ->  one-line preamble, then the items verbatim
+    user took the inline offer ->  one-line preamble, then the items verbatim
 ```
 
-The pointer is the token-saving path, the inline quote the safe default. These
-items already exist in QUEUE.md, so confirm the link resolves before sending it.
-What counts as a recorded editor is defined once in plugin-behaviour.md's
-working-mode render rule — read it there rather than judging by eye.
+The pointer is the default and the token-saving path; the inline quote is what the
+opening inline-text offer switches on. These items already exist in QUEUE.md, so
+confirm the link resolves before sending it.
 
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
@@ -293,7 +292,7 @@ calling it off:
 **1. Route any reshape direction to Unprocessed** [PROMPT]. The trigger is
 mechanical: *session ending + no scope locked + a reshape direction or learning
 the queue needs in conversation = capture needed.* Append it naming the item's
-slug; draft the wording and show it first. Unrouted, the direction survives only
+slug; write it, then report what was filed. Unrouted, the direction survives only
 in the LOG entry, which /plan doesn't read at planning time, so the work
 re-presents unchanged at the next /next. Nothing reshape-shaped in conversation →
 skip, no output.

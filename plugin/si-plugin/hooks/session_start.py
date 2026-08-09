@@ -634,23 +634,12 @@ def main() -> int:
     # to inject. "needs_answer" instructions open with a one-line question and write
     # the user's answer; a setting that needs no answer would be added silently with
     # a note (none yet — the list is built to hold both kinds).
+    # Currently empty: the Editor check was removed when the Editor and Working
+    # mode fields were retired (2026-08-09) — pointing at a doc is now the
+    # unconditional default, so there is no stored setting left to ask for. The
+    # mechanism stays in place for the next setting that needs one.
     missing_settings = []
-    setting_checks = [
-        {
-            "file_present": bool(claude_md_content),
-            "marker": "## Editor",
-            "instruction": (
-                "Your CLAUDE.md is missing the Editor setting, added to the method "
-                "since this project was set up. It records the .md editor you work "
-                "in, which lets the plugin save tokens by pointing at a doc instead "
-                "of re-pasting it. Open your first reply by asking, in one line, "
-                "which editor the user works in here (they can say to skip if they "
-                "don't use one). Then write their answer into a new '## Editor' "
-                "section of CLAUDE.md, matching the template's format. Add only that "
-                "section — change nothing else the user has written."
-            ),
-        },
-    ]
+    setting_checks = []
     for check in setting_checks:
         if check["file_present"] and check["marker"] not in claude_md_content:
             missing_settings.append(check["instruction"])

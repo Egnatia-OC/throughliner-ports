@@ -256,8 +256,9 @@ no CLAUDE.md exists  ->  scaffold from
 one already exists   ->  APPEND the method block; never overwrite
 ```
 
-The template carries an Editor field (`not recorded`) and a Working mode field
-(default `local`); Step 4 fills them from Q6 and Q7.
+The template carries no rendering settings — how doc-bound text is surfaced is a
+default plus a session-opening offer, not a stored field (plugin-behaviour.md,
+view-in-doc rendering).
 
 **.si-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
@@ -334,28 +335,16 @@ from visible context            commitments the user agreed to
 Scope decisions belong in /plan, which is where this item gets processed. If
 examples would clarify scope, ask a follow-up rather than smuggling them in.
 
-**The three settings questions are fixed, not adaptive** — they're project
-settings, not discovery. Ask them the same way each time, one message each, after
-discovery reaches its stopping point. All optional; the user can skip any.
+**The one settings question — whether INBOX messages are committed — is asked at
+scaffolding time** (Step 2), not here. Discovery ends where it ends; there is no
+settings round after it.
 
-**Q6 (optional). When you open a `.md` file — like these project docs — what do you
-usually open it in?**
-→ Identifies your default `.md` app, so Claude can point you to a doc with a link
-that opens there. The link is only useful if you keep a default `.md` reader open
-alongside Claude. **If you'd rather not set this, just say skip** — a plain option
-for anyone, not only "if you're unsure." The trade-off of skipping: Claude writes
-the doc's text into the chat instead, which costs tokens each time and adds up.
-(Doc links also aren't much use while Claude is driving your screen remotely — a
-minor caveat, not a reason to skip.) Named editor → record it; skipped → write `not
-recorded` so the field is present but empty. Asked once, no nag.
-
-**Q7 (optional). Will you usually be working from your computer, or driving Claude
-from your phone?**
-→ Sets your working mode. **local** = you're at your desktop, where an edited file
-opens instantly, so Claude points you to text with a link. **remote** = you're on
-your phone, where opening a file is awkward, so Claude pastes the text into chat.
-Defaults to **local**. Switch anytime by telling Claude ("I'm remote today") — it
-holds for that session and reverts. Asked once, no nag.
+The editor and working-mode questions that used to sit here are **gone**. Neither
+was doing a job: the desktop app opens `.md` in its own viewer whatever editor is
+named, and the location question measured how much text the user wanted pasted
+rather than where they were sitting. Both are replaced by one default — point at
+the doc — plus a one-line offer in the session's opening narration to paste text
+inline instead.
 
 ## Step 4: Write the docs
 
@@ -367,8 +356,6 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
 2.  write ONE work item in Unprocessed from the first-thing-to-build answer
     # the user's words, a [slug] at its end, a "captured by you" note.
     # Not multiple scoped entries.
-2a. fill CLAUDE.md's Editor field from Q6         (or `not recorded`)
-2b. fill CLAUDE.md's Working mode field from Q7   (or `local`)
 3.  show the user what was created (file list + one line each)
 4.  recommend /done to record this setup and commit the new files
 5.  teach the working rhythm (below)

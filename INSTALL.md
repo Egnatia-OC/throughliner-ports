@@ -67,16 +67,18 @@ Once Claude Code is installed and the user is on a paid plan, the plugin install
 
 The install uses Claude Code's plugin marketplace. It's two commands — but the user does **not** have to type them. Instead, have them open a chat **inside Claude Code** and ask the Claude Code agent, in plain words, to install the plugin. Give them this to paste or say:
 
-> Please add the plugin marketplace `FlintCraftTech/sovereign-implementer` and then install the `sovereign-implementer@flintcraft` plugin from it.
+> Please add the plugin marketplace `FlintcraftTech/throughliner` and then install the `sovereign-implementer@flintcraft` plugin from it.
 
 The Claude Code agent will run the two commands itself:
 
 ```
-claude plugin marketplace add FlintCraftTech/sovereign-implementer
+claude plugin marketplace add FlintcraftTech/throughliner
 claude plugin install sovereign-implementer@flintcraft
 ```
 
 (If the user would rather run them by hand, those are the commands — but the default and easiest path is to let Claude Code run them.)
+
+**The two names deliberately differ.** The repository is `throughliner`; the plugin inside it is `sovereign-implementer`. Both lines above are correct as written — if the user asks whether one is a typo, tell them it isn't, and don't let them "correct" either.
 
 After both succeed, the plugin activates on a full restart of Claude Code. Have the user fully quit and reopen the app, then run the smoke test in B.2 to confirm it took. If the marketplace-add or install errors — for example, the marketplace can't be found — have them tell the Claude Code agent the exact error and work it from there; the agent can retry or diagnose.
 

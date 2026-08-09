@@ -31,18 +31,6 @@ This project uses the Sovereign Implementer method.
 
 Language: English
 
-## Editor
-
-Editor: not recorded
-
-<!-- The `.md` editor you work in, from the optional /setup question. When it names an editor, Claude points you to your open docs with a link instead of re-pasting their text into chat, saving tokens. Left as `not recorded` if you skipped the question — Claude then quotes the text inline as usual. -->
-
-## Working mode
-
-Working mode: local
-
-<!-- Where you work from, set at /setup. `local` = at your desktop, where an edited file opens instantly, so Claude points you to text in your docs with a link. `remote` = driving Claude from your phone, where opening an edited file is awkward, so Claude pastes the text straight into chat instead. Flip it for one session just by telling Claude ("I'm remote today"); it reverts next session. -->
-
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 
 ## Project rules

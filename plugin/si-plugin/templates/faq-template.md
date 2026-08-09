@@ -18,13 +18,15 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 Each Sovereign Implementer project is its own folder — self-contained, with its own SPEC, QUEUE, and log. You can keep several of them side by side (for instance nested under one parent folder), but they stay separate projects; the method doesn't run one project across many folders. Claude always works on the exact folder you opened the session in, and never goes hunting through nearby folders or asks you to pick one — the folder you point it at is the project. So to work on a particular project, open that project's folder directly. If you accidentally open a parent folder that just contains your projects, Claude notices and tells you: it says the folder looks like it holds separate projects and suggests you open the one you meant, because running /setup there would set up the parent folder itself rather than the project inside it. Nothing gets adopted or changed until you choose — the heads-up is only so you don't set up the wrong folder by mistake.
 
-## Why does setup ask which editor I use?
+## Claude links me to a doc instead of pasting the text. Can I get the text in chat instead?
 
-So Claude knows your default `.md` app and can point you to a project doc with a link, instead of writing the doc's text out into the chat. When Claude needs to show you a captured idea or the next piece of work, that text already lives in one of your project files (usually QUEUE.md). If Claude knows the app you open those files in, it can link you to the file — "it's in QUEUE.md" — and you read it there. The catch: a link only helps if you keep a default `.md` reader open alongside Claude, so the doc actually opens when you click it. The question is optional, and skipping is a fine choice for anyone — nothing breaks. The trade-off of skipping: when Claude needs to show you a doc, it writes the text out into the chat the way it always has, which costs some tokens each time and adds up over a project's life. It's asked once, during /setup, and never again.
+Yes — say so and Claude pastes text inline for the rest of that session. It also offers this in one line when a session opens, so you don't have to remember it exists.
 
-## Why does setup ask whether I work from my computer or my phone?
+The default is the link, because that text already lives in one of your project files and pasting it into chat writes it twice, which eats a session's budget for no benefit when the file is one click away. But if you're reading on your phone, or away from your computer, opening a file is a nuisance and a link is worse than useless — that's what the offer is for. It lasts the session and doesn't persist.
 
-To set your **working mode** — whether you're usually at your desktop or driving Claude from your phone. It changes one thing: how Claude shows you text that lives in your project files. Set it to **local** (at your computer) and Claude points you to that text with a link, since an edited file opens instantly for you — it saves re-typing the text into chat. Set it to **remote** (on your phone) and Claude pastes the text straight into chat instead, because opening a file on a phone means digging through Google Drive and re-downloading it, so a link would be no use. It's asked once at /setup and defaults to **local** if you skip. You're not locked in: tell Claude "I'm remote today" (or "back at my desk") any time and it switches for that session, reverting afterward. This works alongside the editor setting — a link only gets used when you're in local mode *and* you've told Claude which `.md` app you open your docs in.
+One thing to know about the links: they open the file, but they don't jump to a particular line — the app that opens `.md` files ignores that part. So when the exact spot matters, Claude names the line in the text around the link ("around line 40") rather than relying on the click.
+
+There used to be two setup questions about this — which editor you use, and whether you work from your computer or your phone. Both are gone. The app opens `.md` files in its own viewer regardless of which editor you named, and the computer-or-phone question turned out to be measuring how much text people wanted pasted rather than where they actually were. One default plus one offer does the same job with nothing to maintain. If your project's CLAUDE.md still has an `Editor:` or `Working mode:` line from an older setup, it does nothing now and you can leave it alone.
 
 ## Will Claude ever ask whether I've already done one of my `[user]` steps?
 
@@ -95,11 +97,11 @@ Because it can often do a job itself with a small command-line tool instead of w
 
 ## Do I need to use the terminal to install or update SI?
 
-No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintCraftTech/sovereign-implementer` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
+No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintcraftTech/throughliner` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. (Those two names not matching is expected, not a typo — the repository and the plugin inside it are named differently.) Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
 
 ## How do I find out when there's a new version of the plugin?
 
-GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintCraftTech/sovereign-implementer`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
+GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintcraftTech/throughliner`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
 
 ## I just updated the plugin — how do I check it still works?
 
@@ -151,7 +153,7 @@ Two quick tests sort almost everything. "What it is" vs "how to work on it" spli
 
 ## When Claude edits a doc or other writing during a build, do I see the new wording?
 
-Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude surfaces the actual new wording right after making the edit, so you see what changed. How it surfaces follows your working mode: on your phone (remote) Claude pastes the new wording into chat; at your desktop (local, with an editor set) Claude links you to the spot in the file, since it opens instantly there. Either way you meet the real words, not just the plan for them. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
+Yes. For readable changes — a doc, a piece of copy, a section of your spec, anything you read rather than run — Claude surfaces the actual new wording right after making the edit, so you see what changed. Normally that's a link to the edited file, with the line named in the text beside it; if you've asked for text in chat this session, Claude pastes the new wording inline instead. Either way you meet the real words, not just the plan for them. (Code changes aren't shown this way; reading raw code back wouldn't tell a non-coder much.) The exact wording is written while building, so this is your first look at the real words, not just the plan for them. If something's slightly off, you can ask for a small tweak on the spot — "change this one bit" — and Claude adjusts it there and then, as part of the same build, no separate step. Only a genuinely new or bigger change — a different feature, or reworking something that already worked — waits for its own session.
 
 ## I just had an idea for a feature. How do I record it without losing my train of thought?
 
@@ -189,9 +191,9 @@ A planning session's working file — the planning counterpart to _build.md. Whe
 
 It means the plugin has been updated and now creates a file or folder your project doesn't have yet. Running /setup catches the project up: it adds what's missing without touching your existing work — it backfills the missing scaffolding and does not overwrite or reconcile content you've already written. So it's safe to run, but it isn't a cure-all: it won't refresh or rewrite your existing docs, only add what's absent. The one exception is your **queue**: if an older version stored it in a different layout, /setup offers to convert it to the current format — and even then it drafts the converted queue and shows it to you before writing, so nothing changes without your okay. If something already in your docs is out of step with the new version, that's a separate change you'd make deliberately, not something /setup does for you.
 
-## A session opened by asking which editor I use, or saying my project was missing something — what happened?
+## A session opened by saying my project was missing something — what happened?
 
-The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. Some settings need an answer from you: the first one is which .md editor you work in (it lets Claude point you to a doc instead of re-pasting its text, saving tokens), so Claude opens by asking that in one line — and you can say to skip it. Settings that need no answer are just added, with a note telling you what changed. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
+The plugin keeps improving after your project is set up, so a project can end up missing a setting the method has since added. At the start of a session, before /plan or /next, Claude checks for this and catches the project up — adding only what's missing, and never rewriting or clobbering anything you've written. Most of the time it just adds what's needed and tells you in one line what changed; if something genuinely needs an answer from you, Claude asks it in one line and you can always say skip. This only ever adds; if something already in your docs is out of step with a new version, that's a separate change you'd make deliberately.
 
 ## What happens if Claude needs to touch something outside the current work item?
 
@@ -238,9 +240,19 @@ It's a line Claude keeps in your queue showing which work is ready to build. Eve
 
 Because it hit a wall on one item and stopped rather than spinning on it. When /next works down your cleared queue, it watches the item it's building for signs of no progress — the **same error** coming back, an edit that **changes nothing**, or the **same check failing** the same way, roughly three times on one item. When it sees that, it stops and tells you plainly what repeated (the exact error, or what wouldn't change), and hands you the decision, instead of burning the rest of the run thrashing on something stuck. Since /next often runs faster than you're watching, this stop is what keeps a stuck item from quietly wasting the whole session. It's not a failure of your project — it just means that one item needs a human look before it can go further; the items already finished before it are safe, and you decide how to handle the stuck one from there.
 
+## Why does a planning session open by asking what I want to prioritise?
+
+Because the order you work through your ideas in changes how much you get out of the session, and you're the only one who knows if something is urgent today.
+
+The opening has two parts. First, if anything in your queue is obviously not worth doing any more — a duplicate, or something whose reason has passed — Claude shows those as one short numbered list to drop together, and you name any you'd rather keep. That comes first because there's no point deciding the order of things that are about to be deleted. (If nothing is obviously droppable, this part doesn't happen at all.)
+
+Then one question: anything you want to prioritise, or shall Claude work through them most-unblocking-first? That default means starting with the item whose answer frees up the most other work — settle it, and several other things become possible. It's usually the right order, so you can just say go. But if something has become urgent, or you woke up thinking about one particular idea, saying so here is what puts it first.
+
+If nothing in your queue unblocks anything else, Claude falls back through a few other sensible orders on its own — an unaddressed privacy or data-exposure risk always goes first, then things whose reasoning is going stale, then quick decisions that clear the pile down. You don't get asked about any of that; Claude just says in one line what order it used.
+
 ## How does a planning session work through my unprocessed ideas — can I skip or drop things?
 
-Yes, both, and it's built to keep you moving rather than grinding through every item in order. When /plan starts on your unprocessed queue, it does two quick things first. It skims for items that are clearly not worth doing any more — a duplicate, or something whose reason has passed — and shows them to you as one short list to drop together; you just name any you'd rather keep. (This pass can only *drop* things, never quietly promote them — anything that isn't an obvious drop gets discussed properly, one at a time.) Then it puts the items that would unblock the most other work first, and suggests roughly how many to get through this session.
+Yes, both, and it's built to keep you moving rather than grinding through every item in order. The session opens with the drop list and the ordering question (see [the previous answer](#why-does-a-planning-session-open-by-asking-what-i-want-to-prioritise)), then it puts the items that would unblock the most other work first and suggests roughly how many to get through this session.
 
 After that it goes through the rest one at a time. At each step you can carry on to the next item, **skip** the next one to the bottom of the queue for a later session (it's not dropped — just set aside), close out, or raise something new. And if you toss in a fresh idea mid-session, Claude files it and asks whether you want to dig into it now or keep going through the queue — so a new thought never feels like it got parked and forgotten.
 
@@ -304,4 +316,46 @@ One thing this is *not*: the `.throughliner/` folder. That's a live "Claude is t
 
 ## How do I know what was done in a previous session?
 
-Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file. Each entry file's name starts with its date (`2026-06-09-…`), so if you browse the LOG folder itself, sorting the filenames in descending order lines them up newest-first — the same order the index reads.
+Check LOG/. `index.md` has one-line summaries with commit hashes (newest first), and each line ends with the name of that session's full entry file. The entry file holds the detail — files touched, reasoning, captures routed. For design rationale, search the index, then open the named file. Each entry file's name starts with its date (`2026-06-09-…`), so if you browse the LOG folder itself, sorting the filenames in descending order lines them up newest-first — the same order the index reads. That's the mechanical answer to *where* a reason is written down; for what the record of reasoning is actually for, see [Why does the method record the reasoning behind every decision, not just the decision?](#why-does-the-method-record-the-reasoning-behind-every-decision-not-just-the-decision).
+
+## Claude writes things into my docs and then tells me. Doesn't it need my approval first?
+
+It writes first and reports second now, and the report is your approval moment — you can reject anything it wrote and Claude reverts it.
+
+The rule is one question: **does undoing it put things back exactly as they were?** For anything written into a file in your project — a captured idea, a work item, a session record, a change to SPEC.md, an ordinary edit during a build — the answer is yes. Your project is under version control, so an unwanted change costs one revert and nothing else. Claude writes it, then tells you in one line what landed and where, and you read it in the doc where it's going to live anyway.
+
+Two things still get shown to you *before* they happen, because a revert can't fully undo them:
+
+- **Commit messages.** A commit is harder to unwind than a file edit, and the message never becomes part of a file, so there's nothing to read back and nothing to revert.
+- **Anything that leaves your machine** — a report sent to the method's author, or a message written into another one of your projects. Once it's delivered, undoing your copy doesn't recall theirs.
+
+The honest trade: under the old flow, text you hadn't agreed to never reached disk at all. Now it briefly does. That's cheap and recoverable — but it does mean the one line reporting what landed is worth actually reading, because the risk isn't you saying no, it's you not noticing. Claude keeps that line specific enough to object to without opening the file.
+
+Why it changed: pasting every draft into the chat and then writing it wrote everything twice, which burns through a session's budget fast, and you ended up reading the same text in two places. This way you read it once, where it lives.
+
+## Why does the method record the reasoning behind every decision, not just the decision?
+
+Because Claude forgets. Every session starts from nothing — Claude has no memory of the last one, and no idea why your project is the way it is. The record of *why* is what carries your intent across that gap. It's the reason a fresh, short, even cheaper session still builds the project the way you meant, instead of reading your files, guessing at the intent behind them, and guessing wrong.
+
+That's worth separating from the thing it sits alongside. Your work *moves* through a pipeline: an idea is captured, discussed and kept, then built. The reasoning is what travels *with* that work and outlives it. Two different things, and the second is easy to miss because the first is the visible one.
+
+It isn't one file, either. Your intent lives in SPEC.md; the reasoning for each piece of work rides along inside that work item in QUEUE.md; the history of what was decided and why lives in LOG/. SPEC and QUEUE are read *while* planning and building — so the reasoning is quietly shaping every plan and every build, not just sitting there waiting for you to ask a question. The LOG is the deep archive, pulled up on demand.
+
+What it buys you, concretely:
+
+- **Settled things stay settled.** When an option was considered and rejected, the reason it lost is on the record. Without that, it gets proposed again in three months and you re-argue a decision you already made.
+- **Fewer silent regressions.** You (or Claude) can see *why* something is the way it is before changing it — so the change that would quietly break something gets caught.
+- **It survives a break.** Come back after a month away, or hand the project to someone else, and the thinking is still there. That's institutional memory, and it's the thing projects normally lose first.
+- **It keeps a growing project coherent.** Recorded intent makes contradictions visible, so drift can be spotted instead of accumulating.
+
+And it steadies Claude, not just you. A rule with its reason attached gets followed more reliably than a bare rule — knowing *why* you want something a particular way is a large part of staying aligned to what you actually want.
+
+## Approving drafts and writing session records feels like overhead. What am I actually getting?
+
+A fair question, and the honest answer is that the cost is real but small and the payoff is large and later.
+
+**The approving is the point, not a tax on it.** A reason you never read and never agreed to is a reason you can't trust when you read it back in six months. Your approval is what makes the record genuinely *yours* rather than Claude's summary of a conversation it half-followed. That's the difference between a record you can rely on and one you have to re-verify.
+
+**The writing pays a small cost now against a much larger one later.** Ten minutes across a session, against the "why on earth did we do it this way?" archaeology that otherwise eats an afternoon — usually at the exact moment you're trying to change something and can't tell whether it's safe.
+
+**And it's what makes short, cheap sessions work at all.** If your intent only exists in the conversation, then every session has to be long enough to rebuild it, and every session has to be with a model good enough to reconstruct it. Once the intent is written down outside the conversation, a short session on a cheaper model can pick up the project and get it right. The record isn't overhead on top of the work — it's what lets the work be done in small, affordable pieces.

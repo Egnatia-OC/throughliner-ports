@@ -19,14 +19,14 @@ gets built first — through discussion, not silently.
 - **One item at a time.** Finish one before presenting the next.
 - **Read SPEC.md before proposing work.** Don't queue contradictions.
 - **Process the accumulated unprocessed work before new planning work.**
-- **Never write to QUEUE.md without showing the exact text first.** The rule keys
-  to the *write*, not to where you are in the loop: the message immediately before
-  any QUEUE.md write must contain the text verbatim. Approval attaches to shown
-  text, never to a described shape — a recommendation, however concrete, is not a
-  draft, and "I'll add a line that does X" is not the entry. Keying it to the
-  action holds even when a compacted session has lost track of which beat it's on.
-- **A recommendation is not a decision. A draft is not a written line.** Both need
-  the user's call.
+- **Write to QUEUE.md first, then report what landed.** Don't paste the text into
+  chat for approval ahead of the write. Write it, then say in one line what went
+  in and where — specific enough that the user can object without opening the
+  file. The full rule, including the one test that decides which moments still
+  show first, is in plugin-behaviour.md's approval-time outputs.
+- **A recommendation is not a decision.** Whether an item is kept or deleted is
+  still the user's call, and a written line is not an agreed one — the user can
+  reject what was written, and it is reverted.
 - **SPEC is a normal doc.** When a planning decision changes what SPEC says — a
   new capability, a scope change, a reworded rule (**the test: does any SPEC
   sentence go wrong or incomplete?**) — edit SPEC in that same /plan session, with
@@ -168,16 +168,50 @@ staleness-and-cost trap the method fights. Outside the trigger state, say nothin
 
 On either entry, ask whether to derive **coarse milestones** or **granular
 per-feature items** — the user's call. Output goes to **Unprocessed, never
-Processed**: seeding fills the backlog, it never greenlights a build. Draft the
-items as ordinary captures, show for approval, append on approval.
+Processed**: seeding fills the backlog, it never greenlights a build. Write the
+items as ordinary captures, then report what was seeded.
 
 This step lives in /plan, never in /setup — /setup stays scaffolding + interview
 and never auto-spawns work.
 
-**Then ask** [PROMPT]: "Anything to discuss before we go through the unprocessed
-work?" (If Unprocessed is empty, ask what they'd like to work on.)
+### The opening — two beats, drop then order
 
-If the user has something to discuss, handle it via the Step 2 loop, then ask
+**Beat 1 — the droppable set** [SEQUENCE — bulk-approval inversion]. Skim
+Unprocessed for items obviously not worth doing and present them as ONE numbered
+set the user contests by number.
+
+```
+bulk-droppable ONLY when the reason is one sentence and uncontestable:
+    its premise no longer holds
+    it duplicates another item
+    LOG/index.md shows it already decided
+
+if the drop-reason needs ANY argument  ->  not bulk-droppable; leave it for the
+                                           one-at-a-time loop
+```
+
+**This pass only ever deletes — it never keeps in bulk.** Sliding undesigned work
+into Processed unread is the exact failure this ceiling prevents. If nothing is
+obviously droppable this beat doesn't fire at all — say nothing and go to beat 2.
+
+> "Two look droppable — 1. **[old-slug]**: its premise is gone, the feature it
+> targeted was cut. 2. **[dupe-slug]**: duplicates **[other-slug]**. Drop both, or
+> name any to keep?"
+
+Dropping comes first because there is no point ordering items that are about to be
+deleted, and what gets dropped changes what is left to order.
+
+**Beat 2 — the ordering ask** [PROMPT]. One question, with the default named:
+**"Anything you want to prioritise, or shall I work through them
+most-unblocking-first?"** One question, not a menu — the only alternative offered
+is the user's own priorities. This absorbs the old "anything to discuss?" opening:
+a user with something on their mind answers it here.
+
+(If Unprocessed is empty there's nothing to order, so offer seeding from SPEC by
+name instead — the step above. If SPEC is thin too, it's an ordinary conversation
+about what they want next; **not** a new session type, mode, or container.)
+
+If the user raises something to discuss, handle it via the Step 2 loop, then ask
 "anything else before we go through the queue?" — repeat until nothing more.
 **Then process the unprocessed work.** A discussion item is an optional first
 stop, never an alternative to processing.
@@ -199,40 +233,38 @@ own discussion. State the count upfront, counting both together ("5 items.
 First: …"). Position in the file *is* the order — an item placed next to its
 relatives is processed there by design.
 
-Two passes run once, before the loop. Both fire at the same opening, so combine
-what they surface into the fewest messages.
+The droppable set was already handled at Step 1's opening (beat 1), so the
+survivors are what's left to order.
 
-**Triage bulk-drop pass** [SEQUENCE — bulk-approval inversion]. Skim Unprocessed
-for items obviously not worth doing and present them as ONE numbered set the user
-contests by number.
+**Start-of-processing reorder and throughput floor** [BRIEF]. Apply the order the
+user chose at beat 2 — their own priorities if they named any, otherwise the
+default, **unblock-potential**: the item whose processing would let the most other
+work move forward goes first. Then narrate the session's shape in one line.
+
+**The fallback ladder — internal, applied, never offered.** When nothing meaningfully
+unblocks anything else, don't fall through to file order silently. Work down:
 
 ```
-bulk-droppable ONLY when the reason is one sentence and uncontestable:
-    its premise no longer holds
-    it duplicates another item
-    LOG/index.md shows it already decided
-
-if the drop-reason needs ANY argument  ->  not bulk-droppable; leave it for the
-                                           one-at-a-time loop
+1. an uncleared red flag in Unprocessed   an unaddressed data-exposure or privacy
+                                          risk outranks throughput: the cost of
+                                          leaving it is a breach, not a delay
+2. unblock-potential                      the stated default; what nearly every
+                                          session actually uses
+3. decay                                  a premise going stale, or evidence that
+                                          only holds while the observation is fresh
+4. cheap to settle                        decidable in one exchange; clears volume
+                                          so the queue stops reading as heavy
+5. file order                             position in the section
 ```
 
-**This pass only ever deletes — it never keeps in bulk.** Sliding undesigned work
-into Processed unread is the exact failure this ceiling prevents. If nothing is
-obviously droppable, say so in one line and move on.
-
-> "Two look droppable — 1. **[old-slug]**: its premise is gone, the feature it
-> targeted was cut. 2. **[dupe-slug]**: duplicates **[other-slug]**. Drop both, or
-> name any to keep?"
-
-**Start-of-processing reorder and throughput floor** [BRIEF]. Order the survivors
-by **unblock-potential** — the item whose processing would let the most other work
-move forward goes first — then narrate the session's shape in one line.
+The ladder is never presented as a choice — it's surfaced only through the one-line
+floor narration, which names whichever rung the order actually came from.
 
 The reorder is **conditional and change-scoped**, not a full re-derivation:
 consider only what changed since last session (items newly captured, dropped, or
 whose relationships shifted — read the slug-references items already carry), and
-if the order already puts the biggest unblockers first, leave it. The floor
-narration fires either way; the *move* is what's skipped.
+if the order already sits right, leave it. The floor narration fires either way;
+the *move* is what's skipped.
 
 Word the floor as a recommendation, not a cap: "Ordered to process the biggest
 unblockers first — recommend processing at least N before your next /next." It's a
@@ -274,14 +306,12 @@ closing the interview:
                                    sub-step 2 carry the recommendation
 ```
 
-**View-in-doc.** The item already exists in QUEUE.md, so it's pointer-eligible:
-when mode is `local` AND an editor is recorded, lead with a one-line pointer
-instead of the pasted quote — `First item — **[work-slug]** — is in
-[QUEUE.md](QUEUE.md) under Unprocessed.` — then the analysis in that same message.
-The confirm re-read still runs in its pointer form (a resolves-check, not a
-text-match). Remote or no editor → keep the inline quote. What counts as a
-recorded editor is defined once in plugin-behaviour.md's working-mode render
-rule — read it there rather than judging by eye.
+**View-in-doc.** The item already exists in QUEUE.md, so pointing is the default:
+lead with a one-line pointer instead of the pasted quote — `First item —
+**[work-slug]** — is in [QUEUE.md](QUEUE.md) under Unprocessed.` — then the
+analysis in that same message. The confirm re-read still runs in its pointer form
+(a resolves-check, not a text-match). If the user took the opening inline-text
+offer, keep the inline quote instead.
 
 **2. Recommend**  [PROMPT]
 
@@ -346,21 +376,24 @@ the irreducible user action  ->  a single [user] line, reduced to ONLY that
                                  action, cross-referenced by slug
 ```
 
-Show the draft as a blockquote under **Work item:**. Don't write until approved.
-On approval, make the move so the item is never visible in both sections at once:
+Write the item, then report it. Make the move in this order:
 
 ```
-1. REMOVE from Unprocessed        <- source first
-2. ADD to Processed at the reported placement
+1. ADD to Processed at the chosen placement    <- destination first
+2. REMOVE from Unprocessed
    (both writes in the same turn)
 ```
 
-Adding first leaves a window where the item shows in *both* sections, which reads
-as a lingering duplicate. Removing first means it's briefly in neither — which
-reads correctly as a move in progress. Safe because the drafted item is already
-approved and on screen. If the raw capture had no slug, give it one now. Report
-"moved to Processed as [slug]" only after the Write succeeded and a re-read
-confirms it landed in Processed and is gone from Unprocessed.
+Destination-first because nothing is on screen to fall back on. If something
+interrupts between the two writes, the item exists in Processed and only needs
+the stale copy cleaned up; the other order would leave it in neither section and
+lose the written text entirely. The cost — a one-turn window where it shows in
+both sections, reading as an uncleaned duplicate — is the lesser one, and closing
+both writes in the same turn keeps it to that.
+
+If the raw capture had no slug, give it one now. Report "moved to Processed as
+[slug]" only after the Write succeeded and a re-read confirms it landed in
+Processed and is gone from Unprocessed.
 
 *Split out a buried user-only prerequisite before keeping.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
@@ -447,9 +480,8 @@ dedicated-pass state; the only defer is this skip.** The sharpen-first is part o
 the move: capture whatever design progress was made into the item's prose so the
 next /plan starts further along.
 
-**View-in-doc applies here too** — when local and an editor is recorded, lead with
-a one-line pointer to the next item in place of its verbatim, off-ramps below it
-unchanged.
+**View-in-doc applies here too** — by default lead with a one-line pointer to the
+next item in place of its verbatim, off-ramps below it unchanged.
 
 ### Process-now offer after a user-filed capture  [PROMPT]
 
