@@ -2,6 +2,7 @@
 !plugin/*.zip
 !plugin/zip-archive/*.zip
 .throughliner/
+INBOX/
 __pycache__/
 *.pyc
 .claude/
