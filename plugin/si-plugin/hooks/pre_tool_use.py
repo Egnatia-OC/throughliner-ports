@@ -2,6 +2,11 @@
 """
 PreToolUse hook — enforces three rules:
 
+4. With NO build running (a planning or freeform session), a write outside
+   the quiet list — QUEUE.md, SPEC.md, LOG/, the session's own notes — asks
+   the user first. Ask, never deny. An unscoped build (a working file with
+   no Files: section) is surfaced once for the same reason.
+
 1. During a build, _build.md's Files: section governs which files are
    editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
    memory dir, resources/research/, the session scratchpad dir, and any
@@ -362,7 +367,7 @@ def _is_research_dir(filepath: str, cwd: str) -> bool:
     """Check if a path is under the project's resources/research/ folder.
 
     Research notes are filed under resources/research/<topic>.md the moment a
-    finding is produced (plugin-behaviour.md Research > Filing), and that
+    finding is produced (skill-nonspecific-rules.md Research > Filing), and that
     filing is open to every session type — build, test, or audit. The
     scope-lock must not block it, so this folder is always editable, mirroring
     the method-docs and memory exemptions. Matched relative to the project
@@ -383,7 +388,7 @@ def _is_inbox_dir(filepath: str) -> bool:
     could recognise it. Matching on an `INBOX` path segment covers both.
 
     The scope-lock is not what protects the user here. Every outbound message
-    is shown and approved before it is written (plugin-behaviour.md, the
+    is shown and approved before it is written (skill-nonspecific-rules.md, the
     cross-project INBOX channel) — a message leaving this project is an
     outward-facing action, and the user's approval is the backstop, exactly as
     it is for a feedback report.
@@ -399,7 +404,7 @@ def _is_scratchpad_dir(filepath: str, cwd: str) -> bool:
     The harness gives each session a scratchpad directory OUTSIDE the repo,
     shaped like `<temp>/claude/<project-slug>/<session-id>/scratchpad/...` —
     a `scratchpad` directory sitting beneath a `claude` temp directory.
-    plugin-behaviour.md's Temporary-files rule actively instructs Claude to
+    skill-nonspecific-rules.md's Temporary-files rule actively instructs Claude to
     route scratch scripts and working files there, so the scope-lock must not
     block those writes — this exemption mirrors the method-docs, memory, and
     research exemptions.
@@ -511,6 +516,58 @@ def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool)
         return
 
 
+def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
+    """True for the files a session with no build working file writes by design.
+
+    The quiet list is the planning session's own working surface: QUEUE.md,
+    SPEC.md, LOG/, and the session's own planning notes. Writing to these is what
+    a planning session IS, so asking about them would be pure noise on every
+    write. Everything else gets an ask — never a denial.
+
+    Ask-never-deny is load-bearing and must not be "improved" into a denial. In a
+    build there is a file list agreed in advance, so a surprise write means drift
+    and denying is right. Here there is no agreed list, the user is present, and a
+    legitimate write is authorised in one word. The gate's job is visibility, not
+    containment: it doesn't stop you doing something urgent, it stops you doing it
+    unremarked.
+
+    Keyed on the build working file being absent rather than on "a planning
+    session", because absence is what the code can actually see — and that is also
+    what makes the gate cover a freeform session, which has the same condition.
+    """
+    if not _is_inside(filepath, cwd):
+        return False
+    rel = os.path.relpath(_normalise(filepath), _normalise(cwd))
+    rel = rel.replace("\\", "/")
+    if rel in ("QUEUE.md", "SPEC.md", "_plan.md", "_build.md"):
+        return True
+    if rel.startswith("LOG/"):
+        return True
+    return False
+
+
+def _fire_once(cwd: str, session_id: str, marker_name: str) -> bool:
+    """True the first time a session asks for `marker_name`, False after.
+
+    Used for the unscoped-build surfacing, which describes a standing condition
+    rather than one write — repeating it on every edit would train the user to
+    dismiss it unread. Never raises: if the marker cannot be written, the caller
+    gets True and the notice simply fires again, which is the safe direction.
+    """
+    try:
+        marker_dir = os.path.join(cwd, ".throughliner")
+        os.makedirs(marker_dir, exist_ok=True)
+        safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+        path = os.path.join(marker_dir, f"fired-{marker_name}-{safe_id}")
+        if os.path.exists(path):
+            return False
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("1")
+        return True
+    except OSError:
+        return True
+
+
 def _is_build_file(filepath: str, cwd: str, build_files: list[str]) -> bool:
     """Check if a path is in the build's file list."""
     norm = _normalise(filepath)
@@ -544,7 +601,7 @@ def main() -> int:
     # being a silent surprise. Checked before the cwd / SPEC.md gates below,
     # because the cost protection is universal: a subagent is as expensive in
     # an unadopted folder as an adopted one. Pairs with the hardened
-    # "Tool use" rule in plugin-behaviour.md — the rule steers, the gate
+    # "Tool use" rule in skill-nonspecific-rules.md — the rule steers, the gate
     # guarantees.
     #
     # Both names are matched deliberately: current Claude Code names the
@@ -719,6 +776,19 @@ def main() -> int:
         build_files = _parse_build_files(build_path)
 
         if build_files is None:
+            # An UNSCOPED build: a build working file with no Files: section at
+            # all. It fails open, and from the inside it is indistinguishable
+            # from a properly contained build — nothing marks the difference, so
+            # the containment can be absent for a whole run with nobody noticing.
+            # Surface it once, then get out of the way.
+            if _fire_once(cwd, data.get("session_id", ""), "unscoped-build"):
+                return _ask(
+                    "[Sovereign Implementer] This build's working file has no "
+                    "Files: section, so nothing is limiting which files it can "
+                    "change. That may be exactly right — an audit lists no "
+                    "files — but it is worth knowing rather than assuming.\n\n"
+                    "Proceed, or stop and give the build a file list first?"
+                )
             return 0
 
         if _is_method_doc(filepath, cwd):
@@ -760,6 +830,27 @@ def main() -> int:
                 "If this file genuinely needs editing, halt the build and, "
                 "with the user's approval, add it to _build.md's Files: "
                 "section."
+            )
+
+    else:
+        # Rule 4: no build working file, so no scope-lock is engaged. This is a
+        # planning or freeform session. Writes to its own working surface pass
+        # silently; anything else ASKS — never denies. See _is_plan_quiet_path
+        # for why the ask must not become a denial.
+        if not (
+            _is_plan_quiet_path(filepath, cwd)
+            or _is_memory_dir(filepath)
+            or _is_research_dir(filepath, cwd)
+            or _is_scratchpad_dir(filepath, cwd)
+            or _is_inbox_dir(filepath)
+        ):
+            return _ask(
+                "[Sovereign Implementer] This session has no build running, so "
+                "nothing is limiting which files get changed — and this write is "
+                "outside the files a planning session normally touches "
+                f"(QUEUE.md, SPEC.md, LOG/).\n\nAbout to edit: {filepath}\n\n"
+                "This isn't a refusal and there's nothing wrong with saying yes. "
+                "Go ahead?"
             )
 
     return 0

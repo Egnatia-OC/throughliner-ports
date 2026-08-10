@@ -86,6 +86,24 @@ Write **one LOG entry file per built item**, each named after that item's slug.
 Follow done.md's **LOG entry files** section, using its **Build** body fields
 (`Files touched` from _build.md Changes; `Routed to Captures`).
 
+**One entry per built item is unconditional**, however long the run. A work item's
+queue text is *consumed* when it builds — /next removes it — so after the build the
+LOG entry is the only surviving record of what the work was for. A single combined
+entry per run is cheaper and was refused: the retrieve path is "search the index,
+then open the matched entry", so combining trades away per-slug retrievability,
+which is the property the entries exist for.
+
+**Depth is decided per item, here.** Full depth where the item's reasoning was
+contested or an alternative was seriously weighed; a short form for mechanical
+items whose reasoning is exhausted by naming what changed. Judge per item, never by
+run size — a twelve-item run can still contain the session's most contested
+decision. The rule this replaces was written when a run was one to six items, and
+on a twelve-item run the close cost more than several of the builds it recorded.
+
+**If a `[user]` item's entry was already started**, the walk-through opened it live
+and appended as it went (next.md). Continue that file rather than writing a fresh
+one, and don't treat the existing entry as a duplicate.
+
 If a built item carried a red flag, note in this entry that it carried one and
 that it was cleared — the carry-through, since the substantive clearing record was
 written at the /plan close that cleared it.
@@ -107,3 +125,10 @@ Run the commit core in done.md.
 
 Run done.md's **Recommend next** and apply its **Build close** delta: the shared
 overlap scan + queue-state ladder are the whole recommendation.
+
+**No size judgment about the next run.** Don't advise how many items the next /next
+should take, and don't write one into the forward advisory. The cleared-to-run line
+already *is* the run bound and the user sets it at /plan; a second, softer cap
+downstream of it is a guess with no measurement behind it, since Claude has no gauge
+of context filling at all. Where a run genuinely needs to stop early, that is a
+behaviour-based stop — the no-progress halt — never a number.

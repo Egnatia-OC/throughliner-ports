@@ -224,7 +224,7 @@ a pure pointer drift                     ->  mechanical. Fix it HERE, report in
 
 Every sub-doc's entry-writing step points here.
 
-**Run the scrub checklist before writing** (plugin-behaviour.md, Scrub before
+**Run the scrub checklist before writing** (skill-nonspecific-rules.md, Scrub before
 writing). A LOG entry gets committed, and a session that ran on someone's real
 situation is where a name or a case detail arrives without anyone noticing. Fix
 what you find at the same level of usefulness rather than dropping the fact — and
@@ -254,7 +254,7 @@ planning session, what motivated these queue changes), expanded with what was
 learned along the way. Inline prose, no `Why:` label. Re-authoring is where
 reasoning gets re-attributed by accident: credit the user only for reasoning
 they gave in their own words, write mixed authorship as mixed, and don't wear
-Claude's reasoning as theirs (plugin-behaviour.md, rationale provenance).]
+Claude's reasoning as theirs (skill-nonspecific-rules.md, rationale provenance).]
 
 [per-flavor body fields]
 ````
@@ -591,6 +591,12 @@ may be overlap worth checking."
        ->  "Queue is clear. Run /plan when you have more."
 ```
 
+**Announce a `[freeform]` item if Processed holds one.** /next will not build it —
+it halts on it — so a close that recommends /next without saying so sends the user
+into a stop. Say plainly what the item is and that it needs a session where the
+work is done by hand rather than run from the queue, so they reach for that instead
+of /next or /plan.
+
 **File the forward-recommendation advisory.** When this step made a *concrete*
 recommendation, file it as a capture at the top of Unprocessed, worded as advice,
 consumed and cleared by the next /plan. A generic recommendation files nothing.
@@ -604,6 +610,21 @@ string, never the slug of the item it points at. Written any other way the
 advisory is a heading with no slug at its end, which the queue lint flags on
 every later edit and which stops the queue mover dead: it refuses on the whole
 file, so no move or deletion can run at all while the advisory is present.
+
+**The advisory is a transient orientation handoff, not work.** It is read at the
+next /plan's opening to orient where that session starts, and cleared at that
+session's /done close (done-plan.md). It never runs through keep/delete and never
+moves into Processed. It stays in QUEUE.md rather than getting a file of its own
+because it is read at the top of Unprocessed anyway, and a separate document would
+be one more thing for the user to learn about for one transient line — what made it
+misread as unprocessed work was never its location but that nothing in it said what
+it was, which is why the heading text carries that now.
+
+```
+clear IF it actually oriented this session   # whether or not it was followed
+keep  IF it names a persist-condition that hasn't been met
+      # e.g. "persist until the cleared builds ship"
+```
 
 ```
 flavor deltas:

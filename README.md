@@ -24,7 +24,8 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 - `/setup` — interviews you about your project (adapting to your answers) and scaffolds everything
 - `/plan` — organise the queue, capture ideas, resolve design questions
-- `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one
+- `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one, and it works through everything you've marked ready rather than proposing to stop early
+- Work can be tagged so `/next` treats it differently: a **review pass** that reads and reports without editing, a **step for you** that Claude walks you through live rather than doing itself, or **hands-off** work that Claude must not run from the queue at all — for repairs to the plugin's own machinery, where using a broken mechanism to fix itself is the risk
 - `/done` — record what happened, commit
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. They also notice when your project's documents have fallen behind the current version of the method: rather than carrying on and quietly getting things wrong, the session stops and offers to bring them up to date with `/setup`, which migrates what's there instead of replacing it. They also stop Claude writing to your files by running a script instead of using its editing tools: a shell command can be working from an out-of-date view of a file and quietly overwrite something, so that route is closed off entirely.

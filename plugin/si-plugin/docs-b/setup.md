@@ -267,7 +267,7 @@ one already exists   ->  APPEND the method block; never overwrite
 ```
 
 The template carries no rendering settings — how doc-bound text is surfaced is a
-default plus a session-opening offer, not a stored field (plugin-behaviour.md,
+default plus a session-opening offer, not a stored field (skill-nonspecific-rules.md,
 view-in-doc rendering).
 
 **.si-version** — write the current plugin version (from

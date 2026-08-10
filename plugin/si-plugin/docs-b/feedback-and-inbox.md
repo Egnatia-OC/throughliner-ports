@@ -2,7 +2,7 @@
 name: feedback-and-inbox
 docset: B
 note: >
-  Fetched on demand from plugin-behaviour.md's pointers. Full procedures for
+  Fetched on demand from skill-nonspecific-rules.md's pointers. Full procedures for
   the consumer feedback channel and the cross-project INBOX. The always-loaded
   rules keep only the discriminator and the never-send-unseen guarantee.
 ---

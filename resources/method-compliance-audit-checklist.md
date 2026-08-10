@@ -1,6 +1,6 @@
 # Routine method-compliance audit checklist
 
-The standing criteria for a periodic compliance audit of the method's own procedure docs — `plugin-behaviour.md`, `setup.md`, `plan.md`, the `next*` family, the `done*` family, and any procedure doc added later.
+The standing criteria for a periodic compliance audit of the method's own procedure docs — `skill-nonspecific-rules.md`, `setup.md`, `plan.md`, the `next*` family, the `done*` family, and any procedure doc added later.
 
 **What this is for, and how it differs from the authoring gate.** [`self-authoring-rules.md`](self-authoring-rules.md) is a per-rule check run *once, at authoring time* — you run it over a rule before that rule ships. This checklist is the *corpus-wide periodic sweep*: you run it over docs that already shipped, to catch what drifted or was never checked. The un-hardened tool-use rule that slipped past for so long (the subagent-cost incident, 2026-06-24) is exactly the gap this exists to close — an authoring-time check never re-examines old rules, so without a periodic sweep, a rule authored before a standard existed never gets held to it.
 
@@ -12,11 +12,11 @@ Run all three lenses over each doc in scope. One read of the doc serves all thre
 
 The gate's binding limit is a **count of instructions**, not a word count, so a sweep that doesn't produce a number can only produce opinions: "evict what fails admission" has no target and no stopping rule without one. Count before disposing of anything.
 
-**Scope the count to the always-loaded corpus.** That is `plugin-behaviour.md` plus, in the dev project, `CLAUDE.md`. The skill docs (`plan.md`, `next.md`, `done.md`, `setup.md` and the flavor families) are excluded: they load only when their skill runs, and the ceiling is about what competes for attention in every session. Audit them under the three lenses below; don't count them against the ceiling.
+**Scope the count to the always-loaded corpus.** That is `skill-nonspecific-rules.md` plus, in the dev project, `CLAUDE.md`. The skill docs (`plan.md`, `next.md`, `done.md`, `setup.md` and the flavor families) are excluded: they load only when their skill runs, and the ceiling is about what competes for attention in every session. Audit them under the three lenses below; don't count them against the ceiling.
 
 **Counting rule.** One instruction per discrete directive Claude must follow — a bolded rule statement, a bullet, or a decision block. Descriptive prose, rationale and worked examples score zero. Count per section and record the section totals, not just the sum: the sum tells you whether there is a problem, and the section totals tell you where it is.
 
-**Report the split by audience, not just the total.** A consumer loads only `plugin-behaviour.md`; the dev project loads both. Those are two different numbers against the same ceiling, and collapsing them hides which one is actually over.
+**Report the split by audience, not just the total.** A consumer loads only `skill-nonspecific-rules.md`; the dev project loads both. Those are two different numbers against the same ceiling, and collapsing them hides which one is actually over.
 
 ### Dispositions
 
@@ -58,7 +58,7 @@ Read corpus-wide, the gate asks things it can't ask one rule at a time:
 
 ## Lens 2 — tag placement
 
-Each procedure step carries the response-shape tag that fits what it does (`[SILENT]` / `[BRIEF]` / `[DISCUSS]` / `[PROMPT]` / `[SEQUENCE]`, defined in plugin-behaviour.md). Check each step for three failure modes:
+Each procedure step carries the response-shape tag that fits what it does (`[SILENT]` / `[BRIEF]` / `[DISCUSS]` / `[PROMPT]` / `[SEQUENCE]`, defined in skill-nonspecific-rules.md). Check each step for three failure modes:
 
 - **Missing** — a step that produces output (or withholds it, or waits, or sequences) but carries no tag, so its output behaviour is left to chance.
 - **Wrong** — a tag that fights what the step does: `[SILENT]` on a step that must ask the user, `[DISCUSS]` on pure internal bookkeeping, `[BRIEF]` on a genuine decision point that needs room.
@@ -66,11 +66,13 @@ Each procedure step carries the response-shape tag that fits what it does (`[SIL
 
 ## Lens 3 — narration drift
 
-Check what the doc causes Claude to *say to the user* against the communication rules in plugin-behaviour.md. Three drift patterns:
+Check what the doc causes Claude to *say to the user* against the communication rules in skill-nonspecific-rules.md. Three drift patterns:
 
-- **Background vocabulary in user-facing narration** — a structural or bookkeeping term from plugin-behaviour.md's Vocabulary list (loop, Step N, gate, pre-flight, slug, "processed/unprocessed captures," "staleness sweep," "hash backfill," and the rest) leaking into text the user reads. Background terms belong in the procedure prose Claude reads, never in narration to the user.
-- **Menu where a recommendation was due** — the doc steering Claude to lay out flat options ("file it, drop it, or commit now?") at a moment it actually has a preference, instead of leading with the recommendation and offering the alternatives as fallback (plugin-behaviour.md Dependency ownership narration; the spectrum-not-flat-list rule).
-- **Multi-finding openings that should consolidate** — a doc that fires several scans, watches, or narrations at one skill opening (a /plan read-state, a /next pre-flight, a /done close-out) without consolidating them into one narration, against the consolidate-the-scans rule in plugin-behaviour.md.
+- **Background vocabulary in user-facing narration** — a structural or bookkeeping term from skill-nonspecific-rules.md's Vocabulary list (loop, Step N, gate, pre-flight, slug, "processed/unprocessed captures," "staleness sweep," "hash backfill," and the rest) leaking into text the user reads. Background terms belong in the procedure prose Claude reads, never in narration to the user.
+- **Menu where a recommendation was due** — the doc steering Claude to lay out flat options ("file it, drop it, or commit now?") at a moment it actually has a preference, instead of leading with the recommendation and offering the alternatives as fallback (skill-nonspecific-rules.md Dependency ownership narration; the spectrum-not-flat-list rule).
+- **Multi-finding openings that should consolidate** — a doc that fires several scans, watches, or narrations at one skill opening (a /plan read-state, a /next pre-flight, a /done close-out) without consolidating them into one narration, against the consolidate-the-scans rule in skill-nonspecific-rules.md.
+
+**Not a target: a purpose clause.** Where a sentence is welded into a rule's operative text because the rule cannot be applied correctly without it, that sentence *is* the rule, not rationale riding it. An eviction sweep must leave it alone. The test in reverse: delete it and read what remains — a complete instruction means it was rationale, an unfinished one means it was operative.
 
 ## Output
 

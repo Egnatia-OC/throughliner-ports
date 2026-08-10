@@ -22,9 +22,10 @@ above the cleared-to-run marker.
 ```
 run       = Processed[ top .. `--- Cleared to run above this line ---` )
 flavor(item):
-    (no tag)  ->  build   ->  next-build.md
-    [audit]   ->  review  ->  next-audit.md
-    [user]    ->  walk the user through it; never built
+    (no tag)    ->  build   ->  next-build.md
+    [audit]     ->  review  ->  next-audit.md
+    [user]      ->  walk the user through it; never built
+    [freeform]  ->  HALT — needs a session of its own; never built here
 ```
 
 **Never pick an item from past the marker.** This is a standing rule, not a
@@ -55,6 +56,7 @@ early exits:
     Processed[top] == marker      ->  NOTHING_CLEARED
     an item in the run carries
       `Red flag · State: uncleared` ->  UNCLEARED_FLAG
+    Processed[top] is `[freeform]`  ->  FREEFORM_HALT (nothing has started)
     run has no build/[audit] item ->  ALL_WALKTHROUGHS
 ```
 
@@ -75,6 +77,16 @@ it guards is real: without it, an unattended run would silently build work
 carrying an unaddressed data-exposure risk, which is the one thing the whole
 red-flag model exists to prevent.
 
+**On FREEFORM_HALT** [BRIEF, PROMPT] — say plainly what the item is and that it
+needs a session of its own where the work is done by hand rather than built from
+the queue, and stop. Don't skip past it to the next item.
+
+A `[freeform]` item is placed at one end of the cleared region, never in the
+middle, so the halt is always cheap: met first, nothing has started; met last,
+everything else is already finished. When one sits at the *end* of the run, Step 3
+builds everything above it and then halts on it, which is the same stop reached
+from the other side.
+
 **On ALL_WALKTHROUGHS** [PROMPT] — there's nothing to build, so skip Step 2's
 build scaffolding entirely and go straight to Step 3's walk-through branch.
 
@@ -91,7 +103,7 @@ work as probably-already-done and makes the user re-assert it before you'll help
 
 **Before handing a `[user]` item over, run the capability check.** Name the tool
 that would do the work and confirm it is absent or unauthenticated (the over-tag
-guard, plugin-behaviour.md). This is the last line of defence against a wrong
+guard, skill-nonspecific-rules.md). This is the last line of defence against a wrong
 tag, and it's nearly free — the run is about to act on that tag. If the check
 finds a tool that can do it, do the work as ordinary work and note the correction
 for the close; a wrong `[user]` item otherwise stops an unattended run dead for
@@ -108,7 +120,7 @@ deliberate human checkpoint before /next runs unattended-in-practice: a last
 chance to change scope or reorder. Frame it as that.
 
 ```
-render(run):                        # full rule: plugin-behaviour.md, view-in-doc
+render(run):                        # full rule: skill-nonspecific-rules.md, view-in-doc
     default                    ->  one-line pointer naming the items,
                                    linking to QUEUE.md
     user took the inline offer ->  one-line preamble, then the items verbatim
@@ -117,6 +129,14 @@ render(run):                        # full rule: plugin-behaviour.md, view-in-do
 The pointer is the default and the token-saving path; the inline quote is what the
 opening inline-text offer switches on. These items already exist in QUEUE.md, so
 confirm the link resolves before sending it.
+
+**Present the whole cleared region, and never recommend a subset of it.** The
+cleared-to-run line is the run bound and the user set it at /plan; a softer cap
+proposed here is a guess dressed as prudence, because Claude has no gauge of
+context filling at all. Don't say a run looks large, don't suggest stopping after
+the first few, and don't inherit such a suggestion from a previous session's
+advisory. If a run should stop early, that is decided by observed behaviour — the
+no-progress halt — not by a number chosen up front.
 
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
@@ -135,10 +155,23 @@ work reaches the cleared region.
 
 ## Step 2: Lock scope  [SILENT]
 
+**What scope means here.** Build scope is the active work's described work — the
+changes the work items call for, and nothing past them, enforced by judgment. The
+`Files:` list below is its mechanical approximation: pre_tool_use allows edits only
+to listed files (plus the method docs, the user's memory dir,
+`resources/research/`, the session scratchpad, and any project's `INBOX/`) and
+denies the rest, as a backstop. **The two layers are not the same thing** — a build
+can stay inside every listed file and still do more than the work describes. The
+described work is the test; the `Files:` list is the guardrail.
+
+/next **self-scopes**: it reads the Claude-work items it's about to build and
+derives the scope from them. Work outside the described work is appended to
+Unprocessed, not folded in.
+
 Once the user confirms:
 
 **1. Pre-generate the candidate index entry** for each Claude-work item — artifact
-touched + nature of change (plugin-behaviour.md, Index entries). This is the shape
+touched + nature of change (skill-nonspecific-rules.md, Index entries). This is the shape
 /done writes at close, so pre-generating makes it reusable: if the item builds as
 planned /done reuses it verbatim, if scope shifts /done re-authors it.
 
@@ -163,7 +196,7 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
 ```
 
 The test has two limbs because the first alone doesn't discriminate: design work
-almost always names files — "Files (rough): plugin-behaviour.md, plan.md" is
+almost always names files — "Files (rough): skill-nonspecific-rules.md, plan.md" is
 exactly what an undesigned item looks like — so a files-only test passes it and
 the run proceeds with a file list and nothing to build from. An item is buildable
 only when it says what changes *inside* the files it names. The same two-limb test
@@ -187,8 +220,9 @@ list them → adjacent-work discovery, capture it and continue.
 Run: [flavor + slug of each Claude-work item, top-down]
 
 Entries:
-[For each Claude-work item: its flavor tag (or "build"), its description, and all
-its rationale text — but drop any line starting with `Files:`.]
+[One line per Claude-work item: its flavor tag (or "build"), its slug, and its
+description. Rationale is NOT copied — it lives in QUEUE.md under that slug and is
+read from there.]
 
 Index entry candidates:
 [the pre-generated entry, one per Claude-work item]
@@ -208,6 +242,16 @@ those files plus the method docs, and denies everything else. **Lines must be
 bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.
+
+**Rationale is pointed at, not copied, and the safety that governs the pointer.**
+Each item's reasoning stays in QUEUE.md and is read from there when the item is
+built. The reason not to copy it: on a fifteen-item run the copy came to roughly
+eight thousand tokens, all of it text read from QUEUE.md minutes earlier, and it
+is re-paid on every run touching those items. The reason the pointer is *safe* is
+step 4 below — each item stays in QUEUE.md until the moment it is ticked, so no
+item's only copy ever sits in a file scheduled for deletion. **If that copy-per-item
+ordering is ever changed, this pointer must be revisited with it**; the two
+together are what replaced copying every item's prose in.
 
 **4. Leave QUEUE.md alone. Copy, never cut.**
 
@@ -286,6 +330,45 @@ Tick first, then remove. That order means an interruption between the two leaves
 the item in both files, which a resume can see and settle — the reverse order
 would leave it in neither.
 
+### The `[user]` walk-through lifecycle
+
+How a `[user]` item is run and closed. (What earns the tag is the matched pair in
+skill-nonspecific-rules.md, Captures.) Without the back half, a finished `[user]`
+item strands in Processed and the next /next presents it again as if unbuilt.
+
+- **A `[user]` line is walked through, and that is all.** There is **no completion
+  ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
+  leading, not trailing, not as a light aside. Never ask whether one is already
+  done. A standing rule with no exceptions; the setting that used to turn it back
+  on is retired.
+- **/next leads with the walk-through and drives it live.** Name what's theirs to
+  do, run whatever parts you can, give the **first** concrete step, and **wait**.
+  One step at a time. This is a live drive, not an offer — you walk *beside* the
+  user, you don't step back and hand off.
+- **The close is named only after the walk-through finishes.** How completion gets
+  recorded is told to the user *after* the last step is done or they defer.
+- **One `[user]` item at a time — never bundled.** Each in its own message, led by
+  its own live walk-through. Not a bulk-approval result set.
+- **Completion is inferred, never asked.** An item walked to its end this session
+  is done; an item whose blocker visibly hasn't shipped isn't; and the user
+  saying they did one is the third way it can be known. Nothing else counts.
+- **Where completion has an observable result, check the world before recording
+  it.** The never-ask rule forbids asking the USER; checking the WORLD is what
+  inference already means. A file present or absent, a branch gone, a URL
+  responding: when the item's walkthrough can name such a check, it records it,
+  and the close runs it rather than accepting the report. A failed check
+  produces a plain statement of what was found and leaves the item in place — it
+  never becomes "are you sure you did this?".
+- **The gap this leaves is deliberate: leave the item in place.** An item the user
+  completed on their own, with nothing observable to show for it, will sit in
+  Processed until they mention it — and mentioning it is already a supported path.
+  This is written down precisely so nobody later notices the hole and proposes an
+  ask to fill it. Don't.
+- **A completed `[user]` item has a defined close:** log it under its slug and
+  remove it from Processed. Lives in **both** /done (the user runs /done right
+  after finishing) and /plan (they completed it async and mention it).
+- **Re-clearing dependents** is the below-the-line revisit's job, not the close's.
+
 ### Walk-through branch — the `[user]` items  [SEQUENCE, PROMPT]
 
 Once the Claude-work is built (or if the run had none), walk the user through each
@@ -297,6 +380,22 @@ walk-through. Finish one fully — or record that the user deferred it — befor
 moving to the next. (This is *not* the [SEQUENCE] bulk-approval inversion: that's
 for a deterministic result set the user reads and accepts in one pass. A
 walk-through is an action driven live.)
+
+**Open the item's LOG entry file when the walk-through starts, and append each
+action as it happens.** A walk-through legitimately has Claude doing real work —
+running a reinstall, bumping a version, pruning a cache — and none of it has any
+other home: a `[user]` item never enters the build working file, so without this
+the work exists only in conversation and a crash loses it entirely, leaving a
+working file that positively suggests it never happened. Write the entry under the
+item's slug, in `LOG/`, and add to it as you go. The item itself stays in QUEUE.md
+untouched, so nothing is stranded, and a crash mid-walk-through leaves a partial
+entry saying exactly what was done. The close then finds an entry already started
+rather than writing one fresh.
+
+This is a place to record, never a restriction on doing. The branch is *supposed*
+to run whatever parts Claude can — that is what makes it a live drive. The record
+goes to `LOG/` precisely because `LOG/` is writable whatever the scope-lock says,
+so recording can never be what blocks the walk-through.
 
 **Lead with the walk-through, and drive it live — one step, then wait.** Run
 whatever parts you can, give the **first** concrete step the item records, and
@@ -359,6 +458,11 @@ stopping gets recorded and committed only by /done. Other recommendations (run
 /plan to vet the next work) ride alongside; they never replace naming /done.
 
 No item returns to the queue, because none left it — scope was never locked.
+
+## Resuming
+
+When resuming an active build, read its working file for state rather than
+re-exploring.
 
 ## Rules
 

@@ -360,13 +360,22 @@ def _waiting_inbox_messages(cwd):
 def _behaviour_rules_directive(plugin_root):
     """Instruction to read the behaviour rules from disk, rather than inlining them.
 
-    Hook output is capped at 10,000 characters — documented in the Claude Code
-    hooks reference, and confirmed by anthropics/claude-code#44086 and #70460.
-    Past that, the harness saves the text to a file and injects a ~2KB preview
-    plus a path in its place. `plugin-behaviour.md` is tens of kilobytes, so
-    appending it whole blew the cap by a wide margin and the rules reached no
-    session at all: only the short state lines above survived. The failure was
-    loud in effect and silent in appearance.
+    Hook output is capped at 10,000 characters **per hook command** — that is how
+    the Claude Code hooks reference documents it, and it is confirmed by
+    anthropics/claude-code#44086 and #70460. Past the cap, the harness saves the
+    text to a file and injects a ~2KB preview plus a path in its place. The rules
+    file is tens of kilobytes, so appending it whole from THIS command blew the cap
+    by a wide margin and the rules reached no session at all: only the short state
+    lines above survived. The failure was loud in effect and silent in appearance.
+
+    Stated precisely, because an earlier version of this docstring read as a flat
+    impossibility and would have stopped a future session designing injection: the
+    documented limit is per command, not an aggregate, so several SessionStart
+    commands could in principle each carry a slice. What is NOT verified here is
+    whether the harness concatenates multiple SessionStart outputs cleanly, in a
+    stable order, with no separate aggregate limit further up. Nobody has run that
+    experiment. Evidence and the reference's exact wording:
+    resources/research/hook-enforced-doc-reading.md.
 
     So the rules are pointed at, not pasted. This is a REDIRECT, not progressive
     disclosure — the distinction is load-bearing. Progressive disclosure fails
@@ -384,10 +393,10 @@ def _behaviour_rules_directive(plugin_root):
     """
     if not plugin_root:
         return ""
-    path = "${CLAUDE_PLUGIN_ROOT}/docs-b/plugin-behaviour.md"
+    path = "${CLAUDE_PLUGIN_ROOT}/docs-b/skill-nonspecific-rules.md"
     return (
-        "=== PLUGIN-WIDE BEHAVIOUR RULES — READ THESE FIRST ===\n"
-        "The behaviour rules govern every skill and every reply in this session. "
+        "=== RULES THAT APPLY WHATEVER IS RUNNING — READ THESE FIRST ===\n"
+        "These rules govern every skill and every reply in this session. "
         "They are not included here: they are too large for a hook to inject, so "
         "the harness would silently discard them.\n"
         f"READ {path} IN FULL NOW, before your first reply and before running any "
@@ -395,10 +404,10 @@ def _behaviour_rules_directive(plugin_root):
         "trigger that would later remind you to fetch them, so a session that "
         "skips this runs ungoverned for its whole life.\n"
         "SELF-CHECK: the file you open carries `docset: B` in its frontmatter. If "
-        "it isn't there or doesn't match, tell the user plainly that the "
-        "behaviour rules could not be loaded and name what you found instead — do "
+        "it isn't there or doesn't match, tell the user plainly that the rules "
+        "could not be loaded and name what you found instead — do "
         "not carry on as though they had been.\n"
-        "=== END BEHAVIOUR RULES DIRECTIVE ==="
+        "=== END RULES DIRECTIVE ==="
     )
 
 
@@ -558,7 +567,7 @@ def main() -> int:
     # and build stamp), then the behaviour-rules directive, then the FAQ pointer.
     #
     # Nothing appended here is bulky any more — the two things that used to be
-    # (plugin-behaviour.md whole, and the FAQ index whole) are now pointers, and
+    # (the rules file whole, and the FAQ index whole) are now pointers, and
     # the payload sits comfortably inside the cap. The ordering is kept anyway:
     # it costs nothing and it is what makes adding a line safe. The history is
     # worth remembering — with the rules pasted first they consumed the entire

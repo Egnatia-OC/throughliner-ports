@@ -1,0 +1,271 @@
+# Rezip and Release — the two rituals that fire on an explicit word
+
+Fetched on demand. Read this when Alex says **"rezip"** or **"release"**, and at no
+other time. Neither ritual has an unprompted trigger, which is precisely why they
+live here instead of in the always-loaded `CLAUDE.md`: about twenty-five standing
+instructions, none of which ever fires on a condition Claude has to notice.
+
+**Push is not here.** It runs after every /next and at any /done — a standing
+condition, not an explicit word — so it stays in `CLAUDE.md` where it is always
+loaded. The three-way framing (rezip vs push vs release) and the on-request rule
+stay there too, because knowing *which* action is being asked for has to happen
+before this file is opened.
+
+## Recovering from a project-folder move
+
+Moving this project folder breaks two path-based links that both hold absolute
+paths and don't self-heal — fix both, then fully restart the app:
+
+1. **Local-directory marketplace.** The desktop app's marketplace registration
+   keeps pointing at the old path: slash commands stop autocompleting and get
+   flagged "invalid" (the cached snapshot still runs when forced). Re-point it in
+   place — `claude plugin marketplace add "<new project path>"` (re-registers the
+   path; no `remove` needed) — then
+   `claude plugin install sovereign-implementer@flintcraft`.
+2. **Git worktree, if this checkout is one.** A move severs the worktree link both
+   ways and git reports "not a repository" until both sides are repointed: this
+   worktree's `.git` file (the `gitdir:` pointer) and the main repo's
+   `worktrees/<name>/gitdir` back-reference. Check whether this checkout is a
+   worktree before assuming it is — the `queue-redesign` worktree this note was
+   written for has since been merged away.
+
+Consumers are unaffected — they install from the GitHub marketplace, which has no
+local path to break.
+
+## Rezip (local testing)
+
+When Alex says "rezip" (or asks for a fresh local build to test), run this — no
+release version bump, no archive, no GitHub Release. It comes *before* a push, not
+after one: the test build that was actually exercised is then the build the push
+carries.
+
+**The `-testN` test-build scheme.** A rezip refreshes the installed host without a
+release bump, because bumping the release version on every private test build would
+nag Alex's own projects to re-run /setup each time. But test builds still need to be
+distinct and unmistakably-test, so each carries a `<base>-testN` version — the
+release-line base plus `-test` and a number incremented each rezip-for-testing (e.g.
+`1.12.0-test1`, then `-test2`). Honest framing: the suffix is not what makes a
+reinstalled host load — the full app restart is. `-testN`'s job is to keep each test
+build a distinct, clearly-labeled version never mistaken for a release, and to force
+the CLI to re-snapshot (see the bump rule below). The suffix lives in the working
+tree's `plugin.json` only, and the **Push** step resets it to a clean version, so it
+never reaches the remote.
+
+**The bump rule — the one sentence whose absence caused a whole session to run on
+the wrong plugin.** `claude plugin update` matches on the **version string**.
+Re-running it against an unchanged version reports "already at the latest version",
+re-snapshots nothing, and reports success — however far the source has moved since.
+So **any source change made after a rezip needs a fresh `-testN` bump before another
+update will take.** "I already rezipped today" is not sufficient and never was. On
+2026-08-09 a rezip installed `-test1` while the source was still two commits behind;
+every later update was a silent no-op, and a /plan session ran half its length
+loading procedure docs from a docset that had already been retired. Bumping to
+`-test2` fixed it instantly.
+
+1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the
+   current version and increment N (`-test1` → `-test2`), or start at `-test1` if
+   the base carries no suffix (`1.12.0` → `1.12.0-test1`). Never skip this on the
+   grounds that a rezip already happened.
+2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python
+   bytecode never gets snapshotted into the installed host (disposable — Python
+   regenerates them as needed):
+   `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`.
+   (No zip is built here — the local marketplace sources the plugin from the
+   `plugin/si-plugin` folder, and the CLI snapshots that folder directly. The zip
+   only changes at Release.)
+3. **Run the three hook test suites and stop if any fails.** They exist, they pass,
+   and for a period nothing ran them — which is how a `session_start.py` emitting a
+   rejected payload shape stayed dead and invisible, sessions compensating by
+   reading CLAUDE.md and the queue directly. Run all three:
+
+   ```bash
+   python resources/testing/hook_schema_check.py && python resources/testing/test_reorder_queue.py && python resources/testing/test_pre_tool_use_shell_writes.py
+   ```
+
+   **The honest limit, which travels with them and must never be dropped: the
+   schema check asserts output *shape*, not *delivery*.** A correctly-shaped hook
+   can still be discarded before it reaches a session. These suites do not replace
+   step 9's liveness ask; they are the half a machine can do.
+4. **Prune the plugin cache** at
+   `~/.claude/plugins/cache/flintcraft/sovereign-implementer/`, keeping the build
+   about to be installed and the three most recent. Nothing else ever removes these,
+   so every test build accumulates — ten by 2026-08-04, six again by 2026-08-09 —
+   and the pile is what makes "which host is actually live?" hard to answer.
+5. Refresh the installed host from the local-folder marketplace via the `claude`
+   CLI. The desktop app has no in-app plugin upload, and a working-tree edit alone
+   changes nothing the installed host sees — the host runs a frozen snapshot the CLI
+   copied into `~/.claude/plugins/cache/...` at install time, not the live files.
+   Claude runs these commands; Alex types nothing in a terminal.
+
+   **`claude` is NOT on PATH in the desktop app's Bash/PowerShell tools — invoke it
+   by full path.** A bare `claude plugin …` fails with "command not found"; this is
+   the single reason the reinstall has repeatedly been handed to Alex instead of run
+   by Claude. The executable is at `~/.local/bin/claude.exe` (equivalently
+   `C:\Users\<you>\.local\bin\claude.exe`); if it isn't there, it's under
+   `AppData/Roaming/Claude/claude-code/<version>/claude.exe`. Run every CLI step in
+   this ritual by full path, e.g.
+   `"/c/Users/<you>/.local/bin/claude.exe" plugin update sovereign-implementer@flintcraft`.
+   Locating and running it is Claude's job — don't hand the reinstall to Alex just
+   because a bare `claude` failed.
+   - First time only — register the local marketplace (the committed
+     `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at
+     `plugin/si-plugin`): `claude plugin marketplace add "<PROJECT_ROOT>"` —
+     substitute `<PROJECT_ROOT>` with the absolute path to this project's folder on
+     your machine.
+   - Each rezip after — re-snapshot the current build:
+     `claude plugin update sovereign-implementer@flintcraft` (or
+     `claude plugin install sovereign-implementer@flintcraft`).
+6. **Compare the content stamps immediately after installing — before saying
+   anything to Alex about restarting.** Run `content_stamp()` (from
+   `plugin/si-plugin/hooks/session_start.py`) over `plugin/si-plugin`, and again
+   over the cache directory for the version just installed. No edits happened in
+   between, so the two must be **identical**. A difference is unambiguous rather
+   than a judgement call: either the snapshot didn't take or the stamp function is
+   wrong, and both are worth stopping for. This is the step that catches the
+   silent-no-op failure the bump rule describes, and it caught a real shipped bug
+   the day it was first written down. Its honest limit: it proves the installed copy
+   matches the source, and cannot prove the stamp function computes the right thing.
+7. **Check the CLI's version against the app's.** The `claude` CLI and the desktop
+   app can be on different builds, and a plugin behaviour that depends on a recent
+   Claude Code version will then work in one and not the other. Note the mismatch
+   plainly if there is one rather than debugging past it.
+8. Tell Alex to do a **full app restart, not just a new session** — plugin skills
+   register at app launch, and on Windows a normal quit can leave the app running,
+   so she must fully quit (confirming the process has exited, via Task Manager if
+   needed) and relaunch. Say: "Host refreshed via the CLI — nothing has been
+   published. Fully restart the app to load it for private testing."
+9. **In the first session after the restart, prove the hooks are alive** — this is
+   the delivery half that step 3 cannot give. Ask that fresh session what the
+   session-start hook actually reported to it, and confirm the answer matches what
+   the hook emits. A hook that is well-formed, installed, and silently dropped looks
+   exactly like a working one from this side; only a session saying what it received
+   distinguishes them.
+
+## Release (on request)
+
+Run this when Alex asks for a release, and only then. Once she has asked, run the
+whole ritual through without further confirmation per step — the asking already
+happened. Every step that says "push" here means the ordinary `git push` in
+`CLAUDE.md`.
+
+The last-release tag is read from `gh release list` after `git fetch --tags`, never
+from `git describe --tags`. Both halves were verified rather than assumed: release
+tags are created by `gh release create` on the remote and are not in the local clone
+until fetched, and this repo carries ~135 unrelated local tags (`v95`, `v103`, …)
+from an older history, none of them ancestors of HEAD, so `git describe` fails
+outright here.
+
+1. Backfill any unfilled commit-hash placeholders anywhere in `LOG/` before
+   proceeding. The session-start hook only fires at session start, so a /done that
+   ran earlier in this same session leaves its placeholder unfilled at push time —
+   this step catches it. Same rules as the hook: replace the token only in hash
+   position (an entry heading line or the start of an index line), never in body
+   prose, which may mention the token literally; resolve each to the **oldest**
+   `git log -S "<entry title>"` match, never the newest commit touching the file.
+2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json` to a clean
+   patch/minor — patch for fixes/incremental, minor for new capabilities (`1.20.0` →
+   `1.20.1` or `1.21.0`). If a `-testN` suffix is still present the Push step was
+   skipped; drop it here as well. The release bump lives here, not in rezip — rezip
+   only ever touches the `-testN` test suffix, never the release line, because
+   bumping the release version on every private test build would make Alex's own
+   projects nag "version changed, re-run /setup" each time she tests.
+3. Pre-release consistency sweep — two passes, run in order:
+
+   **Pass A — Gather the feed:** List the commits since the last release, using the
+   tag lookup described above (fetch tags first; read the tag from
+   `gh release list`, never `git describe`):
+
+   ```bash
+   git fetch --tags && git log --oneline "$(gh release list --limit 1 --json tagName -q '.[0].tagName')"..HEAD
+   ```
+
+   Read their LOG entries (each session's own file under LOG/) to understand what
+   changed (files touched, features added/removed/renamed, concepts that shifted).
+   **The range is since-the-last-release-tag, not `origin/main..HEAD`** — that older
+   range meant "unpushed," which under routine pushing is usually empty, so the
+   sweep would silently read nothing and pass. The release span is what this sweep
+   is about, and Pass A's output is also the feed the release notes are written from
+   in step 10.
+
+   **Pass B — Check for staleness against those changes:**
+   - **Target internal consistency:** Do templates match the procedure docs they
+     ship alongside? Compare FAQ templates and CLAUDE-TEMPLATE.md against current
+     procedure docs (field names, doc structure, workflow descriptions). Update any
+     that fell behind.
+   - **Project docs:** Check QUEUE.md, SPEC.md, and LOG/ for references to removed
+     features, renamed fields, or old formats that the release span's commits
+     changed. Fix any found.
+   - **CLAUDE.md:** Check its descriptions (Architecture, Method docs, Rules)
+     against current target state. Update any stale references.
+   - **The install path:** re-read README.md's Install section and INSTALL.md
+     against the way the plugin is actually installed today — the commands, the
+     marketplace name, the minimum Claude Code version. This one earns its own
+     clause because nobody who already has the plugin ever exercises it, so it can
+     break completely and stay broken; the only person who would notice is a
+     brand-new user who by definition can't diagnose it. Every other doc gets read
+     by someone eventually. This one doesn't, so the release sweep is where it gets
+     read.
+4. Archive current zip:
+   `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
+6. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python
+   bytecode never ships in the zip (disposable — Python regenerates them as needed):
+   `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+7. Repackage:
+   `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"`
+   (zip the folder, not its contents — internal paths must start with `si-plugin/`).
+   Verify: list the zip's entries and confirm none contain `__pycache__` — if any do,
+   stop and fix before pushing.
+8. Stage every dirty path in `plugin/si-plugin/` (run
+   `git status --porcelain plugin/si-plugin/` and stage each listed path — catches
+   any sweep edits from step 3), plus the zip in `plugin/`, archive changes in
+   `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's
+   backfill edits). Commit: "Bump to v<VERSION> and repackage".
+9. `git push`.
+10. Publish a GitHub Release for the new version, so users who subscribed via Watch
+    → Releases get notified — a plain `git push` does not fire that notification;
+    only a published Release does. Use `gh`:
+    - Tag and title = the new version (e.g. `v1.13.0`).
+    - **Always `--prerelease`.** The plugin is in active testing and is not
+      marketplace-ready; the flag says so structurally so it never has to be
+      re-decided per release. Drop it only when the project genuinely leaves
+      testing, which is a deliberate decision, not a judgment made inside this
+      ritual.
+    - **Notes summarise everything since the previous release, and must never be the
+      commit message.** Write them from step 3's Pass A feed — the LOG entries
+      across the whole release span, which will usually cover several sessions. The
+      commit message describes one commit; the notes describe a release. So a note
+      that restates the commit message is wrong **even when the span holds a single
+      commit**, because it reports what was typed at a commit rather than what
+      changed for a reader. Group by theme rather than listing commits, say what
+      changed and why it matters in plain English for the Discord reader, and name
+      it plainly as a testing build.
+    - Attach the zip: `plugin/si-plugin.zip`.
+    - Command shape:
+      `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --prerelease --notes "<summary>"`.
+    - If `gh` isn't authenticated in this session (the command errors on auth), don't
+      silently skip the Release — tell Alex how to publish it from the GitHub web UI
+      instead: on the repo's **Releases** page, click **Draft a new release**, create
+      the tag `v<VERSION>`, set the same title, paste the summary as the notes,
+      attach `plugin/si-plugin.zip`, and **Publish release**. The step never silently
+      does nothing.
+11. Update the installed host via the `claude` CLI, then tell Alex to fully restart
+    the app. Same mechanism as the Rezip reload step — the host reads a frozen cache
+    snapshot, so without a CLI update + full restart it keeps running the old build.
+    The marketplace is already registered from earlier testing, so this is just:
+    `claude plugin update sovereign-implementer@flintcraft`. **Invoke `claude` by
+    full path — it is not on PATH in the desktop app's shell tools (see the Rezip
+    reload step's PATH note); a bare `claude` fails, but running it is Claude's job,
+    not a hand-off to Alex.** Then tell Alex: "Released and pushed. I've updated the
+    host via the CLI so it's running the released version — fully quit and relaunch
+    the app to load it."
+
+**Archive accuracy.** Only the Release ritual ever builds the zip — neither Rezip
+nor Push touches it — so the zip sitting in the working tree is always the last
+released one, and the copy archived into `plugin/zip-archive/` at step 4 of the next
+release faithfully reflects the prior release. Git history remains the authoritative
+record either way, since each release commits `si-plugin.zip`.
+
+LOG entries are per-entry files — no log capping at push time. Existing `LOG/log.md`
+and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so
+old entries remain findable.

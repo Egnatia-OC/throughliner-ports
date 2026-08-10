@@ -36,7 +36,7 @@ Why it's worth surfacing: the exact wording is produced here in /next and was
 never seen in /plan, which agreed only the intent. This is the first time the user
 meets the real words.
 
-**How the reveal renders** follows the view-in-doc rule (plugin-behaviour.md). The
+**How the reveal renders** follows the view-in-doc rule (skill-nonspecific-rules.md). The
 text is now doc-resident, so: a plain link to the edited file with the line named
 in the prose ("around line 40" — the app ignores a link's line anchor), falling
 back to an inline excerpt if the link won't resolve. If the user took the opening

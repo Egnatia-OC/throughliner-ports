@@ -439,7 +439,7 @@ def lint(content: str) -> list[str]:
 # because the user publishes more freely believing it worked. The same line the
 # method holds on red flags: provide risk-addressing, never promise risk
 # management. The prose half is a pre-write checklist Claude runs (see
-# plugin-behaviour.md), and the real protection for a public repo is not
+# skill-nonspecific-rules.md), and the real protection for a public repo is not
 # publishing these artifacts at all.
 #
 # Advisory, like every check in this file. It reports; it never blocks or edits.

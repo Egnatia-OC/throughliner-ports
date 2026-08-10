@@ -22,10 +22,6 @@ This project uses the Sovereign Implementer method.
 ## Rules for Claude
 
 - SPEC.md is a normal doc — it changes during planning or a build, always with your approval, and there's no separate spec-edit step. A planning decision that changes what SPEC says edits SPEC in that /plan session; a build that needs a SPEC change asks you and adds SPEC.md to its file list. The safety check still blocks a build from editing SPEC unless that build lists it in its files, so a spec change never rides in silently. Note spec issues for /plan as they come up.
-- Only touch files listed in the active build scope. Halt and ask if you need more.
-- One build at a time. Never start a second build while _build.md exists — finish and /done before starting another. (A planning session in a separate chat alongside a build is allowed.)
-- State problems plainly. Don't hide them or silently fix unrelated things.
-- Route discoveries to QUEUE.md's Unprocessed section rather than acting on them immediately — a later /plan decides their fate.
 
 ## Language
 

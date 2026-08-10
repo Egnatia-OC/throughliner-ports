@@ -23,7 +23,12 @@ gets built first — through discussion, not silently.
   chat for approval ahead of the write. Write it, then say in one line what went
   in and where — specific enough that the user can object without opening the
   file. The full rule, including the one test that decides which moments still
-  show first, is in plugin-behaviour.md's approval-time outputs.
+  show first, is in skill-nonspecific-rules.md's approval-time outputs.
+- **Nothing mechanically contains a planning session, so the containment is a
+  prompt.** There is no build working file here and so no engaged scope-lock; what
+  a session gets instead is an ask before any write outside the quiet list —
+  QUEUE.md, SPEC.md, `LOG/`, and the session's own planning notes. It doesn't stop
+  you doing something urgent, it stops you doing it unremarked.
 - **A recommendation is not a decision.** Whether an item is kept or deleted is
   still the user's call, and a written line is not an agreed one — the user can
   reject what was written, and it is reverted.
@@ -79,7 +84,20 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 
 (no tag)  a build — the default Claude-work flavor
 [audit]   a review pass: reports findings instead of editing files
+[freeform] work done by hand in a session of its own — /next must NOT build it
 ```
+
+- **`[freeform]` marks work /next must not run.** Either the user or Claude may
+  designate it, typically as a stopgap or as the nuclear option for something too
+  big to fix stepwise. Its defining case is a repair to the machinery /next itself
+  uses — the queue mover, the scope-lock, the lint — where running the broken
+  mechanism to build past it is the failure. **Place it at one end of the cleared
+  region, never interleaved with Claude-work:** first when it is a prerequisite or
+  repairs machinery /next uses, last when it is unrelated so the run clears the
+  buildable work before stopping. Both ends satisfy the rule; narrate which end and
+  why, like any other ordering judgment. If later cleared work genuinely depends on
+  the freeform fix landing first, that is an ordinary `Blocked by: [slug]`
+  relationship — no new mechanism.
 
 - **Filing is any session; processing is /plan's.** Moving an item into Processed
   or deleting it is the user's decision to make.
@@ -91,6 +109,12 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 ## Step 1: Read state and entry question
 
 Read QUEUE.md (both sections) and SPEC.md. Check whether Unprocessed has items.
+
+**Page QUEUE.md to the end before reasoning over it.** A long queue can come back
+truncated, and a truncated read looks exactly like a complete one to whatever
+reasons over it — so the check belongs here, at the read. If the read stopped
+short, page the rest before going on; if for any reason you cannot, say so plainly
+rather than reasoning from the part you have.
 
 Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
@@ -212,7 +236,7 @@ same session. The file survives compaction, gives an interrupted /plan a resume
 path, and hands /done a mechanical record instead of a reconstruction from memory.
 /done reads it at close and deletes it — same lifecycle as _build.md.
 
-**Run the scrub checklist before writing a kept item's text** (plugin-behaviour.md,
+**Run the scrub checklist before writing a kept item's text** (skill-nonspecific-rules.md,
 Scrub before writing). Keeping an item is where a capture's rough wording becomes
 the version that ships into a committed doc, so it is the last cheap moment to
 rewrite a real name or a case detail out of it.
@@ -317,7 +341,7 @@ to try harder:** before recommending keep, state the build in both limbs — the
 files that change AND what changes inside them — and if either limb can't be
 stated, the keep cannot proceed.
 
-Naming files alone is not passing. "Files (rough): plugin-behaviour.md, plan.md"
+Naming files alone is not passing. "Files (rough): skill-nonspecific-rules.md, plan.md"
 is exactly what undesigned work looks like, and items in that shape have reached
 Processed and then stalled a /next run that had a file list and nothing to build
 from. An item that can't pass both limbs gets sharpened further in the interview,
@@ -378,6 +402,16 @@ the irreducible user action  ->  a single [user] line, reduced to ONLY that
                                  action, cross-referenced by slug
 ```
 
+*If the item goes below the cleared-to-run line, place it destination-first too.*
+Below the line means one thing: a named queue item blocks this one. So name the
+blocker, and **if that blocker is not already a queue item, write it into
+Unprocessed first**, then write the held item with its `Blocked by: [slug]` line.
+Same reason as the ordering below — a reference resolves the moment its target
+exists. Written the other way round, the held item names a blocker nothing can
+resolve; that has happened, three items at once, and only the queue lint caught it
+after the write. If nothing in the queue blocks the item, it belongs **above** the
+line, not below it.
+
 Write the item, then report it. Make the move in this order:
 
 ```
@@ -406,7 +440,7 @@ the prose.
 
 *Before any `[user]` tag stands, run the capability check.* Name the tool that
 would do the work and confirm it is absent or unauthenticated (the over-tag
-guard, plugin-behaviour.md). Don't reason from what the task *sounds* like —
+guard, skill-nonspecific-rules.md). Don't reason from what the task *sounds* like —
 "create a GitHub repo" sounded browser-shaped and went to the user when `gh`
 would have done it in seconds. This is the cheapest place to catch a wrong tag.
 
