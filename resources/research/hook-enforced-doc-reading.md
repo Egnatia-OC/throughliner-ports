@@ -86,6 +86,35 @@ recoverable from it reliably; how the gate behaves on resume, on compaction, and
 in a subagent, all of which change what the transcript holds. The mechanism is
 confirmed available; its reliability is not.
 
+## Finding 4 — `Stop` receives the final assistant message directly (added 2026-08-11)
+
+Looked up while designing a mechanism for [write-first-report-without-write], and
+recorded here because the answer would otherwise have to be found again.
+
+A `Stop` hook exists and fires when Claude finishes responding. Its stdin carries
+`session_id`, `prompt_id`, `transcript_path`, `cwd`, `permission_mode`,
+`hook_event_name`, `effort`, and — the field that matters —
+**`last_assistant_message`**: the complete final response text for that turn. So a
+check on what Claude *said* needs no transcript parsing at all, which is what
+Finding 2's gate would have required.
+
+It can return `{"decision": "block", "reason": "..."}` (or exit 2), which does not
+end the turn: it prevents stopping and continues the conversation with the reason
+fed back. It can also return `additionalContext` in `hookSpecificOutput` to inject
+feedback without blocking. Unlike `PreToolUse`, it **cannot** escalate to the user
+for a permission decision.
+
+Caveats from the same source: it fires once per turn including turns that end in a
+question to the user, but does **not** fire for `EndConversation` tool calls; the
+default hook timeout is 600 seconds; and a `stop_hook_active` loop-protection flag
+is **not documented**, so any blocking hook must carry its own loop protection.
+
+**The consequence for enforcement design.** `PreToolUse` and `Stop` guard different
+failures and are not interchangeable. A rule about what Claude must *do before
+acting* (read the behaviour doc) is gated at the tool call. A rule about what Claude
+must not *claim* has no tool call attached — the false claim is text — so only an
+end-of-response hook can see it. Source: https://code.claude.com/docs/en/hooks.md
+
 ## What this does not settle
 
 Whether either mechanism is worth building. Both have real costs — a per-call

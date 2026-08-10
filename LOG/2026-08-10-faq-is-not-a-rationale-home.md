@@ -1,4 +1,4 @@
-# [HASH] — The self-authoring gate no longer routes evicted rationale to the shipped FAQ
+# 10d6474 — The self-authoring gate no longer routes evicted rationale to the shipped FAQ
 
 The correction is the user's, in their own words: the FAQ is where frequently
 asked questions would live, it is not where rationale lives, it has nothing to do

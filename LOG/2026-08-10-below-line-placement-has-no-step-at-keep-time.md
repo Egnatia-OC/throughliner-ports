@@ -1,4 +1,4 @@
-# [HASH] — plan.md's Keep sub-step gained the below-the-line placement procedure it never had
+# 10d6474 — plan.md's Keep sub-step gained the below-the-line placement procedure it never had
 
 The problem is the user's, in their own words: they always have to explain how
 holding things below the line works, and watch like a hawk for Claude failing to

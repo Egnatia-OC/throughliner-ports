@@ -1,4 +1,4 @@
-# [HASH] — Three reverted rules re-authored, each admitted on recurrence rather than prediction
+# 10d6474 — Three reverted rules re-authored, each admitted on recurrence rather than prediction
 
 All three shipped once, were lost to the 2026-08-09 emergency revert, and each has
 recurrence evidence. The item deliberately did **not** carry their original

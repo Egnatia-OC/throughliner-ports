@@ -1,4 +1,4 @@
-# [HASH] — LOG entry depth is now decided per item; one entry per built item stays unconditional
+# 10d6474 — LOG entry depth is now decided per item; one entry per built item stays unconditional
 
 Captured by the user 2026-08-09 — they stopped a close part-way through and asked
 what the purpose of the process was, on a run that had built twelve items.

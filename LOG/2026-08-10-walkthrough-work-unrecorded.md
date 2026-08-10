@@ -1,4 +1,4 @@
-# [HASH] — /next now opens a [user] item's LOG entry when the walk-through starts, and appends as it goes
+# 10d6474 — /next now opens a [user] item's LOG entry when the walk-through starts, and appends as it goes
 
 Found at a session close on 2026-08-09 and processed the same day. Caught only
 because the session was still in view — a fresh session would have had nothing to

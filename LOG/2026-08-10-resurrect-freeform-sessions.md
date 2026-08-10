@@ -1,4 +1,4 @@
-# [HASH] — Freeform became a work-item flavor: marked at /plan, halted at /next, announced at /done
+# 10d6474 — Freeform became a work-item flavor: marked at /plan, halted at /next, announced at /done
 
 The call is the user's, in their own words: we'll resurrect the concept of
 freeform sessions, as you are confident in Claude Code now and can finally handle

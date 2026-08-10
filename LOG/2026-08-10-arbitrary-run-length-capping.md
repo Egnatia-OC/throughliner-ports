@@ -1,4 +1,4 @@
-# [HASH] — /next no longer proposes running fewer items than the cleared line allows
+# 10d6474 — /next no longer proposes running fewer items than the cleared line allows
 
 Captured by the user 2026-08-09, in their words: Claude consistently tries to
 arbitrarily limit runs, when research restored from before the revert establishes

@@ -1,4 +1,4 @@
-# [HASH] — The gate's narrow why-clause exception repealed and replaced by the purpose-clause test
+# 10d6474 — The gate's narrow why-clause exception repealed and replaced by the purpose-clause test
 
 The repeal is the user's, in their own words captured earlier: this is not
 consistent with our research in law, and we do not want why-clauses accumulating.
