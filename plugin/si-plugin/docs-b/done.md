@@ -143,10 +143,20 @@ captured or dropped?
 
 ```
 yes             ->  proceed
-some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial
-                    (defer the unticked items, returning them to Processed)?
+some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
                     Wait for the user's call.
 ```
+
+**A partial close restores nothing, and that is the design.** An item is removed
+from QUEUE.md only as it is ticked, so an unticked item is still sitting in
+Processed exactly where it was. Closing partial means deleting _build.md and
+leaving the queue alone — there is no copy-back step, no count to reconcile, and
+nothing that can be lost by getting it wrong.
+
+Before deleting _build.md, confirm the two halves agree: every ticked item is
+gone from QUEUE.md, and every unticked one is still there. A mismatch means an
+interruption landed between the tick and the removal — say what you found and fix
+that one item, rather than proceeding.
 
 **Build-close delta — reconcile against memory.** At a build close, where the
 session is still remembered, reconcile _build.md against what you recall. If the
@@ -584,6 +594,16 @@ may be overlap worth checking."
 **File the forward-recommendation advisory.** When this step made a *concrete*
 recommendation, file it as a capture at the top of Unprocessed, worded as advice,
 consumed and cleared by the next /plan. A generic recommendation files nothing.
+
+```
+#### Last session advises processing <slug> next [forward-advisory]
+```
+
+The trailing `[forward-advisory]` is a fixed, reserved slug — always that literal
+string, never the slug of the item it points at. Written any other way the
+advisory is a heading with no slug at its end, which the queue lint flags on
+every later edit and which stops the queue mover dead: it refuses on the whole
+file, so no move or deletion can run at all while the advisory is present.
 
 ```
 flavor deltas:

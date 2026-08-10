@@ -410,11 +410,28 @@ capture at the **top** of Unprocessed. It's a transient orientation handoff, not
 work.
 
 ```
-format:     #### Last session advises processing <slug> next
+format:     #### Last session advises processing <slug> next [forward-advisory]
             <reasoning beneath>            # AI-authored, so unmarked
 lifecycle:  read at the next /plan's opening   -> orients where the session starts
             cleared at that session's /done close (done-plan.md)
 ```
+
+**The trailing `[forward-advisory]` is a fixed, reserved slug, and it is
+load-bearing.** The advisory used to be written with the referenced item's slug
+mid-line and none of its own, which made it the one heading in the queue with no
+slug at the end — so the lint complained about correctly-formatted output on
+every queue edit, and the queue mover **refused to run at all** while an advisory
+was present, taking every scripted move and deletion down with it. Giving the
+advisory its own reserved slug makes it an ordinary well-formed heading to both,
+so neither needs a special case. The slug is always this same literal string,
+never derived from the item it points at, which is what lets `done-plan.md` clear
+it by name.
+
+It stays in QUEUE.md rather than moving to a file of its own: it is read at the
+top of Unprocessed by the next /plan, and a separate file would be one more
+document for the user to learn about for one transient line. The reason it kept
+being misread as unprocessed work was never its location — it was that nothing
+in it said what it was. The heading text is what carries that.
 
 Never run through keep/delete; never moves into Processed. The clear lives at the
 /done close — the one close that always runs.

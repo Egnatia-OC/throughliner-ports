@@ -162,6 +162,14 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
                                                  scope-ask.
 ```
 
+The test has two limbs because the first alone doesn't discriminate: design work
+almost always names files — "Files (rough): plugin-behaviour.md, plan.md" is
+exactly what an undesigned item looks like — so a files-only test passes it and
+the run proceeds with a file list and nothing to build from. An item is buildable
+only when it says what changes *inside* the files it names. The same two-limb test
+runs at /plan's keep-step, which is where an item like this should be stopped;
+meeting one here means it got through.
+
 A blocking ask on adjacent work both defeats the unattended run and reopens a
 scope decision reserved for /plan. The extra look self-scoping gives is preserved
 by capturing what it finds, not by asking.
@@ -201,24 +209,43 @@ bare paths** — the hook matches each line as an exact path, so any annotation
 becomes part of the path and silently breaks the match. Make sure no other line
 in the file starts with `Files:`.
 
-**4. Remove the run's Claude-work items from QUEUE.md** now that _build.md holds
-them — the queue is free for other sessions.
+**4. Leave QUEUE.md alone. Copy, never cut.**
 
 ```
-Claude-work items  ->  moved to _build.md, REMOVED from QUEUE.md
+Claude-work items  ->  COPIED into _build.md, and they STAY in QUEUE.md
 [user] items       ->  STAY in QUEUE.md
 ```
 
+Nothing is removed from QUEUE.md here. Each Claude-work item is removed **one at
+a time**, at the moment it is ticked in _build.md Progress (Step 3) — so the queue
+visibly shrinks as the run progresses, and an item still showing in QUEUE.md means
+exactly one thing: not built yet.
+
+**Why the bulk removal was wrong, stated so it isn't reinstated.** This step used
+to write every item into _build.md and then strip them all from QUEUE.md at once.
+From that moment until the close, _build.md held the **only** copy of every item
+in the run, built or not — and _build.md is deleted at the close. A run that built
+two of fifteen therefore had thirteen items existing nowhere else, and returning
+them meant reading them out of the working file and retyping every block by hand:
+the exact transcription exposure the queue mover was written to eliminate. Nothing
+counted thirteen out and thirteen back, and nothing would have noticed a block
+returned with a line missing.
+
+The old ordering was destination-first for a real reason — the run survives an
+interruption between the two writes — and it freed QUEUE.md for other sessions
+immediately. Copy-per-item keeps both properties and gives up only one thing: the
+items sit in both files while the build runs. A duplication window is a far
+cheaper failure than a single copy in a file scheduled for deletion, and an
+interrupted run now loses nothing at all.
+
 A `[user]` item is walked through in Step 3, not built, and is closed later by
-/done or /plan. Extracting it into _build.md would strand it, since _build.md is
-deleted at close. The ordering here is deliberately destination-first: items are
-written into _build.md *before* being removed, so the run survives an interruption
-between the two.
+/done or /plan. It never enters _build.md, since _build.md is deleted at close.
 
 **5. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: _build.md is
-the build's working file — it carries the run's work while QUEUE.md stays free,
-lists the files the safety check allows, tracks progress so an interrupted session
-can resume, and holds the reasoning /done writes into the session record.
+the build's working file — it carries a copy of the run's work, lists the files the
+safety check allows, tracks progress so an interrupted session can resume, and
+holds the reasoning /done writes into the session record. The queue keeps its own
+copy of everything not yet built, and each item drops out of it as it's finished.
 
 ```
 progress format:
@@ -242,8 +269,22 @@ build item (no tag)  ->  read and follow next-build.md
 ```
 
 Between build items, keep going autonomously — the user confirmed the whole run
-at the Step 1 off-ramp, so there's no per-item re-confirmation. Tick each item in
-_build.md Progress before starting the next.
+at the Step 1 off-ramp, so there's no per-item re-confirmation.
+
+**As each item completes, do two things before starting the next:** tick it in
+_build.md Progress, then remove that one item from QUEUE.md with the mechanical
+mover, addressed by its slug.
+
+```
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+    --delete <slug> Processed
+# the plugin root is the grandparent of the running skill's base directory
+# (.../<plugin-root>/skills/<skill>) — derive it, never hardcode a path.
+```
+
+Tick first, then remove. That order means an interruption between the two leaves
+the item in both files, which a resume can see and settle — the reverse order
+would leave it in neither.
 
 ### Walk-through branch — the `[user]` items  [SEQUENCE, PROMPT]
 

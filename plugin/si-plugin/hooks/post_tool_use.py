@@ -343,8 +343,12 @@ def _check_blocked_by(annotated, blocks, warnings):
             if target is None:
                 warnings.append(
                     f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
-                    f"[{slug}], which is not a work item in this queue. A "
-                    "blocker must be a real item someone can pick up."
+                    f"[{slug}], which is not in the queue right now. That has "
+                    "three causes and only one is a fault: the blocker has "
+                    "already shipped and been removed, it is in flight (a run "
+                    "has taken it into _build.md), or the reference is wrong. "
+                    "Check LOG before changing anything — a correct reference "
+                    "reads exactly like a broken one here."
                 )
             elif target["idx"] == b["idx"]:
                 warnings.append(

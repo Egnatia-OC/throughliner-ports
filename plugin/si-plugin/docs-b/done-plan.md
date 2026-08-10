@@ -204,6 +204,14 @@ it names an unmet persist-condition  ->  LEAVE it in place
 no advisory present               ->  say nothing
 ```
 
+Delete it with the mechanical mover, addressed by its reserved slug — the same
+tool and the same plugin-root derivation as the reorder above:
+
+```
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+    --delete forward-advisory Unprocessed
+```
+
 Narrate in one line when clearing. Distinct from "Recommend next", which *files a
 fresh* advisory after the commit — clearing the consumed one and filing the next
 are two different advisories.

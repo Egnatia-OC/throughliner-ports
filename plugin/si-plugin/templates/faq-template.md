@@ -324,6 +324,8 @@ Either of you can start one: tell Claude when you hit something, or Claude may s
 
 That's a forward-recommendation note — the previous session's suggestion for where to focus next. It's there so you don't have to remember what the last session recommended; the recommendation sits right where the next /plan session sees it first.
 
+You'll see it ends with `[forward-advisory]`, the same way your real work items end with a short name in brackets. That's deliberate: your queue's automatic checks expect every line in that shape to carry one, and the note used to be written without it — which made the checks complain about a perfectly correct note, and stopped the tool that moves and removes queue items from running at all while the note was there. Giving it a fixed name of its own fixed both. It is still not a work item, and Claude never treats it as one.
+
 It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Once you and Claude have agreed on the processing or build order for the session, the note is deleted automatically. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
 ## Claude offered to delete some files when I closed a session. What's that?

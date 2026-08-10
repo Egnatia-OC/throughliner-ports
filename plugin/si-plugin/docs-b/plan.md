@@ -96,8 +96,10 @@ Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
 
 **Read the forward-recommendation advisory** [SILENT when absent; BRIEF when
-present]. If the top of Unprocessed holds a "Last session advises…" line, read it
-and let it orient *where the session starts*. It never narrows the session to only
+present]. If the top of Unprocessed holds a "Last session advises…" line — it
+carries the reserved slug `[forward-advisory]` at the end of its heading — read it
+and let it orient *where the session starts*. It is **not** a work item and never
+goes through keep/delete in Step 2; skip it there. It never narrows the session to only
 the advised item — Step 2 still processes the full queue. Surface it in one line:
 "Last session recommends starting with [slug]." Orientation, not a command. The
 **clear** happens at the /done close, not here, so it can't be skipped by a
@@ -310,9 +312,22 @@ delete  remove it. If already decided (check LOG/index.md), state the prior
 
 **A keep recommendation must describe what would actually get built**, in terms
 the user recognizes as the work product — which files change, what gets added,
-removed or rewritten, not just the topic. *Forcing function:* if the interview
-hasn't yielded enough to describe the work concretely, the recommendation isn't
-ready — return to interviewing.
+removed or rewritten, not just the topic. **This is a blocking check, not a prompt
+to try harder:** before recommending keep, state the build in both limbs — the
+files that change AND what changes inside them — and if either limb can't be
+stated, the keep cannot proceed.
+
+Naming files alone is not passing. "Files (rough): plugin-behaviour.md, plan.md"
+is exactly what undesigned work looks like, and items in that shape have reached
+Processed and then stalled a /next run that had a file list and nothing to build
+from. An item that can't pass both limbs gets sharpened further in the interview,
+or skip-to-deferred with its design progress written into its prose — never kept.
+
+This is where a design item is caught. An item whose build list is *the design's
+own output* fails the second limb by construction, so it never clears to run, and
+/next never has to meet it. That is the cheap place to catch it: at planning time,
+where the user is already in the conversation, rather than at build time, where
+the run halts to ask.
 
 Part of keeping is settling who does it and how: Claude-work by default or
 `[user]`; and for Claude-work, its flavor. Claude places the item in Processed by
@@ -440,8 +455,14 @@ the method removed.
 ```
 on skip:
     move the item to the bottom of Unprocessed VIA THE MECHANICAL MOVER:
-        python plugin/si-plugin/scripts/reorder_queue.py QUEUE.md Unprocessed \
+        python <plugin-root>/scripts/reorder_queue.py QUEUE.md Unprocessed \
             --move <slug> BOTTOM
+    # the plugin root is the grandparent of the running skill's base directory
+    # (.../<plugin-root>/skills/<skill>). Derive it from there so it resolves
+    # wherever the plugin is installed — never hardcode a path. A hardcoded
+    # path resolves only in the project the method is developed in, and the
+    # fallback when it fails is hand-retyping the block, which is exactly the
+    # corruption exposure the mover exists to remove.
     # relocates the whole prose block byte-for-byte. The text is unchanged by a
     # skip, so hand-retyping it via Edit is pure corruption exposure.
     record its slug in _plan.md as skipped-this-session

@@ -1,4 +1,4 @@
-# [HASH] — plugin-behaviour.md's retirement processed into a build, and the stopped run's six machinery bugs consolidated into a hand-driven freeform brief
+# f8dbe10 — plugin-behaviour.md's retirement processed into a build, and the stopped run's six machinery bugs consolidated into a hand-driven freeform brief
 
 This planning session settled two things the previous session left open, and the second
 reversed a decision made an hour earlier in this same session.
