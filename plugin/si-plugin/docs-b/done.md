@@ -548,6 +548,26 @@ the file. One mechanism on every machine — it sidesteps inline-quoting fragili
 token at column 0). The file is writable here because the sub-doc deletes _build.md
 before Commit, or none ever existed, so the scope-lock isn't active on the root.
 
+**5a. A staging step that partly failed is a STOP, not something to commit
+around** [BRIEF, PROMPT]. Check that every path this close meant to stage is
+actually staged — `git status --porcelain` and read what is in the index — before
+running the commit. Where anything intended is missing, say plainly what did not
+stage and why, and **do not commit.** Fix the staging and re-check, or let the
+user decide.
+
+The real failure this prevents: a staging command aborted partway when it hit a
+gitignored path, and the commit ran anyway. Nineteen LOG entries describing that
+commit's work were left out of it and had to be added by a second commit — after
+which the session-start backfill correctly resolved each one to that second
+commit, because with the files absent from the first, the second genuinely was
+the oldest commit containing them. Every entry then pointed one commit past its
+own subject.
+
+Note what that rules out as the fix: the backfill rule behaved correctly on
+inputs that were wrong, so nothing is added to it. Wrong hashes were one visible
+symptom; entries missing from the commit they describe is the general failure,
+and it is a partial commit either way.
+
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
 

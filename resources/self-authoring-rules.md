@@ -34,6 +34,20 @@ Then, four questions:
 3. Does it apply to every session, or only some?
 4. Could a hook do it instead, at no attention cost? Escalate to a hook when the failure's cost justifies its standing friction — every hook adds friction every session forever, so a cheap, self-correcting slip earns sharper wording instead. The cost of the failure decides, not the fact that a rule slipped.
 
+### Admitting an exception — restate first
+
+§4 says where an exception goes once it exists. This says whether it gets to exist. Nothing did, which is why exceptions have been admitted on the author's say-so.
+
+**Three parts, in this order:**
+
+1. **Restatement first.** Before writing an exception, restate the rule so that it does not need one. An exception is admissible only where restatement was attempted and lost content.
+2. **Admission, on evidence.** Where restatement genuinely fails, the exception requires a recorded instance of the bare rule producing a wrong outcome — not the author's belief that an edge case exists. Every author believes their own rule is the edge case; that belief is what the purpose-clause test (under Rationale lives outside the operative rule) was rebuilt to stop counting as evidence. This test mirrors its shape on purpose — same bar, same reason.
+3. **Review, from the drafting note.** The LOG entry admitting the exception cites the instance, so a later auditor can ask whether it is still a live risk.
+
+**The worked case, which is the evidence for the test.** [derivation-required-for-limits] was drafted as *a bare number is banned, except where it derives from a proportion, from research, or from an external constraint*. It restates without loss as **a limit must state what it was derived from** — the same rule, with no exception in it. The first test disposed of the case that produced the block.
+
+**No count is written, deliberately.** "More than N exceptions means the rule was never worked out" would itself be a bare limit needing its own derivation, with nothing to derive it from. The restatement test does that work without counting: a rule accreting exceptions is one whose exceptions each failed restatement, which is visible on the face of it.
+
 ## 2. Eviction — what comes out
 
 Adding a rule names what it replaces or supersedes. Rules mostly arrive as refinements of existing ones, and the superseded version is what never gets removed. Two named mechanisms:
@@ -65,6 +79,7 @@ One check, and the drafting devices that serve it. All of them are forms of a si
 - Put the main clause first — the rule, then its conditions — especially where the conditions are long, since a reader needs a sentence's principal parts before it can place the rest.
 - Use `subject to <X>` as a cross-reference rather than restating the exception — a restatement costs a paragraph and creates a second copy that drifts.
 - Put multiple exceptions in their own subsection, referenced from the rule.
+- These two bullets place an exception that has already earned its place. **Whether it earns one at all is decided by the restatement test in §1** (Admitting an exception — restate first): restate the rule so it needs no exception, and admit one only where restatement lost content and a recorded instance shows the bare rule going wrong.
 - Use short connectives — but, except that, unless, so long as — not explanations.
 - One idea per provision. Don't mix conditions and exceptions in one sentence.
 - Don't hide exceptions. Clarity and brevity are both served by structure over prose.

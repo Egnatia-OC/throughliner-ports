@@ -66,15 +66,53 @@ Active in every session where the plugin is installed and the project is set up.
   prompts, and commands the user runs in a separate terminal. Commit messages are
   not paste targets (Claude runs the commit). Two paste targets belonging to the
   same approval go as adjacent fences in one message under a single approval.
-- **Write first, then report — decided by one test: does a revert fully undo it?**
+- **Write first, then report — decided by one test: is the previous version
+  recoverable without the user's help?**
 
 ```
 YES -> write it, then report      queue items and captures · LOG entries ·
                                   SPEC edits · ordinary file edits in a build
 NO  -> show it, then wait         a commit message · anything that LEAVES THE
                                   MACHINE (the feedback report, an outbound
-                                  INBOX message to another project)
+                                  INBOX message to another project) · a
+                                  wholesale conversion of a document the user
+                                  already owns, where git does not yet hold it
 ```
+
+  **The test used to read "does a revert fully undo it?", which assumed a
+  safety net that isn't always there.** Recoverability is the thing actually
+  being tested, and stating it that way settles the case that kept getting
+  argued: converting a project's whole QUEUE.md at setup or migration. That
+  conversion rewrites a document the user owns and reads most, in a project
+  that may have just been adopted and may not be a committed git repo at all —
+  so there may be nothing to revert to. It is show-first by the test, not by an
+  exception to it. Where the file *is* committed, the same test lets it be
+  written first.
+
+  Stated as a restatement rather than a third exception on purpose: a rule that
+  restates without losing content does not get an exception (the admission test
+  in the self-authoring gate). Nothing was added here — the wording was
+  corrected to say what it always meant.
+
+- **Show-first, on request.** The user can ask to see doc-resident text before
+  it is written, for the rest of the session.
+
+```
+scope:     doc-resident writes — queue items, captures, LOG entries, SPEC edits
+trigger:   the user asks. Nothing detects it; there is no stored setting.
+effect:    show the text, wait, then write — for this session only
+floor:     the show-first cases above stay show-first regardless. The switch
+           moves in ONE direction, toward more showing.
+```
+
+  Held in the session, never written to a file — same shape as the inline-text
+  offer. The method has retired stored mode settings twice, and both times the
+  stored field recorded something that wasn't stable about the user. A
+  show-first preference is less stable still: it is about where they are right
+  now, not who they are.
+
+  **Being driven remotely is not a separate trigger.** It is a case where the
+  user asks. No detection is built to reach an outcome that asking reaches.
 
   **The report after the write is one line** naming what landed and where — never
   a re-paste of the text just written. It must be specific enough to object to
@@ -139,7 +177,14 @@ wording:   describe the situation, don't name a feature — "reading on your
            recognise themselves in it.
 effect:    the user says the word -> paste doc-bound text inline for this
            session, including the one-line report after a write
+                                 -> and, in /next, show each edit's new text
+                                    inline instead of by line reference
 ```
+
+**The inline switch covers /next's edit display too, rather than asking twice.**
+Line references are already the default everywhere, so a separate run-start
+question would add an ask to reach an outcome this offer already covers — the
+over-asking the method keeps removing. Default off means today's behaviour.
 
 This is a session-scoped switch, held in the session, never written to a file.
 
@@ -283,7 +328,7 @@ A capture is unprocessed work: one work item appended to QUEUE.md's
 or task into the queue without stopping to work it. Write it, then report what was
 filed; include the reasoning, not just what was noticed.
 
-**Line format** — this exact shape is what all three hooks parse. Emitting a work
+**Line format** — this exact shape is what the hooks parse. Emitting a work
 item as a bold line or a plain bullet silently breaks the queue lint, the
 red-flag scan, and the section keying. The `#### ` heading is load-bearing, not
 cosmetic.

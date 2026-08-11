@@ -1,4 +1,4 @@
-# 10d6474 — Seven duplicated rules repealed from CLAUDE.md, and four more from the shipped template
+# 94bba66 — Seven duplicated rules repealed from CLAUDE.md, and four more from the shipped template
 
 Audit findings 1, 2 and 15, approved by the user on 2026-08-09 and 2026-08-10.
 The disposition is consolidate-and-repeal, which the self-authoring gate names as

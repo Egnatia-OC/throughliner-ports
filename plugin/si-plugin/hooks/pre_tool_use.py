@@ -537,11 +537,20 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     """
     if not _is_inside(filepath, cwd):
         return False
-    rel = os.path.relpath(_normalise(filepath), _normalise(cwd))
-    rel = rel.replace("\\", "/")
-    if rel in ("QUEUE.md", "SPEC.md", "_plan.md", "_build.md"):
+    # Build the relative path from paths that have NOT been normcased, then
+    # normcase each side of the comparison instead. `_normalise` lowercases on
+    # Windows, so feeding it in here produced `queue.md`, which could never
+    # match the literals below — the gate was inverted on Windows for every
+    # user of it. `os.path.relpath` compares case-insensitively internally on
+    # Windows while returning the original components, so passing raw paths is
+    # safe. `os.path.normcase` is the identity on POSIX, so exact matching is
+    # preserved there.
+    rel = os.path.relpath(os.path.normpath(filepath), os.path.normpath(cwd))
+    rel = os.path.normcase(rel).replace("\\", "/")
+    quiet_files = ("QUEUE.md", "SPEC.md", "_plan.md", "_build.md")
+    if rel in tuple(os.path.normcase(name) for name in quiet_files):
         return True
-    if rel.startswith("LOG/"):
+    if rel.startswith(os.path.normcase("LOG") + "/"):
         return True
     return False
 

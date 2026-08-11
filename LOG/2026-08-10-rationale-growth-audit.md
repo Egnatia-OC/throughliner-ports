@@ -1,4 +1,4 @@
-# 10d6474 — Rationale growth measured across 186 items: processing roughly doubles a work item, and the growth is concentrated
+# 94bba66 — Rationale growth measured across 186 items: processing roughly doubles a work item, and the growth is concentrated
 
 An `[audit]` item, run against git history rather than by watching future sessions
 — the history already holds each capture's original text and the processed text

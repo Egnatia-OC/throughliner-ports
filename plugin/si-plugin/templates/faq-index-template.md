@@ -49,7 +49,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What's a "red flag," and what do cleared and uncleared mean?](faq.md#whats-a-red-flag-and-what-do-cleared-and-uncleared-mean)
 - [What happens to a red flag when the work carrying it is built?](faq.md#what-happens-to-a-red-flag-when-the-work-carrying-it-is-built)
 - [Why did Claude ask before starting a "subagent"?](faq.md#why-did-claude-ask-before-starting-a-subagent)
-- [What does a "Plan session here" line in the queue mean?](faq.md#what-does-a-plan-session-here-line-in-the-queue-mean)
+- [I remember lines in the queue saying "Plan session here" or "Push required". Where did they go?](faq.md#i-remember-lines-in-the-queue-saying-plan-session-here-or-push-required-where-did-they-go)
 - [I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?](faq.md#i-have-work-sitting-below-the-cleared-to-run-line-waiting-on-something-will-claude-come-back-to-it)
 - [What does the "Cleared to run above this line" marker in the queue mean?](faq.md#what-does-the-cleared-to-run-above-this-line-marker-in-the-queue-mean)
 - [Why did /next stop before finishing everything?](faq.md#why-did-next-stop-before-finishing-everything)

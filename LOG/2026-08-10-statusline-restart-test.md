@@ -1,4 +1,4 @@
-# [HASH] — The status-line restart test ran and produced an ambiguous result, so it is not being closed
+# 801c85a — The status-line restart test ran and produced an ambiguous result, so it is not being closed
 
 The user quit and relaunched the desktop app, opened a fresh session, and reported
 what the session-start hook told it. Claude then read the marker file, per the

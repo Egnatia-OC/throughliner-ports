@@ -1,4 +1,4 @@
-# 10d6474 — session_start.py's cap explanation corrected: the 10,000-character limit is per hook command
+# 94bba66 — session_start.py's cap explanation corrected: the 10,000-character limit is per hook command
 
 Split from [behaviour-rules-read-is-enforceable] at the keep-step because the two
 halves differ in kind — this is certain and tiny, the other needs experiments

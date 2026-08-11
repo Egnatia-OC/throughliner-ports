@@ -1,4 +1,4 @@
-# 10d6474 — The status-line probe written and wired, ready for the restart test
+# 94bba66 — The status-line probe written and wired, ready for the restart test
 
 Split from [statusline-restart-test] at the keep-step because the work is mixed:
 writing and wiring the probe is entirely Claude's, and only the restart is the

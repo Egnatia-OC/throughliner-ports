@@ -1,4 +1,4 @@
-# 10d6474 — Three stale passages corrected in CLAUDE.md, including two retired /next markers it still documented as live
+# 94bba66 — Three stale passages corrected in CLAUDE.md, including two retired /next markers it still documented as live
 
 Audit findings 11 and 12, approved 2026-08-09, plus finding 13 found by the /next
 run that returned this item unbuilt on 2026-08-10.

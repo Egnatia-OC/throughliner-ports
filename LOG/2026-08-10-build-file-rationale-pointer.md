@@ -1,4 +1,4 @@
-# 10d6474 — /next stopped copying every run item's rationale into the build working file
+# 94bba66 — /next stopped copying every run item's rationale into the build working file
 
 Split from [invented-rationale-compounds-past-the-shipped-rule] at the keep-step.
 The measurement is the user's finding: on a fifteen-item run the copy came to

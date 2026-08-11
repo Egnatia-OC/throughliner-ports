@@ -108,14 +108,38 @@ close to a sentence or two.
 ```
 existing QUEUE.md uses an old multi-section shape
     (## Red flags · ## Batches · ### Parked · ## Deferred tests · ## Captures)
-        ->  load ${CLAUDE_PLUGIN_ROOT}/docs/migrate-checklist.md and follow it,
+        ->  load ${CLAUDE_PLUGIN_ROOT}/docs-b/migrate-checklist.md and follow it,
             drafting the converted queue and getting approval before writing
 already two-section (## Processed / ## Unprocessed)
         ->  skip
 ```
 
+Showing the conversion before writing it is the general write-first test
+applied, not an exception to it: a project being adopted or migrated may not be
+a committed git repo, so its old queue may not be recoverable once overwritten.
+The checklist states the reasoning where it is used.
+
 This is the one project doc that reliably falls behind as the method evolves; the
 checklist encodes judgment a find-and-replace can't make.
+
+**1b. Reconcile the settings attached to the scaffold list.** Step 1 restores
+missing *files*. It does not re-run the *decisions* attached to them, so a
+migrated project can end up with a file and none of the setup that goes with it.
+Check each, and make it so if it isn't:
+
+```
+INBOX/ present          ->  `.gitignore` carries an `INBOX/` line
+.gitignore present      ->  it carries a `.throughliner/` line
+```
+
+Both are "exists → skip" cases under Step 1, which is exactly how they get
+missed: an existing `.gitignore` counts as present however little it contains.
+
+**Where the project has INBOX files already in git history, say so plainly.**
+Adding an ignore line stops future commits; it does not untrack what is already
+committed, and it cannot remove anything from history. Tell the user what is
+there and that the line does not undo it. Don't write the line and leave the
+impression the mail is now private.
 
 **2. Retire REGISTRY.md if present.** No longer one of the method's docs, but
 **don't delete it on sight** — the user may have written real notes there. Read it
@@ -248,15 +272,18 @@ project's mailbox: another project you run can drop a message file in here, and
 session_start surfaces anything waiting in one line. A project only ever reads its
 own INBOX — it never goes looking through other projects for mail.
 
-Then ask once whether it should be committed:
+Add `INBOX/` to `.gitignore`, and say so in one line — that mail from other
+projects stays out of the repository, and they can remove the line if they want it
+committed. No question is asked.
 
-> **Should messages other projects send you be committed to this repository, or
-> kept out of it?** If this repo is or might become public, keep them out — a
-> message written by another project carries that project's content into this one,
-> and anything committed is published. Keeping them out is the safe default.
-
-Keep-out → add `INBOX/` to `.gitignore`. Commit → add nothing. Ask plainly and
-take the answer; don't argue for either.
+Why it isn't asked: a message another project sends carries that project's content
+into this one, and anything committed is published. A read message is *moved to
+`INBOX/archive/`*, not deleted, so a mailbox that isn't ignored accumulates
+another project's raw text in the repository forever — long after its useful
+content has been carried into this project's queue in this project's own words.
+Anything worth keeping leaves the mailbox by being processed, so the mailbox
+itself is leftover comms. The safe outcome must not depend on a question being
+asked, because a question is skippable.
 
 **CLAUDE.md:**
 
@@ -352,9 +379,10 @@ from visible context            commitments the user agreed to
 Scope decisions belong in /plan, which is where this item gets processed. If
 examples would clarify scope, ask a follow-up rather than smuggling them in.
 
-**The one settings question — whether INBOX messages are committed — is asked at
-scaffolding time** (Step 2), not here. Discovery ends where it ends; there is no
-settings round after it.
+**There is no settings question at all, here or anywhere.** The last one —
+whether INBOX messages were committed — was dropped in favour of ignoring
+`INBOX/` on both paths, because the safe outcome must not depend on a question
+being asked. Discovery ends where it ends; there is no settings round after it.
 
 The editor and working-mode questions that used to sit here are **gone**. Neither
 was doing a job: the desktop app opens `.md` in its own viewer whatever editor is

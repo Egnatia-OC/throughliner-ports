@@ -1,4 +1,4 @@
-# 10d6474 — The merged plugin verified live, mostly by this session being one
+# 94bba66 — The merged plugin verified live, mostly by this session being one
 
 Slug: `[merged-plugin-live-verification]`. Entry opened live during the /next
 walk-through, per [walkthrough-work-unrecorded].

@@ -295,6 +295,88 @@ def _uncleared_red_flags(queue_path):
     return uncleared_flags
 
 
+def _queue_dependency_facts(queue_path):
+    """Counts describing the queue's dependency shape, or None if unreadable.
+
+    Returns (cleared, held, blockers_in_unprocessed):
+      cleared  — items in Processed above the cleared-to-run marker; the work
+                 /next can pick up right now.
+      held     — items in Processed below it; each names a blocker.
+      blockers_in_unprocessed
+               — how many distinct slugs those held items are blocked by that
+                 sit in Unprocessed, i.e. blockers that must themselves be
+                 processed before anything they hold can move.
+
+    Why a hook computes this. The dependency graph is deliberately implicit —
+    it is whatever you get by reading every `Blocked by:` line and resolving
+    each slug — so it cannot go stale, but every reader re-derives it, and when
+    Claude does the re-deriving it costs tokens and reasoning and can carry a
+    parse bug. Anything a hook computes costs no model attention: it arrives as
+    fact. This runs as a second pass over a file the red-flag scan has already
+    read, so the marginal cost is negligible.
+
+    The counts are facts only. /plan derives the throughput floor from them,
+    because the floor is a /plan concept and this hook runs for every session —
+    a hook telling a /next run to process at least N would be narrating
+    something that does not apply to it.
+
+    Never raises: any error returns None and the caller stays silent.
+    """
+    try:
+        with open(queue_path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        return None
+
+    section = None            # "processed" | "unprocessed" | None
+    above_marker = True       # only meaningful inside Processed
+    cleared = 0
+    held = 0
+    unprocessed_slugs = set()
+    held_blockers = set()
+    in_held_item = False
+
+    slug_re = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]\s*$")
+    blocked_re = re.compile(r"^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]", re.IGNORECASE)
+
+    for raw in lines:
+        stripped = raw.strip()
+        if re.match(r"^##\s+Processed\b", stripped, re.IGNORECASE):
+            section, above_marker = "processed", True
+            in_held_item = False
+            continue
+        if re.match(r"^##\s+Unprocessed\b", stripped, re.IGNORECASE):
+            section = "unprocessed"
+            in_held_item = False
+            continue
+        if "Cleared to run above this line" in stripped:
+            above_marker = False
+            in_held_item = False
+            continue
+        if re.match(r"^####\s+\S", stripped):
+            match = slug_re.search(stripped)
+            slug = match.group(1) if match else None
+            if section == "processed":
+                if above_marker:
+                    cleared += 1
+                    in_held_item = False
+                else:
+                    held += 1
+                    in_held_item = True
+            elif section == "unprocessed":
+                in_held_item = False
+                if slug:
+                    unprocessed_slugs.add(slug)
+            continue
+        if in_held_item:
+            match = blocked_re.match(stripped)
+            if match:
+                held_blockers.add(match.group(1))
+
+    blockers_in_unprocessed = len(held_blockers & unprocessed_slugs)
+    return cleared, held, blockers_in_unprocessed
+
+
 def sweep_stale_editing_markers(cwd: str) -> None:
     """Delete editing-state marker files left behind by dead sessions.
 
@@ -624,6 +706,22 @@ def main() -> int:
             "it through the three-way triage (work to do → a capture in "
             "Unprocessed; a finding → the LOG; evidence to re-read → resources/), "
             "then move the file to INBOX/archive/ so it stops being surfaced."
+        )
+
+    # The queue's dependency facts, in one line. Emitted even when every number
+    # is zero: "nothing is waiting on you" is useful, and silence is ambiguous —
+    # a computed zero and a check that never ran look identical from the outside.
+    # Facts only; /plan turns them into a throughput floor.
+    dependency_facts = _queue_dependency_facts(queue_path)
+    if dependency_facts is not None:
+        cleared, held, blockers_unprocessed = dependency_facts
+        context_parts.append(
+            f"[Sovereign Implementer] Queue dependency facts: {cleared} item"
+            f"{'' if cleared == 1 else 's'} cleared to run, {held} held below the "
+            f"line, {blockers_unprocessed} of those blockers still sitting in "
+            "Unprocessed. Facts, not instructions — /plan derives the session's "
+            "throughput floor from them and says the number out loud; other "
+            "skills can ignore them."
         )
 
     context_parts.append("[Sovereign Implementer] Project is set up.")

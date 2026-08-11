@@ -30,6 +30,8 @@ The plugin splits your project into a build queue and walks you through it. Four
 
 Hooks run automatically in the background to enforce discipline — locking edits to the active work's file list, guarding git safety, and linting the queue structure so it stays well-formed. They also notice when your project's documents have fallen behind the current version of the method: rather than carrying on and quietly getting things wrong, the session stops and offers to bring them up to date with `/setup`, which migrates what's there instead of replacing it. They also stop Claude writing to your files by running a script instead of using its editing tools: a shell command can be working from an out-of-date view of a file and quietly overwrite something, so that route is closed off entirely.
 
+And they check Claude's own reports. Claude writes to your queue first and tells you after, which keeps the write safe — but it means a reply could report filing something the write never actually made, and you'd have no way to tell. So when a reply says a named piece of work was filed, a hook checks your queue for it, and if it isn't there Claude is made to fix it and tell you plainly before you act on it.
+
 When something goes wrong, Claude works out which of three things it was and sends it to the right place: your **app** stays as work in your own queue; a problem with **the method** goes to the plugin's author at flintcraft.tech/report; a problem with **Claude Code itself** goes to a GitHub issue on `anthropics/claude-code`. Both outward reports are scrubbed of your project's details, and nothing is ever sent without you seeing the exact text first.
 
 If you run more than one project on the method, they can **message each other**. Each project gets an `INBOX/` folder, and anything waiting in yours is mentioned at the start of a session — no carrying notes between chats by hand. A message going out to another project is always shown to you for approval first, because it carries this project's content somewhere else.
@@ -54,7 +56,7 @@ The habit that matters: always /done before /clear, so each session is saved bef
 - `gh`, GitHub's command-line tool. If you have it and you're signed in, Claude can file a Claude Code bug report for you directly (after showing you the text and asking). Without it everything still works — Claude writes the report out and you paste it on GitHub yourself.
 
 **Tested environment** — the plugin is developed and tested under these settings. Other configurations may work but aren't verified:
-- Claude Opus 4.8, all effort levels tested OK
+- Claude Opus 5 and Fable 5, all effort levels tested OK
 - Auto mode enabled — optional; it spares you approving each step by hand. Turn it off if you'd rather confirm each action.
 - `/clear` after every `/done` (keeps each session's context clean)
 

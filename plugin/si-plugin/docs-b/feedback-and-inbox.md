@@ -82,6 +82,22 @@ re-read goes under `resources/`. Then move the file to `INBOX/archive/`, so it
 isn't surfaced again every session. A project reads only its own INBOX; it
 never goes looking through other projects for mail.
 
+**When mail is opened.** Any session may open it whenever the user asks —
+opening and routing is filing, and filing is open to every session. The
+*guaranteed* moment is **/plan's Step 1 read-state**, which fetches this doc and
+works through whatever is waiting before the session skims and orders its queue.
+Without a guaranteed moment, mail was surfaced every session and could be opened
+in none of them.
+
+Once routed, a message's contents are ordinary captures and rank by the existing
+ladder. There is no priority rung for mail — the missing piece was the opening,
+not the ranking.
+
+**Mail arriving mid-session waits for the next session start.** The mailbox is
+scanned at session start only. That bound is stated rather than engineered
+around, matching the INBOX design's existing promise that delivery is not
+guaranteed.
+
 **Outbound — never auto-send.** A message is written straight into the
 recipient project's `INBOX/`, but only after the user has seen the exact
 wording and approved it. Sending is outward-facing and both mailboxes may sit

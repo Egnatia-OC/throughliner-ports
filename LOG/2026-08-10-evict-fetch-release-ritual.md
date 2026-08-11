@@ -1,4 +1,4 @@
-# 10d6474 — Rezip and Release moved to a fetched doc; Push stayed always-loaded
+# 94bba66 — Rezip and Release moved to a fetched doc; Push stayed always-loaded
 
 Audit finding 4, approved by the user on 2026-08-09, and the largest single saving
 the compliance audit found. `CLAUDE.md`'s ritual section was roughly 25

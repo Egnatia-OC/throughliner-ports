@@ -1,4 +1,4 @@
-# 10d6474 — The planning-session file gate and the unscoped-build surfacing, both recovered from the revert
+# 94bba66 — The planning-session file gate and the unscoped-build surfacing, both recovered from the revert
 
 Recovery, not a new rule. Both halves shipped at `455082b` and the 2026-08-09
 emergency revert took them. Confirmed absent before rebuilding: `pre_tool_use.py`

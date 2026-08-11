@@ -78,6 +78,29 @@ Self-check (refuses to write on any failure, exits non-zero, changes nothing):
 import sys
 import re
 
+# Force UTF-8 on the console output, once, before any message is emitted.
+#
+# Every message this script prints goes out through `sys.stderr.write`, and on
+# Windows an unconfigured stderr falls back to the console's ANSI code page —
+# so any character outside it is replaced. The echo that confirms which item was
+# moved or deleted prints the item's own heading back, and headings routinely
+# carry em-dashes and arrows, which came back mangled on every run. The file
+# handles were never affected: they are opened with encoding='utf-8'
+# explicitly, so the queue itself was always written correctly. Only the echo
+# was damaged — and the echo is how the caller checks the right item was
+# addressed, which matters most on two headings that differ only in the middle.
+#
+# `errors='replace'` keeps a console that genuinely cannot render a character
+# from turning a cosmetic problem into a crash mid-edit.
+for _stream in (sys.stderr, sys.stdout):
+    try:
+        _stream.reconfigure(encoding='utf-8', errors='replace')
+    except (AttributeError, ValueError, OSError):
+        # Python < 3.7, or a stream that cannot be reconfigured (redirected to
+        # a pipe or replaced by a test harness). Messages then behave as before
+        # — degraded, never fatal.
+        pass
+
 MARKER_RE = re.compile(r'^---\s*Cleared to run above this line\s*---\s*$')
 SECTION_RE = re.compile(r'^##\s+(Processed|Unprocessed)\s*$')
 ITEM_RE = re.compile(r'^####\s')

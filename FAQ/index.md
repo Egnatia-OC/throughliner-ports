@@ -3,10 +3,10 @@
 Quick answers about how this project's workflow works. Each question links to a full answer in [faq.md](faq.md).
 
 - [What do /plan, /next, and /done each do?](faq.md#what-do-plan-next-and-done-each-do)
-- [What's the difference between Batches and Captures in QUEUE.md?](faq.md#whats-the-difference-between-batches-and-captures-in-queuemd)
+- [What are the two sections in QUEUE.md?](faq.md#what-are-the-two-sections-in-queuemd)
 - [How are entries organized in the queue?](faq.md#how-are-entries-organized-in-the-queue)
-- [What is the Red flags section at the top of QUEUE.md?](faq.md#what-is-the-red-flags-section-at-the-top-of-queuemd)
-- [What is the "Deferred tests" section in QUEUE.md?](faq.md#what-is-the-deferred-tests-section-in-queuemd)
+- [Where do security and privacy risks show up in the queue?](faq.md#where-do-security-and-privacy-risks-show-up-in-the-queue)
+- [What happens to a check that can't be done yet?](faq.md#what-happens-to-a-check-that-cant-be-done-yet)
 - [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
 - [Is it safe to clear the conversation or start a new session between steps?](faq.md#is-it-safe-to-clear-the-conversation-or-start-a-new-session-between-steps)
 - [Can I edit SPEC.md while doing a build?](faq.md#can-i-edit-specmd-while-doing-a-build)
@@ -19,3 +19,8 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What does it mean when work sits below the "cleared to run" line?](faq.md#what-does-it-mean-when-work-sits-below-the-cleared-to-run-line)
 - [What is the "freeform" tag on a piece of work?](faq.md#what-is-the-freeform-tag-on-a-piece-of-work)
 - [How do I know what was done in a previous session?](faq.md#how-do-i-know-what-was-done-in-a-previous-session)
+- [Can I see text before Claude writes it, instead of after?](faq.md#can-i-see-text-before-claude-writes-it-instead-of-after)
+- [Claude sometimes stops and corrects itself about something it said it filed. What's happening?](faq.md#claude-sometimes-stops-and-corrects-itself-about-something-it-said-it-filed-whats-happening)
+- [What is the "queue dependency facts" line at the start of a session?](faq.md#what-is-the-queue-dependency-facts-line-at-the-start-of-a-session)
+- [Another project sent me a message. When does Claude actually read it?](faq.md#another-project-sent-me-a-message-when-does-claude-actually-read-it)
+- [Why is my INBOX folder ignored by git, and can I change that?](faq.md#why-is-my-inbox-folder-ignored-by-git-and-can-i-change-that)

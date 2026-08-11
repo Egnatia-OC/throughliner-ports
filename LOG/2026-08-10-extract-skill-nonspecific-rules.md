@@ -1,4 +1,4 @@
-# 10d6474 — plugin-behaviour.md retired: the always-loaded rules extracted into skill-nonspecific-rules.md, the rest pushed down into their skills
+# 94bba66 — plugin-behaviour.md retired: the always-loaded rules extracted into skill-nonspecific-rules.md, the rest pushed down into their skills
 
 The founding argument is the user's and it was made plainly: the doc's premise
 does not hold, its name is doing the filing, and they are sick of spending a

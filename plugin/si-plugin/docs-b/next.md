@@ -138,6 +138,27 @@ the first few, and don't inherit such a suggestion from a previous session's
 advisory. If a run should stop early, that is decided by observed behaviour — the
 no-progress halt — not by a number chosen up front.
 
+**If the user took the inline offer, advise on the large items here** [BRIEF].
+Inline display is settled by the session's opening offer, not by a question of
+its own — but *which items* would bury the run in text can only be judged once
+the run is known, which is now. Name the items whose edits are large enough that
+inline display would swamp everything else, recommend leaving those on line
+references, and let the user answer in the same breath as the off-ramp.
+
+```
+inline OFF (the default)  ->  say nothing about display
+inline ON                 ->  one clause naming the large items, e.g. "item 6
+                              rewrites most of a doc, so I'd keep that one on
+                              line references — inline for the rest?"
+```
+
+Judge "large" against the item's own files — the share of a file its edits
+rewrite — never against a bare number of lines. This is an ordering-style
+judgment, so narrate it in one sentence like any other.
+
+The answer holds for the run. On a resumed run, carry the previous answer
+forward from the working file rather than re-asking.
+
 Close that same message with the off-ramp, e.g. **"Say the word to change scope
 or reorder — otherwise I'll start."**
 
@@ -226,6 +247,8 @@ read from there.]
 
 Index entry candidates:
 [the pre-generated entry, one per Claude-work item]
+
+Edit display: [line references (the default) | inline, except: <items>]
 
 Files:
 - [each file the run's items will change — one bare path per line, nothing else]

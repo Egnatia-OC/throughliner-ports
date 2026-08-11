@@ -43,6 +43,15 @@ back to an inline excerpt if the link won't resolve. If the user took the openin
 inline-text offer, paste the new wording inline as a wrapped block instead. Either
 way, only after the write is confirmed.
 
+**The run's answer is in the working file's `Edit display:` line**, including any
+items the user agreed to keep on line references. Read it rather than deciding
+per edit — the judgment was made once, when the run was presented.
+
+Note what this is not: showing an edit is **visibility**, not approval. The item
+was already agreed at /plan and stop is always available, so displaying an edit
+waits on nothing and the run stays unattended. Show-before-write is the thing
+that gates, and it is a separate switch in the rules file.
+
 **A small mid-build tweak to a just-surfaced readable edit is in scope**
 [PROMPT]. Once the new text is visible the user may ask to change one bit. That
 refines the build's already-agreed work product, so: make it, reveal the updated

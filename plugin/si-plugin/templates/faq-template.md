@@ -254,9 +254,15 @@ One detail worth knowing: a risk counts as cleared the moment it's designed out 
 
 A subagent is a separate helper Claude can spin up to go off and work on something on its own — handy for wide, open-ended research. The catch is cost: a subagent burns through usage fast, and a single run that fans several out at once can use up your session's usage in one go. So before Claude starts one, the method stops and asks you first — a prompt saying Claude wants to start a subagent, which you approve or decline. Declining is completely fine: Claude just does the work directly instead, which is usually all that's needed. The prompt exists so a subagent can never quietly run up a big cost without you knowing — you always get the choice.
 
-## What does a "Plan session here" line in the queue mean?
+## I remember lines in the queue saying "Plan session here" or "Push required". Where did they go?
 
-It's a planning checkpoint Claude placed between work items. When /next reaches it, /next stops and tells you a planning session is needed first, naming the reason — usually because the next work depends on a decision, or on findings that only get sorted out in /plan. Run /plan: it handles the named reason and removes the line, and then /next can carry on. You don't add these yourself — Claude places them when it sees a planning moment coming.
+**They're gone, and nothing replaced them in the same shape.** They were markers Claude put between pieces of work to make /next stop — one to force a planning session, one to force a release. If you have an old queue that still carries either, they no longer do anything and can be deleted.
+
+Two things do their jobs now, both better:
+
+**Whether work is ready is settled before it ever reaches /next.** Ready work sits above the `--- Cleared to run above this line ---` line, and that line is set during planning. If something isn't ready, it doesn't go above the line, so there's no need for a marker telling a build session to stop at it.
+
+**Work waiting on other work names what it's waiting for.** A held item carries a line reading `Blocked by:` and the other item's name. That survives things a marker doesn't: reorder your queue and a positional marker ends up pointing at the wrong place, while a named reference still says exactly what it meant.
 
 ## I have work sitting below the "cleared to run" line, waiting on something. Will Claude come back to it?
 

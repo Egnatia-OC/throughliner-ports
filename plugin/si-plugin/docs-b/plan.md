@@ -129,6 +129,36 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
 
+**Open any waiting INBOX mail** [SILENT when the mailbox is empty; BRIEF when it
+isn't]. This is the guaranteed moment mail gets read. `session_start` surfaces
+that messages are waiting, and `feedback-and-inbox.md` says what to do with one
+that has been opened — but without this step nothing says *when* a message gets
+opened, so mail can be surfaced every session and read in none of them.
+
+```
+INBOX/ holds message files  ->  fetch ${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md
+                                open each message, route it through the triage
+                                there, then move the file to INBOX/archive/
+INBOX/ empty                ->  nothing, silently
+```
+
+Name the fetch when it happens — that doc is loaded on demand, and this is one of
+its stated triggers.
+
+**Do this before the opening below**, so anything a message produces is ordinary
+Unprocessed work by the time the session skims and orders. Once a message is
+opened its contents are ordinary captures and rank by the existing ladder;
+**mail gets no priority rung of its own.** The step that was missing is the
+opening, not the ranking — a rung would have had to say how an unread message
+competes with designed work before anyone knows what is in it.
+
+Any session may open mail whenever the user asks; opening and routing is filing,
+which every session may do. What /plan adds is the guarantee.
+
+**A message arriving mid-session waits for the next session start**, because that
+is when the mailbox is scanned. Say so if it comes up rather than building a
+watcher — the INBOX design already promises no delivery guarantee.
+
 **No completion sweep for `[user]` work.** /plan never asks whether Processed's
 `[user]` items are already done — that ask is gone from the method entirely, and
 so is the setting that used to toggle it. If the user mentions having done one,
@@ -279,8 +309,33 @@ whose relationships shifted — read the slug-references items already carry), a
 if the order already sits right, leave it. The floor narration fires either way;
 the *move* is what's skipped.
 
-Word the floor as a recommendation, not a cap: "Ordered to process the biggest
-unblockers first — recommend processing at least N before your next /next." It's a
+**Derive N from the dependency facts session_start supplies — never invent it.**
+The hook emits one line at every session start: how many items are cleared to
+run, how many are held below the line, and how many of those blockers are still
+sitting in Unprocessed. Those are the inputs.
+
+```
+N = (blockers still in Unprocessed) + (1 if nothing is cleared to run)
+```
+
+Each of those blockers is an item some other work is waiting on, so processing
+it is what releases something; the extra one covers a queue with no ready work
+at all, where the session must produce at least one buildable item or /next has
+nothing to pick up. If the facts say the number is zero and work is already
+cleared, say so — "nothing is waiting on other work, so process whatever is
+worth processing" — rather than reaching for a number.
+
+State what it was derived from when you say it, because a bare number is a
+number nobody can check.
+
+**And say it out loud, always.** The floor narration fires every session,
+including when the derivation lands on zero. A floor that is computed and never
+spoken is indistinguishable from one that was never computed — which is what
+happened before the facts existed: a floor was invented at six and never said.
+
+Word it as a recommendation, not a cap: "Ordered to process the biggest
+unblockers first — three items are holding other work up, so I'd recommend
+processing at least those three before your next /next." It's a
 planning-throughput target, not a context-budget count.
 
 ### For each item
@@ -364,8 +419,9 @@ interview — name the route in one line ("going with keep — drafting the item
 now") and go straight to sub-step 3.
 
 ```
-keep    ->  CAN fold. The draft-approval step is still the user's, so folding
-            loses no decision — the draft is the safety net.
+keep    ->  CAN fold. The item is written and then reported, and the user can
+            reject what was written and have it reverted — so folding loses no
+            decision.
 delete  ->  CANNOT fold to the action. It's terminal, with no later approval
             step, so explicit approval is still required.
 ```
