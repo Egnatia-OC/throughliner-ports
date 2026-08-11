@@ -40,12 +40,18 @@ run.
 ### 1. Active build check
 
 ```
-exists(_build.md)  ->  [BRIEF]   offer to resume; read it for state
+exists(this session's build working file)
+                   ->  [BRIEF]   offer to resume; read it for state
 otherwise          ->  [SILENT]  no output; continue
 ```
 
-`_build.md` holds an interrupted build's progress and remaining work, so resuming
-picks up where it stopped instead of starting over.
+The build working file holds an interrupted build's progress and remaining work,
+so resuming picks up where it stopped instead of starting over.
+
+**It is per session, not per project: `_build-<session-id>.md`.** Check for the
+one belonging to *this* session and no other. A build running in another chat has
+its own, and its file list is not this session's scope — a planning session that
+read another session's working file used to conclude it was inside that build.
 
 ### 2. Find the run  [SILENT]
 
@@ -101,13 +107,17 @@ all — its whole lifecycle carries no completion ask. If the user has already d
 one, they'll say so, and that's the moment it gets recorded. Asking treats ready
 work as probably-already-done and makes the user re-assert it before you'll help.
 
-**Before handing a `[user]` item over, run the capability check.** Name the tool
-that would do the work and confirm it is absent or unauthenticated (the over-tag
-guard, skill-nonspecific-rules.md). This is the last line of defence against a wrong
-tag, and it's nearly free — the run is about to act on that tag. If the check
-finds a tool that can do it, do the work as ordinary work and note the correction
-for the close; a wrong `[user]` item otherwise stops an unattended run dead for
-work nobody needed the user to do.
+**Before handing a `[user]` item over, run the LIGHT capability check.** Name the
+tool that would do the work and confirm it is absent or unauthenticated (the
+over-tag guard, skill-nonspecific-rules.md). This is the last line of defence
+against a wrong tag, and it's nearly free — the run is about to act on that tag.
+If the check finds a tool that can do it, do the work as ordinary work and note
+the correction for the close; a wrong `[user]` item otherwise stops an unattended
+run dead for work nobody needed the user to do.
+
+**Light, not thorough — no reframe, no search, no trying the tool.** The heavy
+version belongs at /plan's keep-step, where the user is in the room. Here the
+user is not, and a run should not stop to explore.
 
 ### 3. Present the run and offer the off-ramp  [BRIEF, PROMPT]
 
@@ -233,7 +243,8 @@ the item names. A doc silent on which sections change → underspecification,
 surface it. Noticing the *hooks* also carry the old term when the item didn't
 list them → adjacent-work discovery, capture it and continue.
 
-**3. Create _build.md:**
+**3. Create this session's build working file** — `_build-<session-id>.md`, in
+the project root:
 
 ````markdown
 # Active Build
@@ -279,19 +290,19 @@ together are what replaced copying every item's prose in.
 **4. Leave QUEUE.md alone. Copy, never cut.**
 
 ```
-Claude-work items  ->  COPIED into _build.md, and they STAY in QUEUE.md
+Claude-work items  ->  COPIED into the build working file, and they STAY in QUEUE.md
 [user] items       ->  STAY in QUEUE.md
 ```
 
 Nothing is removed from QUEUE.md here. Each Claude-work item is removed **one at
-a time**, at the moment it is ticked in _build.md Progress (Step 3) — so the queue
+a time**, at the moment it is ticked in the working file's Progress (Step 3) — so the queue
 visibly shrinks as the run progresses, and an item still showing in QUEUE.md means
 exactly one thing: not built yet.
 
 **Why the bulk removal was wrong, stated so it isn't reinstated.** This step used
-to write every item into _build.md and then strip them all from QUEUE.md at once.
-From that moment until the close, _build.md held the **only** copy of every item
-in the run, built or not — and _build.md is deleted at the close. A run that built
+to write every item into the build working file and then strip them all from QUEUE.md at once.
+From that moment until the close, the build working file held the **only** copy of every item
+in the run, built or not — and the build working file is deleted at the close. A run that built
 two of fifteen therefore had thirteen items existing nowhere else, and returning
 them meant reading them out of the working file and retyping every block by hand:
 the exact transcription exposure the queue mover was written to eliminate. Nothing
@@ -306,9 +317,9 @@ cheaper failure than a single copy in a file scheduled for deletion, and an
 interrupted run now loses nothing at all.
 
 A `[user]` item is walked through in Step 3, not built, and is closed later by
-/done or /plan. It never enters _build.md, since _build.md is deleted at close.
+/done or /plan. It never enters the build working file, since the build working file is deleted at close.
 
-**5. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: _build.md is
+**5. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: the build working file is
 the build's working file — it carries a copy of the run's work, lists the files the
 safety check allows, tracks progress so an interrupted session can resume, and
 holds the reasoning /done writes into the session record. The queue keeps its own
@@ -320,8 +331,10 @@ progress format:
     audit item  ->  - [x] Finding description — captured | dropped
 ```
 
-_build.md is the crash-recovery mechanism: if the session dies, the next session
-sees it and offers to resume.
+The build working file is the crash-recovery mechanism: if the session dies, the
+session that resumes sees it and picks up from it. A working file left by a
+session that never came back is surfaced at session start as a leftover — never
+deleted, because it may hold the only record of what that session did.
 
 ## Step 3: Work the run
 
@@ -339,7 +352,7 @@ Between build items, keep going autonomously — the user confirmed the whole ru
 at the Step 1 off-ramp, so there's no per-item re-confirmation.
 
 **As each item completes, do two things before starting the next:** tick it in
-_build.md Progress, then remove that one item from QUEUE.md with the mechanical
+the working file's Progress, then remove that one item from QUEUE.md with the mechanical
 mover, addressed by its slug.
 
 ```
@@ -487,12 +500,3 @@ No item returns to the queue, because none left it — scope was never locked.
 When resuming an active build, read its working file for state rather than
 re-exploring.
 
-## Rules
-
-- **The work items are the contract.** Don't exceed the described work without
-  explicit approval.
-- **Per-item ticking is mandatory** — it's the crash-recovery mechanism.
-- **At build completion the only valid next-step recommendation is /done** —
-  never /next, never another build. The finished build isn't recorded until /done
-  writes its LOG entries and commits, so recommending more building first leaves
-  the just-finished work without a record.

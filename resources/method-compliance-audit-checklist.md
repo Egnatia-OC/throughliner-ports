@@ -6,6 +6,12 @@ The standing criteria for a periodic compliance audit of the method's own proced
 
 It is a dev artifact. It audits the method's own docs, so it is host-only — not shipped in the plugin package, no FAQ, no SPEC entry — the same status as the gate it builds on.
 
+**What triggers a sweep.** The rule-lifecycle board's **AUDITED** signal, which fires when the always-loaded rule-statement count computed by [`rule_signals.py`](rule_signals.py) is over the ceiling. Being over the ceiling *is* the reason to sweep — rules accumulated past what a session can hold are what these three lenses look for — so the trigger needs no machinery of its own and no number of its own.
+
+The obvious alternative, a sweep every N sessions, was rejected twice over: N would be a bare number with no derivation, which the authoring gate now bans; and a periodic duty is the post-legislative-scrutiny shape the research condemns, which achieved 7.6% coverage of eligible Acts. Before this, the sweep had no trigger at all and ran only when a /plan happened to file an `[audit]` item, which is how the corpus reached ~218 before anyone counted.
+
+**The gap this leaves, stated rather than discovered.** Below the ceiling no sweep ever fires, so drift that is *not growth* — a rule going stale, a prohibition that should have been an action — goes uncaught until the corpus grows across the line. That hole belongs to the board's MAINTAINED signal, which watches for near-duplicate rules independently of the count.
+
 Run all three lenses over each doc in scope. One read of the doc serves all three. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
 
 ## The instruction count — run this first

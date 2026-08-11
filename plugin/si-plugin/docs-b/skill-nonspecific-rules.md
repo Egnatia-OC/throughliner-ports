@@ -28,8 +28,12 @@ Active in every session where the plugin is installed and the project is set up.
   non-coders who may never open a terminal. Name the requirement and let the
   user say whether it fits: "This step needs a terminal open separately from
   the app — do you have one?" rather than "Run this in your terminal:".
-- **Uncertain about an external fact → offer a web search. Uncertain about a
-  choice the user owns → ask.** Don't guess and proceed on either.
+- **Ask "what would answer this?" — if the answer is something outside what you
+  can read, offer a web search; if it is a choice the user owns, ask them.**
+  Don't guess and proceed on either. The trigger is a property of the question,
+  not a feeling about your own confidence: a session that has quietly settled on
+  an answer does not feel uncertain, so a rule firing on "am I unsure?" does not
+  fire at all. This one can be evaluated by a session that is wrongly confident.
 - **Shape every message the same way:**
   - leading with the decision — the one thing the user must see or act on —
     with reasoning and alternatives offered on request, not front-loaded;
@@ -38,14 +42,26 @@ Active in every session where the plugin is installed and the project is set up.
   - giving one item per message when the user's next action depends on the
     prior one — state the count upfront, give the first item, stop, with no
     previewing of later items; record the full set to the session's working
-    file (_plan.md / _build.md) first, then release one at a time, in every
+    file (this session's `_plan-<id>.md` / `_build-<id>.md`) first, then
+    release one at a time, in every
     multi-part exchange, inside skills and out, with no exemption for items
     that seem short;
-  - consolidating the scans at a skill opening into one narration — when
-    several checks fire at once (/plan's read-state, /next's pre-flight,
+  - consolidating the scans at a skill opening into one narration **[BRIEF]** —
+    when several checks fire at once (/plan's read-state, /next's pre-flight,
     /done's close-out), combining what they turn up into one "here's what came
     up: …"; a single check surfaces as it always did, and the session's first
     opening narration also carries the inline-text offer as one clause.
+
+  **The consolidated opening carries its own `[BRIEF]`, because each part being
+  bounded does not bound the sum.** The individual scans are already tagged
+  where they run, and checks keep being added to the opening — so the narration
+  they feed grows with every one, and nothing was governing the total.
+
+  **A suppressed or `[SILENT]` scan contributes nothing to that narration.** The
+  consolidation invites one summary of what the scans surfaced, which is exactly
+  how a scan the procedure says to keep quiet about gets swept into it — a scan
+  that found nothing, or one tagged silent, has nothing to contribute and says
+  nothing.
 
   ```
   inversions — deliver together, not one at a time:
@@ -272,8 +288,19 @@ steps and conversation outside skills.
 ## Research and evidence filing
 
 Offering a web search is a capable move, not an admission of ignorance. The bar
-is low — offering is cheap because the user can decline. Trigger: would more
-current information change what we do next?
+is low — offering is cheap because the user can decline.
+
+**Trigger: what would answer this?** Where the answer is something outside what
+you can read — a current version, whether a feature exists, what a config option
+does — offer the search. Asked that way the trigger is about the *question*, so
+it survives a session that is wrongly confident; asked as "am I uncertain?" it
+requires noticing an internal state, and a session that has settled on an answer
+notices nothing. That is why this has in practice been user-triggered more often
+than not.
+
+The residual, named rather than solved: noticing that a question turns on an
+external fact is still a noticing. This improves the odds; it does not close the
+hole.
 
 **Reach for a CLI tool before handing over a GUI walkthrough.** Two halves, both
 must fire: (1) *consider* whether a tool would let you do the task instead of
@@ -388,12 +415,40 @@ real and equally bad; neither warning may be louder than the other. (How a
   item as its blocker. The test is "can Claude do this at all?", not "can Claude
   do this right now?".
 
-  **And the test is a check, not a judgment: before tagging `[user]`, name the
-  tool that would do the work and confirm it is absent or unauthenticated.**
-  Where no tool plausibly exists, that is itself the answer. The check fires at
-  the /plan keep-step and again at /next's pre-hand-off; if /next's check
-  catches one, do the work as ordinary work and note the correction for the
-  close.
+  **And the test is a check, not a judgment: before tagging `[user]`, ask what
+  would answer this — name the tool that would do the work, and confirm it is
+  absent or unauthenticated.** Where no tool plausibly exists, that is itself
+  the answer.
+
+  **The check runs at two sites, at different weights.**
+
+```
+/plan keep-step   ->  thorough. Restate the question as "what would answer
+                      this?" BEFORE searching, then search. Trying a tool is
+                      allowed where trying is quick.
+/next pre-hand-off ->  light. Name the tool and confirm it is absent. No
+                      reframe, no search, no experiment — the user is not in
+                      the room and a run should not stop to explore.
+```
+
+  **The heavy side is reframe-then-search, not try-the-tool, and the reason is
+  a real miss.** A `[user]` line was once filed after an honest, thorough check
+  — the filesystem was searched and returned only binaries and caches — and the
+  item was deleted hours later when one command turned out to answer the
+  question. Depth was not what failed. The search asked *where is the setting
+  stored*, which is the correct search for the question as posed, and never
+  asked *what would tell me the answer*. Restating the question is **cheaper**
+  than experimenting, not more expensive, and it is the step that would have
+  caught it.
+
+  **/next's light check is not dropped**, because it has already earned its
+  keep: it caught an item wrongly tagged `[user]` when a session using the
+  plugin was itself the observation. If it catches one, do the work as ordinary
+  work and note the correction for the close.
+
+  **An inventory sweep is rejected — don't re-propose it.** Enumerating
+  everything available is expensive and stale by the next session. The check is
+  aimed at one job or it is not worth running.
 - **Don't under-file.** Genuine user work MUST become a `[user]` line — never a
   live chat question, never "separate work you'd do yourself". Floated as a
   question or waved off as an aside, the work exists only in chat and vanishes
@@ -445,10 +500,22 @@ reasoning that led here. Plain short sentences, one idea per sentence. The human
 co-reads and approves this text: **unreadable is unapprovable.** Completeness
 matters more than compression here.
 
-**Placement.** Place by judgment where a relationship applies (new work revises
-or builds on existing work); oldest-first as the fallback. Narrate the placement
-in one line when judgment is exercised. **Mid-session captures follow the same
-rules and get no special priority.**
+**Placement: append to the bottom of Unprocessed, always.** No judgment call, no
+narration line. **Mid-session captures follow the same rule and get no special
+priority.**
+
+Two reasons, the second being the real one. Appending is one write at a known
+position with no decision attached, where judgment placement cost the deciding
+plus a narration sentence on every capture in every session. And **position no
+longer carries any processing weight**: the ladder reorders Unprocessed at
+/plan's opening, and the close-out reorder is repealed — so placement affects
+only how the file reads to a human, and chronological is the better read,
+because file order records when things landed.
+
+What this gives up, stated so it is not rediscovered as a loss: related items no
+longer sit next to each other. That relationship is already carried better by
+slug cross-references in the prose, which survive any reordering and say *what*
+the relationship is rather than implying one by adjacency.
 
 **Don't process work outside /plan.** Filing is open to every session; moving an
 item into Processed or deleting it is /plan's, because that decision is the
@@ -637,8 +704,16 @@ each entry must carry:
     the entry's filename      # at the end of the line
 ```
 
-No length cap — length follows from the content requirement. An entry too short
-to support the open/skip decision fails even at one line.
+No absolute length cap — length follows from the content requirement. An entry
+too short to support the open/skip decision fails even at one line.
+
+**The one bound is proportional: an index line stays within 20% of the length of
+the entry it points to.** A long entry may carry a long line; a short entry may
+not. The figure freezes current practice rather than licensing growth — three
+entries measured on 2026-08-10 ran at 13%, 17% and 19% of their entries, so the
+worst current case passes unaltered and nothing may expand past where it already
+sits. A proportion is used because the entry is the thing that varies, so the
+bound stays correct as entries change length.
 
 This doubles as a **readiness check** at /plan: if the candidate index entry
 can't be written yet because the work isn't specific enough, it isn't ready for
@@ -726,8 +801,27 @@ premise is broken       ->  halt and course-correct
 - **Parallel sessions are allowed** — a planning session in one chat and a build
   in another. "One build at a time" forbids a second concurrent *build*;
   "don't cross plan and next" forbids mixing modes *inside one session*. Don't
-  refuse a planning chat opened alongside an active build. Precaution: avoid both
-  writing QUEUE.md or committing at the same instant.
+  refuse a planning chat opened alongside an active build.
+
+  **Which precaution applies depends on the isolation model, and session_start
+  says which is in force** — it compares git's `--git-dir` against
+  `--git-common-dir`, which differ in a linked worktree and match in a main
+  checkout. Don't infer it from a missing directory and don't ask the user.
+
+```
+shared tree  ->  two appends to different parts of QUEUE.md don't collide, and
+                 the file-modified warning catches it if they do. Avoid two
+                 sessions writing QUEUE.md or committing at the same instant.
+worktree     ->  sessions cannot collide at all — but a capture filed in one
+                 never reaches the other, and the last branch to merge wins.
+                 Keep queue edits in one session until a merge lands.
+```
+
+  **Under both models: don't interrupt a run to file a capture.** Same advice,
+  opposite reasons. On a shared tree no coordination is needed, and the one
+  moment worth avoiding is /next's close, which rewrites Processed and moves the
+  marker. Under isolation, pausing achieves nothing at all — the capture lands
+  in the other session's own copy and cannot reach the running build.
 - **An empty Processed section is normal** — the vetted work is done.
 
 ## Consumer feedback channel and cross-project INBOX
@@ -762,9 +856,15 @@ ask twice, in near-identical words, whether Claude had anything to send back.
 
 - **Claude owns sequencing** — the order work sits in, and what gets built first.
   Don't defer to the user. Ordering is a judgment call you make and narrate, not
-  a question you ask. Both sections have order: a capture's position sets /plan's
-  processing order; a processed item's position sets /next's pick order. When you
-  spot an item that belongs elsewhere, **offer the reorder**, don't just name it.
+  a question you ask.
+
+  **But most of the queue's order carries no weight, so don't spend turns on
+  it.** Everything above the readiness line is built by one /next run, so its
+  internal order rarely changes anything; Unprocessed is ordered by the ladder
+  at /plan's opening, at the moment the order is used. Don't ask which of two
+  cleared items should go first — the answer changes nothing. Reorder when
+  something is genuinely wrong, and otherwise leave the file recording when
+  things landed.
 - **Stable slugs.** Kebab-case, assigned at filing, written at the end of the
   description line. Immutable — reorders and renames don't change them, so a slug
   reference stays grep-able. Cross-references exist only if written as a slug in
@@ -785,6 +885,13 @@ it, so nothing downstream can detect it — which is why the check belongs at th
 read, not later. Confirmed twice live, both times on QUEUE.md, both times with the
 run proceeding on a partial view. The same applies to any file whose *whole*
 content the reasoning depends on.
+
+**A mechanically generated digest covering the whole file satisfies this rule.**
+Code that reads the file end to end and prints a fixed set of fields cannot be
+silently truncated, so it gives the guarantee paging is trying to give — and
+gives it more strongly. What it does not license is a partial read dressed up as
+a summary: the digest must be generated from the whole file, by a script, not
+assembled by whoever is reading.
 
 ## Check our own conformance before blaming the tool
 
@@ -820,9 +927,26 @@ one app, into the user's whole device, so using it silently is a consent surpris
 
 ## Prior decisions
 
-- Before raising a design question, run the why-pipeline retrieve. If LOG shows
-  it's decided, state the prior decision. If the user revisits, flag when it was
-  decided.
+- Before raising a design question, run the why-pipeline retrieve. If **the
+  record** shows it's decided, state the prior decision. If the user revisits,
+  flag when it was decided.
+
+```
+the record, in cheapest-first order:
+    decisions recorded earlier in THIS session   # no retrieve needed — you were there
+    the item's own rationale in QUEUE.md         # where most decisions live until a close
+    SPEC.md
+    LOG/index.md, then the one matched entry
+```
+
+  **The source is the record, not LOG alone.** Most decisions sit in QUEUE prose
+  until a close, so a rule naming only LOG points at the wrong place for the
+  common case — and it misses the case where no retrieve is needed at all,
+  because the decision was made in this session and you were present for it. A
+  question whose answer already follows from a decision made this session is not
+  a new question, however differently it is framed; the test is against the
+  decision's *reason*, not its wording, since a reframe that resolves to the
+  same thing looks different on the surface.
 - **When the user proposes a change that would alter or reverse something the
   record already holds** — an existing rule, a shipped feature, a queued or
   logged decision — run the retrieve *before agreeing*: read LOG/index.md, open at

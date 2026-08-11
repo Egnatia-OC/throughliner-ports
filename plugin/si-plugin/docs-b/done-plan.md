@@ -3,7 +3,7 @@ name: done-plan
 docset: B
 note: >
   Close-out for planning sessions. Reached from done.md's router when no
-  _build.md exists — /plan sessions, /setup sessions, and any session that
+  the build working file exists — /plan sessions, /setup sessions, and any session that
   changed only the method docs.
 ---
 
@@ -19,50 +19,48 @@ Run done.md's **Spec-sync gate** and apply its **Plan close** delta: no scope-lo
 is active, so edit SPEC.md directly in-session when a planning decision changed
 product truth, before continuing to the LOG entry.
 
-## Reorder both sections  [SILENT when no reorder; BRIEF when reordering]
+## Batch the human stops in Processed  [SILENT when nothing moves; BRIEF when it does]
 
-**Conditional and change-scoped — not a full re-derivation every close.**
-Reordering both whole sections from scratch each session, even when the order is
-already right (the common case), is wasted work.
+**One pass, over Processed only: put `[user]` and `[audit]` lines at the end.**
+Everything else the close used to reorder is repealed.
 
 ```
-1. scope to what changed THIS session
-   # items kept, deleted, or whose relationships changed. Consider only those
-   # against their neighbours — don't re-reason the whole queue from zero.
-   # Lean on the slug-references items already carry in their prose.
-2. reorder ONLY if genuinely wrong
-   # still satisfies the principles below -> silent no-op: change nothing,
-   #                                         say nothing
-   # a changed item actually sits wrong  -> compute and apply, and narrate
+repealed — do not reinstate:
+    build-order re-derivation across Processed
+    the Unprocessed reorder by unblock-potential
 ```
+
+**Why build-order re-derivation went.** A genuine prerequisite is carried by
+`Blocked by: [slug]`, and a blocked item sits *below* the readiness line — so
+inside the cleared region there is usually no ordering meaning left to compute.
+Everything above that line is built by one /next run anyway. Where two items
+genuinely reshape what each other edit, the relationship is written into the
+item's prose ("this must land with [slug]"), which survives a reorder where
+adjacency does not — the method's own rule that position never encodes a
+relationship, applied here.
+
+**Why the Unprocessed reorder went.** /plan's start-of-processing ladder already
+orders Unprocessed, at the moment the order is consumed and with the user
+present. The only thing that ever reads Unprocessed order is a /plan opening, so
+the close was computing a durable order whose sole consumer immediately
+recomputes it. Left alone, the section reads chronologically, which tells a human
+when things landed — more useful than a stale ranking.
 
 Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
 field that exists is `Blocked by: [slug]`, written on the item that is held, and
 it is lint-checked precisely so it can't go stale the way those headers did.
 Everything else stays prose slug-references.
 
-When a reorder *is* warranted:
-
-```
-Unprocessed  ->  UNLOCK-POTENTIAL. Process first what would unblock the most
-                 other work; an item that gates others sits above one that
-                 stands alone.
-Processed    ->  BUILD-ORDER. Build first what unblocks or reshapes the framing
-                 for later work; an item whose output is a prerequisite for a
-                 later item sits above the one that needs it.
-```
-
-**Within Processed, place `[user]` and `[audit]` lines end-preferred**, after
-contiguous blocks of build work. Build-order is the primary sort; this is a
-tie-adjustment on top of it. Both flavors force /next to stop for the user — a
+**Place `[user]` and `[audit]` lines end-preferred**, after
+contiguous blocks of build work. Both flavors force /next to stop for the user — a
 step they must run, an audit whose findings they must approve — so one sitting
 *inside* a contiguous build run interrupts an otherwise-unattended sequence.
 Position them at the **end** of the block so the human-in-the-loop stops batch
 together.
 
 **Don't move a `[user]` or `[audit]` line past a build item that genuinely depends
-on its outcome** — build-order wins where a real dependency exists; end-preferred
-is the default only among items with no such constraint.
+on its outcome** — a real dependency wins; end-preferred is the default only
+among items with no such constraint.
 
 **Claude reorders and narrates; it does not ask.** The user owns keep/delete and
 scope, not order. Order is low-stakes and reversible, so the narration is the
@@ -227,7 +225,7 @@ cleared red flag: for a design-out, how it was eliminated; for an acceptance, wh
 the user was warned about and that they chose to proceed. Clearing happens at
 processing, so /plan is where this record is written.
 
-**If a `_plan.md` exists, read its disposition list** — kept and deleted items with
+**If this session has a planning working file, read its disposition list** — kept and deleted items with
 their slugs — and use it to fill the entry's Queue changes and Work processed
 lines. It's the mechanical record of what this session did, so the entry doesn't
 have to be reconstructed from memory.
@@ -243,8 +241,8 @@ shipping — in a self-hosting project a push fires the full push-and-rezip ritu
 off a commit that shipped nothing. Push stays available when the user asks for it
 or is deliberately backing up; a default, not a prohibition.
 
-**Delete `_plan.md`** if one exists, as part of the close — same lifecycle as
-_build.md. It was working state only and was never committed, so removing the file
+**Delete this session's planning working file** if one exists, as part of the close — same lifecycle as
+the build working file. It was working state only and was never committed, so removing the file
 is all that's needed.
 
 ## 3. Recommend next  [BRIEF, PROMPT]

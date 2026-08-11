@@ -33,7 +33,7 @@ criteria, process issues.
 
 ```
 the RECORD this step sweeps:
-    _build.md's notes
+    the build working file's notes
     any captures already appended at the moment of noticing
 conversation memory  ->  a same-session BONUS pass, never a source this step
                          depends on
@@ -64,7 +64,7 @@ Note in this entry that the audit surfaced it.
 
 Run done.md's **Staleness sweep**.
 
-### 2.3 Delete _build.md  [SILENT]
+### 2.3 Delete the build working file  [SILENT]
 
 Routine bookkeeping — delete the file, no narration. Unlocks future builds. **Only
 after everything above is complete.**
@@ -73,7 +73,7 @@ after everything above is complete.**
 
 Run the commit core in done.md. No source-file edits are staged because the audit
 produced none — the staged paths are the QUEUE.md capture additions, the LOG/
-changes, and the _build.md deletion.
+changes, and the build working file's deletion.
 
 ## Phase 3: Recommend next  [BRIEF, PROMPT]
 

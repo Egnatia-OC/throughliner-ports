@@ -32,5 +32,6 @@ Language: English
 ## Project rules
 
 <!-- Add your own rules, conventions, and context below. This section is yours — the plugin won't touch it.
-     If your project has specific test procedures (how to run tests, what to check, environment setup),
-     add them here or point to where they live — Claude will follow them during test entries and /done verification. -->
+     If your project has specific ways of checking that things work — how to run its tests, what to look at,
+     any setup needed first — add them here or point to where they live. Claude follows them as part of
+     building, and where a check is one only you can make, it becomes a step in your queue for you to run. -->

@@ -19,7 +19,7 @@ tokens in this doc.
 
 **Plain-language guard.** Everything you say during /setup is read by a non-coder
 who may be brand new to all of this. Keep internal terms out of what they see — no
-hook filenames, no `_build.md`, no "scope-lock," "method docs," or "Case B"
+hook filenames, no working-file names, no "scope-lock," "method docs," or "Case B"
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
 migration," not "this is Case B." This needs saying here because the
 plain-language behaviour rule loads only once a project is adopted, and /setup runs
@@ -174,7 +174,8 @@ on the old shape — and nothing else would ever raise it again.
 **5. Close state-aware.**
 
 ```
-a leftover _build.md is present  ->  an earlier build was interrupted: name it
+a leftover build working file    ->  an earlier build was interrupted: name it
+    is present
                                      and recommend resuming with /next. The
                                      migration's new files get recorded when
                                      that build closes.
@@ -328,9 +329,25 @@ a shared, buildable understanding — enough to fill SPEC's What / Who / How /
 Principles and capture a first piece of work — by reading each answer and asking
 the next question that actually matters.
 
+**Write the project's files once discovery has covered** what the project is, who
+it's for, its core, and a first thing to build. Principles and the free-form
+"anything else" are optional and don't hold the writing up.
+
+**Where a scaffolding choice is the user's — which folder to adopt, whether
+existing content is a doc to leave alone, how to read an ambiguous answer — ask
+before acting.** The question costs one turn; a wrong guess makes the user undo a
+scaffold.
+
+**The framing throughout is "adopt the folder":** the method is being applied to
+their project, not their project reorganised to suit the method.
+
 **Ask one question per message and stop after each.** Never bundle two questions
 into one message, even short ones.
 
+- **Use the user's own language.** Ask in their words and record their answers in
+  their words, rather than rephrasing into the method's vocabulary.
+- **Where an answer is vague, ask a follow-up** — subject to the stopping rule
+  below, which bounds how far probing goes.
 - **Read each answer, then reason about what's still unclear** before choosing the
   next question. Walk the design one branch at a time. The next question is
   generated from what's missing, not from a fixed position in a script.
@@ -368,13 +385,10 @@ write the docs from whatever's been gathered.
 **one rough work item** in Unprocessed: a `#### ` heading **in the user's words**,
 with a kebab-case `[slug]` at the end and a "captured by you" note beneath.
 
-```
-verbatim user words     ->  yes
-expansion               ->  no
-illustrative examples   ->  no
-parentheticals drawn    ->  no  # even parenthetical examples read as
-from visible context            commitments the user agreed to
-```
+**Write the heading in the user's own words, and stop there.** Their words are
+the whole content of the item — anything added is Claude's scope decision wearing
+the user's voice, and the tempting case is a parenthetical example drawn from
+what they said, which reads as a commitment they agreed to.
 
 Scope decisions belong in /plan, which is where this item gets processed. If
 examples would clarify scope, ask a follow-up rather than smuggling them in.
@@ -419,18 +433,3 @@ the LOG entry /done writes at close.
   then **/clear** to start fresh. The habit that matters: **always /done before
   /clear**, so each session is saved before the context resets.
 
-## Rules
-
-- **One question per message. Do not bundle.**
-- **Use the user's language** — don't rephrase into jargon.
-- If an answer is vague, ask a follow-up — but honour the stopping rule and don't
-  interrogate.
-- **Don't create files until discovery has covered** what the project is, who it's
-  for, its core, and a first thing to build. Principles and the free-form "anything
-  else" are optional.
-- **Unsure about a scaffolding choice the user owns** — which folder to adopt,
-  whether existing content is a doc to leave alone, how to read an ambiguous answer?
-  Ask before acting. The question costs one turn; a wrong guess makes the user undo
-  a scaffold.
-- The framing is **"adopt the folder"**: the method is being applied to their
-  project, not the other way around.

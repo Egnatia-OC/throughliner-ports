@@ -15,10 +15,9 @@ when things go fine. It is not a gag on the moments that must speak: reporting a
 failure, asking before scope grows, and revealing a readable edit's new text all
 speak. A tag on one of those overrides this step's silence.
 
-**No pre-edit preview.** Don't precede an edit with a point-form list of what
-you're about to change. The work was already agreed in /plan, and a "here's what
-I'm about to change" beat before an edit that lands instantly is noise. Holds for
-every edit, readable or code.
+**Make the edit, then say what changed.** The work was already agreed in /plan,
+so an edit goes straight in — no point-form list of what you are about to change
+before it lands. Holds for every edit, readable or code.
 
 **Readable edits reveal their new text** — informational, not an ask.
 
@@ -55,7 +54,7 @@ that gates, and it is a separate switch in the rules file.
 **A small mid-build tweak to a just-surfaced readable edit is in scope**
 [PROMPT]. Once the new text is visible the user may ask to change one bit. That
 refines the build's already-agreed work product, so: make it, reveal the updated
-text, and record it in _build.md Changes so it folds into the LOG entry /done
+text, and record it in the build working file Changes so it folds into the LOG entry /done
 writes. No separately logged object, no /plan round-trip. A request that's
 actually new scope — a different feature, or a change to something that already
 worked — routes out via Scope management below.
@@ -138,7 +137,7 @@ walkthrough anyway.
 
 **Coherence exception** (narrow, keyed to why-pipeline coherence): if the item
 would share the built item's log entry and index line, and folding it in makes the
-work *easier to find later*, add it to _build.md as part of this item's work
+work *easier to find later*, add it to the build working file as part of this item's work
 (appending any files it names to `Files:`) and continue. Evaluate against the
 coherence rules, not user convenience. **When uncertain, capture.**
 
@@ -150,7 +149,7 @@ the new work and the files it needs, then:
 ```
 minor        ->  ask to add it: "This needs [work], which means editing [file] —
 (1-2 files)      add it to scope?" Once approved, append any unlisted file to
-                 _build.md's Files: BEFORE editing it — the scope-lock denies
+                 the build working file's Files: BEFORE editing it — the scope-lock denies
                  edits to unlisted files.
 
 significant  ->  propose splitting. Finish what's scoped, /done to close, then
@@ -223,7 +222,7 @@ plan time.
 
 ```
 adjust scope      ->  drop the item, add a prerequisite, or change the approach.
-                      Update _build.md to match.
+                      Update the build working file to match.
 abort and requeue ->  if the item is unsalvageable:
                         a. return it to QUEUE.md's Processed (placement is your
                            call — original position or top, by what was learned)
@@ -237,7 +236,7 @@ direction or learning the queue needs in conversation = capture needed.* Unroute
 it survives only in the LOG entry, which /plan doesn't read at planning time, so
 the item re-presents unchanged at the next /next.
 
-_build.md stays in place so /done's router still fires the build close-out. The
+the build working file stays in place so /done's router still fires the build close-out. The
 differences: the LOG entry describes the attempt and why it was aborted, and the
 item returns to QUEUE.md rather than disappearing into the log.
 
@@ -251,7 +250,7 @@ do when the user reports the squeeze.
 most of the run is ticked      ->  finish and /done. Short-term memory is enough.
 significant work remains       ->  close partial: /done what's ticked, requeue
                                    the rest. The next session picks up cleanly
-                                   from _build.md and QUEUE.md.
+                                   from the build working file and QUEUE.md.
 ```
 
 Either way, pair it with the fresh-session handoff offer.
@@ -263,7 +262,10 @@ built (every Claude-work item ticked, any `[user]` item walked through):
 
 ```
 1. tell the user the build is complete
-2. say: "Run /done to record this and commit, or tighten what's already built
+2. recommend /done and nothing else — never /next, never another build. The
+   finished work is not recorded until /done writes its LOG entries and
+   commits, so recommending more building first leaves it without a record.
+3. say: "Run /done to record this and commit, or tighten what's already built
    before closing."
 ```
 
@@ -271,4 +273,4 @@ Tightening means refining done work — not raising new work. Anything new route
 through the existing paths. **No chat summary of the changes** — the LOG entries
 /done writes are the single session record.
 
-**Do NOT delete _build.md yourself.** That's /done's job.
+**Do NOT delete the build working file yourself.** That's /done's job.

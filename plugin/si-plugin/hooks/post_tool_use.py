@@ -344,9 +344,14 @@ def _check_blocked_by(annotated, blocks, warnings):
                 warnings.append(
                     f"line {b['idx'] + 1}: {b['heading'][:60]!r} is blocked by "
                     f"[{slug}], which is not in the queue right now. That has "
-                    "three causes and only one is a fault: the blocker has "
+                    "four causes: the blocker has "
                     "already shipped and been removed, it is in flight (a run "
-                    "has taken it into _build.md), or the reference is wrong. "
+                    "has taken it into its build working file), it was "
+                    "DELETED as not worth doing, or the reference is wrong. "
+                    "Only the last is a fault in the reference — but deletion "
+                    "is not benign either: the held item was designed assuming "
+                    "its blocker would happen, so its premise may not survive "
+                    "and it needs re-examining rather than lifting. "
                     "Check LOG before changing anything — a correct reference "
                     "reads exactly like a broken one here."
                 )

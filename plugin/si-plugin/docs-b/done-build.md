@@ -41,7 +41,7 @@ new scope (a redesign, a new feature, a change to something that already worked)
 ### 1.1 Verify completion
 
 Run done.md's **Verify completion**. Its build-close delta applies: reconcile
-_build.md against memory where the session is still remembered, and route any
+the build working file against memory where the session is still remembered, and route any
 mismatch to Unprocessed per 1.2.
 
 ### 1.2 Route findings to Unprocessed  [PROMPT]
@@ -51,7 +51,7 @@ waits on the user.
 
 ```
 the RECORD this step sweeps:
-    _build.md's notes
+    the build working file's notes
     any captures already appended at the moment of noticing
 conversation memory  ->  a same-session BONUS pass, never a source this step
                          depends on
@@ -63,7 +63,7 @@ Append each finding to Unprocessed, placed per the Captures placement rule
 ### 1.3 Spec-sync gate  [SILENT] when nothing drifts, [PROMPT] on drift
 
 Run done.md's **Spec-sync gate** and apply its **Build close** delta: SPEC.md is
-scope-locked, so add SPEC.md to _build.md's `Files:` list before editing, then edit
+scope-locked, so add SPEC.md to the build working file's `Files:` list before editing, then edit
 SPEC to match what the build landed and commit it in this same commit.
 
 ### 1.4 Red-flag close  [SILENT] when no flag, [PROMPT] when an item carries one
@@ -79,12 +79,12 @@ item carries a flag.
 ### 2.1 Write LOG entry  [DISCUSS, PROMPT]
 
 **Narrate first** [BRIEF]: one sentence noting the work's reasoning is being
-carried from _build.md into the LOG entry — the file's last job before /done
+carried from the build working file into the LOG entry — the file's last job before /done
 deletes it.
 
 Write **one LOG entry file per built item**, each named after that item's slug.
 Follow done.md's **LOG entry files** section, using its **Build** body fields
-(`Files touched` from _build.md Changes; `Routed to Captures`).
+(`Files touched` from the build working file Changes; `Routed to Captures`).
 
 **One entry per built item is unconditional**, however long the run. A work item's
 queue text is *consumed* when it builds — /next removes it — so after the build the
@@ -112,7 +112,7 @@ written at the /plan close that cleared it.
 
 Run done.md's **Staleness sweep**.
 
-### 2.3 Delete _build.md  [SILENT]
+### 2.3 Delete the build working file  [SILENT]
 
 Routine bookkeeping — delete the file, no narration. Unlocks future builds. **Only
 after everything above is complete.**

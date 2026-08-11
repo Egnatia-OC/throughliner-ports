@@ -47,11 +47,11 @@ The reason for folding it back in: a waiting list nobody is obliged to read is h
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
-Nothing is lost. `_build.md` tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
+Nothing is lost. The build's working file tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
 
 ## Is it safe to clear the conversation or start a new session between steps?
 
-After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads its working file (`_build.md` or `_plan.md`) rather than relying on the conversation, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
+After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads that conversation's own working file rather than relying on the conversation itself, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
 
 ## Can I edit SPEC.md while doing a build?
 
@@ -65,13 +65,17 @@ Tell Claude. It gets added to Captures without derailing current work. Next /pla
 
 No — an empty queue is a normal resting state. Run /plan when you have ideas or want to review. The project is done when you say it is.
 
-## What is _build.md? Should I edit it?
+## What is the `_build-...md` file? Should I edit it?
 
-The active build's working file. It does four jobs: carries the batch being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the batch's reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
+The active build's working file. It does four jobs: carries the work being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
 
-## What is _plan.md? Should I edit it?
+**The jumble of characters in the name is the session's own id**, so the file is `_build-<something>.md` rather than plain `_build.md`. Each conversation gets its own. That matters if you ever run two conversations at once — a planning chat alongside a build, say. With one shared file, the planning chat would see the build's file, decide it was inside that build, and apply the build's list of allowed files to edits you never agreed to. With one file per conversation, that can't happen.
 
-A planning session's working file — the planning counterpart to _build.md. When /plan starts working through your captures, it creates `_plan.md` to track where it is: which items it's processing, the current one, and what it has routed so far (promoted, parked, or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
+## What is the `_plan-...md` file? Should I edit it?
+
+A planning session's working file — the planning counterpart to the build one above, and named the same way, with the conversation's own id. When /plan starts working through your captures, it creates the file to track where it is: which items it's processing, the current one, and what it has routed so far (kept or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
+
+**If a working file is left behind by a conversation that never closed, Claude tells you at the start of the next session** and never deletes it. A working file can hold the only record of what a crashed session actually did, so throwing it away could lose real work. Run /done if you want what it records written up and committed.
 
 ## What if my project already has planning docs from another tool or an older version?
 
@@ -168,3 +172,28 @@ The reason is what a message *is*. It's another project's raw text, carried into
 **You can change it.** Delete the `INBOX/` line from `.gitignore` and messages will be committed like any other file. Nothing stops you — the ignore line is just the safe starting point.
 
 One thing worth knowing, because it's easy to assume otherwise: **if messages were already committed before the line was added, the line does not undo that.** It stops future commits only; the old ones stay in your project's history. If that applies to you, Claude will say so when it adds the line rather than letting you think the mail is now private.
+
+## Can I run two conversations on the same project at once?
+
+**Yes** — a planning conversation alongside a build is a supported way to work, and Claude won't refuse one. What you can't do is run two *builds* at the same time, or mix planning and building inside one conversation.
+
+**What Claude guarantees depends on how your app isolates sessions, and Claude now checks rather than guessing.** At the start of every session it looks at your project folder and works out which of two situations you're in. You'll see a one-line note saying which.
+
+- **Sharing one folder.** Both conversations edit the same files. In practice this works fine — two additions to different parts of your queue don't clash, and if they somehow do, Claude gets a warning that the file changed underneath it. The one moment worth avoiding is the very end of a build, when Claude is rewriting the queue to remove finished work.
+- **Each in its own copy.** The two conversations genuinely can't interfere. The catch is the mirror image: something you add to your queue in one conversation *doesn't reach the other one at all*, and when the two copies are merged back together, the last one to merge wins. So keep queue edits in one conversation until a merge has happened.
+
+**One rule holds either way: don't interrupt a running build to add something to your queue.** If you're sharing a folder, there's no need — nothing collides. If you're in separate copies, it doesn't work — what you add lands in the other copy and the running build never sees it. Wait until the build finishes; nothing is lost by waiting.
+
+## Claude flagged some queue items as contradicting themselves. What does that mean?
+
+When you run /plan, Claude now checks your queue for work whose *position* disagrees with what the work itself says. It reports what it finds and stops there — it never moves anything.
+
+Three things get flagged:
+
+- **Work marked ready that says it isn't.** An item sitting above the "cleared to run" line whose own notes say it must not be built as written, or that a previous build session handed it back untouched. Left alone, the next build run would build exactly the thing the item warns against.
+- **Work with nothing to change.** An item marked ready whose list of files to edit is empty, or says the list will come out of designing it. That means it's still a design question, not a build.
+- **A chain of waiting.** Work waiting on something that is itself waiting on something else. Neither moves until the far end of the chain does, which is easy to miss when you only look at one item at a time.
+
+**Why this check exists.** Work gets examined carefully when it's *put* into the ready pile, and then never looked at again. But things change around it afterwards — a decision gets reversed, a build session hands something back, the thing it was waiting for turns out to be waiting too. A gate on the door isn't the same as looking around the room.
+
+**Nothing happens automatically.** Whether a flagged item gets moved, rewritten or left exactly where it is, is your call — that's a decision about what the work *is*, and those are always yours. Claude tells you and waits.

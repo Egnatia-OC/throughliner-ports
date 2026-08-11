@@ -4,7 +4,8 @@ SessionStart hook — detect project state, orient Claude.
 
 Three states:
   1. Not adopted (no SPEC.md) → suggest /setup.
-  2. Adopted, _build.md exists → active build, offer resume with /next.
+  2. Adopted, this session's build working file exists → active build,
+     offer resume with /next.
   3. Adopted, no active build → ready for /plan or /next.
 """
 
@@ -263,6 +264,52 @@ def _dirty_tree_count(cwd):
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
+def _isolation_model(cwd):
+    """Whether this session is in an isolated worktree. "worktree", "shared", or None.
+
+    The method must not ASSUME an isolation model, and for a while it looked
+    like it could not know one either — research observed a session in the main
+    checkout with no worktrees directory and no worktree key in any readable
+    settings file, and concluded the model was undiscoverable. It is not:
+    detection is a two-string comparison. In a linked worktree `--git-dir` and
+    `--git-common-dir` differ; in a main checkout they are identical.
+
+    What this reports is the STATE OF THIS SESSION, not the setting. It cannot
+    explain why a session is not isolated when the app documents a new session
+    getting its own worktree, and that discrepancy stays unexplained. It is
+    accepted because the advice consults the current state and never the
+    setting, so knowing the setting would change no behaviour.
+
+    Returns None on any error — a hook that cannot run git says nothing rather
+    than guessing.
+    """
+    def _rev_parse(flag):
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", flag],
+                cwd=cwd, capture_output=True, text=True, timeout=15,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return None
+        if result.returncode != 0:
+            return None
+        return result.stdout.strip()
+
+    git_dir = _rev_parse("--git-dir")
+    common_dir = _rev_parse("--git-common-dir")
+    if git_dir is None or common_dir is None:
+        return None
+    try:
+        same = os.path.samefile(
+            os.path.join(cwd, git_dir), os.path.join(cwd, common_dir)
+        )
+    except OSError:
+        same = os.path.normcase(os.path.normpath(git_dir)) == os.path.normcase(
+            os.path.normpath(common_dir)
+        )
+    return "shared" if same else "worktree"
+
+
 def _uncleared_red_flags(queue_path):
     """Descriptions of work items carrying `Red flag · State: uncleared`.
 
@@ -296,9 +343,9 @@ def _uncleared_red_flags(queue_path):
 
 
 def _queue_dependency_facts(queue_path):
-    """Counts describing the queue's dependency shape, or None if unreadable.
+    """The queue's dependency shape, or None if unreadable.
 
-    Returns (cleared, held, blockers_in_unprocessed):
+    Returns (cleared, held, blockers_in_unprocessed, waiting, dead):
       cleared  — items in Processed above the cleared-to-run marker; the work
                  /next can pick up right now.
       held     — items in Processed below it; each names a blocker.
@@ -306,6 +353,23 @@ def _queue_dependency_facts(queue_path):
                — how many distinct slugs those held items are blocked by that
                  sit in Unprocessed, i.e. blockers that must themselves be
                  processed before anything they hold can move.
+      waiting  — [(held slug, blocker slug)] for held items whose blocker sits
+                 in Unprocessed. The named form of the count above.
+      dead     — [(held slug, blocker slug)] for held items whose blocker slug
+                 is in NEITHER section. This is the lift signal, and it is one
+                 intersection away from what the counts already need.
+
+    Why the slugs are emitted and not just the counts. Naming the items is what
+    saves the reader the re-derivation: a count says something is waiting, a
+    slug says which, and only the second removes the work of finding out. The
+    function resolved every slug already and used to discard them.
+
+    The dead bucket carries the queue lint's caveat rather than a verdict. A
+    blocker slug in neither section has four causes — shipped and removed, in
+    flight inside a run's working file, deleted as not worth doing, or a wrong
+    reference — so LOG is still checked before anything is lifted. Deletion is
+    the one needing re-examination rather than a lift: the held item was
+    designed assuming its blocker would happen, so its premise may not survive.
 
     Why a hook computes this. The dependency graph is deliberately implicit —
     it is whatever you get by reading every `Blocked by:` line and resolving
@@ -333,8 +397,11 @@ def _queue_dependency_facts(queue_path):
     cleared = 0
     held = 0
     unprocessed_slugs = set()
+    processed_slugs = set()
     held_blockers = set()
+    held_pairs = []           # [(held slug, blocker slug)], in file order
     in_held_item = False
+    current_held_slug = None
 
     slug_re = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]\s*$")
     blocked_re = re.compile(r"^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]", re.IGNORECASE)
@@ -357,24 +424,95 @@ def _queue_dependency_facts(queue_path):
             match = slug_re.search(stripped)
             slug = match.group(1) if match else None
             if section == "processed":
+                if slug:
+                    processed_slugs.add(slug)
                 if above_marker:
                     cleared += 1
                     in_held_item = False
+                    current_held_slug = None
                 else:
                     held += 1
                     in_held_item = True
+                    current_held_slug = slug
             elif section == "unprocessed":
                 in_held_item = False
+                current_held_slug = None
                 if slug:
                     unprocessed_slugs.add(slug)
             continue
         if in_held_item:
             match = blocked_re.match(stripped)
             if match:
-                held_blockers.add(match.group(1))
+                blocker = match.group(1)
+                held_blockers.add(blocker)
+                held_pairs.append((current_held_slug or "?", blocker))
 
     blockers_in_unprocessed = len(held_blockers & unprocessed_slugs)
-    return cleared, held, blockers_in_unprocessed
+    known = unprocessed_slugs | processed_slugs
+    waiting = [(h, b) for h, b in held_pairs if b in unprocessed_slugs]
+    dead = [(h, b) for h, b in held_pairs if b not in known]
+    return cleared, held, blockers_in_unprocessed, waiting, dead
+
+
+WORKING_FILE_RE = re.compile(r"^_(build|plan)-(.+)\.md$")
+
+
+def _working_file(cwd: str, kind: str, session_id: str) -> str:
+    """This session's build or plan working file.
+
+    Mirrors pre_tool_use.working_file — the two must agree on the name, since
+    one writes the scope-lock's view of it and the other reports whether a
+    build is in progress. Kept as a copy rather than an import because hooks
+    are standalone scripts with no shared module.
+    """
+    safe_id = re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+    return os.path.join(cwd, f"_{kind}-{safe_id}.md")
+
+
+def leftover_working_files(cwd: str, session_id: str) -> list:
+    """Working files belonging to some other session, newest first.
+
+    Per-session working files trade one problem for another, and this is the
+    answer to the second. A project-level `_build.md` left by a session that
+    never closed was at least self-evidently stale — it sat in the project
+    root and the next session tripped over it. A per-session file is invisible
+    to every session but its own, so without this it would accumulate silently
+    and its unrecorded work would be lost.
+
+    Surfaced, never deleted: the file may hold the only record of what a
+    crashed session did, which is exactly why /next writes progress to it.
+    """
+    found = []
+    try:
+        names = os.listdir(cwd)
+    except OSError:
+        return found
+    mine = os.path.basename(_working_file(cwd, "build", session_id))
+    mine_plan = os.path.basename(_working_file(cwd, "plan", session_id))
+    for name in names:
+        if name in (mine, mine_plan):
+            continue
+        match = WORKING_FILE_RE.match(name)
+        if match:
+            kind = match.group(1)
+        elif name in ("_build.md", "_plan.md"):
+            # The pre-session-scoping names. A project mid-build when the
+            # rename shipped would otherwise have its working file become
+            # invisible to every session at once — orphaned rather than
+            # merely stale, which is worse than the problem being fixed.
+            # Recognising the old names here means no migration is needed and
+            # no format epoch has to be bumped for it.
+            kind = name[1:-3]
+        else:
+            continue
+        path = os.path.join(cwd, name)
+        try:
+            mtime = os.path.getmtime(path)
+        except OSError:
+            mtime = 0
+        found.append((name, kind, mtime))
+    found.sort(key=lambda t: t[2], reverse=True)
+    return found
 
 
 def sweep_stale_editing_markers(cwd: str) -> None:
@@ -507,8 +645,12 @@ def main() -> int:
 
     spec_path = os.path.join(cwd, "SPEC.md")
     queue_path = os.path.join(cwd, "QUEUE.md")
-    build_path = os.path.join(cwd, "_build.md")
-    plan_state_path = os.path.join(cwd, "_plan.md")
+    # Working files are per SESSION, not per project — a planning session
+    # running alongside a build in another chat must not see that build's
+    # working file and conclude it is inside a build.
+    session_id = data.get("session_id", "")
+    build_path = _working_file(cwd, "build", session_id)
+    plan_state_path = _working_file(cwd, "plan", session_id)
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
     si_version_path = os.path.join(cwd, ".si-version")
 
@@ -714,8 +856,8 @@ def main() -> int:
     # Facts only; /plan turns them into a throughput floor.
     dependency_facts = _queue_dependency_facts(queue_path)
     if dependency_facts is not None:
-        cleared, held, blockers_unprocessed = dependency_facts
-        context_parts.append(
+        cleared, held, blockers_unprocessed, waiting, dead = dependency_facts
+        facts = (
             f"[Sovereign Implementer] Queue dependency facts: {cleared} item"
             f"{'' if cleared == 1 else 's'} cleared to run, {held} held below the "
             f"line, {blockers_unprocessed} of those blockers still sitting in "
@@ -723,6 +865,86 @@ def main() -> int:
             "throughput floor from them and says the number out loud; other "
             "skills can ignore them."
         )
+        # Name the resolved pairs, not just the counts. The graph is already
+        # built above; discarding it made every reader rebuild it by hand.
+        if waiting:
+            pairs = "; ".join(f"[{h}] waits on [{b}]" for h, b in waiting)
+            facts += f" Held on Unprocessed blockers: {pairs}."
+        if dead:
+            pairs = "; ".join(f"[{h}] names [{b}]" for h, b in dead)
+            facts += (
+                f" Held items whose blocker is in neither section: {pairs}. "
+                "That is the lift signal, not a verdict — four causes: the "
+                "blocker shipped and was removed, it is in flight inside a "
+                "run's working file, it was DELETED as not worth doing, or the "
+                "reference is wrong. Only a deletion means the held item needs "
+                "re-examining rather than lifting, because it was designed "
+                "assuming its blocker would happen. Check LOG before lifting."
+            )
+        context_parts.append(facts)
+
+    # Which isolation model is actually in force, measured rather than assumed.
+    # One fact, so the parallel-sessions advice can state the case that applies
+    # instead of hedging across both.
+    isolation = _isolation_model(cwd)
+    if isolation == "worktree":
+        context_parts.append(
+            "[Sovereign Implementer] Isolation: this session is in its own git "
+            "worktree, so edits here cannot touch another session's files. The "
+            "parallel-sessions advice for this case: a capture filed in another "
+            "session never reaches this one, and the last branch to merge wins, "
+            "so keep queue edits in one session until a merge lands."
+        )
+    elif isolation == "shared":
+        context_parts.append(
+            "[Sovereign Implementer] Isolation: this session shares one working "
+            "tree with any other session open on this project. The "
+            "parallel-sessions advice for this case: two appends to different "
+            "parts of QUEUE.md don't collide and the file-modified warning "
+            "catches it if they do — but avoid two sessions writing QUEUE.md or "
+            "committing at the same instant."
+        )
+
+    # The rule-lifecycle board, when the project carries it. This surface ships;
+    # the detectors do not, because only a project that develops the method has
+    # method rules to police. A consumer project has no resources/rule_signals.py
+    # and this stays silent — the two-doors pattern, same as any other host-only
+    # artifact. Never raises: the board is advisory and must not be able to
+    # break a session opening.
+    board_script = os.path.join(cwd, "resources", "rule_signals.py")
+    if os.path.isfile(board_script):
+        try:
+            result = subprocess.run(
+                [sys.executable, board_script, cwd],
+                cwd=cwd, capture_output=True, text=True, timeout=30,
+                # The child writes UTF-8 deliberately; without this the parent
+                # decodes it as the console code page and every em-dash comes
+                # back mangled. Same defect the mover's console fix addressed,
+                # one layer up — there it was the write, here it is the read.
+                encoding="utf-8", errors="replace",
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                firing = [
+                    ln for ln in result.stdout.splitlines() if "[FIRING]" in ln
+                ]
+                if firing:
+                    # Only the firing signals are surfaced. A quiet stage says
+                    # nothing, because the board's job is one question per
+                    # stage — is there an outstanding signal — and a recital of
+                    # four "ok"s every session is how a board becomes wallpaper.
+                    # Truncated to stay well inside the hook output cap.
+                    body = "\n".join(f"  {ln}" for ln in firing[:5])
+                    context_parts.append(
+                        "[Sovereign Implementer] Rule-lifecycle board — "
+                        f"{len(firing)} signal(s) firing:\n{body}\n"
+                        "  Each firing signal wants one capture in Unprocessed "
+                        "under the slug it names, unless an open capture with "
+                        "that slug already exists. Run "
+                        "`python resources/rule_signals.py .` for the full "
+                        "board, including the slugs."
+                    )
+        except (OSError, subprocess.SubprocessError, ValueError):
+            pass
 
     context_parts.append("[Sovereign Implementer] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
@@ -860,7 +1082,8 @@ def main() -> int:
     if has_active_build:
         context_parts.append("")
         context_parts.append(
-            "ACTIVE BUILD in progress (_build.md exists). "
+            "ACTIVE BUILD in progress — this session's build working file "
+            f"({os.path.basename(build_path)}) exists. "
             "Run /next to resume, or /done if the work is complete. "
             "A planning session (/plan) may run in a separate chat alongside this build — "
             "if this chat was opened to plan, that is allowed; don't refuse it or insist on "
@@ -876,9 +1099,27 @@ def main() -> int:
     if has_plan_state:
         context_parts.append("")
         context_parts.append(
-            "INTERRUPTED PLANNING SESSION (_plan.md exists). A previous /plan was left "
+            "INTERRUPTED PLANNING SESSION — this session's planning working file "
+            f"({os.path.basename(plan_state_path)}) exists. A previous /plan was left "
             "mid-processing. Run /plan to resume from the recorded item and beat, or "
             "/done to close out what was already routed."
+        )
+
+    # Working files left by OTHER sessions. Surfaced, never deleted — the file
+    # may hold the only record of what a crashed session did. A project-level
+    # working file was at least self-evidently stale; a per-session one is
+    # invisible to everyone but its owner, so this is what replaces that
+    # accidental visibility with a deliberate one.
+    leftovers = leftover_working_files(cwd, session_id)
+    if leftovers:
+        listed = ", ".join(f"{name} ({kind})" for name, kind, _ in leftovers[:5])
+        context_parts.append("")
+        context_parts.append(
+            f"[Sovereign Implementer] {len(leftovers)} working file(s) from other "
+            f"sessions: {listed}. Each belongs to a session that never closed, or "
+            "to one running right now in another chat. Nothing is deleted — a "
+            "working file can hold the only record of what a crashed session did. "
+            "If one is genuinely orphaned, /done can close out what it records."
         )
 
     # Dirty-tree warning: uncommitted changes with no active build and no active plan

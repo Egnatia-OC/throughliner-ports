@@ -49,7 +49,7 @@ groups findings by criterion ready for the compile step. Reading each artifact
 once against everything tends to collapse into a per-artifact skim.
 
 Don't skim; an audit's value is reading what's there. Accumulate observations in
-_build.md Changes with precise references (file:line) so the user can verify each.
+the build working file Changes with precise references (file:line) so the user can verify each.
 
 ## Compile findings  [SILENT]
 
@@ -84,7 +84,7 @@ didn't contest is approved as-is.
 
 Append the approved findings to Unprocessed, each placed per the Captures
 placement rule and written to the capture-authoring standard. Tick each in
-_build.md Progress as `captured` or `dropped`.
+the build working file Progress as `captured` or `dropped`.
 
 ## Close  [BRIEF, PROMPT]
 

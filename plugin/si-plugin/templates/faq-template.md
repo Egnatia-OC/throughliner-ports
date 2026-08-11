@@ -115,11 +115,11 @@ A short fingerprint of the installed plugin's own files — a content check that
 
 ## I closed the app in the middle of a build. What happens when I reopen it?
 
-Nothing is lost. `_build.md` tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
+Nothing is lost. The build's working file tracks progress. When you reopen, session start detects the unfinished build. Run /next to resume.
 
 ## Is it safe to clear the conversation or start a new session between steps?
 
-After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads its working file (`_build.md` or `_plan.md`) rather than relying on the conversation, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
+After /done, yes — everything is recorded in the session log and committed, so a fresh conversation loses nothing. Before /done, the plugin can still recover: it reads that conversation's own working file rather than relying on the conversation itself, so an interrupted build or planning session picks up from the file. But closing with /done first is the clean habit — it's the moment the work becomes a permanent record instead of something the plugin has to reconstruct.
 
 ## Claude offered to write a "handoff prompt" for a fresh session. What is that?
 
@@ -175,13 +175,17 @@ When your SPEC describes a lot of your app but your queue is empty or nearly so,
 
 No — an empty queue is a normal resting state. Run /plan when you have ideas or want to review. The project is done when you say it is.
 
-## What is _build.md? Should I edit it?
+## What is the `_build-...md` file? Should I edit it?
 
 The active build's working file. It does four jobs: carries the work item being built (so QUEUE.md stays free while the build runs), lists which files the build may change (the plugin's safety check blocks edits to anything else), ticks off finished steps (so an interrupted session can resume without redoing work), and keeps the item's reasoning (so /done can write the session record). Claude manages it — don't edit it. Deleted when /done closes the session; if it exists at session start, a previous build was interrupted and /next will offer to resume.
 
-## What is _plan.md? Should I edit it?
+**The jumble of characters in the name is the session's own id**, so the file is `_build-<something>.md` rather than plain `_build.md`. Each conversation gets its own. That matters if you ever run two conversations at once — a planning chat alongside a build, say. With one shared file, the planning chat would see the build's file, decide it was inside that build, and apply the build's list of allowed files to edits you never agreed to. With one file per conversation, that can't happen.
 
-A planning session's working file — the planning counterpart to _build.md. When /plan starts working through your captures, it creates `_plan.md` to track where it is: which items it's processing, the current one, and what it has routed so far (kept or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
+## What is the `_plan-...md` file? Should I edit it?
+
+A planning session's working file — the planning counterpart to the build one above, and named the same way, with the conversation's own id. When /plan starts working through your captures, it creates the file to track where it is: which items it's processing, the current one, and what it has routed so far (kept or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
+
+**If a working file is left behind by a conversation that never closed, Claude tells you at the start of the next session** and never deletes it. A working file can hold the only record of what a crashed session actually did, so throwing it away could lose real work. Run /done if you want what it records written up and committed.
 
 ## What if my project already has planning docs from another tool or an older version?
 

@@ -12,10 +12,16 @@ Close the current session — record what happened, update docs, commit.
 
 ## Route by session shape  [SILENT]
 
-Check for _build.md. **The check is automatic — don't ask, and don't narrate the
-routing; just route.**
+Check for **this session's** build working file, `_build-<session-id>.md` — not
+any other session's, which belongs to a build running in another chat.
+**The check is automatic: route on what you find, silently.**
 
-**The _build.md read is unconditional.** When it exists, read it in full before
+**Run every judgment step the routed sub-doc calls for, whatever the user says
+about committing.** "Just commit" asks for the close to be quick, not for its
+checks to be dropped — the steps are what make the commit safe to make, and they
+are the close's whole substance.
+
+**The read is unconditional.** When it exists, read it in full before
 the close-out runs, *regardless of how much of the session you remember*.
 Conversation memory enriches the LOG entry (tradeoffs, colour the file doesn't
 capture) but never substitutes for the read. A "read it only if you don't
@@ -24,7 +30,7 @@ post-/clear and post-compaction — when the session *feels* remembered but the
 details are gone.
 
 ```
-_build.md EXISTS  ->  read it, then route by the run's work-item flavors:
+the build working file EXISTS  ->  read it, then route by the run's work-item flavors:
     build items (no tag)  ->  done-build.md
                               # a build that changed SPEC.md closes here like
                               # any other build — same steps, same commit core
@@ -33,11 +39,11 @@ _build.md EXISTS  ->  read it, then route by the run's work-item flavors:
                               close-out, one LOG entry per item, sharing the
                               single end-of-session commit
 
-NO _build.md      ->  three shapes:
+NO build working file          ->  three shapes:
     a completed [user] item   ->  Completed [user]-item close (below)
     a planning session        ->  done-plan.md
         (queue managed, captures processed, readiness line moved,
-         or _plan.md exists)
+         or the planning working file exists)
     standalone handmade work  ->  Standalone handmade-work close (below)
         (no planning either, and the tree holds uncommitted edits the
          session didn't make)
@@ -72,13 +78,13 @@ core below, then return to the sub-doc for the recommendation.
 
 **There is no test close-out** — the test flavor is retired. A check Claude can
 run is part of building, closed by done-build.md. A check only the user can run is
-a `[user]` work item, which never enters a _build.md — so /done doesn't close it
+a `[user]` work item, which never enters a build working file — so /done doesn't close it
 *as a build*, but once the user has run it, /done records its completion and
 removes it from the queue through the close below.
 
 ## Completed `[user]`-item close  [BRIEF]
 
-A `[user]` item never entered a _build.md, so it isn't ticked and closed like a
+A `[user]` item never entered a build working file, so it isn't ticked and closed like a
 build. This is the close that records it and removes it from Processed, so a
 finished item doesn't strand in the queue and get re-presented by the next /next.
 It also runs inside a /plan close when the user mentions async-completed items.
@@ -103,7 +109,7 @@ project progress, not bookkeeping.
 
 ## Standalone handmade-work close  [BRIEF, PROMPT]
 
-Reached with no _build.md and no planning work — the user made ad-hoc edits by
+Reached with no build working file and no planning work — the user made ad-hoc edits by
 hand and wants them recorded. **Never required:** hand edits left uncommitted are
 simply swept into the next /done that runs. This exists for when the user wants
 them logged and committed as their own clean record.
@@ -138,7 +144,7 @@ real project work, not bookkeeping.
 
 The build and audit close-outs point here for their completion check.
 
-Read _build.md. Is every item ticked — each build item done, each audit finding
+Read the build working file. Is every item ticked — each build item done, each audit finding
 captured or dropped?
 
 ```
@@ -149,21 +155,21 @@ some unticked   ->  [PROMPT] ask: finish the rest (/next), or close partial?
 
 **A partial close restores nothing, and that is the design.** An item is removed
 from QUEUE.md only as it is ticked, so an unticked item is still sitting in
-Processed exactly where it was. Closing partial means deleting _build.md and
+Processed exactly where it was. Closing partial means deleting the build working file and
 leaving the queue alone — there is no copy-back step, no count to reconcile, and
 nothing that can be lost by getting it wrong.
 
-Before deleting _build.md, confirm the two halves agree: every ticked item is
+Before deleting the build working file, confirm the two halves agree: every ticked item is
 gone from QUEUE.md, and every unticked one is still there. A mismatch means an
 interruption landed between the tick and the removal — say what you found and fix
 that one item, rather than proceeding.
 
 **Build-close delta — reconcile against memory.** At a build close, where the
-session is still remembered, reconcile _build.md against what you recall. If the
+session is still remembered, reconcile the build working file against what you recall. If the
 file and memory disagree — work that happened but went unticked, a Changes note
 missing something memory knows was done — **that mismatch is itself a finding
 about build discipline**, and it routes to Unprocessed. It's the only routine
-check _build.md's accuracy gets before a fresh session has to rely on it. An audit
+check the build working file's accuracy gets before a fresh session has to rely on it. An audit
 close carries no such reconcile.
 
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
@@ -185,7 +191,7 @@ the behaviour change. Deferring the fix would close a commit with SPEC already
 behind, breaking that atomicity — the exact drift this gate prevents.
 
 ```
-build close  ->  SPEC.md is scope-locked: ADD SPEC.md to _build.md's Files:
+build close  ->  SPEC.md is scope-locked: ADD SPEC.md to the build working file's Files:
                  first, then edit. Also catches a build landing a
                  spec-affecting change with no prior spec entry.
 plan close   ->  no scope-lock active: edit SPEC.md directly in-session.
@@ -249,7 +255,7 @@ session start):
 ````markdown
 # [HASH] — [one-line summary]
 
-[Prose rationale — re-authored from the work's rationale in _build.md (or, for a
+[Prose rationale — re-authored from the work's rationale in the build working file (or, for a
 planning session, what motivated these queue changes), expanded with what was
 learned along the way. Inline prose, no `Why:` label. Re-authoring is where
 reasoning gets re-attributed by accident: credit the user only for reasoning
@@ -262,7 +268,7 @@ Claude's reasoning as theirs (skill-nonspecific-rules.md, rationale provenance).
 ```
 per-flavor body fields — the only delta between flavors:
 
-build       **Files touched:**       from _build.md Changes
+build       **Files touched:**       from the build working file Changes
             **Routed to Captures:**  items added, or "none"
 
 audit       **Files touched:**       the target artifacts READ (an audit edits
@@ -301,7 +307,7 @@ This entry is the session's summary — **there is no separate chat recap.** Bef
 writing it, check whether this session raised and resolved a concern or weighed an
 alternative that lost; if so, carry it with why it lost.
 
-**Reuse the pre-generated candidate** where one exists: if _build.md carries a
+**Reuse the pre-generated candidate** where one exists: if the build working file carries a
 matching index-entry candidate and the item built as planned, reuse it verbatim;
 if scope shifted, author fresh against the same rule. Planning sessions have no
 candidate — author fresh.
@@ -311,6 +317,10 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 ```
 - [HASH] — [index entry] → [entry filename]
 ```
+
+**Keep the line within 20% of the entry it points to** — the proportional bound in
+the behaviour rules' Index entries section. A long entry may carry a long line; a
+short one may not.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:
@@ -425,7 +435,7 @@ own wind-down re-scan this session, this is a harmless no-op.
 
 ## Session-file cleanup (throwaway artifacts)  [BRIEF, PROMPT]
 
-Commit core points here, so it runs at every close. _build.md and _plan.md are
+Commit core points here, so it runs at every close. the build working file and the planning working file are
 deleted by the close already; this generalises that lifecycle to *other* throwaway
 files this session created. (Prevention comes first — temp files should have gone
 to the scratchpad and never reached the project. This catches the ones that landed
@@ -435,7 +445,7 @@ Offer to delete only files meeting **all** of these:
 
 ```
 Claude created or wrote them THIS session
-    # established from _build.md Changes and this session's own edits.
+    # established from the build working file Changes and this session's own edits.
     # A file Claude did not create this session is NEVER presumed rubbish —
     # uncommitted changes the session didn't make are the user's own work.
 they have NO future use
@@ -477,8 +487,8 @@ unattended closes. A planning close names no shipped slug, so there's nothing to
 check. **Silent unless a stray slug is found.**
 
 **1. Stage explicitly — name each path:** files this session changed (from
-_build.md Changes), method docs updated during the session or close-out (QUEUE.md,
-SPEC.md, LOG/), and the _build.md deletion where one was removed.
+the build working file Changes), method docs updated during the session or close-out (QUEUE.md,
+SPEC.md, LOG/), and the build working file's deletion where one was removed.
 
 **2. Detect out-of-scope dirty paths.** Run `git status --porcelain` and compare
 against the active build's file list. Any dirty path outside it is a user edit no
@@ -524,9 +534,10 @@ sweep edits, rolled-in user
 edits from step 2)
 ```
 
-**Never write a meta-description of the derivation** ("the rationale as approved,
-plus an appended line naming the backfill…") — that reads as a third text the user
-has to check, defeating the nothing-new-to-read point.
+**Show the message itself, verbatim, and nothing else about it.** A description
+of how it was derived ("the rationale as approved, plus an appended line naming
+the backfill…") reads as a third text the user has to check, which defeats the
+nothing-new-to-read point.
 
 **4. No pre-commit ask.** The commit always happens at /done and its message was
 already approved, so there's nothing new to confirm. Only the push is optional.
@@ -545,7 +556,7 @@ offer push — but these commit-first mechanics stay canonical.
 (e.g. `COMMIT_MSG.tmp`), commit with `git commit -F COMMIT_MSG.tmp`, then delete
 the file. One mechanism on every machine — it sidesteps inline-quoting fragility
 (embedded newlines vary by shell, and a PowerShell here-string needs its closing
-token at column 0). The file is writable here because the sub-doc deletes _build.md
+token at column 0). The file is writable here because the sub-doc deletes the build working file
 before Commit, or none ever existed, so the scope-lock isn't active on the root.
 
 **5a. A staging step that partly failed is a STOP, not something to commit
@@ -625,6 +636,21 @@ consumed and cleared by the next /plan. A generic recommendation files nothing.
 #### Last session advises processing <slug> next [forward-advisory]
 ```
 
+**In the prose beneath, state conditions, not counts.** A condition stays true
+however the queue reorders. Arithmetic against a snapshot does not, because the
+advisory is written at a close and read at the next /plan's opening — and the
+whole point of that interval is that work happens in it. Positions in the
+cleared region are precisely what a build run changes.
+
+```
+write:      a /next run will halt on this item and build nothing past it
+never:      it sits ninth, with eight items ahead of it
+```
+
+This trims nothing worth keeping. The advisory that failed named the right item,
+gave the right reason, and named what to process alongside it — only its numbers
+rotted, and by the time it was read the item it called ninth sat first.
+
 The trailing `[forward-advisory]` is a fixed, reserved slug — always that literal
 string, never the slug of the item it points at. Written any other way the
 advisory is a heading with no slug at its end, which the queue lint flags on
@@ -659,7 +685,3 @@ flavor deltas:
                       unscoped. Otherwise the shared scan + ladder apply.
 ```
 
-## Rules
-
-- **Do NOT skip the sub-doc's judgment steps even if the user says "just commit."**
-- **Routing is automatic. Don't ask** — check for _build.md.

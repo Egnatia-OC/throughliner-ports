@@ -7,8 +7,9 @@ PreToolUse hook — enforces three rules:
    the user first. Ask, never deny. An unscoped build (a working file with
    no Files: section) is surfaced once for the same reason.
 
-1. During a build, _build.md's Files: section governs which files are
-   editable (method docs — QUEUE.md, LOG/, _build.md — plus the user's
+1. During a build, the session's own build working file
+   (_build-<session-id>.md) has a Files: section governing which files are
+   editable (method docs — QUEUE.md, LOG/, that working file — plus the user's
    memory dir, resources/research/, the session scratchpad dir, and any
    project's INBOX/ are always editable). Tri-state:
    no Files: section = no enforcement;
@@ -178,7 +179,7 @@ def _split_segments(command: str) -> list[str]:
 
 
 def _parse_build_files(build_path: str) -> list[str] | None:
-    """Extract file paths from _build.md's Files: section.
+    """Extract file paths from the build working file's Files: section.
 
     Returns None when no Files: section exists (no enforcement),
     an empty list when a section exists but lists nothing
@@ -329,12 +330,44 @@ def has_computed_write_target(command: str) -> bool:
     return False
 
 
-def _is_method_doc(filepath: str, cwd: str) -> bool:
-    """Check if a path is a method doc (QUEUE.md, LOG/, _build.md, _plan.md)."""
+def safe_session_id(session_id: str) -> str:
+    """A session id reduced to filename-safe characters.
+
+    Identical to the editing marker's sanitiser, deliberately: the working
+    files and the marker are the same kind of per-session artifact, and a
+    second convention for the same job is how two things that must agree
+    drift apart.
+    """
+    return re.sub(r"[^A-Za-z0-9._-]", "_", session_id or "unknown")
+
+
+def working_file(cwd: str, kind: str, session_id: str) -> str:
+    """This session's build or plan working file.
+
+    Working files are per SESSION, not per project. They used to sit at
+    `_build.md` and `_plan.md` in the project root, which made every check
+    that keys on their existence ask "is there a build?" when it meant "is
+    there a build FOR THIS SESSION?". The behaviour rules explicitly permit a
+    planning session in one chat alongside a build in another, so a planning
+    session would find `_build.md` present, conclude it was inside a build,
+    and have the build's file list applied to writes it never agreed to.
+
+    The name follows the editing marker's `<name>-<safe id>` shape rather
+    than a per-session directory, and stays in the project root because that
+    is where the docs and the FAQ already tell users to look.
+    """
+    return os.path.join(cwd, f"_{kind}-{safe_session_id(session_id)}.md")
+
+
+def _is_method_doc(filepath: str, cwd: str, session_id: str = "") -> bool:
+    """Check if a path is a method doc (QUEUE.md, LOG/, this session's working files)."""
     norm = _normalise(filepath)
 
-    for doc in ("QUEUE.md", "_build.md", "_plan.md"):
-        if norm == _normalise(os.path.join(cwd, doc)):
+    if norm == _normalise(os.path.join(cwd, "QUEUE.md")):
+        return True
+
+    for kind in ("build", "plan"):
+        if norm == _normalise(working_file(cwd, kind, session_id)):
             return True
 
     log_dir = _normalise(os.path.join(cwd, "LOG"))
@@ -547,8 +580,14 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     # preserved there.
     rel = os.path.relpath(os.path.normpath(filepath), os.path.normpath(cwd))
     rel = os.path.normcase(rel).replace("\\", "/")
-    quiet_files = ("QUEUE.md", "SPEC.md", "_plan.md", "_build.md")
+    quiet_files = ("QUEUE.md", "SPEC.md")
     if rel in tuple(os.path.normcase(name) for name in quiet_files):
+        return True
+    # A working file, whichever session owns it. Matched by shape rather than
+    # by this session's id: writing to another session's working file should be
+    # rare, but it is a planning-note write either way and the quiet list is
+    # about noise, not about scope. The scope-lock is what enforces ownership.
+    if re.match(r"^_(build|plan)-[a-z0-9._-]+\.md$", rel):
         return True
     if rel.startswith(os.path.normcase("LOG") + "/"):
         return True
@@ -634,7 +673,11 @@ def main() -> int:
     if not os.path.isfile(spec_path):
         return 0
 
-    build_path = os.path.join(cwd, "_build.md")
+    # THIS session's build working file. The scope-lock must answer "is there a
+    # build for this session?", not "is there a build?" — a planning session
+    # running alongside a build in another chat used to inherit that build's
+    # file list.
+    build_path = working_file(cwd, "build", data.get("session_id", ""))
     has_active_build = os.path.isfile(build_path)
 
     # --- Bash/PowerShell: git safety ---
@@ -778,7 +821,7 @@ def main() -> int:
     # SPEC.md gate above, so the signal exists only in adopted projects.
     write_editing_marker(cwd, data.get("session_id", ""), filepath, True)
 
-    # Rule 1: _build.md's Files: section governs editability. Tri-state:
+    # Rule 1: the working file's Files: section governs editability. Tri-state:
     # no section = skip enforcement, present but empty = method docs only,
     # entries listed = enforce the list.
     if has_active_build:
@@ -817,27 +860,28 @@ def main() -> int:
 
         if not build_files:
             return _deny(
-                "[Sovereign Implementer] BLOCKED: this session's _build.md "
-                "lists no editable files, so only QUEUE.md, LOG/, and "
-                "_build.md can be edited. Audit and test sessions "
+                "[Sovereign Implementer] BLOCKED: this session's build working "
+                f"file ({os.path.basename(build_path)}) lists no editable "
+                "files, so only QUEUE.md, LOG/, and the working file itself "
+                "can be edited. Audit and test sessions "
                 "don't edit source files — route findings to Captures in "
                 "QUEUE.md instead. If a file genuinely needs editing, halt "
-                "and add it to _build.md's Files: section with the user's "
-                "approval."
+                "and add it to the working file's Files: section with the "
+                "user's approval."
             )
 
         if not _is_build_file(filepath, cwd, build_files):
             return _deny(
                 "[Sovereign Implementer] BLOCKED: this file is not in the "
                 f"current build's file list.\n\n"
-                f"_build.md allows: {', '.join(build_files)}\n\n"
+                f"{os.path.basename(build_path)} allows: {', '.join(build_files)}\n\n"
                 "Files: lines must be bare paths — one path per line, "
                 "nothing else on the line. A note or annotation on a line "
                 "becomes part of the path and silently breaks the match, so "
                 "if this file looks listed above, check its line for "
                 "trailing text.\n\n"
                 "If this file genuinely needs editing, halt the build and, "
-                "with the user's approval, add it to _build.md's Files: "
+                "with the user's approval, add it to the working file's Files: "
                 "section."
             )
 

@@ -34,6 +34,12 @@ Then, four questions:
 3. Does it apply to every session, or only some?
 4. Could a hook do it instead, at no attention cost? Escalate to a hook when the failure's cost justifies its standing friction — every hook adds friction every session forever, so a cheap, self-correcting slip earns sharper wording instead. The cost of the failure decides, not the fact that a rule slipped.
 
+### Declaring a limit — state what it was derived from
+
+A limit the method's own text declares states what it was derived from. A proportion of the thing it governs, a figure from research, and an externally imposed constraint each qualify; a bare number does not.
+
+An absolute number is not the defect — the 150–200 instruction ceiling comes from research and the 10,000-character hook output cap is imposed by Claude Code, and both are sound. What is banned is the undeclared derivation, because a limit nobody can trace is a limit nobody dares change, and it fires against correct work.
+
 ### Admitting an exception — restate first
 
 §4 says where an exception goes once it exists. This says whether it gets to exist. Nothing did, which is why exceptions have been admitted on the author's say-so.
@@ -50,12 +56,9 @@ Then, four questions:
 
 ## 2. Eviction — what comes out
 
-Adding a rule names what it replaces or supersedes. Rules mostly arrive as refinements of existing ones, and the superseded version is what never gets removed. Two named mechanisms:
+Adding a rule names what it replaces or supersedes. **The techniques for taking one out live in [`rule-maintenance.md`](rule-maintenance.md)** — codification, consolidation, recasting, and the staleness test — because they are run during a subtraction pass rather than while authoring, and a session opening this document to write a rule has no use for them.
 
-- **Consolidation** — combine the rules on a topic into one and **repeal the priors**. The repeal is the essential half: a clearer restatement that leaves the old statement standing has doubled the text, not merged it.
-- **Recasting** — where amendments have accreted past legibility, repeal the whole thing and replace it with a single new text incorporating the original and all its amendments. Substantive changes are allowed in the same move.
-
-Also apply a **staleness test**: is this still true? A confidently wrong rule is worse than a missing one.
+What this step requires of an author is only the naming: say which rule this replaces or supersedes, and repeal it in the same move. A clearer restatement that leaves the old statement standing has doubled the text, not merged it.
 
 ## 3. Distribution — where it lives
 
@@ -75,14 +78,14 @@ The residual weakness, stated rather than left to be discovered: a filename is s
 
 One check, and the drafting devices that serve it. All of them are forms of a single instruction: **express a qualification as structure, not as explanation.**
 
-- Avoid provisos. A rule followed by a swelling "provided that" is the habit this exists to break.
+- State the rule bare and put the qualification in structure. A rule followed by a swelling "provided that" is the habit this exists to break.
 - Put the main clause first — the rule, then its conditions — especially where the conditions are long, since a reader needs a sentence's principal parts before it can place the rest.
 - Use `subject to <X>` as a cross-reference rather than restating the exception — a restatement costs a paragraph and creates a second copy that drifts.
 - Put multiple exceptions in their own subsection, referenced from the rule.
 - These two bullets place an exception that has already earned its place. **Whether it earns one at all is decided by the restatement test in §1** (Admitting an exception — restate first): restate the rule so it needs no exception, and admit one only where restatement lost content and a recorded instance shows the bare rule going wrong.
 - Use short connectives — but, except that, unless, so long as — not explanations.
-- One idea per provision. Don't mix conditions and exceptions in one sentence.
-- Don't hide exceptions. Clarity and brevity are both served by structure over prose.
+- One idea per provision: give a condition and an exception a sentence each.
+- Put every exception where a reader will meet it — in the rule's own structure, at the same level as the rule. Clarity and brevity are both served by structure over prose.
 
 ## Rationale lives outside the operative rule
 
@@ -115,10 +118,12 @@ But some sentences genuinely must travel with a rule for the rule to be applied 
 
 **The honest limit.** This protects against accidental stripping, which is the failure that has actually happened. It cannot stop a pass that deliberately rewrites a rule to remove the dependency; nothing short of a hook that understands meaning could. What the form guarantees is that doing so is a visible rewrite rather than a quiet deletion.
 
-**When moving a why, don't take an operative statement with it.** Docset B's fidelity audit found rules that had been *stated inside* their why-clauses — an exception at the end of a sentence, a definition in a parenthetical, a mechanism named in a subordinate clause — and lost when those clauses went. The risk in a subtraction pass is not what a paragraph argues; it is what a paragraph quietly defines while arguing.
+**Moving a why out is a subtraction-pass move, and its hazard — taking an operative statement with it — is covered in [`rule-maintenance.md`](rule-maintenance.md).**
 
 ## This document's own limits
 
-It is subject to its own admission test, and its maximum size is **1,200 words**. Past that, recast it rather than appending. Per-rule worked examples are deliberately excluded: they are the growth engine, and they are how its predecessor justified its own length.
+It is subject to its own admission test. Per-rule worked examples are deliberately excluded: they are the growth engine, and they are how its predecessor justified its own length.
+
+**It declares no maximum size, and the omission is deliberate.** A 1,200-word ceiling stood here until 2026-08-11 and was repealed under the derivation rule above: it was a bare number, stated in the same commit that created the file, at one draft's length plus a margin. Growth pressure on this document is handled by the same eviction and audit machinery as everything else. If it does bloat, the answer is a derived measure — a proportion of something that varies with it, or the instruction count this document already endorses — never another guess.
 
 **There is no per-model authoring pass, and that is deliberate.** This document used to carry one for Opus 4.8. Docset A retired on 2026-08-09 and 4.8 is no longer a supported model, so the checklist was deleted rather than marked historical — a document that reads as live gives live instructions, and its model-specific checks were all prescription-*adding*, the opposite of what the 5-series wants. The honest cost: there is now no written account of what the current models steer on. There hasn't been one since the retirement; this only stops the document pretending otherwise. A 5-series pass gets written if something shows one is needed.

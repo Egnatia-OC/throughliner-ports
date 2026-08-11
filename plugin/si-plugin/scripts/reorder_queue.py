@@ -309,6 +309,42 @@ def delete_item(queue_path, slug, section):
     sys.stderr.write("reorder_queue: deleted from %s: %s\n"
                      % (section, removed_heading))
 
+    # Warn when other work names the deleted slug as its blocker. Prevention at
+    # the source, where whoever is deleting can still act on it: once the item
+    # is gone, a deleted blocker and a shipped one are indistinguishable from
+    # the queue alone, and the held item was designed assuming its blocker
+    # would happen — so its premise may not survive the deletion.
+    #
+    # This does not make the plan-side branch and the lint message redundant. A
+    # deletion can happen by hand edit, bypassing this script entirely.
+    dependents = []
+    for i, line in enumerate(new_lines):
+        m = re.match(r'^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]', line.strip(), re.I)
+        if m and m.group(1) == slug:
+            heading = None
+            for j in range(i, -1, -1):
+                if ITEM_RE.match(new_lines[j]):
+                    heading = heading_slug(new_lines[j]) or new_lines[j].strip()
+                    break
+            dependents.append(heading or ('line %d' % (i + 1)))
+    if dependents:
+        # Deliberately states both readings instead of asserting one. This same
+        # --delete removes a BUILT item during a /next run and a DROPPED item at
+        # /plan, and the script cannot tell which — so a message that assumed
+        # "deleted as not worth doing" would cry wolf on every build removal of
+        # an item other work waits on, which is the common case. A warning that
+        # is usually wrong is one people learn to scroll past.
+        sys.stderr.write(
+            "reorder_queue: NOTE — %d held item(s) name [%s] as their blocker: "
+            "%s. Their Blocked by: lines now point at nothing, and from the "
+            "queue alone a shipped blocker and a dropped one look identical. "
+            "If [%s] SHIPPED, those items may be ready to lift. If it was "
+            "DROPPED as not worth doing, re-examine them instead — each was "
+            "designed assuming it would happen, so its premise may not "
+            "survive.\n"
+            % (len(dependents), slug, ', '.join('[%s]' % d for d in dependents),
+               slug))
+
 
 def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
     """Move one item's block byte-for-byte between sections.
@@ -401,7 +437,16 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
         for i, l in enumerate(t_out):
             if MARKER_RE.match(l):
                 marker_i = i
-            elif heading_slug(l) == slug:
+            elif ITEM_RE.match(l) and heading_slug(l) == slug:
+                # ITEM_RE guard, matching the only other heading_slug call.
+                # heading_slug matches ANY line ending in [slug], not only a
+                # `#### ` heading — so `Blocked by: [slug]` on a held item
+                # matched too, and this loop keeps the LAST match. Whenever the
+                # moved item was one that other work waits on, the report named
+                # the held item's position instead of the moved item's, and
+                # said "waiting, NOT cleared to run" about an item that was in
+                # fact cleared. That is the dangerous direction: it invites a
+                # session to correct a placement that was already right.
                 item_i = i
         if marker_i is not None and item_i is not None:
             side = "ABOVE" if item_i < marker_i else "BELOW"

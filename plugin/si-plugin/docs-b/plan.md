@@ -15,10 +15,12 @@ gets built first — through discussion, not silently.
 
 ## Ground rules
 
-- **Never build during /plan.** Want to write code? Queue it.
-- **One item at a time.** Finish one before presenting the next.
-- **Read SPEC.md before proposing work.** Don't queue contradictions.
-- **Process the accumulated unprocessed work before new planning work.**
+**In a /plan session:**
+
+- **never build** — code that needs writing is queued, not written here;
+- **take one item at a time**, finishing each before the next is presented;
+- **read SPEC.md before proposing work**, so nothing queued contradicts it;
+- **process the accumulated unprocessed work** before any new planning work.
 - **Write to QUEUE.md first, then report what landed.** Don't paste the text into
   chat for approval ahead of the write. Write it, then say in one line what went
   in and where — specific enough that the user can object without opening the
@@ -64,6 +66,15 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 - **Two sections, one move between them.** The only move is Unprocessed →
   Processed, made in /plan by discussing an item and agreeing to keep it. No third
   state, no parking.
+- **When placing an item into Processed — at the keep-step, or when lifting one
+  from below the line — keep `[user]` and `[audit]` lines end-preferred, as
+  done-plan.md's reorder step requires.** Both of /plan's insertion points were
+  blind to that rule, which is kept for one reason: batching the stops that need
+  a human is what lets an otherwise unattended run stay unattended. A `[user]`
+  line landing mid-region gives a run that stops for the user in the middle. The
+  close repairs it, but /next runs before /done, so an item placed at a /plan
+  opening and built the same day is built in the wrong order and the repair
+  arrives after the run it would have helped.
 - **A work item carries a user-credit only when the user raised it.** Provenance is
   asymmetric and default-AI; the credit stays on the item after processing. The
   credit needs the user's **own words** as its source — approving what Claude
@@ -108,13 +119,30 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
 
 ## Step 1: Read state and entry question
 
-Read QUEUE.md (both sections) and SPEC.md. Check whether Unprocessed has items.
+**Run the queue digest instead of reading QUEUE.md whole**, then read SPEC.md:
 
-**Page QUEUE.md to the end before reasoning over it.** A long queue can come back
-truncated, and a truncated read looks exactly like a complete one to whatever
-reasons over it — so the check belongs here, at the read. If the read stopped
-short, page the rest before going on; if for any reason you cannot, say so plainly
-rather than reasoning from the part you have.
+```
+python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
+# the plugin root is the grandparent of the running skill's base directory
+# (.../<plugin-root>/skills/<skill>) — derive it, never hardcode a path.
+```
+
+It prints one line per work item — section, side of the readiness marker, flavor,
+heading, slug, any `Blocked by:` with the blocker's resolved location, and any
+red-flag state. That is everything this step's queue-wide reasoning consumes; the
+rationale prose it omits is read per item, at the moment Step 2 presents that item.
+
+**The digest satisfies the page-to-the-end rule rather than dodging it.** That
+rule exists because a truncated read is indistinguishable from a complete one to
+whatever reasons over it — and a digest generated from the whole file by code
+cannot be silently truncated, so the guarantee is stronger than paging gives. If
+the digest fails to run, fall back to reading QUEUE.md whole and paging it to the
+end; if you cannot, say so plainly rather than reasoning from a partial view.
+
+**Re-run it whenever the picture needs to be current.** `session_start`'s
+dependency facts fire once and describe the queue as it stood *before* the session
+touched it, so a /plan that has processed a dozen items is otherwise reasoning
+against a stale snapshot. The digest is a script, so re-running is cheap.
 
 Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
@@ -172,13 +200,53 @@ revisit is one check per item:
 ```
 blocker shipped per LOG   ->  propose lifting the item above the marker
 blocker still open        ->  skip silently
-blocker missing or not
-    a real queue item     ->  a fault; surface it and fix it this session
+blocker DELETED per LOG   ->  surface the held item for re-examination.
+                              Don't lift it and don't repair the reference.
+blocker absent from the
+    queue and absent from
+    LOG — a wrong
+    reference             ->  a fault; surface it and fix it this session
 ```
+
+**Why deletion gets its own branch rather than folding into the others.** From
+the queue alone a deleted blocker and a shipped one are identical — both are
+simply absent — and LOG *can* tell them apart, but nothing used to say to look.
+A session finding no ship record had no branch to take, so the cheapest readings
+were "must have shipped, lift it" or "the reference is wrong, repair it", and
+both are wrong.
+
+A blocker is deleted because someone judged it not worth doing, and the held
+item was designed assuming that blocker would happen. Its premise may not
+survive. So the response is to re-examine the held item — **which is a fate
+decision, and therefore the user's.** This is the one branch here that is a
+question for them; everything else in this revisit is narrated or silent.
 
 Read shipped-ness off LOG, never off memory — a fresh short session has none.
 **Nothing here is a question for the user.** Lifting is narrated; a still-blocked
 item says nothing at all.
+
+**Then read the digest's placement-contradiction flags, across both regions.**
+The revisit above asks one question per held item and is deliberately silent when
+the answer is "still blocked", so an item's own text is never re-read once it is
+placed. The flags close that: an item is otherwise examined on the way in and
+never afterwards.
+
+```
+item in Processed whose own text says     ->  surface it. It is cleared to run
+  it must not be built, or was                and its own text forbids building
+  returned unbuilt                            it — a /next run would build the
+                                              thing the item forbids
+item in Processed whose Files line names  ->  surface it. The keep-check's
+  nothing, or names its own design's          buildability limb, failing after
+  output                                      the fact
+a hold chain — blocked by an item that    ->  surface it. Neither moves until
+  is itself held                              the chain's end does
+```
+
+**Flag, don't decide.** Moving an item out of Processed is a fate decision and
+stays the user's, so these are surfaced for them and nothing else. That is the
+one thing this differs from the revisit above in: lifting is narrated and
+performed, a contradiction is narrated and left.
 
 The four-way classifier this replaces — mechanically-checkable / Claude-downstream
 / user-only / still-waiting — existed because a blocker used to be a prose
@@ -256,7 +324,10 @@ stop, never an alternative to processing.
 
 ## Step 2: Process work  [SEQUENCE]
 
-**Planning state file: _plan.md.** Create it when processing begins, to hold the
+**Planning state file: `_plan-<session-id>.md`.** It is per session, not per
+project — a planning session must never pick up another session's working file,
+and a build running in another chat must never see this one. Create it when
+processing begins, to hold the
 item list, the current item, and the beat reached. Update it at each beat
 transition, and append each item with its disposition — kept / deleted /
 skipped-this-session — with slug, one line each.
@@ -264,7 +335,7 @@ skipped-this-session — with slug, one line each.
 The skipped-slug record is what stops a skipped item re-surfacing later in the
 same session. The file survives compaction, gives an interrupted /plan a resume
 path, and hands /done a mechanical record instead of a reconstruction from memory.
-/done reads it at close and deletes it — same lifecycle as _build.md.
+/done reads it at close and deletes it — same lifecycle as the build working file.
 
 **Run the scrub checklist before writing a kept item's text** (skill-nonspecific-rules.md,
 Scrub before writing). Keeping an item is where a capture's rough wording becomes
@@ -291,14 +362,24 @@ unblocks anything else, don't fall through to file order silently. Work down:
 1. an uncleared red flag in Unprocessed   an unaddressed data-exposure or privacy
                                           risk outranks throughput: the cost of
                                           leaving it is a breach, not a delay
-2. unblock-potential                      the stated default; what nearly every
+2. an item that would unstick a stalled   where the digest flags a placement
+   cleared region                         contradiction in Processed, the item
+                                          whose processing settles it goes first
+3. unblock-potential                      the stated default; what nearly every
                                           session actually uses
-3. decay                                  a premise going stale, or evidence that
+4. decay                                  a premise going stale, or evidence that
                                           only holds while the observation is fresh
-4. cheap to settle                        decidable in one exchange; clears volume
+5. cheap to settle                        decidable in one exchange; clears volume
                                           so the queue stops reading as heavy
-5. file order                             position in the section
+6. file order                             position in the section
 ```
+
+**Why the stall rung sits above unblock-potential rather than inside it.** Rung 3
+ranks by how much other work an item releases. A stalled cleared region is a
+different quantity: until it is settled *no* build happens at all, so the cost of
+leaving it is a stop to everything rather than a delay to something. That is rung
+1's argument — a non-throughput concern outranking throughput — applied to the
+one other condition that has it.
 
 The ladder is never presented as a choice — it's surfaced only through the one-line
 floor narration, which names whichever rung the order actually came from.
@@ -338,6 +419,11 @@ unblockers first — three items are holding other work up, so I'd recommend
 processing at least those three before your next /next." It's a
 planning-throughput target, not a context-budget count.
 
+**State the four routes here, once, in the same breath** — *"I'll work through
+these one at a time; say skip, stop, or close whenever."* This is the only place
+they are recited. The per-item checkpoint then presents just the next item, and
+never repeats the menu.
+
 ### For each item
 
 **1. Present and interview**  [DISCUSS, PROMPT]
@@ -351,6 +437,18 @@ every item after  ->  it was already sent at the prior item's checkpoint, so
                       open directly with analysis — no re-quote, no
                       "my read to follow" pre-framing
 ```
+
+**As part of the interview, ask what would answer this item's open questions.**
+Where the answer is something outside what you can read — a current version,
+whether a feature exists, what a tool actually does — offer the search or run
+the command, here, with the user present. Where it is a choice they own, ask.
+
+This is a forced site for a question that otherwise floats free. Both the
+web-search offer and the `[user]` capability check are written to fire on
+noticing something, and a session that has quietly settled on an answer notices
+nothing — which is why in practice the user has been the one asking for the
+search. A step that already runs on every item processed is a carrier; a
+standing rule with no site is not.
 
 **There is no separate "ready to dig into this one?" turn.** Presenting the item
 and beginning to work it is one beat. The one wait that stays is the [PROMPT] at
@@ -494,11 +592,19 @@ and reference that slug from the original. A gating action left embedded is
 invisible as next-work — its next-ness survives only in the memory of whoever read
 the prose.
 
-*Before any `[user]` tag stands, run the capability check.* Name the tool that
-would do the work and confirm it is absent or unauthenticated (the over-tag
-guard, skill-nonspecific-rules.md). Don't reason from what the task *sounds* like —
-"create a GitHub repo" sounded browser-shaped and went to the user when `gh`
-would have done it in seconds. This is the cheapest place to catch a wrong tag.
+*Before any `[user]` tag stands, run the THOROUGH capability check.* Restate the
+question as "what would answer this?" **before** searching, then name the tool
+that would do the work and confirm it is absent or unauthenticated (the over-tag
+guard, skill-nonspecific-rules.md). Trying a tool is allowed here where trying is
+quick — the user is in the room, which is what makes this the heavy site.
+
+Don't reason from what the task *sounds* like — "create a GitHub repo" sounded
+browser-shaped and went to the user when `gh` would have done it in seconds. And
+don't mistake a thorough search for a correct one: a check that searched
+diligently for *where a setting is stored* came back empty and honest, and the
+question was answered hours later by one command that had nothing to do with
+settings files. The reframe is what catches that, and it costs less than the
+search does. This is the cheapest place to catch a wrong tag.
 
 **Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.
@@ -517,52 +623,73 @@ Still a delete, just after its worth-keeping content has been carried across.
 
 **4. Checkpoint**  [PROMPT]
 
-After every item, present the next item and close on the off-ramps as the
-message's final, bold ask.
+After every item, present the next item. That is the whole checkpoint.
 
 ```
 message order:
     1. the NEXT item's verbatim (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
-    2. below it, the off-ramps as the closing bold question:
-         continue to the next item
-         skip this next one to the bottom for a later session
-         close out now (Step 3)
-         raise something else (loop back into Step 2)
+    2. nothing else. No menu of routes.
 ```
 
-All four must be genuinely on offer; deliver them conversationally, but below the
-verbatim, not above it. Putting the ask last gives the message a landing instead
-of ending on a raw quote that reads as stopping mid-thought.
+**The four routes are stated ONCE, at the start of processing, and never
+recited again.** Say it there in one line — *"I'll work through these one at a
+time; say skip, stop, or close whenever"* — and each checkpoint then presents
+only the next item.
+
+**Why the recital goes, and why rewording it was not enough.** The wording used
+was already a neutral either/or, which is not wrong in itself. The defect is
+position and repetition: an offer that *names closing*, delivered at the end of
+a long message just after finishing a piece of work, reads as an announcement
+that closing is what happens next — whatever its phrasing. A user once acted on
+that reading and ran /done on a session they wanted to continue, saying
+afterwards they had thought the session was over. Rewording a string that fires
+after every processed item leaves it firing after every processed item.
+
+Three things follow. Closing is never named immediately after completed work,
+which is the exact moment it misreads. Every checkpoint gets several lines
+shorter. And all four routes stay genuinely available — only the recital goes.
+
+**The cost, stated rather than discovered:** a user who forgets the options
+mid-session gets no reminder. Judged small — "stop" needs no teaching, and they
+can ask.
+
+**This does not touch the end-of-queue gate**, which fires when the queue empties
+and is deliberately worded not to lean toward closing. Leave it alone.
 
 The verbatim here is that next item's own presentation, not a forbidden
 look-ahead — the user acts on it immediately, so it's no [SEQUENCE] violation.
 
-**Skip-to-defer.** Skipping is one option among four, never its own turn — a
-separate "dig in or skip?" gate before every item would re-create the over-asking
-the method removed.
+**Skip-to-defer.** Skipping is one of the four routes named at the start of
+processing, never its own turn — a separate "dig in or skip?" gate before every
+item would re-create the over-asking the method removed.
 
 ```
 on skip:
-    move the item to the bottom of Unprocessed VIA THE MECHANICAL MOVER:
-        python <plugin-root>/scripts/reorder_queue.py QUEUE.md Unprocessed \
-            --move <slug> BOTTOM
-    # the plugin root is the grandparent of the running skill's base directory
-    # (.../<plugin-root>/skills/<skill>). Derive it from there so it resolves
-    # wherever the plugin is installed — never hardcode a path. A hardcoded
-    # path resolves only in the project the method is developed in, and the
-    # fallback when it fails is hand-retyping the block, which is exactly the
-    # corruption exposure the mover exists to remove.
-    # relocates the whole prose block byte-for-byte. The text is unchanged by a
-    # skip, so hand-retyping it via Edit is pure corruption exposure.
-    record its slug in _plan.md as skipped-this-session
+    record its slug in the planning working file as skipped-this-session
     don't re-present it this session — present the item after it
+    LEAVE THE FILE ALONE — no move, no edit to QUEUE.md
 ```
 
-A skipped item is not deleted and not processed. **The skipped record is the
-_plan.md slug and nothing else** — there is no durable queue marker, no "parked"
-or "dedicated-pass" tag written to QUEUE.md. Next session it's ordinary
-Unprocessed again.
+**Skipping moves nothing.** Claude is perfectly capable of skipping an item
+within the session and leaving the file order alone, and the move was expensive.
+The stronger reason is what the order records: file position tells a human *when
+things landed*, and relocating a skipped item overwrites that chronology with
+nothing more useful.
+
+**What the move was also doing, so the trade is deliberate rather than
+discovered.** It stopped a skipped item being presented first again next session
+— the planning working file is session-scoped, so the skipped-slug record does
+not survive. Retire the move and a skipped item returns to the top next session
+and is offered first. That is a one-word skip to repeat, which is why it is
+judged acceptable; it is a real cost, not a free saving. A durable marker was
+already rejected once, deliberately, as a phantom queue state — don't re-propose
+one.
+
+A skipped item is not deleted and not processed. **The skipped record is a slug
+in the planning working file and nothing else** — there is no durable queue
+marker, no "parked" or "dedicated-pass" tag written to QUEUE.md. Next session
+it's ordinary Unprocessed again.
 
 Skipping the last item leaves Unprocessed non-empty, which is fine. On the last
 item there's no next verbatim, so the message is just the off-ramps — worded
