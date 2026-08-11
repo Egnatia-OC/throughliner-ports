@@ -1,4 +1,4 @@
-# [HASH] — Show-first became available on request, and /next's inline edit display folded into the offer that already exists
+# 08c885b — Show-first became available on request, and /next's inline edit display folded into the offer that already exists
 
 Captured by the user, whose words were that showing then writing is a sometimes thing, for on request only, remote control or workflows where users may request it. Mixed authorship: the /next half is the user's design, reached by correcting Claude's framing in the interview; the /plan half and the distinction below are Claude's.
 

@@ -1,4 +1,4 @@
-# [HASH] — session_start now emits the queue's dependency facts, and /plan derives the throughput floor from them instead of inventing it
+# 08c885b — session_start now emits the queue's dependency facts, and /plan derives the throughput floor from them instead of inventing it
 
 Captured by the user, whose question was whether the dependency graph could be made mechanical and cheap, like the lint, or built into Understudy. The design is Claude's, agreed by the user.
 

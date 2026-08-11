@@ -1,4 +1,4 @@
-# [HASH] — The planning quiet list fixed: it was case-inverted on Windows and had never matched once
+# 08c885b — The planning quiet list fixed: it was case-inverted on Windows and had never matched once
 
 The user reported constantly getting a permission dialog while in auto mode, and supplied a screenshot showing the hook naming QUEUE.md as outside a list that contains QUEUE.md. The diagnosis and the fix are Claude's.
 

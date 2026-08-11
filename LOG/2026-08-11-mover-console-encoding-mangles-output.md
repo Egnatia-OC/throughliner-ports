@@ -1,4 +1,4 @@
-# [HASH] — The queue mover's console output forced to UTF-8, so item headings echo back readably on Windows
+# 08c885b — The queue mover's console output forced to UTF-8, so item headings echo back readably on Windows
 
 Captured by the user from repeated instances — every deletion the mover confirmed printed the item's heading back with em-dashes replaced by a replacement character. The diagnosis and scoping are Claude's.
 

@@ -1,4 +1,4 @@
-# [HASH] — The Throughliner rename reached and returned unbuilt: its first step is already done, and its ripple is wider than the item states
+# 08c885b — The Throughliner rename reached and returned unbuilt: its first step is already done, and its ripple is wider than the item states
 
 Not built. This entry records why, so the next session that reaches the item starts from what the grep found rather than from the item's own file list.
 

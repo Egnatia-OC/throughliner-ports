@@ -1,4 +1,4 @@
-# [HASH] — A Stop hook now catches a report naming work that isn't there, and the write-first test was restated rather than excepted
+# 08c885b — A Stop hook now catches a report naming work that isn't there, and the write-first test was restated rather than excepted
 
 Captured by the user on 2026-08-10 from a live instance and their report that it had been happening for up to five days. Kept as one item at their instruction. Mixed authorship: the failure and its dating are the user's; the mechanism and the restatement are Claude's.
 

@@ -1,4 +1,4 @@
-# [HASH] — The revert-span sweep run: seven stale claims corrected, and a broken fetch path nobody had itemised
+# 08c885b — The revert-span sweep run: seven stale claims corrected, and a broken fetch path nobody had itemised
 
 Captured by the user after `19ff11b` and widened on 2026-08-09 from SPEC-and-README-only to the whole doc set. The 2026-08-09 revert unwound 65 commits and nothing was audited afterwards.
 

@@ -1,4 +1,4 @@
-# [HASH] — The self-authoring gate gained an admission test for exceptions: restate first, admit only on a recorded instance
+# 08c885b — The self-authoring gate gained an admission test for exceptions: restate first, admit only on a recorded instance
 
 Captured by the user on 2026-08-10 with a block attached — no further exception-shaped rule may be admitted until this is in place. Mixed authorship: the block and the underlying principle are the user's; the design is Claude's, agreed in the processing interview.
 

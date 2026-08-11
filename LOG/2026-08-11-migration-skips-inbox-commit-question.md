@@ -1,4 +1,4 @@
-# [HASH] — The INBOX commit question dropped in favour of ignoring it unconditionally, on both setup paths
+# 08c885b — The INBOX commit question dropped in favour of ignoring it unconditionally, on both setup paths
 
 This item carried a red flag, cleared at processing on 2026-08-11. It is recorded here as carried and cleared; the substantive clearing record was written at that /plan close.
 

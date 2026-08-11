@@ -1,4 +1,4 @@
-# [HASH] — Nineteen LOG headings repointed, twenty-one index placeholders resolved, and a close that commits after a partial staging failure stopped
+# 08c885b — Nineteen LOG headings repointed, twenty-one index placeholders resolved, and a close that commits after a partial staging failure stopped
 
 Filed 2026-08-10 at the user's instruction after Claude surfaced it. Mixed authorship: Claude found the wrong hashes and the cause, the user instructed the filing, and the user agreed at processing that the cause-side fix belongs in this item rather than in a line of its own.
 

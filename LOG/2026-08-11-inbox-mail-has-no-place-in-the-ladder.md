@@ -1,4 +1,4 @@
-# [HASH] — /plan's Step 1 gained the guaranteed moment waiting INBOX mail is opened
+# 08c885b — /plan's Step 1 gained the guaranteed moment waiting INBOX mail is opened
 
 Captured by the user, whose words were that INBOX should be somewhere on the ladder and that items in the inbox should be ranked into the most-unblocking flow and simply processed like captures. The design is Claude's, agreed by the user.
 

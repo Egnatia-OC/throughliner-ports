@@ -157,6 +157,14 @@ Two steps: clean the version, then `git push`. It runs when Alex says "push", af
 
 Pushing often is the point: it decouples "the work is safely on the remote" from "I am publishing a version," so the routine action never carries a publishing decision. **No release-due check runs here.** A release happens when Alex asks for one.
 
+## Discord posts
+
+**Announce only what has shipped: every claim in a post is true of the installed plugin at the moment it is posted.** Where a post describes work that is designed but not built, the post waits for the build — file it as a queue item naming what it waits on.
+
+The limit is **2,000 characters**, which is Discord's.
+
+Claude drafts and Alex posts, because Claude has no route to Discord. The draft is shown before it goes and needs an explicit yes: that is the existing rule on anything leaving the machine, and nothing here changes it.
+
 
 ## Handoff-claim provenance
 
