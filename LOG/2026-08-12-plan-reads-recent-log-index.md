@@ -1,4 +1,4 @@
-# [HASH] — /plan's Step 1 reads the five most recent LOG index lines, at a cost re-measured rather than assumed
+# 0ae69d6 — /plan's Step 1 reads the five most recent LOG index lines, at a cost re-measured rather than assumed
 
 The read lands at Step 1's read-state, alongside the digest and SPEC, folded into the opening narration that already fires. No separate output and no summary of the log for its own sake — orientation, not a report.
 

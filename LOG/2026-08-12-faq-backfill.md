@@ -1,4 +1,4 @@
-# [HASH] — Six FAQ entries added for behaviours with no coverage, and the last surviving stale entry corrected
+# 0ae69d6 — Six FAQ entries added for behaviours with no coverage, and the last surviving stale entry corrected
 
 **Scoped from a comparison rather than from the item's own list**, as [faq-backfill-partly-overtaken] instructed. That capture was right: four of the five entries this item named as documenting retired mechanisms were already corrected in `08c885b`. The remaining job was coverage of undescribed changes, not correcting falsehoods — with one exception the capture did not know about.
 

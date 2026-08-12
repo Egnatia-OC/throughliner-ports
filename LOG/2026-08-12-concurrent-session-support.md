@@ -1,4 +1,4 @@
-# [HASH] — Unmerged worktree work detected and offered a merge; the isolated close warns that "remove" deletes it
+# 0ae69d6 — Unmerged worktree work detected and offered a merge; the isolated close warns that "remove" deletes it
 
 The failure this addresses is not two sessions colliding — that was cut when the item was reshaped to merge-at-close only. It is a session's work sitting unmerged on a branch nobody is tracking, one prompt away from being deleted by a user who reads "remove" as tidying up. The harness creates a session's worktree and branch and **never merges either back**; its exit prompt's remove option deletes the worktree directory and the branch with everything in them.
 

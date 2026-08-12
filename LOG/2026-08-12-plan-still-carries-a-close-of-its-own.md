@@ -1,4 +1,4 @@
-# [HASH] — /plan's wind-down re-scan and Step 3 removed entirely; the fourth off-ramp reworded to "run /done"
+# 0ae69d6 — /plan's wind-down re-scan and Step 3 removed entirely; the fourth off-ramp reworded to "run /done"
 
 The user's account was right and the shipped document disagreed with it, which was the defect: `plan.md` still carried a "Wind-down re-scan" section stating that **/plan runs the FULL re-scan** while /done runs a file-only version, a "Step 3: Close out", and a checkpoint off-ramp naming closing as a phase. A session following the document did exactly what the user had been correcting — offering to wind down and close at nearly every checkpoint.
 

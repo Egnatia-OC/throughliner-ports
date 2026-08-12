@@ -1,4 +1,4 @@
-# [HASH] — A context-adjacency offer triggered at the fallback ladder's bottom rung, with both open questions settled at build
+# 0ae69d6 — A context-adjacency offer triggered at the fallback ladder's bottom rung, with both open questions settled at build
 
 The ladder is unchanged — file order stays rung 6 and is what runs if the offer is declined. Reaching it now triggers **one** offer: process the items whose material this session has already loaded, work through in order, or run /done.
 

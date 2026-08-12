@@ -1,4 +1,4 @@
-# [HASH] — The three-lens compliance sweep: 330 against a ceiling of 200 in this project, and ten findings filed
+# 0ae69d6 — The three-lens compliance sweep: 330 against a ceiling of 200 in this project, and ten findings filed
 
 The first run of the sweep since the AUDITED signal was given a trigger. All eleven docs in scope read; no files edited, per the audit contract.
 

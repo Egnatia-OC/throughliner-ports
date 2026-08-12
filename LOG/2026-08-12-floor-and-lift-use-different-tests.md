@@ -1,4 +1,4 @@
-# [HASH] — The below-line lift and the throughput floor named as different questions, stated once at the revisit
+# 0ae69d6 — The below-line lift and the throughput floor named as different questions, stated once at the revisit
 
 A clarifying clause, not a rule: it restates what two existing steps already do and adds no obligation, which is why it consumed no slot at the authoring gate.
 

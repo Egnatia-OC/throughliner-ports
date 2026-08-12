@@ -1,4 +1,4 @@
-# [HASH] — The editing-state contract extracted to its own root doc; SPEC down 792 words to 5,367
+# 0ae69d6 — The editing-state contract extracted to its own root doc; SPEC down 792 words to 5,367
 
 **The extraction.** The editing-state signal's field-level contract — location, JSON field names, the version-2 migration and why it happened, per-edit firing, the recommended reader policy, the mtime-versus-`written_at` failure-direction argument, Windows path-case comparison, fail-open, the two known limits, housekeeping — now lives in `EDITING-STATE-CONTRACT.md` at the repository root, 1,048 words.
 

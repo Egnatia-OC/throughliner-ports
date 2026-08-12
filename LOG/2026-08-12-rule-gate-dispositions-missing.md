@@ -1,4 +1,4 @@
-# [HASH] — The BORN signal gets a baseline commit, dropping its report from 15-of-15 to 1-of-1
+# 0ae69d6 — The BORN signal gets a baseline commit, dropping its report from 15-of-15 to 1-of-1
 
 `DISPOSITION_BASELINE = "7c9922a"` in `resources/rule_signals.py`. BORN now examines only commits **after** the one in which the disposition obligation shipped.
 

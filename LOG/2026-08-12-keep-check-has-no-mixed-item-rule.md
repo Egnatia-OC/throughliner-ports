@@ -1,4 +1,4 @@
-# [HASH] — The keep-check gains a mixed-item rule framed as a design question, plus a finding-versus-work clause
+# 0ae69d6 — The keep-check gains a mixed-item rule framed as a design question, plus a finding-versus-work clause
 
 Two additions to `plan.md`'s two-limb keep-check.
 

@@ -1,4 +1,4 @@
-# [HASH] — CONTRADICTED, a sixth board signal: a commit whose rule count rose while its LOG entry says the gate wasn't needed
+# 0ae69d6 — CONTRADICTED, a sixth board signal: a commit whose rule count rose while its LOG entry says the gate wasn't needed
 
 The user's question at /plan was what checks the dispositions against what was queued. The answer was **nothing**. BORN is a presence check: a session that added four rules and wrote `Rule gate: not needed — typo fix` satisfies it completely, and nothing anywhere contradicted that.
 

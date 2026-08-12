@@ -1,4 +1,4 @@
-# [HASH] — The fold-the-recommend clause gains a hard precondition: agreement must be about this item, in this exchange
+# 0ae69d6 — The fold-the-recommend clause gains a hard precondition: agreement must be about this item, in this exchange
 
 `plan.md` permitted folding a recommendation into the action *"when the user already agreed during the interview"*, and nothing in the clause bounded which item the agreement was about or when it was given. Claude treated the checkpoint's "continue" as that prior agreement — presenting the next item, recommending, writing it, moving it into Processed and reporting "kept and cleared" all in one turn, repeatedly, across most of a long session. The user's decision point disappeared.
 

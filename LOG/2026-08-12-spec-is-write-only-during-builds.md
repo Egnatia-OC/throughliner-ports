@@ -1,4 +1,4 @@
-# [HASH] — Builds now read SPEC and are checked against it; the sync gate leaves the build close for the /plan close
+# 0ae69d6 — Builds now read SPEC and are checked against it; the sync gate leaves the build close for the /plan close
 
 Four parts, decided by the user at /plan: the doc stays, builds read SPEC, the sync gate moves to the end of /plan, and in its place the build close *checks what was built against SPEC* rather than syncing SPEC to match it.
 

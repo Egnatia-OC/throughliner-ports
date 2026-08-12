@@ -1,4 +1,4 @@
-# [HASH] — The work cycle stated as a loop with its return edges, at the opening of plan.md and next.md
+# 0ae69d6 — The work cycle stated as a loop with its return edges, at the opening of plan.md and next.md
 
 The block the item drafted, placed verbatim at each doc's opening as its own "The work cycle" section, marked as orientation Claude reads and never recites to the user.
 

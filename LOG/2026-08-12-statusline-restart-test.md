@@ -1,4 +1,4 @@
-# [HASH] — statusline-restart-test: the desktop app never ran the probe, so the mechanism is dead here
+# 0ae69d6 — statusline-restart-test: the desktop app never ran the probe, so the mechanism is dead here
 
 **[user] walk-through of the status-line restart test.** Second attempt; the first ran 2026-08-10 and did not discriminate.
 

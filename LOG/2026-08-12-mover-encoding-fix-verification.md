@@ -1,4 +1,4 @@
-# [HASH] — mover-encoding-fix-verification: the UTF-8 fix works, em-dash echoed intact
+# 0ae69d6 — mover-encoding-fix-verification: the UTF-8 fix works, em-dash echoed intact
 
 **[user] walk-through of the queue-mover console encoding check. RESOLVED — the fix works.**
 
