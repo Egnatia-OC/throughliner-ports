@@ -99,6 +99,8 @@ No code method/
 
   **It over-fires, and that is the design rather than a defect.** Touching `docs-b/` for a typo is not authoring a rule, but a false fire costs one line — "not needed, typo fix". FAQ-sync makes exactly this trade and it is why it works.
 
+  **What checks the disposition, and what nothing checks.** Two board signals read it, and only together. BORN checks the line *exists*. CONTRADICTED checks it isn't contradicted by its own commit: where a commit's always-loaded rule-statement count **rose** and its LOG entry says `not needed`, that is a contradiction between two artifacts that are supposed to agree, detectable with no judgment. A fall or no change is never a finding — an eviction pass owes no defence. **Neither can tell whether a gate recorded as `run` ran honestly**; a dishonest "run — considered and kept" defeats both completely. Say so rather than letting the pair read as full coverage: a check that over-claims makes the corpus look guarded when it is only partly guarded. Both are bounded by a baseline commit (`DISPOSITION_BASELINE` in `resources/rule_signals.py`), so neither reports work done before the obligation existed.
+
   **The `Retired:` line rides the same disposition rather than being a second close obligation** — one line, one place, carrying both what the gate decided and what this session retired. It appends to `resources/retired-terms.md`, which is what lets the board report every rule still naming a retired mechanism.
 
   **Host-only by residence**, like the rules above it: consumers never author method rules and would be baffled by the obligation.

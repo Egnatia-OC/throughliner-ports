@@ -822,6 +822,17 @@ worktree     ->  sessions cannot collide at all — but a capture filed in one
   moment worth avoiding is /next's close, which rewrites Processed and moves the
   marker. Under isolation, pausing achieves nothing at all — the capture lands
   in the other session's own copy and cannot reach the running build.
+
+  **What happens to an isolated session's work at close, which is the case that
+  loses work.** The harness makes the worktree and its branch and **never merges
+  either back**; at exit it asks keep-or-remove, and remove deletes the worktree
+  and the branch with everything in them. So an isolated close commits, then says
+  which branch the work is on, that it is not merged, and that "remove" would
+  delete it. The merge itself cannot happen there — git refuses to update a branch
+  checked out in another working tree — so it is offered at a **main-checkout**
+  session's start, where session_start reports worktrees carrying unmerged
+  commits. Offer, never merge silently; on a conflict leave the branch alone and
+  say the work is safe on it.
 - **An empty Processed section is normal** — the vetted work is done.
 
 ## Consumer feedback channel and cross-project INBOX

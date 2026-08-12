@@ -44,3 +44,6 @@ early turns the signal off while the problem stands.
 - `Blocks:` — a queue field, retired in favour of `Blocked by:` on the held item
 - `Depends on:` — a queue field, retired in favour of `Blocked by:` on the held item
 - `session-break line` — a manual run bound, retired 2026-08-11; the readiness line is the run bound
+- `Wind-down re-scan (/plan's)` — /plan's own full re-scan, retired 2026-08-12; done.md's file-only version runs at every close whatever the session type
+- `Step 3: Close out` — /plan's close-out phase, retired 2026-08-12; /done is the only close, and the work-cycle block at plan.md's opening is what now names it
+- `Spec-sync gate (build close)` — the build close's sync obligation, retired 2026-08-12; it became a check-against, and the /plan close carries the only sync gate

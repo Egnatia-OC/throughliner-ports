@@ -13,6 +13,35 @@ You are building the cleared work from the queue. /next works the Processed
 section top-down — building Claude-work items, walking the user through user-work
 — scope-locked to the files that work touches.
 
+## The work cycle
+
+Orientation, read here and never recited to the user.
+
+```
+The work cycle. Every piece of work travels the same loop.
+  STANDING — anything noticed, by anyone, at any moment, becomes a
+     capture in Unprocessed. Not a stage: it is available throughout.
+     Any session may file one; no session but /plan may process one.
+  1. /plan — think and organise. Processes a capture: kept into
+     Processed, or deleted. Keeping settles how it runs — build,
+     [audit], [user], [freeform] — and where it sits.
+  2. /next — build. Takes the top piece of ready work from above the
+     readiness line and builds it, top-down, several back-to-back.
+  3. /done — record what happened, and commit.
+  4. Then the session ends and a fresh one starts. The loop's boundary
+     is a new session with no memory of this one, which is why every
+     return edge below routes through a FILE and never through what
+     someone remembers.
+  5. RETURN EDGE — an [audit] edits nothing. It files findings as
+     captures, which re-enter at the standing step and become work at
+     step 1. A planning session between a finding and its build is the
+     cycle working, not an obstacle to it.
+  6. RETURN EDGE — a build that discovers something files a capture and
+     carries on. The discovery re-enters at the standing step.
+  7. [user] work is walked through, never built. It leaves the loop only
+     when the user has done it.
+```
+
 ## What /next runs on
 
 QUEUE.md holds two sections: **Unprocessed** (captured, not yet processed) and
@@ -53,9 +82,14 @@ one belonging to *this* session and no other. A build running in another chat ha
 its own, and its file list is not this session's scope — a planning session that
 read another session's working file used to conclude it was inside that build.
 
-### 2. Find the run  [SILENT]
+### 2. Find the run, and read SPEC  [SILENT]
 
-Read Processed top-down and take everything above the marker.
+**Read SPEC.md once here, at run start** — not per item. It is the product truth
+each item is built against, and a build that never reads it cannot be checked
+against it. Reading it once per run is what makes the per-item check below cost
+almost nothing.
+
+Then read Processed top-down and take everything above the marker.
 
 ```
 early exits:

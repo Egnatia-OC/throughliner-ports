@@ -66,8 +66,32 @@ worked — routes out via Scope management below.
 2. make the changes                        # no point-form preview first
 3. if readable content -> reveal the new text (informational, no ask)
    if code             -> stay silent
-4. tick it: - [x] item description — done
+4. check what was built against SPEC       # SILENT unless it contradicts
+5. tick it: - [x] item description — done
 ```
+
+**Step 4 checks the work against SPEC; it never edits SPEC to fit the work.** SPEC
+was read once at run start (next.md's pre-flight), so this costs almost nothing,
+and a contradiction caught at the item that caused it is far cheaper to fix than
+one found after five more items are built on top of it. **Silent unless it finds
+something** — an unattended run must not narrate a passing check.
+
+```
+built work agrees with SPEC        ->  say nothing, tick, continue
+built work CONTRADICTS SPEC        ->  [PROMPT] stop and name which SPEC sentence
+                                       it contradicts, in plain words. The user
+                                       decides whether the build is wrong or
+                                       SPEC is.
+build establishes NEW product      ->  the ordinary scope-grow route below: ask,
+  truth SPEC doesn't yet carry         add SPEC.md to Files, edit inline
+```
+
+Note what this replaces. The build close used to *sync* SPEC to match what was
+built. A close-time sync on a document the build never read can only record what
+the build did — it cannot catch a build that contradicted the spec, because it has
+nothing to compare against. That is a justification step wearing a check's
+clothing. Reading SPEC at run start is what makes a real check possible, and the
+sync gate now lives only at the /plan close.
 
 **A check Claude can run is part of building, not a separate test.** Run whatever
 verification you can — read the code back, run a command, inspect output, check

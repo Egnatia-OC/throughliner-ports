@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's Discord section gains a purpose statement: announce Throughliner changes and nothing else
+# b51d205 — CLAUDE.md's Discord section gains a purpose statement: announce Throughliner changes and nothing else
 
 Written in the tail after the 2026-08-12 planning close, at the user's request and in response to a failure minutes earlier.
 

@@ -32,6 +32,8 @@ Hooks run automatically in the background to enforce discipline — locking edit
 
 At the start of a session they also tell you **whether this conversation is isolated from any other one you have open on the project** — worked out from git rather than assumed, because the right advice about running two conversations at once is opposite in the two cases. And they name any **working file left behind by a conversation that never closed**, without deleting it: that file can be the only record of what a crashed session actually did.
 
+Where your app gives each conversation its own copy of the project, they also point out **work sitting on a branch that hasn't been merged back**, and offer to merge it. Nothing merges on its own, and an isolated conversation warns you at its close that the app's "remove" option at exit would delete that work along with the copy.
+
 `/plan` opens by checking your queue for work whose position disagrees with what the work itself says — something marked ready that its own notes say must not be built, something marked ready with no files to change, or a chain of work each waiting on something else that is also waiting. It reports what it finds and moves nothing; that decision stays yours.
 
 And they check Claude's own reports. Claude writes to your queue first and tells you after, which keeps the write safe — but it means a reply could report filing something the write never actually made, and you'd have no way to tell. So when a reply says a named piece of work was filed, a hook checks your queue for it, and if it isn't there Claude is made to fix it and tell you plainly before you act on it.
@@ -40,7 +42,7 @@ When something goes wrong, Claude works out which of three things it was and sen
 
 If you run more than one project on the method, they can **message each other**. Each project gets an `INBOX/` folder, and anything waiting in yours is mentioned at the start of a session — no carrying notes between chats by hand. A message going out to another project is always shown to you for approval first, because it carries this project's content somewhere else.
 
-They also publish an **editing-state signal**: while Claude is writing to a file, a small marker in a `.throughliner/` folder says so, so another app you have open on the same document can hold off rather than the two of you typing over each other. It's a published contract other applications can read, it fails open where the plugin isn't installed, and the folder is gitignored — safe to delete at any time.
+They also publish an **editing-state signal**: while Claude is writing to a file, a small marker in a `.throughliner/` folder says so, so another app you have open on the same document can hold off rather than the two of you typing over each other. It's a published contract other applications can read — the field-level specification is in [EDITING-STATE-CONTRACT.md](EDITING-STATE-CONTRACT.md) — it fails open where the plugin isn't installed, and the folder is gitignored, so it's safe to delete at any time.
 
 ## How to use it
 

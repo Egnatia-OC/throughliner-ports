@@ -13,6 +13,35 @@ note: >
 building happens here.** Claude owns sequencing — the order work sits in, what
 gets built first — through discussion, not silently.
 
+## The work cycle
+
+Orientation, read here and never recited to the user.
+
+```
+The work cycle. Every piece of work travels the same loop.
+  STANDING — anything noticed, by anyone, at any moment, becomes a
+     capture in Unprocessed. Not a stage: it is available throughout.
+     Any session may file one; no session but /plan may process one.
+  1. /plan — think and organise. Processes a capture: kept into
+     Processed, or deleted. Keeping settles how it runs — build,
+     [audit], [user], [freeform] — and where it sits.
+  2. /next — build. Takes the top piece of ready work from above the
+     readiness line and builds it, top-down, several back-to-back.
+  3. /done — record what happened, and commit.
+  4. Then the session ends and a fresh one starts. The loop's boundary
+     is a new session with no memory of this one, which is why every
+     return edge below routes through a FILE and never through what
+     someone remembers.
+  5. RETURN EDGE — an [audit] edits nothing. It files findings as
+     captures, which re-enter at the standing step and become work at
+     step 1. A planning session between a finding and its build is the
+     cycle working, not an obstacle to it.
+  6. RETURN EDGE — a build that discovers something files a capture and
+     carries on. The discovery re-enters at the standing step.
+  7. [user] work is walked through, never built. It leaves the loop only
+     when the user has done it.
+```
+
 ## Ground rules
 
 **In a /plan session:**
@@ -39,11 +68,18 @@ gets built first — through discussion, not silently.
   sentence go wrong or incomplete?**) — edit SPEC in that same /plan session, with
   the user present and approving. Don't defer it. Spec-driven development's
   contract is that a change altering behaviour updates the spec in the same
-  commit; the /plan-close spec-sync gate enforces that atomicity. When a change
-  touches no SPEC sentence, none of this applies. Two other routes exist: a build
-  that discovers it needs a SPEC change asks, adds SPEC.md to its Files, and edits
-  it inline (next-build.md); and a large SPEC rework is its own piece of work,
-  naming SPEC.md among its files like any other build.
+  commit; the /plan-close spec-sync gate enforces that atomicity, and it is now
+  the **only** sync gate — a build close checks its work against SPEC instead of
+  editing SPEC to match. When a change touches no SPEC sentence, none of this
+  applies. Two other routes exist: a build that discovers it needs a SPEC change
+  asks, adds SPEC.md to its Files, and edits it inline (next-build.md); and a
+  large SPEC rework is its own piece of work, naming SPEC.md among its files like
+  any other build.
+
+  **SPEC is read at build time, not only here.** /next reads it at run start, so
+  it is the truth each item is built against rather than a document only planning
+  consults. That is what a queued item's own text has to survive: write it so a
+  build reading SPEC alongside it finds the two in agreement.
 - **/plan resolves what it can in-session; capture is only for what it can't.**
 
 ```
@@ -144,6 +180,19 @@ dependency facts fire once and describe the queue as it stood *before* the sessi
 touched it, so a /plan that has processed a dozen items is otherwise reasoning
 against a stale snapshot. The digest is a script, so re-running is cheap.
 
+**Then read the five most recent lines of `LOG/index.md`** — the top five, newest
+first. This is orientation: it sets the session's upcoming work against what just
+happened, so a fresh session does not open blind to its own recent history. Fold
+anything relevant into the opening narration; **produce no separate output and no
+summary of the log for its own sake.**
+
+Five lines, not the entries beneath them. An index line is built for exactly this
+— it carries the artifact touched and the nature of the change so a session can
+decide what to open without reading prose — and it is capped at a share of its
+entry, so the read is bounded. Measured at roughly 560 tokens. The full retrieve
+path is untouched: this is the orientation read, not a replacement for opening the
+entry that matters.
+
 Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
 
@@ -224,6 +273,22 @@ question for them; everything else in this revisit is narrated or silent.
 Read shipped-ness off LOG, never off memory — a fresh short session has none.
 **Nothing here is a question for the user.** Lifting is narrated; a still-blocked
 item says nothing at all.
+
+**This revisit and the throughput floor ask different questions**, and reading
+either alone makes the other look wrong:
+
+```
+Two tests, different questions — they are not inconsistent.
+  the lift  asks "has this already SHIPPED?"  -> read off LOG
+  the floor asks "what can THIS session
+                  unblock?"                    -> counts blockers in
+                                                  Unprocessed only
+A blocker sitting in Processed needs a BUILD, not a planning session, so
+it is not the floor's business: /next builds it, it leaves the queue, and
+the next revisit lifts what it held.
+The case to watch is a blocker that is ITSELF held below the line — a
+chain. One that terminates is slow; one that loops never resolves.
+```
 
 **Then read the digest's placement-contradiction flags, across both regions.**
 The revisit above asks one question per held item and is deliberately silent when
@@ -384,6 +449,36 @@ one other condition that has it.
 The ladder is never presented as a choice — it's surfaced only through the one-line
 floor narration, which names whichever rung the order actually came from.
 
+**Reaching rung 6 triggers one offer** [PROMPT]. The ladder itself is unchanged —
+file order stays the bottom rung and is what runs if the offer is declined.
+
+```
+  "Nothing left distinguishes these by priority. Some are close to what
+   we've already loaded this session — <named set>. Take those, work
+   through in order, or run /done?"
+
+  user takes the set   ->  process those, in the order given
+  user declines        ->  file order, exactly as the rung says
+  user runs /done      ->  the session ends there
+```
+
+**Which items qualify is checkable, not judged:** an item whose files, research
+notes or subject matter this session has *already opened*. Read it off what was
+actually read this session, not off what feels related.
+
+**How large the set may be follows from that criterion rather than from a
+number.** Name every item that qualifies. If so many qualify that the set can't
+be read in one line, the criterion isn't discriminating anything — say nothing and
+take file order. The bound is the criterion's own selectivity; a fixed count would
+be a bare number, which the method does not admit.
+
+**This step asks, and every rung above it does not — the exception is deliberate.**
+The ladder is internal, applied, never offered, because ordering is Claude's to
+own. Only the user knows whether there is appetite for more items at all, so this
+offer is as much *shall we continue* as *in what order*, and that is a question
+about the user's time, which was never Claude's to own. Don't delete this for
+contradicting the rule above it.
+
 The reorder is **conditional and change-scoped**, not a full re-derivation:
 consider only what changed since last session (items newly captured, dropped, or
 whose relationships shifted — read the slug-references items already carry), and
@@ -409,6 +504,10 @@ worth processing" — rather than reaching for a number.
 State what it was derived from when you say it, because a bare number is a
 number nobody can check.
 
+The floor counts blockers in **Unprocessed only**, and that is not an
+inconsistency with the below-line revisit's shipped test — the two ask different
+questions, stated once at that revisit.
+
 **And say it out loud, always.** The floor narration fires every session,
 including when the derivation lands on zero. A floor that is computed and never
 spoken is indistinguishable from one that was never computed — which is what
@@ -420,7 +519,7 @@ processing at least those three before your next /next." It's a
 planning-throughput target, not a context-budget count.
 
 **State the four routes here, once, in the same breath** — *"I'll work through
-these one at a time; say skip, stop, or close whenever."* This is the only place
+these one at a time; say skip, stop, or run /done whenever."* This is the only place
 they are recited. The per-item checkpoint then presents just the next item, and
 never repeats the menu.
 
@@ -500,6 +599,34 @@ Processed and then stalled a /next run that had a file list and nothing to build
 from. An item that can't pass both limbs gets sharpened further in the interview,
 or skip-to-deferred with its design progress written into its prose — never kept.
 
+**The second limb also asks whether this is work at all.** Ask what changes inside
+which files and get "nothing" back, and the item is a **finding**, not work — its
+home is `resources/` or the LOG under the three-way triage, not Processed. Route it
+there and delete the queue item.
+
+**When one item is mixed — half fully specified, half not designable yet —
+surface it as a choice about DESIGNING, never about filing.** Ask *"shall we
+design the remainder now, or split it off?"* Do not ask "shall I split this item
+or keep it whole?": that is a filing question, and it hides the decision that is
+actually the user's.
+
+```
+design it now  ->  design the remainder in-session; keep the item whole
+split          ->  buildable half   kept into Processed, passing both limbs
+                                    on its own
+                   undesigned half  returned to Unprocessed with the design
+                                    progress made so far written into its
+                                    prose, its own slug, cross-referenced
+                                    from the kept half by slug
+```
+
+The split's mechanics are the decomposition sub-step this document already carries
+for mixed Claude-prep-plus-user-action work (sub-step 3's Keep) — same operation,
+applied to a different seam. **Never keep a mixed item by papering over the failing
+limb** with a close condition requiring the unbuilt half to be re-filed later; that
+is a workaround for a check that should have stopped the keep, and it ships an item
+that will stall a run.
+
 This is where a design item is caught. An item whose build list is *the design's
 own output* fails the second limb by construction, so it never clears to run, and
 /next never has to meet it. That is the cheap place to catch it: at planning time,
@@ -515,6 +642,20 @@ Stop and wait. The user decides.
 **Fold the recommend into the action when the user already agreed** during the
 interview — name the route in one line ("going with keep — drafting the item
 now") and go straight to sub-step 3.
+
+```
+A recommend may fold into the action ONLY when the agreement was
+  - about THIS item, and
+  - given in the exchange now happening.
+Not a prior turn. Not an adjacent item. Not a general "keep going",
+"continue", or "yes" answering a different question.
+Absent that, the recommendation stands alone and WAITS.
+```
+
+The checkpoint's "continue" answers *which item comes next*, never a disposition
+of that item — it has not been analysed yet at the moment the word is said. That
+the user can reject a written item and have it reverted makes folding **safe**;
+safety is not authorisation.
 
 ```
 keep    ->  CAN fold. The item is written and then reported, and the user can
@@ -634,7 +775,7 @@ message order:
 
 **The four routes are stated ONCE, at the start of processing, and never
 recited again.** Say it there in one line — *"I'll work through these one at a
-time; say skip, stop, or close whenever"* — and each checkpoint then presents
+time; say skip, stop, or run /done whenever"* — and each checkpoint then presents
 only the next item.
 
 **Why the recital goes, and why rewording it was not enough.** The wording used
@@ -729,7 +870,7 @@ Unprocessed should be empty except items skipped this session; Processed holds t
 kept work in order; section headers intact.
 
 **Neutral end-of-queue gate** [PROMPT]. When the queue empties, do **not** presume
-the session is over and do not slide into the wind-down re-scan or the close. An
+the session is over and do not slide toward the close. An
 empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
 — "anything else to capture or discuss, or shall we close out?" — and wait. If the
 user raises a further capture, file it and **return to this same neutral gate** —
@@ -738,41 +879,7 @@ never re-lean to close after filing.
 New items from conversation follow the same loop — check QUEUE.md for overlap
 first. If you notice a gap: "I notice [X] — want to hear a suggestion?"
 
-### Wind-down re-scan  [DISCUSS, PROMPT]
-
-After every item is processed and before recommending /done, re-read this
-session's own discussion and surface candidate captures — things the user thought
-out loud but never explicitly flagged.
-
-**Name the step's best-effort nature in plain words when it runs**: it re-reads
-whatever conversation is still in view, and a long session may have lost earlier
-discussion to compaction — so a surfaced-nothing result isn't read as "nothing was
-missed."
-
-Present all candidates as ONE numbered set of fully-drafted captures for a single
-approval; the user contests by number, and only contested items go one at a time.
-Approved candidates are filed to Unprocessed; processing them follows the normal
-flow, this session or later.
-
-This is a best-effort safety net behind the capture-at-the-moment-of-noticing
-rule. A non-coder who thinks out loud generates capturable material they never
-flag.
-
-```
-/plan  ->  runs the FULL re-scan: files the captures AND can process them
-/done  ->  runs a FILE-ONLY version (filing is allowed in any session;
-           processing is what the no-planning-in-execution rule protects)
-```
-
-## Step 3: Close out  [BRIEF, PROMPT]
-
-The durable close work runs at the /done close (done-plan.md), not here —
-reordering both sections, positioning the cleared-to-run marker, holding back
-items that depend on unverified work, naming each held item's blocker, and placing ready
-`[user]` work above the marker. /done is the one close that always runs however a
-session ends, so consolidating there is what stops it being silently skipped. The
-spec-sync obligation is likewise the /done close's hard gate, not a duplicate here.
-
-So closing a /plan session is just this: **"Run /done to record this and commit,
-or keep planning."** No chat summary — the LOG entry /done writes is the single
-session summary.
+There is no close-out phase here. /plan plans; /done records and commits, and it
+runs the wind-down re-scan at every close whatever the session type. The user's
+exit is `/done`, named in the work cycle at the top of this document and available
+at every checkpoint.

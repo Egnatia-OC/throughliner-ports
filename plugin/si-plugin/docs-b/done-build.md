@@ -60,11 +60,30 @@ conversation memory  ->  a same-session BONUS pass, never a source this step
 Append each finding to Unprocessed, placed per the Captures placement rule
 (narrate the placement). Append any fix a build check surfaced too.
 
-### 1.3 Spec-sync gate  [SILENT] when nothing drifts, [PROMPT] on drift
+### 1.3 Spec check-against  [SILENT] when the run agrees with SPEC; [PROMPT] on a contradiction
 
-Run done.md's **Spec-sync gate** and apply its **Build close** delta: SPEC.md is
-scope-locked, so add SPEC.md to the build working file's `Files:` list before editing, then edit
-SPEC to match what the build landed and commit it in this same commit.
+**The build close checks the run's work against SPEC. It does not sync SPEC to
+match it.** Each item was already checked as it was built (next-build.md, step 4);
+this is the run-level look, over work that has accumulated.
+
+```
+run agrees with SPEC   ->  silent; nothing to report
+run CONTRADICTS SPEC   ->  name the SPEC sentence and the work that contradicts
+                           it, in plain words, and let the user decide which is
+                           wrong. Do NOT rewrite SPEC to fit what was built.
+```
+
+**Why the sync gate left this close.** A close-time sync on a document the build
+never read can only record what the build did — with nothing to compare against it
+cannot catch a build that contradicted the spec, so in practice it became a place
+to justify whatever the run had done within its scope. The sync gate now lives
+only at the /plan close, where the decision that changes product truth is actually
+made.
+
+**Where a build genuinely established new product truth, that route is unchanged
+and is not this step:** it asks mid-build, adds SPEC.md to the working file's
+`Files:` list, and edits SPEC inline in the same commit (next-build.md, Scope
+management). This step exists for the contradictions that route did not catch.
 
 ### 1.4 Red-flag close  [SILENT] when no flag, [PROMPT] when an item carries one
 

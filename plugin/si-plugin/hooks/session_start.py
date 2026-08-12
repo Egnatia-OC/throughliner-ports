@@ -310,6 +310,77 @@ def _isolation_model(cwd):
     return "shared" if same else "worktree"
 
 
+def _unmerged_session_branches(cwd):
+    """Branches checked out in a linked worktree that carry commits HEAD lacks.
+
+    Returns a list of (branch, commit_count), empty on any error or when there
+    is nothing to report.
+
+    The harness creates a session's isolated worktree and branch and NEVER
+    merges it back. At the end of an interactive worktree session it prompts
+    keep-or-remove, and removing deletes the worktree directory and its branch
+    along with all the work in them. So the failure guarded here is not two
+    sessions colliding: it is a session's work sitting unmerged on a branch
+    nobody is tracking, one prompt away from being deleted by a user who reads
+    "remove" as tidying up.
+
+    A session branch is identified by WHERE IT LIVES — checked out in a linked
+    worktree — not by its name. Guessing a naming convention would both miss
+    branches the harness names differently and flag the user's own feature
+    branches, and a check that cries wolf gets worked around. The linked-worktree
+    test has no such failure mode: an ordinary feature branch the user made in
+    the main checkout is never reported.
+
+    Never raises. A hook that cannot run git says nothing rather than guessing.
+    """
+    try:
+        listing = subprocess.run(
+            ["git", "worktree", "list", "--porcelain"],
+            cwd=cwd, capture_output=True, text=True, timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    if listing.returncode != 0:
+        return []
+
+    # --porcelain emits a blank-line-separated record per worktree. The first
+    # record is the main checkout; a bare or detached one carries no branch.
+    records, current = [], {}
+    for line in listing.stdout.splitlines():
+        if not line.strip():
+            if current:
+                records.append(current)
+                current = {}
+            continue
+        key, _, value = line.partition(" ")
+        current[key] = value
+    if current:
+        records.append(current)
+
+    found = []
+    for record in records[1:]:
+        ref = record.get("branch")
+        if not ref:
+            continue
+        branch = ref.rsplit("/", 1)[-1]
+        try:
+            counted = subprocess.run(
+                ["git", "rev-list", "--count", "HEAD.." + ref],
+                cwd=cwd, capture_output=True, text=True, timeout=15,
+            )
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if counted.returncode != 0:
+            continue
+        try:
+            ahead = int(counted.stdout.strip())
+        except ValueError:
+            continue
+        if ahead > 0:
+            found.append((branch, ahead))
+    return found
+
+
 def _uncleared_red_flags(queue_path):
     """Descriptions of work items carrying `Red flag · State: uncleared`.
 
@@ -893,7 +964,10 @@ def main() -> int:
             "worktree, so edits here cannot touch another session's files. The "
             "parallel-sessions advice for this case: a capture filed in another "
             "session never reaches this one, and the last branch to merge wins, "
-            "so keep queue edits in one session until a merge lands."
+            "so keep queue edits in one session until a merge lands. This "
+            "session's work is NOT merged back automatically — the close says "
+            "which branch it is on and warns that choosing \"remove\" at exit "
+            "would delete it."
         )
     elif isolation == "shared":
         context_parts.append(
@@ -904,6 +978,30 @@ def main() -> int:
             "catches it if they do — but avoid two sessions writing QUEUE.md or "
             "committing at the same instant."
         )
+
+        # Only a main-checkout session can merge a session branch back: git
+        # refuses to update a branch that is checked out in another working
+        # tree, so the isolated session cannot merge itself. That inverts the
+        # obvious design — the merge cannot happen at the isolated close, so
+        # this is the moment it gets offered.
+        stranded = _unmerged_session_branches(cwd)
+        if stranded:
+            listed = ", ".join(
+                "%s (%d commit%s)" % (name, count, "" if count == 1 else "s")
+                for name, count in stranded
+            )
+            context_parts.append(
+                "[Sovereign Implementer] Worktrees carrying unmerged commits: " +
+                listed + ". Each is checked out in its own worktree and has "
+                "commits this checkout doesn't. That is ALL that was measured — "
+                "it does not establish these are stranded session branches. A "
+                "long-lived deliberate worktree (an archived port, a parallel "
+                "project) looks identical here and must not be offered for "
+                "merging. Before offering, judge which it is; where it is "
+                "session work, OFFER the merge and never merge silently. On a "
+                "conflict, leave the branch alone and say plainly the work is "
+                "safe on it — never show raw conflict markers."
+            )
 
     # The rule-lifecycle board, when the project carries it. This surface ships;
     # the detectors do not, because only a project that develops the method has

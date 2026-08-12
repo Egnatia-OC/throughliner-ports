@@ -174,8 +174,15 @@ close carries no such reconcile.
 
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
 
-The build and plan close-outs point here. (Audits land no product changes, so an
-audit close has no spec-sync gate.)
+**The plan close-out points here, and it is the only one.** A build close runs a
+*check-against* instead (done-build.md) — it reads what was built against SPEC and
+reports a contradiction rather than editing SPEC to match. Audits land no product
+changes, so an audit close has neither.
+
+Why the build close no longer syncs: a sync on a document the build never read can
+only record what the build did, so it cannot catch a build that contradicted the
+spec. /next now reads SPEC at run start, which is what makes a real check possible,
+and the sync belongs where the decision that changes product truth is made.
 
 **Did this session's work change what SPEC says?** Apply the spec-entry trigger
 test **in plan.md's own wording** — quote it from there rather than keeping a copy
@@ -191,17 +198,22 @@ the behaviour change. Deferring the fix would close a commit with SPEC already
 behind, breaking that atomicity — the exact drift this gate prevents.
 
 ```
-build close  ->  SPEC.md is scope-locked: ADD SPEC.md to the build working file's Files:
-                 first, then edit. Also catches a build landing a
-                 spec-affecting change with no prior spec entry.
-plan close   ->  no scope-lock active: edit SPEC.md directly in-session.
-                 Editing SPEC to match a decision the user already made this
-                 session is RECORDING, not re-planning.
+plan close  ->  no scope-lock active: edit SPEC.md directly in-session.
+                Editing SPEC to match a decision the user already made this
+                session is RECORDING, not re-planning.
 ```
 
-The plan branch covers every plan-type close — a /plan session, a setup session,
-and a method-doc-only session alike. None of the three runs a scope-lock, so all
-three edit SPEC directly.
+This covers every plan-type close — a /plan session, a setup session, and a
+method-doc-only session alike. None runs a scope-lock, so all three edit SPEC
+directly.
+
+**A decision made this session but not yet built satisfies the gate when its work
+item lists SPEC.md.** This is the case the gate now meets by default, so say what
+happens rather than leaving it to be re-derived. Editing SPEC the moment a
+retirement is *decided* would make it describe a product that doesn't exist yet —
+a false SPEC, not a synced one. Where SPEC still describes the shipped product
+accurately and the item carrying the change names SPEC.md among its files, SPEC
+moves when the behaviour does, and the gate passes.
 
 A session that changed only queue ordering or captures touched no SPEC sentence
 and passes silently.
@@ -581,6 +593,20 @@ and it is a partial commit either way.
 
 **6. Commit with `git commit -F`.** No fresh okay needed. Then offer push only
 when a remote exists, and push only if the user accepts.
+
+**6a. An isolated session names its branch and warns about "remove"** [BRIEF].
+Fires only where session_start reported this session is in its own worktree; in a
+shared tree, say nothing. After committing, say plainly which branch the work is
+on and that **it is not merged back** — the harness never merges a session
+worktree, and choosing **remove** at exit deletes the worktree and the branch with
+all the work in them. Use that word, because it is the word the exit prompt uses
+and a user reads it as tidying up.
+
+Don't try to merge here: git refuses to update a branch checked out in another
+working tree, so an isolated session cannot merge itself into the main line. The
+merge is offered at a main-checkout session's start instead, where session_start
+reports worktrees carrying unmerged commits. Say that too, so the user knows the
+work has somewhere to go.
 
 The LOG entry keeps its placeholder. The session-start hook backfills it at the
 next session, as a working-tree edit folding into that session's commit — no

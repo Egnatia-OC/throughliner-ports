@@ -20,17 +20,26 @@ because a state file must be maintained and the first session that forgets to
 update it makes the board lie. The one exception is the retired-terms list,
 which is source data — a recorded event, authored once — not derived state.
 
-## The five signals
+## The six signals
 
 MEASURED   a structural rule-statement count across the always-loaded files,
            against the 150-200 instruction ceiling.
 AUDITED    fires when MEASURED is over the ceiling. Not downstream of MEASURED
            *completing* — both read the same computed number independently.
-BORN       LOG entries that should carry a gate-disposition line and do not,
+BORN       commits that should carry a gate-disposition line and do not,
            matched against commits touching the rule-bearing file set.
+CONTRADICTED
+           commits whose LOG entry says the gate was not needed while the
+           always-loaded count ROSE. BORN checks a disposition EXISTS; this
+           checks it isn't contradicted by the commit it describes. It cannot
+           tell whether a gate recorded as *run* ran honestly, and does not
+           claim to.
 MAINTAINED near-duplicate rule statements across the corpus. This is
            codification — one subject, one rule, stated once.
 REPEALED   live rules naming a term on the retired list.
+
+BORN and CONTRADICTED are both bounded by DISPOSITION_BASELINE, so neither
+reports commits made before the obligation existed.
 
 ## What a signal does
 
@@ -80,6 +89,24 @@ RULE_BEARING = [
 
 RETIRED_TERMS_FILE = "resources/retired-terms.md"
 
+# The commit in which the rule-gate disposition obligation shipped. BORN and
+# CONTRADICTED examine only commits AFTER this one; everything at or before it
+# predates the obligation and owes nothing.
+#
+# 7c9922a (2026-08-11) is the build that added the `Rule gate:` block to
+# CLAUDE.md, alongside the rule-lifecycle board itself. Found by
+# `git log -S'Rule gate: run —' -- CLAUDE.md`, not from memory.
+#
+# Named rather than left bare, deliberately: a hash nobody can date is a
+# constant nobody dares change. If the obligation is ever re-founded, move this
+# and say in this comment which commit it now names and why.
+DISPOSITION_BASELINE = "7c9922a"
+
+# Backfilling dispositions for pre-baseline commits was considered and REJECTED.
+# A backfilled disposition is written by someone reconstructing what a past
+# session decided — it would look like evidence and not be, which is exactly the
+# handoff-provenance problem the method already names.
+
 # The ceiling, in the proxy's own units. The research figure is 150-200
 # *instructions*; this is a structural proxy for them, so the ceiling is
 # re-expressed here rather than reused raw. See calibrate() for the derivation
@@ -110,6 +137,32 @@ FENCE_RE = re.compile(r"^\s*```")
 
 # --- MEASURED -----------------------------------------------------------
 
+def count_text_statements(text):
+    """Structural rule-statements in one document's text.
+
+    Split out from count_statements so the same counter can run over a blob
+    read from git history (CONTRADICTED's delta) as over a file on disk. One
+    counter, two callers — a second implementation is what would drift.
+    """
+    count = 0
+    in_fence = False
+    for raw in text.splitlines():
+        if FENCE_RE.match(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            # A line inside a typed block carries a rule as surely as a
+            # bullet does — the blocks are where this docset puts
+            # structure. Blank and comment-only lines do not.
+            stripped = raw.strip()
+            if stripped and not stripped.startswith("#"):
+                count += 1
+            continue
+        if BULLET_RE.match(raw) or BOLD_LEAD_RE.match(raw.strip()):
+            count += 1
+    return count
+
+
 def count_statements(root):
     """Structural rule-statements across the always-loaded corpus."""
     total = 0
@@ -118,25 +171,10 @@ def count_statements(root):
         path = os.path.join(root, rel)
         try:
             with open(path, "r", encoding="utf-8") as f:
-                lines = f.read().splitlines()
+                text = f.read()
         except OSError:
             continue
-        count = 0
-        in_fence = False
-        for raw in lines:
-            if FENCE_RE.match(raw):
-                in_fence = not in_fence
-                continue
-            if in_fence:
-                # A line inside a typed block carries a rule as surely as a
-                # bullet does — the blocks are where this docset puts
-                # structure. Blank and comment-only lines do not.
-                stripped = raw.strip()
-                if stripped and not stripped.startswith("#"):
-                    count += 1
-                continue
-            if BULLET_RE.match(raw) or BOLD_LEAD_RE.match(raw.strip()):
-                count += 1
+        count = count_text_statements(text)
         per_file[rel] = count
         total += count
     return total, per_file
@@ -186,60 +224,86 @@ def signal_audited(root, measured):
 # --- BORN ---------------------------------------------------------------
 
 DISPOSITION_RE = re.compile(r"^Rule gate:", re.IGNORECASE | re.MULTILINE)
+NOT_NEEDED_RE = re.compile(r"^Rule gate:\s*not needed", re.IGNORECASE | re.MULTILINE)
+
+
+def _rule_bearing_commits(root):
+    """Commits after the baseline that touch a rule-bearing file.
+
+    Returns (commits, error_message). Each commit is a dict with sha/subject.
+    The baseline is what stops the signal reporting history that predates the
+    obligation — every commit at or before it owes no disposition.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "log", "-30", "--format=%H%x00%s", "--name-only",
+             DISPOSITION_BASELINE + "..HEAD"],
+            cwd=root, capture_output=True, text=True, timeout=20,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None, "git unavailable"
+    if out.returncode != 0:
+        # An unknown baseline is the likely cause — a shallow clone, or the
+        # constant edited to a hash this repository doesn't carry. Say so
+        # rather than silently falling back to the whole history, which would
+        # re-report everything the baseline exists to exclude.
+        return None, "git log failed (is %s in this repository?)" % DISPOSITION_BASELINE
+
+    commits, current = [], None
+    for line in out.stdout.splitlines():
+        if "\x00" in line:
+            sha, subject = line.split("\x00", 1)
+            current = {"sha": sha[:7], "full": sha, "subject": subject, "hits": False}
+            commits.append(current)
+        elif line.strip() and current is not None:
+            if any(line.startswith(p) for p in RULE_BEARING):
+                current["hits"] = True
+    return [c for c in commits if c["hits"]], None
+
+
+def _log_dispositions(root):
+    """Map of short sha -> set of disposition kinds found in LOG entries.
+
+    Kinds are "run" and "not needed". A commit's entry is matched by the hash
+    the entry records.
+    """
+    log_dir = os.path.join(root, "LOG")
+    found = {}
+    if not os.path.isdir(log_dir):
+        return found
+    for name in os.listdir(log_dir):
+        if not name.endswith(".md"):
+            continue
+        try:
+            with open(os.path.join(log_dir, name), "r", encoding="utf-8") as f:
+                text = f.read()
+        except OSError:
+            continue
+        if not DISPOSITION_RE.search(text):
+            continue
+        kind = "not needed" if NOT_NEEDED_RE.search(text) else "run"
+        for sha in re.findall(r"\b([0-9a-f]{7,40})\b", text):
+            found.setdefault(sha[:7], set()).add(kind)
+    return found
 
 
 def signal_born(root):
-    """LOG entries that should carry a gate-disposition line and do not.
+    """Commits that should carry a gate-disposition line and do not.
 
     Over-fires by design: touching docs-b/ for a typo is not authoring a rule.
     A false fire costs one line — "not needed, typo fix". FAQ-sync makes
     exactly this trade and it is why it works.
+
+    Bounded by DISPOSITION_BASELINE, so it reports only commits that were
+    subject to the obligation when they were made.
     """
-    try:
-        out = subprocess.run(
-            ["git", "log", "-30", "--format=%H%x00%s", "--name-only"],
-            cwd=root, capture_output=True, text=True, timeout=20,
-        )
-    except (OSError, subprocess.SubprocessError):
+    rule_commits, err = _rule_bearing_commits(root)
+    if err:
         return {"stage": "BORN", "firing": False, "value": 0,
                 "slug": "rule-gate-dispositions-missing",
-                "message": "git unavailable; BORN not computed."}
-    if out.returncode != 0:
-        return {"stage": "BORN", "firing": False, "value": 0,
-                "slug": "rule-gate-dispositions-missing",
-                "message": "git log failed; BORN not computed."}
+                "message": err + "; BORN not computed."}
 
-    touching = []
-    current = None
-    for line in out.stdout.splitlines():
-        if "\x00" in line:
-            sha, subject = line.split("\x00", 1)
-            current = {"sha": sha[:7], "subject": subject, "hits": False}
-            touching.append(current)
-        elif line.strip() and current is not None:
-            if any(line.startswith(p) for p in RULE_BEARING):
-                current["hits"] = True
-
-    rule_commits = [c for c in touching if c["hits"]]
-
-    # A commit is satisfied when some LOG entry carries a disposition line
-    # naming it, or when the entry for it carries one at all. Entries are
-    # matched by the commit hash they record.
-    log_dir = os.path.join(root, "LOG")
-    dispositions = set()
-    if os.path.isdir(log_dir):
-        for name in os.listdir(log_dir):
-            if not name.endswith(".md"):
-                continue
-            try:
-                with open(os.path.join(log_dir, name), "r", encoding="utf-8") as f:
-                    text = f.read()
-            except OSError:
-                continue
-            if DISPOSITION_RE.search(text):
-                for sha in re.findall(r"\b([0-9a-f]{7,40})\b", text):
-                    dispositions.add(sha[:7])
-
+    dispositions = _log_dispositions(root)
     missing = [c for c in rule_commits if c["sha"] not in dispositions]
     return {
         "stage": "BORN",
@@ -247,13 +311,120 @@ def signal_born(root):
         "value": len(missing),
         "slug": "rule-gate-dispositions-missing",
         "message": (
-            f"{len(missing)} of the last {len(rule_commits)} commits touching "
-            "rule-bearing files have no 'Rule gate:' disposition line in any LOG "
-            "entry: " + ", ".join(f"{c['sha']}" for c in missing[:8])
+            f"{len(missing)} of the {len(rule_commits)} commits since "
+            f"{DISPOSITION_BASELINE} touching rule-bearing files have no "
+            "'Rule gate:' disposition line in any LOG entry: "
+            + ", ".join(f"{c['sha']}" for c in missing[:8])
             if missing else
-            f"All {len(rule_commits)} recent rule-bearing commits carry a gate disposition."
+            f"All {len(rule_commits)} rule-bearing commits since "
+            f"{DISPOSITION_BASELINE} carry a gate disposition."
         ),
     }
+
+
+# --- CONTRADICTED -------------------------------------------------------
+
+
+def signal_contradicted(root):
+    """Commits whose always-loaded rule count ROSE while their LOG entry says
+    the gate was not needed.
+
+    BORN is a PRESENCE check: a session that added four rules and wrote
+    "Rule gate: not needed — typo fix" satisfies it completely. That reasoning
+    holds against omission and does nothing against a FALSE artifact, and the
+    two had never been separated.
+
+    This compares two artifacts that are supposed to agree — the corpus size at
+    a commit, and what that commit's LOG entry claims about the gate — so it
+    needs no judgment. It runs at the NEXT session's start, over a commit
+    already written and no longer editable to suit the check; a check at the
+    close would be the session judging its own disposition in the same breath
+    as writing it, which is the self-report problem this exists to close.
+
+    One-directional by design:
+
+        count ROSE  + "Rule gate: not needed"   ->  FLAG
+        count ROSE  + "Rule gate: run — ..."    ->  fine
+        count FELL or unchanged                 ->  fine, ALWAYS
+
+    An eviction pass lowers the count and owes no disposition defence, so a fall
+    is never a finding.
+
+    WHAT IT CANNOT DO, and must not claim: it cannot tell whether a gate that
+    *ran* ran honestly. A dishonest "run — considered and kept" defeats it
+    completely. It catches omission-dressed-as-disposition, not bad judgment. A
+    check that over-claims is worse than none — it makes the corpus look guarded
+    when it is only partly guarded.
+
+    The count is the same proxy MEASURED uses, so this reports a contradiction
+    between two artifacts rather than a measured fact about rules.
+    """
+    rule_commits, err = _rule_bearing_commits(root)
+    if err:
+        return {"stage": "CONTRADICTED", "firing": False, "value": 0,
+                "slug": "rule-gate-disposition-is-unverified",
+                "message": err + "; CONTRADICTED not computed."}
+
+    dispositions = _log_dispositions(root)
+    flagged = []
+    for commit in rule_commits:
+        if "not needed" not in dispositions.get(commit["sha"], set()):
+            continue
+        delta = _count_delta_at(root, commit["full"])
+        if delta is not None and delta > 0:
+            flagged.append((commit["sha"], delta))
+
+    return {
+        "stage": "CONTRADICTED",
+        "firing": bool(flagged),
+        "value": len(flagged),
+        "slug": "rule-gate-disposition-is-unverified",
+        "message": (
+            "%d commit(s) say the rule gate was not needed while the "
+            "always-loaded rule-statement count ROSE: %s. This is a "
+            "contradiction between two artifacts, not proof of a bad rule — and "
+            "it says nothing about commits whose gate is recorded as run." % (
+                len(flagged),
+                ", ".join("%s (+%d)" % (sha, d) for sha, d in flagged[:8]),
+            )
+            if flagged else
+            "No commit since %s claims the gate was not needed while the "
+            "corpus grew." % DISPOSITION_BASELINE
+        ),
+    }
+
+
+def _count_delta_at(root, rev):
+    """Always-loaded statement count at `rev` minus the count at its parent.
+
+    Returns None where either side can't be read — a first commit, a file that
+    didn't exist yet, an unreadable blob. Reuses the same counter MEASURED
+    uses via `git show <rev>:<path>`, so there is no second counting logic to
+    drift.
+    """
+    def _count_at(ref):
+        total = 0
+        for rel in ALWAYS_LOADED:
+            try:
+                out = subprocess.run(
+                    ["git", "show", "%s:%s" % (ref, rel)],
+                    cwd=root, capture_output=True, text=True, timeout=20,
+                )
+            except (OSError, subprocess.SubprocessError):
+                return None
+            if out.returncode != 0:
+                # The file may genuinely not exist at that revision. Treat it
+                # as zero rather than as an error, so a corpus file added later
+                # doesn't make every earlier commit uncountable.
+                continue
+            total += count_text_statements(out.stdout)
+        return total
+
+    before = _count_at(rev + "^")
+    after = _count_at(rev)
+    if before is None or after is None:
+        return None
+    return after - before
 
 
 # --- MAINTAINED ---------------------------------------------------------
@@ -428,6 +599,7 @@ def board(root):
         measured,
         signal_audited(root, measured),
         signal_born(root),
+        signal_contradicted(root),
         signal_maintained(root),
         signal_repealed(root),
     ]
@@ -437,7 +609,7 @@ def main(argv):
     root = argv[1] if len(argv) > 1 else "."
     signals = board(root)
     firing = [s for s in signals if s["firing"]]
-    print(f"## Rule-lifecycle board — {len(firing)} of 5 signalling")
+    print(f"## Rule-lifecycle board — {len(firing)} of {len(signals)} signalling")
     for s in signals:
         mark = "FIRING" if s["firing"] else "ok"
         print(f"- {s['stage']} [{mark}] {s['message']}")
