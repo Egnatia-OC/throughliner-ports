@@ -1,4 +1,4 @@
-# [HASH] — The two standing PreToolUse schema failures were stale fixtures, now fixed
+# e5d169b — The two standing PreToolUse schema failures were stale fixtures, now fixed
 
 Two assertions had been failing since before this session: *PreToolUse (out of scope): decision is deny* returned `ask`, and *PreToolUse (in scope): emits nothing* emitted the planning-quiet-list advisory.
 

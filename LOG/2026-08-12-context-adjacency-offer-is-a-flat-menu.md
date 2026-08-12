@@ -1,4 +1,4 @@
-# [HASH] — The context-adjacency offer leads with a recommendation instead of a flat menu
+# e5d169b — The context-adjacency offer leads with a recommendation instead of a flat menu
 
 `plan.md`'s rung-6 offer presented three equal branches — take the context-adjacent set, work through in file order, or run /done — at a moment when Claude has a view. Ordering is Claude's under the dependency-ownership rule, so a flat menu hands back a judgment that was never the user's.
 

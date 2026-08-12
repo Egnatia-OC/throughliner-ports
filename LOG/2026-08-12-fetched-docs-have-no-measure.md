@@ -1,4 +1,4 @@
-# [HASH] — The growth report extends to the fetched procedure docs as their own group
+# e5d169b — The growth report extends to the fetched procedure docs as their own group
 
 Nothing measured the fetched procedure docs at all. `plan.md` alone is 226 structural statements — larger than the always-loaded corpus's 234 — and `done.md` 181, `setup.md` 126, `next.md` 124. The ceiling deliberately excluded them because they load only when their skill runs, but that exclusion was reasoned about when they were small.
 

@@ -1,4 +1,4 @@
-# [HASH] — A board signal is satisfied by an open item in either queue section
+# e5d169b — A board signal is satisfied by an open item in either queue section
 
 The board's printed guidance said a signal files a capture in Unprocessed "unless an open capture with that slug already exists" — naming a section for the filing and leaving the satisfied-test unqualified. A session could read it as requiring the item to still be *in* Unprocessed. On 2026-08-12 a single /plan processed all four board-filed captures into Processed at once, so under that reading the next session would have filed four duplicates on top of four items that were not merely open but designed, kept and cleared: the signal firing loudest exactly when the work was furthest along.
 

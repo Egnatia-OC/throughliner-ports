@@ -1,4 +1,4 @@
-# [HASH] — The REPEALED signal reported 44 retired-term references and every one was noise
+# e5d169b — The REPEALED signal reported 44 retired-term references and every one was noise
 
 The item was filed on the board's report of 44 live references to retired terms, and it named two as genuine: `Blocks:` and `Depends on:` surviving in `done-plan.md` and `post_tool_use.py`. It also carried, honestly, that the others were "probably not faults" and instructed the build not to assume 44 defects. That instruction was the valuable part.
 

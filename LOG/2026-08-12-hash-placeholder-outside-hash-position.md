@@ -1,4 +1,4 @@
-# [HASH] — A hash placeholder outside hash position is now detectable, and the one stuck entry is repaired
+# e5d169b — A hash placeholder outside hash position is now detectable, and the one stuck entry is repaired
 
 `LOG/2026-08-10-queue-machinery-repair-freeform.md` was written with a non-template header block — `**Slug:** / **Commit:** / **Session type:**` — so its placeholder sat in a `**Commit:**` field rather than at the start of a heading. The backfill matches only hash position, so the entry was never scanned, never filled, and never reported.
 

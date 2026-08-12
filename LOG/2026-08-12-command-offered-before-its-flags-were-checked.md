@@ -1,4 +1,4 @@
-# [HASH] — A command handed to the user for pasting is verified first
+# e5d169b — A command handed to the user for pasting is verified first
 
 `next.md`'s `[user]` walk-through branch gains a check: before a command goes into a block for the user to run, verify it — run it where doing so is safe (a scratch fixture), or read the tool's `--help`.
 

@@ -1,4 +1,4 @@
-# [HASH] — Adding a scan to a skill opening must state what it displaces
+# e5d169b — Adding a scan to a skill opening must state what it displaces
 
 A skill opening is the one place the method accretes without any addition looking like a rule: each scan is individually small, individually tagged, and folded into one consolidated narration, so nothing counts them. /plan's Step 1 now fires eight, and the most recent was added by the session that noticed, with nothing objecting. A rule permitting unlimited additions so long as each is small has no stopping condition.
 

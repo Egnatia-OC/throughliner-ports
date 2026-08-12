@@ -955,6 +955,58 @@ def main() -> int:
             + "\n".join(f"- {flag}" for flag in uncleared_flags)
         )
 
+    # Project state, immediately after the two things that legitimately outrank
+    # it: the stale-format halt and the uncleared-red-flag scan.
+    #
+    # It sits HERE rather than after the scans below because it is the shortest,
+    # most load-bearing thing in the payload and every reader needs it first.
+    # The scans that follow — dependency facts, isolation, the worktree report,
+    # the board — are each individually bounded and collectively are not: they
+    # grow as the project grows, and when they preceded this block they pushed
+    # it past the 2KB line the schema check draws. That is a real ordering
+    # regression rather than a size problem; the payload was 2,749 characters
+    # against a 10,000-character cap when it fired. Putting the state first
+    # makes adding another scan safe, which is exactly what the check exists to
+    # protect.
+    context_parts.append("[Sovereign Implementer] Project is set up.")
+    context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
+    context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
+
+    # Surface the installed host version (the version of the plugin actually
+    # running this session, test suffix included). This is the always-correct
+    # source for "what host is installed?" — it runs inside the installed host,
+    # unlike any hand-maintained record, which goes stale the moment the user
+    # reinstalls without Claude in the loop. Surfaced so the deferred-test roll
+    # can resolve whether a host-side change has gone live mechanically instead
+    # of interrogating the user. Version only — the host-vs-target comparison is
+    # Claude's reasoning (a consumer project has no target to compare against).
+    if plugin_version:
+        context_parts.append(
+            f"  Installed plugin (host) version: {plugin_version} — the version "
+            "running this session. Use it to judge whether a host-side deferred "
+            "test has gone live, instead of asking the user what's installed."
+        )
+        # Content stamp of the installed host's own files. The version number
+        # alone can't tell whether host-side changes are live — a build batch
+        # edits a hook or a doc without bumping any version, so the installed
+        # host and the target can show the same version while the host is stale.
+        # The stamp answers the real (content) question. In the self-hosting dev
+        # project the deferred-test roll compares this against the target's stamp
+        # (computed the same way over plugin/si-plugin/); a consumer never has a
+        # target to compare against, so this is informational there.
+        host_stamp = content_stamp(plugin_root)
+        if host_stamp:
+            context_parts.append(
+                f"  Installed host build stamp: {host_stamp} — a content hash of "
+                "the installed plugin's files. To tell whether a host-side change "
+                "is actually live, compare this against the target's current stamp "
+                "(in the dev project, run this hook's content_stamp() over "
+                "plugin/si-plugin/): stamps match means the installed host carries "
+                "the latest files; stamps differ means it hasn't been reinstalled "
+                "since the most recent host-side change, so host-side tests aren't "
+                "live yet. This catches edits that bump no version."
+            )
+
     # Waiting mail, surfaced in one line. Short and state-bearing, so it sits up
     # here with the rest of the project state rather than at the bottom.
     waiting = _waiting_inbox_messages(cwd)
@@ -1092,45 +1144,6 @@ def main() -> int:
                     )
         except (OSError, subprocess.SubprocessError, ValueError):
             pass
-
-    context_parts.append("[Sovereign Implementer] Project is set up.")
-    context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
-    context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
-
-    # Surface the installed host version (the version of the plugin actually
-    # running this session, test suffix included). This is the always-correct
-    # source for "what host is installed?" — it runs inside the installed host,
-    # unlike any hand-maintained record, which goes stale the moment the user
-    # reinstalls without Claude in the loop. Surfaced so the deferred-test roll
-    # can resolve whether a host-side change has gone live mechanically instead
-    # of interrogating the user. Version only — the host-vs-target comparison is
-    # Claude's reasoning (a consumer project has no target to compare against).
-    if plugin_version:
-        context_parts.append(
-            f"  Installed plugin (host) version: {plugin_version} — the version "
-            "running this session. Use it to judge whether a host-side deferred "
-            "test has gone live, instead of asking the user what's installed."
-        )
-        # Content stamp of the installed host's own files. The version number
-        # alone can't tell whether host-side changes are live — a build batch
-        # edits a hook or a doc without bumping any version, so the installed
-        # host and the target can show the same version while the host is stale.
-        # The stamp answers the real (content) question. In the self-hosting dev
-        # project the deferred-test roll compares this against the target's stamp
-        # (computed the same way over plugin/si-plugin/); a consumer never has a
-        # target to compare against, so this is informational there.
-        host_stamp = content_stamp(plugin_root)
-        if host_stamp:
-            context_parts.append(
-                f"  Installed host build stamp: {host_stamp} — a content hash of "
-                "the installed plugin's files. To tell whether a host-side change "
-                "is actually live, compare this against the target's current stamp "
-                "(in the dev project, run this hook's content_stamp() over "
-                "plugin/si-plugin/): stamps match means the installed host carries "
-                "the latest files; stamps differ means it hasn't been reinstalled "
-                "since the most recent host-side change, so host-side tests aren't "
-                "live yet. This catches edits that bump no version."
-            )
 
     # Presence-based drift: a project is "behind" only when it's actually missing
     # files/folders the current plugin scaffolds. A higher plugin version with

@@ -1,4 +1,4 @@
-# [HASH] — The short LOG entry becomes the default; full depth is bought at build time
+# e5d169b — The short LOG entry becomes the default; full depth is bought at build time
 
 `done-build.md` already asked for depth to be decided per item — full where the reasoning was contested or an alternative seriously weighed, short for mechanical items. On a sixteen-entry close, nearly every entry came out at full depth anyway. The rule asked for a judgment and provided no moment that forces it.
 

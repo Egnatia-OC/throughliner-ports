@@ -1,4 +1,4 @@
-# [HASH] — The rule-corpus ceiling is removed and MEASURED becomes a per-audience growth report
+# e5d169b — The rule-corpus ceiling is removed and MEASURED becomes a per-audience growth report
 
 The board reported one always-loaded count as though it were the only one. `ALWAYS_LOADED` named a single file — the shipped `skill-nonspecific-rules.md`, at 234 statements — while this project also loads its own `CLAUDE.md` in every session, another 96. So every reading of the board understated this project's real burden by the whole of CLAUDE.md, and `resources/method-compliance-audit-checklist.md` had always required the count be reported split by audience. The one tool producing the number did not do it.
 

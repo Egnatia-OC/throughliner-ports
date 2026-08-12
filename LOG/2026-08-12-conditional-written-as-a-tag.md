@@ -1,4 +1,4 @@
-# [HASH] — Conditional response-shape tags get one convention, applied at all thirteen sites
+# e5d169b — Conditional response-shape tags get one convention, applied at all thirteen sites
 
 A step whose output shape depends on what it finds was being written three different ways. The convention is now `[TAG] when <condition>; [TAG] when <condition>` — every arm carries its own bracketed tag, and the condition sits outside the brackets. It is stated once, in `skill-nonspecific-rules.md`'s Response-shape tags section, with both failing shapes shown as counter-examples.
 

@@ -1,4 +1,4 @@
-# [HASH] — The eviction pass runs on relevance rather than a count, with a disposition per change
+# e5d169b — The eviction pass runs on relevance rather than a count, with a disposition per change
 
 This item was filed by the board's MEASURED signal as "get the count under 200". Both the count and the ceiling are gone — the 150–200 figure was re-validated against the 5-series this same session and found roughly an order of magnitude too tight — so the item was re-aimed at the user's decision into a **relevance-driven** pass: remove text irrelevant to the session reading it, or over-prescriptive for a 5-series model. The slug keeps its old name because slugs are immutable; the prose governs.
 

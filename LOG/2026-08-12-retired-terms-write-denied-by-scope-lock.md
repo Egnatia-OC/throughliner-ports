@@ -1,4 +1,4 @@
-# [HASH] — resources/retired-terms.md joins the scope-lock's exempt set
+# e5d169b — resources/retired-terms.md joins the scope-lock's exempt set
 
 The method requires a session that retires a term to append it to `resources/retired-terms.md`. The scope-lock denied that write, because no build item names the file and self-scoping therefore never puts it in `Files:`. It succeeded only by accident of ordering — after the close deletes the working file, which disengages the lock entirely.
 

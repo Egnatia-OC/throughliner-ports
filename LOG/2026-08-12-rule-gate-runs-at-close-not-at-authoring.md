@@ -1,4 +1,4 @@
-# [HASH] — The rule-gate disposition moves to authoring time; the close transcribes it
+# e5d169b — The rule-gate disposition moves to authoring time; the close transcribes it
 
 A run built thirteen items, several authoring or amending method rules, and wrote every `Rule gate:` disposition at the close in one sweep — after all the LOG entries existed, minutes before the commit. Each said `run — admitted` and each read plausibly. Not one was written before the rule it describes.
 

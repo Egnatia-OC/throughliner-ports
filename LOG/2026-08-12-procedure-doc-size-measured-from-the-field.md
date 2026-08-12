@@ -1,4 +1,4 @@
-# [HASH] — done.md becomes a real router: a build close reads 15% less, a planning close is unchanged
+# e5d169b — done.md becomes a real router: a build close reads 15% less, a planning close is unchanged
 
 Understudy measured a /next-plus-/done run reading about 24,000 tokens of procedure before opening a single project file, and named three causes. Two were absorbed by other work processed the same day, so this item was narrowed at the user's decision to cause 1 alone: **the router does not actually route.** `done.md` held every close shape in one file, and a planning close used roughly half of it and could not read half a file.
 

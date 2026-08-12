@@ -1,4 +1,4 @@
-# [HASH] — --move-section accepts --marker-after, so keeping and clearing an item is one command
+# e5d169b — --move-section accepts --marker-after, so keeping and clearing an item is one command
 
 Moving an item from Unprocessed into Processed *and* clearing it is the ordinary shape of keeping work at /plan — the commonest planning operation, not an edge case. It took two commands.
 
