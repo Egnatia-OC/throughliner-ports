@@ -181,7 +181,11 @@ Pushing often is the point: it decouples "the work is safely on the remote" from
 
 ## Discord posts
 
-**Announce only what has shipped: every claim in a post is true of the installed plugin at the moment it is posted.** Where a post describes work that is designed but not built, the post waits for the build — file it as a queue item naming what it waits on.
+**The purpose, for now, is to announce new features, changes and improvements to Throughliner — and nothing else.** Not tips on using Claude Code, not general development lessons, not interesting findings the project happened to make along the way. A finding is worth posting only where it *is* a change to Throughliner. When a session turns up something genuinely useful that isn't that, its home is the LOG or `resources/research/`, not the channel.
+
+**The test is not "did we learn it" but "did Throughliner change".** A session that has just learned something useful feels like it has something to announce, and that feeling is not the criterion.
+
+**Announce only what has shipped: every claim in a post is true of the installed plugin at the moment it is posted.** Where a post describes work that is designed but not built, the post waits for the build — file it as a queue item naming what it waits on. **A planning session therefore has nothing to announce**, however much it decided; say that plainly rather than reaching for a substitute subject.
 
 The limit is **2,000 characters**, which is Discord's.
 
