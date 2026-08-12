@@ -1,4 +1,4 @@
-# [HASH] — The queue mover's side-of-marker report is guarded, with the regression test the defect earned [mover-reports-wrong-side-of-marker]
+# 7c9922a — The queue mover's side-of-marker report is guarded, with the regression test the defect earned [mover-reports-wrong-side-of-marker]
 
 Filed by Claude from a live instance: the mover reported an item as sitting below the readiness marker when it had placed it above, and the file disagreed with the tool.
 

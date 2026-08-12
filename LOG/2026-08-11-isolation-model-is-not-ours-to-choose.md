@@ -1,4 +1,4 @@
-# [HASH] — session_start measures which isolation model is in force, and the parallel-sessions rule states both cases [isolation-model-is-not-ours-to-choose]
+# 7c9922a — session_start measures which isolation model is in force, and the parallel-sessions rule states both cases [isolation-model-is-not-ours-to-choose]
 
 Captured by the user, who asked what the branching was for and refused to let Claude design out an intentional design without knowing — which is what produced the research at `resources/research/worktree-isolation-and-desktop-sessions.md`. The detection finding and the design are Claude's.
 

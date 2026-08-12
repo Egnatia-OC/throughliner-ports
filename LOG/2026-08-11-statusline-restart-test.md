@@ -1,4 +1,4 @@
-# [HASH] — Status-line restart test, second attempt [statusline-restart-test]
+# 7c9922a — Status-line restart test, second attempt [statusline-restart-test]
 
 Walked through during the 2026-08-11 build run, after the run's 21 build items
 were complete. Written as the walk-through proceeds, so a crash mid-way leaves a

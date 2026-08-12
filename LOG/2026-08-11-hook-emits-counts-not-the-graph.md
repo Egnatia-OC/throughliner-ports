@@ -1,4 +1,4 @@
-# [HASH] — session_start names the resolved blocker graph, and /plan reads a mechanical digest instead of the whole queue [hook-emits-counts-not-the-graph]
+# 7c9922a — session_start names the resolved blocker graph, and /plan reads a mechanical digest instead of the whole queue [hook-emits-counts-not-the-graph]
 
 Mixed authorship: the user found it — they asked why Claude read the queue and reasoned over it again before using the mechanical mover, and held the Discord post's own promise against the behaviour ("anything a hook computes is free… the graph moves into the session-start hook and arrives as fact"). They also chose the wider of the two options offered. The diagnosis and design are Claude's.
 

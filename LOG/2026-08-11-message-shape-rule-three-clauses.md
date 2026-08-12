@@ -1,4 +1,4 @@
-# [HASH] — Two clauses added to the message-shape rule; the third was already shipped [message-shape-rule-three-clauses]
+# 7c9922a — Two clauses added to the message-shape rule; the third was already shipped [message-shape-rule-three-clauses]
 
 Merges three captures that turned out to amend the same rule — `skill-nonspecific-rules.md`'s "Shape every message the same way". The merge is Claude's recommendation, agreed by the user. Two of the three were originally theirs.
 

@@ -1,4 +1,4 @@
-# [HASH] — Working files are per session, so a second session stops inheriting another's scope-lock [session-scope-the-working-file]
+# 7c9922a — Working files are per session, so a second session stops inheriting another's scope-lock [session-scope-the-working-file]
 
 Split out of [isolation-model-is-not-ours-to-choose] at the user's instruction. The finding was recorded on 2026-08-10 as Finding 2 of [concurrent-session-support]; the separability argument is Claude's.
 

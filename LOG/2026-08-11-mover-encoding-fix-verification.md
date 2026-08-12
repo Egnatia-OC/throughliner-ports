@@ -1,4 +1,4 @@
-# [HASH] — Queue-mover console encoding, verification [mover-encoding-fix-verification]
+# 7c9922a — Queue-mover console encoding, verification [mover-encoding-fix-verification]
 
 Walked through during the 2026-08-11 build run, after its 21 build items were
 complete. Written as the walk-through proceeds.

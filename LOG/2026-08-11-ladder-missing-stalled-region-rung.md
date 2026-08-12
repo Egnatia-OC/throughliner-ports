@@ -1,4 +1,4 @@
-# [HASH] — The processing ladder gains a rung for work that would unstick a stalled cleared region [ladder-missing-stalled-region-rung]
+# 7c9922a — The processing ladder gains a rung for work that would unstick a stalled cleared region [ladder-missing-stalled-region-rung]
 
 Mixed authorship: the widening is the user's — their words were that the ladder should be widened to include these factors — and so is the placement decision. The narrowing to one factor, the argument for it, and the concern recorded against the placement are Claude's.
 

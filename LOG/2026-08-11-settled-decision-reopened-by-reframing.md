@@ -1,4 +1,4 @@
-# [HASH] — The prior-decision retrieve reads the whole record, not LOG alone [settled-decision-reopened-by-reframing]
+# 7c9922a — The prior-decision retrieve reads the whole record, not LOG alone [settled-decision-reopened-by-reframing]
 
 The instance is Claude's failure; the user caught it, and their words were that they were confused and had not realised it would affect reasoning across the item.
 

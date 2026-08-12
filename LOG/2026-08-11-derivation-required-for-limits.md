@@ -1,4 +1,4 @@
-# [HASH] — A limit the method declares must state what it was derived from, and the 1,200-word ceiling is repealed [derivation-required-for-limits]
+# 7c9922a — A limit the method declares must state what it was derived from, and the 1,200-word ceiling is repealed [derivation-required-for-limits]
 
 The user's rule, from their instruction that an arbitrary cap is only admissible when it is expressed as a bound defined by a rate or proportion. Claude's contribution was the wording and one piece of pushback the user accepted.
 

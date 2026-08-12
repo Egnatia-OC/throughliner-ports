@@ -1,4 +1,4 @@
-# [HASH] — Four reorders retired: the close-out pass reduces to batching human stops, and captures append [processed-reorder-mostly-unnecessary]
+# 7c9922a — Four reorders retired: the close-out pass reduces to batching human stops, and captures append [processed-reorder-mostly-unnecessary]
 
 Captured by the user, from noticing that Claude asked which of two cleared items should go first. Their words: it doesn't matter what order these are in, as they will be completed in the same session; there's no need to reorder stuff in Processed, and reordering is token expensive. The narrowing is Claude's, and it disagreed with the "no need" in one respect.
 

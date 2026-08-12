@@ -1,4 +1,4 @@
-# [HASH] — The capability check splits by site: thorough at /plan, light at /next [capability-check-weight-by-site]
+# 7c9922a — The capability check splits by site: thorough at /plan, light at /next [capability-check-weight-by-site]
 
 Captured by the user mid-/plan, from their question about what a tool-availability check costs and where it should run. Mixed authorship: the question and the instruction to file are theirs; the weights are Claude's answer.
 

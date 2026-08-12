@@ -1,4 +1,4 @@
-# [HASH] — Three trailing Rules sections repealed, after checking line by line that the body really restates them [trailing-rules-sections-repealed]
+# 7c9922a — Three trailing Rules sections repealed, after checking line by line that the body really restates them [trailing-rules-sections-repealed]
 
 Consolidates three audit findings approved by the user. Each item's own text anticipated this, noting the pattern across the three is one shape.
 

@@ -1,4 +1,4 @@
-# [HASH] — The rule-lifecycle status board: five independent signals over the method's own rules, each filing a capture when it fires [rule-lifecycle-system]
+# 7c9922a — The rule-lifecycle status board: five independent signals over the method's own rules, each filing a capture when it fires [rule-lifecycle-system]
 
 The largest item in the run, and the one the previous /plan session designed in full after demoting it for having no build list. This close records what shipped and the two build-time questions it answered.
 
@@ -19,6 +19,18 @@ The largest item in the run, and the one the previous /plan session designed in 
 **Two defects found by running it, both in the detector's precision rather than its design.** The retired-terms file's own format example was being parsed as a term, loading the literal word "term" and flagging half the corpus — the parser now reads only under the list heading. And a doc that *says* a term is retired was counting as a live reference, which would have fired on every doc doing the right thing; a retirement-context guard cut 96 hits to 44. Remaining false positives are accepted: the item specifies a flag for a human, never a gate.
 
 **An uncomfortable result worth recording rather than burying.** The board's first real reading is that the corpus is over its ceiling, the audit is due, and no commit in recent history carries a gate disposition. The run that built the measure also pushed the number from 210 to 234. That is captured as [this-run-grew-what-it-measured] rather than left as an aside — the board working as designed on its first day means it is telling us something we would rather not hear.
+
+## Filed in the post-commit tail
+
+[spec-is-write-only-during-builds] — the user asked what SPEC is for if it is only
+loaded at the close for spec-sync, and suggested the doc could go. Checked rather
+than agreed: /plan *does* read SPEC every session, both as a ground rule and at
+Step 1, so the premise is half wrong. The half that holds is real and had not been
+named — /next never reads SPEC at all, so during a build the doc is write-only, and
+this very run edited it four times without once consulting it. Claude recommended
+against deletion (this project is atypical: the author holds the product truth that
+a consumer and a fresh short session do not) and reframed the item onto the sharper
+question, whether a close-time gate on a doc no build reads earns its cost.
 
 ## Session-level dispositions
 

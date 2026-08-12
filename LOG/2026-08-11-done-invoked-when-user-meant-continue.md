@@ -1,4 +1,4 @@
-# [HASH] — The /plan off-ramps are stated once at the start, and the per-item checkpoint drops the menu [done-invoked-when-user-meant-continue]
+# 7c9922a — The /plan off-ramps are stated once at the start, and the per-item checkpoint drops the menu [done-invoked-when-user-meant-continue]
 
 Captured by the user, observed live. Mid-session they ran /done and then said: "i didn't want to close, i just thought you were saying the session was over." No close was intended; the /done was a misreading of Claude's own message.
 

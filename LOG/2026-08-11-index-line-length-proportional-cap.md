@@ -1,4 +1,4 @@
-# [HASH] — A LOG index line is bounded at 20% of the entry it points to [index-line-length-proportional-cap]
+# 7c9922a — A LOG index line is bounded at 20% of the entry it points to [index-line-length-proportional-cap]
 
 The user's instruction, that the index-line guideline gain a proportional length bound — explicitly as a guideline addition, not as extra rationale, which the same guideline forbids.
 

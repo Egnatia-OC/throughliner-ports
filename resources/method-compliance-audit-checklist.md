@@ -45,7 +45,8 @@ relocate-rationale      the rule stays; its why moves out (consumer-facing why
 
 ### Two things learned running this (2026-08-09, the first inventory)
 
-- **The eviction list is the audit's output, and it goes into the queue as build work cleared to run — not as findings awaiting a later planning session.** An audit that reports and removes nothing reproduces the failure it exists to fix, but the fix is not cramming a corpus rewrite into a review pass. Approve the list item by item during the run.
+- **The eviction list is the audit's output, and it goes to Captures like every other finding.** This document used to say the list went in as build work cleared to run, and separately that eviction had to happen inside the run — both were repealed on 2026-08-12 by the user's ruling that audits always file to Captures, made when the contradiction was surfaced at /plan. The ruling also restores agreement with the shipped contract, which says an `[audit]` reports findings instead of editing files; the checklist had been contradicting the plugin.
+- **The concern those clauses carried is real and is rehomed rather than dropped.** An audit whose findings are never acted on reproduces the failure it exists to fix. What answers that is the queue, not the audit: findings are ordinary work, ordered by the ladder and counted toward the throughput floor, where ignoring them is visible. Filing an eviction list and never building it is a queue problem with a queue remedy — it is not a reason to let a review pass rewrite the corpus it is reading.
 - **An `[audit]` item that names a document to write into contradicts the audit contract and must be surfaced, not followed.** This checklist is named as the criteria home, which reads as a doc-write. The resolution that worked: the *findings* went to the queue, and only the *method* — this section — was written here.
 
 ## Lens 1 — self-authoring compliance
@@ -60,7 +61,7 @@ Read corpus-wide, the gate asks things it can't ask one rule at a time:
 - **Rationale placement.** Which operative statements still carry their why inline, and where should it go — the shipped FAQ if a consumer would want it, the deciding LOG entry if it's an authoring decision? When moving one, check the clause isn't *stating* a rule while arguing for it.
 - **Consistency.** Is a rule held to its own standard across docs? Hardened in one doc but cited loosely in another is a finding even when each instance reads fine alone.
 
-**Eviction has to happen in the run, not as a follow-up.** An audit that reports and removes nothing reproduces the failure it exists to fix.
+**Eviction does not happen in this run.** The sweep names what should go and why; the removal is separate work, filed to Captures like every other finding — see the dispositions note above for why the concern behind the older, opposite instruction is answered by the queue rather than by letting an audit edit.
 
 ## Lens 2 — tag placement
 

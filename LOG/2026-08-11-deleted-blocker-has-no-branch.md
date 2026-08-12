@@ -1,4 +1,4 @@
-# [HASH] — A deleted blocker gets its own branch, and the two texts that contradicted each other now agree [deleted-blocker-has-no-branch]
+# 7c9922a — A deleted blocker gets its own branch, and the two texts that contradicted each other now agree [deleted-blocker-has-no-branch]
 
 Captured by the user, who asked what happens to items whose blockers have gone stale or been deleted. The verification and diagnosis are Claude's, from reading both texts at processing time.
 

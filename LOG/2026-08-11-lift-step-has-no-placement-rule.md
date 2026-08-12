@@ -1,4 +1,4 @@
-# [HASH] — plan.md's two insertion points into Processed now maintain end-preferred placement [lift-step-has-no-placement-rule]
+# 7c9922a — plan.md's two insertion points into Processed now maintain end-preferred placement [lift-step-has-no-placement-rule]
 
 Mixed authorship: the slip and the diagnosis are Claude's; the user caught it, by asking whether some lifted items needed ordering consideration.
 

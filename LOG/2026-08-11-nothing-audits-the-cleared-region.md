@@ -1,4 +1,4 @@
-# [HASH] — The digest flags items whose placement contradicts their own text, on both sides of the readiness marker [nothing-audits-the-cleared-region]
+# 7c9922a — The digest flags items whose placement contradicts their own text, on both sides of the readiness marker [nothing-audits-the-cleared-region]
 
 Captured by the user as three questions about why a design item sat cleared unnoticed; widened by them too — they raised that anything can happen to an item after it is placed. The diagnosis, the correction to it, and the mechanism are Claude's.
 

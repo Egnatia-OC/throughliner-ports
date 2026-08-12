@@ -1,4 +1,4 @@
-# [HASH] — The web-search offer and the capability check now fire on a question, not on a feeling [what-would-answer-this-as-a-shared-trigger]
+# 7c9922a — The web-search offer and the capability check now fire on a question, not on a feeling [what-would-answer-this-as-a-shared-trigger]
 
 Captured by the user. Their words: the "what would answer this?" logic could also help trigger Claude to offer web search more, which is currently user-triggered more often than not. The unification is Claude's.
 

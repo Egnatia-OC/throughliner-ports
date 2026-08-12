@@ -1,4 +1,4 @@
-# [HASH] — The shipped CLAUDE.md template stops inviting users to prepare for a retired feature [claude-template-references-retired-test-flavor]
+# 7c9922a — The shipped CLAUDE.md template stops inviting users to prepare for a retired feature [claude-template-references-retired-test-flavor]
 
 Audit finding, approved by the user. `CLAUDE-TEMPLATE.md` invited the user to add test procedures that "Claude will follow during test entries and /done verification". The test flavor is retired; the method now routes a check Claude can run into building, and a check only the user can run into a `[user]` item.
 

@@ -1,4 +1,4 @@
-# [HASH] — Five prohibition-only rules rewritten to state the action they require [prohibitions-rewritten-as-actions]
+# 7c9922a — Five prohibition-only rules rewritten to state the action they require [prohibitions-rewritten-as-actions]
 
 Consolidates five findings of the prohibition-and-subordination audit, approved as a set by the user. Consolidating by fix-shape rather than by file is Claude's recommendation, agreed by them: one criterion applied once across its instances, which is also how the audit found them.
 
