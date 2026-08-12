@@ -1,4 +1,4 @@
-# [HASH] — The planning session's post-close tail: four captures held for a concurrent run, and two items corrected from evidence the tail produced
+# 9ade5e2 — The planning session's post-close tail: four captures held for a concurrent run, and two items corrected from evidence the tail produced
 
 This entry records work done *after* the 2026-08-12 planning close committed at `5234ec8`. It exists for the same reason the other session's tail entry does: the close had already run, the method has no delta-close path ([done-delta-close], [post-close-tail-state], both still unprocessed), and without an entry the tail's work would appear in the record only as a commit message. Written at the user's request rather than by any rule — which is the second time in two days that has been true, and is itself an argument for the delta-close item.
 
