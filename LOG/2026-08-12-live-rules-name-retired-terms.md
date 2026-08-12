@@ -13,6 +13,8 @@ Four distinct defects produced the 44:
 
 Result: 44 → 0. The only real edits were two clarifications in `CLAUDE.md`: the example of an internal term to avoid named a document that no longer exists, and the docset-A sentence gained "— now retired, see below —" so it stands without depending on a later paragraph.
 
+**A fifth instance of the same defect was created by hand later the same day, and this entry would over-claim without it.** The four fixes above are code. Hours afterwards, at the close, `CEILING` was added to the retired-terms list as a bare word — matching the ordinary English "ceiling", which `plan.md` uses about an unrelated queue guard. Precisely the failure class just removed, reintroduced through the one route the code fixes cannot guard: the hand-written list the detector reads from. Corrected in the post-close tail (`2026-08-12-post-close-rezip-and-board-findings.md`), and the list entry now carries its own reasoning so the next person adding a term meets it. Anyone citing this entry for "the detector was fixed" should read that as fixed *in code*, with the input list still a soft surface.
+
 **The lesson worth keeping is about reading captures, not about this detector.** A capture's account of how a mechanism behaves is a claim to test, not a fact to build on. Building this item on its stated premise would have meant "fixing" two pieces of correct text and leaving the actual defect — a lint reporting 44 non-faults, which is the cry-wolf shape that teaches everyone to skim its output — completely untouched.
 
 **Files touched:** `resources/rule_signals.py`, `CLAUDE.md`
