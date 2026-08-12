@@ -10,4 +10,4 @@ A skill opening is the one place the method accretes without any addition lookin
 
 **Files touched:** `resources/self-authoring-rules.md`
 **Routed to Captures:** [gate-still-declares-the-old-ceiling] — found while editing this file: its opening still declares the 150–200 instruction ceiling as the gate's binding limit, the figure this same session's research invalidated. Not needed to complete this item, and rewriting the opening of the document that governs every rule is not a mid-build edit.
-**Rule gate:** run — one rule admitted, as an amendment to §2's eviction question rather than freestanding. Parent named: "Adding a rule names what it replaces or supersedes." Host-only by residence. Nothing evicted, because an amendment occupies its parent's slot.
+Rule gate: run — one rule admitted, as an amendment to §2's eviction question rather than freestanding. Parent named: "Adding a rule names what it replaces or supersedes." Host-only by residence. Nothing evicted, because an amendment occupies its parent's slot.

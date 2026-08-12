@@ -12,4 +12,4 @@ The item's own counter-argument, that the corpus was 65% over its ceiling, is vo
 
 **Files touched:** `plugin/si-plugin/docs-b/next.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run — one rule admitted, into a fetched doc rather than the always-loaded corpus, on the reasoning above.
+Rule gate: run — one rule admitted, into a fetched doc rather than the always-loaded corpus, on the reasoning above.

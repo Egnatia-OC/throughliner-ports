@@ -14,5 +14,5 @@ Shipped rather than host-only, since any consumer running a multi-item /next rea
 
 **Files touched:** `plugin/si-plugin/docs-b/next-build.md`, `docs-b/done-build.md`, `FAQ/faq.md`, `FAQ/index.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run, written before the edit. One rule amended in each of two fetched docs, no freestanding rule added — `done-build.md`'s depth rule keeps both triggers verbatim with only its default inverted, and `next-build.md`'s existing close-notes step gains the carrier. Nothing evicted, because both are amendments occupying their parents' slots.
-**FAQ:** updated — "My session records used to be long. Why are some of them short now?"
+Rule gate: run, written before the edit. One rule amended in each of two fetched docs, no freestanding rule added — `done-build.md`'s depth rule keeps both triggers verbatim with only its default inverted, and `next-build.md`'s existing close-notes step gains the carrier. Nothing evicted, because both are amendments occupying their parents' slots.
+FAQ: updated — "My session records used to be long. Why are some of them short now?"

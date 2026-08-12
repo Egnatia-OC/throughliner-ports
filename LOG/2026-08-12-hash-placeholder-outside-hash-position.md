@@ -12,4 +12,4 @@ The detector is deliberately narrow, matching two unambiguous shapes — a field
 
 **Files touched:** `LOG/2026-08-10-queue-machinery-repair-freeform.md`, `plugin/si-plugin/hooks/session_start.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — a hook check and a data repair; no rule in the method's text.
+Rule gate: not needed — a hook check and a data repair; no rule in the method's text.

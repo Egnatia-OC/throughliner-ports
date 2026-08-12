@@ -10,4 +10,4 @@ Two test cases added: the combined call lands the item above the marker and move
 
 **Files touched:** `plugin/si-plugin/scripts/reorder_queue.py`, `scripts/test_reorder_queue.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — a script capability and its tests.
+Rule gate: not needed — a script capability and its tests.

@@ -14,4 +14,4 @@ That cannot perform admission. It can only describe, and the artifacts show whic
 
 **Files touched:** `CLAUDE.md`, `resources/self-authoring-rules.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run, and written before the edit was made. One obligation amended, not added: the existing disposition rule gains a moment and a carrier. Parent named — the disposition rule itself — so it consumes no new slot. Host-only by residence.
+Rule gate: run, and written before the edit was made. One obligation amended, not added: the existing disposition rule gains a moment and a carrier. Parent named — the disposition rule itself — so it consumes no new slot. Host-only by residence.

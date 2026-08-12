@@ -10,4 +10,4 @@ The item's caution is built in as operative text: the recommendation has to name
 
 **Files touched:** `plugin/si-plugin/docs-b/plan.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run — no rule admitted. An existing step's narration shape was corrected to comply with two rules already in force.
+Rule gate: run — no rule admitted. An existing step's narration shape was corrected to comply with two rules already in force.

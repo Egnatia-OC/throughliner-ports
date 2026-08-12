@@ -16,5 +16,5 @@ The larger half of the change is that **the ceiling is gone entirely**, which wa
 
 **Files touched:** `resources/rule_signals.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — no rule in the method's own text was authored or amended; this is a change to a host-only measurement script.
-**Retired:** `CEILING` — the 200-statement rule-corpus ceiling
+Rule gate: not needed — no rule in the method's own text was authored or amended; this is a change to a host-only measurement script.
+Retired: `CEILING` — the 200-statement rule-corpus ceiling

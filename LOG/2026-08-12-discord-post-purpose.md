@@ -15,6 +15,6 @@ Written in the tail after the 2026-08-12 planning close, at the user's request a
 **Files touched:** `CLAUDE.md` (the Discord posts section)
 **Routed to Captures:** none — the three Discord post lines the user asked for are held until a concurrent /next session closes and the queue is free to write.
 
-**FAQ:** not needed — host-only guidance about this project's own announcements; consumers never post to the channel.
+FAQ: not needed — host-only guidance about this project's own announcements; consumers never post to the channel.
 
-**Rule gate:** run — admitted as a scope clause on the existing Discord rule rather than a new rule, so it consumes no slot and adds no obligation; nothing evicted; left always-loaded in CLAUDE.md with the fetch question noted above; and the reasoning moved out of the operative statement into this entry, leaving only the test that is needed to apply it.
+Rule gate: run — admitted as a scope clause on the existing Discord rule rather than a new rule, so it consumes no slot and adds no obligation; nothing evicted; left always-loaded in CLAUDE.md with the fetch question noted above; and the reasoning moved out of the operative statement into this entry, leaving only the test that is needed to apply it.

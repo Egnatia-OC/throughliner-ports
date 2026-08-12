@@ -17,4 +17,4 @@ Result: 44 → 0. The only real edits were two clarifications in `CLAUDE.md`: th
 
 **Files touched:** `resources/rule_signals.py`, `CLAUDE.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run — no rule admitted. The CLAUDE.md changes are two clarifications to existing text; nothing was added to the corpus and nothing needed evicting to make room.
+Rule gate: run — no rule admitted. The CLAUDE.md changes are two clarifications to existing text; nothing was added to the corpus and nothing needed evicting to make room.

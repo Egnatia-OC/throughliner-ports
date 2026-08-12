@@ -12,4 +12,4 @@ A growth report with no threshold is the only form available. The item guessed a
 
 **Files touched:** `resources/rule_signals.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — a reporting group added to a host-only script.
+Rule gate: not needed — a reporting group added to a host-only script.

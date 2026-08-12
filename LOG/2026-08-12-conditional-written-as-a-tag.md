@@ -10,4 +10,4 @@ The second limb: `plan.md`'s skip-to-defer recommendation carried `[DISCUSS]` an
 
 **Files touched:** `plugin/si-plugin/docs-b/skill-nonspecific-rules.md`, `docs-b/plan.md`, `docs-b/done.md`, `docs-b/done-plan.md`, `docs-b/done-build.md`, `docs-b/done-audit.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run — one rule admitted into the always-loaded corpus, the conditional-tag convention. It defines the syntax of a mechanism already stated at that site, and thirteen sites were guessing at it. It fires in all four skills, which is the file's own admission test. Nothing needed evicting to make room: the same session's eviction pass removed ~104 words from the same file, so this lands net-negative.
+Rule gate: run — one rule admitted into the always-loaded corpus, the conditional-tag convention. It defines the syntax of a mechanism already stated at that site, and thirteen sites were guessing at it. It fires in all four skills, which is the file's own admission test. Nothing needed evicting to make room: the same session's eviction pass removed ~104 words from the same file, so this lands net-negative.

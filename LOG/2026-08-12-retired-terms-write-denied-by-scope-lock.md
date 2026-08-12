@@ -16,4 +16,4 @@ A test case was added to `resources/testing/hook_schema_check.py` and passes. No
 
 **Files touched:** `plugin/si-plugin/hooks/pre_tool_use.py`, `resources/testing/hook_schema_check.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — a hook exemption and its test; no rule in the method's text.
+Rule gate: not needed — a hook exemption and its test; no rule in the method's text.

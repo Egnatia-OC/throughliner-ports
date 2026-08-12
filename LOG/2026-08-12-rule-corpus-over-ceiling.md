@@ -18,4 +18,4 @@ Losing the number costs less than it first appears, because the surviving case n
 
 **Files touched:** `plugin/si-plugin/docs-b/skill-nonspecific-rules.md`, `docs-b/plan.md`, `docs-b/next-build.md`
 **Routed to Captures:** none from this item
-**Rule gate:** run — nothing admitted, which is the point: this is an eviction pass, so the gate's second question is the whole activity. Four rules dispositioned, one relocated between docs, none added.
+Rule gate: run — nothing admitted, which is the point: this is an eviction pass, so the gate's second question is the whole activity. Four rules dispositioned, one relocated between docs, none added.

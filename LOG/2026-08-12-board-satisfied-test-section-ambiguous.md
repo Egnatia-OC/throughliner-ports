@@ -10,4 +10,4 @@ Scope shrank between filing and building and the build did not restore it: MEASU
 
 **Files touched:** `resources/rule_signals.py`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — printed guidance in a host-only script, not a rule in the method's text.
+Rule gate: not needed — printed guidance in a host-only script, not a rule in the method's text.

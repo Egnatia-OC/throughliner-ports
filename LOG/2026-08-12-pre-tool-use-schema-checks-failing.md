@@ -16,4 +16,4 @@ The how-far-back question needed no bisect — it dates to [session-scope-the-wo
 
 **Files touched:** `resources/testing/hook_schema_check.py`
 **Routed to Captures:** [plan-quiet-list-fixture-also-stale]. It matters beyond bookkeeping: [nothing-runs-the-hook-tests-at-a-close] was held below the line naming *this* item as its blocker, on the ground that a hard close-time gate cannot ship while the suites carry standing failures. They still do. That item's `Blocked by:` was re-pointed at the new capture, with the reasoning written in — not lifted, since lifting is /plan's call at the below-the-line revisit.
-**Rule gate:** not needed — stale test fixtures corrected.
+Rule gate: not needed — stale test fixtures corrected.

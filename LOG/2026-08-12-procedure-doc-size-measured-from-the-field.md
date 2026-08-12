@@ -16,5 +16,5 @@ One consequence had to be handled rather than left: `done-plan.md`'s push overri
 
 **Files touched:** `plugin/si-plugin/docs-b/done.md`, `docs-b/done-plan.md`
 **Routed to Captures:** none from this item
-**Rule gate:** not needed — text was relocated between two procedure docs and one push-offer branch stated in one place instead of two; the obligations are unchanged.
-**Retired:** `Completed [user]-item close (in done.md)` and `Standalone handmade-work close (in done.md)` — both relocated to `done-plan.md`
+Rule gate: not needed — text was relocated between two procedure docs and one push-offer branch stated in one place instead of two; the obligations are unchanged.
+Retired: `Completed [user]-item close (in done.md)` and `Standalone handmade-work close (in done.md)` — both relocated to `done-plan.md`
