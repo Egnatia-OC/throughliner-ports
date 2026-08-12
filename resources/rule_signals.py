@@ -23,9 +23,11 @@ which is source data — a recorded event, authored once — not derived state.
 ## The six signals
 
 MEASURED   a structural rule-statement count across the always-loaded files,
-           against the 150-200 instruction ceiling.
-AUDITED    fires when MEASURED is over the ceiling. Not downstream of MEASURED
-           *completing* — both read the same computed number independently.
+           reported per audience as a growth report. No threshold, no verdict:
+           it never fires. See GROWTH_NOTE for why the ceiling was removed.
+AUDITED    never fires either, for the same reason — its trigger was the
+           ceiling, and no defensible replacement threshold exists. It reports
+           the counts and leaves the sweep to judgment.
 BORN       commits that should carry a gate-disposition line and do not,
            matched against commits touching the rule-bearing file set.
 CONTRADICTED
@@ -48,8 +50,29 @@ would need a bare number) and it does not go quiet on a standing signal (that
 recreates the silent inaction the whole design exists to prevent). The work
 goes where all work goes — the queue — where ignoring it is visible.
 
-A signal counts as satisfied while an open capture with its slug exists, which
-is the guard against filing the same capture every session.
+A signal counts as satisfied while ANY OPEN WORK ITEM CARRIES ITS SLUG, IN
+EITHER SECTION — Unprocessed or Processed, captured or designed and cleared.
+Only deleting that item re-arms the signal. This is the guard against filing
+the same capture every session.
+
+Saying "in either section" is not pedantry. The wording used to name
+Unprocessed as the filing destination and then leave the satisfied-test
+unqualified, so a session could read it as "an open capture *in Unprocessed*".
+On 2026-08-12 a single /plan processed all four board-filed captures into
+Processed at once; under that reading the very next session would have filed
+four duplicates on top of four items that were not merely open but designed,
+kept and cleared — the signal firing loudest exactly when the work was
+furthest along.
+
+The check is NOT mechanical, which is the easiest thing here to miss. This
+script computes and prints; it never parses QUEUE.md and never files anything.
+The satisfied-test is performed by whoever reads the output, so this wording
+IS the mechanism — there is no code to fall back on.
+
+Having the script scan QUEUE.md itself was weighed and rejected:
+post_tool_use.py already parses QUEUE.md for the lint, and a second parser in
+a second script is two things that must agree about the file's shape and will
+drift.
 
 Usage:
     python resources/rule_signals.py [project root]
@@ -69,13 +92,53 @@ for _stream in (sys.stderr, sys.stdout):
 
 # --- Configuration ------------------------------------------------------
 
-# The always-loaded corpus: what every session pays for, in every session.
-# MEASURED counts only these. Fetched docs cost nothing until opened and are
-# deliberately out of scope — capping them would guard a cost the ceiling
-# does not count.
-ALWAYS_LOADED = [
+# The always-loaded corpus, split by AUDIENCE, because there are two and
+# collapsing them hides which one is carrying the weight.
+#
+# A consumer project loads only the shipped file. THIS project loads that file
+# AND its own CLAUDE.md in every session, so its real always-loaded burden is
+# the sum. Reporting one number understated this project's position by the
+# whole of CLAUDE.md, and the eviction work scoped off that number was scoped
+# against the smaller figure.
+#
+# resources/method-compliance-audit-checklist.md has always required the count
+# be reported split by audience. This is the tool finally doing it.
+SHIPPED_ALWAYS_LOADED = [
     "plugin/si-plugin/docs-b/skill-nonspecific-rules.md",
 ]
+
+HOST_ALWAYS_LOADED = [
+    "CLAUDE.md",
+]
+
+# Every file loaded in every session of THIS project. CONTRADICTED measures
+# growth against this combined set rather than the shipped file alone: a
+# commit that adds rules to CLAUDE.md grows the corpus a session actually
+# carries, and CLAUDE.md is already in RULE_BEARING, so measuring only the
+# shipped half left that growth invisible to the one check aimed at it.
+ALWAYS_LOADED = SHIPPED_ALWAYS_LOADED + HOST_ALWAYS_LOADED
+
+# Fetched procedure docs. Not always-loaded — each is paid only by the sessions
+# that run its skill — so they are reported as their own group and never summed
+# with the always-loaded counts. Redistribution to a fetched doc is how bloat
+# gets hidden rather than cut; two groups is what makes a relocation read as a
+# relocation instead of as a reduction.
+FETCHED_DOCS = [
+    "plugin/si-plugin/docs-b/plan.md",
+    "plugin/si-plugin/docs-b/next.md",
+    "plugin/si-plugin/docs-b/next-build.md",
+    "plugin/si-plugin/docs-b/next-audit.md",
+    "plugin/si-plugin/docs-b/done.md",
+    "plugin/si-plugin/docs-b/done-build.md",
+    "plugin/si-plugin/docs-b/done-plan.md",
+    "plugin/si-plugin/docs-b/setup.md",
+]
+
+# How far back the growth report looks for its direction of travel. This is a
+# reporting WINDOW, not a threshold — nothing passes or fails against it, and
+# no work is triggered by it. It matches the window _rule_bearing_commits
+# already uses, so the board reads one span of history rather than two.
+GROWTH_WINDOW = 30
 
 # Files where a method rule can be born. A commit touching one of these is
 # BORN's trigger — mechanical, with no judgment involved, which is what makes
@@ -107,25 +170,38 @@ DISPOSITION_BASELINE = "7c9922a"
 # session decided — it would look like evidence and not be, which is exactly the
 # handoff-provenance problem the method already names.
 
-# The ceiling, in the proxy's own units. The research figure is 150-200
-# *instructions*; this is a structural proxy for them, so the ceiling is
-# re-expressed here rather than reused raw. See calibrate() for the derivation
-# and CEILING_NOTE for what it rests on.
+# THERE IS NO CEILING, AND ONE MUST NOT BE RE-DERIVED TO FILL THE GAP.
 #
-# Derivation: the 2026-08-09 hand count of the always-loaded corpus came to
-# ~218 instructions against a 150-200 ceiling, i.e. roughly 9-33% over. The
-# proxy is calibrated so that the corpus as it stood then reads as over. A
-# proxy consistently off by a fixed factor is fine; what would not work is a
-# measure that is sometimes exact and sometimes not.
-CEILING = 200
-
-CEILING_NOTE = (
-    "The 150-200 figure is from research on instruction-following, recorded in "
-    "resources/research/instruction-file-bloat-and-subtraction.md. This script "
-    "counts a structural proxy for an instruction, not instructions themselves. "
-    "The proxy is the right shape because it moves when the corpus grows, holds "
-    "still when it does not, and falls when rules are consolidated — which is "
-    "exactly what the eviction techniques are for."
+# There used to be: CEILING = 200, in the proxy's own units, derived from the
+# 150-200 instruction figure in
+# resources/research/instruction-file-bloat-and-subtraction.md. That figure was
+# re-validated against the 5-series on 2026-08-12 and found roughly an order of
+# magnitude too tight — the benchmark was re-run a year on, frontier models had
+# improved about tenfold, and the nearest tested Claude model only begins
+# failing between 2,000 and 5,000 constraints. Full finding, with both caveats
+# (neither Opus 5 nor Fable 5 was tested, and the benchmark measures keyword
+# constraints rather than behavioural rules):
+# resources/research/instruction-ceiling-revalidated-for-5-series.md
+#
+# So the ceiling lost its derivation, and a threshold with no derivation is
+# what the method bans. Being conservative is not a defence — an invented
+# number fires against correct work.
+#
+# What this deliberately gives up: nothing here will ever say the corpus is too
+# big. That is the honest position rather than a regression. The case for
+# eviction now rests on RELEVANCE — irrelevant content degrading the model's
+# treatment of all instructions, near-identical rules acting as optimal
+# distractors for each other, and Anthropic's own 5-series guidance to remove
+# prior-model scaffolding. A count measures none of those.
+GROWTH_NOTE = (
+    "These are growth reports, not verdicts. There is no ceiling: the 150-200 "
+    "instruction figure the old one derived from was re-validated against the "
+    "5-series and found roughly an order of magnitude too tight "
+    "(resources/research/instruction-ceiling-revalidated-for-5-series.md), and "
+    "a threshold with no derivation is what the method bans. Read the numbers "
+    "as direction of travel. The case for eviction is relevance — irrelevant "
+    "and near-duplicate rules degrade every instruction around them — and no "
+    "count measures that."
 )
 
 # A structural rule-statement: a bullet, a bolded lead-in, or a line inside a
@@ -163,11 +239,15 @@ def count_text_statements(text):
     return count
 
 
-def count_statements(root):
-    """Structural rule-statements across the always-loaded corpus."""
+def count_statements(root, files=None):
+    """Structural rule-statements across a named set of documents.
+
+    Defaults to the whole always-loaded corpus. Callers pass one audience's
+    list to get that audience's number.
+    """
     total = 0
     per_file = {}
-    for rel in ALWAYS_LOADED:
+    for rel in (ALWAYS_LOADED if files is None else files):
         path = os.path.join(root, rel)
         try:
             with open(path, "r", encoding="utf-8") as f:
@@ -180,43 +260,116 @@ def count_statements(root):
     return total, per_file
 
 
-def signal_measured(root):
-    total, per_file = count_statements(root)
-    over = total > CEILING
+def _count_at_rev(root, ref, files, strict=False):
+    """Statement count for `files` as they stood at revision `ref`.
+
+    Returns None if git is unusable, or — under `strict` — if any file in the
+    set did not exist at that revision.
+
+    The two modes exist because two callers want opposite things from a
+    missing file. CONTRADICTED compares one commit to its parent and wants a
+    missing file to count zero, so that adding a corpus file doesn't make
+    every earlier commit uncountable. The growth report wants the opposite: a
+    file that did not exist yet makes the comparison FALSE, not zero, because
+    the difference then reads as growth when it is really the file's creation.
+    That exact misreading appeared on the first run of this report.
+    """
+    total = 0
+    for rel in files:
+        try:
+            out = subprocess.run(
+                ["git", "show", "%s:%s" % (ref, rel)],
+                cwd=root, capture_output=True, text=True, timeout=20,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return None
+        if out.returncode != 0:
+            if strict:
+                return None
+            continue
+        total += count_text_statements(out.stdout)
+    return total
+
+
+def _growth(root, files, now):
+    """Direction of travel: this count against the same count GROWTH_WINDOW
+    commits back. Returns a short phrase, never a verdict.
+    """
+    then = _count_at_rev(root, "HEAD~%d" % GROWTH_WINDOW, files, strict=True)
+    if then is None:
+        return "not comparable over %d commits (a file here is newer than that)" % (
+            GROWTH_WINDOW,)
+    delta = now - then
+    direction = "up" if delta > 0 else ("down" if delta < 0 else "flat")
+    return "%s %+d over the last %d commits (was %d)" % (
+        direction, delta, GROWTH_WINDOW, then)
+
+
+def _group_report(root, label, files):
+    total, per_file = count_statements(root, files)
     detail = ", ".join(f"{k.split('/')[-1]}: {v}" for k, v in per_file.items())
+    return "%s %d (%s) — %s" % (
+        label, total, detail, _growth(root, files, total))
+
+
+def signal_measured(root):
+    """A growth report per audience, and per group. It never fires.
+
+    Two audiences, because there are two: a consumer loads the shipped rules
+    file only, while this project also loads its own CLAUDE.md in every
+    session. And a third group for the fetched procedure docs, kept separate
+    because their cost profile genuinely differs — a fetched doc is paid only
+    by the sessions that run its skill — and because keeping them separate is
+    what makes text MOVED out of the always-loaded file read as a relocation
+    rather than as a reduction.
+
+    skill-nonspecific-rules.md is deliberately NOT in the fetched group even
+    though a skill fetches it: it is always-loaded, already counted above, and
+    listing it twice would double-count the one file the report is most about.
+    """
+    shipped, _ = count_statements(root, SHIPPED_ALWAYS_LOADED)
+    host, _ = count_statements(root, HOST_ALWAYS_LOADED)
+    lines = [
+        "always-loaded, consumer: " + _group_report(
+            root, "", SHIPPED_ALWAYS_LOADED).strip(),
+        "always-loaded, this project: %d (consumer's %d plus %d host-only) — %s" % (
+            shipped + host, shipped, host,
+            _growth(root, ALWAYS_LOADED, shipped + host)),
+        "fetched procedure docs: " + _group_report(
+            root, "", FETCHED_DOCS).strip(),
+    ]
     return {
         "stage": "MEASURED",
-        "firing": over,
-        "value": total,
+        "firing": False,
+        "value": shipped + host,
         "slug": "rule-corpus-over-ceiling",
-        "message": (
-            f"Always-loaded rule-statement count is {total} against a ceiling of "
-            f"{CEILING} ({detail}). {'OVER — eviction is due.' if over else 'Within the ceiling.'}"
-        ),
+        "message": "Growth report (no ceiling, no verdict). " + " | ".join(lines),
     }
 
 
 # --- AUDITED ------------------------------------------------------------
 
 def signal_audited(root, measured):
-    """Fires on the same number MEASURED reads, computed independently.
+    """No longer fires, and says so plainly rather than pretending to a trigger.
 
-    Sharing an input is not the dependency the design forbids — being gated on
-    another stage having finished is. If MEASURED were deleted, this would
-    compute the number itself.
+    Its trigger was the ceiling. With the ceiling gone and no defensible
+    replacement available, inventing one here would be exactly the bare-number
+    failure the method bans — so this reports the number and leaves the sweep
+    to judgment. Deciding a sweep is due is now a person's call, informed by
+    MEASURED's direction of travel and by MAINTAINED, which catches the drift
+    that is not growth.
     """
     total, _ = count_statements(root)
     return {
         "stage": "AUDITED",
-        "firing": total > CEILING,
+        "firing": False,
         "value": total,
         "slug": "three-lens-compliance-sweep-due",
         "message": (
-            "The corpus is over the ceiling, so the three-lens compliance sweep "
-            "in resources/method-compliance-audit-checklist.md is due."
-            if total > CEILING else
-            "Corpus within the ceiling; no sweep due. Note the known gap: drift "
-            "that is not growth goes uncaught here and is MAINTAINED's job."
+            "No automatic trigger: the ceiling this fired on is gone and no "
+            "replacement threshold is defensible. The three-lens sweep in "
+            "resources/method-compliance-audit-checklist.md is run by judgment "
+            "— MEASURED's direction of travel and MAINTAINED are the inputs."
         ),
     }
 
@@ -402,26 +555,8 @@ def _count_delta_at(root, rev):
     uses via `git show <rev>:<path>`, so there is no second counting logic to
     drift.
     """
-    def _count_at(ref):
-        total = 0
-        for rel in ALWAYS_LOADED:
-            try:
-                out = subprocess.run(
-                    ["git", "show", "%s:%s" % (ref, rel)],
-                    cwd=root, capture_output=True, text=True, timeout=20,
-                )
-            except (OSError, subprocess.SubprocessError):
-                return None
-            if out.returncode != 0:
-                # The file may genuinely not exist at that revision. Treat it
-                # as zero rather than as an error, so a corpus file added later
-                # doesn't make every earlier commit uncountable.
-                continue
-            total += count_text_statements(out.stdout)
-        return total
-
-    before = _count_at(rev + "^")
-    after = _count_at(rev)
+    before = _count_at_rev(root, rev + "^", ALWAYS_LOADED)
+    after = _count_at_rev(root, rev, ALWAYS_LOADED)
     if before is None or after is None:
         return None
     return after - before
@@ -517,11 +652,96 @@ def load_retired_terms(root):
 # A line that says a term IS retired is correct text, not a stale reference.
 # Without this the signal fires on every doc doing the right thing — including
 # the rules that record the retirement — which is how a lint becomes noise.
+#
+# Widened 2026-08-12 from the phrasings that actually appeared in the corpus:
+# a doc says a mechanism is gone in more ways than the first list imagined.
 RETIREMENT_CONTEXT = (
-    "retired", "retire", "no longer", "is gone", "are gone", "was removed",
-    "repealed", "superseded", "deprecated", "stays retired", "never write",
-    "don't write", "do not write", "not a", "vestigial",
+    "retired", "retire", "no longer", "is gone", "are gone", "it's gone",
+    "was removed", "were removed", "repealed", "superseded", "deprecated",
+    "stays retired", "never write", "don't write", "do not write", "not a",
+    "vestigial", "reintroduce", "used to", "formerly", "replaced by",
+    "there used to be", "has been removed", "does not exist",
 )
+
+# Files that RECORD what was true when they were written. Editing a retired
+# term out of one falsifies the record, so a hit inside one is never a finding
+# and reporting it is pure noise. Same exclusion list the identity rename
+# carries, and for the same reason.
+ARCHIVAL_PATHS = (
+    # This file itself. Its comments name retired terms as worked examples of
+    # what the detector must and must not match — the same reason the
+    # retired-terms list is already excluded. A file whose subject is retired
+    # terms will always name them.
+    "resources/rule_signals.py",
+    "resources/research/",
+    "resources/captures/",
+    "resources/testing/",
+    "resources/plugin-behaviour-retired.md",
+    "INBOX/archive/",
+    "LOG/",
+)
+
+# A dated file at the top of resources/ is a record of an event, not a live
+# rule — e.g. resources/2026-08-09-emergency-revert-plan.md.
+DATED_FILE_RE = re.compile(r"(^|/)\d{4}-\d{2}-\d{2}-")
+
+
+def _is_archival(rel_path):
+    return (
+        any(rel_path.startswith(p) for p in ARCHIVAL_PATHS)
+        or DATED_FILE_RE.search(rel_path) is not None
+    )
+
+
+def _term_appears_as_a_name(term, raw):
+    """True where `term` is used as the NAME of the mechanism, not incidentally.
+
+    The terms include field names ending in a colon — `Blocks:`, `Depends on:`,
+    `Editor:`. A bare case-insensitive substring test matches the Python line
+    `for b in blocks:` and the prose "not only when it blocks:", neither of
+    which mentions the retired field at all. Both were in the corpus, and
+    between them they are most of what the signal was reporting.
+
+    So a colon-terminated term counts only where it is quoted in backticks,
+    bolded, or begins a line — the three ways a document actually names a
+    field. Terms that are not field names (a filename, a docset) keep the
+    plain substring test, which is right for them.
+    """
+    low = raw.lower()
+    t = term.lower()
+    if not term.rstrip().endswith(":"):
+        # Whole-word at each end, or `docset A` matches the words "docset and"
+        # — which is what it was doing, in this project's own CLAUDE.md.
+        # Anchored only where the edge character is one \b understands, so a
+        # term like `plugin-behaviour.md` still matches.
+        pattern = re.escape(t)
+        if t[:1].isalnum():
+            pattern = r"\b" + pattern
+        if t[-1:].isalnum():
+            pattern = pattern + r"\b"
+        return re.search(pattern, low) is not None
+    if ("`" + t) in low or ("**" + t) in low:
+        return True
+    return low.lstrip().lstrip("-*# ").startswith(t)
+
+
+def _paragraph_says_retired(lines, index):
+    """True where the hit's own paragraph says the mechanism is retired.
+
+    The context test used to read one line. Prose splits a sentence across
+    lines constantly — "still carry an `Editor:` … line — all three settings
+    are retired" puts the term and the word `retired` on different lines — so a
+    per-line test flagged correct writing. The paragraph is the contiguous run
+    of non-blank lines around the hit: structural, with no window size to pick.
+    """
+    start = index
+    while start > 0 and lines[start - 1].strip():
+        start -= 1
+    end = index
+    while end + 1 < len(lines) and lines[end + 1].strip():
+        end += 1
+    block = " ".join(lines[start:end + 1]).lower()
+    return any(c in block for c in RETIREMENT_CONTEXT)
 
 
 def signal_repealed(root):
@@ -565,16 +785,17 @@ def signal_repealed(root):
             except OSError:
                 continue
             rel_path = os.path.relpath(path, root).replace("\\", "/")
+            if _is_archival(rel_path):
+                continue
             seen = set()
             for n, raw in enumerate(lines, 1):
-                low = raw.lower()
-                if any(c in low for c in RETIREMENT_CONTEXT):
+                if _paragraph_says_retired(lines, n - 1):
                     continue
                 for term, _why in terms:
                     key = (rel_path, term)
                     if key in seen:
                         continue
-                    if term.lower() in low:
+                    if _term_appears_as_a_name(term, raw):
                         seen.add(key)
                         hits.append((f"{rel_path}:{n}", term))
 
@@ -616,11 +837,17 @@ def main(argv):
     if firing:
         print()
         print("Each firing signal files one capture in Unprocessed, under the slug "
-              "shown below, unless an open capture with that slug already exists:")
+              "shown below.")
+        print("A signal is already satisfied — file nothing — while ANY open work "
+              "item carries its slug,")
+        print("in EITHER section: Unprocessed or Processed, captured or designed "
+              "and cleared to run.")
+        print("Only deleting that item re-arms the signal. Nothing here scans the "
+              "queue; you perform this check.")
         for s in firing:
             print(f"  [{s['slug']}]")
     print()
-    print(CEILING_NOTE)
+    print(GROWTH_NOTE)
     return 0
 
 

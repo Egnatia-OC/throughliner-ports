@@ -486,6 +486,16 @@ present or absent, a branch gone, a URL responding. Checking the world is not
 asking the user. A failed check is reported plainly as what was found, and the
 item stays in place; it never becomes "are you sure you did this?".
 
+**Verify any command before handing it over to be pasted.** Run it where doing
+so is safe — a scratch fixture — or read the tool's `--help`. The scope is
+narrow on purpose: a command *Claude* runs with a wrong flag costs one turn and
+self-corrects, because the error arrives, the help gets read, and the work
+continues. The cost only lands when the command goes into a block for the user
+to run: they are a non-coder, they cannot tell a typo from a broken tool, and
+the failure arrives in their hands rather than yours. A tool's own flag list is
+not an external fact to be careful about — it is one `--help` away, so the gap
+this closes is ordering, not knowledge.
+
 **Say nothing about /done until the walk-through is complete.** While driving the
 steps, don't mention /done, don't frame the item as "handed over", don't recommend
 recording it. Mentioning the close mid-walk-through is what once demoted this to a

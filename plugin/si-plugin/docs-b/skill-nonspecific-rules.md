@@ -95,20 +95,11 @@ NO  -> show it, then wait         a commit message · anything that LEAVES THE
                                   already owns, where git does not yet hold it
 ```
 
-  **The test used to read "does a revert fully undo it?", which assumed a
-  safety net that isn't always there.** Recoverability is the thing actually
-  being tested, and stating it that way settles the case that kept getting
-  argued: converting a project's whole QUEUE.md at setup or migration. That
-  conversion rewrites a document the user owns and reads most, in a project
-  that may have just been adopted and may not be a committed git repo at all —
-  so there may be nothing to revert to. It is show-first by the test, not by an
-  exception to it. Where the file *is* committed, the same test lets it be
-  written first.
-
-  Stated as a restatement rather than a third exception on purpose: a rule that
-  restates without losing content does not get an exception (the admission test
-  in the self-authoring gate). Nothing was added here — the wording was
-  corrected to say what it always meant.
+  Worked case, because it is the one that keeps getting argued: converting a
+  project's whole QUEUE.md at setup or migration rewrites a document the user
+  owns and reads most, in a project that may not be a committed git repo at
+  all — so there may be nothing to revert to. Show-first. Where the file *is*
+  committed, the same test lets it be written first.
 
 - **Show-first, on request.** The user can ask to see doc-resident text before
   it is written, for the rest of the session.
@@ -265,6 +256,20 @@ Tags compose. When a tag conflicts with the general pull to explain or elaborate
 `[SEQUENCE]` carve-out: showing the *one next item* the user is about to act on
 (the /plan captures loop) is presentation, not a preview. The forbidden case is
 teasing items they must hold in their head.
+
+**A step whose shape depends on what it finds tags every arm, and the condition
+sits OUTSIDE the brackets:**
+
+```
+write:   [SILENT] when clean; [BRIEF] when flagging
+never:   [SILENT when clean; BRIEF when flagging]     # prose inside the bracket
+never:   [BRIEF, PROMPT in the trigger state]         # a condition worn as a tag
+```
+
+There are five tags and a condition is not one of them, so a bracket holding
+prose is the exact substitution the tags exist to replace. Tagging every arm is
+what makes the quiet case as explicit as the loud one — a single-tag heading
+leaves the other arm to be guessed.
 
 **Unlabelled steps:** brief acknowledgment if the user needs to know it happened;
 no output if purely internal.
@@ -889,13 +894,16 @@ ask twice, in near-identical words, whether Claude had anything to send back.
 
 ## Reading a whole file before reasoning over it
 
-**Page the whole queue before any queue-wide reasoning.** A read that stopped
-short is named plainly, never reasoned from quietly. The failure is silent by
+**Page the whole queue before any queue-wide reasoning, and the same for any
+file whose *whole* content the reasoning depends on.** A read that stopped short
+is named plainly, never reasoned from quietly. The failure is silent by
 construction: a truncated read looks like a complete one to whatever reasons over
 it, so nothing downstream can detect it — which is why the check belongs at the
-read, not later. Confirmed twice live, both times on QUEUE.md, both times with the
-run proceeding on a partial view. The same applies to any file whose *whole*
-content the reasoning depends on.
+read, not later.
+
+A digest generated from the whole file by code satisfies this more strongly than
+paging does, because code cannot silently truncate. Where a skill provides one,
+use it.
 
 **A mechanically generated digest covering the whole file satisfies this rule.**
 Code that reads the file end to end and prints a fixed set of fields cannot be
@@ -928,13 +936,6 @@ a session opens into the aftermath of one. Reference, fetched on demand.
 **Uncommitted changes you didn't make are the user's own work, not breakage.**
 Read them as expected handmade work; confirm with the user and fold them in.
 Never report them as damage, and never try to undo or reset them.
-
-## Device and hardware access
-
-Confirm before connecting to or acting on the user's physical device or external
-hardware — adb against a connected phone, flashing firmware, driving attached
-hardware. Ask, and wait for a yes. A channel like adb reaches far past installing
-one app, into the user's whole device, so using it silently is a consent surprise.
 
 ## Prior decisions
 

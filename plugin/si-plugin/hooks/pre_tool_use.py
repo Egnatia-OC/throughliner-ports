@@ -411,6 +411,41 @@ def _is_research_dir(filepath: str, cwd: str) -> bool:
     return norm.startswith(research_dir + os.sep) or norm == research_dir
 
 
+def _is_retired_terms_file(filepath: str, cwd: str) -> bool:
+    """Check if a path is the project's resources/retired-terms.md.
+
+    Exempt for a structural reason, not a convenient one. The method requires a
+    session that retires a term to append it to this file. Retirement is
+    discovered DURING a build — you find out a term is retired by retiring it —
+    so it can never appear in a `Files:` list that /next computed from the work
+    items before the build started. No amount of better self-scoping can fix
+    that; the write is unschedulable by construction.
+
+    Without this, the obligation was satisfiable only in a narrow undocumented
+    window: denied during the build and anywhere in the close before the
+    working file is deleted, and working only after, by accident of ordering.
+    A session that hit the denial mid-close was told to ask the user to widen
+    scope, which is a bad trade for a bookkeeping append.
+
+    Two alternatives were weighed and lost. Stating the ordering in done.md
+    works but leaves a trap for anyone who reorders the close, and the ordering
+    that currently works is an accident rather than a design. Having /next
+    widen `Files:` whenever a run touches rule-bearing files is more machinery
+    than the problem deserves, and it guesses.
+
+    This ships to consumers, who will never have the file. Accepted knowingly:
+    a host-only branch inside a shipped hook costs more than an inert path
+    check. Matched relative to the project root, like the research exemption.
+
+    Note what is deliberately NOT swept in. SPEC.md is also outside the exempt
+    set, and correctly so — a build may edit SPEC only by naming it in
+    `Files:`, which is the whole point of the SPEC gate. It is not a second
+    instance of this problem.
+    """
+    return _normalise(filepath) == _normalise(
+        os.path.join(cwd, "resources", "retired-terms.md"))
+
+
 def _is_inbox_dir(filepath: str) -> bool:
     """Check if a path is inside any project's INBOX folder.
 
@@ -850,6 +885,9 @@ def main() -> int:
             return 0
 
         if _is_research_dir(filepath, cwd):
+            return 0
+
+        if _is_retired_terms_file(filepath, cwd):
             return 0
 
         if _is_scratchpad_dir(filepath, cwd):

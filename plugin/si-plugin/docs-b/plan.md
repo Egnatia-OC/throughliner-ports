@@ -168,12 +168,10 @@ heading, slug, any `Blocked by:` with the blocker's resolved location, and any
 red-flag state. That is everything this step's queue-wide reasoning consumes; the
 rationale prose it omits is read per item, at the moment Step 2 presents that item.
 
-**The digest satisfies the page-to-the-end rule rather than dodging it.** That
-rule exists because a truncated read is indistinguishable from a complete one to
-whatever reasons over it — and a digest generated from the whole file by code
-cannot be silently truncated, so the guarantee is stronger than paging gives. If
-the digest fails to run, fall back to reading QUEUE.md whole and paging it to the
-end; if you cannot, say so plainly rather than reasoning from a partial view.
+This is the code-generated digest the page-to-the-end rule prefers, so it
+satisfies that rule rather than dodging it. If the digest fails to run, fall back
+to reading QUEUE.md whole and paging it to the end; if you cannot, say so plainly
+rather than reasoning from a partial view.
 
 **Re-run it whenever the picture needs to be current.** `session_start`'s
 dependency facts fire once and describe the queue as it stood *before* the session
@@ -196,8 +194,8 @@ entry that matters.
 Everything this step surfaces folds into **one** opening narration, per the
 consolidate-the-scans rule.
 
-**Read the forward-recommendation advisory** [SILENT when absent; BRIEF when
-present]. If the top of Unprocessed holds a "Last session advises…" line — it
+**Read the forward-recommendation advisory** [SILENT] when absent; [BRIEF] when
+present. If the top of Unprocessed holds a "Last session advises…" line — it
 carries the reserved slug `[forward-advisory]` at the end of its heading — read it
 and let it orient *where the session starts*. It is **not** a work item and never
 goes through keep/delete in Step 2; skip it there. It never narrows the session to only
@@ -206,8 +204,8 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
 
-**Open any waiting INBOX mail** [SILENT when the mailbox is empty; BRIEF when it
-isn't]. This is the guaranteed moment mail gets read. `session_start` surfaces
+**Open any waiting INBOX mail** [SILENT] when the mailbox is empty; [BRIEF] when
+it isn't. This is the guaranteed moment mail gets read. `session_start` surfaces
 that messages are waiting, and `feedback-and-inbox.md` says what to do with one
 that has been opened — but without this step nothing says *when* a message gets
 opened, so mail can be surfaced every session and read in none of them.
@@ -242,8 +240,8 @@ so is the setting that used to toggle it. If the user mentions having done one,
 close it at this session's /done (log under its slug, remove from Processed);
 otherwise leave them alone and say nothing about them.
 
-**Below-the-line revisit** [SILENT when nothing lifts; BRIEF when proposing a
-lift]. Every below-line item names its blocker as `Blocked by: [slug]`, so the
+**Below-the-line revisit** [SILENT] when nothing lifts; [BRIEF] when
+proposing a lift. Every below-line item names its blocker as `Blocked by: [slug]`, so the
 revisit is one check per item:
 
 ```
@@ -322,9 +320,10 @@ blocked by a queue item now, and a thing in the world becomes a queue item befor
 anything blocks on it, so a condition waiting on an action nobody filed can no
 longer be written.
 
-**Seed the queue from SPEC** [BRIEF, PROMPT in the trigger state; otherwise
-SILENT]. A rich SPEC can describe buildable features with no path into the queue —
-the whole feature set "dies in SPEC" with nothing to build it.
+**Seed the queue from SPEC** [SILENT] when the trigger state is absent;
+[BRIEF, PROMPT] when it fires. A rich SPEC can describe buildable features with
+no path into the queue — the whole feature set "dies in SPEC" with nothing to
+build it.
 
 ```
 auto-trigger (narrow):  Processed is empty or near-empty
@@ -452,15 +451,27 @@ floor narration, which names whichever rung the order actually came from.
 **Reaching rung 6 triggers one offer** [PROMPT]. The ladder itself is unchanged —
 file order stays the bottom rung and is what runs if the offer is declined.
 
-```
-  "Nothing left distinguishes these by priority. Some are close to what
-   we've already loaded this session — <named set>. Take those, work
-   through in order, or run /done?"
+**Lead with the recommendation, and name which items and why.** Ordering is
+Claude's under the dependency-ownership rule, so a flat three-option menu hands
+back a judgment that was never the user's. What IS theirs is whether there is
+appetite to carry on at all — a question about their time — so the offer still
+asks; it just stops pretending the ordering is undecided.
 
-  user takes the set   ->  process those, in the order given
+```
+  "Nothing left distinguishes these by priority, so I'd take <named set>
+   next — we've already got <what was opened> loaded this session, so
+   they're cheap from here. Otherwise I can work through in file order,
+   or we can stop and run /done."
+
+  user agrees          ->  process those, in the order given
   user declines        ->  file order, exactly as the rung says
   user runs /done      ->  the session ends there
 ```
+
+**Name the items and the reason, or the fix is cosmetic.** A vague "shall I carry
+on with the related ones?" satisfies the narration rule's letter and gives the
+user nothing specific to object to — and being able to object to the *selection*
+is the whole point of recommending rather than listing.
 
 **Which items qualify is checkable, not judged:** an item whose files, research
 notes or subject matter this session has *already opened*. Read it off what was
@@ -837,7 +848,8 @@ item there's no next verbatim, so the message is just the off-ramps — worded
 **neutrally**, "anything else to capture or discuss, or close out?", never as a
 lean toward closing. An empty Unprocessed is not a signal the session is over.
 
-**Recommend skip-to-defer when an item won't design out this session** [DISCUSS].
+**Recommend skip-to-defer when an item won't design out this session**
+[DISCUSS, PROMPT].
 Skip isn't only the user's to pick. When you can't yet describe what an item's
 build would change, or the design keeps opening more questions than it closes,
 propose sharpening what you can and then skipping it to the bottom — rather than

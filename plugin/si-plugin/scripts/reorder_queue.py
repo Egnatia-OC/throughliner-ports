@@ -14,8 +14,8 @@ Contract:
   python reorder_queue.py <queue_path> <section> <slug1> <slug2> ... [--marker-after <slug|TOP|BOTTOM>]
   python reorder_queue.py <queue_path> <section> --move <slug> <TOP|BOTTOM> [--marker-after ...]
   python reorder_queue.py <queue_path> <section> --move <slug> <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
-  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM>]
-  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug>
+  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> [--position <TOP|BOTTOM>] [--marker-after ...]
+  python reorder_queue.py <queue_path> --move-section <slug> <FromSection> <ToSection> --position <BEFORE|AFTER> <anchor-slug> [--marker-after ...]
   python reorder_queue.py <queue_path> --delete <slug> <Section>
 
   <section>  one of: Processed | Unprocessed
@@ -41,8 +41,9 @@ Contract:
              structural write, and without this it was hand-retyped. Default
              lands at the BOTTOM of the target section — which in Processed is
              BELOW the cleared-to-run marker, so an item moved there because it
-             was cleared needs --position (or a follow-up --marker-after) or
-             the file reads as though nothing was cleared. --position takes
+             was cleared needs --position, and --marker-after in the SAME call
+             where the marker should move too, or the file reads as though
+             nothing was cleared. --position takes
              TOP or BOTTOM alone, or BEFORE/AFTER followed by an anchor slug
              in the target section as its next bare word. The
              heading text is NOT rewritten — a processed item's new description
@@ -346,12 +347,25 @@ def delete_item(queue_path, slug, section):
                slug))
 
 
-def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
+def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
+                 marker_pref=None):
     """Move one item's block byte-for-byte between sections.
 
     Same guarantees as a reorder: refuses to write on any failure, block
     content byte-identical, marker presence preserved per section, nothing
     outside the two sections changed.
+
+    `marker_pref` places the destination's readiness marker in the same call.
+    Moving an item across sections AND clearing it is the ordinary shape of
+    keeping work at /plan — the commonest planning operation, not an edge
+    case — and it used to take two commands, because this branch accepted
+    --marker-after and then silently ignored it. Silently: the move succeeded,
+    exit code 0, and only the marker half went missing.
+
+    Every check below runs BEFORE anything is written, so the call either does
+    both halves or neither. A half-applied queue edit is worse than a plain
+    refusal, because the readiness marker decides how much work an unattended
+    /next run may build without the user present.
     """
     for name in (sec_from, sec_to):
         if name not in ('Processed', 'Unprocessed'):
@@ -394,6 +408,20 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor):
 
     f_pref = 'TOP' if f_marker_after is None else f_marker_after
     t_pref = 'TOP' if t_marker_after is None else t_marker_after
+
+    # --marker-after applies to the DESTINATION section, which is the only one
+    # gaining an item. Validated here, before any write, so a bad value refuses
+    # the whole call rather than leaving the move applied and the marker not.
+    if marker_pref is not None:
+        if not t_had:
+            die("--marker-after: section %s has no cleared-to-run marker, so "
+                "there is nothing to place. The marker lives in Processed."
+                % sec_to)
+        t_new_slugs = [s for s, _ in t_new]
+        if marker_pref not in ('TOP', 'BOTTOM') and marker_pref not in t_new_slugs:
+            die("--marker-after slug '%s' is not in section %s (after the move)"
+                % (marker_pref, sec_to))
+        t_pref = marker_pref
     # The moved item must never silently land above the target's readiness
     # marker: if it was inserted before the marker anchor resolves, the marker
     # keeps its anchor slug, which is unaffected by an insertion.
@@ -522,8 +550,10 @@ def main():
                       "position.")
         if len(rest) != 1:
             die("usage: reorder_queue.py <queue_path> --move-section <slug> "
-                "<FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> [anchor]]")
-        move_section(rest[0], ms_slug, ms_from, ms_to, position, anchor)
+                "<FromSection> <ToSection> [--position <TOP|BOTTOM|BEFORE|AFTER> "
+                "[anchor]] [--marker-after <slug|TOP|BOTTOM>]")
+        move_section(rest[0], ms_slug, ms_from, ms_to, position, anchor,
+                     marker_pref)
         return
 
     move_slug = None

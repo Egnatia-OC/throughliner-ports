@@ -60,7 +60,7 @@ privacy or breach risk this audit surfaces is filed as an ordinary **uncleared**
 capture in Unprocessed (`Red flag · State: uncleared`), which a later /plan clears.
 Note in this entry that the audit surfaced it.
 
-### 2.2 Staleness sweep  [SILENT] when clean, [BRIEF] when flagging
+### 2.2 Staleness sweep  [SILENT] when clean; [BRIEF] when flagging
 
 Run done.md's **Staleness sweep**.
 

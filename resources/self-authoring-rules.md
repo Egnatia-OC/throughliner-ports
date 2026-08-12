@@ -2,6 +2,8 @@
 
 Run this before any rule, clause, or standing instruction is added to the method's own text: the procedure docs, the behaviour rules, the hooks, SPEC. Four parts, in use order — admission, eviction, distribution, wording. Model-agnostic.
 
+**Record the answer where you reach it: write the `Rule gate:` disposition into the session's build working file at the moment the rule is authored.** The close then transcribes that line into the LOG entry rather than composing one. This document has always said the gate runs once, at authoring time, and never said where its answer goes — which is the gap that let a disposition be written five hours later, at a close, over rules already built and minutes from being committed. A disposition composed after the text exists cannot admit or refuse anything; it can only describe, and it describes favourably, because refusing would mean undoing finished work.
+
 ## Additions are not free
 
 The binding limit is a **count of instructions**, not a word count. Models follow roughly 150–200 reliably; past that, adding one causes fewer to be followed. Worse, content that merely doesn't apply this session does not get filtered out selectively — irrelevant instructions cause wholesale dismissal of the set, and semantically similar but inapplicable rules are the principal mechanism of that interference. A large body of same-sounding behavioural rules is exactly that shape.
@@ -59,6 +61,12 @@ An absolute number is not the defect — the 150–200 instruction ceiling comes
 Adding a rule names what it replaces or supersedes. **The techniques for taking one out live in [`rule-maintenance.md`](rule-maintenance.md)** — codification, consolidation, recasting, and the staleness test — because they are run during a subtraction pass rather than while authoring, and a session opening this document to write a rule has no use for them.
 
 What this step requires of an author is only the naming: say which rule this replaces or supersedes, and repeal it in the same move. A clearer restatement that leaves the old statement standing has doubled the text, not merged it.
+
+**Adding a scan to a skill's opening states what it displaces.** A skill opening — /plan's Step 1, /next's pre-flight, /done's close-out — is the one place the method accretes without any addition looking like a rule: each scan is individually small, individually tagged, and folded into one consolidated narration, so nothing anywhere counts them. /plan's Step 1 now fires eight, and the most recent was added with nothing objecting. A rule that permits unlimited additions so long as each is small has no stopping condition, which is what this step exists to supply.
+
+No cap and no number. Any figure would be invented, which the derivation rule bans; and each part being bounded is precisely what fails to bound the sum. Naming the displaced scan is what forces the sum to be looked at.
+
+The evidence is one realised instance, not a pattern: an advisory read at Step 1 and not surfaced for three hours. Recorded at that strength deliberately, so a later auditor can weigh it honestly — the claim is that the opening keeps growing and has dropped something once, not that it drops things routinely.
 
 ## 3. Distribution — where it lives
 

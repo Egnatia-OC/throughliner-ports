@@ -127,9 +127,82 @@ def test_report_agrees_with_file():
               f"(said ABOVE={said_above}, actually above={is_above})")
 
 
+def test_move_section_applies_marker_after():
+    """A cross-section move can place the readiness marker in the same call.
+
+    Moving an item into Processed AND clearing it is the ordinary shape of
+    keeping work at /plan, so it must be one command. It used to be two: this
+    branch accepted --marker-after and silently ignored it, exiting 0 with the
+    move applied and the marker untouched.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(FIXTURE)
+
+        result = subprocess.run(
+            [sys.executable, SCRIPT, path,
+             "--move-section", "beta", "Unprocessed", "Processed",
+             "--position", "AFTER", "alpha", "--marker-after", "beta"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        output = result.stdout + result.stderr
+
+        with open(path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+        marker_i = next(i for i, l in enumerate(lines)
+                        if "Cleared to run above this line" in l)
+        beta_i = next(i for i, l in enumerate(lines)
+                      if l.startswith("#### ") and l.rstrip().endswith("[beta]"))
+        delta_i = next(i for i, l in enumerate(lines)
+                       if l.startswith("#### ") and l.rstrip().endswith("[delta]"))
+
+        check("the call succeeds", result.returncode == 0,
+              f"exit {result.returncode}: {output.strip()}")
+        check("the item landed in Processed above the marker", beta_i < marker_i,
+              f"(item at {beta_i}, marker at {marker_i})")
+        check("the marker moved to just after the named slug",
+              beta_i < marker_i < delta_i or (beta_i < marker_i and delta_i > marker_i),
+              f"(beta {beta_i}, marker {marker_i}, delta {delta_i})")
+        check("report says ABOVE", "ABOVE" in output, f"got: {output.strip()}")
+
+
+def test_move_section_marker_failure_writes_nothing():
+    """Both halves, or neither. A half-applied queue edit is worse than a refusal.
+
+    The readiness marker decides how much work an unattended /next run may
+    build with nobody present, so a move that lands while its marker placement
+    fails is the dangerous outcome, not the tidy one.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(FIXTURE)
+
+        result = subprocess.run(
+            [sys.executable, SCRIPT, path,
+             "--move-section", "beta", "Unprocessed", "Processed",
+             "--position", "AFTER", "alpha", "--marker-after", "no-such-slug"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        output = result.stdout + result.stderr
+
+        with open(path, "r", encoding="utf-8") as f:
+            after = f.read()
+
+        check("the call refuses", result.returncode != 0,
+              f"exit {result.returncode}")
+        check("the error names the bad marker slug", "no-such-slug" in output,
+              f"got: {output.strip()}")
+        check("the file is byte-for-byte unchanged", after == FIXTURE,
+              "the move was applied despite the marker failing")
+
+
 if __name__ == "__main__":
     print("test_reorder_queue")
     test_side_of_marker_report()
     test_report_agrees_with_file()
+    test_move_section_applies_marker_after()
+    test_move_section_marker_failure_writes_nothing()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

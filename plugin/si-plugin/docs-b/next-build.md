@@ -141,6 +141,10 @@ Changes:
 - file2.ext: added import + handler function
 ```
 
+**An item wanting a full-depth LOG entry writes a depth line naming which trigger
+it meets — reasoning contested, or an alternative seriously weighed — and an item
+that writes nothing gets the short form.**
+
 ## Scope management
 
 **When a mid-build discovery is work only the user can run** — a rename you can't
@@ -208,10 +212,14 @@ Don't attempt the check inline if it genuinely needs the user, and don't extend
 this item's scope to include it.
 
 **Before assuming a device or environment is absent, check.** Ask whether one is
-available rather than assuming none is. And before using any connected device, ask
-permission — "May I use your connected device to test this?" — then wait. A
-connected device you touch unexpectedly is a consent surprise; a check wrongly
-skipped on a guess sits unrun for weeks.
+available rather than assuming none is; a check wrongly skipped on a guess sits
+unrun for weeks.
+
+**And confirm before connecting to or acting on the user's physical device or
+external hardware** — adb against a connected phone, flashing firmware, driving
+attached hardware. Ask — "May I use your connected device to test this?" — and
+wait for a yes. A channel like adb reaches far past installing one app, into the
+user's whole device, so using it silently is a consent surprise.
 
 ### Going in circles  [PROMPT]
 

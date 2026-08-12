@@ -1,7 +1,6 @@
-# Freeform: the six queue-machinery bugs the stopped /next run exposed
+# f8b03ea — Freeform: the six queue-machinery bugs the stopped /next run exposed
 
 **Slug:** [queue-machinery-repair-freeform]
-**Commit:** [HASH]
 **Session type:** freeform — driven by hand, deliberately not through /next.
 
 Four of the six bugs are in the machinery /next itself uses — the queue mover, the

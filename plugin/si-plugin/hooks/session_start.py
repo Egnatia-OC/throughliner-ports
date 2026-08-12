@@ -58,6 +58,34 @@ FORMAT_EPOCH_FILE = ".si-format-epoch"
 # structure can change without reworking this.
 _HASH_POSITION = re.compile(r"^(?P<prefix>#{1,6}\s+|-\s+)\[HASH\](?P<sep>\s+[—–-]\s+)")
 
+# A placeholder written OUTSIDE hash position can never resolve, and until this
+# check existed nothing could see it: the backfill skips the line, so the entry
+# is never scanned, never filled, and never reported. That silence is a worse
+# failure than a noisy one — a committed artifact carrying a token no mechanism
+# will ever fill.
+#
+# Deliberately narrow, matching only the two shapes that are unambiguously a
+# MISPLACED hash rather than writing about one:
+#     **Commit:** [HASH]        a field whose value is the token
+#     [HASH]                    the token alone on its line
+#
+# Prose that discusses the token is correct writing and must never match —
+# several entries do it, including the one about hash placeholders. Any
+# backticked occurrence is prose by definition and is excluded before these
+# patterns are tried. Getting this wrong in the other direction would build the
+# cry-wolf failure this check was written to replace.
+_HASH_AS_FIELD_VALUE = re.compile(r"^\*{0,2}[A-Za-z][A-Za-z ]{0,29}:\*{0,2}\s*\[HASH\]\s*$")
+_HASH_ALONE = re.compile(r"^\s*\[HASH\]\s*$")
+
+
+def _hash_is_misplaced(line):
+    """True where this line carries a placeholder that can never resolve."""
+    if "[HASH]" not in line:
+        return False
+    if "`" in line:
+        return False
+    return bool(_HASH_AS_FIELD_VALUE.match(line) or _HASH_ALONE.match(line))
+
 
 def _oldest_commit_for(cwd, entry_title):
     """Hash of the oldest commit that introduced `entry_title` under LOG/.
@@ -123,6 +151,10 @@ def backfill_log_hashes(cwd):
     # instead of the silent skip that let scrolly-thing's failure accumulate
     # unnoticed. Keyed by file so each anomalous file is named once.
     unresolved_committed = []
+    # Entries carrying a placeholder OUTSIDE hash position. A different fault
+    # from the one above and reported as one: there the backfill may be
+    # failing, here the entry is malformed and no backfill can ever read it.
+    malformed_position = []
     for name in names:
         if not name.endswith(".md"):
             continue
@@ -135,9 +167,17 @@ def backfill_log_hashes(cwd):
             continue
         changed = False
         file_flagged = False
+        misplaced_flagged = False
         for i, line in enumerate(lines):
             match = _HASH_POSITION.match(line)
             if not match:
+                if (
+                    not misplaced_flagged
+                    and _hash_is_misplaced(line)
+                    and _file_is_committed(cwd, relpath)
+                ):
+                    malformed_position.append(name)
+                    misplaced_flagged = True
                 continue
             entry_title = line[match.end():].strip()
             if not entry_title:
@@ -170,6 +210,15 @@ def backfill_log_hashes(cwd):
             f"carry an unfilled hash placeholder ({', '.join(unresolved_committed)}) "
             "— these should have resolved, so the backfill may be failing (e.g. an "
             "index summary reworded since it was committed). Worth checking."
+        )
+    if malformed_position:
+        anomaly += (
+            f" Note: {len(malformed_position)} committed entry file(s) carry a hash "
+            f"placeholder OUTSIDE hash position ({', '.join(malformed_position)}). "
+            "The backfill is working correctly; the entry is malformed — its "
+            "placeholder is not at the start of a heading or an index line, so "
+            "nothing can ever fill it. Move it into the heading, per the entry "
+            "template."
         )
     if not filled:
         if anomaly:

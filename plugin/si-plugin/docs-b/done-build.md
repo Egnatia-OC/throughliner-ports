@@ -85,7 +85,7 @@ and is not this step:** it asks mid-build, adds SPEC.md to the working file's
 `Files:` list, and edits SPEC inline in the same commit (next-build.md, Scope
 management). This step exists for the contradictions that route did not catch.
 
-### 1.4 Red-flag close  [SILENT] when no flag, [PROMPT] when an item carries one
+### 1.4 Red-flag close  [SILENT] when no flag; [PROMPT] when an item carries one
 
 Per built item: if it carries a `Red flag · State: …` marker, run done.md's
 **Red-flag lifecycle at close** before the item leaves the queue. Its flag was
@@ -112,12 +112,12 @@ entry per run is cheaper and was refused: the retrieve path is "search the index
 then open the matched entry", so combining trades away per-slug retrievability,
 which is the property the entries exist for.
 
-**Depth is decided per item, here.** Full depth where the item's reasoning was
-contested or an alternative was seriously weighed; a short form for mechanical
-items whose reasoning is exhausted by naming what changed. Judge per item, never by
-run size — a twelve-item run can still contain the session's most contested
-decision. The rule this replaces was written when a run was one to six items, and
-on a twelve-item run the close cost more than several of the builds it recorded.
+**The short form is the default; full depth is what a depth line in the working
+file buys.** An item wrote that line at build time where its reasoning was
+contested or an alternative was seriously weighed (next-build.md); an item that
+wrote nothing gets the short form, which names what changed and stops. Never
+judge by run size — a twelve-item run can still contain the session's most
+contested decision.
 
 **If a `[user]` item's entry was already started**, the walk-through opened it live
 and appended as it went (next.md). Continue that file rather than writing a fresh
@@ -127,7 +127,7 @@ If a built item carried a red flag, note in this entry that it carried one and
 that it was cleared — the carry-through, since the substantive clearing record was
 written at the /plan close that cleared it.
 
-### 2.2 Staleness sweep  [SILENT] when clean, [BRIEF] when flagging
+### 2.2 Staleness sweep  [SILENT] when clean; [BRIEF] when flagging
 
 Run done.md's **Staleness sweep**.
 

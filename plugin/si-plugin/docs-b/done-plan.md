@@ -2,24 +2,101 @@
 name: done-plan
 docset: B
 note: >
-  Close-out for planning sessions. Reached from done.md's router when no
-  the build working file exists — /plan sessions, /setup sessions, and any session that
-  changed only the method docs.
+  Close-out for every no-build session. Reached from done.md's router when no
+  build working file exists — /plan sessions, /setup sessions, method-doc-only
+  sessions, a completed [user] item, and standalone handmade work.
 ---
 
-# Plan close-out
+# No-build close-out
 
-Every step below runs at every plan-type /done close — a /plan session, a /setup
-session, and a session that changed only the method docs. The reorder, the marker
-placement and the `[user]`-placement step each reach all three; none is /plan-only.
+Reached whenever there is no build working file. Three shapes arrive here and
+they overlap freely — a planning session can also close a completed `[user]`
+item, and either can carry hand edits.
+
+```
+queue managed, captures processed, readiness line moved, or a planning
+    working file exists          ->  run every step below
+a completed [user] item          ->  the Completed [user] items step, plus the
+                                     LOG entry, commit and recommendation
+the user made ad-hoc hand edits  ->  the Standalone handmade-work steps, plus
+                                     the same three
+```
+
+The reorder, the marker placement and the `[user]`-placement step reach every
+plan-type close — a /plan session, a /setup session, and a session that changed
+only the method docs; none is /plan-only.
 
 ## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
 
-Run done.md's **Spec-sync gate** and apply its **Plan close** delta: no scope-lock
-is active, so edit SPEC.md directly in-session when a planning decision changed
-product truth, before continuing to the LOG entry.
+**This is the only close that syncs SPEC.** A build close runs a *check-against*
+instead (done-build.md) — it reads what was built against SPEC and reports a
+contradiction rather than editing SPEC to match. Audits land no product changes,
+so an audit close has neither.
 
-## Batch the human stops in Processed  [SILENT when nothing moves; BRIEF when it does]
+Why the build close no longer syncs: a sync on a document the build never read can
+only record what the build did, so it cannot catch a build that contradicted the
+spec. /next now reads SPEC at run start, which is what makes a real check possible,
+and the sync belongs where the decision that changes product truth is made.
+
+**Did this session's work change what SPEC says?** Apply the spec-entry trigger
+test **in plan.md's own wording** — quote it from there rather than keeping a copy
+here, so the two can't drift apart. Read against what this session landed.
+
+If it fires, **stop the close — don't commit yet.** Surface the drift in plain
+words, naming which SPEC sentence the session made wrong, get approval to fix it,
+then edit SPEC and commit it **in this same commit**. Don't file it as a capture
+for a later session.
+
+Spec-driven development's contract is that the spec moves in the same commit as
+the behaviour change. Deferring the fix would close a commit with SPEC already
+behind, breaking that atomicity — the exact drift this gate prevents.
+
+No scope-lock is active at any close reaching this doc, so edit SPEC.md directly
+in-session. Editing SPEC to match a decision the user already made this session is
+RECORDING, not re-planning. That covers all three shapes alike.
+
+**A decision made this session but not yet built satisfies the gate when its work
+item lists SPEC.md.** This is the case the gate now meets by default, so say what
+happens rather than leaving it to be re-derived. Editing SPEC the moment a
+retirement is *decided* would make it describe a product that doesn't exist yet —
+a false SPEC, not a synced one. Where SPEC still describes the shipped product
+accurately and the item carrying the change names SPEC.md among its files, SPEC
+moves when the behaviour does, and the gate passes.
+
+A session that changed only queue ordering or captures touched no SPEC sentence
+and passes silently.
+
+## Standalone handmade-work close  [BRIEF, PROMPT]
+
+Runs only where the user made ad-hoc edits by hand and wants them recorded.
+**Never required:** hand edits left uncommitted are simply swept into the next
+/done that runs. This exists for when the user wants them logged and committed as
+their own clean record.
+
+**1. Read the edits as the user's own work — don't panic.** Uncommitted changes
+the session didn't make are most likely the user's expected work. Run `git status
+--porcelain`, and where what changed isn't self-evident, look. Confirm with the
+user that these are theirs and meant to be saved. **Never report them as a broken
+repo, and never try to undo them.**
+
+**2. Decide LOG granularity by judgment.**
+
+```
+one coherent change     ->  a single entry: LOG/<YYYY-MM-DD>-handmade.md
+                            (-2 if the name is taken)
+several distinct        ->  a separate entry per logical change
+logical changes             # better recall than one lumped entry
+```
+
+Write each entry's one-liner and rationale, then **report what landed.**
+
+**3. Stage the hand-edited files explicitly** at the commit step. The commit
+message is the approved entry; for several entries, the title names the
+handmade-work close and the body carries each entry's summary. Unlike a planning
+close, a handmade close **does** offer push when a remote exists — it's real
+project work, not bookkeeping.
+
+## Batch the human stops in Processed  [SILENT] when nothing moves; [BRIEF] when it does
 
 **One pass, over Processed only: put `[user]` and `[audit]` lines at the end.**
 Everything else the close used to reorder is repealed.
@@ -97,7 +174,7 @@ narration scales:
     no reorder needed                      ->  say nothing
 ```
 
-## Position the cleared-to-run line  [SILENT when unchanged; BRIEF when it moves]
+## Position the cleared-to-run line  [SILENT] when unchanged; [BRIEF] when it moves
 
 Walk Processed top-down and put the `--- Cleared to run above this line ---`
 marker just below the last item the user has agreed is ready to build.
@@ -176,17 +253,50 @@ pending prerequisite keeps it below. This lives in the /plan close rather than
 readiness check of its own. Narrate it when a `[user]` item moves above the marker
 — one line naming which is now ready.
 
-## Completed `[user]` items  [SILENT when none; BRIEF when closing one]
+## Completed `[user]` items  [SILENT] when none; [BRIEF] when closing one
 
-If the user mentioned during this session that they'd completed a `[user]` item,
-record and remove it now through done.md's
-**Completed `[user]`-item close**: a LOG entry per completed item named by its
-slug, and the item removed from Processed. Fold each entry into this session's
-records alongside the planning entry, and its slug into the commit. When nothing
-was mentioned, say nothing — **never ask** whether any are done. There is no
-completion ask anywhere in a `[user]` item's life.
+A `[user]` item never entered a build working file, so it isn't ticked and closed
+like a build. This is the close that records it and removes it from Processed, so
+a finished item doesn't strand in the queue and get re-presented by the next
+/next. It runs both as a close of its own and inside a planning close.
 
-## Clear the consumed forward-recommendation advisory  [SILENT when none; BRIEF when clearing]
+**Identify completed items from what the session can already see — never by
+asking.** There is no completion ask anywhere in a `[user]` item's life.
+
+```
+walked through to its end in THIS session   ->  completed. Close it here.
+the user has said they did it               ->  completed. Close it here.
+anything else                               ->  leave it in Processed, silently
+```
+
+Where the item's walkthrough names an observable check — a file present or
+absent, a branch gone, a URL responding — **run it before recording completion**,
+rather than taking the report at face value. Checking the world is not asking the
+user. A failed check is reported as what was found, and the item stays in place.
+
+The gap this leaves is real and is meant to stay: an item the user completed on
+their own between sessions, with nothing observable to show for it, will sit in
+the queue until they mention it. **That is the fallback, not a hole to plug** —
+mentioning it is already a supported path, and a completion ask is exactly what
+this removed. Don't reintroduce one under any wording.
+
+```
+1. take the completed item(s) from what the session can see  [SILENT]
+   # don't list the other [user] items still sitting in Processed — an item
+   # whose completion isn't visible simply stays where it is
+2. write a LOG entry per completed item, named after its slug
+   # records what the user did and its outcome; write it, then report it
+   # if it carried a red-flag marker -> run done.md's Red-flag lifecycle
+3. remove each completed item from Processed
+   # this is what stops it being re-presented
+```
+
+Fold each entry into this session's records alongside any planning entry, and its
+slug into the commit. When nothing was mentioned and nothing was walked through,
+say nothing. A remote-gated push offer applies as normal — a completed `[user]`
+item is real project progress, not bookkeeping.
+
+## Clear the consumed forward-recommendation advisory  [SILENT] when none; [BRIEF] when clearing
 
 /plan Step 1 *reads* the advisory to orient the session; the *clear* lives here,
 at the one close that always runs however a /plan ends. It used to be tied to "once
@@ -233,13 +343,24 @@ have to be reconstructed from memory.
 ## 2. Commit
 
 Run the commit core in done.md. Staged paths are the changed method docs
-(QUEUE.md, SPEC.md, LOG/) — planning sessions touch nothing else.
+(QUEUE.md, SPEC.md, LOG/), plus the hand-edited files where this was a handmade
+close — planning sessions touch nothing else.
 
-**Override the commit core's push offer: a planning session commits and doesn't
-offer push.** Planning state is local bookkeeping, and push is reserved for
-shipping — in a self-hosting project a push fires the full push-and-rezip ritual
-off a commit that shipped nothing. Push stays available when the user asks for it
-or is deliberately backing up; a default, not a prohibition.
+**The push offer differs by which shape closed, so decide it before running the
+core:**
+
+```
+planning / setup / method-doc-only  ->  commit, and DON'T offer push. Planning
+                                        state is local bookkeeping, and push is
+                                        reserved for shipping — in a
+                                        self-hosting project a push fires the
+                                        full ritual off a commit that shipped
+                                        nothing. A default, not a prohibition:
+                                        push stays available when the user asks
+                                        or is deliberately backing up.
+completed [user] item / handmade    ->  offer push as the commit core does.
+                                        Both are real project progress.
+```
 
 **Delete this session's planning working file** if one exists, as part of the close — same lifecycle as
 the build working file. It was working state only and was never committed, so removing the file

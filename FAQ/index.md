@@ -34,3 +34,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [The plugin updated and Claude says my project's files are in an old shape. What now?](faq.md#the-plugin-updated-and-claude-says-my-projects-files-are-in-an-old-shape-what-now)
 - [My app asked whether to keep or remove this session's copy of the project. Which do I pick?](faq.md#my-app-asked-whether-to-keep-or-remove-this-sessions-copy-of-the-project-which-do-i-pick)
 - [Claude flagged some queue items as contradicting themselves. What does that mean?](faq.md#claude-flagged-some-queue-items-as-contradicting-themselves-what-does-that-mean)
+- [My session records used to be long. Why are some of them short now?](faq.md#my-session-records-used-to-be-long-why-are-some-of-them-short-now)

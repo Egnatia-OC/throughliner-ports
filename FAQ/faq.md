@@ -283,3 +283,15 @@ Three things get flagged:
 **Why this check exists.** Work gets examined carefully when it's *put* into the ready pile, and then never looked at again. But things change around it afterwards — a decision gets reversed, a build session hands something back, the thing it was waiting for turns out to be waiting too. A gate on the door isn't the same as looking around the room.
 
 **Nothing happens automatically.** Whether a flagged item gets moved, rewritten or left exactly where it is, is your call — that's a decision about what the work *is*, and those are always yours. Claude tells you and waits.
+
+## My session records used to be long. Why are some of them short now?
+
+Because short is now the normal one, and long is the exception it's meant to be.
+
+Every piece of work gets a record written into your `LOG/` folder when you run /done. Those records used to run long by default — several hundred words each, walking through the reasoning, the options considered and why one won. That's genuinely valuable for a decision you might revisit or disagree with later. It's wasted on a change that's fully explained by saying what changed.
+
+The problem was that writing less *felt* like leaving something out, so nearly everything got the long treatment. On a session that finished a dozen pieces of work, writing the records cost more than doing several of the jobs did.
+
+**What changed.** As Claude builds each piece of work, it now decides on the spot whether that one deserves the long version — while the reasoning is fresh, not hours later at the end. Two things earn it: the reasoning was genuinely contested, or a real alternative was weighed and rejected. Everything else gets a short record naming what changed.
+
+**Nothing is capped, and nothing is lost.** There's no word limit — a hard decision still gets as much room as it needs. The only change is which way the default points. And the reasoning behind your *work* isn't affected at all: that lives on the queue items themselves and travels with them, which is separate from how the finished record is written up.

@@ -39,39 +39,26 @@ the build working file EXISTS  ->  read it, then route by the run's work-item fl
                               close-out, one LOG entry per item, sharing the
                               single end-of-session commit
 
-NO build working file          ->  three shapes:
-    a completed [user] item   ->  Completed [user]-item close (below)
-    a planning session        ->  done-plan.md
+NO build working file          ->  done-plan.md, which carries all three
+                                   no-build shapes and picks between them:
+    a planning session
         (queue managed, captures processed, readiness line moved,
          or the planning working file exists)
-    standalone handmade work  ->  Standalone handmade-work close (below)
+    a completed [user] item
+    standalone handmade work
         (no planning either, and the tree holds uncommitted edits the
          session didn't make)
 ```
 
+A no-build close touches QUEUE.md, SPEC.md and LOG/ and nothing else, whichever
+of the three it is — which is why one sub-doc carries all three and a build close
+never reads any of them.
+
 Detect a completed `[user]` item **from what the session can already see — never
 by asking.** A `[user]` item is walked through, and that is all; no step of its
-life asks whether it's done.
-
-```
-walked through to its end in THIS session   ->  completed. Close it here.
-the user has said they did it               ->  completed. Close it here.
-anything else                               ->  leave it in Processed, silently
-```
-
-Where the item's walkthrough names an observable check — a file present or
-absent, a branch gone, a URL responding — **run it before recording completion**,
-rather than taking the report at face value. Checking the world is not asking the
-user. A failed check is reported as what was found, and the item stays in place.
-
-The gap this leaves is real and is meant to stay: an item the user completed on
-their own between sessions, with nothing observable to show for it, will sit in
-the queue until they mention it. **That is the fallback, not a hole to plug** —
-mentioning it is already a supported path, and a completion ask is exactly what
-this removed. Don't reintroduce one under any wording.
-
-This can coincide with a planning session; when it does, close the item through
-that section and let done-plan.md handle the rest.
+life asks whether it's done. The detection rules and the close itself are in
+done-plan.md; a completed item can coincide with a planning session, and that one
+sub-doc handles both.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -80,67 +67,9 @@ core below, then return to the sub-doc for the recommendation.
 run is part of building, closed by done-build.md. A check only the user can run is
 a `[user]` work item, which never enters a build working file — so /done doesn't close it
 *as a build*, but once the user has run it, /done records its completion and
-removes it from the queue through the close below.
+removes it from the queue through done-plan.md.
 
-## Completed `[user]`-item close  [BRIEF]
-
-A `[user]` item never entered a build working file, so it isn't ticked and closed like a
-build. This is the close that records it and removes it from Processed, so a
-finished item doesn't strand in the queue and get re-presented by the next /next.
-It also runs inside a /plan close when the user mentions async-completed items.
-
-```
-1. take the completed item(s) from what the session can see  [SILENT]
-   # the routing test above already identified them. Don't ask, and don't
-   # list the other [user] items still sitting in Processed — an item whose
-   # completion isn't visible simply stays where it is.
-   # where the walkthrough named an observable check, run it first
-2. write a LOG entry per completed item, named after its slug
-   # records what the user did and its outcome; write it, then report it
-   # if it carried a red-flag marker -> run Red-flag lifecycle at close
-3. remove each completed item from Processed
-   # this is what stops it being re-presented
-4. run the wind-down re-scan, then the commit core
-   # staging QUEUE.md and the LOG changes
-```
-
-A remote-gated push offer applies as normal — a completed `[user]` item is real
-project progress, not bookkeeping.
-
-## Standalone handmade-work close  [BRIEF, PROMPT]
-
-Reached with no build working file and no planning work — the user made ad-hoc edits by
-hand and wants them recorded. **Never required:** hand edits left uncommitted are
-simply swept into the next /done that runs. This exists for when the user wants
-them logged and committed as their own clean record.
-
-**1. Read the edits as the user's own work — don't panic.** Uncommitted changes
-the session didn't make are most likely the user's expected work. Run `git status
---porcelain`, and where what changed isn't self-evident, look. Confirm with the
-user that these are theirs and meant to be saved. **Never report them as a broken
-repo, and never try to undo them.**
-
-**2. Decide LOG granularity by judgment.**
-
-```
-one coherent change     ->  a single entry: LOG/<YYYY-MM-DD>-handmade.md
-                            (-2 if the name is taken)
-several distinct        ->  a separate entry per logical change
-logical changes             # better recall than one lumped entry
-```
-
-Write each entry's one-liner and rationale, then **report what landed** — this
-close is reached by sessions with no build and no planning behind them, so the
-shared LOG-entry frame is a doc away. The commit message is the one thing here
-that is still shown before it is used (Step 3).
-
-**3. Run the wind-down re-scan, then the commit core**, staging the hand-edited
-files explicitly. The commit message is the approved entry; for several entries,
-the title names the handmade-work close and the body carries each entry's summary.
-Unlike a planning close, this one **does** offer push when a remote exists — it's
-real project work, not bookkeeping.
-
-## Verify completion  [PROMPT when unticked]
+## Verify completion  [SILENT] when every item is ticked; [PROMPT] when any is not
 
 The build and audit close-outs point here for their completion check.
 
@@ -172,53 +101,7 @@ about build discipline**, and it routes to Unprocessed. It's the only routine
 check the build working file's accuracy gets before a fresh session has to rely on it. An audit
 close carries no such reconcile.
 
-## Spec-sync gate  [SILENT] in sync; [PROMPT] on drift
-
-**The plan close-out points here, and it is the only one.** A build close runs a
-*check-against* instead (done-build.md) — it reads what was built against SPEC and
-reports a contradiction rather than editing SPEC to match. Audits land no product
-changes, so an audit close has neither.
-
-Why the build close no longer syncs: a sync on a document the build never read can
-only record what the build did, so it cannot catch a build that contradicted the
-spec. /next now reads SPEC at run start, which is what makes a real check possible,
-and the sync belongs where the decision that changes product truth is made.
-
-**Did this session's work change what SPEC says?** Apply the spec-entry trigger
-test **in plan.md's own wording** — quote it from there rather than keeping a copy
-here, so the two can't drift apart. Read against what this session landed.
-
-If it fires, **stop the close — don't commit yet.** Surface the drift in plain
-words, naming which SPEC sentence the session made wrong, get approval to fix it,
-then edit SPEC and commit it **in this same commit**. Don't file it as a capture
-for a later session.
-
-Spec-driven development's contract is that the spec moves in the same commit as
-the behaviour change. Deferring the fix would close a commit with SPEC already
-behind, breaking that atomicity — the exact drift this gate prevents.
-
-```
-plan close  ->  no scope-lock active: edit SPEC.md directly in-session.
-                Editing SPEC to match a decision the user already made this
-                session is RECORDING, not re-planning.
-```
-
-This covers every plan-type close — a /plan session, a setup session, and a
-method-doc-only session alike. None runs a scope-lock, so all three edit SPEC
-directly.
-
-**A decision made this session but not yet built satisfies the gate when its work
-item lists SPEC.md.** This is the case the gate now meets by default, so say what
-happens rather than leaving it to be re-derived. Editing SPEC the moment a
-retirement is *decided* would make it describe a product that doesn't exist yet —
-a false SPEC, not a synced one. Where SPEC still describes the shipped product
-accurately and the item carrying the change names SPEC.md among its files, SPEC
-moves when the behaviour does, and the gate passes.
-
-A session that changed only queue ordering or captures touched no SPEC sentence
-and passes silently.
-
-## Staleness sweep  [SILENT] when clean, [BRIEF] when flagging
+## Staleness sweep  [SILENT] when clean; [BRIEF] when flagging
 
 The build and audit close-outs point here. Quick check of the remaining work items
 — any staleness from any cause, not just what this session changed:

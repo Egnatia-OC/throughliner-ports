@@ -252,8 +252,27 @@ def test_session_start_state_lines_lead_the_payload():
 
 # --- PreToolUse ---------------------------------------------------------------
 
+# The working file is per SESSION, not per project: pre_tool_use resolves it as
+# `_build-<safe session id>.md`. A fixture must therefore write that name AND
+# send the matching session_id in its payload.
+#
+# This comment exists because getting it wrong is invisible. The fixture used to
+# write the legacy plain `_build.md` and send no session_id, so the hook resolved
+# `_build-unknown.md`, found nothing, and correctly concluded no build was
+# running — which produced `ask` where the test expected `deny`, and the
+# planning-quiet-list advisory where it expected silence. Two standing failures,
+# one cause, and the fixture read as correct for weeks because the name it used
+# is the name every document still calls it in prose.
+#
+# A real run is unaffected: it carries a real session id and a correctly named
+# working file, which is why the scope-lock kept denying correctly in live
+# sessions while this suite failed.
+TEST_SESSION_ID = "hookcheck-fixed-session"
+
+
 def _scoped_project(files_section):
-    """A temp project with a _build.md whose Files: section is `files_section`.
+    """A temp project with this session's build working file, whose Files:
+    section is `files_section`.
 
     SPEC.md must exist: the hook only enforces in an ADOPTED project and
     returns silently without it. A fixture missing SPEC.md produces a passing-
@@ -263,7 +282,8 @@ def _scoped_project(files_section):
     d = tempfile.mkdtemp(prefix="hookcheck-scope-")
     with open(os.path.join(d, "SPEC.md"), "w", encoding="utf-8") as f:
         f.write("# SPEC\n")
-    with open(os.path.join(d, "_build.md"), "w", encoding="utf-8") as f:
+    name = "_build-%s.md" % TEST_SESSION_ID
+    with open(os.path.join(d, name), "w", encoding="utf-8") as f:
         f.write("# Active Build\n\nFiles:\n" + files_section + "\n\nProgress:\n")
     return d
 
@@ -272,6 +292,7 @@ def test_pre_tool_use_out_of_scope_denies():
     d = _scoped_project("- allowed.md")
     rc, out, err = drive("pre_tool_use.py",
                          {"hook_event_name": "PreToolUse", "cwd": d,
+                          "session_id": TEST_SESSION_ID,
                           "tool_name": "Edit",
                           "tool_input": {"file_path": os.path.join(d, "forbidden.md")}},
                          cwd=d)
@@ -287,11 +308,33 @@ def test_pre_tool_use_in_scope_is_silent():
     d = _scoped_project("- allowed.md")
     rc, out, err = drive("pre_tool_use.py",
                          {"hook_event_name": "PreToolUse", "cwd": d,
+                          "session_id": TEST_SESSION_ID,
                           "tool_name": "Edit",
                           "tool_input": {"file_path": os.path.join(d, "allowed.md")}},
                          cwd=d)
     check("PreToolUse (in scope): exits 0", rc == 0, err[:500])
     check("PreToolUse (in scope): emits nothing", out.strip() == "", out[:300])
+
+
+def test_pre_tool_use_retired_terms_is_writable():
+    """resources/retired-terms.md is writable with a build running.
+
+    The method requires a session that retires a term to append it here, and
+    retirement is discovered DURING a build — so this path can never be in a
+    `Files:` list computed before the build started. Without the exemption the
+    obligation is satisfiable only in an undocumented window at the close.
+    """
+    d = _scoped_project("- allowed.md")
+    target = os.path.join(d, "resources", "retired-terms.md")
+    rc, out, err = drive("pre_tool_use.py",
+                         {"hook_event_name": "PreToolUse", "cwd": d,
+                          "session_id": TEST_SESSION_ID,
+                          "tool_name": "Edit",
+                          "tool_input": {"file_path": target}},
+                         cwd=d)
+    check("PreToolUse (retired-terms): exits 0", rc == 0, err[:500])
+    check("PreToolUse (retired-terms): not denied",
+          '"permissionDecision": "deny"' not in out.replace("'", '"'), out[:300])
 
 
 def test_pre_tool_use_git_safety_denies():
@@ -450,6 +493,7 @@ def main():
         test_session_start_state_lines_lead_the_payload,
         test_pre_tool_use_out_of_scope_denies,
         test_pre_tool_use_in_scope_is_silent,
+        test_pre_tool_use_retired_terms_is_writable,
         test_pre_tool_use_git_safety_denies,
         test_pre_tool_use_subagent_asks,
         test_content_stamp_ignores_the_cli_in_use_marker,
