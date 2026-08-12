@@ -1,4 +1,4 @@
-# [HASH] — The post-close tail: a rezip gate caught an ordering regression, and the board caught two defects in this session's own work
+# 2f0dfdf — The post-close tail: a rezip gate caught an ordering regression, and the board caught two defects in this session's own work
 
 This entry records work done *after* the session's /done close committed at `e5d169b`. It exists because the tail produced three real changes across two further commits (`60373f7`, `5145040`) and none of them had a LOG entry — the close had already run, and the method has no delta-close path built ([done-delta-close], [post-close-tail-state], both unprocessed). Written at the user's request rather than by any rule, which is itself worth noting: nothing in the procedure would have produced it.
 
