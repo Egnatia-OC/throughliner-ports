@@ -63,6 +63,14 @@ Active in every session where the plugin is installed and the project is set up.
   that found nothing, or one tagged silent, has nothing to contribute and says
   nothing.
 
+  **The inversion governs sequencing, never approval-before-write.** Two
+  separate axes: write-first answers *show-then-wait or write-then-report*, and
+  its test is recoverability; the inversion answers *one item per message or all
+  together*. An inversion delivers a set in one message — it never makes a write
+  wait for approval. Reading "deliver together" as "show for approval first" is
+  what once put the close's capture re-scan in conflict with the write-first rule
+  that governs above it.
+
   ```
   inversions — deliver together, not one at a time:
       alternatives the user is choosing between   # the choice is between them
@@ -338,6 +346,26 @@ evidence a future session must        ->  a durable file under resources/
 **File research findings as part of using them**, not only when asked. Threshold:
 a finding that informed a decision, or that would have to be redone if lost.
 Name the file in chat when it lands, so the filing is visible and checkable.
+
+**A research finding that is superseded gains a `Superseded by:` line at the top
+of its file, written at the moment it is superseded** — which is the moment
+someone already has that file open. Name what supersedes it, and say whether the
+whole finding falls or only part of it:
+
+```
+**Superseded by: <path or item>** — <what falls, and what still stands>
+```
+
+The queue digest reads that line back: a work item whose prose names a
+superseded research file is flagged, so the correction reaches the decisions
+built on it. Citation otherwise runs one way — an item names the file, the file
+names nothing — so a superseded finding leaves every item scoped against it
+silently wrong.
+
+**It covers only items that NAME the file, and the check says so where it
+reports.** An item scoped on a finding it never cites is not reached. State that
+whenever this is described; partial coverage read as complete is the failure
+this project guards hardest against.
 
 ### Temporary files and session artifacts
 
@@ -709,16 +737,28 @@ each entry must carry:
     the entry's filename      # at the end of the line
 ```
 
-No absolute length cap — length follows from the content requirement. An entry
-too short to support the open/skip decision fails even at one line.
+**No length cap of any kind — not absolute, not proportional.** Length follows
+from the content requirement above. The bound is the requirement itself: an
+index line must carry enough to support the open/skip decision, and must not
+restate the entry. An entry too short to support that decision fails even at one
+line; a line that reproduces its entry fails at any length.
 
-**The one bound is proportional: an index line stays within 20% of the length of
-the entry it points to.** A long entry may carry a long line; a short entry may
-not. The figure freezes current practice rather than licensing growth — three
-entries measured on 2026-08-10 ran at 13%, 17% and 19% of their entries, so the
-worst current case passes unaltered and nothing may expand past where it already
-sits. A proportion is used because the entry is the thing that varies, so the
-bound stays correct as entries change length.
+**A 20% proportional cap stood here until 2026-08-12 and was repealed on
+measurement, which is recorded so it is not restored.** It was derived from
+three entries of 968, 1,055 and 1,738 words — all long. Measured across the
+whole index, it turned out to be monotonic in *entry* length rather than in line
+length: not one of the fifteen entries over 1,000 words breached it, while two
+thirds of the entries under 200 words did, the worst being a 34-word line
+against an 87-word entry. So it never fired on the thing it was aimed at, and
+fired 117 times on work nobody thinks is wrong. The distribution is in
+[`resources/research/index-line-length-distribution.md`](../../../resources/research/index-line-length-distribution.md).
+
+**No replacement number, and the reason it is a judgment test rather than a
+script.** Scoping a cap to entries above some length reintroduces a bare figure,
+and absolute length discriminates nothing — the longest lines in the corpus all
+point at the longest entries and all read correctly. A mechanical check that
+fires against correct work is worse than none, because it is learned past and
+then ignored everywhere.
 
 This doubles as a **readiness check** at /plan: if the candidate index entry
 can't be written yet because the work isn't specific enough, it isn't ready for
@@ -932,6 +972,12 @@ always check for secrets before committing
 **Undoing a lot of work at once → read `${CLAUDE_PLUGIN_ROOT}/docs-b/recovery.md`
 first.** Trigger: the user asks to roll the project back to an earlier state, or
 a session opens into the aftermath of one. Reference, fetched on demand.
+
+**A clean `git status` means no UNCOMMITTED change — never that no change was
+made.** Before reporting that an edit doesn't exist, check recent commits. The
+two look identical from a clean tree, and the difference matters most exactly
+when the user is asking "did my change land?" — answered wrongly, they redo work
+that already exists.
 
 **Uncommitted changes you didn't make are the user's own work, not breakage.**
 Read them as expected handmade work; confirm with the user and fold them in.

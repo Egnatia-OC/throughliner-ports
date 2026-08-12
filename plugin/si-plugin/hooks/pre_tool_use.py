@@ -878,7 +878,12 @@ def main() -> int:
                 )
             return 0
 
-        if _is_method_doc(filepath, cwd):
+        # The session id must be passed: _is_method_doc resolves this session's
+        # working files by name, and without the id it looks for
+        # `_build-unknown.md` and never matches the real one — which denied a
+        # scoped build every write to its own working file, including the
+        # progress ticks and change notes the close reads.
+        if _is_method_doc(filepath, cwd, data.get("session_id", "")):
             return 0
 
         if _is_memory_dir(filepath):

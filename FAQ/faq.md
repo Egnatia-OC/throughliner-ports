@@ -295,3 +295,44 @@ The problem was that writing less *felt* like leaving something out, so nearly e
 **What changed.** As Claude builds each piece of work, it now decides on the spot whether that one deserves the long version — while the reasoning is fresh, not hours later at the end. Two things earn it: the reasoning was genuinely contested, or a real alternative was weighed and rejected. Everything else gets a short record naming what changed.
 
 **Nothing is capped, and nothing is lost.** There's no word limit — a hard decision still gets as much room as it needs. The only change is which way the default points. And the reasoning behind your *work* isn't affected at all: that lives on the queue items themselves and travels with them, which is separate from how the finished record is written up.
+
+## Claude said a queue item "rests on a superseded finding". What does that mean?
+
+It means work you planned was based on something that has since turned out to be wrong.
+
+When Claude researches something that shapes a decision — how a tool behaves, what a limit is, whether a feature exists — it saves that research in your project under `resources/research/`. Queue items then get written referring to it. The research is the foundation; the work sits on top.
+
+**The problem this catches.** Sometimes the research turns out to be wrong, or gets overtaken. Someone re-checks it and finds a better answer. But the connection only runs one way: your queue item mentions the research file, and the research file has no idea who's relying on it. So the correction gets written down, and every piece of work built on the old answer carries on looking perfectly fine.
+
+**How it's caught now.** When a finding is superseded, a line goes at the top of that research file saying what replaced it and whether the whole thing falls or only part. Then, whenever you run /plan, Claude checks each queue item for research files it mentions, and flags any that carry that line.
+
+**What to do with a flag.** Re-read the item before building it. Sometimes the item is fine — only part of the research changed. Sometimes its whole premise is gone and it needs rewriting or dropping. Claude flags it and stops there; deciding is yours.
+
+**One honest limit.** This only catches items that actually *name* the research file. Work that was shaped by a finding without ever citing it won't be flagged, and nothing here reaches it — so treat a clean result as "nothing obvious", not "all clear".
+
+## At the end of a session Claude used to ask me to approve a list of new queue items. Now it just tells me. Why?
+
+Because the items are already written by the time you read the list, and that's deliberate.
+
+When you run /done, Claude re-reads the session for anything worth capturing that hasn't been written down yet. It used to draft those as a numbered list, show them to you, and wait for your yes before writing any of them. Now it writes them into your queue first and then shows you the same numbered list, saying what landed.
+
+**Nothing is lost by this, and one thing is gained.** You still see every item, still as one list, and you can still reject any of them by number — Claude reverts it. What changes is that a session ending abruptly no longer loses the captures: they're on disk from the moment they're named.
+
+**Why it's safe to write first.** Your queue is tracked in git, so an item you don't want costs a one-line undo and nothing else. The things Claude still shows you *before* acting are the ones where that isn't true: a commit message, and anything that leaves your computer.
+
+**What to do if one is wrong.** Say which number, and Claude removes or rewrites it. The one thing to know is that rejecting is now an undo rather than a non-event — so it's worth reading the list rather than skimming it.
+
+## A build run stopped early and said the next job "runs alone". Why?
+
+Because that job is one it would be dangerous to half-finish, so it gets a run to itself.
+
+Normally /next works straight down your ready pile and builds everything above the "cleared to run" line in one go. Some jobs shouldn't be part of a batch like that. The clearest example is renaming a folder: the moment the folder's name changes, everything that pointed at the old name is broken until the rest of the job is done. If a run like that gets interrupted halfway — because you stepped away, or the conversation ran long — you're left with a project pointing at somewhere that no longer exists.
+
+So during planning, a job like that gets marked **runs alone**. When a build run reaches it, one of two things happens:
+
+- **If the run has already built other things**, it stops there and tells you why. The marked job stays in the queue, ready, and you start a fresh run for it.
+- **If the marked job is the very first thing in the run**, it gets built — and then the run ends after it, rather than carrying on into the next job.
+
+Either way it ends up with a run of its own.
+
+**One honest limit.** This only controls automatic build runs. It doesn't stop you and Claude working on that job alongside other things by hand if you decide to — it's a guard against a long unattended run sweeping the job up, not a lock on the work itself.

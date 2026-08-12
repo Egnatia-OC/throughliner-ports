@@ -340,6 +340,18 @@ their slugs — and use it to fill the entry's Queue changes and Work processed
 lines. It's the mechanical record of what this session did, so the entry doesn't
 have to be reconstructed from memory.
 
+**If there is no planning working file, say so in the entry.** Write a plain line
+into the session record naming the absence:
+
+> No planning record was kept for this session, so what follows was written from
+> what I could still remember of the conversation. It may be incomplete.
+
+Then write the entry as best you can. The point is that a missing record becomes
+visible instead of silently becoming a from-memory reconstruction that reads
+exactly like a complete one. This does **not** prevent the miss, and must not be
+described as if it does — it makes the miss impossible to hide, which is all it
+does and all the method's other required-artifact obligations do.
+
 ## 2. Commit
 
 Run the commit core in done.md. Staged paths are the changed method docs

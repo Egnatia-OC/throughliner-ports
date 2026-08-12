@@ -6,15 +6,17 @@ Run this before any rule, clause, or standing instruction is added to the method
 
 ## Additions are not free
 
-The binding limit is a **count of instructions**, not a word count. Models follow roughly 150–200 reliably; past that, adding one causes fewer to be followed. Worse, content that merely doesn't apply this session does not get filtered out selectively — irrelevant instructions cause wholesale dismissal of the set, and semantically similar but inapplicable rules are the principal mechanism of that interference. A large body of same-sounding behavioural rules is exactly that shape.
+**The binding constraint is relevance, not a count.** Content that merely doesn't apply this session does not get filtered out selectively — irrelevant instructions cause wholesale dismissal of the set, and semantically similar but inapplicable rules are the principal mechanism of that interference. Near-identical rules are optimal distractors for one another. A large body of same-sounding behavioural rules is exactly that shape.
 
 So every rule admitted degrades the rules already there. That is the cost this document exists to charge, and the reason it opens by stating it: each individual addition looks free, which is how the predecessor to this document was honestly applied all the way from 6,162 words to 21,445.
+
+**No ceiling is stated here, and the omission is the finding rather than a gap.** This section used to open by declaring a count of 150–200 instructions as the binding limit. That figure was re-validated against the 5-series on 2026-08-12 and found roughly an order of magnitude too tight ([instruction-ceiling-revalidated-for-5-series.md](research/instruction-ceiling-revalidated-for-5-series.md)), and `resources/rule_signals.py` removed the ceiling derived from it the same day, replacing it with a growth report carrying no threshold. **No replacement number is introduced**, here or anywhere: this project has now banned inventing one twice, and a second unbacked figure in the gate would restore by hand what was removed by code. The charging argument never depended on the number — relevance is stated in the same breath and survives the research untouched.
 
 Sources: [instruction-file-bloat-and-subtraction.md](research/instruction-file-bloat-and-subtraction.md), [legal-drafting-for-tight-rules.md](research/legal-drafting-for-tight-rules.md), [legislative-prose-syntax.md](research/legislative-prose-syntax.md).
 
 ## 1. Admission — does this rule get to exist?
 
-**First, name the parent: which existing rule does this amend?** Legislation distinguishes an amendment from a *freestanding* provision. That distinction maps onto the ceiling exactly: a freestanding rule consumes one of the slots a model follows reliably; an amendment consumes none, because it changes a rule already occupying its slot. A change that can't name a parent is either genuinely new territory or — far more often — a refinement whose parent was never looked for. Look for it.
+**First, name the parent: which existing rule does this amend?** Legislation distinguishes an amendment from a *freestanding* provision. That distinction maps onto the cost above exactly: a freestanding rule adds another statement competing for relevance with every other; an amendment adds none, because it changes a rule already there. A change that can't name a parent is either genuinely new territory or — far more often — a refinement whose parent was never looked for. Look for it.
 
 **Then write the rule as a subordinate unit of that parent, and ship it in that form if it holds.** Freestanding is what a rule falls back to when subordination fails, not the default. The test is syntactic:
 
@@ -40,7 +42,9 @@ Then, four questions:
 
 A limit the method's own text declares states what it was derived from. A proportion of the thing it governs, a figure from research, and an externally imposed constraint each qualify; a bare number does not.
 
-An absolute number is not the defect — the 150–200 instruction ceiling comes from research and the 10,000-character hook output cap is imposed by Claude Code, and both are sound. What is banned is the undeclared derivation, because a limit nobody can trace is a limit nobody dares change, and it fires against correct work.
+An absolute number is not the defect. The worked example is the **10,000-character hook output cap**: it is imposed by Claude Code, the derivation is one sentence, and anyone can check it against the tool. What is banned is the undeclared derivation, because a limit nobody can trace is a limit nobody dares change, and it fires against correct work.
+
+**The 150–200 instruction ceiling used to stand here as a second example, and it is now the counter-example.** It came from research, which is a qualifying derivation, and it was still wrong: re-validated against the 5-series it proved roughly an order of magnitude too tight, and it had already propagated into a constant, a board signal, and the framing of several queue items. So a stated derivation makes a limit **traceable and revisable**; it does not make it correct. A number sourced from research about one generation of models is a number with an expiry date, and this rule is what makes the expiry findable.
 
 ### Admitting an exception — restate first
 

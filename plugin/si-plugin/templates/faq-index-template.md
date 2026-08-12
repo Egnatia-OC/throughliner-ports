@@ -67,3 +67,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Why does the method record the reasoning behind every decision, not just the decision?](faq.md#why-does-the-method-record-the-reasoning-behind-every-decision-not-just-the-decision)
 - [Approving drafts and writing session records feels like overhead. What am I actually getting?](faq.md#approving-drafts-and-writing-session-records-feels-like-overhead-what-am-i-actually-getting)
 - [What is the INBOX folder, and how do my projects send each other messages?](faq.md#what-is-the-inbox-folder-and-how-do-my-projects-send-each-other-messages)
+- [Claude said a queue item "rests on a superseded finding". What does that mean?](faq.md#claude-said-a-queue-item-rests-on-a-superseded-finding-what-does-that-mean)
+- [At the end of a session Claude used to ask me to approve a list of new queue items. Now it just tells me. Why?](faq.md#at-the-end-of-a-session-claude-used-to-ask-me-to-approve-a-list-of-new-queue-items-now-it-just-tells-me-why)
+- [A build run stopped early and said the next job "runs alone". Why?](faq.md#a-build-run-stopped-early-and-said-the-next-job-runs-alone-why)

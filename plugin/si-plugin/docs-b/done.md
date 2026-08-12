@@ -213,9 +213,12 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 - [HASH] — [index entry] → [entry filename]
 ```
 
-**Keep the line within 20% of the entry it points to** — the proportional bound in
-the behaviour rules' Index entries section. A long entry may carry a long line; a
-short one may not.
+**There is no length cap on the line — the bound is what it must carry.** It has
+to support the decision to open or skip the entry, and must not restate it. See
+the behaviour rules' Index entries section. The 20% proportional cap that used to
+sit here was repealed on 2026-08-12 after measurement showed it fired on short
+entries rather than on long lines; do not restore it or replace it with another
+figure.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:
@@ -228,9 +231,30 @@ session with no slug          ->  LOG/<YYYY-MM-DD>-<type>.md
 name already taken            ->  append -2, -3, …
 ```
 
-The date prefix is the **session** date, not the commit date — write it from the
-current date at close. Its only job is the name sort; it is not a second copy of
-the hash.
+**Every date written at a close is the close date** — today's date, at the moment
+you are closing. That covers the filename prefix and every date written into the
+words of a session record or a queue item alike ("processed 2026-08-12",
+"cleared 2026-08-12"). One rule, no exceptions, so there is nothing to work out
+in the moment. It is not the commit date, and the filename prefix is not a second
+copy of the hash; its only job is the name sort.
+
+**Where a session ran across more than one calendar day, say so in one plain
+sentence in its record:**
+
+> This session ran across 2026-08-11 and 2026-08-12.
+
+That is the whole accommodation — no change to any filename or datestamp. A
+session spanning two days is ordinary rather than exotic: it is what happens
+whenever someone stops for the night, or runs out of usage and picks it up in
+the morning.
+
+**Why the close date is right, which is a different argument for each half.**
+For the filename, its only job is the name sort, the close date already does
+that, and a two-day session sorts correctly either way — so carrying both dates
+would lengthen every filename forever for an occasional case. For a date written
+into the words, which is read later for meaning, the close date is right because
+the stamp records **when the decision was made**, and a decision reached in a
+session's last hour was reached that day whatever day the session opened.
 
 **The hash lives in the entry heading and the index line, never in the filename** —
 the commit hash doesn't exist yet when the file is written, which is why the
@@ -313,18 +337,55 @@ captures — things the user thought out loud but never flagged.
 # routing is planning, /plan's alone
 ```
 
-Present all candidates as ONE numbered set of fully-drafted captures for a single
-approval; the user contests by number, and only contested items go one at a time.
-Append the approved ones to Unprocessed, and add them to this session's LOG entry's
-"Routed to Captures:" line as a working-tree edit riding this commit.
+**Write every candidate to Unprocessed first, then report them as ONE numbered
+set.** Nothing waits on approval before reaching disk — a capture in a
+git-tracked QUEUE.md is recoverable without the user's help, which is the
+write-first test. The user contests by number, and a contested item is reverted
+or reworked one at a time.
 
-**Name the step's best-effort nature in plain words when it runs** — it re-reads
-whatever discussion is still in view, so a surfaced-nothing result is "nothing
-jumped out in what I could still see," not a guarantee nothing was missed.
+Add them to this session's LOG entry's "Routed to Captures:" line as a
+working-tree edit riding this commit.
 
-Two things to state, not fix: a fresh-chat /done has none of the session's
-thinking in view, so there is nothing to re-scan; and when /plan already ran its
-own wind-down re-scan this session, this is a harmless no-op.
+**Why the set still arrives together.** Delivering all of them at once is the
+bulk-approval inversion, which governs SEQUENCING — one item per message, or
+all together — and never approval-before-write. Reading it as "show for
+approval first" is what put this step in conflict with the write-first rule
+that governs above it.
+
+**State this sentence, as written, when the step runs:**
+
+> I can't tell whether any of our earlier conversation has dropped out of view,
+> so this is what I could still see rather than a guarantee I've caught
+> everything.
+
+**Say it as written rather than conveying its sense.** An instruction to
+"explain the limit honestly" invites improvement, and improving it is exactly
+what went wrong: a session once opened with "this has been a long session, so I
+can only re-read what's still in view". Session length is a proxy Claude *can*
+observe, standing in for the thing that actually determines the result — whether
+the conversation has been compacted — and that is not observable at all. There
+is no signal announcing it; a compaction that lands cleanly leaves nothing to
+notice, in the same way a truncated file read looks complete from the inside.
+So the substituted caveat invites the user to discount the result by a factor
+that is fictional.
+
+**The limit on the fix, stated rather than implied:** a fixed sentence is harder
+to improve on than an intent, but nothing prevents a session rewording it and no
+check will catch that. This reduces the odds; it does not close the hole.
+
+Never name session length, duration, message count, or any other observable
+proxy for compaction.
+
+One thing to state, not fix: a fresh-chat /done has none of the session's
+thinking in view, so there is nothing to re-scan.
+
+**This is the only wind-down re-scan in the method, and there is no second one
+to coordinate with.** /plan has none — a re-scan defined by the position "after
+every item is processed" never reaches that position in a session that processes
+in batches at the user's direction, so it attached itself to whatever felt like a
+pause and ran three times in one session, twice at a moment no document names.
+Each run is a stop-and-ask, so an invented cadence spends the user's turns on a
+beat they did not ask for and cannot predict. Do not reintroduce one.
 
 > "Re-read our discussion — nothing came up that isn't already captured."
 
@@ -405,6 +466,26 @@ any OTHER out-of-scope dirty path
 
 This exact dirt appears every session and the answer is always "it's the backfill,
 stage it," so re-investigating it is pure delay for zero decision value.
+
+**Where the staged paths include a method doc, name them in one line before
+committing** — "staging QUEUE.md, SPEC.md and two log entries". One sentence, no
+diff, no file-by-file account.
+
+It exists because the check above is blind to the commonest case. It compares
+dirty paths against the build's file list, so it cannot see anything inside a
+file the session already owns — and QUEUE.md is the file a planning session edits
+by design. A hand edit the user made there during the close, or a line another
+session left in it deliberately, arrives inside a file Claude already considers
+its own and is swept into the commit with no mention. Naming the files makes the
+sweep visible.
+
+**Two limits, and neither may be softened.** Naming the staged files makes a
+swept edit **visible**, not **detected** — nothing cheap will ever tell the user
+that a particular line inside QUEUE.md was theirs rather than Claude's. And
+against the worst case it does almost nothing: where another session has already
+*committed* this session's in-progress work under its own message, this line
+produces the word "QUEUE.md" — true, useless, and silent about whose work is
+inside. Do not describe it as covering that.
 
 **3. The commit message is not drafted fresh** — it derives from the LOG entry
 already written at the entry step. It is shown before the commit either way: a

@@ -35,3 +35,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [My app asked whether to keep or remove this session's copy of the project. Which do I pick?](faq.md#my-app-asked-whether-to-keep-or-remove-this-sessions-copy-of-the-project-which-do-i-pick)
 - [Claude flagged some queue items as contradicting themselves. What does that mean?](faq.md#claude-flagged-some-queue-items-as-contradicting-themselves-what-does-that-mean)
 - [My session records used to be long. Why are some of them short now?](faq.md#my-session-records-used-to-be-long-why-are-some-of-them-short-now)
+- [Claude said a queue item "rests on a superseded finding". What does that mean?](faq.md#claude-said-a-queue-item-rests-on-a-superseded-finding-what-does-that-mean)
+- [At the end of a session Claude used to ask me to approve a list of new queue items. Now it just tells me. Why?](faq.md#at-the-end-of-a-session-claude-used-to-ask-me-to-approve-a-list-of-new-queue-items-now-it-just-tells-me-why)
+- [A build run stopped early and said the next job "runs alone". Why?](faq.md#a-build-run-stopped-early-and-said-the-next-job-runs-alone-why)

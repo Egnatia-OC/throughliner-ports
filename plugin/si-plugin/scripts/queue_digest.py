@@ -23,6 +23,7 @@ Usage:
 Exit codes: 0 on success, 1 on a usage or read error.
 """
 
+import os
 import re
 import sys
 
@@ -45,6 +46,11 @@ ITEM_RE = re.compile(r"^####\s+\S")
 BLOCKED_RE = re.compile(r"^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]", re.IGNORECASE)
 FLAG_RE = re.compile(r"^Red flag\s*·\s*State:\s*(\w+)", re.IGNORECASE)
 FLAVOR_RE = re.compile(r"^\[(audit|user|freeform)\]\s*", re.IGNORECASE)
+# "Runs alone" — the item is ready, but /next must not build it alongside other
+# work. Printed on the item's digest line because a solo item changes how much
+# of the ready region a single run can actually clear, which is exactly what a
+# planning session is deciding when it reads the digest.
+RUNS_ALONE_RE = re.compile(r"^\**Runs alone\**\s*$", re.IGNORECASE)
 MARKER = "Cleared to run above this line"
 
 # Placement-contradiction signals. Each is a contradiction the queue's own text
@@ -70,6 +76,18 @@ NO_FILES_PHRASES = (
     "design's output",
 )
 FILES_LINE_RE = re.compile(r"^\**Files\b[^:]*:\**\s*(.*)$", re.IGNORECASE)
+
+# A research file cited in a work item's prose. Research is filed because it
+# will be re-read and reused, so a research file is an upstream dependency of
+# everything scoped against it — but citation runs one way. When a finding is
+# superseded there is no path back to the decisions built on it, and those
+# decisions do not announce that they rest on anything. The convention that
+# closes it: a superseded research file gains a `Superseded by:` line at its
+# top, written at the moment someone already has the file open to re-validate
+# it, and this check reads that line back.
+RESEARCH_CITE_RE = re.compile(r"resources/research/([a-z0-9][a-z0-9._-]*\.md)")
+SUPERSEDED_RE = re.compile(r"^\**Superseded by:?\**\s*(.+)$",
+                           re.IGNORECASE | re.MULTILINE)
 
 
 def parse(path):
@@ -115,6 +133,7 @@ def parse(path):
                 "slug": slug,
                 "blocked_by": None,
                 "flag": None,
+                "runs_alone": False,
                 # Lowercased prose, for the placement-contradiction checks. Not
                 # printed — the digest stays one line per item.
                 "prose": [],
@@ -130,6 +149,8 @@ def parse(path):
             flag = FLAG_RE.match(stripped)
             if flag:
                 current["flag"] = flag.group(1).lower()
+            if RUNS_ALONE_RE.match(stripped):
+                current["runs_alone"] = True
             files = FILES_LINE_RE.match(stripped)
             if files and current["files_line"] is None:
                 current["files_line"] = files.group(1).lower()
@@ -169,7 +190,46 @@ def _self_referential_phrase(item):
     return None
 
 
-def contradictions(items):
+def _superseded_research(item, root):
+    """Research files this item cites that carry a `Superseded by:` line.
+
+    Returns a list of (filename, what superseded it).
+
+    COVERAGE LIMIT, stated here and in the digest's own output because it must
+    never be read as complete: this catches only items that NAME the research
+    file in their prose. An item scoped on a finding it never cites stays
+    invisible, and nothing here reaches it.
+    """
+    if not root:
+        return []
+    hits, seen = [], set()
+    for line in item["prose"]:
+        for name in RESEARCH_CITE_RE.findall(line):
+            if name in seen:
+                continue
+            seen.add(name)
+            path = os.path.join(root, "resources", "research", name)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    # The line sits at the top of the file, so reading the
+                    # opening is enough and a large file costs nothing.
+                    head = f.read(4000)
+            except OSError:
+                continue
+            match = SUPERSEDED_RE.search(head)
+            if match:
+                # A superseded note legitimately explains WHAT was superseded
+                # and what still stands, so it can run to a paragraph. The
+                # digest is one line per finding, so show the head of it and
+                # let the reader open the file for the rest.
+                by = " ".join(match.group(1).split())
+                if len(by) > 90:
+                    by = by[:90].rstrip() + "…"
+                hits.append((name, by))
+    return hits
+
+
+def contradictions(items, root=""):
     """Items whose placement contradicts their own text. Flags, never decides.
 
     Moving an item out of Processed is a fate decision and stays the user's at
@@ -178,6 +238,13 @@ def contradictions(items):
     found = []
     for item in items:
         slug = item["slug"] or "NO-SLUG"
+
+        for name, by in _superseded_research(item, root):
+            found.append(
+                f"[{slug}] is scoped against resources/research/{name}, which "
+                f"is marked superseded by {by} — re-read the item's premise "
+                "before building it"
+            )
 
         if item["section"] == "Processed":
             hit = _self_referential_phrase(item)
@@ -217,7 +284,7 @@ def locate(slug, items):
     return "ABSENT"
 
 
-def render(items):
+def render(items, root=""):
     out = []
     for section in ("Processed", "Unprocessed"):
         in_section = [i for i in items if i["section"] == section]
@@ -230,6 +297,8 @@ def render(items):
             if section == "Processed":
                 bits.append("cleared" if item["cleared"] else "held")
             bits.append(item["flavor"])
+            if item["runs_alone"]:
+                bits.append("runs alone")
             slug = item["slug"] or "NO-SLUG"
             line = f"- [{slug}] ({', '.join(bits)}) {item['heading']}"
             if item["blocked_by"]:
@@ -239,7 +308,7 @@ def render(items):
             out.append(line)
         out.append("")
 
-    flags = contradictions(items)
+    flags = contradictions(items, root)
     out.append(f"## Placement contradictions — {len(flags)}")
     if flags:
         out.extend(f"- {f}" for f in flags)
@@ -249,6 +318,11 @@ def render(items):
         )
     else:
         out.append("- none")
+    out.append(
+        "Superseded-research flags cover only items that NAME the research file "
+        "in their prose. An item scoped on a finding it never cites is not "
+        "reached by this check — read it as partial coverage, not a clean bill."
+    )
     out.append("")
     return "\n".join(out)
 
@@ -262,7 +336,10 @@ def main(argv):
     except OSError as exc:
         print(f"queue_digest: cannot read {argv[1]}: {exc}", file=sys.stderr)
         return 1
-    print(render(items))
+    # The project root is the queue file's own folder, so the research files an
+    # item cites can be opened without asking for a second argument.
+    root = os.path.dirname(os.path.abspath(argv[1]))
+    print(render(items, root))
     return 0
 
 

@@ -26,8 +26,12 @@ delta — a finding is ticked when captured or dropped.
 
 ### 1.2 Route stragglers to Unprocessed  [PROMPT]
 
-Each straggler is drafted, shown and approved before it's written, so this step
-waits on the user. The findings themselves were appended during the audit; this
+Each straggler is written to Unprocessed first, then reported — the whole set as
+one numbered report. A capture in a git-tracked QUEUE.md is recoverable without
+the user's help, so it is a write-first case; the user contests by number after
+the fact. This step does not wait on the user before writing.
+
+The findings themselves were appended during the audit; this
 sweeps anything *else* flagged along the way — observations outside the audit's
 criteria, process issues.
 

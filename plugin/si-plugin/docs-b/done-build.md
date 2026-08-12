@@ -46,8 +46,10 @@ mismatch to Unprocessed per 1.2.
 
 ### 1.2 Route findings to Unprocessed  [PROMPT]
 
-Each finding is drafted, shown and approved before it's written, so this step
-waits on the user.
+Each finding is written to Unprocessed first, then reported — the whole set as
+one numbered report. A capture in a git-tracked QUEUE.md is recoverable without
+the user's help, so it is a write-first case; the user contests by number after
+the fact. This step does not wait on the user before writing.
 
 ```
 the RECORD this step sweeps:

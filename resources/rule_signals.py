@@ -10,17 +10,23 @@ it stays silent when this file is absent, which is the two-doors pattern.
 
 It is NOT a cycle. That was the design's first decision: a positional cycle —
 one stage following another — is what failed before, because compression ended
-up permanently downstream of machinery that never ran. These are five
-independent mechanisms, each firing on its own trigger whether or not any other
-ran, and what a session reads at start is which of them are currently
-signalling. A board, not a position.
+up permanently downstream of machinery that never ran. These are independent
+mechanisms, each firing on its own trigger whether or not any other ran, and
+what a session reads at start is which of them are currently signalling. A
+board, not a position.
 
 Nothing here is stored. The board is recomputed from the artifacts every time,
 because a state file must be maintained and the first session that forgets to
 update it makes the board lie. The one exception is the retired-terms list,
 which is source data — a recorded event, authored once — not derived state.
 
-## The six signals
+## Six entries, in two classes
+
+Two REPORTS (MEASURED, AUDITED) measure and can never fire. Four SIGNALS (BORN,
+CONTRADICTED, MAINTAINED, REPEALED) have a trigger and do fire. Only signals are
+counted in the header: a denominator including the reports invites the reading
+that six things are watched when four are, and a check that over-claims makes
+the corpus look guarded when it is only partly guarded.
 
 MEASURED   a structural rule-statement count across the always-loaded files,
            reported per audience as a growth report. No threshold, no verdict:
@@ -340,7 +346,9 @@ def signal_measured(root):
     ]
     return {
         "stage": "MEASURED",
-        "firing": False,
+        # A REPORT, not a signal: it has no threshold, so it cannot fire. The
+        # `firing: False` key it used to carry read as meaningful and was not.
+        "kind": "report",
         "value": shipped + host,
         "slug": "rule-corpus-over-ceiling",
         "message": "Growth report (no ceiling, no verdict). " + " | ".join(lines),
@@ -362,7 +370,9 @@ def signal_audited(root, measured):
     total, _ = count_statements(root)
     return {
         "stage": "AUDITED",
-        "firing": False,
+        # A REPORT, not a signal — same reason as MEASURED: its trigger was the
+        # ceiling, the ceiling is gone, and no replacement is defensible.
+        "kind": "report",
         "value": total,
         "slug": "three-lens-compliance-sweep-due",
         "message": (
@@ -418,7 +428,16 @@ def _log_dispositions(root):
     """Map of short sha -> set of disposition kinds found in LOG entries.
 
     Kinds are "run" and "not needed". A commit's entry is matched by the hash
-    the entry records.
+    in the entry's HEADING — the position the backfill writes and the one the
+    entry's own identity rests on.
+
+    Prose mentions of a hash do NOT count, and that restriction is the fix for
+    a real misattribution. This used to match a hash anywhere in the entry, so
+    an entry citing a prior commit — which entries in this project do
+    constantly — silently donated its own disposition to that commit. It
+    flagged `b51d205`, a two-file commit whose own entry records `run`, purely
+    because an unrelated entry described reproducing a test "against a detached
+    checkout of b51d205".
     """
     log_dir = os.path.join(root, "LOG")
     found = {}
@@ -435,7 +454,10 @@ def _log_dispositions(root):
         if not DISPOSITION_RE.search(text):
             continue
         kind = "not needed" if NOT_NEEDED_RE.search(text) else "run"
-        for sha in re.findall(r"\b([0-9a-f]{7,40})\b", text):
+        # The heading is the entry's first non-empty line, written as
+        # "# <sha> — <title>". Only hashes there attribute the disposition.
+        heading = next((ln for ln in text.splitlines() if ln.strip()), "")
+        for sha in re.findall(r"\b([0-9a-f]{7,40})\b", heading):
             found.setdefault(sha[:7], set()).add(kind)
     return found
 
@@ -494,14 +516,25 @@ def signal_contradicted(root):
     close would be the session judging its own disposition in the same breath
     as writing it, which is the self-report problem this exists to close.
 
-    One-directional by design:
+    One-directional by design, and unanimous:
 
-        count ROSE  + "Rule gate: not needed"   ->  FLAG
-        count ROSE  + "Rule gate: run — ..."    ->  fine
-        count FELL or unchanged                 ->  fine, ALWAYS
+        count ROSE  + EVERY disposition "not needed"   ->  FLAG
+        count ROSE  + any disposition "run — ..."      ->  fine
+        count FELL or unchanged                        ->  fine, ALWAYS
 
     An eviction pass lowers the count and owes no disposition defence, so a fall
     is never a finding.
+
+    The unanimity requirement is what makes the check usable on a large run. A
+    commit is the wrong unit once one run ships sixteen items under one hash:
+    a single item legitimately recording "not needed" put that kind into the
+    commit's set while a sibling item authored a rule and correctly recorded
+    "run", and the signal reported a contradiction between two artifacts that
+    agreed. The COST is stated rather than left to be found: a mixed run in
+    which one item genuinely authored a rule and wrongly recorded "not needed"
+    now passes silently, because a sibling entry recorded "run". That is a real
+    loss of coverage, accepted against a check that would otherwise fire
+    falsely at every large run — and a check that cries wolf gets skimmed past.
 
     WHAT IT CANNOT DO, and must not claim: it cannot tell whether a gate that
     *ran* ran honestly. A dishonest "run — considered and kept" defeats it
@@ -521,7 +554,14 @@ def signal_contradicted(root):
     dispositions = _log_dispositions(root)
     flagged = []
     for commit in rule_commits:
-        if "not needed" not in dispositions.get(commit["sha"], set()):
+        kinds = dispositions.get(commit["sha"], set())
+        # EVERY disposition naming this commit must say "not needed". A commit
+        # is the wrong unit once a run ships sixteen items under one hash: one
+        # item legitimately recording "not needed" — a script fix, a test
+        # repair — sat alongside a sibling that authored a rule and correctly
+        # recorded "run", and the pair was read as a contradiction between two
+        # artifacts that do not in fact disagree.
+        if not kinds or kinds != {"not needed"}:
             continue
         delta = _count_delta_at(root, commit["full"])
         if delta is not None and delta > 0:
@@ -533,10 +573,13 @@ def signal_contradicted(root):
         "value": len(flagged),
         "slug": "rule-gate-disposition-is-unverified",
         "message": (
-            "%d commit(s) say the rule gate was not needed while the "
-            "always-loaded rule-statement count ROSE: %s. This is a "
-            "contradiction between two artifacts, not proof of a bad rule — and "
-            "it says nothing about commits whose gate is recorded as run." % (
+            "%d commit(s) where EVERY gate disposition says 'not needed' while "
+            "the always-loaded rule-statement count ROSE: %s. This is a "
+            "contradiction between two artifacts, not proof of a bad rule. Two "
+            "things it does NOT cover: a commit whose gate is recorded as run "
+            "(it cannot tell an honest 'run' from a dishonest one), and a mixed "
+            "run where one item wrongly recorded 'not needed' alongside a "
+            "sibling that recorded 'run'." % (
                 len(flagged),
                 ", ".join("%s (+%d)" % (sha, d) for sha, d in flagged[:8]),
             )
@@ -828,9 +871,24 @@ def board(root):
 
 def main(argv):
     root = argv[1] if len(argv) > 1 else "."
-    signals = board(root)
+    entries = board(root)
+    # Reports are instruments; signals are alarms. Only signals can fire, so
+    # only signals are counted — a denominator that included the reports
+    # invited the reading that six things are being watched when four are, and
+    # this project's own standard is that a check which over-claims makes the
+    # corpus look guarded when it is only partly guarded.
+    reports = [s for s in entries if s.get("kind") == "report"]
+    signals = [s for s in entries if s.get("kind") != "report"]
     firing = [s for s in signals if s["firing"]]
+
     print(f"## Rule-lifecycle board — {len(firing)} of {len(signals)} signalling")
+    if reports:
+        print()
+        print("### Reports — measurements with no threshold. These never fire.")
+        for s in reports:
+            print(f"- {s['stage']} {s['message']}")
+    print()
+    print("### Signals — these fire, and a firing signal files a capture.")
     for s in signals:
         mark = "FIRING" if s["firing"] else "ok"
         print(f"- {s['stage']} [{mark}] {s['message']}")

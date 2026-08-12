@@ -41,8 +41,16 @@ CASES = [
     # (relative path, expected, what it pins)
     ("QUEUE.md", True, "the queue itself — the case that was failing"),
     ("SPEC.md", True, "the spec"),
-    ("_plan.md", True, "a planning session's own working file"),
-    ("_build.md", True, "the build working file"),
+    # Working files are session-scoped: `_plan-<session id>.md`. The bare
+    # `_plan.md` / `_build.md` names these cases used to assert are the retired
+    # shape, and the hook deliberately no longer matches them — a bare name was
+    # visible to every session on the project, which is what session-scoping
+    # removed. Asserting the current shape is what keeps the suite honest.
+    ("_plan-3f9c1a2b-7d4e-4c88-b1a0-5e2d6f8c9a01.md", True,
+     "a planning session's own working file"),
+    ("_build-3f9c1a2b-7d4e-4c88-b1a0-5e2d6f8c9a01.md", True,
+     "the build working file"),
+    ("_build.md", False, "the retired bare name is no longer on the list"),
     (os.path.join("LOG", "index.md"), True, "the log index"),
     (os.path.join("LOG", "2026-08-11-entry.md"), True, "a log entry file"),
     ("README.md", False, "an ordinary project file still asks"),

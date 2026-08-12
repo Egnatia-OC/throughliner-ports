@@ -146,6 +146,24 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   the freeform fix landing first, that is an ordinary `Blocked by: [slug]`
   relationship — no new mechanism.
 
+- **`Runs alone` marks work that is ready to build but must not share a run.**
+  Write it on its own line in the item's block, alongside `Blocked by:` and the
+  red-flag marker:
+
+```
+Runs alone
+```
+
+  Settle it at the keep-step, and place the item at one end of the cleared
+  region so the run reaches everything else first. Use it for a change that is
+  wrong to half-land — a rename, a folder move, a migration that invalidates
+  paths partway through. /next reads it as a run bound and stops there; the
+  marker binds /next and nothing else, so it does not stop the work being done
+  alongside other work by hand.
+
+  This is not `[freeform]`. `[freeform]` marks work /next must **not** build;
+  `Runs alone` marks work /next **should** build, on its own.
+
 - **Filing is any session; processing is /plan's.** Moving an item into Processed
   or deleting it is the user's decision to make.
 - **A surfaced risk is kept only once its flag is cleared.** Clearing is part of
@@ -186,15 +204,13 @@ summary of the log for its own sake.**
 
 Five lines, not the entries beneath them. An index line is built for exactly this
 — it carries the artifact touched and the nature of the change so a session can
-decide what to open without reading prose — and it is capped at a share of its
-entry, so the read is bounded. Measured at roughly 560 tokens. The full retrieve
+decide what to open without reading prose, without restating it. Measured at
+roughly 560 tokens. The full retrieve
 path is untouched: this is the orientation read, not a replacement for opening the
 entry that matters.
 
-Everything this step surfaces folds into **one** opening narration, per the
-consolidate-the-scans rule.
-
-**Read the forward-recommendation advisory** [SILENT] when absent; [BRIEF] when
+**Read the forward-recommendation advisory, and surface it FIRST — on its own,
+before the consolidated opening narration** [SILENT] when absent; [BRIEF] when
 present. If the top of Unprocessed holds a "Last session advises…" line — it
 carries the reserved slug `[forward-advisory]` at the end of its heading — read it
 and let it orient *where the session starts*. It is **not** a work item and never
@@ -203,6 +219,22 @@ the advised item — Step 2 still processes the full queue. Surface it in one li
 "Last session recommends starting with [slug]." Orientation, not a command. The
 **clear** happens at the /done close, not here, so it can't be skipped by a
 session that ends via an off-ramp.
+
+**It goes first and alone because it is the easiest thing to drop.** Folded in
+among the other opening checks it is one short orientation line competing with
+five other things in the same message, and nothing downstream ever confirms it
+was said. It was once read correctly at this step and not surfaced for three
+hours — the failure it exists to prevent, occurring inside the mechanism
+designed to prevent it.
+
+**The limit, stated rather than implied: this makes the line harder to drop, not
+impossible.** Nothing will ever confirm it was said, and a required artifact is
+no use here — the advisory is cleared at the close, and a "the advisory was
+surfaced" line in the LOG would be Claude attesting to its own narration, which
+verifies nothing. Do not describe this as fixing the problem.
+
+Everything the step surfaces **after** the advisory folds into **one** opening
+narration, per the consolidate-the-scans rule.
 
 **Open any waiting INBOX mail** [SILENT] when the mailbox is empty; [BRIEF] when
 it isn't. This is the guaranteed moment mail gets read. `session_start` surfaces
@@ -615,6 +647,13 @@ which files and get "nothing" back, and the item is a **finding**, not work — 
 home is `resources/` or the LOG under the three-way triage, not Processed. Route it
 there and delete the queue item.
 
+**And where an item asserts how a mechanism behaves, read the mechanism before
+describing the build.** A capture's account of how something works is a claim to
+test, not a fact to build on — captures are filed cheaply from inside the run
+that noticed a symptom, which is right, so the checking belongs at the reading
+end. This adds no separate step: you cannot honestly state what changes inside a
+file whose behaviour you have not looked at.
+
 **When one item is mixed — half fully specified, half not designable yet —
 surface it as a choice about DESIGNING, never about filing.** Ask *"shall we
 design the remainder now, or split it off?"* Do not ask "shall I split this item
@@ -718,20 +757,52 @@ resolve; that has happened, three items at once, and only the queue lint caught 
 after the write. If nothing in the queue blocks the item, it belongs **above** the
 line, not below it.
 
-Write the item, then report it. Make the move in this order:
+Write the item, then report it. Make the move in **three** edits, in this order:
 
 ```
-1. ADD to Processed at the chosen placement    <- destination first
-2. REMOVE from Unprocessed
-   (both writes in the same turn)
+1. MARK the original — rename its heading to a unique placeholder,
+   e.g. "#### MOVING-<slug> [<slug>]"     <- its only job is to make the
+                                             two copies tell each other apart
+2. ADD to Processed at the chosen placement    <- destination first
+3. DELETE the placeholder-marked block by that now-unique heading
+   (all three edits in the same turn)
 ```
+
+**Why the marking edit exists, and it is not fussiness.** After step 2 the file
+holds two near-identical copies of the same item. They differ only in their tail
+— the processed version's rationale is rewritten, the heading and opening
+paragraphs usually are not — so the most natural text to reach for when deleting
+the original matches both. In one session that produced three separate failures:
+once the deletion matched the new copy instead of the original, silently undoing
+the whole move; once it matched only the tail, leaving an orphaned heading and
+three paragraphs behind; once the repair spliced a heading into the middle of a
+neighbouring item's paragraph, briefly making two items unreadable as items.
+Marking the original first means the deletion has something unique to aim at.
+
+**The evidence for this sequence is a lead, not a proof.** It was found by trial
+in the session that hit those three failures, and it worked on every attempt
+afterwards — including the hardest case, moving an item to a different position
+as well as across sections. A handful of successes against three failures is
+worth adopting and worth stating honestly.
+
+**Then re-run the queue digest and read its output.** All three failures above
+were caught this way and by nothing else; it costs one command.
+
+```
+python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
+```
+
+**The honest limit.** This reduces a hazard created by two copies existing at
+once; it does not remove the window. An interruption between edits still leaves
+a placeholder-marked item in the file. That is ugly and obvious — and obvious is
+exactly what the current failure is not.
 
 Destination-first because nothing is on screen to fall back on. If something
-interrupts between the two writes, the item exists in Processed and only needs
-the stale copy cleaned up; the other order would leave it in neither section and
-lose the written text entirely. The cost — a one-turn window where it shows in
-both sections, reading as an uncleaned duplicate — is the lesser one, and closing
-both writes in the same turn keeps it to that.
+interrupts before the deletion, the item exists in Processed and only needs the
+marked copy cleaned up; the other order would leave it in neither section and
+lose the written text entirely. The cost — a short window where it shows in both
+sections, one of them visibly marked — is the lesser one, and closing all three
+edits in the same turn keeps it to that.
 
 If the raw capture had no slug, give it one now. Report "moved to Processed as
 [slug]" only after the Write succeeded and a re-read confirms it landed in

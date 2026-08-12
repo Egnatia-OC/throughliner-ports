@@ -1,5 +1,7 @@
 # Writing long agent documentation: avoiding additive noise, and how to subtract
 
+**Superseded by: resources/research/instruction-ceiling-revalidated-for-5-series.md (2026-08-12)** — in part, not wholly. Section 1's figure of roughly 150–200 instructions was re-validated against the 5-series and found roughly an order of magnitude too tight. **Anything scoped against that number needs its premise re-read.** The rest of this file — the relevance argument, near-identical rules as optimal distractors, and the subtraction techniques — was not challenged and stands.
+
 Researched 2026-08-09, after the emergency revert caused by plugin-behaviour.md growing
 from 6,162 to 21,445 words. Question asked: what are the best guidelines for writing long
 documentation for Claude, focused on avoiding additive noise and making correct

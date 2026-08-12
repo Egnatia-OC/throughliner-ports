@@ -60,6 +60,25 @@ flavor(item):
 **Never pick an item from past the marker.** This is a standing rule, not a
 branch condition — it holds at every step, on every path through /next.
 
+**A `Runs alone` line on an item is the run's second bound.** Walking the
+cleared region top-down:
+
+```
+marker on an item, run has already built something
+    ->  stop before it. The run ends there.
+marker on the run's FIRST item
+    ->  build it, then end the run after it.
+```
+
+Say plainly why the run stopped: this item must not be built alongside other
+work, so it gets a run of its own — then recommend /done. Mechanical, no
+judgment. It composes with the cleared-to-run line rather than replacing it:
+whichever bound comes first ends the run.
+
+The marker binds /next and nothing else. It does not stop the item being built
+alongside other work by hand, so never describe it as guaranteeing the item runs
+alone — only that an unattended run will not sweep it up.
+
 The run includes any `[user]` items among the cleared work; Step 3 walks the user
 through each *without ending the run*. The marker is the only thing that bounds a
 run.
@@ -78,9 +97,19 @@ The build working file holds an interrupted build's progress and remaining work,
 so resuming picks up where it stopped instead of starting over.
 
 **It is per session, not per project: `_build-<session-id>.md`.** Check for the
-one belonging to *this* session and no other. A build running in another chat has
-its own, and its file list is not this session's scope — a planning session that
+one belonging to *this* session and no other, matching that exact name — a
+pattern written for the retired bare `_build.md` matches only the old name and
+can never find a current one, which makes the check report "no interrupted
+build" every time, silently, forever. A build running in another chat has its
+own, and its file list is not this session's scope — a planning session that
 read another session's working file used to conclude it was inside that build.
+
+**Before creating any file at the project root, read the untracked list in the
+session's opening snapshot.** A file listed there exists but has never been
+committed, so git holds no copy and overwriting it destroys the only version.
+The editing tool will not stop you: it reports the write as creating a new file,
+because from its point of view there was nothing there to protect. This is a
+habit, not a rule with machinery behind it.
 
 ### 2. Find the run, and read SPEC  [SILENT]
 
