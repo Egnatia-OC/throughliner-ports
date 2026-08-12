@@ -548,3 +548,23 @@ Filed 2026-08-12 by Claude, reflecting on this session's own close.
 **To settle at processing.** Whether the depth call gets a carrier — a line in the working file per item, decided at build time when the reasoning is fresh, which the close then honours. Note the tension with [rule-gate-runs-at-close-not-at-authoring], which proposes the same relocation for a different close obligation; if both are taken, the working file becomes the place where a build records what its close must say, and that is a coherent design rather than two patches.
 Relates to [procedure-doc-size-measured-from-the-field], [rule-gate-runs-at-close-not-at-authoring], [log-entry-cost-at-run-scale] (the rule this failed to follow).
 
+#### The INBOX has no address book, so the user re-supplies a recipient's folder path every time a conversation continues [inbox-has-no-recipient-address-book]
+Captured by you 2026-08-12 at the /done close, in your own words: our messaging procedure has no storage system for recipient projects; once communication has been picked up it should be able to be continued without the user having to retrieve the path again. The instance below is Claude's.
+**The instance, minutes before you said it.** A message from Understudy was read out of this project's INBOX, routed, archived, and a reply was drafted — and then Claude could not send it, because nothing anywhere records where Understudy is. The message itself carries a sender *name* and no address. The user supplied `Casual Projects\understudy` by hand, for a project this one had already exchanged at least four messages with (three in `INBOX/archive/` plus this one).
+**Why the asymmetry exists.** Inbound needs no address: another project writes into this one's `INBOX/` and the mailbox is simply scanned. Outbound needs a filesystem path, and the method never made one durable. So every reply is a fresh lookup the user performs, however long the correspondence has been running.
+**What makes it more than an inconvenience.** The archive already holds the evidence — four message files, all from Understudy, and no way to answer any of them without asking. And it defeats the reply rule the method deliberately adopted: `skill-nonspecific-rules.md` requires that when an inbound message changes work here, Claude drafts the reply **unprompted**. An unprompted draft that then stops to ask for an address is not much better than not drafting it, and it puts the friction exactly where the rule was trying to remove it.
+**To settle at processing — and the shape matters, because this is user data about the user's own machine.**
+```
+where it lives    a file the project owns, most likely alongside INBOX/,
+                  recording name -> absolute folder path
+when it is filled recorded the first time a path is supplied, so the cost is
+                  paid once per correspondent rather than once per reply
+what it is NOT    not a scan of the filesystem for other SI projects. The
+                  standing rule is to operate on the folder the session opens
+                  in and never go looking for others; an address book is a
+                  record of paths the user gave, not a discovery mechanism.
+```
+**One thing to weigh carefully at processing.** An address book is a file of absolute paths on the user's machine, which is the shape the editing-state signal's version 2 deliberately stopped writing because those paths identify a person and get committed. `INBOX/` is already gitignored, so a sibling file there inherits that protection — but it must be *checked* rather than assumed, and the gitignore line covers the folder rather than anything placed beside it.
+**Also worth deciding:** whether a message should carry its sender's path in the message itself, which would make the archive self-sufficient and need no new file at all. Cheaper, but it only helps for messages sent after the change, and it puts a machine path inside a document that travels between projects.
+Relates to [procedure-doc-size-measured-from-the-field] (the message that exposed it) and the INBOX design generally.
+
