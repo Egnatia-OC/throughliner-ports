@@ -49,7 +49,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-PLUGIN_ROOT = os.path.join(ROOT, "plugin", "si-plugin")
+PLUGIN_ROOT = os.path.join(ROOT, "plugin", "throughliner")
 HOOKS = os.path.join(PLUGIN_ROOT, "hooks")
 
 _failures = []
@@ -214,7 +214,7 @@ def test_session_start_points_at_the_rules_rather_than_pasting_them():
           "no read-first instruction found")
     # The giveaway that someone re-inlined the file: its own body text.
     check("SessionStart: the rules file's contents are absent from the payload",
-          "## Response-shape tags" not in ctx and "## Why-pipeline" not in ctx,
+          "## Response-shape tags" not in ctx and "## The throughline" not in ctx,
           "rules body detected in payload")
     # The FAQ pointer follows the rules directive: truncation ordering only
     # protects what sits earlier, and the rules are the thing that must arrive.
@@ -240,7 +240,7 @@ def test_session_start_state_lines_lead_the_payload():
         check("SessionStart: ordering checkable", False, err[:300])
         return
     ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
-    state = ctx.find("[Sovereign Implementer] Project is set up.")
+    state = ctx.find("[Throughliner] Project is set up.")
     check("SessionStart: project state within the first 2KB",
           0 <= state <= 2048, "state line at " + str(state))
     flags = ctx.find("UNCLEARED RED FLAG(S)")

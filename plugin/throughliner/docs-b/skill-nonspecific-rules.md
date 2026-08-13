@@ -8,7 +8,7 @@ note: >
   Register: structure in typed blocks, everything else in prose, tags inline.
 ---
 
-# Sovereign Implementer — skill-nonspecific rules
+# Throughliner — skill-nonspecific rules
 
 **A rule belongs in this file only if it fires in all four skills — /setup, /plan,
 /next and /done.** A rule that fires inside one of them belongs in that skill's own
@@ -683,14 +683,28 @@ blocker.
 **/plan's revisit is one question per item: has the blocker shipped?** Check
 it against LOG, propose lifting if it has, skip silently if it hasn't.
 
-## Why-pipeline
+## The throughline
 
 **Rationale is prose. Carry it forward; don't collapse it into a structured "why"
 field.**
 
 A reason travels capture → processed work → log as prose. At each stage
 re-author it to fit context, write it, and report where it landed.
-Reasons live inline in the entry text.
+Reasons live inline in the entry text. That travelling reason is the
+**throughline**, and it is what the method is named for.
+
+**The throughline is the reasoning spine — the thread of *why* — not any one
+file.** Intent lives in SPEC, rationale rides every QUEUE item, history lives in
+LOG. SPEC and QUEUE are read during planning and building, so the throughline
+shapes work silently rather than only on a "why?" question; LOG is the deep
+archive, pulled on demand. **LOG is where the throughline is recorded, and is
+not itself the throughline** — the tell that they are distinct is that a
+complete LOG can carry no throughline at all, every event recorded with the
+reasoning stripped out, which is exactly the failure this fights.
+
+What it buys: Claude's memory resets each session, and the throughline is why a
+fresh, short session still builds the project the way the user meant instead of
+re-deriving intent from the code and guessing wrong.
 
 **Rationale provenance is asymmetric and default-AI**, exactly like the work-item
 credit: reasoning is assumed to be Claude's unless explicitly credited as the
@@ -993,7 +1007,7 @@ Never report them as damage, and never try to undo or reset them.
 
 ## Prior decisions
 
-- Before raising a design question, run the why-pipeline retrieve. If **the
+- Before raising a design question, run the throughline retrieve. If **the
   record** shows it's decided, state the prior decision. If the user revisits,
   flag when it was decided.
 

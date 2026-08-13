@@ -46,10 +46,22 @@ import sys
 #   2  the two-section Processed / Unprocessed recut, work items as `#### `
 #      headings with a trailing [slug], red flags as tagged state lines, and
 #      `Blocked by: [slug]` as the one dependency field
-FORMAT_EPOCH = 2
+#   3  the Sovereign Implementer -> Throughliner identity rename: a project's
+#      two marker files are renamed `.si-version` -> `.throughliner-version`
+#      and `.si-format-epoch` -> `.throughliner-format-epoch`
+FORMAT_EPOCH = 3
 
 # The project records its own epoch here, written by /setup on completion.
-FORMAT_EPOCH_FILE = ".si-format-epoch"
+FORMAT_EPOCH_FILE = ".throughliner-format-epoch"
+
+# The pre-rename names of both marker files. Read as a fallback so a project
+# set up before the identity rename is still recognised as adopted and is
+# reported as behind the current format rather than as missing its markers
+# entirely — two notices about one gap read as two problems. /setup's
+# migration writes the new names and removes these.
+LEGACY_FORMAT_EPOCH_FILE = ".si-format-epoch"
+LEGACY_VERSION_FILE = ".si-version"
+VERSION_FILE = ".throughliner-version"
 
 # A placeholder counts only in hash position: an entry heading line
 # ("## [HASH] — title") or the start of an index line ("- [HASH] — text").
@@ -222,10 +234,10 @@ def backfill_log_hashes(cwd):
         )
     if not filled:
         if anomaly:
-            return "[Sovereign Implementer] Log housekeeping:" + anomaly
+            return "[Throughliner] Log housekeeping:" + anomaly
         return ""
     return (
-        f"[Sovereign Implementer] Log housekeeping: filled {filled} commit-hash "
+        f"[Throughliner] Log housekeeping: filled {filled} commit-hash "
         f"placeholder(s) in {', '.join(touched_files)}. This is an uncommitted "
         "working-tree edit — fold it into this session's commit." + anomaly
     )
@@ -261,7 +273,7 @@ def content_stamp(root):
     This is the basis /plan's below-line revisit uses to tell whether host-side
     changes are actually live: the hook stamps the installed host (its own
     CLAUDE_PLUGIN_ROOT) here; in the self-hosting dev project /plan computes
-    the target's stamp by calling this same function over plugin/si-plugin/,
+    the target's stamp by calling this same function over plugin/throughliner/,
     and equal stamps mean the installed host matches the current target. A
     version number can't answer this — a build batch edits host-side files
     without bumping any version — so the stamp is a content question, not a
@@ -772,7 +784,11 @@ def main() -> int:
     build_path = _working_file(cwd, "build", session_id)
     plan_state_path = _working_file(cwd, "plan", session_id)
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
-    si_version_path = os.path.join(cwd, ".si-version")
+    si_version_path = os.path.join(cwd, VERSION_FILE)
+    if not os.path.isfile(si_version_path):
+        legacy_version_path = os.path.join(cwd, LEGACY_VERSION_FILE)
+        if os.path.isfile(legacy_version_path):
+            si_version_path = legacy_version_path
 
     has_spec = os.path.isfile(spec_path)
     has_queue = os.path.isfile(queue_path)
@@ -825,6 +841,10 @@ def main() -> int:
     # never be the thing that decides a project is fine.
     project_epoch = 1
     epoch_path = os.path.join(cwd, FORMAT_EPOCH_FILE)
+    if not os.path.isfile(epoch_path):
+        legacy_epoch_path = os.path.join(cwd, LEGACY_FORMAT_EPOCH_FILE)
+        if os.path.isfile(legacy_epoch_path):
+            epoch_path = legacy_epoch_path
     if os.path.isfile(epoch_path):
         try:
             with open(epoch_path, "r", encoding="utf-8") as f:
@@ -867,7 +887,7 @@ def main() -> int:
 
         if has_work:
             msg = (
-                "[Sovereign Implementer] This folder has files but no SI docs yet. "
+                "[Throughliner] This folder has files but no SI docs yet. "
                 "If it's a fresh project, run /setup to get started. If it already "
                 "has planning or spec docs under other names — from another tool or "
                 "an older version — /setup can treat it as a migration and map them "
@@ -875,14 +895,14 @@ def main() -> int:
             )
         else:
             msg = (
-                "[Sovereign Implementer] Empty project folder. "
+                "[Throughliner] Empty project folder. "
                 "Run /setup to scaffold the project docs and describe what you're building."
             )
 
         if nested_si:
             msg += (
-                " Heads up: this folder contains what look like separate Sovereign "
-                "Implementer projects of their own (" + ", ".join(sorted(nested_si)) + "). "
+                " Heads up: this folder contains what look like separate "
+                "Throughliner projects of their own (" + ", ".join(sorted(nested_si)) + "). "
                 "If you meant to work in one of those, open it directly rather than this "
                 "parent folder — running /setup here would adopt this parent folder, not "
                 "them. Tell the user this plainly so they can course-correct before "
@@ -968,7 +988,7 @@ def main() -> int:
     # against a 10,000-character cap when it fired. Putting the state first
     # makes adding another scan safe, which is exactly what the check exists to
     # protect.
-    context_parts.append("[Sovereign Implementer] Project is set up.")
+    context_parts.append("[Throughliner] Project is set up.")
     context_parts.append(f"  SPEC.md: {'found' if has_spec else 'MISSING'}")
     context_parts.append(f"  QUEUE.md: {'found' if has_queue else 'MISSING'}")
 
@@ -992,7 +1012,7 @@ def main() -> int:
         # host and the target can show the same version while the host is stale.
         # The stamp answers the real (content) question. In the self-hosting dev
         # project the deferred-test roll compares this against the target's stamp
-        # (computed the same way over plugin/si-plugin/); a consumer never has a
+        # (computed the same way over plugin/throughliner/); a consumer never has a
         # target to compare against, so this is informational there.
         host_stamp = content_stamp(plugin_root)
         if host_stamp:
@@ -1001,7 +1021,7 @@ def main() -> int:
                 "the installed plugin's files. To tell whether a host-side change "
                 "is actually live, compare this against the target's current stamp "
                 "(in the dev project, run this hook's content_stamp() over "
-                "plugin/si-plugin/): stamps match means the installed host carries "
+                "plugin/throughliner/): stamps match means the installed host carries "
                 "the latest files; stamps differ means it hasn't been reinstalled "
                 "since the most recent host-side change, so host-side tests aren't "
                 "live yet. This catches edits that bump no version."
@@ -1013,7 +1033,7 @@ def main() -> int:
     if waiting:
         count = len(waiting)
         context_parts.append(
-            f"[Sovereign Implementer] {count} message"
+            f"[Throughliner] {count} message"
             f"{'' if count == 1 else 's'} waiting in this project's INBOX: "
             + ", ".join(waiting)
             + ". Mention this to the user in one line. When one is opened, route "
@@ -1030,7 +1050,7 @@ def main() -> int:
     if dependency_facts is not None:
         cleared, held, blockers_unprocessed, waiting, dead = dependency_facts
         facts = (
-            f"[Sovereign Implementer] Queue dependency facts: {cleared} item"
+            f"[Throughliner] Queue dependency facts: {cleared} item"
             f"{'' if cleared == 1 else 's'} cleared to run, {held} held below the "
             f"line, {blockers_unprocessed} of those blockers still sitting in "
             "Unprocessed. Facts, not instructions — /plan derives the session's "
@@ -1061,7 +1081,7 @@ def main() -> int:
     isolation = _isolation_model(cwd)
     if isolation == "worktree":
         context_parts.append(
-            "[Sovereign Implementer] Isolation: this session is in its own git "
+            "[Throughliner] Isolation: this session is in its own git "
             "worktree, so edits here cannot touch another session's files. The "
             "parallel-sessions advice for this case: a capture filed in another "
             "session never reaches this one, and the last branch to merge wins, "
@@ -1072,7 +1092,7 @@ def main() -> int:
         )
     elif isolation == "shared":
         context_parts.append(
-            "[Sovereign Implementer] Isolation: this session shares one working "
+            "[Throughliner] Isolation: this session shares one working "
             "tree with any other session open on this project. The "
             "parallel-sessions advice for this case: two appends to different "
             "parts of QUEUE.md don't collide and the file-modified warning "
@@ -1092,7 +1112,7 @@ def main() -> int:
                 for name, count in stranded
             )
             context_parts.append(
-                "[Sovereign Implementer] Worktrees carrying unmerged commits: " +
+                "[Throughliner] Worktrees carrying unmerged commits: " +
                 listed + ". Each is checked out in its own worktree and has "
                 "commits this checkout doesn't. That is ALL that was measured — "
                 "it does not establish these are stranded session branches. A "
@@ -1134,7 +1154,7 @@ def main() -> int:
                     # Truncated to stay well inside the hook output cap.
                     body = "\n".join(f"  {ln}" for ln in firing[:5])
                     context_parts.append(
-                        "[Sovereign Implementer] Rule-lifecycle board — "
+                        "[Throughliner] Rule-lifecycle board — "
                         f"{len(firing)} signal(s) firing:\n{body}\n"
                         "  Each firing signal wants one capture in Unprocessed "
                         "under the slug it names, unless an open capture with "
@@ -1158,14 +1178,15 @@ def main() -> int:
         missing_scaffold.append("the FAQ folder (workflow help)")
     if not os.path.isfile(si_version_path):
         missing_scaffold.append(
-            "the .si-version marker (records which plugin version set the project up)"
+            "the .throughliner-version marker (records which plugin version set "
+            "the project up)"
         )
     # Not listed when the format-epoch halt is already firing — the halt says the
     # same thing louder and with the migration attached, and two notices about
     # one gap read as two problems.
     if not os.path.isfile(epoch_path) and not format_stale:
         missing_scaffold.append(
-            "the .si-format-epoch marker (records which document format the "
+            "the .throughliner-format-epoch marker (records which document format the "
             "project uses)"
         )
 
@@ -1234,7 +1255,7 @@ def main() -> int:
     if version_mismatch:
         context_parts.append("")
         context_parts.append(
-            "[Sovereign Implementer] Plugin version changed since this project was "
+            "[Throughliner] Plugin version changed since this project was "
             f"last set up ({project_version} → {plugin_version}) — an update has been "
             "installed."
         )
@@ -1275,7 +1296,7 @@ def main() -> int:
         listed = ", ".join(f"{name} ({kind})" for name, kind, _ in leftovers[:5])
         context_parts.append("")
         context_parts.append(
-            f"[Sovereign Implementer] {len(leftovers)} working file(s) from other "
+            f"[Throughliner] {len(leftovers)} working file(s) from other "
             f"sessions: {listed}. Each belongs to a session that never closed, or "
             "to one running right now in another chat. Nothing is deleted — a "
             "working file can hold the only record of what a crashed session did. "
@@ -1291,7 +1312,7 @@ def main() -> int:
         if dirty_count:
             context_parts.append("")
             context_parts.append(
-                f"[Sovereign Implementer] {dirty_count} file(s) have uncommitted "
+                f"[Throughliner] {dirty_count} file(s) have uncommitted "
                 "changes from a previous session — /done will pick them up."
             )
 

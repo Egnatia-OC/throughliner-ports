@@ -70,3 +70,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Claude said a queue item "rests on a superseded finding". What does that mean?](faq.md#claude-said-a-queue-item-rests-on-a-superseded-finding-what-does-that-mean)
 - [At the end of a session Claude used to ask me to approve a list of new queue items. Now it just tells me. Why?](faq.md#at-the-end-of-a-session-claude-used-to-ask-me-to-approve-a-list-of-new-queue-items-now-it-just-tells-me-why)
 - [A build run stopped early and said the next job "runs alone". Why?](faq.md#a-build-run-stopped-early-and-said-the-next-job-runs-alone-why)
+- [The plugin is now called Throughliner. What do I have to do?](faq.md#the-plugin-is-now-called-throughliner-what-do-i-have-to-do)

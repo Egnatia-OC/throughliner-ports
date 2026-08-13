@@ -397,3 +397,15 @@ So during planning, a job like that gets marked **runs alone**. When a build run
 Either way it ends up with a run of its own.
 
 **One honest limit.** This only controls automatic build runs. It doesn't stop you and Claude working on that job alongside other things by hand if you decide to — it's a guard against a long unattended run sweeping the job up, not a lock on the work itself.
+
+## The plugin is now called Throughliner. What do I have to do?
+
+Install it once under the new name, and that's it. Everything you've built stays exactly where it is.
+
+The plugin used to be called Sovereign Implementer. The name changed because it was describing the wrong thing: the real value here is the **throughline** — the reasoning behind every decision, carried from the moment you capture an idea, through the work item, into the session record. Claude's memory resets every session. The throughline is why a fresh session still builds your project the way you meant, instead of re-reading your code and guessing at what you wanted.
+
+**What happens on your side.** Claude Code notices the old name and follows it to the new one automatically, rewriting its own settings and showing you a one-line notice. But because the plugin comes from GitHub, it also needs fetching under the new name, so you'll be asked to install it once. Ask Claude to install `throughliner@flintcraft` and then fully restart the app. That's the whole job.
+
+**Two things worth knowing.** The automatic follow-along needs Claude Code version 2.1.193 or newer — on an older version you'd see a "plugin not found" message, and the fix is to update Claude Code first. And if your Claude Code settings are managed by an administrator (a work laptop, for instance), those can't be rewritten automatically, so the notice keeps appearing until an admin updates them.
+
+**Inside your own project**, two small hidden marker files are renamed too — they record which version and which document format your project is on. If your project was set up before the rename, Claude will say your project is on an older format and point you at /setup, which renames them for you along with anything else that needs bringing up to date. Nothing you wrote is touched.

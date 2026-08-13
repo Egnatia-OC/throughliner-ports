@@ -71,7 +71,7 @@ PERSON_CUES = re.compile(
 # document furniture. Extend freely — a false positive here only costs one
 # extra line of human review, while a missing entry costs noise.
 VOCABULARY = {
-    "Claude Code", "Sovereign Implementer", "Active Build", "Red flag",
+    "Claude Code", "Throughliner", "Active Build", "Red flag",
     "Working mode", "Repo visibility", "Task Manager", "Git Bash",
     "Pull Request", "Log Entry", "Session Start", "Claude Opus",
     "Claude Sonnet", "Claude Haiku", "Files touched", "Queue changes",

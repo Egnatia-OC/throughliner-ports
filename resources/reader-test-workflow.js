@@ -11,7 +11,7 @@ export const meta = {
 
 // ── Plugin doc paths ──
 
-const P = 'C:/Users/Alex/Desktop/Taskflow Planning/No code method/plugin/si-plugin'
+const P = 'C:/Users/Alex/Desktop/Taskflow Planning/No code method/plugin/throughliner'
 const TEMPLATE = P + '/templates/CLAUDE-TEMPLATE.md'
 const BEHAVIOUR = P + '/docs/plugin-behaviour.md'
 const PLAN_DOC = P + '/docs/plan.md'
@@ -131,7 +131,7 @@ const FAKE_CLAUDE_MD = `# CLAUDE.md
 
 <!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
 
-This project uses the Sovereign Implementer method.
+This project uses the Throughliner method.
 
 ## Project docs
 
@@ -168,13 +168,13 @@ Language: English
 
 // Session-start hook outputs
 
-const SESSION_NO_BUILD = `[Sovereign Implementer] Project is set up.
+const SESSION_NO_BUILD = `[Throughliner] Project is set up.
   SPEC.md: found
   QUEUE.md: found
 
 Ready. Run /plan to manage the queue, or /next to start the top batch.`
 
-const SESSION_ACTIVE_BUILD = `[Sovereign Implementer] Project is set up.
+const SESSION_ACTIVE_BUILD = `[Throughliner] Project is set up.
   SPEC.md: found
   QUEUE.md: found
 
@@ -367,9 +367,9 @@ ${FAKE_BUILD}`
 }
 
 function simPrompt(phase) {
-  return `You are a fresh instance of Claude. The Sovereign Implementer plugin is installed in this session. You are working on a personal bookshelf tracker app for a non-coder user.
+  return `You are a fresh instance of Claude. The Throughliner plugin is installed in this session. You are working on a personal bookshelf tracker app for a non-coder user.
 
-USE ONLY THE DOCS PROVIDED. Do not rely on any prior knowledge of the Sovereign Implementer plugin.
+USE ONLY THE DOCS PROVIDED. Do not rely on any prior knowledge of the Throughliner plugin.
 
 STEP 1 — Read the plugin docs. These are the docs you would receive in a real session:
 
@@ -451,9 +451,9 @@ const USER_QUESTIONS = [
 ]
 
 function answererPrompt() {
-  return `You are a fresh instance of Claude. The Sovereign Implementer plugin is installed. A non-coder user is asking you questions about how the plugin workflow works.
+  return `You are a fresh instance of Claude. The Throughliner plugin is installed. A non-coder user is asking you questions about how the plugin workflow works.
 
-USE ONLY THE DOCS PROVIDED. Do not rely on any prior knowledge of the Sovereign Implementer plugin.
+USE ONLY THE DOCS PROVIDED. Do not rely on any prior knowledge of the Throughliner plugin.
 
 Read these docs first:
 1. ${TEMPLATE} — the project CLAUDE.md template
@@ -472,7 +472,7 @@ ${USER_QUESTIONS.map(function(q, i) { return (i + 1) + '. ' + q }).join('\n')}`
 }
 
 function scorerPrompt(answers) {
-  return `You are an evaluator checking whether a set of answers about the Sovereign Implementer plugin are correct and complete.
+  return `You are an evaluator checking whether a set of answers about the Throughliner plugin are correct and complete.
 
 Read the authoritative docs:
 1. ${TEMPLATE} — CLAUDE.md template
@@ -495,7 +495,7 @@ Be strict. A "partially-covered" answer means the docs have some relevant info b
 }
 
 function synthesisPrompt(allFindings) {
-  return `You are categorizing findings from a reader-test of the Sovereign Implementer plugin docs. The test simulated three skill sessions (/plan, /next, /done) and a questions panel against a fake bookshelf tracker project.
+  return `You are categorizing findings from a reader-test of the Throughliner plugin docs. The test simulated three skill sessions (/plan, /next, /done) and a questions panel against a fake bookshelf tracker project.
 
 Here are all the findings:
 

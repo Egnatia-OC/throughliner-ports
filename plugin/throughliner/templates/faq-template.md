@@ -16,7 +16,7 @@ You run **/setup** once, right at the start of a project. After that, every work
 
 ## Can I keep several projects in one folder, and what if I open the wrong one?
 
-Each Sovereign Implementer project is its own folder — self-contained, with its own SPEC, QUEUE, and log. You can keep several of them side by side (for instance nested under one parent folder), but they stay separate projects; the method doesn't run one project across many folders. Claude always works on the exact folder you opened the session in, and never goes hunting through nearby folders or asks you to pick one — the folder you point it at is the project. So to work on a particular project, open that project's folder directly. If you accidentally open a parent folder that just contains your projects, Claude notices and tells you: it says the folder looks like it holds separate projects and suggests you open the one you meant, because running /setup there would set up the parent folder itself rather than the project inside it. Nothing gets adopted or changed until you choose — the heads-up is only so you don't set up the wrong folder by mistake.
+Each Throughliner project is its own folder — self-contained, with its own SPEC, QUEUE, and log. You can keep several of them side by side (for instance nested under one parent folder), but they stay separate projects; the method doesn't run one project across many folders. Claude always works on the exact folder you opened the session in, and never goes hunting through nearby folders or asks you to pick one — the folder you point it at is the project. So to work on a particular project, open that project's folder directly. If you accidentally open a parent folder that just contains your projects, Claude notices and tells you: it says the folder looks like it holds separate projects and suggests you open the one you meant, because running /setup there would set up the parent folder itself rather than the project inside it. Nothing gets adopted or changed until you choose — the heads-up is only so you don't set up the wrong folder by mistake.
 
 ## Claude links me to a doc instead of pasting the text. Can I get the text in chat instead?
 
@@ -95,13 +95,13 @@ Because some tests need something only you can provide — and when that's the c
 
 Because it can often do a job itself with a small command-line tool instead of walking you through doing it by hand in an app — and doing it for you is usually faster and less error-prone. So before handing you a step-by-step for a desktop app, Claude pauses to consider whether a tool exists that would let it just do the task (things like reading text out of a scanned image, converting a PDF, or reshaping a data file often have one). When it thinks one might but isn't sure which, it offers to look one up on the web. You're never obliged to say yes: decline and Claude falls back to guiding you by hand. And the usual safeguards still apply — Claude names the tool and what it's for rather than installing things blindly, asks before downloading or running anything, and won't assume you have a terminal or the right setup; it names what a tool would need and lets you say whether that fits. The reason it offers this on its own is that a lot of these tools aren't things a non-coder would know to ask for — so the option shouldn't depend on you knowing it exists.
 
-## Do I need to use the terminal to install or update SI?
+## Do I need to use the terminal to install or update Throughliner?
 
-No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintcraftTech/throughliner` marketplace and install `sovereign-implementer@flintcraft`; to update later, you ask it to run the update. (Those two names not matching is expected, not a typo — the repository and the plugin inside it are named differently.) Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
+No. The plugin installs and updates through Claude Code's own plugin system, and **Claude runs those commands for you** — you just ask it in plain English inside a Claude Code chat. You never open or type into a terminal. "Marketplace" and "CLI install" sound technical, but in practice they mean: Claude Code knows where to find this plugin (a marketplace is just the published location on GitHub), and it fetches and installs it with a couple of commands it runs itself. To install, you ask Claude Code to add the `FlintcraftTech/throughliner` marketplace and install `throughliner@flintcraft`; to update later, you ask it to run the update. Either way it's Claude doing the typing, then you fully restart the app so the new version loads.
 
 ## How do I find out when there's a new version of the plugin?
 
-GitHub can email you whenever a new version of Sovereign Implementer is published. Go to the plugin's page at `https://github.com/FlintcraftTech/throughliner`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
+GitHub can email you whenever a new version of Throughliner is published. Go to the plugin's page at `https://github.com/FlintcraftTech/throughliner`, click **Watch** near the top right, choose **Custom**, tick **Releases**, and click **Apply**. After that you get an email each time a new release goes out. It needs a free GitHub account, which costs nothing to set up.
 
 ## I just updated the plugin — how do I check it still works?
 
@@ -446,3 +446,15 @@ So during planning, a job like that gets marked **runs alone**. When a build run
 Either way it ends up with a run of its own.
 
 **One honest limit.** This only controls automatic build runs. It doesn't stop you and Claude working on that job alongside other things by hand if you decide to — it's a guard against a long unattended run sweeping the job up, not a lock on the work itself.
+
+## The plugin is now called Throughliner. What do I have to do?
+
+Install it once under the new name, and that's it. Everything you've built stays exactly where it is.
+
+The plugin used to be called Sovereign Implementer. The name changed because it was describing the wrong thing: the real value here is the **throughline** — the reasoning behind every decision, carried from the moment you capture an idea, through the work item, into the session record. Claude's memory resets every session. The throughline is why a fresh session still builds your project the way you meant, instead of re-reading your code and guessing at what you wanted.
+
+**What happens on your side.** Claude Code notices the old name and follows it to the new one automatically, rewriting its own settings and showing you a one-line notice. But because the plugin comes from GitHub, it also needs fetching under the new name, so you'll be asked to install it once. Ask Claude to install `throughliner@flintcraft` and then fully restart the app. That's the whole job.
+
+**Two things worth knowing.** The automatic follow-along needs Claude Code version 2.1.193 or newer — on an older version you'd see a "plugin not found" message, and the fix is to update Claude Code first. And if your Claude Code settings are managed by an administrator (a work laptop, for instance), those can't be rewritten automatically, so the notice keeps appearing until an admin updates them.
+
+**Inside your own project**, two small hidden marker files are renamed too — they record which version and which document format your project is on. If your project was set up before the rename, Claude will say your project is on an older format and point you at /setup, which renames them for you along with anything else that needs bringing up to date. Nothing you wrote is touched.

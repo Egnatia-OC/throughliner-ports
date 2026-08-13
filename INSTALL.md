@@ -1,12 +1,12 @@
-# Install guide — Sovereign Implementer
+# Install guide — Throughliner
 
-**What this is.** A step-by-step guide to installing the Sovereign Implementer plugin for Claude Code. You paste this guide into a chat at claude.ai, and Claude reads it and walks you through the install one step at a time — you don't have to figure anything out on your own.
+**What this is.** A step-by-step guide to installing the Throughliner plugin for Claude Code. You paste this guide into a chat at claude.ai, and Claude reads it and walks you through the install one step at a time — you don't have to figure anything out on your own.
 
-**Who it's for.** Anyone who wants to use Sovereign Implementer and is new to this. No coding or terminal experience is needed. Everything happens in apps you click through, not a command line.
+**Who it's for.** Anyone who wants to use Throughliner and is new to this. No coding or terminal experience is needed. Everything happens in apps you click through, not a command line.
 
 **What to expect.** Claude will ask you a couple of quick questions to find out where you're starting from, then guide you through getting Claude Code (if you don't have it), making sure you're on a paid plan, and adding the plugin. It goes one step at a time and waits for you at each one.
 
-**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Sovereign Implementer plugin](#branch-b--install-the-sovereign-implementer-plugin). Branch B installs by asking Claude Code to add the plugin's marketplace and install it — Claude runs the commands for you, so you never type in a terminal.
+**Already have Claude Code and a paid plan?** You can skip the opening questions below. Still do the quick app check in [Step 1 — Opening interview](#step-1--opening-interview) to confirm you're actually in Claude Code (not the Claude chat app), then jump straight to [Branch B — Install the Throughliner plugin](#branch-b--install-the-throughliner-plugin). Branch B installs by asking Claude Code to add the plugin's marketplace and install it — Claude runs the commands for you, so you never type in a terminal.
 
 **For Claude (the assistant reading this):** your operating instructions are at the end of this file, in the "Instructions for Claude" section. Read that section before you start walking the user through anything.
 
@@ -57,7 +57,7 @@ Claude Code requires a paid plan (covered in "Before you start" above). Be hones
 
 Recommend the subscription path for a non-coder unless they already have API credit set up. Walk them through upgrading at claude.ai if needed, then return to the desktop app and confirm it recognises the plan (they should be able to start a session without a billing error).
 
-## Branch B — Install the Sovereign Implementer plugin
+## Branch B — Install the Throughliner plugin
 
 Once Claude Code is installed and the user is on a paid plan, the plugin installs from its marketplace on GitHub. The good news for a non-coder: **Claude Code runs the install commands for you** — you ask it, in plain English, and it does the rest. You never type in a terminal.
 
@@ -67,18 +67,18 @@ Once Claude Code is installed and the user is on a paid plan, the plugin install
 
 The install uses Claude Code's plugin marketplace. It's two commands — but the user does **not** have to type them. Instead, have them open a chat **inside Claude Code** and ask the Claude Code agent, in plain words, to install the plugin. Give them this to paste or say:
 
-> Please add the plugin marketplace `FlintcraftTech/throughliner` and then install the `sovereign-implementer@flintcraft` plugin from it.
+> Please add the plugin marketplace `FlintcraftTech/throughliner` and then install the `throughliner@flintcraft` plugin from it.
 
 The Claude Code agent will run the two commands itself:
 
 ```
 claude plugin marketplace add FlintcraftTech/throughliner
-claude plugin install sovereign-implementer@flintcraft
+claude plugin install throughliner@flintcraft
 ```
 
 (If the user would rather run them by hand, those are the commands — but the default and easiest path is to let Claude Code run them.)
 
-**The two names deliberately differ.** The repository is `throughliner`; the plugin inside it is `sovereign-implementer`. Both lines above are correct as written — if the user asks whether one is a typo, tell them it isn't, and don't let them "correct" either.
+**The repository and the plugin now share the name `throughliner`.** If the user is coming from the plugin's old name, Sovereign Implementer, Claude Code follows the old name automatically but still needs to fetch the plugin under the new one — so the install above is run once, then the app is fully restarted.
 
 After both succeed, the plugin activates on a full restart of Claude Code. Have the user fully quit and reopen the app, then run the smoke test in B.2 to confirm it took. If the marketplace-add or install errors — for example, the marketplace can't be found — have them tell the Claude Code agent the exact error and work it from there; the agent can retry or diagnose.
 
@@ -89,18 +89,18 @@ This is just a quick check that the install took. It doesn't need a real project
 - Have them make a new empty folder anywhere (e.g. on the Desktop, call it `si-test`).
 - In Claude Code, open that folder via **File > Open Folder** (or the app's equivalent "open folder" action) so there's a folder open to work in.
 - Click into the **chat box** (where you'd normally type a message) and start typing `/setup`. As they type, a menu of available commands appears.
-- **Success looks like:** a command for setup shows up in that menu. It may appear as `/setup`, or namespaced as `/sovereign-implementer:setup` — either form means the plugin is installed. Have them select it and press **Enter** to run it. (For the smoke test, seeing the command appear is already enough; they don't have to finish a real setup here.)
+- **Success looks like:** a command for setup shows up in that menu. It may appear as `/setup`, or namespaced as `/throughliner:setup` — either form means the plugin is installed. Have them select it and press **Enter** to run it. (For the smoke test, seeing the command appear is already enough; they don't have to finish a real setup here.)
 - **Failure looks like:** they type `/setup` and **no matching command appears** in the menu at all. That means the plugin isn't registered yet.
 
 If it fails, work through these in order — don't jump straight to reinstalling:
 1. **Fully quit and reopen the app** — not just a new session. Plugin commands register when the app launches, and on Windows a normal "quit" can leave the app running in the background, so a new chat or even a normal close-and-reopen may not pick them up. Quit the app, then on Windows confirm the process has actually exited (check Task Manager and end it if it's still there) before reopening. Then try `/setup` again.
-2. If it still doesn't show, have the user ask the Claude Code agent to confirm the plugin is installed and enabled (the agent can list installed plugins), and to reinstall it with `claude plugin install sovereign-implementer@flintcraft` if needed. Then fully restart again.
+2. If it still doesn't show, have the user ask the Claude Code agent to confirm the plugin is installed and enabled (the agent can list installed plugins), and to reinstall it with `claude plugin install throughliner@flintcraft` if needed. Then fully restart again.
 
 A note for real use later: `/setup` is also the command that sets up a real project once the plugin is confirmed working — that's a separate step you'll do in your own project folder, not part of this test.
 
 ### Updating later
 
-To update, have the user ask the Claude Code agent to run `claude plugin update sovereign-implementer@flintcraft` (Claude Code runs it — no terminal typing), then fully restart the app so the new version loads.
+To update, have the user ask the Claude Code agent to run `claude plugin update throughliner@flintcraft` (Claude Code runs it — no terminal typing), then fully restart the app so the new version loads.
 
 ## Step 2 — First-run pointer
 
@@ -110,7 +110,7 @@ Once the plugin is installed and the `/setup` command is recognised, tell the us
 
 Do not run /setup for them in this chat — they need to do it in their own desktop app, in their own project folder.
 
-That's the end of the install guide — Sovereign Implementer is installed and your project is ready to start.
+That's the end of the install guide — Throughliner is installed and your project is ready to start.
 
 ---
 
@@ -118,7 +118,7 @@ That's the end of the install guide — Sovereign Implementer is installed and y
 
 This section is for the assistant reading the guide, not for the human installer. If you're the person installing, you can stop above — everything you need is in the steps.
 
-**Note to Claude:** You are reading this guide on a user's behalf. They have opened a fresh chat at claude.ai and pasted this link because they want to install the Sovereign Implementer plugin for Claude Code. Follow the instructions in this file to walk them through it.
+**Note to Claude:** You are reading this guide on a user's behalf. They have opened a fresh chat at claude.ai and pasted this link because they want to install the Throughliner plugin for Claude Code. Follow the instructions in this file to walk them through it.
 
 **Ground rules:**
 - Assume the user has zero terminal experience and is mildly allergic to terminals. Use the Claude Code **desktop app** at all times. The plugin install (Branch B) uses `claude plugin ...` commands, but the user does not type them — the Claude Code agent runs them on the user's behalf. Frame it that way: they ask Claude Code in plain English and it runs the commands. Don't have the user open or type into a terminal, and don't suggest unrelated CLI workflows (`claude --version`, `/config` in a terminal, etc.).

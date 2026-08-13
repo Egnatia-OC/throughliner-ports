@@ -44,7 +44,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-HOOK = os.path.join(ROOT, "plugin", "si-plugin", "hooks", "pre_tool_use.py")
+HOOK = os.path.join(ROOT, "plugin", "throughliner", "hooks", "pre_tool_use.py")
 
 _failures = []
 
@@ -102,21 +102,21 @@ def decision(cwd, command):
 # The two shapes that actually slipped, verbatim in structure.
 HEREDOC_APPEND = (
     "python - <<'PY'\n"
-    "with open('plugin/si-plugin/templates/faq-template.md', 'a') as f:\n"
+    "with open('plugin/throughliner/templates/faq-template.md', 'a') as f:\n"
     "    f.write('new entry')\n"
     "PY"
 )
 HEREDOC_SUBSTITUTE = (
     "python - <<'PY'\n"
-    "p = 'plugin/si-plugin/docs-b/setup.md'\n"
+    "p = 'plugin/throughliner/docs-b/setup.md'\n"
     "text = open(p).read()\n"
-    "open('plugin/si-plugin/docs-b/setup.md', 'w').write(text.replace('a', 'b'))\n"
+    "open('plugin/throughliner/docs-b/setup.md', 'w').write(text.replace('a', 'b'))\n"
     "PY"
 )
 COMPUTED_PATH = (
     "python - <<'PY'\n"
     "name = 'faq-template.md'\n"
-    "with open(f'plugin/si-plugin/templates/{name}', 'a') as f:\n"
+    "with open(f'plugin/throughliner/templates/{name}', 'a') as f:\n"
     "    f.write('x')\n"
     "PY"
 )
@@ -126,7 +126,7 @@ def main():
     print("test_pre_tool_use_shell_writes")
 
     # 1. The slipped append shape, target OUT of scope during a build -> deny.
-    d = make_project(build_files=["plugin/si-plugin/docs-b/plan.md"])
+    d = make_project(build_files=["plugin/throughliner/docs-b/plan.md"])
     check(
         "heredoc append to out-of-scope file denied",
         decision(d, HEREDOC_APPEND) == "deny",
@@ -156,7 +156,7 @@ def main():
     #    slips were of exactly this shape, so this is the assertion that says
     #    the matcher would now catch them.
     d2 = make_project(
-        build_files=["plugin/si-plugin/templates/faq-template.md"]
+        build_files=["plugin/throughliner/templates/faq-template.md"]
     )
     check(
         "in-scope scripted write denied (scope condition dropped)",
@@ -210,7 +210,7 @@ def main():
     #    write call in the command text, so neither matcher sees anything.
     check(
         "non-writing python command passes",
-        decision(d, "python plugin/si-plugin/scripts/reorder_queue.py QUEUE.md --delete x Processed")
+        decision(d, "python plugin/throughliner/scripts/reorder_queue.py QUEUE.md --delete x Processed")
         == "pass",
         "",
     )

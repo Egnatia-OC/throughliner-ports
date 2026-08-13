@@ -9,7 +9,7 @@ note: >
 
 # /setup procedure
 
-You are setting up a project folder with the Sovereign Implementer method.
+You are setting up a project folder with the Throughliner method.
 
 **This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
 markers other procedure docs use). /setup runs before a project is adopted, so the
@@ -39,7 +39,7 @@ spec documents, treat it as a possible migration and follow the migration framin
 below. Recognise a migration **by what the docs do, not by a fixed list of old
 names** — the source could be anything.
 
-For Case C, check `.si-version`:
+For Case C, check `.throughliner-version`:
 
 ```
 version matches current plugin   ->  fully up to date. Say so in a sentence,
@@ -157,12 +157,19 @@ holds anything the user clearly added
 
 Where their own content goes is the user's call, not yours.
 
-**3. Update `.si-version`** to the current plugin version.
+**3. Update `.throughliner-version`** to the current plugin version.
 
-**3a. Write `.si-format-epoch`** — the document-format number this migration
+If the project instead carries the pre-rename marker `.si-version`, write the
+new file and delete the old one — the method was called Sovereign Implementer
+until epoch 3 and both marker files were named for it. Do the same for
+`.si-format-epoch` in step 3a. Leaving the old file behind means every later
+session reads a marker the plugin no longer writes to, so the two names drift
+apart silently.
+
+**3a. Write `.throughliner-format-epoch`** — the document-format number this migration
 brings the project up to. Read it from `FORMAT_EPOCH` near the top of
 `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py` and write that number, on its own,
-into `.si-format-epoch` at the project root.
+into `.throughliner-format-epoch` at the project root.
 
 Do this **last among the migration edits**, once the conversions above have
 actually landed. It is what clears the session-start halt that sent the user
@@ -298,11 +305,11 @@ The template carries no rendering settings — how doc-bound text is surfaced is
 default plus a session-opening offer, not a stored field (skill-nonspecific-rules.md,
 view-in-doc rendering).
 
-**.si-version** — write the current plugin version (from
+**.throughliner-version** — write the current plugin version (from
 `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`). session_start reads it to
 detect when the plugin has been updated.
 
-**.si-format-epoch** — write the document-format number, read from `FORMAT_EPOCH`
+**.throughliner-format-epoch** — write the document-format number, read from `FORMAT_EPOCH`
 near the top of `${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py`. Separate from the
 version on purpose: the version changes at every release, the format number only
 when a change makes older projects' documents structurally wrong. session_start

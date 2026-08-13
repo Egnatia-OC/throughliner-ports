@@ -29,7 +29,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-HOOKS = os.path.join(ROOT, "plugin", "si-plugin", "hooks")
+HOOKS = os.path.join(ROOT, "plugin", "throughliner", "hooks")
 PRE = os.path.join(HOOKS, "pre_tool_use.py")
 POST = os.path.join(HOOKS, "post_tool_use.py")
 

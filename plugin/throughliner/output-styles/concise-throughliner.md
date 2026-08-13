@@ -1,6 +1,6 @@
 ---
-name: Sovereign Concise
-description: Anti-overwhelm output structure for the Sovereign Implementer — lead with the decision, one item at a time, plain English (never terse).
+name: Throughliner Concise
+description: Anti-overwhelm output structure for Throughliner — lead with the decision, one item at a time, plain English (never terse).
 keep-coding-instructions: true
 force-for-plugin: true
 ---

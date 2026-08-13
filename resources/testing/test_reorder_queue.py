@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for plugin/si-plugin/scripts/reorder_queue.py.
+"""Regression tests for plugin/throughliner/scripts/reorder_queue.py.
 
 Host-only dev artifact — not shipped in the plugin package.
 
@@ -23,7 +23,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SCRIPT = os.path.join(ROOT, "plugin", "si-plugin", "scripts", "reorder_queue.py")
+SCRIPT = os.path.join(ROOT, "plugin", "throughliner", "scripts", "reorder_queue.py")
 
 MARKER = "--- Cleared to run above this line ---"
 

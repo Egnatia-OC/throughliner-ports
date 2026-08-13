@@ -701,7 +701,7 @@ def main() -> int:
     # never recognising the tool it exists to guard.
     if tool_name in ("Task", "Agent"):
         return _ask(
-            "[Sovereign Implementer] Claude wants to start a subagent. "
+            "[Throughliner] Claude wants to start a subagent. "
             "Subagents burn tokens fast — a single run can use up your usage "
             "for the session. Approve if this genuinely needs wide, "
             "open-ended exploration; decline to have Claude do the work "
@@ -735,7 +735,7 @@ def main() -> int:
         for segment in _split_segments(command):
             if RESET_HARD.search(segment):
                 return _deny(
-                    "[Sovereign Implementer] BLOCKED: `git reset --hard` destroys "
+                    "[Throughliner] BLOCKED: `git reset --hard` destroys "
                     "uncommitted work and cannot be undone.\n\n"
                     "Safer alternatives:\n"
                     "- `git stash` — saves changes for later.\n"
@@ -746,7 +746,7 @@ def main() -> int:
 
             if PUSH_FORCE.search(segment):
                 return _deny(
-                    "[Sovereign Implementer] BLOCKED: `git push --force` can "
+                    "[Throughliner] BLOCKED: `git push --force` can "
                     "overwrite remote commits.\n\n"
                     "Use `git push --force-with-lease` instead — it refuses to "
                     "push if the remote has commits you haven't fetched."
@@ -755,7 +755,7 @@ def main() -> int:
 
             if BLANKET_ADD.search(segment):
                 return _deny(
-                    "[Sovereign Implementer] BLOCKED: blanket adds (`git add -A`, "
+                    "[Throughliner] BLOCKED: blanket adds (`git add -A`, "
                     "`git add --all`, `git add .`) stage everything in the tree, "
                     "including files never meant for the commit.\n\n"
                     "Stage explicitly — name each path: `git add <path> <path>`."
@@ -764,7 +764,7 @@ def main() -> int:
 
             if COMMIT_ALL.search(segment):
                 return _deny(
-                    "[Sovereign Implementer] BLOCKED: `git commit -a` / `-am` "
+                    "[Throughliner] BLOCKED: `git commit -a` / `-am` "
                     "auto-stages every modified file, including changes never "
                     "meant for the commit.\n\n"
                     "Stage explicitly, then commit: `git add <path> <path>`, "
@@ -797,7 +797,7 @@ def main() -> int:
             if not _is_inside(resolved, cwd):
                 continue
             return _deny(
-                "[Sovereign Implementer] BLOCKED: this command writes to a file "
+                "[Throughliner] BLOCKED: this command writes to a file "
                 f"through a script rather than through the editing tools.\n\n"
                 f"Target: {target}\n\n"
                 "The shell reads the file through a mount that can hold a stale "
@@ -823,7 +823,7 @@ def main() -> int:
 
         if has_computed_write_target(command):
             return _deny(
-                "[Sovereign Implementer] BLOCKED: this command writes to a file "
+                "[Throughliner] BLOCKED: this command writes to a file "
                 "through a script, and the target path is computed at runtime "
                 "rather than written out, so this check cannot tell what it "
                 "writes to.\n\n"
@@ -878,7 +878,7 @@ def main() -> int:
             # Surface it once, then get out of the way.
             if _fire_once(cwd, data.get("session_id", ""), "unscoped-build"):
                 return _ask(
-                    "[Sovereign Implementer] This build's working file has no "
+                    "[Throughliner] This build's working file has no "
                     "Files: section, so nothing is limiting which files it can "
                     "change. That may be exactly right — an audit lists no "
                     "files — but it is worth knowing rather than assuming.\n\n"
@@ -911,7 +911,7 @@ def main() -> int:
 
         if not build_files:
             return _deny(
-                "[Sovereign Implementer] BLOCKED: this session's build working "
+                "[Throughliner] BLOCKED: this session's build working "
                 f"file ({os.path.basename(build_path)}) lists no editable "
                 "files, so only QUEUE.md, LOG/, and the working file itself "
                 "can be edited. Audit and test sessions "
@@ -942,7 +942,7 @@ def main() -> int:
             else:
                 diagnosis = "This file is not in the list at all."
             return _deny(
-                "[Sovereign Implementer] BLOCKED: this file is not in the "
+                "[Throughliner] BLOCKED: this file is not in the "
                 f"current build's file list.\n\n"
                 f"{os.path.basename(build_path)} allows: {', '.join(build_files)}\n\n"
                 f"{diagnosis}\n\n"
@@ -964,7 +964,7 @@ def main() -> int:
             or _is_inbox_dir(filepath)
         ):
             return _ask(
-                "[Sovereign Implementer] This session has no build running, so "
+                "[Throughliner] This session has no build running, so "
                 "nothing is limiting which files get changed — and this write is "
                 "outside the files a planning session normally touches "
                 f"(QUEUE.md, SPEC.md, LOG/).\n\nAbout to edit: {filepath}\n\n"

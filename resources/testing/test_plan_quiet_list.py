@@ -28,7 +28,7 @@ import sys
 
 HOOKS = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "plugin", "si-plugin", "hooks",
+    "plugin", "throughliner", "hooks",
 )
 sys.path.insert(0, HOOKS)
 
@@ -54,7 +54,7 @@ CASES = [
     (os.path.join("LOG", "index.md"), True, "the log index"),
     (os.path.join("LOG", "2026-08-11-entry.md"), True, "a log entry file"),
     ("README.md", False, "an ordinary project file still asks"),
-    (os.path.join("plugin", "si-plugin", "docs-b", "plan.md"), False,
+    (os.path.join("plugin", "throughliner", "docs-b", "plan.md"), False,
      "a shipped doc still asks"),
     ("QUEUEQ.md", False, "a near-miss name is not on the list"),
 ]

@@ -43,3 +43,4 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I sent a message to another one of my projects. How do I know it arrived?](faq.md#i-sent-a-message-to-another-one-of-my-projects-how-do-i-know-it-arrived)
 - [I asked for something during a build and Claude wrote it down instead of doing it. Can I insist?](faq.md#i-asked-for-something-during-a-build-and-claude-wrote-it-down-instead-of-doing-it-can-i-insist)
 - [We kept working after the session was "closed", and Claude offered to add it to the record. Why?](faq.md#we-kept-working-after-the-session-was-closed-and-claude-offered-to-add-it-to-the-record-why)
+- [The plugin is now called Throughliner. What do I have to do?](faq.md#the-plugin-is-now-called-throughliner-what-do-i-have-to-do)

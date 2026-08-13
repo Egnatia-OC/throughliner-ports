@@ -101,7 +101,7 @@ One check, and the drafting devices that serve it. All of them are forms of a si
 
 ## Rationale lives outside the operative rule
 
-Legislation states the binding rule bare and puts the reasoning in recitals and explanatory memoranda — published alongside, aiding interpretation, but not the law. The method has done the opposite, and that habit is the single largest contributor to per-rule weight. It is settled, not open: [opus-5-instruction-compliance.md](research/opus-5-instruction-compliance.md) records that why-clauses travelling with every rule are exactly the over-prescription the 5-series guidance says degrades output, and [fable-5-instruction-compatibility.md](research/fable-5-instruction-compatibility.md) resolves it — keep the why-pipeline; stop treating why-attachment as a compliance requirement.
+Legislation states the binding rule bare and puts the reasoning in recitals and explanatory memoranda — published alongside, aiding interpretation, but not the law. The method has done the opposite, and that habit is the single largest contributor to per-rule weight. It is settled, not open: [opus-5-instruction-compliance.md](research/opus-5-instruction-compliance.md) records that why-clauses travelling with every rule are exactly the over-prescription the 5-series guidance says degrades output, and [fable-5-instruction-compatibility.md](research/fable-5-instruction-compatibility.md) resolves it — keep the throughline; stop treating why-attachment as a compliance requirement.
 
 So the operative statement stays bare. **The reasoning is published, not hidden — and it splits by audience:**
 

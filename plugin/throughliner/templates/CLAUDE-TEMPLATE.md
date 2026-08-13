@@ -2,7 +2,7 @@
 
 <!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
 
-This project uses the Sovereign Implementer method.
+This project uses the Throughliner method.
 
 ## Project docs
 

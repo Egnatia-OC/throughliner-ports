@@ -21,7 +21,7 @@ paths and don't self-heal — fix both, then fully restart the app:
    flagged "invalid" (the cached snapshot still runs when forced). Re-point it in
    place — `claude plugin marketplace add "<new project path>"` (re-registers the
    path; no `remove` needed) — then
-   `claude plugin install sovereign-implementer@flintcraft`.
+   `claude plugin install throughliner@flintcraft`.
 2. **Git worktree, if this checkout is one.** A move severs the worktree link both
    ways and git reports "not a repository" until both sides are repointed: this
    worktree's `.git` file (the `gitdir:` pointer) and the main repo's
@@ -62,16 +62,16 @@ every later update was a silent no-op, and a /plan session ran half its length
 loading procedure docs from a docset that had already been retired. Bumping to
 `-test2` fixed it instantly.
 
-1. Bump the test suffix in `plugin/si-plugin/.claude-plugin/plugin.json`: read the
+1. Bump the test suffix in `plugin/throughliner/.claude-plugin/plugin.json`: read the
    current version and increment N (`-test1` → `-test2`), or start at `-test1` if
    the base carries no suffix (`1.12.0` → `1.12.0-test1`). Never skip this on the
    grounds that a rezip already happened.
-2. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python
+2. Delete all `__pycache__` folders under `plugin/throughliner/` so compiled Python
    bytecode never gets snapshotted into the installed host (disposable — Python
    regenerates them as needed):
-   `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`.
+   `Get-ChildItem "plugin\throughliner" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`.
    (No zip is built here — the local marketplace sources the plugin from the
-   `plugin/si-plugin` folder, and the CLI snapshots that folder directly. The zip
+   `plugin/throughliner` folder, and the CLI snapshots that folder directly. The zip
    only changes at Release.)
 3. **Run the three hook test suites and stop if any fails.** They exist, they pass,
    and for a period nothing ran them — which is how a `session_start.py` emitting a
@@ -87,7 +87,7 @@ loading procedure docs from a docset that had already been retired. Bumping to
    can still be discarded before it reaches a session. These suites do not replace
    step 9's liveness ask; they are the half a machine can do.
 4. **Prune the plugin cache** at
-   `~/.claude/plugins/cache/flintcraft/sovereign-implementer/`, keeping the build
+   `~/.claude/plugins/cache/flintcraft/throughliner/`, keeping the build
    about to be installed and the three most recent. Nothing else ever removes these,
    so every test build accumulates — ten by 2026-08-04, six again by 2026-08-09 —
    and the pile is what makes "which host is actually live?" hard to answer.
@@ -104,20 +104,20 @@ loading procedure docs from a docset that had already been retired. Bumping to
    `C:\Users\<you>\.local\bin\claude.exe`); if it isn't there, it's under
    `AppData/Roaming/Claude/claude-code/<version>/claude.exe`. Run every CLI step in
    this ritual by full path, e.g.
-   `"/c/Users/<you>/.local/bin/claude.exe" plugin update sovereign-implementer@flintcraft`.
+   `"/c/Users/<you>/.local/bin/claude.exe" plugin update throughliner@flintcraft`.
    Locating and running it is Claude's job — don't hand the reinstall to Alex just
    because a bare `claude` failed.
    - First time only — register the local marketplace (the committed
      `.claude-plugin/marketplace.json`, marketplace `flintcraft`, which points at
-     `plugin/si-plugin`): `claude plugin marketplace add "<PROJECT_ROOT>"` —
+     `plugin/throughliner`): `claude plugin marketplace add "<PROJECT_ROOT>"` —
      substitute `<PROJECT_ROOT>` with the absolute path to this project's folder on
      your machine.
    - Each rezip after — re-snapshot the current build:
-     `claude plugin update sovereign-implementer@flintcraft` (or
-     `claude plugin install sovereign-implementer@flintcraft`).
+     `claude plugin update throughliner@flintcraft` (or
+     `claude plugin install throughliner@flintcraft`).
 6. **Compare the content stamps immediately after installing — before saying
    anything to Alex about restarting.** Run `content_stamp()` (from
-   `plugin/si-plugin/hooks/session_start.py`) over `plugin/si-plugin`, and again
+   `plugin/throughliner/hooks/session_start.py`) over `plugin/throughliner`, and again
    over the cache directory for the version just installed. No edits happened in
    between, so the two must be **identical**. A difference is unambiguous rather
    than a judgement call: either the snapshot didn't take or the stamp function is
@@ -162,7 +162,7 @@ outright here.
    position (an entry heading line or the start of an index line), never in body
    prose, which may mention the token literally; resolve each to the **oldest**
    `git log -S "<entry title>"` match, never the newest commit touching the file.
-2. Bump version in `plugin/si-plugin/.claude-plugin/plugin.json` to a clean
+2. Bump version in `plugin/throughliner/.claude-plugin/plugin.json` to a clean
    patch/minor — patch for fixes/incremental, minor for new capabilities (`1.20.0` →
    `1.20.1` or `1.21.0`). If a `-testN` suffix is still present the Push step was
    skipped; drop it here as well. The release bump lives here, not in rezip — rezip
@@ -206,18 +206,18 @@ outright here.
      by someone eventually. This one doesn't, so the release sweep is where it gets
      read.
 4. Archive current zip:
-   `mv plugin/si-plugin.zip plugin/zip-archive/si-plugin-v<OLD_VERSION>.zip`
+   `mv plugin/throughliner.zip plugin/zip-archive/throughliner-v<OLD_VERSION>.zip`
 5. Prune `plugin/zip-archive/` to the three most recent zips (delete oldest).
-6. Delete all `__pycache__` folders under `plugin/si-plugin/` so compiled Python
+6. Delete all `__pycache__` folders under `plugin/throughliner/` so compiled Python
    bytecode never ships in the zip (disposable — Python regenerates them as needed):
-   `Get-ChildItem "plugin\si-plugin" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
+   `Get-ChildItem "plugin\throughliner" -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force`
 7. Repackage:
-   `Compress-Archive -Path "plugin\si-plugin" -DestinationPath "plugin\si-plugin.zip"`
-   (zip the folder, not its contents — internal paths must start with `si-plugin/`).
+   `Compress-Archive -Path "plugin\throughliner" -DestinationPath "plugin\throughliner.zip"`
+   (zip the folder, not its contents — internal paths must start with `throughliner/`).
    Verify: list the zip's entries and confirm none contain `__pycache__` — if any do,
    stop and fix before pushing.
-8. Stage every dirty path in `plugin/si-plugin/` (run
-   `git status --porcelain plugin/si-plugin/` and stage each listed path — catches
+8. Stage every dirty path in `plugin/throughliner/` (run
+   `git status --porcelain plugin/throughliner/` and stage each listed path — catches
    any sweep edits from step 3), plus the zip in `plugin/`, archive changes in
    `plugin/zip-archive/`, plugin.json, and the LOG/ changes (including step 1's
    backfill edits). Commit: "Bump to v<VERSION> and repackage".
@@ -240,20 +240,20 @@ outright here.
       changed for a reader. Group by theme rather than listing commits, say what
       changed and why it matters in plain English for the Discord reader, and name
       it plainly as a testing build.
-    - Attach the zip: `plugin/si-plugin.zip`.
+    - Attach the zip: `plugin/throughliner.zip`.
     - Command shape:
-      `gh release create v<VERSION> plugin/si-plugin.zip --title "v<VERSION>" --prerelease --notes "<summary>"`.
+      `gh release create v<VERSION> plugin/throughliner.zip --title "v<VERSION>" --prerelease --notes "<summary>"`.
     - If `gh` isn't authenticated in this session (the command errors on auth), don't
       silently skip the Release — tell Alex how to publish it from the GitHub web UI
       instead: on the repo's **Releases** page, click **Draft a new release**, create
       the tag `v<VERSION>`, set the same title, paste the summary as the notes,
-      attach `plugin/si-plugin.zip`, and **Publish release**. The step never silently
+      attach `plugin/throughliner.zip`, and **Publish release**. The step never silently
       does nothing.
 11. Update the installed host via the `claude` CLI, then tell Alex to fully restart
     the app. Same mechanism as the Rezip reload step — the host reads a frozen cache
     snapshot, so without a CLI update + full restart it keeps running the old build.
     The marketplace is already registered from earlier testing, so this is just:
-    `claude plugin update sovereign-implementer@flintcraft`. **Invoke `claude` by
+    `claude plugin update throughliner@flintcraft`. **Invoke `claude` by
     full path — it is not on PATH in the desktop app's shell tools (see the Rezip
     reload step's PATH note); a bare `claude` fails, but running it is Claude's job,
     not a hand-off to Alex.** Then tell Alex: "Released and pushed. I've updated the
@@ -264,7 +264,7 @@ outright here.
 nor Push touches it — so the zip sitting in the working tree is always the last
 released one, and the copy archived into `plugin/zip-archive/` at step 4 of the next
 release faithfully reflects the prior release. Git history remains the authoritative
-record either way, since each release commits `si-plugin.zip`.
+record either way, since each release commits `throughliner.zip`.
 
 LOG entries are per-entry files — no log capping at push time. Existing `LOG/log.md`
 and `LOG/log-v*.md` files stay in place untouched: index references work by hash, so

@@ -30,7 +30,7 @@ for _stream in (sys.stderr, sys.stdout):
 
 HOOK = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "plugin", "si-plugin", "hooks", "post_tool_use.py",
+    "plugin", "throughliner", "hooks", "post_tool_use.py",
 )
 
 failures = []

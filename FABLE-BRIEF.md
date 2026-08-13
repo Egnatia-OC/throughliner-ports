@@ -1,6 +1,6 @@
 # Fable session brief — drain and fix the queue
 
-Autonomous working session on the Sovereign Implementer plugin. **SI is disabled for this run**, so there are no SI skills or hooks — you work with plain file edits and git.
+Autonomous working session on the Throughliner plugin. **Throughliner is disabled for this run**, so there are no Throughliner skills or hooks — you work with plain file edits and git.
 
 ## Who this is for
 The developer, Alex, is a non-coder who has spent months shaping this plugin and is stuck. She needs solutions, not more process. **Do not ask for approval during this session — write your results directly into QUEUE.md.** She will process them later.

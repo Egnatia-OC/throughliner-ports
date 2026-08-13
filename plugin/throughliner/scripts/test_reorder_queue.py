@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regression tests for reorder_queue.py's reporting.
 
-Run: python plugin/si-plugin/scripts/test_reorder_queue.py
+Run: python plugin/throughliner/scripts/test_reorder_queue.py
 
 Why this file exists, and why its sibling defect has no test. Three faults have
 now been found in this script's OUTPUT rather than its writes — across every

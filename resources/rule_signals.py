@@ -110,7 +110,7 @@ for _stream in (sys.stderr, sys.stdout):
 # resources/method-compliance-audit-checklist.md has always required the count
 # be reported split by audience. This is the tool finally doing it.
 SHIPPED_ALWAYS_LOADED = [
-    "plugin/si-plugin/docs-b/skill-nonspecific-rules.md",
+    "plugin/throughliner/docs-b/skill-nonspecific-rules.md",
 ]
 
 HOST_ALWAYS_LOADED = [
@@ -130,14 +130,14 @@ ALWAYS_LOADED = SHIPPED_ALWAYS_LOADED + HOST_ALWAYS_LOADED
 # gets hidden rather than cut; two groups is what makes a relocation read as a
 # relocation instead of as a reduction.
 FETCHED_DOCS = [
-    "plugin/si-plugin/docs-b/plan.md",
-    "plugin/si-plugin/docs-b/next.md",
-    "plugin/si-plugin/docs-b/next-build.md",
-    "plugin/si-plugin/docs-b/next-audit.md",
-    "plugin/si-plugin/docs-b/done.md",
-    "plugin/si-plugin/docs-b/done-build.md",
-    "plugin/si-plugin/docs-b/done-plan.md",
-    "plugin/si-plugin/docs-b/setup.md",
+    "plugin/throughliner/docs-b/plan.md",
+    "plugin/throughliner/docs-b/next.md",
+    "plugin/throughliner/docs-b/next-build.md",
+    "plugin/throughliner/docs-b/next-audit.md",
+    "plugin/throughliner/docs-b/done.md",
+    "plugin/throughliner/docs-b/done-build.md",
+    "plugin/throughliner/docs-b/done-plan.md",
+    "plugin/throughliner/docs-b/setup.md",
 ]
 
 # How far back the growth report looks for its direction of travel. This is a
@@ -150,7 +150,7 @@ GROWTH_WINDOW = 30
 # BORN's trigger — mechanical, with no judgment involved, which is what makes
 # this stage buildable at all.
 RULE_BEARING = [
-    "plugin/si-plugin/docs-b/",
+    "plugin/throughliner/docs-b/",
     "resources/self-authoring-rules.md",
     "resources/rule-maintenance.md",
     "CLAUDE.md",
@@ -817,7 +817,7 @@ def signal_repealed(root):
                 "slug": "live-rules-name-retired-terms",
                 "message": f"No retired-terms list at {RETIRED_TERMS_FILE}."}
 
-    scan_roots = ["plugin/si-plugin", "resources", "FAQ", "CLAUDE.md", "SPEC.md"]
+    scan_roots = ["plugin/throughliner", "resources", "FAQ", "CLAUDE.md", "SPEC.md"]
     hits = []
     for rel in scan_roots:
         base = os.path.join(root, rel)

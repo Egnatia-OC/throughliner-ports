@@ -190,7 +190,7 @@ second ask, SIGNIFICANT        ->  still propose the split. A repeated request
                                    the run bound exists to prevent.
 ```
 
-**Coherence exception** (narrow, keyed to why-pipeline coherence): if the item
+**Coherence exception** (narrow, keyed to throughline coherence): if the item
 would share the built item's log entry and index line, and folding it in makes the
 work *easier to find later*, add it to the build working file as part of this item's work
 (appending any files it names to `Files:`) and continue. Evaluate against the

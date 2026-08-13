@@ -1,12 +1,18 @@
-# Sovereign Implementer
+# Throughliner
 
 A Claude Code plugin that lets you build the project you have in mind — an app, a website, a tool, whatever you're making — without writing code yourself. You describe what you want; Claude builds it — and the plugin keeps the work organised across sessions so nothing drifts or gets lost.
 
+**What makes it different: your intent keeps running the project after Claude has forgotten it.** Claude's memory resets every session. Throughliner carries the *why* — the throughline — alongside the work itself, so a fresh, short session still builds your project the way you meant instead of re-reading your code and guessing at your intent.
+
+The throughline is not one file. Your intent lives in the spec, the reasoning rides on every item in your queue, and the history lives in your session log. The first two are read while Claude is planning and building, so the throughline shapes every decision quietly rather than only when you ask "why is this like this?" The log is the deep archive, pulled up when you need it.
+
+What that buys you: settled things stop being re-decided, because a rejected option's reason for losing is on the record and doesn't get re-proposed. Silent regressions get caught, because you can see why something is the way it is before changing it. You can come back after a break — or hand the project to someone else — and the reasoning is still there. And the small cost of approving drafts is what makes the record genuinely *yours*: a reason you never vouched for is one you can't trust when you read it back.
+
 ## Install
 
-**Already have Claude Code?** Open a chat in Claude Code and ask it to install Sovereign Implementer — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner` and install the `sovereign-implementer@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner` and `claude plugin install sovereign-implementer@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update sovereign-implementer@flintcraft`, then restart again.
+**Already have Claude Code?** Open a chat in Claude Code and ask it to install Throughliner — Claude runs the install commands for you, so you never touch a terminal. Just say: *"Add the marketplace `FlintcraftTech/throughliner` and install the `throughliner@flintcraft` plugin."* (For reference, those are the two commands `claude plugin marketplace add FlintcraftTech/throughliner` and `claude plugin install throughliner@flintcraft`.) Then fully restart Claude Code so the plugin loads. To update later, ask Claude to run `claude plugin update throughliner@flintcraft`, then restart again.
 
-**The two names don't match, and that's expected.** The repository is called `throughliner`; the plugin inside it is called `sovereign-implementer`. Both commands above are correct exactly as written — don't "fix" one to match the other.
+**Coming from Sovereign Implementer?** That was this plugin's old name. Claude Code follows the old name to the new one automatically and rewrites its own settings, but it still needs fetching under the new name — so install `throughliner@flintcraft` once and fully restart. Everything in your projects stays where it is. (The automatic follow-along needs Claude Code 2.1.193 or newer.)
 
 **New to Claude Code?** Open a fresh chat at [claude.ai](https://claude.ai), paste this link — `https://github.com/FlintcraftTech/throughliner/raw/main/INSTALL.md` — and ask Claude to guide you through setup. The guide walks you through Claude Code install, paid plan setup, and plugin install. Built to assume no terminal experience — Claude runs any commands for you.
 

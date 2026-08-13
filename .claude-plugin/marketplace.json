@@ -3,11 +3,14 @@
   "owner": {
     "name": "FlintcraftTech"
   },
+  "renames": {
+    "sovereign-implementer": "throughliner"
+  },
   "plugins": [
     {
-      "name": "sovereign-implementer",
-      "source": "./plugin/si-plugin",
-      "description": "Structured workflow for non-coders building apps with Claude Code. Four skills (/setup, /plan, /next, /done) and three hooks — two enforce scope and git safety, one advises on queue structure."
+      "name": "throughliner",
+      "source": "./plugin/throughliner",
+      "description": "Your intent keeps running the project after Claude has forgotten it. Throughliner is a structured workflow for non-coders building apps with Claude Code: four skills (/setup, /plan, /next, /done) and four hooks that carry the reasoning behind every decision through capture, build and record."
     }
   ]
 }

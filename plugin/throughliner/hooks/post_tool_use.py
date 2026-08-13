@@ -464,7 +464,7 @@ SECRET_SHAPES = (
     (re.compile(r"\b[0-9a-fA-F]{32,}\b"), "a long hex string"),
     # No `/` in the class, and a digit and a capital are both required. Without
     # those three constraints this matched an ordinary filesystem path in a LOG
-    # entry (`~/.claude/plugins/cache/flintcraft/sovereign-implementer`) — a run
+    # entry (`~/.claude/plugins/cache/flintcraft/throughliner`) — a run
     # of forty-odd letters and slashes reads as base64 to a regex. Real base64
     # secrets carry digits and mixed case; prose and paths usually don't.
     (
@@ -544,7 +544,7 @@ def _lint_queue(queue_path: str) -> int:
     warnings = lint(content)
     if warnings:
         sections.append(
-            "[Sovereign Implementer] QUEUE.md structure lint (advisory). "
+            "[Throughliner] QUEUE.md structure lint (advisory). "
             "These flag known violations only — novel structure is allowed "
             "and never flagged. Judge each one: fix what's genuinely wrong "
             "in a follow-up edit, leave what isn't.\n"
@@ -562,7 +562,7 @@ def _lint_queue(queue_path: str) -> int:
 
 def _secret_message(name: str, findings: list) -> str:
     return (
-        f"[Sovereign Implementer] Possible secret in {name} (advisory). "
+        f"[Throughliner] Possible secret in {name} (advisory). "
         "These match known credential shapes only — deterministic, no "
         "judgement. Tell the user plainly what was found and where, and let "
         "them decide.\n"
