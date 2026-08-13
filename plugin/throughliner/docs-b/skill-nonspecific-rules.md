@@ -17,13 +17,17 @@ states, and it is the admission control: check a candidate rule against the four
 before writing it here.
 
 Active in every session where the plugin is installed and the project is set up.
+/setup is the one skill that also runs *before* that point — adopting a fresh
+folder — and these rules are not loaded there; they govern its migration and
+top-up runs, which happen in projects already set up.
 
 ## Communication
 
 - Plain language. No jargon unless the user used it first.
 - Push back rather than agreeing. If an approach is wrong, say so.
 - State regressions plainly — don't hide failures or apologise around them.
-- Run commands yourself. Don't ask the user to run things you can run.
+- Run commands yourself, where they are commands you can run. Don't ask the user
+  to run those. Some genuinely need them — the two rules below cover that case.
 - **Surface the environment a step needs; don't presume it.** Users here are
   non-coders who may never open a terminal. Name the requirement and let the
   user say whether it fits: "This step needs a terminal open separately from
@@ -77,8 +81,14 @@ Active in every session where the plugin is installed and the project is set up.
       a deterministic result set under approved
       criteria (e.g. an audit's findings)         # bulk approval; contested
                                                   # items then go one at a time
+      the consolidated opening narration          # several scans, one message
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
+
+  **The consolidated opening's precedence, stated because the two rules would
+  otherwise collide:** anything a scan surfaces that the user must act on leaves
+  the bundle and goes on its own, one item per message. The consolidation is for
+  what the session is telling them, never for what it is asking them.
 
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
@@ -86,11 +96,11 @@ Active in every session where the plugin is installed and the project is set up.
   a Claude-raised capture. Inside /plan only, both get an offer: a user-filed
   capture is offered process-now or carry-on, and a Claude-raised one asks once
   whether to file it or work it now.
-- **Verbatim-copy strings go in fenced code blocks, one per string** — the app's
-  copy takes the whole message. Scope: genuine paste targets only — paste-ready
-  prompts, and commands the user runs in a separate terminal. Commit messages are
-  not paste targets (Claude runs the commit). Two paste targets belonging to the
-  same approval go as adjacent fences in one message under a single approval.
+- **A verbatim-copy string is a paste target, and paste targets are rendered by
+  the View-in-doc rendering section below.** Scope: genuine paste targets only —
+  paste-ready prompts, and commands the user runs in a separate terminal. Commit
+  messages are not paste targets (Claude runs the commit). Two paste targets
+  belonging to the same approval go under a single approval in one message.
 - **Write first, then report — decided by one test: is the previous version
   recoverable without the user's help?**
 
@@ -130,13 +140,13 @@ floor:     the show-first cases above stay show-first regardless. The switch
   **Being driven remotely is not a separate trigger.** It is a case where the
   user asks. No detection is built to reach an outcome that asking reaches.
 
-  **The report after the write is one line** naming what landed and where — never
-  a re-paste of the text just written. It must be specific enough to object to
-  without opening the file. Say the user can reject it and it's reverted.
-- **When text IS shown — the show-first cases above — it renders as a blockquote
-  with a bold lead-in** naming the content type (**Commit message:**, **Report
-  draft:**). Exception: content whose exact characters are the substance (code,
-  shell commands) keeps a fence. End the message with an explicit ask naming the
+  **The report after the write is one line** naming what landed and where. It is
+  never a re-paste of the text just written — the one exception is the
+  inline-text offer below, which the user switches on and which covers this
+  report by name. It must be specific enough to object to without opening the
+  file. Say the user can reject it and it's reverted.
+- **When text IS shown — the show-first cases above — the View-in-doc rendering
+  section below says how.** End the message with an explicit ask naming the
   decision needed.
 - **Offer a fresh-session handoff when the user reports the session degrading.**
   You have no gauge of context filling — the trigger is always the user's report
@@ -146,9 +156,18 @@ floor:     the show-first cases above stay show-first regardless. The switch
   wherever the user gives the signal, in plain conversation as much as inside a
   command.
 
+### Ignore stale setting fields from older setups
+
+A project's CLAUDE.md may still carry an `Editor:`, `Working mode:` or
+`Completion mode:` line — all three settings are retired. Don't act on the line,
+don't flag it, don't ask the user to remove it, and never treat it as a broken
+project.
+
 ### View-in-doc rendering
 
-The canonical rule for how doc-bound text is rendered. Other docs point here.
+The canonical rule for how doc-bound text is rendered — including the blockquote
+form for shown text and the fence for paste targets, both stated above and
+governed here. Other docs point here.
 
 **The render rule keys on doc-residency, and nothing else:**
 
@@ -170,12 +189,19 @@ readable edit's post-write reveal ->  a plain link to the file, with the line
 opens `.md` in its own viewer and silently ignores the anchor — so name the line
 in the prose instead.
 
-**Ignore stale fields from older setups silently.** A project's CLAUDE.md may
-still carry an `Editor:`, `Working mode:` or `Completion mode:` line — all three
-settings are retired. Don't act on the line, don't flag it, don't ask the user to
-remove it, and never treat it as a broken project. Pointing is the unconditional
-default; **the one thing that overrides it is the user saying so** — see the
-opening offer below.
+**How inline text is formed, whichever rule sent it there:**
+
+```
+shown text (the show-first cases)  ->  a blockquote with a bold lead-in naming
+                                       the content type (**Commit message:**,
+                                       **Report draft:**)
+a paste target, or content whose   ->  a fenced code block, one string per
+  exact characters ARE the             fence — the app's copy takes the whole
+  substance (code, shell commands)     message
+```
+
+**Pointing is the default, overridden only when the user asks** — see the opening
+offer below.
 
 ### The inline-text offer at session opening
 
@@ -192,7 +218,9 @@ wording:   describe the situation, don't name a feature — "reading on your
            awkward". A user who has never worked that way should still
            recognise themselves in it.
 effect:    the user says the word -> paste doc-bound text inline for this
-           session, including the one-line report after a write
+           session, including the one-line report after a write — this is the
+           stated exception to that report's never-a-re-paste default, and the
+           only thing that overrides it
                                  -> and, in /next, show each edit's new text
                                     inline instead of by line reference
 ```
@@ -398,7 +426,12 @@ cosmetic.
 #### <one-line description> [slug]
 <prose rationale — the reasoning, in plain short sentences>
 Red flag · State: <cleared | uncleared>        # only if it carries one
+Blocked by: [slug]                             # only below the cleared-to-run
+                                               # line, where it is required
 ```
+
+**Write `Blocked by:` plain, not bolded.** The lint tolerates the emphasis, but
+the plain form is what this block shows.
 
 The user-credit and the filing-time commit stamp are prose conventions written
 into the rationale, not fixed lines of this block — see the two bullets below.
@@ -431,7 +464,7 @@ into the rationale, not fixed lines of this block — see the two bullets below.
 (no tag)     ->  build   ->  /next routes to next-build.md
 [audit]      ->  review  ->  /next routes to next-audit.md; findings become captures
 [user]       ->  walk-through; /next walks the user through it, never builds it
-[freeform]   ->  work done by hand in a session of its own; /next halts on it
+[freeform]   ->  work done by hand rather than by /next; /next halts on it
 ```
 
 The tag **leads** the description; the slug stays at its **end**. One leading tag
@@ -570,7 +603,8 @@ Unprocessed                    captured, not yet fully processed. Two kinds:
                                never-discussed captures, AND work discussed and
                                worth doing but not yet designed enough to say
                                what its build would change.
-Processed, above the line      kept and ready. /next picks work from here.
+Processed, above the line      kept and ready. /next picks work from here,
+                               except a `[freeform]` item, which it halts on.
 Processed, below the line      designed and buildable, blocked by a named
                                queue item — and by nothing else.
 Deleted                        judged not worth doing. Git history keeps it.
@@ -580,6 +614,8 @@ discriminator: can you describe what gets built?
     yes, blocked by an item   -> Processed below the line, naming its blocker
     yes, nothing blocks it    -> Processed above the line
 ```
+
+**An empty Processed section is normal** — the vetted work is done.
 
 **One shelf, one shelving move.** There is exactly ONE holding place for
 not-ready work — Unprocessed — and ONE shelving move: placing or returning an
@@ -618,8 +654,10 @@ field, in one direction, on the item that is held.
 ## Red flags
 
 Screen every session for anything that could expose the user's data or their
-users' data, or amounts to a breach. When one is found, state the risk in plain
-English, surface it immediately, and tag the work item carrying it:
+users' data, or amounts to a breach — a duty owed every session, and one that
+catches only what it spots, so it is never a guarantee that every risk present
+has been found. When one is found, state the risk in plain English, surface it
+immediately, and tag the work item carrying it:
 
 ```
 Red flag · State: <cleared | uncleared>     # one line under the item's description
@@ -737,12 +775,13 @@ don't sort it into a typed taxonomy            # never complete; forces nuance
    ("UX reason / functionality reason")        # into the nearest slot
 ```
 
-**Retrieve.** When asked why something exists, search `LOG/index.md` first — its
-one-line-per-entry shape points to candidates faster than scanning prose. Then
-open the matched entry's file directly (the index line ends with its filename).
-Pre-split entries live in `LOG/log.md` and `LOG/log-v*.md` — find those by the
-index line's hash or title. Only fall back to inferring from code if the index
-and logs have nothing.
+**Retrieve.** When asked why something exists, work the cheapest-first ladder in
+Prior decisions below — it is the canonical retrieve order. When the ladder
+reaches LOG: `LOG/index.md`'s one-line-per-entry shape points to candidates
+faster than scanning prose, and the matched entry's file is opened directly (the
+index line ends with its filename). Pre-split entries live in `LOG/log.md` and
+`LOG/log-v*.md` — find those by the index line's hash or title. Only fall back to
+inferring from code if the whole ladder has nothing.
 
 ## Index entries
 
@@ -900,7 +939,6 @@ worktree     ->  sessions cannot collide at all — but a capture filed in one
   session's start, where session_start reports worktrees carrying unmerged
   commits. Offer, never merge silently; on a conflict leave the branch alone and
   say the work is safe on it.
-- **An empty Processed section is normal** — the vetted work is done.
 
 ## Consumer feedback channel and cross-project INBOX
 
@@ -932,9 +970,12 @@ ask twice, in near-identical words, whether Claude had anything to send back.
 
 ## Dependency ownership
 
-- **Claude owns sequencing** — the order work sits in, and what gets built first.
-  Don't defer to the user. Ordering is a judgment call you make and narrate, not
-  a question you ask.
+- **Claude owns sequencing within Processed** — the order kept work sits in, and
+  what gets built first. Don't defer to the user. That ordering is a judgment
+  call you make and narrate, not a question you ask. **It does not reach
+  Unprocessed:** a capture is appended to the bottom with no judgment and no
+  narration, per the Captures placement rule, and Unprocessed's order is
+  re-derived by the ladder at /plan's opening.
 
   **But most of the queue's order carries no weight, so don't spend turns on
   it.** Everything above the readiness line is built by one /next run, so its
@@ -947,10 +988,10 @@ ask twice, in near-identical words, whether Claude had anything to send back.
   description line. Immutable — reorders and renames don't change them, so a slug
   reference stays grep-able. Cross-references exist only if written as a slug in
   prose; **queue position never encodes a relationship**.
-- **Narrate the ordering work.** Any time you exercise ordering judgment — a
-  non-default placement, a reorder, an explicit "appending here because nothing
-  relates to it" — say why in one short sentence. Silent ownership reads as no
-  ownership.
+- **Narrate the ordering work.** Any time you exercise ordering judgment within
+  Processed — a non-default placement, a reorder — say why in one short
+  sentence. Silent ownership reads as no ownership. An append to Unprocessed is
+  unnarrated.
 - **The user owns whether an item is kept or deleted**, and whether a build
   expands its scope.
 
@@ -1029,8 +1070,7 @@ the record, in cheapest-first order:
   same thing looks different on the surface.
 - **When the user proposes a change that would alter or reverse something the
   record already holds** — an existing rule, a shipped feature, a queued or
-  logged decision — run the retrieve *before agreeing*: read LOG/index.md, open at
-  most the one matched entry, and cite the prior decision rather than agreeing or
-  pushing back generically. Trigger stays narrow to bound cost: fire only when
-  the proposal touches something already in the record, never on new-work
-  suggestions.
+  logged decision — run the retrieve *before agreeing*, down the ladder above,
+  and cite the prior decision rather than agreeing or pushing back generically.
+  Trigger stays narrow to bound cost: fire only when the proposal touches
+  something already in the record, never on new-work suggestions.
