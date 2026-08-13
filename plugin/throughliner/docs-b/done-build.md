@@ -122,12 +122,17 @@ entry per run is cheaper and was refused: the retrieve path is "search the index
 then open the matched entry", so combining trades away per-slug retrievability,
 which is the property the entries exist for.
 
-**The short form is the default; full depth is what a depth line in the working
-file buys.** An item wrote that line at build time where its reasoning was
-contested or an alternative was seriously weighed (next-build.md); an item that
-wrote nothing gets the short form, which names what changed and stops. Never
-judge by run size — a twelve-item run can still contain the session's most
-contested decision.
+**Each item's depth field says which form its entry takes — read it, don't judge
+it.** Every ticked item carries `Depth: short` or `Depth: full — <trigger>`,
+written at the tick (next.md's per-item completion step). Short names what
+changed and stops; full is what a contested-reasoning or weighed-alternative
+trigger buys. Never judge by run size — a twelve-item run can still contain the
+session's most contested decision.
+
+**A ticked item with no depth field is read as short**, and noted at the close as
+a discipline slip rather than passing silently: the field is required, so a
+missing one means the build skipped a step, and saying so is what keeps it from
+decaying back into an optional line.
 
 **If a `[user]` item's entry was already started**, the walk-through opened it live
 and appended as it went (next.md). Continue that file rather than writing a fresh

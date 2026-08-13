@@ -202,10 +202,10 @@ This entry is the session's summary — **there is no separate chat recap.** Bef
 writing it, check whether this session raised and resolved a concern or weighed an
 alternative that lost; if so, carry it with why it lost.
 
-**Reuse the pre-generated candidate** where one exists: if the build working file carries a
-matching index-entry candidate and the item built as planned, reuse it verbatim;
-if scope shifted, author fresh against the same rule. Planning sessions have no
-candidate — author fresh.
+**Reuse the item's candidate.** A ticked build item always carries one, written
+at its tick and so describing what the build actually did rather than predicting
+it — reuse it. Planning sessions have no candidate; author fresh against the same
+rule.
 
 Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 

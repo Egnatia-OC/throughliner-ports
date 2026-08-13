@@ -1338,6 +1338,19 @@ def main() -> int:
             "Open it when a workflow question comes up, or point the user there."
         )
 
+    # A short tone reminder, last of all. Anthropic's Opus 5 guidance pairs a
+    # concision instruction with a brief restatement near the END of a long
+    # prompt, because the original is buried by everything loaded after it. The
+    # output style rides the system prompt; the CLAUDE.md files, this injection,
+    # the slash-command prompt and the skill's procedure doc all land later. This
+    # line is the cheapest late position available to the plugin — one place to
+    # maintain, rather than the same sentence in four skill prompts.
+    context_parts.append("")
+    context_parts.append(
+        "<tone_preference>Lead with the decision, one item at a time, and keep "
+        "narration between tool calls to a minimum.</tone_preference>"
+    )
+
     # Nested envelope, as above — a top-level additionalContext is discarded.
     output = {
         "hookSpecificOutput": {

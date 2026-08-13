@@ -277,7 +277,11 @@ proposing a lift. Every below-line item names its blocker as `Blocked by: [slug]
 revisit is one check per item:
 
 ```
-blocker shipped per LOG   ->  propose lifting the item above the marker
+blocker BUILT and VERIFIED
+    per LOG               ->  propose lifting the item above the marker
+blocker BUILT only, its
+    verification still
+    pending               ->  NOT enough. Skip silently; it stays below.
 blocker still open        ->  skip silently
 blocker DELETED per LOG   ->  surface the held item for re-examination.
                               Don't lift it and don't repair the reference.
@@ -301,6 +305,9 @@ decision, and therefore the user's.** This is the one branch here that is a
 question for them; everything else in this revisit is narrated or silent.
 
 Read shipped-ness off LOG, never off memory — a fresh short session has none.
+**"Shipped" here means built and verified**, per done-plan.md's
+hold-back-unverified-work rule: a lift is a clearing move, so it must not clear
+what the keep-step would have refused.
 **Nothing here is a question for the user.** Lifting is narrated; a still-blocked
 item says nothing at all.
 
@@ -808,6 +815,15 @@ python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
 item and clearing it is one command rather than two. The same script does the
 below-the-line lift (`--move` within Processed) and skip-to-defer
 (`--move <slug> BOTTOM`).
+
+**Before clearing, apply done-plan.md's hold-back-unverified-work rule.** Where
+this item's prose names a slug that LOG records as built but not yet verified,
+place it into Processed **below** the line naming that slug as its blocker,
+rather than clearing it. The rule's statement stays in done-plan.md — this is a
+reference to it, not a second copy, so the two can't drift. The reason it is
+needed here as well as at the close: /next runs before /done, so an item cleared
+at a /plan opening can be built unattended the same day, on a foundation nobody
+has confirmed.
 
 **An exact-string replace can only move a block by reproducing its whole text,
 which is why this is the primary path.** Moving one item and filing one capture

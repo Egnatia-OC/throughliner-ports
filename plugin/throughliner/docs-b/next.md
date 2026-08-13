@@ -296,12 +296,7 @@ Unprocessed, not folded in.
 
 Once the user confirms:
 
-**1. Pre-generate the candidate index entry** for each Claude-work item — artifact
-touched + nature of change (skill-nonspecific-rules.md, Index entries). This is the shape
-/done writes at close, so pre-generating makes it reusable: if the item builds as
-planned /done reuses it verbatim, if scope shifts /done re-authors it.
-
-**2. Self-scope.** Read each Claude-work item's description and rationale, work
+**1. Self-scope.** Read each Claude-work item's description and rationale, work
 out which files it will change, and list them. `[audit]` items name no files —
 an audit reads and reports — so a run of only audit items gets an empty Files
 list, locking the session to method docs.
@@ -338,7 +333,7 @@ the item names. A doc silent on which sections change → underspecification,
 surface it. Noticing the *hooks* also carry the old term when the item didn't
 list them → adjacent-work discovery, capture it and continue.
 
-**3. Create this session's build working file** — `_build-<session-id>.md`, in
+**2. Create this session's build working file** — `_build-<session-id>.md`, in
 the project root:
 
 ````markdown
@@ -352,7 +347,7 @@ description. Rationale is NOT copied — it lives in QUEUE.md under that slug an
 read from there.]
 
 Index entry candidates:
-[the pre-generated entry, one per Claude-work item]
+[empty — one added as each item is ticked]
 
 Edit display: [line references (the default) | inline, except: <items>]
 
@@ -377,12 +372,12 @@ Each item's reasoning stays in QUEUE.md and is read from there when the item is
 built. The reason not to copy it: on a fifteen-item run the copy came to roughly
 eight thousand tokens, all of it text read from QUEUE.md minutes earlier, and it
 is re-paid on every run touching those items. The reason the pointer is *safe* is
-step 4 below — each item stays in QUEUE.md until the moment it is ticked, so no
+step 3 below — each item stays in QUEUE.md until the moment it is ticked, so no
 item's only copy ever sits in a file scheduled for deletion. **If that copy-per-item
 ordering is ever changed, this pointer must be revisited with it**; the two
 together are what replaced copying every item's prose in.
 
-**4. Leave QUEUE.md alone. Copy, never cut.**
+**3. Leave QUEUE.md alone. Copy, never cut.**
 
 ```
 Claude-work items  ->  COPIED into the build working file, and they STAY in QUEUE.md
@@ -414,7 +409,7 @@ interrupted run now loses nothing at all.
 A `[user]` item is walked through in Step 3, not built, and is closed later by
 /done or /plan. It never enters the build working file, since the build working file is deleted at close.
 
-**5. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: the build working file is
+**4. Narrate the lock** [BRIEF] — one sentence, in user-facing terms: the build working file is
 the build's working file — it carries a copy of the run's work, lists the files the
 safety check allows, tracks progress so an interrupted session can resume, and
 holds the reasoning /done writes into the session record. The queue keeps its own
@@ -446,9 +441,36 @@ build item (no tag)  ->  read and follow next-build.md
 Between build items, keep going autonomously — the user confirmed the whole run
 at the Step 1 off-ramp, so there's no per-item re-confirmation.
 
-**As each item completes, do two things before starting the next:** tick it in
-the working file's Progress, then remove that one item from QUEUE.md with the mechanical
-mover, addressed by its slug.
+**As each item completes, do four things before starting the next:** tick it in
+the working file's Progress, record that item's depth field, write that item's
+index-entry candidate, then remove that one item from QUEUE.md with the
+mechanical mover, addressed by its slug.
+
+**The tick is the accumulation point.** `Progress:`, `Index entry candidates:`
+and `Changes:` all grow one item at a time, so the working file only ever
+describes work that actually happened. The index candidate is artifact touched +
+nature of change (skill-nonspecific-rules.md, Index entries), and written here it
+*describes* the build rather than predicting it — more accurate as well as
+cheaper, since a run is never guaranteed to reach its end and a candidate is only
+ever redeemed by an item that builds. Nothing is lost by moving it: the readiness
+check pre-generation doubled as still runs at /plan's keep-step, which refuses an
+item whose index line cannot be written yet.
+
+**The depth field is required, not optional, and it is written here rather than
+loosely during the build.** One line per ticked item, under the Progress tick:
+
+```
+Depth: short
+Depth: full — <which trigger: reasoning contested | alternative seriously weighed>
+```
+
+A required field is the point. The close reads these hours later, when every
+item's reasoning is simultaneously fresh and every one *feels* worth telling at
+length — so an absent line is not a signal that presents itself, and honouring
+the short-form default would mean hunting item by item for something that is not
+there. Writing the field at the tick turns a silent omission into a visible one,
+which is the shape this method already trusts for the FAQ-sync disposition and
+the rule-gate line.
 
 ```
 python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \

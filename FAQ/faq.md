@@ -103,6 +103,8 @@ If work is waiting on something in the *world* rather than on other work — a r
 
 At the start of every planning session Claude asks one question per held item — has its blocker shipped? — and offers to move up the ones whose blockers have. It doesn't ask you anything, because the answer is in the record.
 
+**"Shipped" means built *and* checked, which is why an item sometimes stays put after the thing it was waiting for was clearly built.** If the blocker was built but its check hasn't been run yet — say it needed the plugin reinstalled and nothing has confirmed that took effect — the held item stays where it is. This can look like Claude being slow to notice, and it isn't: work above the line can be built with nobody watching, so moving something up on an unconfirmed foundation risks stacking a run of finished work on something that later turns out not to have worked. Claude applies the same test when it first puts an item into the ready pile, so the two moments can't disagree.
+
 If nothing in the queue blocks a piece of work, it doesn't belong below the line at all — it goes above it, ready to build.
 
 ## What is the "freeform" tag on a piece of work?

@@ -141,9 +141,11 @@ Changes:
 - file2.ext: added import + handler function
 ```
 
-**An item wanting a full-depth LOG entry writes a depth line naming which trigger
-it meets — reasoning contested, or an alternative seriously weighed — and an item
-that writes nothing gets the short form.**
+**Every item records a depth field, and it is written at the tick — not loosely
+during the build.** The field has two values: `Depth: short`, or `Depth: full —`
+naming which trigger it meets, reasoning contested or an alternative seriously
+weighed. Short is the default and full is what the trigger buys. The moment it is
+written is next.md's per-item completion step, alongside the Progress tick.
 
 ## Scope management
 

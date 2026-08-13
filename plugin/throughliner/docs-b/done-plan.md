@@ -327,8 +327,8 @@ are two different advisories.
 ## 1. Write LOG entry  [DISCUSS, PROMPT]
 
 Follow done.md's **LOG entry files** section, using its **Plan / setup** body
-fields (`Queue changes`; `Work processed`). Planning sessions have no
-pre-generated candidate — author the index entry fresh.
+fields (`Queue changes`; `Work processed`). Planning sessions carry no
+index-entry candidate — author the index entry fresh.
 
 If a red flag was cleared this session, record **how** per done.md's Recording a
 cleared red flag: for a design-out, how it was eliminated; for an acceptance, what
