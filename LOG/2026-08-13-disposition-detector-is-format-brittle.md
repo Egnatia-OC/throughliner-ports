@@ -1,4 +1,4 @@
-# [HASH] — Both disposition patterns tolerate a bolded label, changed in one edit
+# 340e7ef — Both disposition patterns tolerate a bolded label, changed in one edit
 
 `resources/rule_signals.py`'s `DISPOSITION_RE` and `NOT_NEEDED_RE` now accept an
 optionally-emphasised label. The code carries a comment saying they must always

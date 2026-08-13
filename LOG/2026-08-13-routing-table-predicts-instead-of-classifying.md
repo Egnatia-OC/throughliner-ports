@@ -1,4 +1,4 @@
-# [HASH] — The routing table asks what a thing is, not whether it will get built
+# 340e7ef — The routing table asks what a thing is, not whether it will get built
 
 Two changes to `skill-nonspecific-rules.md`. The routing table's first row read
 "a standing design consideration unlikely to be built", and "unlikely to be

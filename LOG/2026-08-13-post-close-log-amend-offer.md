@@ -1,4 +1,4 @@
-# [HASH] — After post-close work that changed a file, the close offers to append it to the record
+# 340e7ef — After post-close work that changed a file, the close offers to append it to the record
 
 `done.md`'s Recommend next gained the offer: where further work after the close
 changes a file, offer once to append a marked tail section to this session's LOG

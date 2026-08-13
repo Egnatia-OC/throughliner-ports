@@ -1,4 +1,4 @@
-# [HASH] — The UTF-8 rules every new script rediscovers are written down
+# 340e7ef — The UTF-8 rules every new script rediscovers are written down
 
 Three lines folded into the same `CLAUDE.md` scripting-constraints bullet as the
 interpreter rules. A new script reconfigures stdout and stderr to UTF-8, copying

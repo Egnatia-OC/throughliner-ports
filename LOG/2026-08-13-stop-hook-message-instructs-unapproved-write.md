@@ -1,4 +1,4 @@
-# [HASH] — The filing-claim hook states what it observed instead of instructing a write
+# 340e7ef — The filing-claim hook states what it observed instead of instructing a write
 
 `stop.py`'s block message dropped the imperative *"Make the write now if it is
 missing"*. It keeps the observation, keeps the stakes sentence — they may already

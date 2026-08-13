@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's Push section stops asserting something the working tree contradicts
+# 340e7ef — CLAUDE.md's Push section stops asserting something the working tree contradicts
 
 The Push section claimed `plugin.json` "is dirty only between a rezip and that
 same session's push", and concluded that there is therefore no recurring

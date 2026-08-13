@@ -1,4 +1,4 @@
-# [HASH] — A close whose commit touches the hooks now runs the test suites first
+# 340e7ef — A close whose commit touches the hooks now runs the test suites first
 
 CLAUDE.md gained a close obligation: where the staged paths include
 `plugin/si-plugin/hooks/`, run the suites under `resources/testing/` before

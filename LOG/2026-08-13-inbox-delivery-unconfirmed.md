@@ -1,4 +1,4 @@
-# [HASH] — Outbound mail checks the recipient has a mailbox, and the docs stop implying delivery means arrival
+# 340e7ef — Outbound mail checks the recipient has a mailbox, and the docs stop implying delivery means arrival
 
 Two complementary changes to `feedback-and-inbox.md`'s outbound section, kept
 together rather than treated as alternatives. Before writing, check the

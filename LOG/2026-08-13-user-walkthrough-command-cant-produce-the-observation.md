@@ -1,4 +1,4 @@
-# [HASH] — A walkthrough step must be able to produce the observation the item names
+# 340e7ef — A walkthrough step must be able to produce the observation the item names
 
 The check now runs at two sites at two weights, copying the shape the capability
 check already uses. At `plan.md`'s keep-step, where a walkthrough is authored,

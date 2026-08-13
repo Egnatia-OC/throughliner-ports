@@ -1,4 +1,4 @@
-# [HASH] — The queue mover verifies its own write before reporting success
+# 340e7ef — The queue mover verifies its own write before reporting success
 
 `reorder_queue.py` gained `write_verified()`, which every write path now goes
 through: flush and fsync the handle, re-read the file from disk, and confirm the

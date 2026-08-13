@@ -1,4 +1,4 @@
-# [HASH] — An address book inside INBOX/, so a reply doesn't need the path re-supplied
+# 340e7ef — An address book inside INBOX/, so a reply doesn't need the path re-supplied
 
 `feedback-and-inbox.md`'s outbound section now describes
 `INBOX/.address-book.md`, recording correspondent name to absolute folder path,
@@ -47,4 +47,50 @@ SPEC and README were synced at the close as an approved scope grow.
 
 **Files touched:** `plugin/si-plugin/docs-b/feedback-and-inbox.md`, `SPEC.md`,
 `README.md`
+
+---
+
+## After the close — the address book's first real use, and the correspondence it carried
+
+Written after `340e7ef` was committed and pushed.
+
+**The feature was exercised within the hour of shipping, and it worked.** A
+message from Understudy arrived; a reply was owed; the recipient's `INBOX/` was
+checked and found to exist, so nothing had to be created; the reply was written
+there after the user approved the exact wording. `INBOX/.address-book.md` was
+then created with Understudy's folder recorded, and `git check-ignore` confirmed
+the file is matched by `.gitignore`'s `INBOX/` line — the verification the doc
+text says is load-bearing, run rather than assumed.
+
+**What the correspondence produced, recorded here because it belongs to no built
+item.** Understudy sent four testing outcomes from a /plan session, then a
+follow-up. One was already fixed by this run — carried in
+[plan-move-ritual-ignores-the-mover]'s own tail. Three became captures:
+[no-field-for-ordering-preference], [queue-edit-echo-costs-context] and
+[adopted-claude-md-describes-retired-structure]. Earlier the same day, three
+further captures came from their two other messages:
+[in-session-parking-has-no-home], [close-cost-depth-line-never-surfaces] and
+[tick-conflates-built-and-confirmed].
+
+**Their sharpest contribution refines an item rather than this one**, and is
+recorded on it: the forward advisory carries ordering intent for one session
+because it is cleared at every close, while a `Blocked by:` persists until its
+blocker ships — so the advisory cannot carry "whenever these two get built, this
+one goes first". That distinction is the test any new-field proposal must answer.
+
+**Two observations about the channel itself, from using it rather than designing
+it.**
+
+The reply cost roughly 900 output tokens to send, having already cost the same to
+show — because a message that leaves the machine must be shown before it is
+written, so draft-then-send charges twice by construction. That is a second live
+instance of [approval-flow-token-doubling-simplification], not a new finding.
+
+And the exchange does not stop on its own. Our reply prompted theirs, and a reply
+to that would have prompted another; the user noticed the loop before Claude did.
+The always-loaded rule requires drafting a reply when an inbound message *changes
+work here* — theirs did, by refining two captures — but "changes work" and "needs
+an answer" are different tests, and only the second should trigger a send. The
+thread was stopped on that reasoning. Not filed as work: it is one instance, and
+the user was offered a capture rather than one being written unasked.
 **Routed to Captures:** none

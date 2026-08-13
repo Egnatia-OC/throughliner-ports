@@ -1,4 +1,4 @@
-# [HASH] — A change of ordering rung is narrated at the pick, not left silent
+# 340e7ef — A change of ordering rung is narrated at the pick, not left silent
 
 `plan.md`'s floor-narration passage now says to re-check the rung at every pick
 and narrate in one clause only when it has changed, with a pointer at the

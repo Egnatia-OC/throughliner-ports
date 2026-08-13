@@ -1,4 +1,4 @@
-# [HASH] — The /plan close must name its planning state file, or name its absence
+# 340e7ef — The /plan close must name its planning state file, or name its absence
 
 `done-plan.md`'s LOG entry now carries a `Planning state:` line unconditionally —
 either the filename and the number of dispositions, or "none — no items were

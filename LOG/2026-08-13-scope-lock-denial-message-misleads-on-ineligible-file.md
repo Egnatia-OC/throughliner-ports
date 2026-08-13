@@ -1,4 +1,4 @@
-# [HASH] — The scope-lock's denial message stops advising a typo hunt on a line that doesn't exist
+# 340e7ef — The scope-lock's denial message stops advising a typo hunt on a line that doesn't exist
 
 The final `_deny` in `pre_tool_use.py` always carried the same advice: Files:
 lines must be bare paths, so if this file looks listed above, check its line for

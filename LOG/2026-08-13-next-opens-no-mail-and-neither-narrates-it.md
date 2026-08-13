@@ -1,4 +1,4 @@
-# [HASH] — /next opens waiting mail before presenting the run, and the close offers the reply
+# 340e7ef — /next opens waiting mail before presenting the run, and the close offers the reply
 
 `next.md`'s pre-flight gained a mail step, placed before the run is presented.
 That ordering is what makes the user's reason operative — in her words, mail can

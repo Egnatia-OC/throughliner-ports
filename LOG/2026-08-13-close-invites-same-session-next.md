@@ -1,4 +1,4 @@
-# [HASH] — The close stops inviting a build in the same session, and learns the readiness marker
+# 340e7ef — The close stops inviting a build in the same session, and learns the readiness marker
 
 `done.md`'s rung 2 no longer asks whether the user is continuing into another
 /next now. It names the next item as information and says a build wants a fresh

@@ -1,4 +1,4 @@
-# [HASH] — A fixture suite for the queue lint's never-fired flags
+# 340e7ef — A fixture suite for the queue lint's never-fired flags
 
 New suite at `resources/testing/test_queue_lint_flags.py`, importing the hook's
 `lint()` by path and asserting it flags a slugless work-item heading, a missing

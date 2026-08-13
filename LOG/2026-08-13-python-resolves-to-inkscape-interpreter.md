@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md records that this machine's `python` is Inkscape's, and what follows
+# 340e7ef — CLAUDE.md records that this machine's `python` is Inkscape's, and what follows
 
 Two lines in a new scripting-constraints bullet: scripts under
 `plugin/si-plugin/scripts/` and `resources/` are standard-library only, and the

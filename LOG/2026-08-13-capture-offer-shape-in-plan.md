@@ -1,4 +1,4 @@
-# [HASH] — A Claude-raised capture in /plan asks once: file it, or work it now?
+# 340e7ef — A Claude-raised capture in /plan asks once: file it, or work it now?
 
 Two failures in the same paragraph of `plan.md`, which is why they were one item.
 The user-raised branch had dropped its *anything else to add first?* clause; it is

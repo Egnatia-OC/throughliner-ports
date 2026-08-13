@@ -1,4 +1,4 @@
-# [HASH] — An out-of-scope request mid-run gets a reason, and a second ask carries a small edit through
+# 340e7ef — An out-of-scope request mid-run gets a reason, and a second ask carries a small edit through
 
 `next-build.md`'s out-of-scope capture now reports with one clause saying why the
 work is being captured rather than done. And on a second ask for the same intent,

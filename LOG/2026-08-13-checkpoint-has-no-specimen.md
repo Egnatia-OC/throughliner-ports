@@ -1,4 +1,4 @@
-# [HASH] — The checkpoint gained a specimen of the message it asks for
+# 340e7ef — The checkpoint gained a specimen of the message it asks for
 
 `plan.md`'s checkpoint now shows the actual shape of the message — a pointer to
 the next item, with nothing beneath it — placed before the rationale rather than
