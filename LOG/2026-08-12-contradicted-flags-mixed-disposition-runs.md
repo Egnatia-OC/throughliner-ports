@@ -1,4 +1,4 @@
-# [HASH] — CONTRADICTED now needs unanimity, and stops inheriting dispositions from entries that merely mention a commit
+# 16ed591 — CONTRADICTED now needs unanimity, and stops inheriting dispositions from entries that merely mention a commit
 
 Two defects, both silencing the same three false fires, and it matters that they were fixed and verified **separately** — because either one alone would have made the board go quiet while leaving the other underneath.
 
@@ -16,4 +16,4 @@ Keying the check on the LOG entry rather than the commit remains the correct sha
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a detector correction; no rule authored and no always-loaded text changed.
+Rule gate: not needed — a detector correction; no rule authored and no always-loaded text changed.

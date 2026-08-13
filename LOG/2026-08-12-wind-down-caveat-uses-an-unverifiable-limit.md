@@ -1,4 +1,4 @@
-# [HASH] — The wind-down caveat is now a fixed sentence, because the version that described its intent got improved into something measurable-sounding and false
+# 16ed591 — The wind-down caveat is now a fixed sentence, because the version that described its intent got improved into something measurable-sounding and false
 
 A session introduced the close's capture re-scan with "this has been a long session, so I can only re-read what's still in view." Session length is a proxy Claude *can* observe, standing in for the variable that actually determines the result — whether the conversation has been compacted — and that is not observable at all.
 
@@ -18,4 +18,4 @@ The limit on the fix is written in beside it. A fixed string is harder to improv
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — an existing step's described caveat replaced by a fixed wording of the same caveat. No new obligation, no always-loaded change.
+Rule gate: not needed — an existing step's described caveat replaced by a fixed wording of the same caveat. No new obligation, no always-loaded change.

@@ -1,4 +1,4 @@
-# [HASH] — The board now separates reports from signals, and CLAUDE.md's account of it is no longer wrong in two directions
+# 16ed591 — The board now separates reports from signals, and CLAUDE.md's account of it is no longer wrong in two directions
 
 The board described itself wrongly in two places at once, and the two errors pointed opposite ways. Its printed header read "N of 6 signalling" over a board where only four entries could signal at all — MEASURED and AUDITED both lost their trigger when the rule-corpus ceiling was removed, and had been carrying a hard-coded `firing: False` ever since. Meanwhile CLAUDE.md's always-loaded description called it "five independent signals" and named five, omitting CONTRADICTED entirely. The header over-counted what was watched; the prose under-counted what existed.
 
@@ -14,4 +14,4 @@ Doing nothing was weighed on the honest ground that both message bodies already 
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a reporting-accuracy correction to a host-only script and to this project's description of it. No rule authored; the always-loaded consumer text gained no obligation.
+Rule gate: not needed — a reporting-accuracy correction to a host-only script and to this project's description of it. No rule authored; the always-loaded consumer text gained no obligation.

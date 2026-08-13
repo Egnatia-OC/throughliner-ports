@@ -1,4 +1,4 @@
-# [HASH] — The keep-step's move is now three edits, because the two-write version corrupted the queue three times in one session
+# 16ed591 — The keep-step's move is now three edits, because the two-write version corrupted the queue three times in one session
 
 The move from Unprocessed to Processed was two writes in one turn: add at the destination, then remove the original. The order was right and stays right — an interruption between them leaves the item in Processed, where only a stale copy needs cleaning, rather than in neither section.
 
@@ -22,4 +22,4 @@ Written for a non-coder throughout: the two copies look alike, so the original i
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — an existing step's mechanics changed from two edits to three. No rule authored, no obligation added, nothing in the always-loaded set.
+Rule gate: not needed — an existing step's mechanics changed from two edits to three. No rule authored, no obligation added, nothing in the always-loaded set.

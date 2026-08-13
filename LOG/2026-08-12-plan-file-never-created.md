@@ -1,4 +1,4 @@
-# [HASH] — A planning close with no planning record now says so in the session record, instead of quietly reconstructing from memory
+# 16ed591 — A planning close with no planning record now says so in the session record, instead of quietly reconstructing from memory
 
 A /plan session processed roughly twenty items and never created its planning working file. Nothing noticed until the close reached for it and found nothing to read, at which point the entry's queue-changes and work-processed lines were rebuilt from conversation memory — exactly what the file exists to prevent, and exactly what a fresh or compacted session could not have done.
 
@@ -14,4 +14,4 @@ Simply repealing the requirement was refuted rather than merely rejected, and th
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — an existing close step gains an explicit branch for a case it already reached and handled silently. No new obligation and no always-loaded text.
+Rule gate: not needed — an existing close step gains an explicit branch for a case it already reached and handled silently. No new obligation and no always-loaded text.

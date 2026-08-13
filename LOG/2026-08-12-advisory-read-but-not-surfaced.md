@@ -1,4 +1,4 @@
-# [HASH] — The forward advisory is surfaced on its own line before everything else, because it was the easiest thing in a crowded opening to drop
+# 16ed591 — The forward advisory is surfaced on its own line before everything else, because it was the easiest thing in a crowded opening to drop
 
 /plan's Step 1 required the advisory to be read and surfaced in one line as orientation. One session read it correctly and said nothing about it for three hours; it came up only because the session ran out of obvious next items and went looking. The work it named was eventually done, so nothing was lost — but the mechanism did not do that, luck did. The advisory exists so a recommendation survives between sessions without depending on anyone's memory, and here it failed inside the mechanism designed to prevent exactly that failure.
 
@@ -16,4 +16,4 @@ One adjacent correction rode along, caught by editing the surrounding paragraph 
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a placement change to an existing step. Nothing is added to the always-loaded corpus and no new obligation is created.
+Rule gate: not needed — a placement change to an existing step. Nothing is added to the always-loaded corpus and no new obligation is created.

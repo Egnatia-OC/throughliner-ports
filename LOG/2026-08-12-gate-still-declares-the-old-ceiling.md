@@ -1,4 +1,4 @@
-# [HASH] — The self-authoring gate now charges on relevance, and the ceiling it used to declare is its counter-example
+# 16ed591 — The self-authoring gate now charges on relevance, and the ceiling it used to declare is its counter-example
 
 The gate opened by declaring the binding limit as a count of instructions — roughly 150–200 — and rested its whole charging argument there. That figure was re-validated against the 5-series and found roughly an order of magnitude too tight, and `rule_signals.py` had already removed the ceiling derived from it, replacing it with a growth report carrying no threshold. The gate went on asserting it.
 
@@ -16,4 +16,4 @@ This was the second confirmed instance of [no-link-from-research-to-items-scoped
 
 **Routed to Captures:** none
 
-**Rule gate:** run — the gate was run on itself. Disposition: this is subtraction plus restatement, not addition. The count is removed as an operative limit and nothing takes its place; what is added is the explanation of an absence, which the derivation rule requires of any repealed limit. Host-only — consumers never author method rules.
+Rule gate: run — the gate was run on itself. Disposition: this is subtraction plus restatement, not addition. The count is removed as an operative limit and nothing takes its place; what is added is the explanation of an absence, which the derivation rule requires of any repealed limit. Host-only — consumers never author method rules.

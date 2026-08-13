@@ -1,4 +1,4 @@
-# [HASH] — The keep-step now reads a mechanism before describing a build against it, as one clause on a check that already existed
+# 16ed591 — The keep-step now reads a mechanism before describing a build against it, as one clause on a check that already existed
 
 Two captures filed at closes asserted how a mechanism behaves and both were wrong. One said the session-start hook reports a stuck placeholder "at every single session start, forever" and built its proposed fix on that; the hook's pattern matches only a placeholder in heading or index position, and the one in question sat in a commit field, so it never fired and the real defect was silence rather than noise. The other named three causes, two of which had been absorbed by other work within two days of filing.
 
@@ -18,4 +18,4 @@ The limit: this governs the keep-step only. A capture whose mechanism claim is n
 
 **Routed to Captures:** none
 
-**Rule gate:** run — admitted as an amendment, consuming no slot. Parent named: the keep-step's second limb, which already requires stating what changes inside which files. Written as a clause on that limb, not a step of its own, and deliberately kept to a clause. Distribution: plan.md, not the always-loaded file — it fires at one moment in one skill. Eviction: nothing, since nothing is superseded. Admission evidence: two recorded wrong captures, plus four instances during processing and this run where reading the mechanism changed the build.
+Rule gate: run — admitted as an amendment, consuming no slot. Parent named: the keep-step's second limb, which already requires stating what changes inside which files. Written as a clause on that limb, not a step of its own, and deliberately kept to a clause. Distribution: plan.md, not the always-loaded file — it fires at one moment in one skill. Eviction: nothing, since nothing is superseded. Admission evidence: two recorded wrong captures, plus four instances during processing and this run where reading the mechanism changed the build.

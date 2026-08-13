@@ -1,4 +1,4 @@
-# [HASH] — Superseded research now says so at the top of its own file, and the queue digest carries the correction to the work built on it
+# 16ed591 — Superseded research now says so at the top of its own file, and the queue digest carries the correction to the work built on it
 
 Research is filed precisely because it will be re-read and reused, so a research file is an upstream dependency of everything that cites it. But citation runs one way: an item names the file, and the file names nothing. When a finding is superseded there is no path from the correction back to the decisions built on it, and those decisions do not announce that they rest on anything at all.
 
@@ -18,4 +18,4 @@ Two routes lost. A "what cited this" list maintained on the research file fails 
 
 **FAQ:** updated — "Claude said a queue item 'rests on a superseded finding'. What does that mean?"
 
-**Rule gate:** run — admitted as an amendment, consuming no slot. Parent named: the "Research and evidence filing" section already in skill-nonspecific-rules.md, which governs where findings land; this adds what happens when one is overtaken, subordinate to that section. Nothing evicted, and nothing needed to be — the section had no account of a finding's end of life, which is the gap. Distribution reasoned above rather than assumed. Admission evidence: three recorded instances. No bare number introduced.
+Rule gate: run — admitted as an amendment, consuming no slot. Parent named: the "Research and evidence filing" section already in skill-nonspecific-rules.md, which governs where findings land; this adds what happens when one is overtaken, subordinate to that section. Nothing evicted, and nothing needed to be — the section had no account of a finding's end of life, which is the gap. Distribution reasoned above rather than assumed. Admission evidence: three recorded instances. No bare number introduced.

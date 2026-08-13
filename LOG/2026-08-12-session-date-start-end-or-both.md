@@ -1,4 +1,4 @@
-# [HASH] — Every date written at a close is the close date, and a session that spanned two days says so in one sentence
+# 16ed591 — Every date written at a close is the close date, and a session that spanned two days says so in one sentence
 
 The method settled the filename prefix for a one-day session — the session date, written from the current date at close — and said nothing about a session that runs across two. That is not an exotic case: it is what happens whenever someone stops for the night or hits a usage limit and resumes in the morning, which is exactly what produced the question.
 
@@ -16,4 +16,4 @@ One thing that is coincidence rather than compliance: the /plan session that set
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a close-time convention stated where the close reads it, widening an existing rule from the filename to every date the close writes. Nothing added to the always-loaded set, deliberately.
+Rule gate: not needed — a close-time convention stated where the close reads it, widening an existing rule from the filename to every date the close writes. Nothing added to the always-loaded set, deliberately.

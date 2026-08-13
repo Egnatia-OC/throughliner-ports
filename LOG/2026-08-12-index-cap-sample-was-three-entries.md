@@ -1,4 +1,4 @@
-# [HASH] — The 20% index-line cap was measured against the whole corpus, found to be measuring the wrong thing, and repealed
+# 16ed591 — The 20% index-line cap was measured against the whole corpus, found to be measuring the wrong thing, and repealed
 
 The cap said an index line must stay within 20% of the length of the entry it points to. It was derived from three entries of 968, 1,055 and 1,738 words. Measuring all 416 index lines that have an entry file to measure against turns that derivation inside out.
 
@@ -20,4 +20,4 @@ The distribution is filed as a durable finding rather than summarised here, beca
 
 **Routed to Captures:** none
 
-**Rule gate:** run — this is a repeal. A limit is removed and nothing takes its place, which the derivation rule requires be explained rather than left silent; the explanation and the measurement are written in beside the repealed figure so a later reader meets the evidence before restoring it. The always-loaded text is net shorter for a rule, not longer.
+Rule gate: run — this is a repeal. A limit is removed and nothing takes its place, which the derivation rule requires be explained rather than left silent; the explanation and the measurement are written in beside the repealed figure so a later reader meets the evidence before restoring it. The always-loaded text is net shorter for a rule, not longer.

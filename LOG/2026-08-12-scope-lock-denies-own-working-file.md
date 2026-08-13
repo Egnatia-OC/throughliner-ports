@@ -1,4 +1,4 @@
-# [HASH] — The scope-lock denied every build its own working file, and the run that found it could only proceed by working around itself
+# 16ed591 — The scope-lock denied every build its own working file, and the run that found it could only proceed by working around itself
 
 Not a queue item. This was found within minutes of locking scope on a seventeen-item run: the first attempt to write a rule-gate disposition into the build working file was denied outright by the scope-lock, with the file's own name absent from the list of paths it allowed.
 
@@ -14,4 +14,4 @@ The user approved adding the file to scope before either edit was made.
 
 **Routed to Captures:** [scope-lock-fix-unverified-live]
 
-**Rule gate:** not needed — a one-argument correction to existing code, authoring no rule and changing no always-loaded text.
+Rule gate: not needed — a one-argument correction to existing code, authoring no rule and changing no always-loaded text.

@@ -1,4 +1,4 @@
-# [HASH] — The last two standing test failures were stale fixtures, and all five suites now pass
+# 16ed591 — The last two standing test failures were stale fixtures, and all five suites now pass
 
 `test_plan_quiet_list.py` asserted that the planning quiet list covers `_plan.md` and `_build.md`. It does not, deliberately: working files were renamed to `_plan-<session id>.md` and `_build-<session id>.md`, and a bare name was visible to every session on the project, which is exactly what session-scoping removed. The fixtures had never been updated, so two assertions had been failing since that rename shipped.
 
@@ -12,4 +12,4 @@ All five suites under `resources/testing/` now pass, including after this run's 
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a test-fixture correction, authoring no rule.
+Rule gate: not needed — a test-fixture correction, authoring no rule.

@@ -1,4 +1,4 @@
-# [HASH] — The interrupted-build check was already correct, so what shipped was the untracked-file habit and a note on why the exact name matters
+# 16ed591 — The interrupted-build check was already correct, so what shipped was the untracked-file habit and a note on why the exact name matters
 
 This item had two halves and the substantive one turned out to be already done. It said to correct a `*_build.md` glob in /next's pre-flight so it matches the session-scoped name. Grepping the whole plugin finds no such pattern: `next.md` already states the file is per session, named `_build-<session-id>.md`, and that the check is for *this* session's file and no other. `session_start.py`'s leftover-working-file scan matches the session-scoped form and deliberately also recognises the retired bare names, so a project mid-build when the rename shipped is not orphaned. There was nothing left to fix.
 
@@ -14,4 +14,4 @@ One piece of the item's own reasoning was void and is named here as a fourth ins
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a habit added to an existing pre-flight step and an explanation written beside an existing requirement. No always-loaded rule, deliberately.
+Rule gate: not needed — a habit added to an existing pre-flight step and an explanation written beside an existing requirement. No always-loaded rule, deliberately.

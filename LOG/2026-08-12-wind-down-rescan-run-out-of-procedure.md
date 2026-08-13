@@ -1,4 +1,4 @@
-# [HASH] — The /plan-side wind-down re-scan was already gone, so what shipped was the removal of a dead reference to it and a do-not-reintroduce
+# 16ed591 — The /plan-side wind-down re-scan was already gone, so what shipped was the removal of a dead reference to it and a do-not-reintroduce
 
 This item asked for a subtraction: remove the wind-down re-scan from `plan.md`, and remove the now-dead "when /plan already ran its own, this is a no-op" clause from `done.md`. **The first half was already done.** Grepping `plan.md` for both "wind-down" and "re-scan" returns a single line, and that line already says /done runs the re-scan at every close whatever the session type. There is no step there to remove.
 
@@ -14,4 +14,4 @@ The fresh-chat clause beside it — a /done in a new chat has none of the sessio
 
 **Routed to Captures:** none
 
-**Rule gate:** not needed — a dead cross-reference removed and replaced with a statement of the status quo. No rule authored.
+Rule gate: not needed — a dead cross-reference removed and replaced with a statement of the status quo. No rule authored.

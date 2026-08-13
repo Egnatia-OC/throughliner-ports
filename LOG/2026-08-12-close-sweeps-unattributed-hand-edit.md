@@ -1,4 +1,4 @@
-# [HASH] — A clean git status may no longer be reported as "no change was made", and the close names the method docs it stages
+# 16ed591 — A clean git status may no longer be reported as "no change was made", and the close names the method docs it stages
 
 Two halves, weighted opposite to how the item first proposed them.
 
@@ -16,4 +16,4 @@ One thing about the item itself is worth carrying, because it is this run's own 
 
 **Routed to Captures:** none
 
-**Rule gate:** run — admitted as an amendment, consuming no slot. Parent named: the file-safety block in skill-nonspecific-rules.md, which already governs what may be reported about git state; the clause is written into that block. Distribution: always-loaded, and this is the item's own stated reason — the question can arrive whatever is running, which is that file's four-skills test. Eviction: nothing, since there was no prior statement about clean-tree meaning to supersede. Admission evidence: a recorded instance in which the user was close to redoing existing work. The done.md half is a narration step rather than a rule, and carries both its limits explicitly.
+Rule gate: run — admitted as an amendment, consuming no slot. Parent named: the file-safety block in skill-nonspecific-rules.md, which already governs what may be reported about git state; the clause is written into that block. Distribution: always-loaded, and this is the item's own stated reason — the question can arrive whatever is running, which is that file's four-skills test. Eviction: nothing, since there was no prior statement about clean-tree meaning to supersede. Admission evidence: a recorded instance in which the user was close to redoing existing work. The done.md half is a narration step rather than a rule, and carries both its limits explicitly.
