@@ -604,13 +604,60 @@ may be overlap worth checking."
 ```
 1. captures appended this session that affect the next work
        ->  recommend /plan, name the blocker
-2. Processed work exists
-       ->  name the next item, then ask whether the user is continuing into
-           another /next now. If yes and a reorder applies, offer to reorder
-           first so the next /next picks the right item.
+2. work sits ABOVE the readiness marker
+       ->  name the next item as information, and say a build wants a fresh
+           session. No question, and no command string ending the message.
+2b. Processed holds work but the cleared region is EMPTY (the marker is at
+    the top)
+       ->  say the next work still needs vetting, and point at planning.
+           A build run would soft-stop here, costing a round trip.
 3. Processed empty
-       ->  "Queue is clear. Run /plan when you have more."
+       ->  say the queue is clear and that planning is where more work comes
+           from.
 ```
+
+**Rung 2 states the next item and stops there.** It used to ask whether the user
+was continuing into another /next now — and a message that ends by asking a
+question whose answer looks like a command is one keystroke from being run by
+accident, because the harness offers the slash command it just saw as a
+tab-completion. A user was caught by exactly that. Rewording the question is not
+enough: the same defect was fixed once before, in plan.md's four-routes recital,
+by removing the named command from that moment rather than by phrasing it more
+carefully.
+
+**A build wants a fresh session**, which is the user's decision and is the
+reason rung 2 no longer invites one. A run inheriting a full build plus its
+close is the opposite of the fresh short session everything here is designed
+for.
+
+**Rungs 2b and 3 name no command either.** Rung 2b exists because rung 2 used to
+key only on "Processed work exists", which cannot tell work /next can run from
+work that needs vetting first — so a close that had just emptied the cleared
+region still pointed at /next, straight into a stop.
+
+**After the close, if further work changes a file, offer once to append it to
+this session's LOG entry** [BRIEF, PROMPT]. The entry is written and committed by
+now, so anything done afterwards — a fix, a question answered, a piece of work
+run on request — is invisible in the record unless the entry is amended and the
+amendment committed. The session has ended in the method's terms and not in the
+chat's.
+
+```
+append, never rewrite   ->  a marked tail section on the existing entry, so it
+                            reads plainly as work that came after the close.
+                            Leave the index line alone unless the tail changes
+                            what the entry is ABOUT.
+once per tail           ->  not once per exchange. An offer reappearing after
+                            every message is the nagging shape this method
+                            keeps deleting.
+only where a file        -> post-close conversation that alters nothing has
+  changed                   nothing to record, and offering there trains the
+                            user to decline.
+```
+
+The evidence is recurrence rather than one miss: the user has had to ask for this
+amendment repeatedly, which is the same signal that carried the reply-draft
+offer. A thing they keep having to ask for is a thing the method should offer.
 
 **Announce a `[freeform]` item if Processed holds one.** /next will not build it —
 it halts on it — so a close that recommends /next without saying so sends the user

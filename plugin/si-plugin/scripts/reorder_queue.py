@@ -77,6 +77,7 @@ Self-check (refuses to write on any failure, exits non-zero, changes nothing):
 """
 
 import sys
+import os
 import re
 
 # Force UTF-8 on the console output, once, before any message is emitted.
@@ -233,6 +234,62 @@ def elements_with_marker(new_blocks, had_marker, pref):
     return elements
 
 
+def section_slugs(lines, section):
+    """Slugs of the work items in one section, as a set. Empty if absent."""
+    sections = parse(lines)
+    if section not in sections:
+        return set()
+    start, end = sections[section]
+    _, blocks, _, _ = split_blocks(lines[start:end])
+    return {s for s, _ in blocks if s}
+
+
+def write_verified(queue_path, new_lines, absent=(), present=()):
+    """Write the queue, force it to disk, read it back, and confirm the write
+    actually landed before reporting success.
+
+    Why this exists: a --delete once printed its normal success line, exited
+    zero, and left the item sitting in the file. Re-running the identical
+    command a moment later worked. That is worse than a loud failure, which
+    costs one retry — /next treats the success line as proof an item was built
+    and removed, and the whole copy-per-item design rests on "an item still
+    showing in QUEUE.md means exactly one thing: not built yet". A false
+    success breaks that guarantee silently.
+
+    `absent` and `present` are (slug, section) pairs the re-read must confirm.
+
+    The flush-and-fsync is not decoration. This project lives under a
+    file-sync layer, and a normal file close leaves the write in flight — so a
+    plain read-back could be served the same in-flight content and pass for
+    exactly the reason the check exists. Forcing the bytes to disk first is
+    what makes the re-read evidence rather than an echo.
+
+    The honest limit: this catches a write that never reached the file. It
+    cannot catch a sync layer that reverts the file some time after the
+    process has exited, because nothing is still running to look.
+    """
+    with open(queue_path, 'w', encoding='utf-8', newline='') as f:
+        f.write(''.join(new_lines))
+        f.flush()
+        os.fsync(f.fileno())
+
+    with open(queue_path, 'r', encoding='utf-8', newline='') as f:
+        after = f.read().splitlines(keepends=True)
+
+    for slug, section in absent:
+        if slug in section_slugs(after, section):
+            die("write did NOT land: [%s] is still a work item in %s after the "
+                "file was written and read back. Nothing downstream should "
+                "treat this as done — re-run the command and check the file."
+                % (slug, section))
+    for slug, section in present:
+        if slug not in section_slugs(after, section):
+            die("write did NOT land: [%s] is not a work item in %s after the "
+                "file was written and read back. Nothing downstream should "
+                "treat this as done — re-run the command and check the file."
+                % (slug, section))
+
+
 def delete_item(queue_path, slug, section):
     """Remove one work item's whole block, addressed by slug.
 
@@ -305,8 +362,7 @@ def delete_item(queue_path, slug, section):
     if lines[:start] != new_lines[:start] or lines[end:] != new_lines[start + len(out):]:
         die("self-check failed: content outside the section changed")
 
-    with open(queue_path, 'w', encoding='utf-8', newline='') as f:
-        f.write(''.join(new_lines))
+    write_verified(queue_path, new_lines, absent=[(slug, section)])
     sys.stderr.write("reorder_queue: deleted from %s: %s\n"
                      % (section, removed_heading))
 
@@ -448,8 +504,9 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
         if had != any(MARKER_RE.match(l) for l in out):
             die("self-check failed: marker presence changed in a section")
 
-    with open(queue_path, 'w', encoding='utf-8', newline='') as f:
-        f.write(new_text)
+    # A move is a delete plus an add, so it is verified on both sides.
+    write_verified(queue_path, new_lines,
+                   absent=[(slug, sec_from)], present=[(slug, sec_to)])
     sys.stderr.write("reorder_queue: moved [%s] %s -> %s (%s)\n"
                      % (slug, sec_from, sec_to, position or 'BOTTOM'))
 
@@ -720,8 +777,8 @@ def main():
         die("self-check failed: content outside the section changed")
     new_text = ''.join(new_lines)
 
-    with open(queue_path, 'w', encoding='utf-8', newline='') as f:
-        f.write(new_text)
+    write_verified(queue_path, new_lines,
+                   present=[(s, section) for s in desired])
 
     # Report the marker's ACTUAL position, not merely that one was written.
     # "marker placed" read as reassurance and said nothing: it appeared

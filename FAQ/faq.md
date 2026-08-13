@@ -161,7 +161,7 @@ You don't need to do anything with it. It's information, not a request.
 
 ## Another project sent me a message. When does Claude actually read it?
 
-**At the start of your next planning session.** When you run /plan, Claude opens whatever is waiting in your INBOX before anything else happens — before it suggests dropping anything, and before it asks what you'd like to work on first.
+**At the start of your next planning or build session.** When you run /plan, Claude opens whatever is waiting in your INBOX before anything else happens — before it suggests dropping anything, and before it asks what you'd like to work on first. When you run /next, it opens the mail before showing you the run, so a message can still change what gets built.
 
 Each message gets sorted into one of three places: work to do becomes an item in your queue, a finding gets written into your session record, and anything you'd need to re-read word-for-word gets saved as a file. Then the message file is moved into `INBOX/archive/` so it doesn't come up again.
 
@@ -170,6 +170,19 @@ You'll also see a line at the start of *any* session telling you mail is waiting
 **Once a message has been read, its contents are just ordinary items in your queue.** They don't jump the line for having arrived by mail — they get weighed and ordered like everything else.
 
 One limit worth knowing: **a message that arrives while you're mid-session won't be noticed until your next session starts.** That's when your mailbox is checked. Nothing is lost; it just waits.
+
+## A build run started by telling me a message affects one of today's jobs. What does that mean?
+
+**It means /next read your mail before showing you the run, and something in it bears on work that was about to be built.**
+
+Mail can block work — that's the whole reason the reading happens at the start of a build run and not after. So Claude opens the mailbox first, writes anything the message raises into your queue as a new item, and then shows you the run as usual. If the message bears on something in that run, it says so and suggests **leaving that one job out of this run**.
+
+Two things that deliberately don't happen:
+
+- **Nothing is removed from your queue.** The job is skipped for this run only and stays exactly where it is. Deciding whether it should change, wait, or go away is planning work, and it happens at your next /plan.
+- **Nothing is sent back mid-run.** If a reply is worth writing, Claude drafts it at the end of the session and shows you the exact wording first. A build run works faster than you can follow, which is the wrong moment to be approving something that leaves your computer.
+
+If there's no mail waiting, none of this appears — a run that announced "no mail" every time would just be noise.
 
 ## Why is my INBOX folder ignored by git, and can I change that?
 
@@ -321,6 +334,54 @@ When you run /done, Claude re-reads the session for anything worth capturing tha
 **Why it's safe to write first.** Your queue is tracked in git, so an item you don't want costs a one-line undo and nothing else. The things Claude still shows you *before* acting are the ones where that isn't true: a commit message, and anything that leaves your computer.
 
 **What to do if one is wrong.** Say which number, and Claude removes or rewrites it. The one thing to know is that rejecting is now an undo rather than a non-event — so it's worth reading the list rather than skimming it.
+
+## I sent a message to another one of my projects. How do I know it arrived?
+
+**You know it was delivered. You don't know it was read, and nothing here will tell you.**
+
+Sending writes a file into the other project's mailbox. That's the whole mechanism — there's no receipt, no read confirmation, and no notification back to you. The other project sees it the next time you open a session there, and only then.
+
+**Two things now happen to make that less fragile.** Before writing, Claude checks the other project actually has a mailbox, and says so plainly if it has to create one — because a project set up before mailboxes existed has nothing that tells you mail is waiting, so a message can sit there forever with neither side knowing. And the first time you give Claude the folder path for a project, it's saved, so continuing a conversation doesn't mean digging out the path again every time.
+
+**That saved list lives inside the `INBOX/` folder, which git ignores** — so the folder paths on your computer are never committed and never end up in a published repository. If you ever move that file somewhere else, you lose that protection without any warning.
+
+**Why there's no read receipt.** It would mean one project automatically writing into another, and nothing here sends anything without you seeing the exact wording first. A receipt you have to approve for a message you didn't write is worse than no receipt at all.
+
+## I asked for something during a build and Claude wrote it down instead of doing it. Can I insist?
+
+**Yes — ask again and a small change gets done.**
+
+When you raise something mid-build that isn't part of what's being built, Claude writes it into your queue and carries on, and now tells you in one line *why*: the run stays on the work you agreed, and the new thing gets weighed properly against everything else still to come rather than being decided on the spot. It also gets a proper check and a file list before anything is written, which is what stops a half-thought-through change landing in the middle of a build.
+
+**If you ask a second time, Claude takes that as your decision and does it** — as long as it's small, meaning it touches a file or two. That's not a special rule for builds; it's the same principle everywhere here, that if Claude raises a concern and you repeat yourself, the call is yours.
+
+**Big changes still get pushed back.** If what you're asking for touches a lot of files, or isn't fully worked out yet, Claude will suggest finishing the current run and picking it up properly afterwards. Asking twice doesn't make a large change small, and that's exactly the kind of change that goes wrong when it's squeezed into a run already underway.
+
+## We kept working after the session was "closed", and Claude offered to add it to the record. Why?
+
+**Because the record was already written and committed, so that work wasn't in it.**
+
+Closing a session writes up what happened and commits it. That's the end of the session as far as the workflow is concerned — but conversations don't stop that neatly. You ask one more thing, something gets fixed, a small job gets run. All of it is real work, and none of it appears anywhere, because the write-up was finished before it happened.
+
+So when something after the close actually changes a file, Claude offers once to **add a short section to the end of that session's record**, marked as work that came afterwards. It's added rather than blended in, so you can still see what was true at the close and what came later.
+
+Three things about the offer:
+
+- **It comes once**, not after every message.
+- **It only comes if a file changed.** Talking something through afterwards has nothing to record.
+- **It's an offer.** Say no and nothing happens.
+
+Before this, the only thing that closed the gap was you remembering to ask.
+
+## Why can't I just start the next build in the same conversation?
+
+**You can — but the workflow no longer suggests it, and there's a good reason.**
+
+Claude works best in short conversations. A conversation that has already run a full build, and then recorded and committed it, is carrying all of that; a new build starting on top of it is the opposite of the fresh start everything here is designed around. Clearing the conversation, or opening a new one, gives the next build a clean run.
+
+There's a second, more practical reason. The close used to end by asking whether you wanted to go straight into another build — and a message that ends with a question whose answer looks like a command is one keystroke away from being sent by accident, because your app helpfully offers the command as a completion. That happened. So the close now tells you what's next and stops, rather than putting a command in front of you at the moment you're relaxed and expecting a yes-or-no.
+
+Nothing is blocked. You'll still be told what the next piece of work is; you just start it yourself, when you're ready, in a fresh conversation.
 
 ## A build run stopped early and said the next job "runs alone". Why?
 

@@ -386,8 +386,21 @@ def signal_audited(root, measured):
 
 # --- BORN ---------------------------------------------------------------
 
-DISPOSITION_RE = re.compile(r"^Rule gate:", re.IGNORECASE | re.MULTILINE)
-NOT_NEEDED_RE = re.compile(r"^Rule gate:\s*not needed", re.IGNORECASE | re.MULTILINE)
+# Both patterns tolerate an emphasised label (`**Rule gate:**`). Bolding a
+# label is the ordinary Markdown instinct everywhere else in a LOG entry, and it
+# has now defeated this check twice — the second time in a session that had just
+# read the sentence describing the brittleness and then bolded every disposition
+# it wrote. A rule depending on authors resisting an instinct they demonstrably
+# cannot resist is not a rule.
+#
+# CHANGE THESE TWO TOGETHER, ALWAYS. Make only the first tolerant and a bolded
+# `**Rule gate:** not needed` matches the disposition check while still failing
+# the not-needed check — so it is counted as "run". That is a silent inversion
+# of what the entry says, which is worse than the failure being fixed, where a
+# bolded disposition is merely invisible.
+DISPOSITION_RE = re.compile(r"^\*{0,2}Rule gate:", re.IGNORECASE | re.MULTILINE)
+NOT_NEEDED_RE = re.compile(r"^\*{0,2}Rule gate:\*{0,2}\s*not needed",
+                           re.IGNORECASE | re.MULTILINE)
 
 
 def _rule_bearing_commits(root):

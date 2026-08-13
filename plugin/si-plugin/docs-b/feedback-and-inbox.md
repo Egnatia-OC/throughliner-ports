@@ -83,11 +83,16 @@ isn't surfaced again every session. A project reads only its own INBOX; it
 never goes looking through other projects for mail.
 
 **When mail is opened.** Any session may open it whenever the user asks —
-opening and routing is filing, and filing is open to every session. The
-*guaranteed* moment is **/plan's Step 1 read-state**, which fetches this doc and
-works through whatever is waiting before the session skims and orders its queue.
-Without a guaranteed moment, mail was surfaced every session and could be opened
-in none of them.
+opening and routing is filing, and filing is open to every session. There are
+two *guaranteed* moments: **/plan's Step 1 read-state**, before the session
+skims and orders its queue, and **/next's pre-flight**, before the run is
+presented. Without a guaranteed moment, mail was surfaced every session and
+could be opened in none of them.
+
+At /next the read is deliberately partial — open, file, and defer. Anything a
+message raises becomes a capture; where it bears on an item in the cleared
+region, /next names it and recommends dropping that item from **that run only**,
+leaving the queue untouched. Deciding an item's fate stays /plan's.
 
 Once routed, a message's contents are ordinary captures and rank by the existing
 ladder. There is no priority rung for mail — the missing piece was the opening,
@@ -103,6 +108,48 @@ recipient project's `INBOX/`, but only after the user has seen the exact
 wording and approved it. Sending is outward-facing and both mailboxes may sit
 in repositories that get published, so draft, show, wait — the same guarantee
 the feedback reports keep.
+
+**Check the recipient's `INBOX/` exists before writing, and say plainly when one
+has to be created.** A project whose installed method predates INBOX scaffolding
+has nothing at its session start that surfaces waiting mail, so a message
+delivered into a folder this project just made can sit unread indefinitely with
+nothing on this side ever knowing. That has happened.
+
+**What sending guarantees, stated honestly because it is easy to assume more.**
+It places a file in the recipient's mailbox. Nothing confirms it was read. A
+completed round trip has happened — a message was read, answered, and a factual
+error corrected at its source — but that worked because the other project
+happened to read its mailbox and chose to reply. A good outcome, not a
+guarantee, and the docs must not let it read as one.
+
+An automatic read-receipt written back into the sender's mailbox is **rejected,
+not merely unbuilt.** Nothing leaves the machine without the user seeing the
+exact text and giving an explicit yes, and that rule names outbound INBOX
+messages. A receipt is an automatic send: it would either break that guarantee
+or stop to ask the user to approve a receipt for a message they never wrote.
+
+**The address book — `INBOX/.address-book.md`, correspondent name to absolute
+folder path.** Outbound needs a filesystem path and inbound needs none, so every
+reply used to be a fresh lookup the user performed by hand, however long the
+correspondence had run: a reply once stalled after four exchanges because
+nothing anywhere recorded where the other project was. Write an entry the first
+time the user supplies a path, so the cost is paid once per correspondent
+instead of once per reply.
+
+```
+lives INSIDE INBOX/    ->  `.gitignore` ignores that folder and everything
+                           beneath it, so the file is never committed. This is
+                           load-bearing: the entries are absolute paths that
+                           identify a person, and a later change moving the
+                           file BESIDE INBOX/ loses the protection silently.
+records what the user  ->  never a filesystem scan for other projects. The
+    gave                   standing rule is to work on the folder the session
+                           opened in and never go looking for others.
+```
+
+Putting the sender's path inside the message instead was rejected on the same
+ground: that writes a path from this machine into another project's repository,
+which may be committed and may be public.
 
 Not to be confused with the editing-state signal: `.throughliner/` markers are
 live session state a companion app reads. INBOX is for messages. They stay

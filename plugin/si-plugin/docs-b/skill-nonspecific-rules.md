@@ -83,8 +83,9 @@ Active in every session where the plugin is installed and the project is set up.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
-  a Claude-raised capture. Inside /plan only, a user-filed capture also gets the
-  offer to process it now or carry on.
+  a Claude-raised capture. Inside /plan only, both get an offer: a user-filed
+  capture is offered process-now or carry-on, and a Claude-raised one asks once
+  whether to file it or work it now.
 - **Verbatim-copy strings go in fenced code blocks, one per string** — the app's
   copy takes the whole message. Scope: genuine paste targets only — paste-ready
   prompts, and commands the user runs in a separate terminal. Commit messages are
@@ -593,12 +594,19 @@ queue-shaped thing that isn't work its proper home below. This is a recurring
 failure — invented states and categories keep appearing, and the user has caught
 each one.
 
-**Proper homes for queue-shaped things that aren't work:**
+**Routing never re-opens a fate the user has already decided.** Where an item's
+own prose records that the user asked for something to be kept, the routing
+question is closed before it starts — the table below is for things that have no
+home yet, never a route out of the queue for work whose fate is settled.
+
+**Proper homes for queue-shaped things that aren't work. The test is what the
+thing IS, never whether it will get done:**
 
 ```
-a standing design consideration unlikely to be built  ->  SPEC note, or CLAUDE.md rule
-a durable finding                                     ->  resources/research, or LOG
-a forward recommendation                              ->  the advisory (transient)
+a principle that governs how work is done  ->  SPEC note, or CLAUDE.md rule
+    ("always consider X when designing")
+a durable finding                          ->  resources/research, or LOG
+a forward recommendation                   ->  the advisory (transient)
 ```
 
 The cleared-to-run line **replaces** parking. Order within a section carries

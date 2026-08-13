@@ -340,6 +340,22 @@ their slugs — and use it to fill the entry's Queue changes and Work processed
 lines. It's the mechanical record of what this session did, so the entry doesn't
 have to be reconstructed from memory.
 
+**The entry carries a `Planning state:` line, always, and the close is not
+complete without it:**
+
+```
+Planning state: _plan-<id>.md, N dispositions
+Planning state: none — no items were processed
+```
+
+A session that processed work and cannot name its state file leaves a gap anyone
+can see, and "no items were processed" is a claim a later reader can disagree
+with by reading the queue's own history. Same shape as the other close
+obligations, and the same honest limit: by the close the information has already
+been reconstructed from memory if the file was never made. What the line buys is
+that the reconstruction is **labelled** as one instead of passing as a
+contemporaneous record. It detects; it does not prevent.
+
 **If there is no planning working file, say so in the entry.** Write a plain line
 into the session record naming the absence:
 

@@ -198,11 +198,68 @@ def test_move_section_marker_failure_writes_nothing():
               "the move was applied despite the marker failing")
 
 
+def _load_module():
+    """Import reorder_queue.py by path so its helpers can be called directly."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("reorder_queue", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_delete_reports_only_what_landed():
+    """The success line must mean the item really left the file.
+
+    A --delete once printed its normal success line, exited zero, and left the
+    item in place. /next reads that line as proof an item was built and
+    removed, so a false success breaks the one guarantee the copy-per-item
+    design rests on. This asserts the ordinary path genuinely lands.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(FIXTURE)
+
+        result = subprocess.run(
+            [sys.executable, SCRIPT, path, "--delete", "delta", "Processed"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        with open(path, "r", encoding="utf-8") as f:
+            after = f.read()
+
+        check("the delete succeeds", result.returncode == 0,
+              f"exit {result.returncode}: {result.stderr.strip()}")
+        check("the item is really gone from the file", "[delta]" not in after,
+              "success was reported but the slug is still in the file")
+
+
+def test_write_verified_refuses_a_write_that_did_not_land():
+    """The verification itself fails loudly when the re-read disagrees.
+
+    Simulated by asking write_verified to confirm the absence of a slug the
+    written content still contains — which is exactly the state a write that
+    silently did not land would leave behind.
+    """
+    mod = _load_module()
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        lines = FIXTURE.splitlines(keepends=True)
+        raised = False
+        try:
+            mod.write_verified(path, lines, absent=[("alpha", "Processed")])
+        except SystemExit as exc:
+            raised = exc.code != 0
+        check("a write that did not land exits non-zero", raised,
+              "write_verified reported success for a slug still in the file")
+
+
 if __name__ == "__main__":
     print("test_reorder_queue")
     test_side_of_marker_report()
     test_report_agrees_with_file()
     test_move_section_applies_marker_after()
     test_move_section_marker_failure_writes_nothing()
+    test_delete_reports_only_what_landed()
+    test_write_verified_refuses_a_write_that_did_not_land()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

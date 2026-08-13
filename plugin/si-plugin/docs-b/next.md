@@ -182,7 +182,32 @@ run dead for work nobody needed the user to do.
 version belongs at /plan's keep-step, where the user is in the room. Here the
 user is not, and a run should not stop to explore.
 
-### 3. Present the run and offer the off-ramp  [BRIEF, PROMPT]
+### 3. Open waiting mail  [SILENT] when the mailbox is empty; [BRIEF] when it isn't
+
+Read anything waiting in this project's `INBOX/`, before the run is presented.
+That ordering is the point: mail can block work, so it is read while the run can
+still change rather than after scope is locked. Full mechanics —
+`${CLAUDE_PLUGIN_ROOT}/docs-b/feedback-and-inbox.md`.
+
+```
+/next OPENS, FILES and DEFERS. It never processes.
+    anything a message raises   ->  a capture in Unprocessed
+    a message bearing on an     ->  name it at the present-the-run beat and
+      item in the cleared           recommend dropping that item FROM THIS
+      region                        RUN ONLY. Leave the queue untouched.
+    the message file            ->  moves to INBOX/archive/
+```
+
+Processing — deciding an item's fate — stays /plan's, which is the boundary the
+whole method rests on. The reply draft is offered at the close, not here: a run
+is unattended in practice, and stopping it to approve text that leaves the
+machine would defeat that.
+
+Nothing in the scope-lock blocks this: `pre_tool_use` treats any project's
+`INBOX/` as always editable, so reading and archiving mail during a locked run
+cannot be denied.
+
+### 4. Present the run and offer the off-ramp  [BRIEF, PROMPT]
 
 Put the run in front of the user and invite a last-glance change **in the same
 message** — presenting and offering the off-ramp are one beat, not two.
@@ -210,6 +235,13 @@ context filling at all. Don't say a run looks large, don't suggest stopping afte
 the first few, and don't inherit such a suggestion from a previous session's
 advisory. If a run should stop early, that is decided by observed behaviour — the
 no-progress halt — not by a number chosen up front.
+
+**The one thing that may drop an item from the run is waiting mail** [BRIEF].
+Where a message read at the step above bears on an item in the cleared region,
+name it here and recommend dropping that item from **this run only** — the queue
+is left untouched and /plan decides its fate. That is not the softer cap this
+rule forbids: it rests on something a message actually said, not on a guess
+about how large a run should be.
 
 **If the user took the inline offer, advise on the large items here** [BRIEF].
 Inline display is settled by the session's opening offer, not by a question of
@@ -514,6 +546,12 @@ recommend /done to record it. If they don't say anything, walk it through.
 present or absent, a branch gone, a URL responding. Checking the world is not
 asking the user. A failed check is reported plainly as what was found, and the
 item stays in place; it never becomes "are you sure you did this?".
+
+**Confirm the step can produce the observation the item names** — the light
+form: check that the step names something which yields the evidence, and no
+more. No experiment, no search, no stopping. (The heavy version, where the
+command is actually run, belongs at /plan's keep-step, where the walkthrough is
+authored and the user is in the room.)
 
 **Verify any command before handing it over to be pasted.** Run it where doing
 so is safe — a scratch fixture — or read the tool's `--help`. The scope is

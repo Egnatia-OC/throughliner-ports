@@ -179,14 +179,22 @@ def main():
     names = ", ".join("[%s]" % slug for slug in missing)
     downgraded = all(_already_blocked(cwd, session_id, slug) for slug in missing)
 
+    # States what it observed and stops there. It used to end with "Make the
+    # write now if it is missing" — an instruction to perform a write, from a
+    # hook with no way to know whether the user approved one. A hook is frozen
+    # text and the rules move: today write-first means the write was always
+    # going to happen, but a message that instructs it would invert an approval
+    # the moment any draft-then-approve shape returns anywhere in the method.
+    # The stakes sentence stays, because it states what is at risk rather than
+    # instructing anything, and it is what makes a session take the block
+    # seriously.
     reason = (
         "Your last message reported writing %s, but %s not in QUEUE.md as a "
         "work-item heading. Either the write did not happen, or it landed "
-        "somewhere else. Make the write now if it is missing, then tell the "
-        "user plainly what actually happened — they may already be acting on "
-        "the report. If the item genuinely lives elsewhere (an archived "
-        "message, another project's queue, a LOG entry), say so in one line and "
-        "carry on."
+        "somewhere else. Tell the user plainly what actually happened — they "
+        "may already be acting on the report. If the item genuinely lives "
+        "elsewhere (an archived message, another project's queue, a LOG "
+        "entry), say so in one line and carry on."
         % (names, "it is" if len(missing) == 1 else "they are")
     )
 

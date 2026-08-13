@@ -359,8 +359,16 @@ def working_file(cwd: str, kind: str, session_id: str) -> str:
     return os.path.join(cwd, f"_{kind}-{safe_session_id(session_id)}.md")
 
 
-def _is_method_doc(filepath: str, cwd: str, session_id: str = "") -> bool:
-    """Check if a path is a method doc (QUEUE.md, LOG/, this session's working files)."""
+def _is_method_doc(filepath: str, cwd: str, session_id: str) -> bool:
+    """Check if a path is a method doc (QUEUE.md, LOG/, this session's working files).
+
+    `session_id` is required, deliberately. It used to default to "", and a
+    caller that omitted it resolved this session's working file as
+    `_build-unknown.md` — a name that can never match, so every scoped build
+    was denied every write to its own working file, with no error to say why.
+    Without the default, a caller that forgets raises instead of failing
+    silently.
+    """
     norm = _normalise(filepath)
 
     if norm == _normalise(os.path.join(cwd, "QUEUE.md")):
@@ -914,15 +922,30 @@ def main() -> int:
             )
 
         if not _is_build_file(filepath, cwd, build_files):
+            # The trailing-text hint is useful only when the file IS named in
+            # the list and the match broke on an annotation. When it is absent
+            # entirely, that advice sends the reader hunting for a typo on a
+            # line that does not exist — and a wrong diagnostic costs more than
+            # a missing one, because the reader here is a run with nobody
+            # watching and something has already gone wrong.
+            looks_listed = any(
+                os.path.basename(filepath) in listed for listed in build_files
+            )
+            if looks_listed:
+                diagnosis = (
+                    "Files: lines must be bare paths — one path per line, "
+                    "nothing else on the line. A note or annotation on a line "
+                    "becomes part of the path and silently breaks the match, "
+                    "and this file looks listed above, so check its line for "
+                    "trailing text."
+                )
+            else:
+                diagnosis = "This file is not in the list at all."
             return _deny(
                 "[Sovereign Implementer] BLOCKED: this file is not in the "
                 f"current build's file list.\n\n"
                 f"{os.path.basename(build_path)} allows: {', '.join(build_files)}\n\n"
-                "Files: lines must be bare paths — one path per line, "
-                "nothing else on the line. A note or annotation on a line "
-                "becomes part of the path and silently breaks the match, so "
-                "if this file looks listed above, check its line for "
-                "trailing text.\n\n"
+                f"{diagnosis}\n\n"
                 "If this file genuinely needs editing, halt the build and, "
                 "with the user's approval, add it to the working file's Files: "
                 "section."

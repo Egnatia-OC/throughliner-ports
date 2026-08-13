@@ -95,6 +95,14 @@ cleared at processing, so carry the cleared flag into this item's LOG entry (2.1
 the backstop stops only if the marker still reads uncleared. Silent when no built
 item carries a flag.
 
+### 1.5 Reply to mail the run opened  [SILENT] when no mail arrived; [PROMPT] when it did
+
+Where /next's pre-flight opened a message that changed work here, draft the reply
+now and show it. The close is the moment the user is reliably present, which
+mid-run is not — and a reply leaves the machine, so it goes out only on their
+explicit yes to the exact wording. Never auto-sent, and never left for them to
+ask for.
+
 ## Phase 2: Record
 
 ### 2.1 Write LOG entry  [DISCUSS, PROMPT]

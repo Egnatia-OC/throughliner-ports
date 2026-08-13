@@ -304,6 +304,18 @@ Read shipped-ness off LOG, never off memory — a fresh short session has none.
 **Nothing here is a question for the user.** Lifting is narrated; a still-blocked
 item says nothing at all.
 
+**Lift with the mover**, which moves the block byte-for-byte and places the
+marker in the same call — never by hand:
+
+```
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+    --move <slug> AFTER <the last item that should stay cleared> \
+    --marker-after <slug>
+```
+
+Then drop the item's `Blocked by:` line and say in its prose what cleared it.
+(Skip-to-defer needs no command at all — it moves nothing.)
+
 **This revisit and the throughput floor ask different questions**, and reading
 either alone makes the other look wrong:
 
@@ -432,6 +444,13 @@ The skipped-slug record is what stops a skipped item re-surfacing later in the
 same session. The file survives compaction, gives an interrupted /plan a resume
 path, and hands /done a mechanical record instead of a reconstruction from memory.
 /done reads it at close and deletes it — same lifecycle as the build working file.
+
+**The close names this file, or names its absence.** Its LOG entry carries a
+`Planning state:` line either way, so a session that processed work without ever
+creating the file leaves a visible gap rather than a from-memory reconstruction
+that reads like a contemporaneous record. Nothing else catches the omission —
+no hook can tell a planning session from an ordinary chat before planning has
+begun.
 
 **Run the scrub checklist before writing a kept item's text** (skill-nonspecific-rules.md,
 Scrub before writing). Keeping an item is where a capture's rough wording becomes
@@ -565,6 +584,21 @@ planning-throughput target, not a context-budget count.
 these one at a time; say skip, stop, or run /done whenever."* This is the only place
 they are recited. The per-item checkpoint then presents just the next item, and
 never repeats the menu.
+
+**Re-check the rung at every pick, and narrate in one clause only when it has
+changed.** The opening names the rung the order came from; nothing used to cover
+a change once processing was under way. A session opened on rung 4, exhausted
+the decay-fresh work about ten items later, moved to cheap-to-settle with no
+narration at all, and the user had to ask outright what order was in force.
+
+Hanging this on the pick — a step that always runs — is what makes it fire; a
+standing rule with no site does not. Narrating on every item is explicitly not
+proposed: that is the per-item noise the checkpoint was stripped back to avoid.
+
+**The honest limit.** This reduces the reliance on noticing; it does not remove
+it. Claude still has to compare the rung in force against the rung the pick came
+from, and a session that has quietly settled into a different order can still
+answer that wrongly. Nothing here makes the change detectable from outside.
 
 ### For each item
 
@@ -757,56 +791,51 @@ resolve; that has happened, three items at once, and only the queue lint caught 
 after the write. If nothing in the queue blocks the item, it belongs **above** the
 line, not below it.
 
-Write the item, then report it. Make the move in **three** edits, in this order:
+**Move the item with the mover, not by hand.** Rewrite the item's rationale
+where it sits, then move the block with one command — it travels byte-for-byte,
+so nothing is retyped:
 
 ```
-1. MARK the original — rename its heading to a unique placeholder,
-   e.g. "#### MOVING-<slug> [<slug>]"     <- its only job is to make the
-                                             two copies tell each other apart
-2. ADD to Processed at the chosen placement    <- destination first
-3. DELETE the placeholder-marked block by that now-unique heading
-   (all three edits in the same turn)
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+    --move-section <slug> Unprocessed Processed \
+    [--position TOP|BOTTOM|BEFORE <anchor>|AFTER <anchor>] \
+    [--marker-after <slug>|TOP|BOTTOM]
+# the plugin root is the grandparent of the running skill's base directory
+# (.../<plugin-root>/skills/<skill>) — derive it, never hardcode a path.
 ```
 
-**Why the marking edit exists, and it is not fussiness.** After step 2 the file
-holds two near-identical copies of the same item. They differ only in their tail
-— the processed version's rationale is rewritten, the heading and opening
-paragraphs usually are not — so the most natural text to reach for when deleting
-the original matches both. In one session that produced three separate failures:
-once the deletion matched the new copy instead of the original, silently undoing
-the whole move; once it matched only the tail, leaving an orphaned heading and
-three paragraphs behind; once the repair spliced a heading into the middle of a
-neighbouring item's paragraph, briefly making two items unreadable as items.
-Marking the original first means the deletion has something unique to aim at.
+`--marker-after` places the readiness marker in the same call, so keeping an
+item and clearing it is one command rather than two. The same script does the
+below-the-line lift (`--move` within Processed) and skip-to-defer
+(`--move <slug> BOTTOM`).
 
-**The evidence for this sequence is a lead, not a proof.** It was found by trial
-in the session that hit those three failures, and it worked on every attempt
-afterwards — including the hardest case, moving an item to a different position
-as well as across sections. A handful of successes against three failures is
-worth adopting and worth stating honestly.
+**An exact-string replace can only move a block by reproducing its whole text,
+which is why this is the primary path.** Moving one item and filing one capture
+by hand once cost 6,253 output tokens across four edits — 66% of the turn —
+because a ~10,000-character item gets written out three times.
 
-**Then re-run the queue digest and read its output.** All three failures above
-were caught this way and by nothing else; it costs one command.
+**Then re-run the queue digest and read its output.** It caught all three of the
+corruptions that the hand ritual below was written to prevent, and it costs one
+command.
 
 ```
 python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
 ```
 
-**The honest limit.** This reduces a hazard created by two copies existing at
-once; it does not remove the window. An interruption between edits still leaves
-a placeholder-marked item in the file. That is ugly and obvious — and obvious is
-exactly what the current failure is not.
-
-Destination-first because nothing is on screen to fall back on. If something
-interrupts before the deletion, the item exists in Processed and only needs the
-marked copy cleaned up; the other order would leave it in neither section and
-lose the written text entirely. The cost — a short window where it shows in both
-sections, one of them visibly marked — is the lesser one, and closing all three
-edits in the same turn keeps it to that.
-
 If the raw capture had no slug, give it one now. Report "moved to Processed as
-[slug]" only after the Write succeeded and a re-read confirms it landed in
-Processed and is gone from Unprocessed.
+[slug]" only after the move reported success.
+
+**Fallback — by hand, when the script fails or refuses on a malformed file.**
+Three edits in this order, all in the same turn: MARK the original by renaming
+its heading to a unique placeholder (`#### MOVING-<slug> [<slug>]`), ADD the
+item to Processed at the chosen placement, then DELETE the placeholder-marked
+block. Destination-first, because an interruption then leaves the item in
+Processed needing only a cleanup rather than in neither section. The marking
+edit exists because after the add the file holds two near-identical copies and
+the natural text to reach for matches both: in one session that silently undid a
+whole move, left an orphaned heading with three paragraphs, and spliced a
+heading into a neighbouring item's paragraph. Re-run the digest afterwards
+either way.
 
 *Split out a buried user-only prerequisite before keeping.* Scan the item's
 rationale for a gating action that is both user-only and gates this or other work.
@@ -829,6 +858,17 @@ question was answered hours later by one command that had nothing to do with
 settings files. The reframe is what catches that, and it costs less than the
 search does. This is the cheapest place to catch a wrong tag.
 
+*And where the item's walkthrough is authored here, confirm the step can
+actually produce the observation the item names* — where running the command is
+harmless, run it. This is a different question from the capability check above:
+that one asks whether Claude could do the *work*, this asks whether the *user's
+step* yields the *evidence*. A walkthrough once handed over a `--move` command
+to check whether a heading rendered correctly; that path echoes no heading at
+all, so the observation was impossible from the step given. It was caught only
+because the user happened to ask Claude to run the command first, which nothing
+requires and which usually will not happen. /plan is the only site where trying
+is free.
+
 **Keep a surfaced risk with a red-flag marker** [DISCUSS, PROMPT] — the item gets
 one extra line under its description: `Red flag · State: <cleared | uncleared>`.
 Processing the risk *means* clearing it. Set **cleared** once this session designs
@@ -848,34 +888,38 @@ Still a delete, just after its worth-keeping content has been carried across.
 
 After every item, present the next item. That is the whole checkpoint.
 
+**The specimen — this is the shape of the message:**
+
+> Next up:
+>
+> **#### The close invites another /next in the same session [close-invites-same-session-next]**
+> Captured by you (2026-08-13), from a live instance minutes earlier in another
+> project running this plugin.
+
+Nothing beneath it. No routes, no options, no question.
+
 ```
 message order:
-    1. the NEXT item's verbatim (item only, no analysis)
+    1. a one-line pointer to the NEXT item, or its verbatim if the user took
+       the inline offer (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
     2. nothing else. No menu of routes.
 ```
 
 **The four routes are stated ONCE, at the start of processing, and never
-recited again.** Say it there in one line — *"I'll work through these one at a
-time; say skip, stop, or run /done whenever"* — and each checkpoint then presents
-only the next item.
+recited again** — *"I'll work through these one at a time; say skip, stop, or
+run /done whenever"*.
 
-**Why the recital goes, and why rewording it was not enough.** The wording used
-was already a neutral either/or, which is not wrong in itself. The defect is
-position and repetition: an offer that *names closing*, delivered at the end of
-a long message just after finishing a piece of work, reads as an announcement
-that closing is what happens next — whatever its phrasing. A user once acted on
-that reading and ran /done on a session they wanted to continue, saying
-afterwards they had thought the session was over. Rewording a string that fires
-after every processed item leaves it firing after every processed item.
+**Why rewording the recital was not enough.** The old wording was already a
+neutral either/or. The defect is position and repetition: an offer that *names
+closing*, at the end of a long message just after finishing a piece of work,
+reads as an announcement that closing is what happens next, whatever its
+phrasing. A user acted on that reading and closed a session they wanted to
+continue. The cost of removing it — someone who forgets the options gets no
+reminder — is judged small, since "stop" needs no teaching.
 
-Three things follow. Closing is never named immediately after completed work,
-which is the exact moment it misreads. Every checkpoint gets several lines
-shorter. And all four routes stay genuinely available — only the recital goes.
-
-**The cost, stated rather than discovered:** a user who forgets the options
-mid-session gets no reminder. Judged small — "stop" needs no teaching, and they
-can ask.
+**If the rung has changed since the last pick, say so here in one clause**
+(see the floor narration above). Only when it changed; never per item.
 
 **This does not touch the end-of-queue gate**, which fires when the queue empties
 and is deliberately worded not to lean toward closing. Leave it alone.
@@ -944,8 +988,28 @@ carry on         ->  leaves it in Unprocessed for its turn
 (either way: anything else to add first?)
 ```
 
-Scoped to a capture the **user** raised — processing is /plan's to do, so the
-offer is real here. A capture *Claude* raised confirms and resumes instead.
+**The "anything else to add first?" clause is not optional**, and it belongs to
+this branch only. It was dropped once, and it is the clause that stops a user's
+idea being closed off before they have finished the thought.
+
+**When *Claude* raises something mid-/plan that may be work, ask once, at the
+moment it is raised, before any write: file it for later, or work it now?**
+Work-it-now runs the ordinary present-and-interview loop and, if kept, places the
+item straight into Processed — a route that already exists and needs nothing
+built. What was missing is the choice, so the answer stopped defaulting to
+file-first when it is often "deal with it now".
+
+No anything-else clause on this branch: the user was not mid-thought, so there
+is nothing of theirs to invite, and asking would be soliciting further captures
+off the back of Claude's own — which the always-loaded rule bars. That rule is
+not being reversed here; this offer disposes of the one thing already raised and
+asks nothing beyond it.
+
+Nor does this erode write-first, which governs whether text is shown for
+approval before it is written. Both branches write. The question decides only
+*where* — Unprocessed now, or worked and placed — and where work-it-now lands
+the item in Processed in the same turn, the exposure is identical, so filing
+first is not the safer order either.
 
 ### After all items
 

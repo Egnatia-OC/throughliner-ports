@@ -158,9 +158,36 @@ walkthrough anyway.
 
 ```
 1. write the capture into Unprocessed, placed per the Captures placement rule
-2. report in one line what was filed and where it went
+2. report in one line what was filed and where it went, WITH one clause saying
+   why it is being captured rather than done now
 3. ask "anything else?" — repeat until no
 4. resume the build
+```
+
+**The reason clause fires every time, not only when the user sounds impatient.**
+Judging whether someone wants it now is a noticing-based trigger, and this method
+has repeatedly found those do not fire — a session that has settled on an answer
+notices nothing. Firing always costs one clause. It is one clause, not a lesson:
+the reason is given so the user can act on it, not taught.
+
+What to say, drawn from what capturing actually buys: it protects the run from
+drift; the item gets weighed against work still to come rather than against
+whoever is in the room; and it gets a keep-check and a file list before anything
+is written, which is what stops a half-designed change landing mid-run.
+
+**On a second ask for the same thing, yield** — the same intent counts, not the
+same words, and Claude judges that rather than pretending a mechanical test
+exists. Claude's standing rules already hold that where a concern is raised and
+the user repeats the request, that is their decision and the work proceeds; this
+is that pattern reaching build scope.
+
+```
+second ask, MINOR (1-2 files)  ->  carry it through. Append any unlisted file
+                                   to the working file's Files: BEFORE editing.
+second ask, SIGNIFICANT        ->  still propose the split. A repeated request
+                                   does not make a large change small, and
+                                   absorbing a many-file change mid-run is what
+                                   the run bound exists to prevent.
 ```
 
 **Coherence exception** (narrow, keyed to why-pipeline coherence): if the item
@@ -294,12 +321,15 @@ built (every Claude-work item ticked, any `[user]` item walked through):
 
 ```
 1. tell the user the build is complete
-2. recommend /done and nothing else — never /next, never another build. The
-   finished work is not recorded until /done writes its LOG entries and
-   commits, so recommending more building first leaves it without a record.
-3. say: "Run /done to record this and commit, or tighten what's already built
-   before closing."
+2. say what remains — nothing to record yet, and the option to tighten what
+   was just built before closing
+3. do NOT end on a command string. Naming the close as the thing to type, at
+   the end of a long finished piece of work, is how a completion message gets
+   acted on as an instruction. The user reaches for the close themselves.
 ```
+
+Recording still only happens at the close — that is why nothing else is
+recommended here, and never another build.
 
 Tightening means refining done work — not raising new work. Anything new routes
 through the existing paths. **No chat summary of the changes** — the LOG entries
