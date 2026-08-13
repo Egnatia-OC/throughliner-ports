@@ -1,4 +1,4 @@
-# [HASH] — The output style now reaches the files Claude writes, not only what it says in chat
+# d6efa7c — The output style now reaches the files Claude writes, not only what it says in chat
 
 Anthropic treats written-deliverable length as a control distinct from conversational verbosity: files Claude Opus 5 writes to disk — reports, Markdown documents, summaries — are often longer than on prior models, and the documented countermeasure is one sentence, matching document length to what the task needs rather than padding with filler sections, redundant summaries or boilerplate.
 

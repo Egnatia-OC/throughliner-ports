@@ -1,4 +1,4 @@
-# [HASH] — The one-item-at-a-time rule is now shown as a specimen message rather than described in prose
+# d6efa7c — The one-item-at-a-time rule is now shown as a specimen message rather than described in prose
 
 Alex asked, separately from length, what would get Claude to stop bundling. The honest research finding is that no such lever is documented. Anthropic's guidance has nothing on releasing output one piece at a time, and the general literature that surfaces on the phrasing is prompt-chaining research — about how a *human* should decompose their prompts to improve model accuracy, which is a different problem in the opposite direction and must not be cited as support for this rule.
 

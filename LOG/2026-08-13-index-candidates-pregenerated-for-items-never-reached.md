@@ -1,4 +1,4 @@
-# [HASH] — Index-entry candidates move from scope-lock to the tick, so a run only pays for the items it actually builds
+# d6efa7c — Index-entry candidates move from scope-lock to the tick, so a run only pays for the items it actually builds
 
 /next's lock-scope step used to pre-generate a candidate index entry for every Claude-work item before the build started. The measurement that produced this item came from a live run: scope was locked over 23 items, 23 candidates were written for roughly 2,500 output tokens, and the run was interrupted after ten. Thirteen of those candidates described work that had not happened, would be written again by a later run, and were deleted with the working file at the close.
 

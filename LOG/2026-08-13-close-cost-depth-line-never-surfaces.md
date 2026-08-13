@@ -1,4 +1,4 @@
-# [HASH] — The LOG depth decision becomes a required field written at the tick, because an absent line was never a signal anyone could see
+# d6efa7c — The LOG depth decision becomes a required field written at the tick, because an absent line was never a signal anyone could see
 
 The short-form LOG entry has been the documented default for some time, and it has effectively never fired. The Understudy project measured why: closing an eleven-item /next run cost about 15,500 output tokens in one turn, and although the mechanism for buying full depth existed — a depth line written into the build working file during the build — exactly two of the eleven items wrote one, and all eleven were then written at near-full depth. Following the rule as stated would have roughly halved that turn.
 

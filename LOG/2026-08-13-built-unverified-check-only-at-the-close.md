@@ -1,4 +1,4 @@
-# [HASH] — /plan's two clearing moves now defer to the close's built-but-unverified rule instead of being blind to it
+# d6efa7c — /plan's two clearing moves now defer to the close's built-but-unverified rule instead of being blind to it
 
 done-plan.md carries the rule that an item must not be cleared where its prose names a dependency that LOG records as built but not yet verified — built alone is not enough. plan.md carried it nowhere, although both of its insertion points are clearing moves: the keep-step clears an item with `--marker-after` in the same call that places it, and the below-the-line revisit lifted on "has the blocker shipped?", where *shipped* does not distinguish built from verified.
 

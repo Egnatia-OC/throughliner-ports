@@ -1,4 +1,4 @@
-# [HASH] — The output style's negative instructions restated as the behaviour wanted, with the contrastive example deliberately kept
+# d6efa7c — The output style's negative instructions restated as the behaviour wanted, with the contrastive example deliberately kept
 
 "Tell Claude what to do instead of what not to do" is one of the few levers Anthropic names as particularly effective for steering output format, and the Opus 5 guidance repeats it for communication style specifically: positive examples of the style you want tend to be more effective than instructions about what not to do. The output style was roughly half negatives — "don't preview the later items", "never cram", "never drop a plain-English explanation", "Cut bloat", and a "Bad:" exemplar — while the parts that visibly held were the positives, "Lead with the decision" and the "Good:" line.
 
