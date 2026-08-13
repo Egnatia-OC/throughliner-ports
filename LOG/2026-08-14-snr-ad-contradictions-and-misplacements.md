@@ -1,4 +1,4 @@
-# [HASH] — Fifteen contradictions and misplacements resolved in the always-loaded rules, and the rule gate caught writing a disposition it never ran
+# 0150ce4 — Fifteen contradictions and misplacements resolved in the always-loaded rules, and the rule gate caught writing a disposition it never ran
 
 The always-loaded rules file carried eleven places where two of its own rules gave opposing instructions for the same situation, and four where a rule sat in a section that had nothing to do with it. An outside audit found them, they were filed as fifteen separate captures at the user's instruction and consolidated into one item at her instruction too, and the item was marked `Runs alone` because all fifteen edit one file, several touch the same paragraphs, and a partial application would have left the file internally inconsistent in a new way.
 
