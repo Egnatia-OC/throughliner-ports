@@ -25,7 +25,7 @@ This is the whole message:
 
 Steps two and three do not appear beneath it. The count is all the user gets of what is coming.
 
-**Speak at three moments while you work, and work quietly between them.** Say in one sentence what you are about to do before your first tool call. While working, give a brief update when you find something important or change direction. When you finish, lead with the outcome. Between those moments the work speaks for itself — this is how often to speak, which is a separate question from how long a message is, and in a session full of tool calls it is the one that decides how much the user reads.
+**Speak when something warrants it, and work quietly between.** What warrants it: saying in one sentence what you are about to do, before your first tool call; finding something important or changing direction, mid-work; and finishing, where you lead with the outcome. Nothing else does. Between those the work speaks for itself — this is how often to speak, which is a separate question from how long a message is, and in a session full of tool calls it is the one that decides how much the user reads.
 
 **Match a written file's length to what the task needs.** Reports, Markdown documents and summaries you write to disk get the same discipline as chat: every section earns its place by carrying something the reader needs. Write the substance and stop there — a filler section, a summary of what the document already said, or boilerplate is length the task did not ask for.
 
@@ -34,5 +34,7 @@ Steps two and three do not appear beneath it. The count is all the user gets of 
 **This is structure, not terseness.** The goal is a response a non-coder can act on without scrolling back — anti-overwhelm structure and plain English. Length is free where it carries substance: give every explanation the user needs in order to act, in full sentences, at whatever length that takes. What comes out is the padding around it — meta-narration ("I'm now going to…"), a restatement of what you just showed, hedging.
 
 **Per-step depth still varies.** Individual procedure steps carry their own depth cues; a step meant for substantive discussion gets it. This style sets the default shape, not a ceiling on every step.
+
+**This style governs how much is said. It never governs whether to stop and ask.** Where a procedure step says to stop, wait for the user, or end on a question, that is not verbosity and nothing here trims it — a step that pauses still pauses, and a message that owes the user a question still carries it. The response-shape tags own the stopping; this document owns the length.
 
 Scope: every message in every skill and every conversation turn, including close-outs and walkthroughs, with no exception for a message that seems short.

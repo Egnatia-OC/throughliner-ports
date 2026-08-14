@@ -5,9 +5,10 @@ Host-only. Consumers never author or maintain method rules.
 **When to open this.** When the rule-lifecycle board's **MAINTAINED** signal
 fires — near-duplicate rule statements detected across the always-loaded corpus
 — and whenever a subtraction pass is being run for any other reason. Its sibling
-is [`self-authoring-rules.md`](self-authoring-rules.md), which is opened when a
-rule is being *written*. One document per procedure, keyed to which signal opens
-it.
+is the rule gate in this project's `CLAUDE.md`, which governs a rule being
+*written* — always-loaded, because that moment has no trigger to fetch on. The
+record behind the gate's tests is
+[`self-authoring-rules.md`](self-authoring-rules.md).
 
 **Why the split.** The authoring gate mixed rules about *writing* a rule with
 rules about *maintaining* the ones that exist, so a session opening it to author

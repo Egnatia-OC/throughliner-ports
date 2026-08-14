@@ -181,10 +181,6 @@ The active build's working file. It does four jobs: carries the work item being 
 
 **The jumble of characters in the name is the session's own id**, so the file is `_build-<something>.md` rather than plain `_build.md`. Each conversation gets its own. That matters if you ever run two conversations at once — a planning chat alongside a build, say. With one shared file, the planning chat would see the build's file, decide it was inside that build, and apply the build's list of allowed files to edits you never agreed to. With one file per conversation, that can't happen.
 
-## What is the `_plan-...md` file? Should I edit it?
-
-A planning session's working file — the planning counterpart to the build one above, and named the same way, with the conversation's own id. When /plan starts working through your captures, it creates the file to track where it is: which items it's processing, the current one, and what it has routed so far (kept or dropped). It does three jobs: it survives a cleared or compacted conversation, it lets an interrupted /plan pick up where it stopped, and it gives /done a record of what was decided. Claude manages it — don't edit it. /done deletes it when the planning session closes; if it exists at session start, a previous /plan was interrupted and you can resume with /plan.
-
 **If a working file is left behind by a conversation that never closed, Claude tells you at the start of the next session** and never deletes it. A working file can hold the only record of what a crashed session actually did, so throwing it away could lose real work. Run /done if you want what it records written up and committed.
 
 ## What if my project already has planning docs from another tool or an older version?
@@ -336,7 +332,7 @@ That's a forward-recommendation note — the previous session's suggestion for w
 
 You'll see it ends with `[forward-advisory]`, the same way your real work items end with a short name in brackets. That's deliberate: your queue's automatic checks expect every line in that shape to carry one, and the note used to be written without it — which made the checks complain about a perfectly correct note, and stopped the tool that moves and removes queue items from running at all while the note was there. Giving it a fixed name of its own fixed both. It is still not a work item, and Claude never treats it as one.
 
-It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Once you and Claude have agreed on the processing or build order for the session, the note is deleted automatically. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
+It's advice, not a command. When you run /plan, Claude reads it, mentions what it says, and lets it inform where you focus — but you're free to go a different direction. Mentioning it is what uses it up: the note is deleted automatically at that point, whether or not you follow it. It never moves into Processed and is never treated as real work — it's a one-time orientation handoff that disappears once it's done its job. If no note is there when you start /plan, nothing was recommended — the last session's close didn't have a specific suggestion to make.
 
 ## Claude offered to delete some files when I closed a session. What's that?
 

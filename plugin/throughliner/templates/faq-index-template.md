@@ -37,7 +37,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [Claude offered to "seed the queue from SPEC." What does that mean?](faq.md#claude-offered-to-seed-the-queue-from-spec-what-does-that-mean)
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
 - [What is the `_build-...md` file? Should I edit it?](faq.md#what-is-the-_build-md-file-should-i-edit-it)
-- [What is the `_plan-...md` file? Should I edit it?](faq.md#what-is-the-_plan-md-file-should-i-edit-it)
 - [What if my project already has planning docs from another tool or an older version?](faq.md#what-if-my-project-already-has-planning-docs-from-another-tool-or-an-older-version)
 - [Claude says my project is "out of date" and offers to run /setup. What does that do?](faq.md#claude-says-my-project-is-out-of-date-and-offers-to-run-setup-what-does-that-do)
 - [I want to undo a lot of work and go back to how the project was a while ago. What should I know?](faq.md#i-want-to-undo-a-lot-of-work-and-go-back-to-how-the-project-was-a-while-ago-what-should-i-know)

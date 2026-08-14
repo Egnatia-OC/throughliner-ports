@@ -101,6 +101,13 @@ file content — as part of getting the item right.
 a check Claude CAN run   ->  just building
 a check needing the user ->  a [user] work item, which /plan would have set as
                              its own item; /next walks the user through it
+a check Claude can run   ->  it stays OUTSTANDING in the run's working file.
+  but a circumstance of      Retry it before the close; if the circumstance
+  the moment blocks          still hasn't cleared, the close files it as a
+  (the app must be on        capture. No new state, no new tag.
+  screen and stealing
+  focus would interrupt
+  the user)
 ```
 
 If mid-build you discover the work needs a user-run check that isn't already a

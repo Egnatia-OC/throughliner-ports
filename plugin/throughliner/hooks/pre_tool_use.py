@@ -596,9 +596,9 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     """True for the files a session with no build working file writes by design.
 
     The quiet list is the planning session's own working surface: QUEUE.md,
-    SPEC.md, LOG/, and the session's own planning notes. Writing to these is what
-    a planning session IS, so asking about them would be pure noise on every
-    write. Everything else gets an ask — never a denial.
+    SPEC.md and LOG/. Writing to these is what a planning session IS, so asking
+    about them would be pure noise on every write. Everything else gets an ask —
+    never a denial.
 
     Ask-never-deny is load-bearing and must not be "improved" into a denial. In a
     build there is a file list agreed in advance, so a surprise write means drift
@@ -626,11 +626,16 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     quiet_files = ("QUEUE.md", "SPEC.md")
     if rel in tuple(os.path.normcase(name) for name in quiet_files):
         return True
-    # A working file, whichever session owns it. Matched by shape rather than
-    # by this session's id: writing to another session's working file should be
-    # rare, but it is a planning-note write either way and the quiet list is
-    # about noise, not about scope. The scope-lock is what enforces ownership.
-    if re.match(r"^_(build|plan)-[a-z0-9._-]+\.md$", rel):
+    # A build working file, whichever session owns it. Matched by shape rather
+    # than by this session's id: writing to another session's working file
+    # should be rare, but it is a working-state write either way and the quiet
+    # list is about noise, not about scope. The scope-lock enforces ownership.
+    #
+    # `_plan-<id>.md` was matched here too until the planning working file was
+    # deleted from the method (2026-08-14). A session with no build working file
+    # is now writing QUEUE.md, SPEC.md and LOG/ and nothing else by design, so a
+    # `_plan-` write is exactly the surprise this gate should surface.
+    if re.match(r"^_build-[a-z0-9._-]+\.md$", rel):
         return True
     if rel.startswith(os.path.normcase("LOG") + "/"):
         return True

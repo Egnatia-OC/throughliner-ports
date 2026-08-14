@@ -296,34 +296,6 @@ slug into the commit. When nothing was mentioned and nothing was walked through,
 say nothing. A remote-gated push offer applies as normal — a completed `[user]`
 item is real project progress, not bookkeeping.
 
-## Clear the consumed forward-recommendation advisory  [SILENT] when none; [BRIEF] when clearing
-
-/plan Step 1 *reads* the advisory to orient the session; the *clear* lives here,
-at the one close that always runs however a /plan ends. It used to be tied to "once
-the order is agreed" at the end of the discussion — a beat a no-work or off-ramp
-/plan never reaches, so the clear was silently skipped and a stale advisory
-survived.
-
-```
-it oriented this session          ->  DELETE it from Unprocessed now, whether or
-                                      not the recommendation was followed
-it names an unmet persist-condition  ->  LEAVE it in place
-    ("persist until the cleared builds ship")
-no advisory present               ->  say nothing
-```
-
-Delete it with the mechanical mover, addressed by its reserved slug — the same
-tool and the same plugin-root derivation as the reorder above:
-
-```
-python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
-    --delete forward-advisory Unprocessed
-```
-
-Narrate in one line when clearing. Distinct from "Recommend next", which *files a
-fresh* advisory after the commit — clearing the consumed one and filing the next
-are two different advisories.
-
 ## 1. Write LOG entry  [DISCUSS, PROMPT]
 
 Follow done.md's **LOG entry files** section, using its **Plan / setup** body
@@ -335,38 +307,22 @@ cleared red flag: for a design-out, how it was eliminated; for an acceptance, wh
 the user was warned about and that they chose to proceed. Clearing happens at
 processing, so /plan is where this record is written.
 
-**If this session has a planning working file, read its disposition list** — kept and deleted items with
-their slugs — and use it to fill the entry's Queue changes and Work processed
-lines. It's the mechanical record of what this session did, so the entry doesn't
-have to be reconstructed from memory.
-
-**The entry carries a `Planning state:` line, always, and the close is not
-complete without it:**
+**Read what this session did off the queue itself, not off memory:**
 
 ```
-Planning state: _plan-<id>.md, N dispositions
-Planning state: none — no items were processed
+git diff HEAD -- QUEUE.md
 ```
 
-A session that processed work and cannot name its state file leaves a gap anyone
-can see, and "no items were processed" is a claim a later reader can disagree
-with by reading the queue's own history. Same shape as the other close
-obligations, and the same honest limit: by the close the information has already
-been reconstructed from memory if the file was never made. What the line buys is
-that the reconstruction is **labelled** as one instead of passing as a
-contemporaneous record. It detects; it does not prevent.
+That is the mechanical record — every item kept, every item deleted, and the
+reasoning written into each one as it was processed — so the entry's Queue
+changes and Work processed lines are filled from the artifact rather than
+reconstructed. It is the same argument the method already makes for preferring a
+generated digest over a paged read: code cannot silently truncate, and memory can.
 
-**If there is no planning working file, say so in the entry.** Write a plain line
-into the session record naming the absence:
-
-> No planning record was kept for this session, so what follows was written from
-> what I could still remember of the conversation. It may be incomplete.
-
-Then write the entry as best you can. The point is that a missing record becomes
-visible instead of silently becoming a from-memory reconstruction that reads
-exactly like a complete one. This does **not** prevent the miss, and must not be
-described as if it does — it makes the miss impossible to hide, which is all it
-does and all the method's other required-artifact obligations do.
+**Skipped items are the one thing the diff cannot see, and they are deliberately
+not recorded anywhere.** Skipping moves nothing and edits nothing, so it leaves no
+trace; a skipped item simply returns next session. Don't reintroduce a file to
+hold them.
 
 ## 2. Commit
 
@@ -389,10 +345,6 @@ planning / setup / method-doc-only  ->  commit, and DON'T offer push. Planning
 completed [user] item / handmade    ->  offer push as the commit core does.
                                         Both are real project progress.
 ```
-
-**Delete this session's planning working file** if one exists, as part of the close — same lifecycle as
-the build working file. It was working state only and was never committed, so removing the file
-is all that's needed.
 
 ## 3. Recommend next  [BRIEF, PROMPT]
 

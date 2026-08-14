@@ -111,6 +111,13 @@ for _stream in (sys.stderr, sys.stdout):
 # be reported split by audience. This is the tool finally doing it.
 SHIPPED_ALWAYS_LOADED = [
     "plugin/throughliner/docs-b/skill-nonspecific-rules.md",
+    # The output style is shipped and applied automatically whenever the plugin
+    # is enabled, at system-prompt priority — so it is always-loaded in the only
+    # sense this count cares about, and it carries behavioural rules. It sat
+    # outside this list until an underived limit reached it and no watcher said
+    # anything: the growth report did not count it and BORN's trigger did not
+    # cover it, so a commit changing only the style fired nothing at all.
+    "plugin/throughliner/output-styles/concise-throughliner.md",
 ]
 
 HOST_ALWAYS_LOADED = [
@@ -151,6 +158,7 @@ GROWTH_WINDOW = 30
 # this stage buildable at all.
 RULE_BEARING = [
     "plugin/throughliner/docs-b/",
+    "plugin/throughliner/output-styles/",
     "resources/self-authoring-rules.md",
     "resources/rule-maintenance.md",
     "CLAUDE.md",

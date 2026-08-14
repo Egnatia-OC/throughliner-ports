@@ -619,10 +619,15 @@ def leftover_working_files(cwd: str, session_id: str) -> list:
         names = os.listdir(cwd)
     except OSError:
         return found
+    # Only a build working file can belong to THIS session. The planning
+    # working file was deleted from the method on 2026-08-14, so a `_plan-`
+    # file is now an orphan by definition — left by a session that ran under
+    # an older build. Still detected below and still surfaced, because it may
+    # hold the only record of what that session did; it just can never be
+    # excluded as "mine".
     mine = os.path.basename(_working_file(cwd, "build", session_id))
-    mine_plan = os.path.basename(_working_file(cwd, "plan", session_id))
     for name in names:
-        if name in (mine, mine_plan):
+        if name == mine:
             continue
         match = WORKING_FILE_RE.match(name)
         if match:
@@ -782,7 +787,6 @@ def main() -> int:
     # working file and conclude it is inside a build.
     session_id = data.get("session_id", "")
     build_path = _working_file(cwd, "build", session_id)
-    plan_state_path = _working_file(cwd, "plan", session_id)
     faq_index_path = os.path.join(cwd, "FAQ", "index.md")
     si_version_path = os.path.join(cwd, VERSION_FILE)
     if not os.path.isfile(si_version_path):
@@ -793,7 +797,6 @@ def main() -> int:
     has_spec = os.path.isfile(spec_path)
     has_queue = os.path.isfile(queue_path)
     has_active_build = os.path.isfile(build_path)
-    has_plan_state = os.path.isfile(plan_state_path)
     has_faq_index = os.path.isfile(faq_index_path)
 
     # `has_faq_index` is read for two jobs: the one-line pointer near the end of
@@ -1277,15 +1280,6 @@ def main() -> int:
             "Run /plan to manage the queue, or /next to start the top work item."
         )
 
-    if has_plan_state:
-        context_parts.append("")
-        context_parts.append(
-            "INTERRUPTED PLANNING SESSION — this session's planning working file "
-            f"({os.path.basename(plan_state_path)}) exists. A previous /plan was left "
-            "mid-processing. Run /plan to resume from the recorded item and beat, or "
-            "/done to close out what was already routed."
-        )
-
     # Working files left by OTHER sessions. Surfaced, never deleted — the file
     # may hold the only record of what a crashed session did. A project-level
     # working file was at least self-evidently stale; a per-session one is
@@ -1303,11 +1297,17 @@ def main() -> int:
             "If one is genuinely orphaned, /done can close out what it records."
         )
 
-    # Dirty-tree warning: uncommitted changes with no active build and no active plan
-    # almost always mean a previous session ended without /done — work sitting
-    # unrecorded that a non-coder won't notice for weeks. Silent during an active build
-    # or an active plan, where dirt is expected mid-session, not orphaned.
-    if not has_active_build and not has_plan_state:
+    # Dirty-tree warning: uncommitted changes with no active build almost always
+    # mean a previous session ended without /done — work sitting unrecorded that
+    # a non-coder won't notice for weeks. Silent during an active build, where
+    # dirt is expected mid-session rather than orphaned.
+    #
+    # A planning session now leaves no working file at all, so there is no
+    # second condition to suppress on. That costs one false fire: a /plan that
+    # has edited QUEUE.md and not yet closed looks the same as an abandoned
+    # session. The message says /done will pick the changes up, which is true
+    # either way, so the false fire is harmless.
+    if not has_active_build:
         dirty_count = _dirty_tree_count(cwd)
         if dirty_count:
             context_parts.append("")

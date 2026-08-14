@@ -13,7 +13,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I just had an idea for a feature. How do I record it?](faq.md#i-just-had-an-idea-for-a-feature-how-do-i-record-it-without-losing-my-train-of-thought)
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)
 - [What is the `_build-...md` file? Should I edit it?](faq.md#what-is-the-_build-md-file-should-i-edit-it)
-- [What is the `_plan-...md` file? Should I edit it?](faq.md#what-is-the-_plan-md-file-should-i-edit-it)
 - [What if my project already has planning docs from another tool or an older version?](faq.md#what-if-my-project-already-has-planning-docs-from-another-tool-or-an-older-version)
 - [What happens if Claude needs to touch a file the current work doesn't cover?](faq.md#what-happens-if-claude-needs-to-touch-a-file-the-current-work-doesnt-cover)
 - [What does it mean when work sits below the "cleared to run" line?](faq.md#what-does-it-mean-when-work-sits-below-the-cleared-to-run-line)

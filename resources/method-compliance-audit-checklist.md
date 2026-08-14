@@ -2,7 +2,7 @@
 
 The standing criteria for a periodic compliance audit of the method's own procedure docs — `skill-nonspecific-rules.md`, `setup.md`, `plan.md`, the `next*` family, the `done*` family, and any procedure doc added later.
 
-**What this is for, and how it differs from the authoring gate.** [`self-authoring-rules.md`](self-authoring-rules.md) is a per-rule check run *once, at authoring time* — you run it over a rule before that rule ships. This checklist is the *corpus-wide periodic sweep*: you run it over docs that already shipped, to catch what drifted or was never checked. The un-hardened tool-use rule that slipped past for so long (the subagent-cost incident, 2026-06-24) is exactly the gap this exists to close — an authoring-time check never re-examines old rules, so without a periodic sweep, a rule authored before a standard existed never gets held to it.
+**What this is for, and how it differs from the authoring gate.** The rule gate — in this project's `CLAUDE.md` — is a per-rule check run *once, at authoring time* — you run it over a rule before that rule ships. This checklist is the *corpus-wide periodic sweep*: you run it over docs that already shipped, to catch what drifted or was never checked. The un-hardened tool-use rule that slipped past for so long (the subagent-cost incident, 2026-06-24) is exactly the gap this exists to close — an authoring-time check never re-examines old rules, so without a periodic sweep, a rule authored before a standard existed never gets held to it.
 
 It is a dev artifact. It audits the method's own docs, so it is host-only — not shipped in the plugin package, no FAQ, no SPEC entry — the same status as the gate it builds on.
 
@@ -53,7 +53,7 @@ relocate-rationale      the rule stays; its why moves out (consumer-facing why
 
 ## Lens 1 — self-authoring compliance
 
-Apply the four parts of [`self-authoring-rules.md`](self-authoring-rules.md) — admission, eviction, distribution, wording — to each doc. That document is the single source of truth; read the tests there rather than re-listing them here, so the two never drift.
+Apply the four parts of the rule gate — admission, eviction, distribution, wording — to each doc. The gate in this project's `CLAUDE.md` is the single source of truth for the tests; read them there rather than re-listing them here, so the two never drift. [`self-authoring-rules.md`](self-authoring-rules.md) carries the record behind them — the repeals, the defeated proposals, the measurements — and is worth opening when a finding turns on why a test is shaped as it is.
 
 Read corpus-wide, the gate asks things it can't ask one rule at a time:
 
@@ -79,9 +79,34 @@ Check what the doc causes Claude to *say to the user* against the communication 
 
 - **Background vocabulary in user-facing narration** — a structural or bookkeeping term from skill-nonspecific-rules.md's Vocabulary list (loop, Step N, gate, pre-flight, slug, "processed/unprocessed captures," "staleness sweep," "hash backfill," and the rest) leaking into text the user reads. Background terms belong in the procedure prose Claude reads, never in narration to the user.
 - **Menu where a recommendation was due** — the doc steering Claude to lay out flat options ("file it, drop it, or commit now?") at a moment it actually has a preference, instead of leading with the recommendation and offering the alternatives as fallback (skill-nonspecific-rules.md Dependency ownership narration; the spectrum-not-flat-list rule).
-- **Multi-finding openings that should consolidate** — a doc that fires several scans, watches, or narrations at one skill opening (a /plan read-state, a /next pre-flight, a /done close-out) without consolidating them into one narration, against the consolidate-the-scans rule in skill-nonspecific-rules.md.
+- **Multi-finding openings that should consolidate** — a doc that fires several scans, watches, or narrations at one skill opening without consolidating them into one narration. The rule is stated per skill, in that skill's own opening step: plan.md's read-state, next.md's pre-flight, done.md's close.
 
 **Not a target: a purpose clause.** Where a sentence is welded into a rule's operative text because the rule cannot be applied correctly without it, that sentence *is* the rule, not rationale riding it. An eviction sweep must leave it alone. The test in reverse: delete it and read what remains — a complete instruction means it was rationale, an unfinished one means it was operative.
+
+## The doubled communication rules — what this project's own narration cannot test
+
+**Read this before treating anything about this project's narration as evidence the method works.** Three layers assert the method's communication rules in every session here, and only one of them is the method. Where a rule is doubled, no session can tell which layer it followed — so a rule that is weak, badly worded, or missing from `skill-nonspecific-rules.md` still produces correct behaviour in this project, supplied by a layer consumers do not have. The defect then ships and this project never sees it.
+
+The three layers: **(G)** the user's global `~/.claude/CLAUDE.md`, loaded in every session on this machine and in every project; **(S)** the shipped output style `plugin/throughliner/output-styles/concise-throughliner.md`, applied automatically at system-prompt priority; **(M)** the method's own `plugin/throughliner/docs-b/skill-nonspecific-rules.md`. Only M ships as the method's steering; G is personal and reaches every project; S ships but sits above M in priority.
+
+| Rule | G | S | M |
+|---|---|---|---|
+| One item per message when the next action depends on the last | yes | yes | yes |
+| State the count upfront before a multi-part exchange | yes | yes | yes |
+| Never preview later items | yes | yes | yes |
+| Alternatives the user is choosing between are shown together | yes | yes | yes |
+| Lead with the decision; don't front-load reasoning | yes | yes | yes |
+| Skip recaps of what the user can already see | yes | yes | — |
+| The single user-facing ask goes in bold, as a question, at the end | yes | — | yes |
+| Offer a web search rather than guessing at an external fact | yes | — | yes |
+| Plain English for a non-coder; no unexplained jargon | yes | yes | yes |
+| Gate detail behind an explicit request | — | yes | — |
+| How often to speak while working (narration cadence) | — | yes | — |
+| A written file's length matches what the task needs | — | yes | — |
+
+**How to read it.** Nine of the twelve are asserted by at least two layers, and five by all three — so this project's behaviour on those five is unattributable, and its good behaviour on them is not evidence about M. The three S-only rows are the opposite case and worth watching for the same reason in reverse: nothing in M carries them, so removing S would remove them entirely.
+
+**What was rejected, and why it is not reopened.** Stripping the duplicated rules out of G was refused: those instructions serve the user across every other project, and removing them to improve one project's test fidelity trades real everyday benefit for a diagnostic. Testing the communication rules in a consumer project without the global overrides is the real answer and is separate work. Making the overlap visible — this table — costs nothing and loses nothing, which is why it is what was built.
 
 ## Output
 

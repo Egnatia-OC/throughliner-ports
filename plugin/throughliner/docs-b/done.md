@@ -42,8 +42,7 @@ the build working file EXISTS  ->  read it, then route by the run's work-item fl
 NO build working file          ->  done-plan.md, which carries all three
                                    no-build shapes and picks between them:
     a planning session
-        (queue managed, captures processed, readiness line moved,
-         or the planning working file exists)
+        (queue managed, captures processed, readiness line moved)
     a completed [user] item
     standalone handmade work
         (no planning either, and the tree holds uncommitted edits the
@@ -100,6 +99,24 @@ missing something memory knows was done — **that mismatch is itself a finding
 about build discipline**, and it routes to Unprocessed. It's the only routine
 check the build working file's accuracy gets before a fresh session has to rely on it. An audit
 close carries no such reconcile.
+
+## The close's checks report as one narration  [BRIEF]
+
+Several checks fire across a close — verify completion, the staleness sweep, the
+red-flag lifecycle, the wind-down re-scan. Combine what they turn up into one
+"here's what came up: …" rather than letting each speak in turn. Each check being
+individually bounded does not bound the sum, and closes keep gaining checks. A
+check that found nothing, or one tagged silent, contributes nothing to it.
+
+**Anything the user must act on leaves the bundle** and goes on its own, one item
+per message. The consolidation is for what the close is telling them, never for
+what it is asking them — the wind-down re-scan's numbered set is its own message
+for that reason.
+
+**Run the scrub checklist before writing a LOG entry** (skill-nonspecific-rules.md,
+Scrub before writing). A LOG entry is committed text that quotes the session's own
+discussion back, so it is the moment a real name or a case detail reaches a
+permanent record.
 
 ## Staleness sweep  [SILENT] when clean; [BRIEF] when flagging
 
@@ -391,7 +408,7 @@ beat they did not ask for and cannot predict. Do not reintroduce one.
 
 ## Session-file cleanup (throwaway artifacts)  [BRIEF, PROMPT]
 
-Commit core points here, so it runs at every close. the build working file and the planning working file are
+Commit core points here, so it runs at every close. The build working file is
 deleted by the close already; this generalises that lifecycle to *other* throwaway
 files this session created. (Prevention comes first — temp files should have gone
 to the scratchpad and never reached the project. This catches the ones that landed

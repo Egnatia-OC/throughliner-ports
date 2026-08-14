@@ -87,10 +87,10 @@ never          ->  left as a bare markerless line
 judgment**:
 
 ```
-vetted and ready        ->  Processed
-still needs thought     ->  Unprocessed
-a deferred test only    ->  a [user] item with a described walkthrough
-the user can run
+vetted and ready                      ->  Processed
+still needs thought                   ->  Unprocessed
+a deferred test ONLY THE USER can run ->  a [user] item with a described
+                                          walkthrough
 ```
 
 **3. Method-shipped boilerplate is refreshed by re-copy, never regenerated from

@@ -21,6 +21,8 @@ Concretely: anything a skill causes Claude to *say to the user* — chat narrati
 
 When editing any skill doc, check the output-facing strings against this audience before saving.
 
+**This project's narration is not evidence the method's communication rules work.** Three layers assert them here — Alex's global `~/.claude/CLAUDE.md`, the shipped output style, and the method's own always-loaded rules — so correct behaviour in this project may be coming from a layer consumers do not have. Which rules are doubled, and by which layers, is enumerated in [`resources/method-compliance-audit-checklist.md`](resources/method-compliance-audit-checklist.md).
+
 ## Model target
 
 **The method runs on one docset, and no model detection.** `plugin/throughliner/docs-b/` is it. There is nothing to pick between, so nothing picks: session_start carries no docset logic and no model logic, and the skills point straight at `docs-b/`.
@@ -84,7 +86,36 @@ No code method/
 
 - **Use absolute paths** for sub-folder lookups. `<PROJECT_ROOT>\plugin\throughliner\...` — substitute `<PROJECT_ROOT>` with the absolute path to this project's folder on your machine.
 - **Cross-doc references go by name.** When editing the docs under `plugin/throughliner/`, a reference to a step in another doc names its target ("the blocker gate in next.md's pre-flight"), never a step number. Step numbers silently retarget when a batch adds, deletes, or reorders steps — the reference still resolves, but to the wrong content; names survive renumbering. Within-doc references are exempt: renumbering is visible in the file being edited.
-- **Run [`resources/self-authoring-rules.md`](resources/self-authoring-rules.md) before adding any rule to the method's own text.** It is the admission-and-eviction gate: four parts in use order — does this rule get to exist, what comes out to make room, always-loaded or fetched, and how it's worded. It also settles where a rule's reasoning goes (out of the operative statement, into the LOG entry that decided it — and where a reason is genuinely needed to apply the rule, into the rule itself as operative text). Reach for it both when authoring text and when deciding how to fix a rule that slipped — the hook-versus-sharper-wording judgment is admission test 4. It replaces the retired `authoring-heuristic.md`, which was in force for the whole period the old behaviour doc grew from 6,162 to 21,445 words: it had no admission control and no eviction policy, so every addition passed it honestly. Host-only — not in the plugin package, and consumers never author method rules. Its eviction techniques now live in [`resources/rule-maintenance.md`](resources/rule-maintenance.md), opened during a subtraction pass rather than while authoring.
+- **The rule gate — run this before adding any rule to the method's own text.** Four parts in use order: admission, eviction, distribution, wording. Every rule admitted degrades the rules already there — irrelevant and near-identical rules are optimal distractors for one another — so the cost is relevance, not a count. **No ceiling is stated and none may be invented.** Host-only: consumers never author method rules.
+
+**1. Admission — does this rule get to exist?**
+
+**First, name the parent: which existing rule does this amend?** An amendment competes with nothing; a freestanding rule competes with everything. A change that cannot name a parent is either new territory or, far more often, a refinement whose parent was never looked for.
+
+**Then write it as a subordinate unit of that parent, and ship it in that form if it holds.** Freestanding is the fallback, not the default. Genuinely subordinate when all hold: at least two parallel units exist; each reads as a continuation of the parent's opening words; all share one grammatical function; every modifier points only at the opening words or at its own unit; none is a complete sentence. A complete sentence formatted as a nested bullet is a freestanding rule wearing a bullet, and spends a slot accordingly.
+
+Then four questions:
+
+1. Has this actually failed, more than once, in a way you can point to? A speculative rule stops here.
+2. Does Claude already do it unprompted?
+3. Does it apply to every session, or only some?
+4. Could a hook do it instead, at no attention cost? Escalate to a hook when the failure's cost justifies its standing friction — a cheap, self-correcting slip earns sharper wording instead.
+
+**A limit the method's text declares states what it was derived from.** A proportion of the thing it governs, a figure from research, or an externally imposed constraint each qualify; a bare number does not. A stated derivation makes a limit traceable and revisable — it does not make it correct.
+
+**An exception must survive the restatement test.** Before writing one, restate the rule so that it does not need one; an exception is admissible only where restatement was attempted and lost content. Where restatement genuinely fails, the exception requires a recorded instance of the bare rule producing a wrong outcome — not the author's belief that an edge case exists — and the LOG entry admitting it cites that instance.
+
+**2. Eviction — name what comes out.** Adding a rule names which rule it replaces or supersedes, and repeals it in the same move. A clearer restatement that leaves the old statement standing has doubled the text, not merged it. **Adding a scan to a skill's opening states what it displaces** — each scan is small and individually tagged, so nothing anywhere counts them. The techniques for taking a rule out live in [`resources/rule-maintenance.md`](resources/rule-maintenance.md), opened during a subtraction pass rather than while authoring.
+
+**3. Distribution — always-loaded, or fetched?** A session cannot fetch a rule it has never read, so a rule that must shape behaviour unprompted is always-loaded and pays the full admission cost. Reference material a session knows to go looking for can be fetched. The always-loaded shipped file is `docs-b/skill-nonspecific-rules.md`, and its name is its admission test: a rule belongs there only if it fires in all four skills.
+
+**4. Wording — state the action the rule requires.** Anything described in terms of what *not* to do means the rule of what TO do was never adequately described; a prohibition is a signal to go back and specify the action. Express a qualification as structure, not explanation: state the rule bare with the qualification in structure; main clause first, conditions after; `subject to <X>` as a cross-reference rather than a restatement; multiple exceptions in their own subsection; short connectives (but, except that, unless, so long as) rather than explanations; one idea per provision; every exception at the same level as the rule it qualifies.
+
+**Rationale lives outside the operative rule.** The operative statement stays bare. **Why a rule is worded as it is** — which alternative lost, what the trade-off was — goes to the LOG entry that decided it. An evicted why does not have to land anywhere: git history keeps it, and anything still needing a decision becomes a capture. **The FAQ is never an eviction destination** — an FAQ entry is written because a user would ask that question, never because a rule shed some prose.
+
+**Where a reason is needed to apply the rule, reclassify it — don't exempt it.** If a rule cannot be applied correctly without a sentence, that sentence is part of the rule and is written as operative text. Three parts, in this order: it earns its place only where there is a recorded instance of the rule being misapplied without it; once admitted, write it into the operative sentence so it cannot be removed without leaving the rule incomplete; and the LOG entry admitting it cites the instance. The auditor's test is the same one in reverse — **delete the sentence and read what remains: a complete instruction means what you deleted was rationale, an unfinished one means it was operative.** Syntax protects a clause; it never admits one.
+
+**The record behind these rules** — the repeal histories, the defeated proposals, and why each test is shaped as it is — is [`resources/self-authoring-rules.md`](resources/self-authoring-rules.md). Open it when something settled is about to be re-proposed, not while authoring.
 - **The `Rule gate:` disposition is written at the moment the rule is authored, into the session's build working file. The close TRANSCRIBES it into the LOG entry; it does not compose one.**
 
   **Why the relocation, recorded because the old placement looked fine and was not.** A run once built thirteen items, several authoring or amending method rules, and wrote every disposition at the close in one sweep — after all the LOG entries existed, minutes before the commit. Each said `run — admitted` and each read plausibly. Not one was written before the rule it describes. That cannot perform admission; it can only describe. The give-away was in the artifacts: every disposition was favourable, nothing was rejected, nothing was evicted to make room, and one admitted a rule while recording that it passed the four-skills test "only weakly". **A gate that runs after the build has no power to refuse, because refusing would mean undoing finished work.**
@@ -103,7 +134,7 @@ No code method/
 
   **This is the FAQ-sync rule's shape extended to a second subject, not a new obligation** — which is why it is authored as an amendment and consumes no slot. It is copied from FAQ-sync deliberately, because that is the one mechanism in this project with proven teeth, and for its stated reason: a required artifact turns a silent omission into a visible one. "Not needed because X" is a claim a later reader can disagree with, and a missing line is a gap anyone can see. A pointer makes the gate visible; only this makes it produce evidence either way.
 
-  **The trigger is mechanical, and stronger than FAQ-sync's** — a commit touching `plugin/throughliner/docs-b/`, `resources/self-authoring-rules.md`, `resources/rule-maintenance.md` or this file. FAQ-sync's own trigger ("is this change user-facing?") cannot be detected at all and has to ride a close-time read; this one is visible from git with no judgment involved.
+  **The trigger is mechanical, and stronger than FAQ-sync's** — a commit touching `plugin/throughliner/docs-b/`, `plugin/throughliner/output-styles/`, `resources/self-authoring-rules.md`, `resources/rule-maintenance.md` or this file. FAQ-sync's own trigger ("is this change user-facing?") cannot be detected at all and has to ride a close-time read; this one is visible from git with no judgment involved.
 
   **It over-fires, and that is the design rather than a defect.** Touching `docs-b/` for a typo is not authoring a rule, but a false fire costs one line — "not needed, typo fix". FAQ-sync makes exactly this trade and it is why it works.
 

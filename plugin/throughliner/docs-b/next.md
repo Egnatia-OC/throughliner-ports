@@ -13,35 +13,6 @@ You are building the cleared work from the queue. /next works the Processed
 section top-down — building Claude-work items, walking the user through user-work
 — scope-locked to the files that work touches.
 
-## The work cycle
-
-Orientation, read here and never recited to the user.
-
-```
-The work cycle. Every piece of work travels the same loop.
-  STANDING — anything noticed, by anyone, at any moment, becomes a
-     capture in Unprocessed. Not a stage: it is available throughout.
-     Any session may file one; no session but /plan may process one.
-  1. /plan — think and organise. Processes a capture: kept into
-     Processed, or deleted. Keeping settles how it runs — build,
-     [audit], [user], [freeform] — and where it sits.
-  2. /next — build. Takes the top piece of ready work from above the
-     readiness line and builds it, top-down, several back-to-back.
-  3. /done — record what happened, and commit.
-  4. Then the session ends and a fresh one starts. The loop's boundary
-     is a new session with no memory of this one, which is why every
-     return edge below routes through a FILE and never through what
-     someone remembers.
-  5. RETURN EDGE — an [audit] edits nothing. It files findings as
-     captures, which re-enter at the standing step and become work at
-     step 1. A planning session between a finding and its build is the
-     cycle working, not an obstacle to it.
-  6. RETURN EDGE — a build that discovers something files a capture and
-     carries on. The discovery re-enters at the standing step.
-  7. [user] work is walked through, never built. It leaves the loop only
-     when the user has done it.
-```
-
 ## What /next runs on
 
 QUEUE.md holds two sections: **Unprocessed** (captured, not yet processed) and
@@ -84,6 +55,15 @@ through each *without ending the run*. The marker is the only thing that bounds 
 run.
 
 ## Step 1: Pre-flight
+
+**Whatever these checks surface folds into ONE narration** [BRIEF], carried with
+the run at step 4 rather than trickling out check by check. Each check being
+individually bounded does not bound the sum, and this pre-flight keeps gaining
+checks. A check that found nothing, or one tagged silent, contributes nothing.
+The session's first opening narration also carries the inline-text offer as one
+clause. **Anything the user must act on leaves the bundle** and goes on its own —
+the consolidation is for what the run is telling them, never for what it is
+asking them.
 
 ### 1. Active build check
 
@@ -264,8 +244,9 @@ judgment, so narrate it in one sentence like any other.
 The answer holds for the run. On a resumed run, carry the previous answer
 forward from the working file rather than re-asking.
 
-Close that same message with the off-ramp, e.g. **"Say the word to change scope
-or reorder — otherwise I'll start."**
+Close that same message with the off-ramp, e.g. **"Say go and I'll start — or say
+the word to change scope or reorder first."** The affirmative first, the exception
+second.
 
 ```
 user wants a change  ->  route to /plan

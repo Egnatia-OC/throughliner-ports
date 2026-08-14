@@ -13,35 +13,6 @@ note: >
 building happens here.** Claude owns sequencing — the order work sits in, what
 gets built first — through discussion, not silently.
 
-## The work cycle
-
-Orientation, read here and never recited to the user.
-
-```
-The work cycle. Every piece of work travels the same loop.
-  STANDING — anything noticed, by anyone, at any moment, becomes a
-     capture in Unprocessed. Not a stage: it is available throughout.
-     Any session may file one; no session but /plan may process one.
-  1. /plan — think and organise. Processes a capture: kept into
-     Processed, or deleted. Keeping settles how it runs — build,
-     [audit], [user], [freeform] — and where it sits.
-  2. /next — build. Takes the top piece of ready work from above the
-     readiness line and builds it, top-down, several back-to-back.
-  3. /done — record what happened, and commit.
-  4. Then the session ends and a fresh one starts. The loop's boundary
-     is a new session with no memory of this one, which is why every
-     return edge below routes through a FILE and never through what
-     someone remembers.
-  5. RETURN EDGE — an [audit] edits nothing. It files findings as
-     captures, which re-enter at the standing step and become work at
-     step 1. A planning session between a finding and its build is the
-     cycle working, not an obstacle to it.
-  6. RETURN EDGE — a build that discovers something files a capture and
-     carries on. The discovery re-enters at the standing step.
-  7. [user] work is walked through, never built. It leaves the loop only
-     when the user has done it.
-```
-
 ## Ground rules
 
 **In a /plan session:**
@@ -209,32 +180,93 @@ roughly 560 tokens. The full retrieve
 path is untouched: this is the orientation read, not a replacement for opening the
 entry that matters.
 
-**Read the forward-recommendation advisory, and surface it FIRST — on its own,
-before the consolidated opening narration** [SILENT] when absent; [BRIEF] when
-present. If the top of Unprocessed holds a "Last session advises…" line — it
-carries the reserved slug `[forward-advisory]` at the end of its heading — read it
-and let it orient *where the session starts*. It is **not** a work item and never
-goes through keep/delete in Step 2; skip it there. It never narrows the session to only
-the advised item — Step 2 still processes the full queue. Surface it in one line:
-"Last session recommends starting with [slug]." Orientation, not a command. The
-**clear** happens at the /done close, not here, so it can't be skipped by a
-session that ends via an off-ramp.
+**Read the forward-recommendation advisory, and surface it as the FIRST LINE of
+the opening narration — above a horizontal rule, with the narration and the
+opening's ask below it** [SILENT] when absent; [BRIEF] when present. If the top of
+Unprocessed holds a "Last session advises…" line — it carries the reserved slug
+`[forward-advisory]` at the end of its heading — read it and let it orient *where
+the session starts*. It is **not** a work item and never goes through keep/delete
+in Step 2; skip it there. It never narrows the session to only the advised item —
+Step 2 still processes the full queue. One line: "Last session recommends starting
+with [slug]." Orientation, not a command.
 
-**It goes first and alone because it is the easiest thing to drop.** Folded in
-among the other opening checks it is one short orientation line competing with
-five other things in the same message, and nothing downstream ever confirms it
-was said. It was once read correctly at this step and not surfaced for three
-hours — the failure it exists to prevent, occurring inside the mechanism
-designed to prevent it.
+**Delete the advisory from Unprocessed as soon as it has been surfaced**, in this
+same step, unless it names a persist-condition that has not been met:
+
+```
+it oriented this session             ->  DELETE it from Unprocessed now, whether
+                                         or not the recommendation was followed
+it names an unmet persist-condition  ->  LEAVE it in place
+    ("persist until the cleared builds ship")
+no advisory present                  ->  say nothing
+```
+
+```
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+    --delete forward-advisory Unprocessed
+```
+
+Narrate the clear in one line. The session reading it is the one that can tell it is spent, so the
+clear lives where the knowledge is. It used to happen at the /plan close, and a
+build session passing between two planning sessions therefore left a consumed note
+behind: a /plan files an advisory, a /next builds the very thing it points at, the
+build close clears nothing, and the next /plan opens on advice about work that
+already shipped. Giving the build close its own clear step was rejected — it would
+put the deletion in a session that never read the note and cannot judge whether it
+was used.
+
+**One consequence, stated here rather than discovered later.** Clearing at the
+read means the advisory is gone even if the planning session then ends without
+doing anything with it. That is acceptable: the advisory is orientation, not work,
+and a session that opened and read it has had the orientation it was for. Holding
+it back against that case is exactly what produced the stale note.
+
+**The specimen — this is the shape of the opening message:**
+
+> Last session recommends starting with **[some-slug]**.
+>
+> ---
+>
+> Seventeen items ready to build and four waiting to be processed; nothing is
+> held below the line. If you're reading this away from your computer, say so and
+> I'll paste text inline rather than linking to it.
+>
+> **Anything you want to prioritise, or shall I work through them
+> most-unblocking-first?**
+
+**Position carries this, not a message of its own.** A separate advisory message
+was tried and dropped: it left the session's first message with nothing to answer,
+against the rule that every message ends on a single ask. Its justification was a
+case where the advisory was read at this step and then not surfaced for three
+hours — but a separate message defends against a Claude-side omission no better
+than "put it first" does, since both are ordering instructions in a procedure doc
+and a session that skips one skips the other. What the isolation genuinely
+protected is attention *within* the message: folded in among five other opening
+checks, one short orientation line competes with everything else. First line,
+above a rule, is not "folded in among" anything.
 
 **The limit, stated rather than implied: this makes the line harder to drop, not
 impossible.** Nothing will ever confirm it was said, and a required artifact is
-no use here — the advisory is cleared at the close, and a "the advisory was
-surfaced" line in the LOG would be Claude attesting to its own narration, which
-verifies nothing. Do not describe this as fixing the problem.
+no use here — a "the advisory was surfaced" line in the LOG would be Claude
+attesting to its own narration, which verifies nothing. Do not describe this as fixing the problem.
 
-Everything the step surfaces **after** the advisory folds into **one** opening
-narration, per the consolidate-the-scans rule.
+**Everything the step surfaces after the advisory folds into ONE opening
+narration** [BRIEF], beneath the rule. This step fires many checks at once — the
+digest, the recent log lines, the mail, the below-the-line revisit, the
+placement-contradiction flags — and each being individually bounded does not
+bound the sum. Combine what they turn up into one "here's what came up: …". A
+check that found nothing, or one the procedure says to keep quiet about,
+contributes nothing to it. The session's first opening narration also carries the
+inline-text offer as one clause.
+
+**Anything a check surfaces that the user must ACT on leaves the bundle** and goes
+on its own, one item per message. The consolidation is for what the session is
+telling them, never for what it is asking them.
+
+**The opening message ends on whichever ask fires first** — beat 1's droppable set
+when it fires, beat 2's ordering question when it doesn't. Beat 1 keeps its own
+reply and is never bundled with beat 2; what it does not do is leave the narration
+above it standing as a message with no ask.
 
 **Open any waiting INBOX mail** [SILENT] when the mailbox is empty; [BRIEF] when
 it isn't. This is the guaranteed moment mail gets read. `session_start` surfaces
@@ -439,25 +471,15 @@ stop, never an alternative to processing.
 
 ## Step 2: Process work  [SEQUENCE]
 
-**Planning state file: `_plan-<session-id>.md`.** It is per session, not per
-project — a planning session must never pick up another session's working file,
-and a build running in another chat must never see this one. Create it when
-processing begins, to hold the
-item list, the current item, and the beat reached. Update it at each beat
-transition, and append each item with its disposition — kept / deleted /
-skipped-this-session — with slug, one line each.
+**Showing the one next item the user is about to act on is presentation, not a
+preview**, so the checkpoint below satisfies `[SEQUENCE]` rather than breaching
+it. What the tag forbids is teasing items the user must hold in their head.
 
-The skipped-slug record is what stops a skipped item re-surfacing later in the
-same session. The file survives compaction, gives an interrupted /plan a resume
-path, and hands /done a mechanical record instead of a reconstruction from memory.
-/done reads it at close and deletes it — same lifecycle as the build working file.
-
-**The close names this file, or names its absence.** Its LOG entry carries a
-`Planning state:` line either way, so a session that processed work without ever
-creating the file leaves a visible gap rather than a from-memory reconstruction
-that reads like a contemporaneous record. Nothing else catches the omission —
-no hook can tell a planning session from an ordinary chat before planning has
-begun.
+**/plan writes no working file, and there is no planning state to record.** Each
+item's disposition and its reasoning are written into that item's own rationale in
+QUEUE.md as it is processed, so the close recovers the whole session with
+`git diff HEAD -- QUEUE.md` — mechanically, from the artifact, rather than from a
+second file kept in parallel. Don't create one, and don't propose one.
 
 **Run the scrub checklist before writing a kept item's text** (skill-nonspecific-rules.md,
 Scrub before writing). Keeping an item is where a capture's rough wording becomes
@@ -778,6 +800,25 @@ aside. Then draft the walkthrough into the item's prose. Not being able to scrip
 every step is **not** a reason to withhold the line: file it with a rough
 walkthrough and sharpen it here.
 
+**Run the THOROUGH capability check here — this is its site.** Restate the
+question as *what would answer this?* **before** searching, then search; trying a
+tool is allowed where trying is quick. The reframe is the load-bearing half and
+it is cheaper than experimenting, not more expensive: a `[user]` line was once
+filed after an honest, thorough search that returned only binaries and caches,
+and deleted hours later when one command answered the question. That search asked
+*where is the setting stored*, which is correct for the question as posed, and
+never asked *what would tell me the answer*. Where no tool plausibly exists, that
+is itself the answer. Don't enumerate everything available — an inventory sweep
+is expensive, stale by the next session, and was rejected; the check is aimed at
+one job or it is not worth running. /next runs a light version of this at its
+pre-hand-off, but the user is not in the room there, so depth belongs here.
+
+**And check the index entry can be written.** If the candidate line for
+`LOG/index.md` — the artifact touched and the nature of the change — cannot be
+written yet because the work isn't specific enough, the item isn't ready for
+Processed. Keep discussing. Same test as the two-limb build check above,
+approached from the record's side.
+
 *Decompose a mixed Claude-prep + user-step item.* When an item bundles work Claude
 can do with an irreducible user action, don't keep it as one `[user]` item with
 Claude-work buried inside:
@@ -911,16 +952,29 @@ After every item, present the next item. That is the whole checkpoint.
 > **#### The close invites another /next in the same session [close-invites-same-session-next]**
 > Captured by you (2026-08-13), from a live instance minutes earlier in another
 > project running this plugin.
+>
+> **Worth doing?**
 
-Nothing beneath it. No routes, no options, no question.
+Beneath the item: one bold question about that item, and nothing else. No menu of
+routes, no analysis.
 
 ```
 message order:
     1. a one-line pointer to the NEXT item, or its verbatim if the user took
        the inline offer (item only, no analysis)
        — re-read from QUEUE.md first to confirm the quote matches
-    2. nothing else. No menu of routes.
+    2. one bold question about THAT item — is it worth doing, or whatever
+       decision the item actually turns on
+    3. nothing else. No menu of routes.
 ```
+
+**The question is what the user answers; the recital is what was removed.** These
+are different things, and collapsing them left a message with nothing to reply to
+— through a long processing run that is most of the session's turns, so most of it
+arrived with no ask at all. What is banned here is the four-route recital ending in
+a named close. An ordinary question about the item in hand is not that, and the
+always-loaded rule requiring every message to end on a single bold ask applies to
+this message like any other.
 
 **The four routes are stated ONCE, at the start of processing, and never
 recited again** — *"I'll work through these one at a time; say skip, stop, or
@@ -949,34 +1003,27 @@ item would re-create the over-asking the method removed.
 
 ```
 on skip:
-    record its slug in the planning working file as skipped-this-session
     don't re-present it this session — present the item after it
     LEAVE THE FILE ALONE — no move, no edit to QUEUE.md
 ```
 
-**Skipping moves nothing.** Claude is perfectly capable of skipping an item
-within the session and leaving the file order alone, and the move was expensive.
-The stronger reason is what the order records: file position tells a human *when
+**Skipping moves nothing and records nothing.** File position tells a human *when
 things landed*, and relocating a skipped item overwrites that chronology with
 nothing more useful.
 
-**What the move was also doing, so the trade is deliberate rather than
-discovered.** It stopped a skipped item being presented first again next session
-— the planning working file is session-scoped, so the skipped-slug record does
-not survive. Retire the move and a skipped item returns to the top next session
-and is offered first. That is a one-word skip to repeat, which is why it is
-judged acceptable; it is a real cost, not a free saving. A durable marker was
-already rejected once, deliberately, as a phantom queue state — don't re-propose
-one.
+**What that gives up, so the trade is deliberate rather than discovered.** A
+skipped item returns to the top next session and is offered again. That is a
+one-word skip to repeat, which is why it is judged acceptable; it is a real cost,
+not a free saving. A durable marker was already rejected once, deliberately, as a
+phantom queue state — don't re-propose one, and don't propose a file to hold the
+skips either.
 
-A skipped item is not deleted and not processed. **The skipped record is a slug
-in the planning working file and nothing else** — there is no durable queue
-marker, no "parked" or "dedicated-pass" tag written to QUEUE.md. Next session
-it's ordinary Unprocessed again.
+A skipped item is not deleted and not processed. Next session it's ordinary
+Unprocessed again.
 
 Skipping the last item leaves Unprocessed non-empty, which is fine. On the last
 item there's no next verbatim, so the message is just the off-ramps — worded
-**neutrally**, "anything else to capture or discuss, or close out?", never as a
+**neutrally**, "anything else to capture or discuss, or run /done?", never as a
 lean toward closing. An empty Unprocessed is not a signal the session is over.
 
 **Recommend skip-to-defer when an item won't design out this session**
@@ -1035,14 +1082,14 @@ kept work in order; section headers intact.
 **Neutral end-of-queue gate** [PROMPT]. When the queue empties, do **not** presume
 the session is over and do not slide toward the close. An
 empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
-— "anything else to capture or discuss, or shall we close out?" — and wait. If the
+— "anything else to capture or discuss, or shall we run /done?" — and wait. If the
 user raises a further capture, file it and **return to this same neutral gate** —
 never re-lean to close after filing.
 
 New items from conversation follow the same loop — check QUEUE.md for overlap
 first. If you notice a gap: "I notice [X] — want to hear a suggestion?"
 
-There is no close-out phase here. /plan plans; /done records and commits, and it
+The close-out phase here is retired and no longer exists. /plan plans; /done records and commits, and it
 runs the wind-down re-scan at every close whatever the session type. The user's
-exit is `/done`, named in the work cycle at the top of this document and available
+exit is `/done`, named in the work cycle in the always-loaded rules and available
 at every checkpoint.

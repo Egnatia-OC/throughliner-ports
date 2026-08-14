@@ -41,16 +41,20 @@ CASES = [
     # (relative path, expected, what it pins)
     ("QUEUE.md", True, "the queue itself — the case that was failing"),
     ("SPEC.md", True, "the spec"),
-    # Working files are session-scoped: `_plan-<session id>.md`. The bare
-    # `_plan.md` / `_build.md` names these cases used to assert are the retired
-    # shape, and the hook deliberately no longer matches them — a bare name was
-    # visible to every session on the project, which is what session-scoping
-    # removed. Asserting the current shape is what keeps the suite honest.
-    ("_plan-3f9c1a2b-7d4e-4c88-b1a0-5e2d6f8c9a01.md", True,
-     "a planning session's own working file"),
+    # The build working file is session-scoped: `_build-<session id>.md`. The
+    # bare `_build.md` name this case used to assert is the retired shape, and
+    # the hook deliberately no longer matches it — a bare name was visible to
+    # every session on the project, which is what session-scoping removed.
+    # Asserting the current shape is what keeps the suite honest.
     ("_build-3f9c1a2b-7d4e-4c88-b1a0-5e2d6f8c9a01.md", True,
      "the build working file"),
     ("_build.md", False, "the retired bare name is no longer on the list"),
+    # The planning working file was deleted from the method on 2026-08-14: a
+    # planning session now writes QUEUE.md, SPEC.md and LOG/ and nothing else,
+    # so a `_plan-` write is exactly the surprise the gate should surface. This
+    # case asserted True until then.
+    ("_plan-3f9c1a2b-7d4e-4c88-b1a0-5e2d6f8c9a01.md", False,
+     "the retired planning working file now asks"),
     (os.path.join("LOG", "index.md"), True, "the log index"),
     (os.path.join("LOG", "2026-08-11-entry.md"), True, "a log entry file"),
     ("README.md", False, "an ordinary project file still asks"),
