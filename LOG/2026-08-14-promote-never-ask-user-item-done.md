@@ -1,4 +1,4 @@
-# [HASH] — Six prohibitions against asking whether a `[user]` item is done replaced by one rule stating the action
+# a216873 — Six prohibitions against asking whether a `[user]` item is done replaced by one rule stating the action
 
 The rule appeared once in `plan.md`, four times in `next.md`, and once in `done.md`, and was canonical nowhere. Four copies inside a single procedure doc is a strong signal that each site was written without the others in view — the same authoring failure behind the capability-check finding.
 

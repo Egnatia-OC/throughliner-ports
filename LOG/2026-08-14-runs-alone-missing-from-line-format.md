@@ -1,4 +1,4 @@
-# [HASH] — `Runs alone` added to the canonical line-format block, and its second definition replaced by a pointer
+# a216873 — `Runs alone` added to the canonical line-format block, and its second definition replaced by a pointer
 
 The always-loaded Captures section documents every marker a work item can carry — `Blocked by:`, `Red flag · State:`, the flavor tags — and omitted this one, in the one place a session goes to learn what a work item may contain. That block is described in the same doc as the exact shape the hooks parse against, which is what made the omission the sharper half of the finding.
 

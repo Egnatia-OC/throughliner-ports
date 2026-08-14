@@ -1,4 +1,4 @@
-# [HASH] — `Blocked by:` reserved for genuine blockers, with ordering preference carried by placement plus a sentence
+# a216873 — `Blocked by:` reserved for genuine blockers, with ordering preference carried by placement plus a sentence
 
 This came from the Understudy project, reporting a session that re-pointed a held item's `Blocked by:` at a different item rather than lifting it, reasoning that building on unconfirmed work would make faults hard to attribute. That is an ordering preference, not a dependency.
 

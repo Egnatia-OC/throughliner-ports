@@ -1,4 +1,4 @@
-# [HASH] — The rule gate's site moved to /plan's keep-step, where refusing is still possible
+# a216873 — The rule gate's site moved to /plan's keep-step, where refusing is still possible
 
 The capture reported a run that built eight items, three authoring genuinely new standing rules, with the gate run once after all eight were built. The disposition was honest about its own timing and admitted nothing was refused — which is the failure `CLAUDE.md` documents in its own words: a gate that runs after the work exists cannot refuse, because refusing would mean undoing finished work.
 

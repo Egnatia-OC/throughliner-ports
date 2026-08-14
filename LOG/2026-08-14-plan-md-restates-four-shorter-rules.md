@@ -1,4 +1,4 @@
-# [HASH] — Four shorter restatements in plan.md: two cut, one trimmed, one kept
+# a216873 — Four shorter restatements in plan.md: two cut, one trimmed, one kept
 
 Four audit findings grouped because they are one file and one pass.
 

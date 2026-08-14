@@ -1,4 +1,4 @@
-# [HASH] — plan.md's provenance restatement cut to a pointer, and done.md's kept because it sits at the failure site
+# a216873 — plan.md's provenance restatement cut to a pointer, and done.md's kept because it sits at the failure site
 
 All four clauses of the always-loaded provenance rule — default-AI, the own-words bar, mixed authorship written as mixed, and the same bar binding reason-shaped sentences — were reproduced in `plan.md`'s capture-and-processing discipline and again inside `done.md`'s LOG entry template. The audit marked both as cite-and-restate: the pointer already works, so the restated body deletes with no loss.
 

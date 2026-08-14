@@ -1,4 +1,4 @@
-# [HASH] — The five unaudited sub-docs read, and seven findings captured
+# a216873 — The five unaudited sub-docs read, and seven findings captured
 
 The outside redundancy audit stated as its own limit that `next-build.md`, `next-audit.md`, `done-build.md`, `done-audit.md` and `done-plan.md` were never supplied to it, and that since `next.md` and `done.md` delegate substantial material to them it expected more duplication at those boundaries than it could see. This audit went and looked. All five were read in full; nothing was edited.
 

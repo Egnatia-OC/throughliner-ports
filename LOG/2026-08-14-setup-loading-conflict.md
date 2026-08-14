@@ -1,4 +1,4 @@
-# [HASH] — setup.md stops claiming the always-loaded rules are never in force, and keeps both guards it restates
+# a216873 — setup.md stops claiming the always-loaded rules are never in force, and keeps both guards it restates
 
 The redundancy audit flagged two passages in `setup.md` as duplicating the always-loaded rules — the plain-language guard and the one-question-per-message rule — and `setup.md` justified both by asserting that /setup runs before adoption, so those rules are not loaded. The always-loaded doc says the opposite: its rules *are* active for /setup's migration and top-up runs.
 

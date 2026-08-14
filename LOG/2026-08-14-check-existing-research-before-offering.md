@@ -1,4 +1,4 @@
-# [HASH] — The web-search offer now reads the research index first, and the coverage limit is written into the rule
+# a216873 — The web-search offer now reads the research index first, and the coverage limit is written into the rule
 
 Alex's own words filed this: Claude should always check existing research before offering research. The instance behind it was a search offered and run on worktree isolation when `resources/research/worktree-isolation-and-desktop-sessions.md` already existed, dated three days earlier, citing the same two documentation URLs and reaching the same conclusion — and the duplicate missed what the file carried beyond the docs, that the contradiction had already been reported to Anthropic as a numbered issue.
 

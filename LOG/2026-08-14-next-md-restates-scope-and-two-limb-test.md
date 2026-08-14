@@ -1,4 +1,4 @@
-# [HASH] — next.md's scope definition replaced rather than deleted, and the two-limb test kept to its operative sentence
+# a216873 — next.md's scope definition replaced rather than deleted, and the two-limb test kept to its operative sentence
 
 Two findings, both trimmed rather than cut, and the audit's fix for the first would have broken the paragraph.
 

@@ -1,4 +1,4 @@
-# [HASH] — plan.md's `Runs alone` justification replaced with the one that survived testing, and the refuted premise recorded
+# a216873 — plan.md's `Runs alone` justification replaced with the one that survived testing, and the refuted premise recorded
 
 The verification behind this item was done in the planning session that processed it: a throwaway repository, a folder rename half-landed, recovery attempted from both states. Uncommitted, `git reset` then `git checkout -- .` restored the tracked tree exactly, leaving one untracked directory that `git status` named. Committed, `git revert` restored it exactly and reported the rename it was undoing. Both are one command and neither loses anything.
 

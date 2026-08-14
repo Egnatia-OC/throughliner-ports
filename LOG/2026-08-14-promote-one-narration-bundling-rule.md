@@ -1,4 +1,4 @@
-# [HASH] — The one-narration bundling rule ships as a free subordinate amendment, evicting three copies
+# a216873 — The one-narration bundling rule ships as a free subordinate amendment, evicting three copies
 
 `plan.md`, `next.md` and `done.md` each carried near-verbatim copies of the same two sentences: that each check being individually bounded does not bound the sum, and that anything the user must act on leaves the bundle, because the consolidation is for what the session is telling them and never for what it is asking them.
 

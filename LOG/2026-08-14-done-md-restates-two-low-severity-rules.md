@@ -1,4 +1,4 @@
-# [HASH] — done.md's index-line passage cut back to its repeal history, and the user-runnable table refused for eviction
+# a216873 — done.md's index-line passage cut back to its repeal history, and the user-runnable table refused for eviction
 
 Two low-rated audit findings, one accepted and one refused.
 

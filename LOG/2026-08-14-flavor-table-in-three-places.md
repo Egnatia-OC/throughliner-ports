@@ -1,4 +1,4 @@
-# [HASH] — plan.md's flavor table removed, next.md's kept as the routing map, and the capture's second argument corrected
+# a216873 — plan.md's flavor table removed, next.md's kept as the routing map, and the capture's second argument corrected
 
 The build / `[audit]` / `[user]` / `[freeform]` table is canonical in `skill-nonspecific-rules.md`, reproduced in `plan.md` together with the over-tag guard and its blocked-on-a-push carve-out near-verbatim, and reproduced again in `next.md` with routing targets substituted in.
 

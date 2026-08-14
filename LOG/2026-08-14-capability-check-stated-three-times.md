@@ -1,4 +1,4 @@
-# [HASH] — The `[user]` capability check merged from three passages into one, keeping both anecdotes
+# a216873 — The `[user]` capability check merged from three passages into one, keeping both anecdotes
 
 The audit called this the densest redundancy in the corpus: within about a hundred lines of `plan.md`'s keep sub-step, three passages restated the same material — the matched pair copied from the always-loaded rules, then the thorough check with its "what would answer this?" reframe, then the thorough check and reframe again with a second anecdote and a citation back to the always-loaded doc.
 

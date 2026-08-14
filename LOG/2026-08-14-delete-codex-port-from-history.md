@@ -1,4 +1,4 @@
-# [HASH] — The Codex port deleted, and its queue item's "cheap and reversible" premise found false mid-build
+# a216873 — The Codex port deleted, and its queue item's "cheap and reversible" premise found false mid-build
 
 The shelved Codex port was not merely a sibling folder — it was a git worktree of this repository, checked out on branch `codex/si-port`, which is how it kept appearing in `git worktree list` as live work. It had been dormant since 2026-07-28 with `CLAUDE.md` already describing it as read-only history.
 

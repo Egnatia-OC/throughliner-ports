@@ -1,4 +1,4 @@
-# [HASH] — The red-flag clearing lifecycle cut from four sites to two, and the merged section keeps its old heading
+# a216873 — The red-flag clearing lifecycle cut from four sites to two, and the merged section keeps its old heading
 
 The audit found the two clearing paths, and the rule that an unclearable flag returns to the bottom of Unprocessed, stated canonically in `skill-nonspecific-rules.md` and then four more times: twice in `plan.md` about 780 lines apart, and twice in `done.md` in adjacent sections. Five copies of one rule is the worst ratio it found, and the eviction half of this project's own rule gate is exactly what should have prevented it.
 
