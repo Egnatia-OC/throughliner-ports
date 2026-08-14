@@ -75,13 +75,6 @@ run CONTRADICTS SPEC   ->  name the SPEC sentence and the work that contradicts
                            wrong. Do NOT rewrite SPEC to fit what was built.
 ```
 
-**Why the sync gate left this close.** A close-time sync on a document the build
-never read can only record what the build did — with nothing to compare against it
-cannot catch a build that contradicted the spec, so in practice it became a place
-to justify whatever the run had done within its scope. The sync gate now lives
-only at the /plan close, where the decision that changes product truth is actually
-made.
-
 **Where a build genuinely established new product truth, that route is unchanged
 and is not this step:** it asks mid-build, adds SPEC.md to the working file's
 `Files:` list, and edits SPEC inline in the same commit (next-build.md, Scope
@@ -117,10 +110,7 @@ Follow done.md's **LOG entry files** section, using its **Build** body fields
 
 **One entry per built item is unconditional**, however long the run. A work item's
 queue text is *consumed* when it builds — /next removes it — so after the build the
-LOG entry is the only surviving record of what the work was for. A single combined
-entry per run is cheaper and was refused: the retrieve path is "search the index,
-then open the matched entry", so combining trades away per-slug retrievability,
-which is the property the entries exist for.
+LOG entry is the only surviving record of what the work was for.
 
 **Each item's depth field says which form its entry takes — read it, don't judge
 it.** Every ticked item carries `Depth: short` or `Depth: full — <trigger>`,

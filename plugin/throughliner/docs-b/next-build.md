@@ -86,13 +86,6 @@ build establishes NEW product      ->  the ordinary scope-grow route below: ask,
   truth SPEC doesn't yet carry         add SPEC.md to Files, edit inline
 ```
 
-Note what this replaces. The build close used to *sync* SPEC to match what was
-built. A close-time sync on a document the build never read can only record what
-the build did — it cannot catch a build that contradicted the spec, because it has
-nothing to compare against. That is a justification step wearing a check's
-clothing. Reading SPEC at run start is what makes a real check possible, and the
-sync gate now lives only at the /plan close.
-
 **A check Claude can run is part of building, not a separate test.** Run whatever
 verification you can — read the code back, run a command, inspect output, check
 file content — as part of getting the item right.
@@ -223,11 +216,32 @@ significant  ->  propose splitting. Finish what's scoped, /done to close, then
 ```
 
 **A SPEC change the build discovers it needs is a legitimate scope-grow.** Name
-the change and ask — "this needs SPEC to say X instead of Y — add SPEC.md to
-scope?" — then append SPEC.md to `Files:` before editing. Safe in-build because
-spec-driven development wants the spec to move in the same commit as the behaviour
-change, and the /done-build spec-sync gate backstops it. **A SPEC change is
-product truth, so it always gets the explicit ask** — it never rides in silently.
+the change and ask, then append SPEC.md to `Files:` before editing. Safe in-build
+because spec-driven development wants the spec to move in the same commit as the
+behaviour change, and the /done-build spec-sync gate backstops it. **A SPEC
+change is product truth, so it always gets the explicit ask** — it never rides in
+silently.
+
+**The ask names itself as the normal route**, in the same breath as the change:
+this is the standard path when a build establishes product truth the spec does
+not yet carry, and it always asks first. Say it as something routine, not as a
+request for an exception — e.g. *"This adds behaviour the spec doesn't describe
+yet. When that happens the build asks before touching SPEC, which is what I'm
+doing now: I'd add the sentence 'X' to SPEC. Add SPEC.md to scope?"*
+
+Read cold, an unexpected request to edit product truth mid-build looks like a run
+asking permission to break a rule rather than a run following one — **the method's
+own author read it that way.** An external non-coder has strictly less context, so
+the likely consequence is worse than confusion: they say no to a change the method
+wanted, and SPEC silently falls behind the behaviour.
+
+**The SPEC-contradiction halt above is not this and must not be softened to
+match.** That branch is a genuine "something is wrong here" and stays alarming.
+
+**What may be written into SPEC is governed by the three SPEC-maintenance rules —
+admission, rationale-leaves-the-sentence, and staleness — in plan.md's "SPEC is a
+normal doc" ground rule.** Read them there rather than restating them here, so the
+two sites cannot drift.
 
 ## Mid-build course-correction
 

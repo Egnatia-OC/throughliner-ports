@@ -24,6 +24,12 @@ line, one place, carrying both what the gate decided and what was retired.
 - `term` — what it was, and when it was retired
 ```
 
+**Retired artifacts are recorded here too, in their own section below.** A retired
+step leaves behind the files it produced, and nothing else in the project holds a
+list of outputs whose producer no longer exists — so a stale artifact can sit next
+to a live one presenting itself as current. The parser reads only the term list, so
+the artifact section is for a session to read rather than for the board to scan.
+
 **A term is removed from this list only when no live reference remains** and
 the retirement is old enough that nobody will reintroduce it. Removing it
 early turns the signal off while the problem stands.
@@ -53,5 +59,24 @@ early turns the signal off while the problem stands.
 - `Planning state:` — a required line in a planning session's LOG entry naming its working file, retired 2026-08-14 with the file itself; the close reads `git diff HEAD -- QUEUE.md` instead
 - `close-out phase` — a phase of /plan, retired 2026-08-12 and listed 2026-08-14; /done owns that work and always did, so a user-facing sentence offering to "close out" offers something they cannot do. Every internal use — the build close-out, the audit close-out, the sub-doc headings in `done.md` and its family — is procedure-internal vocabulary and correctly named, so this term is the two-word phrase and never the bare word `close-out`.
 - `why-pipeline` — the name of the rationale-carrying mechanism, retired 2026-08-13; it is now **the throughline**, and the plugin is named for it. The mechanism is unchanged; only the name moved, so a live doc still saying `why-pipeline` is stale rather than wrong.
+
+## Retired artifacts
+
+Files a retired step produced, deleted when the step was retired. Recorded so a
+later session meeting a reference to one knows it is gone rather than missing.
+
+*Currently empty.* The section was created on 2026-08-14 with the eviction rule
+that fills it, and the first two candidates were withdrawn the same day — see
+below.
+
+**The withdrawn pair, recorded because the mistake is instructive.**
+`plugin/throughliner.zip` and `plugin/zip-archive/` were deleted as a retired
+step's leftovers and then restored, because they are not leftovers: the **rezip**
+stopped building a zip, but the **release** still packages one and attaches it to
+the GitHub Release, and `resources/release-ritual.md` moves, prunes and rebuilds
+both paths. So a live release artifact can wear the appearance of a dead one, and
+a frozen modification date is consistent with both readings. Before listing
+anything here, grep for the path across `resources/` and the shipped package —
+the producer that still writes it may not be the one you have in mind.
 
 **The identity strings retired on the same day — `sovereign-implementer`, `si-plugin`, `.si-version`, `.si-format-epoch` — are deliberately NOT listed here, and the reason is this list's own cry-wolf rule.** Every one of them has a correct, permanent live use: the marketplace `renames` map must carry the old slug forever or consumers' settings stop migrating, and `session_start.py` and `setup.md` name both old marker files on purpose, as the fallback that recognises a pre-rename project. Listing them would make REPEALED fire on machinery that is working exactly as designed — the same failure the bare word `CEILING` produced. `throughliner` is now the only correct name in new writing; that is enforced by reading, not by this list.

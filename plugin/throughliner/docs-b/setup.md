@@ -25,6 +25,39 @@ migration," not "this is Case B." This needs saying here because the
 plain-language behaviour rule loads only once a project is adopted, and /setup runs
 before that.
 
+## Step 0: Is a build running right now?
+
+Look for a file named `_build-<session-id>.md` in the project folder. That file
+means a build is in progress — either in this chat or another one — and /setup
+must not run alongside it.
+
+**Say so plainly and stop.** /setup creates and rewrites a lot of the project's
+files, and while a build is running the safety check refuses every write outside
+that build's own list. Starting anyway would not be blocked cleanly at the door;
+it would fail partway, file by file, leaving the setup half-finished. So:
+
+> There's a build running in this project at the moment, and setting up while it
+> runs would leave things half-changed. Finish it, or run /done to close it, and
+> then start me again — I'll pick up from there.
+
+Then stop. Don't begin the scaffolding, don't ask whether to continue anyway, and
+don't try to work around the refusal. Making /setup runnable during a build would
+mean the safety check yielding to the one command that changes the most files,
+which is that guard's whole purpose inverted.
+
+**A planning session is different — it is not refused.** There is no build file
+there and nothing is blocked; writes outside the usual few files simply ask
+first. What /setup owes that situation is a description rather than a refusal,
+because the failure to avoid is silence, not permission. Say what is about to
+happen and let the user choose:
+
+> You've got a planning session going here. I can set up now — it'll ask before
+> touching anything outside your usual files. Worth knowing that the planning
+> work in this chat isn't saved yet; /done is what records it. Set up now, or
+> close first?
+
+Then wait for their answer, and do what they say.
+
 ## Step 1: Detect folder state
 
 ```

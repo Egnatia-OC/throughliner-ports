@@ -370,23 +370,6 @@ a time**, at the moment it is ticked in the working file's Progress (Step 3) —
 visibly shrinks as the run progresses, and an item still showing in QUEUE.md means
 exactly one thing: not built yet.
 
-**Why the bulk removal was wrong, stated so it isn't reinstated.** This step used
-to write every item into the build working file and then strip them all from QUEUE.md at once.
-From that moment until the close, the build working file held the **only** copy of every item
-in the run, built or not — and the build working file is deleted at the close. A run that built
-two of fifteen therefore had thirteen items existing nowhere else, and returning
-them meant reading them out of the working file and retyping every block by hand:
-the exact transcription exposure the queue mover was written to eliminate. Nothing
-counted thirteen out and thirteen back, and nothing would have noticed a block
-returned with a line missing.
-
-The old ordering was destination-first for a real reason — the run survives an
-interruption between the two writes — and it freed QUEUE.md for other sessions
-immediately. Copy-per-item keeps both properties and gives up only one thing: the
-items sit in both files while the build runs. A duplication window is a far
-cheaper failure than a single copy in a file scheduled for deletion, and an
-interrupted run now loses nothing at all.
-
 A `[user]` item is walked through in Step 3, not built, and is closed later by
 /done or /plan. It never enters the build working file, since the build working file is deleted at close.
 

@@ -123,10 +123,7 @@ floor:     the show-first cases above stay show-first regardless. The switch
 ```
 
   Held in the session, never written to a file — same shape as the inline-text
-  offer. The method has retired stored mode settings twice, and both times the
-  stored field recorded something that wasn't stable about the user. A
-  show-first preference is less stable still: it is about where they are right
-  now, not who they are.
+  offer.
 
   **Being driven remotely is not a separate trigger.** It is a case where the
   user asks. No detection is built to reach an outcome that asking reaches.
@@ -376,7 +373,11 @@ evidence a future session must        ->  a durable file under resources/
 
 **File research findings as part of using them**, not only when asked. Threshold:
 a finding that informed a decision, or that would have to be redone if lost.
-Name the file in chat when it lands, so the filing is visible and checkable.
+Name the file in chat when it lands, so the filing is visible and checkable, and
+**write its line in `resources/research/index.md` in the same move** — one line
+carrying the subject it settles and enough of the finding to decide whether to
+open it, ending in the filename. A file added without a line is invisible to
+every later session, so the folder grows a write path with no matching read path.
 
 **A research finding that is superseded gains a `Superseded by:` line at the top
 of its file, written at the moment it is superseded** — which is the moment
@@ -550,11 +551,6 @@ longer carries any processing weight**: the ladder reorders Unprocessed at
 /plan's opening, and the close-out reorder is repealed — so placement affects
 only how the file reads to a human, and chronological is the better read,
 because file order records when things landed.
-
-What this gives up, stated so it is not rediscovered as a loss: related items no
-longer sit next to each other. That relationship is already carried better by
-slug cross-references in the prose, which survive any reordering and say *what*
-the relationship is rather than implying one by adjacency.
 
 **Narration discipline.** State what was filed in one line and move on — don't
 narrate the shelving mechanics. Narrate timing in the capture-now, design-later
@@ -744,16 +740,6 @@ index line must carry enough to support the open/skip decision, and must not
 restate the entry. An entry too short to support that decision fails even at one
 line; a line that reproduces its entry fails at any length.
 
-**A 20% proportional cap stood here until 2026-08-12 and was repealed on
-measurement, which is recorded so it is not restored.** It was derived from
-three entries of 968, 1,055 and 1,738 words — all long. Measured across the
-whole index, it turned out to be monotonic in *entry* length rather than in line
-length: not one of the fifteen entries over 1,000 words breached it, while two
-thirds of the entries under 200 words did, the worst being a 34-word line
-against an 87-word entry. So it never fired on the thing it was aimed at, and
-fired 117 times on work nobody thinks is wrong. The distribution is in
-[`resources/research/index-line-length-distribution.md`](../../../resources/research/index-line-length-distribution.md).
-
 **No replacement number, and the reason it is a judgment test rather than a
 script.** Scoping a cap to entries above some length reintroduces a bare figure,
 and absolute length discriminates nothing — the longest lines in the corpus all
@@ -850,6 +836,12 @@ shared tree  ->  two appends to different parts of QUEUE.md don't collide, and
 worktree     ->  sessions cannot collide at all — but a capture filed in one
                  never reaches the other, and the last branch to merge wins.
                  Keep queue edits in one session until a merge lands.
+clone        ->  a cloud session, running on its own copy in a container. Fully
+                 isolated, and the isolation is stronger than a worktree's:
+                 work reaches the main machine ONLY as a pushed branch, so a
+                 capture filed here is invisible everywhere else until that
+                 branch merges. Never read this as a shared tree — no
+                 file-modified warning can cross the container boundary.
 ```
 
   **Under both models: don't interrupt a run to file a capture.** Same advice,
@@ -944,9 +936,7 @@ whoever is reading.
 
 When something appears to misbehave — Claude Code, a hook, the method itself —
 read what the tool documents, then look for others reporting it, and only then
-suspect the tool. The evidence: one session spent building two detailed theories
-about a tool misbehaving when the cause was our own code not matching the
-documented contract, findable in about a minute.
+suspect the tool.
 
 ## File safety
 

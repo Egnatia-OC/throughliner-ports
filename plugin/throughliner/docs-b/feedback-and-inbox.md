@@ -115,6 +115,16 @@ has nothing at its session start that surfaces waiting mail, so a message
 delivered into a folder this project just made can sit unread indefinitely with
 nothing on this side ever knowing. That has happened.
 
+**And confirm the recipient's `INBOX/` is covered by that project's
+`.gitignore`. Where it is not, say so plainly and do not send until the user
+says go.** One more limb on the check that already runs, not a new mechanism.
+A reply is written into the recipient's own folder, so a file from this project
+appears inside a repository whose ignore rules this project does not control —
+and where those rules do not cover the mailbox, the message gets committed
+there. Sending with a warning instead was rejected: a warning at the moment of
+sending is the kind that gets clicked past, and the cost of being wrong lands in
+a repository neither party can see.
+
 **What sending guarantees, stated honestly because it is easy to assume more.**
 It places a file in the recipient's mailbox. Nothing confirms it was read. A
 completed round trip has happened — a message was read, answered, and a factual
@@ -150,6 +160,14 @@ records what the user  ->  never a filesystem scan for other projects. The
 Putting the sender's path inside the message instead was rejected on the same
 ground: that writes a path from this machine into another project's repository,
 which may be committed and may be public.
+
+**The address book is write-and-send only.** A session may pass a recorded path
+to a send. It may never quote the path, never name a correspondent in any
+document, and never carry either into chat. Some projects are private in a way
+that goes past "not published" — the folder name alone can identify a real
+person and a sensitive matter — and the gitignore protects against publication
+and nothing else. The exposure this closes is a session reading the address book
+and copying a name into QUEUE.md or a LOG entry, which are committed.
 
 Not to be confused with the editing-state signal: `.throughliner/` markers are
 live session state a companion app reads. INBOX is for messages. They stay

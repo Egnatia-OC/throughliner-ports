@@ -99,7 +99,100 @@ session edits its own copy and a capture filed in one does not reach the other
 until a merge. The shipped "parallel sessions are allowed" rule was written for
 the shared-tree case and does not know about the other.
 
-## 7. Adjacent finding, noted rather than pursued
+## 6a. The reused-session hypothesis, tested and REFUTED (2026-08-14)
+
+The leading explanation for the contradiction in §5 was that Claude Code
+allocates a worktree at session *creation* rather than at `/clear`, and that a
+workflow built on pre-made, cleared sessions would therefore never see one.
+
+**Tested directly and it does not hold.** A genuinely new desktop session (+ New
+session, not `/clear`) was started on this project and asked to report both git
+paths. Both printed `.git` — identical, which means a main working tree.
+`.claude/worktrees/` still did not exist afterwards, and `git worktree list`
+still showed only the main checkout and the Codex port.
+
+So the documented behaviour does not happen on this machine under any
+session-creation route tested, and the "Worktree location" setting was already
+confirmed at its default, so nothing is redirecting worktrees elsewhere either.
+**This removes the leading explanation without supplying one** — §5's
+contradiction stands and is now harder to explain, not easier.
+
+**It strengthens the filed issue rather than dissolving it.** What might have
+been a workflow artefact on this machine is shown not to be, so
+`anthropics/claude-code#85560` describes the app's behaviour rather than how
+sessions were being started. Record: `LOG/2026-08-14-cleared-sessions-may-never-get-a-worktree.md`.
+
+**One consequence is now established rather than suspected:** the isolated path
+is never exercised by this project's own testing, because isolation is absent
+here under every route tried.
+
+## 7. Worktrees are not the only isolation mechanism — the cloud clone (added 2026-08-14)
+
+This file read as though a worktree were the only way a session could be
+isolated. It is not.
+
+**A Claude Code cloud session runs on a clone inside a container.** Its own
+startup steps, from a screenshot of a live session: set up a cloud container,
+**cloned repository**, run setup script, started Claude Code. No worktree is
+involved. Work reaches the user's machine only as a pushed branch.
+
+**Why that broke the isolation check.** `session_start` decided between two
+cases by comparing `git rev-parse --git-dir` against `--git-common-dir`: they
+differ in a linked worktree and match in a main checkout. **In a clone they also
+match, because a clone is a main checkout.** So a cloud session was classified
+as a shared tree and told that two appends to different parts of QUEUE.md do not
+collide and the file-modified warning will catch them if they do. Both halves
+are false there, and this is worse than the worktree case rather than equivalent:
+the worktree branch of the advice at least describes isolation, while the clone
+got the one branch that actively misleads.
+
+**The discriminator, measured on a live cloud session rather than guessed.** Both
+git paths resolved to the same `.git`, confirming an ordinary clone. The
+environment carries the signal:
+
+```
+CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE=cloud_def…   # the one to key on
+CLAUDE_CODE_ENTRYPOINT=remote_mobile
+IS_SANDBOX=yes                                    # broader; other sandboxes may set it
+```
+
+`IS_SANDBOX` was rejected as the signal: it describes sandboxing generally, and a
+false positive would hand an ordinary session the wrong branch of the advice.
+
+**Absence means "not cloud", deliberately.** These variable names are
+undocumented, so a rename is a live risk. Written this way a rename loses the
+improvement; written the other way it would produce a confident wrong answer.
+
+Container observed: `sandbox-ccr-default`, running Claude Code 2.1.42, entered
+from mobile.
+
+## 8. What a deliberate long-lived worktree looks like (recorded 2026-08-14)
+
+Recorded here because the only live specimen on this machine is scheduled for
+deletion, and the example would otherwise vanish with it.
+
+**The specimen.** The shelved Codex port: branch `codex/si-port`, checked out in
+a worktree at a **sibling folder outside the project** (`../Sovereign
+Implementer - Codex port`), dormant since 2026-07-28, 31 commits ahead of the
+main checkout. `CLAUDE.md` describes it as read-only history with no live
+relationship to maintain.
+
+**What marks it as an archive rather than session work.** Not its name, and not
+its commit count — a stranded session branch looks identical on both. It is the
+**location**: it sits outside the project entirely, whereas Claude Code allocates
+a session's worktree inside `<project-root>/.claude/worktrees/` by default, and
+the desktop setting offers only that default or a custom folder, with no option
+that disables worktrees. Sources: [Run parallel sessions with
+worktrees](https://code.claude.com/docs/en/worktrees) and the Settings → Claude
+Code → "Worktree location" control.
+
+**Which way the path test fails.** Where a user has set a custom worktree
+location, their session worktrees classify as deliberate and go unoffered — a
+missed merge offer. It never does the opposite, because an archive is never
+inside `.claude/worktrees/`. That asymmetry is why the path test was chosen over
+a naming test, which fails in both directions.
+
+## 9. Adjacent finding, noted rather than pursued
 
 The desktop app has **native cross-session messaging**: Claude can list the other
 Code-tab sessions, read what they have been doing, and send messages between them,

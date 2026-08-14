@@ -326,7 +326,7 @@ def _dirty_tree_count(cwd):
 
 
 def _isolation_model(cwd):
-    """Whether this session is in an isolated worktree. "worktree", "shared", or None.
+    """This session's isolation model: "clone", "worktree", "shared", or None.
 
     The method must not ASSUME an isolation model, and for a while it looked
     like it could not know one either — research observed a session in the main
@@ -341,9 +341,33 @@ def _isolation_model(cwd):
     accepted because the advice consults the current state and never the
     setting, so knowing the setting would change no behaviour.
 
+    There are THREE cases, not two, and the git comparison cannot separate the
+    first from the third. A Claude Code cloud session — started from the mobile
+    or web app against the GitHub repository — runs on a *clone* inside a
+    container. A clone IS a main checkout, so both paths match and the two-way
+    comparison classifies it as a shared tree. That is the one misclassification
+    that actively misleads: the shared-tree advice says collisions are handled
+    and the file-modified warning will catch them, and neither is true across a
+    container boundary.
+
+    So the environment is read FIRST, ahead of the git comparison.
+    `CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE` is set in a cloud session (measured
+    live: `cloud_def…`, alongside `CLAUDE_CODE_ENTRYPOINT=remote_mobile` and
+    `IS_SANDBOX=yes`). `IS_SANDBOX` is deliberately NOT the signal — it
+    describes sandboxing generally, and a false positive would hand an ordinary
+    session the wrong branch of the advice.
+
+    These variable names are undocumented, so a rename is a live risk. Absence
+    therefore means "not cloud" and the check falls back to today's two-way
+    behaviour: a rename loses the improvement, where the other direction would
+    produce a confident wrong answer.
+
     Returns None on any error — a hook that cannot run git says nothing rather
     than guessing.
     """
+    if os.environ.get("CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE"):
+        return "clone"
+
     def _rev_parse(flag):
         try:
             result = subprocess.run(
@@ -374,8 +398,8 @@ def _isolation_model(cwd):
 def _unmerged_session_branches(cwd):
     """Branches checked out in a linked worktree that carry commits HEAD lacks.
 
-    Returns a list of (branch, commit_count), empty on any error or when there
-    is nothing to report.
+    Returns a list of (branch, commit_count, session_allocated), empty on any
+    error or when there is nothing to report.
 
     The harness creates a session's isolated worktree and branch and NEVER
     merges it back. At the end of an interactive worktree session it prompts
@@ -391,6 +415,29 @@ def _unmerged_session_branches(cwd):
     branches, and a check that cries wolf gets worked around. The linked-worktree
     test has no such failure mode: an ordinary feature branch the user made in
     the main checkout is never reported.
+
+    Living in a linked worktree is not enough on its own to say the work is
+    STRANDED, and that gap used to be reported rather than closed: a deliberate
+    long-lived worktree (an archived port, a parallel project) looks identical,
+    so the line fired every session about a branch that would never be merged.
+    Claude Code's docs settle it. A desktop session's worktree is stored at
+    `<project-root>/.claude/worktrees/` by default, and the desktop setting
+    offers exactly two values — that default, or a custom folder. There is no
+    option that disables worktrees.
+
+    So: a worktree inside the project's own `.claude/worktrees/` is
+    session-allocated; one anywhere else is deliberate. Which way it fails is
+    why this beats a naming test. Where a user has set a custom worktree
+    location, the path test calls their session worktrees deliberate and stays
+    silent — a missed merge offer. It never does the opposite, because an
+    archive is never inside `.claude/worktrees/`. A naming test fails in both
+    directions.
+
+    A worktree carrying the method's own leftover working files is strong
+    additional evidence a session ran there, but it only reaches worktrees where
+    a session both ran AND left a file behind, so it cannot carry the
+    classification alone. Recorded so it is not re-proposed as the primary
+    mechanism.
 
     Never raises. A hook that cannot run git says nothing rather than guessing.
     """
@@ -418,12 +465,30 @@ def _unmerged_session_branches(cwd):
     if current:
         records.append(current)
 
+    try:
+        session_root = os.path.normcase(
+            os.path.normpath(os.path.join(cwd, ".claude", "worktrees"))
+        )
+    except (OSError, ValueError):
+        session_root = None
+
     found = []
     for record in records[1:]:
         ref = record.get("branch")
         if not ref:
             continue
         branch = ref.rsplit("/", 1)[-1]
+        session_allocated = False
+        path = record.get("worktree")
+        if session_root and path:
+            try:
+                normalised = os.path.normcase(os.path.normpath(path))
+            except (OSError, ValueError):
+                normalised = None
+            if normalised is not None:
+                session_allocated = normalised.startswith(
+                    session_root + os.sep
+                ) or normalised == session_root
         try:
             counted = subprocess.run(
                 ["git", "rev-list", "--count", "HEAD.." + ref],
@@ -438,7 +503,7 @@ def _unmerged_session_branches(cwd):
         except ValueError:
             continue
         if ahead > 0:
-            found.append((branch, ahead))
+            found.append((branch, ahead, session_allocated))
     return found
 
 
@@ -1082,7 +1147,18 @@ def main() -> int:
     # One fact, so the parallel-sessions advice can state the case that applies
     # instead of hedging across both.
     isolation = _isolation_model(cwd)
-    if isolation == "worktree":
+    if isolation == "clone":
+        context_parts.append(
+            "[Throughliner] Isolation: this session runs on a CLONE of the "
+            "repository inside a cloud container, not on the user's machine. "
+            "The parallel-sessions advice for this case: nothing written here "
+            "is visible to any other session, and work reaches the main "
+            "machine only as a pushed branch — so a capture filed here is "
+            "invisible everywhere else until that branch merges. Do not read "
+            "this as a shared tree: no file-modified warning can fire across "
+            "the container boundary."
+        )
+    elif isolation == "worktree":
         context_parts.append(
             "[Throughliner] Isolation: this session is in its own git "
             "worktree, so edits here cannot touch another session's files. The "
@@ -1109,22 +1185,36 @@ def main() -> int:
         # obvious design — the merge cannot happen at the isolated close, so
         # this is the moment it gets offered.
         stranded = _unmerged_session_branches(cwd)
-        if stranded:
+        session_work = [b for b in stranded if b[2]]
+        deliberate = [b for b in stranded if not b[2]]
+        if session_work:
             listed = ", ".join(
                 "%s (%d commit%s)" % (name, count, "" if count == 1 else "s")
-                for name, count in stranded
+                for name, count, _ in session_work
             )
             context_parts.append(
-                "[Throughliner] Worktrees carrying unmerged commits: " +
-                listed + ". Each is checked out in its own worktree and has "
-                "commits this checkout doesn't. That is ALL that was measured — "
-                "it does not establish these are stranded session branches. A "
-                "long-lived deliberate worktree (an archived port, a parallel "
-                "project) looks identical here and must not be offered for "
-                "merging. Before offering, judge which it is; where it is "
-                "session work, OFFER the merge and never merge silently. On a "
-                "conflict, leave the branch alone and say plainly the work is "
-                "safe on it — never show raw conflict markers."
+                "[Throughliner] Session worktrees carrying unmerged commits: " +
+                listed + ". Each sits inside this project's "
+                ".claude/worktrees/, which is where Claude Code allocates a "
+                "session's own worktree, so these are session work rather than "
+                "a deliberate long-lived worktree. OFFER the merge and never "
+                "merge silently. On a conflict, leave the branch alone and say "
+                "plainly the work is safe on it — never show raw conflict "
+                "markers."
+            )
+        if deliberate:
+            listed = ", ".join(
+                "%s (%d commit%s)" % (name, count, "" if count == 1 else "s")
+                for name, count, _ in deliberate
+            )
+            context_parts.append(
+                "[Throughliner] Worktrees outside .claude/worktrees/ carrying "
+                "unmerged commits: " + listed + ". These classify as deliberate "
+                "long-lived worktrees — an archived port, a parallel project — "
+                "so do NOT offer to merge them. One way this can be wrong: if "
+                "the worktree location has been changed from its default in "
+                "Claude Code's settings, real session work lands here too and "
+                "is not offered."
             )
 
     # The rule-lifecycle board, when the project carries it. This surface ships;
@@ -1260,7 +1350,10 @@ def main() -> int:
         context_parts.append(
             "[Throughliner] Plugin version changed since this project was "
             f"last set up ({project_version} → {plugin_version}) — an update has been "
-            "installed."
+            "installed. /setup wants a session of its own: it refuses to run "
+            "while a build is in progress, and it rewrites enough of the "
+            "project's files that mid-session is the wrong moment even when "
+            "nothing blocks it. Finish and close what is running first."
         )
 
     if has_active_build:

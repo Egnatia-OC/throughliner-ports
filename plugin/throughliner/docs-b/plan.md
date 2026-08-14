@@ -17,7 +17,8 @@ gets built first — through discussion, not silently.
 
 **In a /plan session:**
 
-- **never build** — code that needs writing is queued, not written here;
+- **never build** — work that changes anything outside the quiet list below is
+  queued, not done here, whether or not it is code;
 - **take one item at a time**, finishing each before the next is presented;
 - **read SPEC.md before proposing work**, so nothing queued contradicts it;
 - **process the accumulated unprocessed work** before any new planning work.
@@ -51,6 +52,32 @@ gets built first — through discussion, not silently.
   it is the truth each item is built against rather than a document only planning
   consults. That is what a queued item's own text has to survive: write it so a
   build reading SPEC alongside it finds the two in agreement.
+
+  **Three rules govern what a SPEC edit may write.** SPEC grows with the project
+  and nothing evicts from it, so an edit that only ever adds leaves a document
+  that costs more to read every session and says less per sentence.
+
+  - **Admission — does this sentence belong in SPEC, or downstream?** SPEC
+    carries product truth: what the project is, who it is for, how it behaves.
+    A sentence describing *how a mechanism is implemented* — internal fields,
+    file formats, version history, the steps a component runs through — belongs
+    in the doc that owns that mechanism, and SPEC names the behaviour instead.
+    Spec-driven-development guidance is consistent on this, and the split
+    between durable project rules and what is being built is already carried
+    here by CLAUDE.md versus SPEC.md.
+  - **Rationale leaves the operative sentence.** Why a design was chosen, which
+    alternative lost, what the trade-off was: that is the record of the decision
+    and belongs in the LOG entry that made it. SPEC states what is true of the
+    product now.
+  - **Staleness is a defect, not clutter.** A SPEC sentence describing a
+    mechanism the project no longer has is wrong rather than merely surplus, and
+    it is corrected at the moment it is noticed rather than filed for later.
+
+  **No ceiling and no size measure, deliberately.** SPEC has a floor the method's
+  own rule corpus does not: it must describe the product as it actually is, so it
+  cannot be compressed past that without becoming false. A true sentence about a
+  live feature cannot be evicted, which is why these three rules are about what
+  goes in and whether it is still true, never about how long the document is.
 - **/plan resolves what it can in-session; capture is only for what it can't.**
 
 ```
@@ -323,13 +350,6 @@ blocker absent from the
     reference             ->  a fault; surface it and fix it this session
 ```
 
-**Why deletion gets its own branch rather than folding into the others.** From
-the queue alone a deleted blocker and a shipped one are identical — both are
-simply absent — and LOG *can* tell them apart, but nothing used to say to look.
-A session finding no ship record had no branch to take, so the cheapest readings
-were "must have shipped, lift it" or "the reference is wrong, repair it", and
-both are wrong.
-
 A blocker is deleted because someone judged it not worth doing, and the held
 item was designed assuming that blocker would happen. Its premise may not
 survive. So the response is to re-examine the held item — **which is a fate
@@ -517,13 +537,6 @@ unblocks anything else, don't fall through to file order silently. Work down:
                                           so the queue stops reading as heavy
 6. file order                             position in the section
 ```
-
-**Why the stall rung sits above unblock-potential rather than inside it.** Rung 3
-ranks by how much other work an item releases. A stalled cleared region is a
-different quantity: until it is settled *no* build happens at all, so the cost of
-leaving it is a stop to everything rather than a delay to something. That is rung
-1's argument — a non-throughput concern outranking throughput — applied to the
-one other condition that has it.
 
 The ladder is never presented as a choice — it's surfaced only through the one-line
 floor narration, which names whichever rung the order actually came from.
@@ -979,14 +992,6 @@ this message like any other.
 **The four routes are stated ONCE, at the start of processing, and never
 recited again** — *"I'll work through these one at a time; say skip, stop, or
 run /done whenever"*.
-
-**Why rewording the recital was not enough.** The old wording was already a
-neutral either/or. The defect is position and repetition: an offer that *names
-closing*, at the end of a long message just after finishing a piece of work,
-reads as an announcement that closing is what happens next, whatever its
-phrasing. A user acted on that reading and closed a session they wanted to
-continue. The cost of removing it — someone who forgets the options gets no
-reminder — is judged small, since "stop" needs no teaching.
 
 **If the rung has changed since the last pick, say so here in one clause**
 (see the floor narration above). Only when it changed; never per item.

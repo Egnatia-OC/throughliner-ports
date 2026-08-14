@@ -39,7 +39,7 @@ The docset serves the **5-series — Fable 5 and Opus 5** — which converge on 
 
 ## Host and target
 
-**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only a `claude` CLI install/update against the committed marketplace plus a full app restart does (the desktop app's in-app plugin upload is gone; the exact commands are in the Push section below and in `resources/release-ritual.md`). A bare working-tree or zip edit changes nothing the host sees, because the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files.
+**Host** = the plugin as installed in the desktop app. Its hooks fire, its skills are available, its procedures govern sessions. Nothing in this repo changes host behaviour — only a `claude` CLI install/update against the committed marketplace plus a full app restart does (the desktop app's in-app plugin upload is gone; the exact commands are in the Push section below and in `resources/release-ritual.md`). A bare working-tree or zip edit changes nothing the host sees, because the host runs a frozen snapshot the CLI copied into `~/.claude/plugins/cache/...` at install time, not the live files. **Two packaging paths, and conflating them has already caused one wrong deletion:** the **rezip** builds no zip — the local marketplace sources the folder and the CLI snapshots it directly — while a **release** still runs `Compress-Archive` into `plugin/throughliner.zip`, archives the previous one under `plugin/zip-archive/`, and attaches the zip to the GitHub Release. So those two paths are live release artifacts, not leftovers of the retired rezip packaging.
 **Target** = the editable source at `plugin/throughliner/`. This is what sessions build and edit. Target changes have no effect until packaged and installed as the new host.
 
 Host and target are the same plugin at different stages. Ambiguous references to "the plugin," "the hooks," "the procedures," etc. must specify host or target. **Default assumption: discussion is about the target unless the user says otherwise.** Most target changes become host changes automatically on reinstall. Changes that live outside the plugin package (e.g. project doc structure, this CLAUDE.md) won't propagate through reinstall and need manual updates.
@@ -69,14 +69,14 @@ No code method/
   CLAUDE.md              — this file
   .gitignore
   plugin/                — plugin packaging
+    throughliner.zip     — the zip a RELEASE builds and attaches (not the rezip)
+    zip-archive/         — previous releases' zips, pruned to three
     throughliner/        — target source
       .claude-plugin/    — plugin manifest
       hooks/             — session_start, pre_tool_use, post_tool_use
       skills/            — setup, plan, next, done
       templates/         — CLAUDE-TEMPLATE.md
       docs-b/            — procedure docs loaded by skills (the one docset)
-    throughliner.zip     — current installable zip
-    zip-archive/         — versioned archive of past zips
   SPEC.md                — this project's spec (once /setup has run)
   QUEUE.md               — this project's work queue
   LOG/                   — this project's session logs (index.md + per-entry files)
@@ -105,7 +105,7 @@ Then four questions:
 
 **An exception must survive the restatement test.** Before writing one, restate the rule so that it does not need one; an exception is admissible only where restatement was attempted and lost content. Where restatement genuinely fails, the exception requires a recorded instance of the bare rule producing a wrong outcome — not the author's belief that an edge case exists — and the LOG entry admitting it cites that instance.
 
-**2. Eviction — name what comes out.** Adding a rule names which rule it replaces or supersedes, and repeals it in the same move. A clearer restatement that leaves the old statement standing has doubled the text, not merged it. **Adding a scan to a skill's opening states what it displaces** — each scan is small and individually tagged, so nothing anywhere counts them. The techniques for taking a rule out live in [`resources/rule-maintenance.md`](resources/rule-maintenance.md), opened during a subtraction pass rather than while authoring.
+**2. Eviction — name what comes out.** Adding a rule names which rule it replaces or supersedes, and repeals it in the same move. A clearer restatement that leaves the old statement standing has doubled the text, not merged it. **Adding a scan to a skill's opening states what it displaces** — each scan is small and individually tagged, so nothing anywhere counts them. **Retiring a step retires the artifacts that step produced — name them and delete them in the same build**, and where a live doc describes the retired step's output, reword that too. This fires only when someone is knowingly retiring a step; it does nothing about junk that accumulates from nobody's decision in particular. The techniques for taking a rule out live in [`resources/rule-maintenance.md`](resources/rule-maintenance.md), opened during a subtraction pass rather than while authoring.
 
 **3. Distribution — always-loaded, or fetched?** A session cannot fetch a rule it has never read, so a rule that must shape behaviour unprompted is always-loaded and pays the full admission cost. Reference material a session knows to go looking for can be fetched. The always-loaded shipped file is `docs-b/skill-nonspecific-rules.md`, and its name is its admission test: a rule belongs there only if it fires in all four skills.
 
@@ -128,6 +128,8 @@ Then four questions:
   Rule gate: run — <what it decided>
   Rule gate: not needed — <why>
   Retired: `<term>` — <what it was>        # only when this session retired something
+  Retired artifacts: `<path>` — <what produced it>   # only when this session
+                                           # retired a step that produced files
   ```
 
   **Write the label plain, not bolded.** `**Rule gate:**` is the ordinary Markdown instinct and it has twice hidden a whole session's dispositions from the board that reads them. The patterns in `resources/rule_signals.py` now tolerate the emphasis, but the plain form is what the specimen shows, so the instinct is corrected at the authoring end rather than only forgiven at the reading end.
@@ -158,9 +160,13 @@ Then four questions:
   **A firing signal files one capture in Unprocessed under the slug the board prints, and then gets out of the way.** It does not escalate over time — that would need a bare number, which the gate now bans — and it does not go quiet on a standing signal, which would recreate the silent inaction the whole design exists to prevent. The work goes where all work goes, ordered by the ladder and counting toward the throughput floor, where ignoring it is visible in the queue. **A signal counts as satisfied while an open capture with its slug already exists**, which is the guard against filing the same capture every session.
 
   **Why a board and not a cycle**, recorded so the cycle is not re-proposed: a positional cycle is what failed before, with compression permanently downstream of machinery that never ran. Independent triggers can each fire whether or not any other ran, can be built one at a time, and produce a status board rather than a position. Nobody has to read the board — everyone already reads the queue.
-- **FAQ entries are part of batch authoring.** When /plan authors a batch that introduces something a consumer would see or ask about — a new queue line, a new doc section, a new narration moment — the batch carries a `plugin/throughliner/templates/faq-template.md` entry (plus its `faq-index-template.md` index line) in its build list. The test mirrors the spec-entry trigger: would a non-coder meeting this change have a question the FAQ doesn't answer? If yes, the FAQ entry ships with the batch. Host-project rule, not shipped plan.md — consumers never author FAQ entries, so the rule would misfire in their /plan sessions.
+- **FAQ entries are part of batch authoring.** When /plan authors a batch that introduces something a consumer would see or ask about — a new queue line, a new doc section, a new narration moment — the batch carries a `plugin/throughliner/templates/faq-template.md` entry (plus its `faq-index-template.md` index line) in its build list. The test is the same one the FAQ-sync gate uses, so both narrow together: does this change alter what a user **does** — a new step, a changed command, something different appearing in their own documents, a moment where they must answer or decide? If yes, and a non-coder meeting it would have a question the FAQ doesn't answer, the FAQ entry ships with the batch. A change that is user-visible but leaves their actions unchanged does not fire it. Host-project rule, not shipped plan.md — consumers never author FAQ entries, so the rule would misfire in their /plan sessions.
 - **README feature-list sync rides the SPEC-sync trigger.** A change that adds or removes a user-facing feature — a skill, a mode, a command, or user-visible hook behaviour — already must update SPEC.md. That same moment also syncs README.md's "What it does" feature list, which is the plain-English mirror of SPEC's feature list. One more clause on the existing trigger, not a new detection point. Host-only concern: consumers don't maintain the method's README.
-- **FAQ-sync is a hard close gate with a logged disposition — a session carrying a user-facing change cannot close until the FAQ is dispositioned.** It rides the SPEC-sync close trigger's read moment, and it has the same teeth SPEC-sync has: the close does not complete until it is satisfied.
+- **FAQ-sync is a hard close gate with a logged disposition — a session carrying a change that alters what a user DOES cannot close until the FAQ is dispositioned.** It rides the SPEC-sync close trigger's read moment, and it has the same teeth SPEC-sync has: the close does not complete until it is satisfied.
+
+  **The trigger is what the user does, not what they can see.** A new step, a changed command, something different appearing in their own documents, a moment where they have to answer or decide: those fire it. A change that is user-visible but leaves their actions unchanged — a reworded line, a tightened explanation, a doc reorganised behind the same behaviour — does not. The gate keeps its teeth and loses most of its firing rate.
+
+  **Narrowed 2026-08-14, and this is the saving, not a retreat.** The FAQ is retained as the canonical home for consumer-facing explanation, which is a reasoned departure from the research (`resources/research/faq-as-a-document-type.md`) rather than an oversight: the literature's remedy is that an answer belongs where its subject is explained, and here there is no such place for a consumer, because the procedure docs are Claude's rather than theirs. Making it canonical means its maintenance cost stays — so the saving has to come from the trigger firing less, not from the document being tended less.
 
   **The disposition is written into the LOG entry, as an explicit line:**
 

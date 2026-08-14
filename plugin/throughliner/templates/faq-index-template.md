@@ -70,3 +70,6 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [At the end of a session Claude used to ask me to approve a list of new queue items. Now it just tells me. Why?](faq.md#at-the-end-of-a-session-claude-used-to-ask-me-to-approve-a-list-of-new-queue-items-now-it-just-tells-me-why)
 - [A build run stopped early and said the next job "runs alone". Why?](faq.md#a-build-run-stopped-early-and-said-the-next-job-runs-alone-why)
 - [The plugin is now called Throughliner. What do I have to do?](faq.md#the-plugin-is-now-called-throughliner-what-do-i-have-to-do)
+- [Claude wouldn't send a message to my other project and asked me first. Why?](faq.md#claude-wouldnt-send-a-message-to-my-other-project-and-asked-me-first-why)
+- [Claude said a sentence I wanted in SPEC belongs somewhere else. Why?](faq.md#claude-said-a-sentence-i-wanted-in-spec-belongs-somewhere-else-why)
+- [A build asked to change SPEC halfway through. Is it allowed to do that?](faq.md#a-build-asked-to-change-spec-halfway-through-is-it-allowed-to-do-that)

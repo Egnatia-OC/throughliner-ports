@@ -454,3 +454,45 @@ The plugin used to be called Sovereign Implementer. The name changed because it 
 **Two things worth knowing.** The automatic follow-along needs Claude Code version 2.1.193 or newer — on an older version you'd see a "plugin not found" message, and the fix is to update Claude Code first. And if your Claude Code settings are managed by an administrator (a work laptop, for instance), those can't be rewritten automatically, so the notice keeps appearing until an admin updates them.
 
 **Inside your own project**, two small hidden marker files are renamed too — they record which version and which document format your project is on. If your project was set up before the rename, Claude will say your project is on an older format and point you at /setup, which renames them for you along with anything else that needs bringing up to date. Nothing you wrote is touched.
+
+## Claude wouldn't send a message to my other project and asked me first. Why?
+
+Because sending a message writes a file into that other project's folder, and Claude found that the other project's setup would commit it to that project's history rather than keep it private.
+
+Every project on the method has an `INBOX/` folder, and one project can drop a message into another's. Your projects are normally set up so the mailbox stays out of git — the message sits on your disk and never becomes part of the project's saved history. But that only holds if the receiving project is set up that way. A project adopted a while ago, or one whose ignore settings were edited by hand, may not be.
+
+**So before sending, Claude checks the receiving end and stops if the mailbox isn't protected there.** It tells you plainly what it found and waits for you to say go. The reason it stops rather than sending with a warning: once the message is committed in the other project's history, it's there, and that history may be somewhere neither of you is looking.
+
+**What to do about it.** You have two straightforward options. Say go anyway — reasonable if the message is unremarkable and the other project is private. Or open the other project first and ask Claude to add its `INBOX/` to that project's ignore list, then come back and send. The second takes a minute and fixes it for every message afterwards.
+
+**One related thing worth knowing.** When you tell Claude where another project lives, it remembers the folder path so you don't have to look it up again. It keeps that note inside the mailbox folder, out of git, and it won't quote the path back to you in conversation or write it into your queue or your session records — because those *are* saved, and a folder path can say more about you than you'd want a saved file to carry.
+
+## Claude said a sentence I wanted in SPEC belongs somewhere else. Why?
+
+Because SPEC is meant to say what your project **is and does**, and the sentence was describing **how something is built**. Those are different jobs, and mixing them is what makes a spec slowly stop being readable.
+
+SPEC.md is the one document Claude reads before proposing work and again before building it. It's the answer to "what is this thing, who is it for, how does it behave." That makes it valuable in proportion to how much of it is true and load-bearing. The problem is that it only ever grows: every change that affects what your app does adds a sentence, and nothing ever takes one out. Left alone for a year, it becomes long, expensive to read every session, and full of detail nobody needs at that level.
+
+**So three rules apply whenever Claude edits it.**
+
+- **What goes in.** Product truth — the behaviour, not the machinery. "Users can export their list as a spreadsheet" belongs in SPEC. "The export runs through a queue and writes a temporary file first" is implementation, and belongs wherever that part of the project is documented.
+- **Reasoning goes to the session record.** Why you chose one approach over another is genuinely worth keeping — it just isn't a description of your product. It goes into the log entry for the session that decided it, where the decision lives with its reasons. SPEC keeps the plain statement of what's true now.
+- **Out-of-date sentences get fixed, not tolerated.** If SPEC describes something your app doesn't do any more, that's a mistake in the document, not just untidiness — because Claude will build against it. Whoever notices it corrects it.
+
+**There's no length limit, and that's deliberate.** Claude won't ever tell you SPEC has got too big, or ask you to trim it to fit a number. Your spec has to describe your product as it actually is — so a true sentence about a real feature can never be cut just to save room. The rules above are about what goes in and whether it's still true, never about size.
+
+**If you disagree, say so.** These are Claude's judgement calls about where a sentence lives, not rules about what you're allowed to want. If you'd rather the detail sat in SPEC, tell Claude and it goes in SPEC.
+
+## A build asked to change SPEC halfway through. Is it allowed to do that?
+
+Yes — that's the normal route, and asking you first is the rule it's following, not one it's breaking.
+
+Here's the situation it's in. A build works from a job you already agreed during planning, and SPEC describes what your project does. Sometimes, partway through building, it turns out the work establishes something true about your project that SPEC doesn't say yet. Leaving SPEC behind isn't an option: it's the document Claude reads at the start of every future build, so a gap there quietly misleads every session afterwards.
+
+**So the method's answer is that the build may update SPEC, but never quietly.** It stops, tells you exactly what sentence it wants to add or change, and waits for you. That pause is the safeguard — SPEC is your project's truth, so a change to it is always yours to approve.
+
+**Why it can look alarming.** You agreed to a piece of work, and mid-way through Claude asks to edit the document that defines your project. Read cold that can look like it's asking permission to go out of bounds. It isn't. It's the one moment the method insists on asking, precisely because the document matters.
+
+**How to answer.** Read the proposed sentence. If it matches what you now want your project to do, say yes and the change lands in the same commit as the work — which is the point, so the two never drift apart. If it doesn't match, say no: that's a useful signal that the build has gone somewhere you didn't intend, and it's much better caught here.
+
+**One thing this is not.** If Claude says the work **contradicts** something SPEC already says, that's a different and more serious moment — it means the job and your project's stated truth disagree, and one of them is wrong. That one stops the run and needs a real decision from you, rather than a quick yes.

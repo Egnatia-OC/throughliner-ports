@@ -107,22 +107,6 @@ repealed — do not reinstate:
     the Unprocessed reorder by unblock-potential
 ```
 
-**Why build-order re-derivation went.** A genuine prerequisite is carried by
-`Blocked by: [slug]`, and a blocked item sits *below* the readiness line — so
-inside the cleared region there is usually no ordering meaning left to compute.
-Everything above that line is built by one /next run anyway. Where two items
-genuinely reshape what each other edit, the relationship is written into the
-item's prose ("this must land with [slug]"), which survives a reorder where
-adjacency does not — the method's own rule that position never encodes a
-relationship, applied here.
-
-**Why the Unprocessed reorder went.** /plan's start-of-processing ladder already
-orders Unprocessed, at the moment the order is consumed and with the user
-present. The only thing that ever reads Unprocessed order is a /plan opening, so
-the close was computing a durable order whose sole consumer immediately
-recomputes it. Left alone, the section reads chronologically, which tells a human
-when things landed — more useful than a stale ranking.
-
 Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
 field that exists is `Blocked by: [slug]`, written on the item that is held, and
 it is lint-checked precisely so it can't go stale the way those headers did.

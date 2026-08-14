@@ -265,14 +265,6 @@ session spanning two days is ordinary rather than exotic: it is what happens
 whenever someone stops for the night, or runs out of usage and picks it up in
 the morning.
 
-**Why the close date is right, which is a different argument for each half.**
-For the filename, its only job is the name sort, the close date already does
-that, and a two-day session sorts correctly either way — so carrying both dates
-would lengthen every filename forever for an occasional case. For a date written
-into the words, which is read later for meaning, the close date is right because
-the stamp records **when the decision was made**, and a decision reached in a
-session's last hour was reached that day whatever day the session opened.
-
 **The hash lives in the entry heading and the index line, never in the filename** —
 the commit hash doesn't exist yet when the file is written, which is why the
 placeholder pattern exists.
