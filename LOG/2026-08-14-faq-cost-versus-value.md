@@ -1,4 +1,4 @@
-# [HASH] — The FAQ is kept and its sync gate narrowed to changes that alter what a user does
+# 78fa417 — The FAQ is kept and its sync gate narrowed to changes that alter what a user does
 
 Captured by the user, in her own words: now that we have the build cycle in every skill, she doesn't know that the FAQ is needed any more, and it's expensive to maintain.
 

@@ -1,4 +1,4 @@
-# [HASH] — next-build.md's spec-sync replacement note cut, its lookalike neighbour left standing
+# 78fa417 — next-build.md's spec-sync replacement note cut, its lookalike neighbour left standing
 
 "Note what this replaces. The build close used to *sync* SPEC to match what was built…" explained why reading SPEC at run start makes a real check possible where a close-time sync could not. The step above it already routes all three cases — agreement, contradiction, new product truth — and is complete without the history.
 

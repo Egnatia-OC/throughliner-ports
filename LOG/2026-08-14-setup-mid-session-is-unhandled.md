@@ -1,4 +1,4 @@
-# [HASH] — /setup now refuses cleanly during a build and describes itself during planning, and the update notice stops inviting the mid-session run
+# 78fa417 — /setup now refuses cleanly during a build and describes itself during planning, and the update notice stops inviting the mid-session run
 
 Captured by the user at a /plan wind-down, from a live instance in another project: a planning session was picked up partway through with a newly installed rezip, Claude rightly recommended /setup, and she ran it. Her framing is the finding — **/plan is normally always closed with /done, and /setup would come after that**, so a mid-session /setup is out of order and no step described it.
 

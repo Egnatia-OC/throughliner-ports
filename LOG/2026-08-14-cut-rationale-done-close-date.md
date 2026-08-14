@@ -1,4 +1,4 @@
-# [HASH] — done.md's close-date argument cut, the rule it explains left intact
+# 78fa417 — done.md's close-date argument cut, the rule it explains left intact
 
 "Why the close date is right, which is a different argument for each half" explained why the filename prefix and the dates written into a record's words both take the close date rather than the open date. The rule above it already states which date to use, without exceptions, and reads complete on its own — which is exactly what the reclassification test asks.
 

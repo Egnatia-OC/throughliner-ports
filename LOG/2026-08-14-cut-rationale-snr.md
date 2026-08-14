@@ -1,4 +1,4 @@
-# [HASH] — Four rationale paragraphs cut from the always-loaded rules, and the two anti-re-proposal guards among them preserved here
+# 78fa417 — Four rationale paragraphs cut from the always-loaded rules, and the two anti-re-proposal guards among them preserved here
 
 The highest-value cut on the rationale audit's list, because this file loads in every session of every command — a word removed here is a word saved everywhere, forever. Four paragraphs went: the retired-stored-mode-settings sentences beneath the show-first rule, the "what this gives up" paragraph beneath the capture-placement rule, the whole paragraph recording that the 20% index-line cap was repealed on measurement, and the evidence sentence beneath the check-our-own-conformance rule. Each states why its rule is worded as it is, and each rule reads complete without it.
 

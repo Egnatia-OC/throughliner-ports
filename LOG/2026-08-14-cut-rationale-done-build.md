@@ -1,4 +1,4 @@
-# [HASH] — Two rationale passages cut from done-build.md
+# 78fa417 — Two rationale passages cut from done-build.md
 
 "Why the sync gate left this close" explained the removal of the build close's SPEC sync — that a close-time sync on a document the build never read can only record what the build did, so it became a place to justify whatever the run had done. The instruction it sits under already states plainly that the build close checks its work against SPEC and does not sync SPEC to match, with a table covering agreement, contradiction and new product truth.
 

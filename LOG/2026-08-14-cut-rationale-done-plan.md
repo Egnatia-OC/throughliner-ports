@@ -1,4 +1,4 @@
-# [HASH] — done-plan.md's two explanations of steps it no longer contains, cut
+# 78fa417 — done-plan.md's two explanations of steps it no longer contains, cut
 
 "Why build-order re-derivation went" and "Why the Unprocessed reorder went" both explained the removal of steps the document does not contain, which made this the clearest case on the audit's list: the reasoning was about text that had already gone. Nothing in the document's live instructions depends on either.
 

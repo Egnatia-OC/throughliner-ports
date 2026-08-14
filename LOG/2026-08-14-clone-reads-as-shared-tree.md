@@ -1,4 +1,4 @@
-# [HASH] — The isolation check gains a third case: a cloud session runs on a clone, and was being told collisions are handled
+# 78fa417 — The isolation check gains a third case: a cloud session runs on a clone, and was being told collisions are handled
 
 Filed by Claude from the user's screenshot of a cloud session's initialization steps. A Claude Code cloud session — started from the mobile or web app against the GitHub repository — reports its startup as: set up a cloud container, **cloned repository**, run setup script, started Claude Code. No worktree. It works on a clone inside a container, and its work reaches this machine only as a pushed branch.
 

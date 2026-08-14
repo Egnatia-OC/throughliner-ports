@@ -1,4 +1,4 @@
-# [HASH] — next.md's bulk-removal post-mortem cut, the largest single cut the rationale audit found
+# 78fa417 — next.md's bulk-removal post-mortem cut, the largest single cut the rationale audit found
 
 Two paragraphs beginning "Why the bulk removal was wrong, stated so it isn't reinstated" recorded what the old destination-first ordering did wrong and what copy-per-item trades for it. Applied to the reclassification test — delete the paragraph and read what remains — the instruction above them is complete and correctly applicable without any of it: copy, never cut, and remove each item at the moment it is ticked.
 

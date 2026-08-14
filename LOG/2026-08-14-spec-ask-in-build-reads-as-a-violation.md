@@ -1,4 +1,4 @@
-# [HASH] — The build's sanctioned SPEC-change ask now names itself as the normal route
+# 78fa417 — The build's sanctioned SPEC-change ask now names itself as the normal route
 
 Mixed authorship: the observation is the user's, in her own words — a spec edit was happening in a /next run in another project, and she said those are not supposed to be allowed in /next. The diagnosis and the fix are Claude's.
 

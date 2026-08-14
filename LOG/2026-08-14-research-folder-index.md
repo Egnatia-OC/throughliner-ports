@@ -1,4 +1,4 @@
-# [HASH] — The research folder gains an index, 54 lines backfilled from each file's own opening
+# 78fa417 — The research folder gains an index, 54 lines backfilled from each file's own opening
 
 Captured by the user, in her own words: add an index to the research folder, like there is on LOG, so subject matter can be searched without opening files.
 

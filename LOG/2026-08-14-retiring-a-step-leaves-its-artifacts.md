@@ -1,4 +1,4 @@
-# [HASH] — Retiring a step now retires the files it produced, and /plan's build prohibition is drawn by destination instead of content type
+# 78fa417 — Retiring a step now retires the files it produced, and /plan's build prohibition is drawn by destination instead of content type
 
 The rezip stopped building a zip when the local marketplace began sourcing the plugin folder directly. The last zip it ever built stayed in place, and five days and several sessions later it was still sitting one line above the live folder in the file listing, presenting itself as the plugin. Windows Explorer hides the `.zip` in its breadcrumb, so browsing into it looked exactly like browsing the target: the same seven top-level folders, and inside `docs-b` a file that had been split apart on 2026-08-10, with every date frozen at 2026-08-09. Read as live, that says the project has been authoring the wrong docset for days, and it took a session and several exchanges to establish that nothing was wrong.
 

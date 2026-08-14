@@ -1,4 +1,4 @@
-# [HASH] — Three SPEC-maintenance rules ship, derived from the self-authoring gate, with its ceiling deliberately refused
+# 78fa417 — Three SPEC-maintenance rules ship, derived from the self-authoring gate, with its ceiling deliberately refused
 
 The user's question, and she drew the host/target line herself: might SPEC benefit from some of the method's self-authoring rules — not for this project, but *shipped*, so that a real external project carries built-in SPEC-maintenance rules. The analysis was Claude's.
 

@@ -1,4 +1,4 @@
-# [HASH] — The worktree scan now classifies by path instead of reporting a judgment it cannot make
+# 78fa417 — The worktree scan now classifies by path instead of reporting a judgment it cannot make
 
 Filed by Claude while smoke-testing the unmerged-worktree scan against this repository. Run here it returned exactly one branch: the shelved Codex port, 31 commits ahead — a deliberate archive that must never be merged. Nothing distinguished it from a stranded session branch, because both are a linked worktree holding unmerged commits.
 

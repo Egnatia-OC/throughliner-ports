@@ -1,4 +1,4 @@
-# [HASH] — Three rationale paragraphs cut from plan.md, with one neighbour deliberately spared
+# 78fa417 — Three rationale paragraphs cut from plan.md, with one neighbour deliberately spared
 
 Three paragraphs failed the reclassification test and went: the note explaining why deletion gets its own branch rather than folding into the others, the note explaining why the stall rung sits above unblock-potential rather than inside it, and the note explaining why rewording the close recital was not enough. Each states why its rule is shaped as it is, and each rule reads complete without it.
 

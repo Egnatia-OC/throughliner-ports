@@ -1,4 +1,4 @@
-# [HASH] — The INBOX address book becomes write-and-send only, and an outbound send now checks the recipient's ignore rules first
+# 78fa417 — The INBOX address book becomes write-and-send only, and an outbound send now checks the recipient's ignore rules first
 
 **This item carried a red flag, cleared at processing on 2026-08-14 by designing the risk out rather than accepting it.** The substantive clearing record was written at that /plan close; this entry carries it through and records what was built.
 
