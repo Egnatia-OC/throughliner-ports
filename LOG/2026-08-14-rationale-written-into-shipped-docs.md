@@ -1,4 +1,4 @@
-# [HASH] — Audit: about 1,050 words of rationale in the shipped procedure docs, 255 of them always-loaded, filed as eight cut items plus a second-pass audit
+# 47966bb — Audit: about 1,050 words of rationale in the shipped procedure docs, 255 of them always-loaded, filed as eight cut items plus a second-pass audit
 
 Filed 2026-08-13 by Claude mid-run from its own conduct, after Alex asked what had
 made the turn expensive. Run as an audit rather than a build on the decision taken

@@ -1,4 +1,4 @@
-# [HASH] — Ten rules that fire in one skill each leave the always-loaded file for the skill doc that uses them
+# 47966bb — Ten rules that fire in one skill each leave the always-loaded file for the skill doc that uses them
 
 Audit finding C, settled at processing on 2026-08-13: the filter is not
 aspirational, so the rules move. The always-loaded file's opening states the

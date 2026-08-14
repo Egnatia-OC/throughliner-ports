@@ -1,4 +1,4 @@
-# [HASH] — Fifteen rules stated twice or three times in the always-loaded file reduced to one statement each
+# 47966bb — Fifteen rules stated twice or three times in the always-loaded file reduced to one statement each
 
 Audit findings B1–B15, consolidated into one item at Alex's instruction on
 2026-08-13 because the fix is identical for each and fifteen builds would have

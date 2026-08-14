@@ -1,4 +1,4 @@
-# [HASH] — The planning working file is deleted from the method outright; the close reads the queue's own diff instead
+# 47966bb — The planning working file is deleted from the method outright; the close reads the queue's own diff instead
 
 Filed 2026-08-14 by Claude at the opening of a /next run, from a message another
 project running throughliner left in this project's INBOX.

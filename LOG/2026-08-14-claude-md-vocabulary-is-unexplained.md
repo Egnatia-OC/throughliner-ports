@@ -1,4 +1,4 @@
-# [HASH] — The background-only vocabulary list is recast around one test: does the term name something in this user's world, something you could show them
+# 47966bb — The background-only vocabulary list is recast around one test: does the term name something in this user's world, something you could show them
 
 Captured by Alex on 2026-08-13 by repeatedly having to ask what the words meant.
 Over one session she asked, in her own words, what a disposition is, what a gate

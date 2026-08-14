@@ -1,4 +1,4 @@
-# [HASH] — /plan's two neutral gates say "run /done" instead of "close out", and the retired phrase is listed so the check can see the next instance
+# 47966bb — /plan's two neutral gates say "run /done" instead of "close out", and the retired phrase is listed so the check can see the next instance
 
 Captured by Alex on 2026-08-13, in her words: it's not "close out" anymore,
 that's a retired plan feature — it's just "or run /done".

@@ -1,4 +1,4 @@
-# [HASH] — The turn-by-turn asks come back: the cadence rule loses its bare count, the style is bounded to length, and both watchers gain the output style
+# 47966bb — The turn-by-turn asks come back: the cadence rule loses its bare count, the style is bounded to length, and both watchers gain the output style
 
 Alex reported on 2026-08-13, in her own words, that since the last rezip all the
 turn-by-turn behaviour was gone and the asks were all gone. She also identified

@@ -1,4 +1,4 @@
-# [HASH] — A step's response-shape tag now governs the narration between its tool calls, not only its final message
+# 47966bb — A step's response-shape tag now governs the narration between its tool calls, not only its final message
 
 Captured by Alex on 2026-08-13, in her words: reply length is where the fatigue
 mostly comes from, and she wants to distribute this benefit as much as she can.

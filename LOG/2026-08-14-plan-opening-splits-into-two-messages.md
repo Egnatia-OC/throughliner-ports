@@ -1,4 +1,4 @@
-# [HASH] — The forward advisory moves into the opening narration's first line, above a rule, so the session's first message carries an ask
+# 47966bb — The forward advisory moves into the opening narration's first line, above a rule, so the session's first message carries an ask
 
 Captured by Alex on 2026-08-13 from that session's own opening minutes earlier:
 `plan.md` required the advisory to be surfaced first and alone, so the session's

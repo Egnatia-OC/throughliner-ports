@@ -1,4 +1,4 @@
-# [HASH] — A Claude-runnable check blocked by a circumstance of the moment gets a row in next-build.md's table, and the migration checklist's wrapped condition is reflowed
+# 47966bb — A Claude-runnable check blocked by a circumstance of the moment gets a row in next-build.md's table, and the migration checklist's wrapped condition is reflowed
 
 Filed 2026-08-13 by Claude at the opening of a /next run, from a message the
 Understudy project left in this project's INBOX.

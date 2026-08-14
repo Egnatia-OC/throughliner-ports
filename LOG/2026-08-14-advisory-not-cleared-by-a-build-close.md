@@ -1,4 +1,4 @@
-# [HASH] — The forward advisory is cleared at the /plan read that consumes it, not at the close, so a build session can no longer leave a spent note behind
+# 47966bb — The forward advisory is cleared at the /plan read that consumes it, not at the close, so a build session can no longer leave a spent note behind
 
 Observed 2026-08-13 at a session opening: the advisory said to start with the
 rename because it had been starved rather than blocked, and the rename had already

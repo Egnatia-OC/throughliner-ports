@@ -1,4 +1,4 @@
-# [HASH] — `[DISCUSS]` is redefined as a two-way exchange in short turns rather than the one tag that licenses length
+# 47966bb — `[DISCUSS]` is redefined as a two-way exchange in short turns rather than the one tag that licenses length
 
 Raised by Alex on 2026-08-13 in her own words — "delivering a lecture is not
 discussing" — after a keep-step ran to several hundred words on an item she could

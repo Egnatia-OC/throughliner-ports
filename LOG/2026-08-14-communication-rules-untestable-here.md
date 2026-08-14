@@ -1,4 +1,4 @@
-# [HASH] — The twelve doubled communication rules are enumerated by layer, so this project's narration stops being read as evidence the method works
+# 47966bb — The twelve doubled communication rules are enumerated by layer, so this project's narration stops being read as evidence the method works
 
 Captured by Alex on 2026-08-09 at a close, immediately after the memory question,
 when she asked whether anything else lingering might be hiding the real face of the

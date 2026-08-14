@@ -1,4 +1,4 @@
-# [HASH] — The rule gate's operative half moves into the always-loaded CLAUDE.md, and self-authoring-rules.md becomes the record behind it
+# 47966bb — The rule gate's operative half moves into the always-loaded CLAUDE.md, and self-authoring-rules.md becomes the record behind it
 
 Filed 2026-08-14 at a close. The failure was Claude's own conduct; the migration
 proposal is Claude's, offered in answer to Alex's question about whether moving the

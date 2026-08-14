@@ -1,4 +1,4 @@
-# [HASH] — The work-cycle block moves into the always-loaded rules and is deleted from both procedure docs
+# 47966bb — The work-cycle block moves into the always-loaded rules and is deleted from both procedure docs
 
 Filed 2026-08-13 by Claude at its own close, from a check Alex asked for in the
 same session: whether the work-cycle summary given to /plan is the same one given

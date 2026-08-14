@@ -1,4 +1,4 @@
-# [HASH] — The /next off-ramp leads with the affirmative — "Say go and I'll start" — instead of naming only the exception
+# 47966bb — The /next off-ramp leads with the affirmative — "Say go and I'll start" — instead of naming only the exception
 
 Captured by Alex on 2026-08-13, mid-run, from the message that opened that
 session's /next. Her observation in her own words: when the off-ramp says
