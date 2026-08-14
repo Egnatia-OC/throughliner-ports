@@ -22,11 +22,9 @@ gets built first — through discussion, not silently.
 - **take one item at a time**, finishing each before the next is presented;
 - **read SPEC.md before proposing work**, so nothing queued contradicts it;
 - **process the accumulated unprocessed work** before any new planning work.
-- **Write to QUEUE.md first, then report what landed.** Don't paste the text into
-  chat for approval ahead of the write. Write it, then say in one line what went
-  in and where — specific enough that the user can object without opening the
-  file. The full rule, including the one test that decides which moments still
-  show first, is in skill-nonspecific-rules.md's approval-time outputs.
+- **Write to QUEUE.md first, then report what landed.** The full rule, including
+  the one test that decides which moments still show first, is in
+  skill-nonspecific-rules.md's approval-time outputs.
 - **Nothing mechanically contains a planning session, so the containment is a
   prompt.** There is no build working file here and so no engaged scope-lock; what
   a session gets instead is an ask before any write outside the quiet list —
@@ -109,34 +107,15 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   close repairs it, but /next runs before /done, so an item placed at a /plan
   opening and built the same day is built in the wrong order and the repair
   arrives after the run it would have helped.
-- **A work item carries a user-credit only when the user raised it.** Provenance is
-  asymmetric and default-AI; the credit stays on the item after processing. The
-  credit needs the user's **own words** as its source — approving what Claude
-  reasoned out is agreement, not authorship. Where both contributed, write it as
-  mixed and name who did which part. The same bar binds reason-shaped sentences
-  in the prose ("their reason", "the user's call"): don't write one unless the
-  user gave that reason.
-- **Who does the work, and how.** Work is Claude's to build by default.
+- **A user-credit stays on the item after processing** — see the provenance rule
+  in skill-nonspecific-rules.md for what earns one.
+- **Who does the work, and how.** Work is Claude's to build by default, and the
+  flavor tags are in skill-nonspecific-rules.md. A `[user]` line must carry a
+  DESCRIBED walkthrough, settled here at the keep-step.
 
-```
-[user]    only when Claude genuinely CANNOT perform or witness it
-          — a check needing the user's eyes, a decision only they can make,
-            a physical action (tapping send, connecting a device)
-          — work Claude can run but is BLOCKED on a push/restart stays
-            Claude-work: file what it waits on as its own item, and shelve
-            this one below the line naming that item as its blocker
-          — must carry a DESCRIBED walkthrough, settled at the keep-step
-
-(no tag)  a build — the default Claude-work flavor
-[audit]   a review pass: reports findings instead of editing files
-[freeform] work done by hand in a session of its own — /next must NOT build it
-```
-
-- **`[freeform]` marks work /next must not run.** Either the user or Claude may
-  designate it, typically as a stopgap or as the nuclear option for something too
-  big to fix stepwise. Its defining case is a repair to the machinery /next itself
-  uses — the queue mover, the scope-lock, the lint — where running the broken
-  mechanism to build past it is the failure. **Place it at one end of the cleared
+- **`[freeform]` placement.** Either the user or Claude may designate it,
+  typically as a stopgap or as the nuclear option for something too big to fix
+  stepwise. **Place it at one end of the cleared
   region, never interleaved with Claude-work:** first when it is a prerequisite or
   repairs machinery /next uses, last when it is unrelated so the run clears the
   buildable work before stopping. Both ends satisfy the rule; narrate which end and
@@ -153,21 +132,25 @@ Runs alone
 ```
 
   Settle it at the keep-step, and place the item at one end of the cleared
-  region so the run reaches everything else first. Use it for a change that is
-  wrong to half-land — a rename, a folder move, a migration that invalidates
-  paths partway through. /next reads it as a run bound and stops there; the
-  marker binds /next and nothing else, so it does not stop the work being done
-  alongside other work by hand.
+  region so the run reaches everything else first. **Use it where the work moves
+  paths underneath a run in flight** — a rename, a folder move, a migration. A
+  running /next holds file paths in its working file and its scope-lock list, and
+  work that moves them makes those stale mid-build. /next reads the marker as a
+  run bound and stops there; the marker binds /next and nothing else, so it does
+  not stop the work being done alongside other work by hand.
+
+  **The marker's original justification was tested on 2026-08-14 and refuted; do
+  not restore it.** It claimed a half-landed rename leaves paths pointing at a
+  folder that no longer exists, so the change must be finished or not started.
+  Tested in a throwaway repository from both states: an uncommitted half-rename
+  was restored exactly by `git reset` then `git checkout -- .`, leaving one
+  untracked directory that `git status` named; a committed one was restored
+  exactly by `git revert`. Recoverability was never the issue. The run-in-flight
+  hazard above is, and it is untouched by any of that.
 
   This is not `[freeform]`. `[freeform]` marks work /next must **not** build;
   `Runs alone` marks work /next **should** build, on its own.
 
-- **Filing is any session; processing is /plan's.** Moving an item into Processed
-  or deleting it is the user's decision to make.
-- **A surfaced risk is kept only once its flag is cleared.** Clearing is part of
-  processing: **cleared** once the risk is designed out in-session, or the user is
-  told it plainly and chooses to proceed (the LOG records which). A risk that
-  can't be cleared stays a capture and returns to the bottom of Unprocessed.
 
 ## Step 1: Read state and entry question
 
@@ -278,17 +261,10 @@ no use here — a "the advisory was surfaced" line in the LOG would be Claude
 attesting to its own narration, which verifies nothing. Do not describe this as fixing the problem.
 
 **Everything the step surfaces after the advisory folds into ONE opening
-narration** [BRIEF], beneath the rule. This step fires many checks at once — the
-digest, the recent log lines, the mail, the below-the-line revisit, the
-placement-contradiction flags — and each being individually bounded does not
-bound the sum. Combine what they turn up into one "here's what came up: …". A
-check that found nothing, or one the procedure says to keep quiet about,
-contributes nothing to it. The session's first opening narration also carries the
-inline-text offer as one clause.
-
-**Anything a check surfaces that the user must ACT on leaves the bundle** and goes
-on its own, one item per message. The consolidation is for what the session is
-telling them, never for what it is asking them.
+narration** [BRIEF], beneath the rule — the digest, the recent log lines, the
+mail, the below-the-line revisit, the placement-contradiction flags, combined
+into one "here's what came up: …". The session's first opening narration also
+carries the inline-text offer as one clause.
 
 **The opening message ends on whichever ask fires first** — beat 1's droppable set
 when it fires, beat 2's ordering question when it doesn't. Beat 1 keeps its own
@@ -325,11 +301,9 @@ which every session may do. What /plan adds is the guarantee.
 is when the mailbox is scanned. Say so if it comes up rather than building a
 watcher — the INBOX design already promises no delivery guarantee.
 
-**No completion sweep for `[user]` work.** /plan never asks whether Processed's
-`[user]` items are already done — that ask is gone from the method entirely, and
-so is the setting that used to toggle it. If the user mentions having done one,
-close it at this session's /done (log under its slug, remove from Processed);
-otherwise leave them alone and say nothing about them.
+**Where the user mentions having done a `[user]` item**, close it at this
+session's /done: log it under its slug and remove it from Processed. The setting
+that used to toggle a completion sweep here is retired.
 
 **Below-the-line revisit** [SILENT] when nothing lifts; [BRIEF] when
 proposing a lift. Every below-line item names its blocker as `Blocked by: [slug]`, so the
@@ -805,26 +779,31 @@ turn. The standalone recommend-and-wait stays the path when the lean isn't clear
 (slug at the end, `[user]` leading if user-work) and the prose rationale carrying
 the discussion's reasoning inline.
 
-*When the item is `[user]`, apply the matched pair now:* confirm it's genuinely
-user-only (work Claude can run but can't run *yet* is Claude-work shelved below
-the line — the over-tag guard); and **don't under-file** — genuine user work must
-become a `[user]` line, never a live chat question or a "you'd do that yourself"
-aside. Then draft the walkthrough into the item's prose. Not being able to script
-every step is **not** a reason to withhold the line: file it with a rough
-walkthrough and sharpen it here.
+*When the item is `[user]`, **don't under-file**:* genuine user work must become a
+`[user]` line, never a live chat question or a "you'd do that yourself" aside.
+Then draft the walkthrough into the item's prose. Not being able to script every
+step is **not** a reason to withhold the line: file it with a rough walkthrough
+and sharpen it here.
 
 **Run the THOROUGH capability check here — this is its site.** Restate the
-question as *what would answer this?* **before** searching, then search; trying a
-tool is allowed where trying is quick. The reframe is the load-bearing half and
-it is cheaper than experimenting, not more expensive: a `[user]` line was once
-filed after an honest, thorough search that returned only binaries and caches,
-and deleted hours later when one command answered the question. That search asked
-*where is the setting stored*, which is correct for the question as posed, and
-never asked *what would tell me the answer*. Where no tool plausibly exists, that
-is itself the answer. Don't enumerate everything available — an inventory sweep
-is expensive, stale by the next session, and was rejected; the check is aimed at
-one job or it is not worth running. /next runs a light version of this at its
-pre-hand-off, but the user is not in the room there, so depth belongs here.
+question as *what would answer this?* **before** searching, then name the tool
+that would do the work and confirm it is absent or unauthenticated. Trying a tool
+is allowed where trying is quick: the user is in the room, which is what makes
+this the heavy site. Where no tool plausibly exists, that is itself the answer.
+Don't enumerate everything available — an inventory sweep is expensive, stale by
+the next session, and was rejected; the check is aimed at one job or it is not
+worth running. /next runs a light version of this at its pre-hand-off, but the
+user is not in the room there, so depth belongs here.
+
+Two failures this catches, each a different one. **Don't reason from what the
+task *sounds* like** — "create a GitHub repo" sounded browser-shaped and went to
+the user when `gh` would have done it in seconds. **And don't mistake a thorough
+search for a correct one** — a `[user]` line was once filed after an honest,
+diligent search that returned only binaries and caches, and deleted hours later
+when one command answered the question. That search asked *where is the setting
+stored*, which is correct for the question as posed, and never asked *what would
+tell me the answer*. The reframe is the load-bearing half and it costs less than
+the search does.
 
 **And check the index entry can be written.** If the candidate line for
 `LOG/index.md` — the artifact touched and the nature of the change — cannot be
@@ -914,21 +893,7 @@ and reference that slug from the original. A gating action left embedded is
 invisible as next-work — its next-ness survives only in the memory of whoever read
 the prose.
 
-*Before any `[user]` tag stands, run the THOROUGH capability check.* Restate the
-question as "what would answer this?" **before** searching, then name the tool
-that would do the work and confirm it is absent or unauthenticated (the over-tag
-guard, skill-nonspecific-rules.md). Trying a tool is allowed here where trying is
-quick — the user is in the room, which is what makes this the heavy site.
-
-Don't reason from what the task *sounds* like — "create a GitHub repo" sounded
-browser-shaped and went to the user when `gh` would have done it in seconds. And
-don't mistake a thorough search for a correct one: a check that searched
-diligently for *where a setting is stored* came back empty and honest, and the
-question was answered hours later by one command that had nothing to do with
-settings files. The reframe is what catches that, and it costs less than the
-search does. This is the cheapest place to catch a wrong tag.
-
-*And where the item's walkthrough is authored here, confirm the step can
+*Where the item's walkthrough is authored here, confirm the step can
 actually produce the observation the item names* — where running the command is
 harmless, run it. This is a different question from the capability check above:
 that one asks whether Claude could do the *work*, this asks whether the *user's

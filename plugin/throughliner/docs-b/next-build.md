@@ -147,6 +147,10 @@ naming which trigger it meets, reasoning contested or an alternative seriously
 weighed. Short is the default and full is what the trigger buys. The moment it is
 written is next.md's per-item completion step, alongside the Progress tick.
 
+**Where the project's own instructions require a rule-gate disposition, it is
+transcribed from the item, never composed here** — see next.md's per-item
+completion step, which also says what to do when the item carries none.
+
 ## Scope management
 
 **When a mid-build discovery is work only the user can run** — a rename you can't

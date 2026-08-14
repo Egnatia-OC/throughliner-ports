@@ -44,11 +44,8 @@ marker on the run's FIRST item
 Say plainly why the run stopped: this item must not be built alongside other
 work, so it gets a run of its own — then recommend /done. Mechanical, no
 judgment. It composes with the cleared-to-run line rather than replacing it:
-whichever bound comes first ends the run.
-
-The marker binds /next and nothing else. It does not stop the item being built
-alongside other work by hand, so never describe it as guaranteeing the item runs
-alone — only that an unattended run will not sweep it up.
+whichever bound comes first ends the run. What the marker means and where it is
+written are in plan.md's keep-step, which is the authoring site.
 
 The run includes any `[user]` items among the cleared work; Step 3 walks the user
 through each *without ending the run*. The marker is the only thing that bounds a
@@ -57,13 +54,8 @@ run.
 ## Step 1: Pre-flight
 
 **Whatever these checks surface folds into ONE narration** [BRIEF], carried with
-the run at step 4 rather than trickling out check by check. Each check being
-individually bounded does not bound the sum, and this pre-flight keeps gaining
-checks. A check that found nothing, or one tagged silent, contributes nothing.
-The session's first opening narration also carries the inline-text offer as one
-clause. **Anything the user must act on leaves the bundle** and goes on its own —
-the consolidation is for what the run is telling them, never for what it is
-asking them.
+the run at step 4 rather than trickling out check by check. The session's first
+opening narration also carries the inline-text offer as one clause.
 
 ### 1. Active build check
 
@@ -143,12 +135,6 @@ build scaffolding entirely and go straight to Step 3's walk-through branch.
 builds all the Claude-work, then Step 3 walks the `[user]` items. The two passes
 never interleave, so no cleared Claude-work is left unbuilt — even when a `[user]`
 item sits mid-run.
-
-**Never check whether a `[user]` item is already done.** Not up front, not in
-passing, not as a trailing note. A `[user]` item is walked through, and that is
-all — its whole lifecycle carries no completion ask. If the user has already done
-one, they'll say so, and that's the moment it gets recorded. Asking treats ready
-work as probably-already-done and makes the user re-assert it before you'll help.
 
 **Before handing a `[user]` item over, run the LIGHT capability check.** Name the
 tool that would do the work and confirm it is absent or unauthenticated (the
@@ -262,9 +248,9 @@ work reaches the cleared region.
 
 ## Step 2: Lock scope  [SILENT]
 
-**What scope means here.** Build scope is the active work's described work — the
-changes the work items call for, and nothing past them, enforced by judgment. The
-`Files:` list below is its mechanical approximation: pre_tool_use allows edits only
+**What scope means here — two layers.** The **described work** is the test (its
+definition is in skill-nonspecific-rules.md's Scope section); the `Files:` list
+below is its mechanical approximation: pre_tool_use allows edits only
 to listed files (plus the method docs, the user's memory dir,
 `resources/research/`, the session scratchpad, and any project's `INBOX/`) and
 denies the rest, as a backstop. **The two layers are not the same thing** — a build
@@ -297,13 +283,10 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
                                                  scope-ask.
 ```
 
-The test has two limbs because the first alone doesn't discriminate: design work
-almost always names files — "Files (rough): skill-nonspecific-rules.md, plan.md" is
-exactly what an undesigned item looks like — so a files-only test passes it and
-the run proceeds with a file list and nothing to build from. An item is buildable
-only when it says what changes *inside* the files it names. The same two-limb test
-runs at /plan's keep-step, which is where an item like this should be stopped;
-meeting one here means it got through.
+**An item is buildable only when it says what changes *inside* the files it
+names.** The same two-limb test runs at /plan's keep-step, which carries the full
+argument and is where an item like this should be stopped; meeting one here means
+it got through.
 
 A blocking ask on adjacent work both defeats the unattended run and reopens a
 scope decision reserved for /plan. The extra look self-scoping gives is preserved
@@ -410,6 +393,12 @@ the working file's Progress, record that item's depth field, write that item's
 index-entry candidate, then remove that one item from QUEUE.md with the
 mechanical mover, addressed by its slug.
 
+**Where the project's own instructions require a rule-gate disposition and the
+item carries one, copy it across unchanged.** Transcribe, never compose. Where
+the item is about to author or amend a standing rule and carries no disposition,
+halt and say so: the gate's site is planning, and a disposition written now could
+only describe what is already built.
+
 **The tick is the accumulation point.** `Progress:`, `Index entry candidates:`
 and `Changes:` all grow one item at a time, so the working file only ever
 describes work that actually happened. The index candidate is artifact touched +
@@ -453,11 +442,6 @@ How a `[user]` item is run and closed. (What earns the tag is the matched pair i
 skill-nonspecific-rules.md, Captures.) Without the back half, a finished `[user]`
 item strands in Processed and the next /next presents it again as if unbuilt.
 
-- **A `[user]` line is walked through, and that is all.** There is **no completion
-  ask anywhere in its lifecycle** — not at /next, not at /plan, not at /done, not
-  leading, not trailing, not as a light aside. Never ask whether one is already
-  done. A standing rule with no exceptions; the setting that used to turn it back
-  on is retired.
 - **/next leads with the walk-through and drives it live.** Name what's theirs to
   do, run whatever parts you can, give the **first** concrete step, and **wait**.
   One step at a time. This is a live drive, not an offer — you walk *beside* the
@@ -466,16 +450,11 @@ item strands in Processed and the next /next presents it again as if unbuilt.
   recorded is told to the user *after* the last step is done or they defer.
 - **One `[user]` item at a time — never bundled.** Each in its own message, led by
   its own live walk-through. Not a bulk-approval result set.
-- **Completion is inferred, never asked.** An item walked to its end this session
-  is done; an item whose blocker visibly hasn't shipped isn't; and the user
-  saying they did one is the third way it can be known. Nothing else counts.
-- **Where completion has an observable result, check the world before recording
-  it.** The never-ask rule forbids asking the USER; checking the WORLD is what
-  inference already means. A file present or absent, a branch gone, a URL
-  responding: when the item's walkthrough can name such a check, it records it,
-  and the close runs it rather than accepting the report. A failed check
-  produces a plain statement of what was found and leaves the item in place — it
-  never becomes "are you sure you did this?".
+- **Three things count as knowing an item is complete**, and nothing else: it was
+  walked to its end this session, the user said they did it, or its walkthrough
+  named an observable check and that check passed. An item whose blocker visibly
+  hasn't shipped is not complete. A failed check produces a plain statement of
+  what was found and leaves the item in place.
 - **The gap this leaves is deliberate: leave the item in place.** An item the user
   completed on their own, with nothing observable to show for it, will sit in
   Processed until they mention it — and mentioning it is already a supported path.
@@ -522,16 +501,12 @@ walking beside them, not dumping a list for them to work alone.
 Never say "want me to walk you through it?", and never satisfy this branch with
 "it stays open until you've done it".
 
-**No completion ask, anywhere in this branch — not leading, not trailing.** Don't
-open with "have you already done this one?", and don't close with "…or tell me if
-you've already done it". A `[user]` item is walked through, full stop. If the user
-volunteers that it's done, take them at their word: don't walk it through, and
-recommend /done to record it. If they don't say anything, walk it through.
+**Where the user volunteers that an item is done, take them at their word:** skip
+the walk-through and recommend /done to record it.
 
 **Where the item's walkthrough names an observable check, run it** — a file
-present or absent, a branch gone, a URL responding. Checking the world is not
-asking the user. A failed check is reported plainly as what was found, and the
-item stays in place; it never becomes "are you sure you did this?".
+present or absent, a branch gone, a URL responding. A failed check is reported
+plainly as what was found, and the item stays in place.
 
 **Confirm the step can produce the observation the item names** — the light
 form: check that the step names something which yields the evidence, and no

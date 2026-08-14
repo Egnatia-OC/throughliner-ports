@@ -68,7 +68,9 @@ The work cycle. Every piece of work travels the same loop.
     the end of the message;
   - giving one item per message when the user's next action depends on the
     prior one, per `[SEQUENCE]` below — in every multi-part exchange, inside
-    skills and out, with no exemption for items that seem short.
+    skills and out, with no exemption for items that seem short;
+  - folding what several checks turn up into one narration, with anything the
+    user must act on leaving the bundle and going on its own.
 
   **The inversion governs sequencing, never approval-before-write.** Two
   separate axes: write-first answers *show-then-wait or write-then-report*, and
@@ -339,6 +341,13 @@ requires noticing an internal state, and a session that has settled on an answer
 notices nothing. That is why this has in practice been user-triggered more often
 than not.
 
+**Before offering a search, read `resources/research/index.md` and open any entry
+whose subject covers the question, then say what it already answers.** The index
+is one line per finding, so this is nearly free. It reaches a finding whose index
+line describes the subject; a finding filed under a subject line that does not
+match how the question later gets asked is still missed, so this narrows the
+duplication rather than closing it.
+
 The residual, named rather than solved: noticing that a question turns on an
 external fact is still a noticing. This improves the odds; it does not close the
 hole.
@@ -429,6 +438,8 @@ cosmetic.
 #### <one-line description> [slug]
 <prose rationale — the reasoning, in plain short sentences>
 Red flag · State: <cleared | uncleared>        # only if it carries one
+Runs alone                                     # only if the work moves paths
+                                               # underneath a run in flight
 Blocked by: [slug]                             # only below the cleared-to-run
                                                # line, where it is required
 ```
@@ -495,6 +506,11 @@ real and equally bad; neither warning may be louder than the other. (How a
   when the session ends. When "can Claude do this at all?" returns **no**, file a
   `[user]` line. A thing in the world an item waits on is filed as its own item
   in Unprocessed, and filing it is where the user's part gets a `[user]` line.
+- **Walk a `[user]` item through whenever it is reached, and learn completion
+  from what the user volunteers.** That is its whole lifecycle in every skill —
+  /plan, /next and /done alike. Where the item names an observable result, check
+  the world for it: a file present or absent, a branch gone, a URL responding.
+  Where it names none, the item stays in place until the user mentions it.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
   check. "Can't fully script it yet" is **not** a reason to withhold the line:
   file it with a rough walkthrough flagged for refinement at the keep-step. The
@@ -609,8 +625,18 @@ a forward recommendation                   ->  the advisory (transient)
 
 The cleared-to-run line **replaces** parking. Order within a section carries
 build order and processing order; a *blocking* relationship is carried by the
-`Blocked by: [slug]` field. `Blocks:` and `Depends on:` headers stay retired: one
-field, in one direction, on the item that is held.
+`Blocked by: [slug]` field — reserved for work that cannot be built until another
+item ships, and carrying an ordering preference instead by placement plus one
+sentence in the item's prose naming what it should follow. `Blocks:` and
+`Depends on:` headers stay retired: one field, in one direction, on the item that
+is held.
+
+**Why an ordering preference must not take the field.** `Blocked by:` sends an
+item below the cleared-to-run line, out of the region a run works and out of what
+the user sees during an ordinary run — which has already cost a consumer project
+two fully designed items and its user's confidence that a feature was queued at
+all. The prose sentence survives a reorder, because the sentence is the
+relationship and the position is only where it runs.
 
 ## Red flags
 

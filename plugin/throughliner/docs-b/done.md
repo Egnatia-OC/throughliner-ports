@@ -53,11 +53,9 @@ A no-build close touches QUEUE.md, SPEC.md and LOG/ and nothing else, whichever
 of the three it is — which is why one sub-doc carries all three and a build close
 never reads any of them.
 
-Detect a completed `[user]` item **from what the session can already see — never
-by asking.** A `[user]` item is walked through, and that is all; no step of its
-life asks whether it's done. The detection rules and the close itself are in
-done-plan.md; a completed item can coincide with a planning session, and that one
-sub-doc handles both.
+Detect a completed `[user]` item from what the session can already see. The
+detection rules and the close itself are in done-plan.md; a completed item can
+coincide with a planning session, and that one sub-doc handles both.
 
 The sub-doc runs the close-out. When it reaches its Commit step, run the commit
 core below, then return to the sub-doc for the recommendation.
@@ -104,14 +102,10 @@ close carries no such reconcile.
 
 Several checks fire across a close — verify completion, the staleness sweep, the
 red-flag lifecycle, the wind-down re-scan. Combine what they turn up into one
-"here's what came up: …" rather than letting each speak in turn. Each check being
-individually bounded does not bound the sum, and closes keep gaining checks. A
-check that found nothing, or one tagged silent, contributes nothing to it.
+"here's what came up: …" rather than letting each speak in turn.
 
-**Anything the user must act on leaves the bundle** and goes on its own, one item
-per message. The consolidation is for what the close is telling them, never for
-what it is asking them — the wind-down re-scan's numbered set is its own message
-for that reason.
+**The wind-down re-scan's numbered set is its own message**, being something the
+user must act on.
 
 **Run the scrub checklist before writing a LOG entry** (skill-nonspecific-rules.md,
 Scrub before writing). A LOG entry is committed text that quotes the session's own
@@ -230,12 +224,10 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 - [HASH] — [index entry] → [entry filename]
 ```
 
-**There is no length cap on the line — the bound is what it must carry.** It has
-to support the decision to open or skip the entry, and must not restate it. See
-the behaviour rules' Index entries section. The 20% proportional cap that used to
-sit here was repealed on 2026-08-12 after measurement showed it fired on short
-entries rather than on long lines; do not restore it or replace it with another
-figure.
+**The 20% proportional cap that used to sit here was repealed on 2026-08-12**,
+after measurement showed it fired on short entries rather than on long lines; do
+not restore it or replace it with another figure. What the line must carry is in
+the behaviour rules' Index entries section.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:
@@ -300,10 +292,13 @@ move: if the closing session discovers a needed verification that isn't already 
 tracks it in a dedicated section, and **no LOG-only prose stands in for the queue
 line** — an unrun check recorded only in a log entry never surfaces again.
 
-## Recording a cleared red flag
+## Red-flag lifecycle at close
 
-A red flag is cleared at *processing* — the /plan moment its item is judged ready.
-When a flag was cleared this session, record **how** in the session's LOG entry:
+The sub-doc close-outs point here when the closing item carries a marker.
+Clearing happened at processing, so the close **records** and does not re-decide.
+
+Where a flag was cleared *this session*, record **how** in the session's LOG
+entry:
 
 ```
 designed out / fixed  ->  how the risk was removed
@@ -316,11 +311,8 @@ only `State: cleared`. **Recording is unconditional once a flag clears** — the
 record never rides only in chat or on the marker, because no later session
 re-reads those for clearing history.
 
-## Red-flag lifecycle at close
-
-The sub-doc close-outs point here when the closing item carries a marker. By the
-time a red-flagged item reaches a build or audit close its flag was already
-cleared at processing, so the close does **not** re-decide it. Two things:
+At a build or audit close the flag was cleared in an earlier /plan session, so
+two things:
 
 ```
 1. carry the cleared flag into this item's LOG entry

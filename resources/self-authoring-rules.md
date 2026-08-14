@@ -4,6 +4,8 @@
 
 **Why the operative half moved (2026-08-14).** A build amending fifteen rules in the always-loaded file wrote a `Rule gate: run — …` disposition without this document ever having been opened, reasoning from `CLAUDE.md`'s summary of the gate and recording the result in the gate's format. Re-run properly at the close, the gate produced three findings the first pass had missed. The trigger had been in front of that session twice and neither pointer produced the read — which is this document's own §3 test answered against itself: a session cannot fetch a rule it has never read, and nothing announces the moment the gate applies. The remainder has an unmistakable trigger and can be fetched; the gate has no trigger at all and cannot.
 
+**Where the gate runs (2026-08-14).** At /plan's keep-step, as each rule is designed, with the disposition written into the queue item. The earlier requirement — at the moment of authoring, into the build working file — is superseded: a planning session has no build working file, and a build-time disposition is still written after that item's rules were designed, so it can describe but not refuse. Refusing costs a conversation at /plan and finished work anywhere later, which is the whole argument.
+
 **What did not change: loading the gate does not make a disposition honest.** `CLAUDE.md` already records that neither board signal can tell an honest `run` from a dishonest one. Migration raises the odds the gate is applied; it cannot verify that it was.
 
 ## Additions are not free

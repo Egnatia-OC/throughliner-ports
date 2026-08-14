@@ -2,9 +2,11 @@
 name: setup
 docset: B
 note: >
-  /setup procedure. Runs BEFORE a project is adopted, so the behaviour rules
-  aren't loaded yet — this doc carries no response-shape tags and states its own
-  plain-language guard.
+  /setup procedure. It runs on two kinds of session: a fresh adoption, where the
+  always-loaded behaviour rules are absent, and a migration or top-up inside an
+  already-adopted project, where they are present. This doc therefore carries no
+  response-shape tags and states its own plain-language guard, so that it holds
+  on the run where nothing else governs it.
 ---
 
 # /setup procedure
@@ -12,18 +14,21 @@ note: >
 You are setting up a project folder with the Throughliner method.
 
 **This doc carries no response-shape tags** (the bracketed `[BRIEF]`-style
-markers other procedure docs use). /setup runs before a project is adopted, so the
-behaviour rules that define those tags aren't loaded yet — here the prose in each
-step carries the behaviour directly. **Don't add tags back**; they'd be undefined
-tokens in this doc.
+markers other procedure docs use); the prose in each step carries the behaviour
+directly instead. **Don't add tags back.** /setup runs on two kinds of session: a
+fresh adoption, where the rules defining those tags are not loaded, and a
+migration or top-up inside an already-adopted project, where they are. One text
+cannot carry markers that mean something on one run and nothing on the other.
 
 **Plain-language guard.** Everything you say during /setup is read by a non-coder
 who may be brand new to all of this. Keep internal terms out of what they see — no
 hook filenames, no working-file names, no "scope-lock," "method docs," or "Case B"
 labels. Say "your project's files," not "method docs"; say "I'll set this up as a
-migration," not "this is Case B." This needs saying here because the
-plain-language behaviour rule loads only once a project is adopted, and /setup runs
-before that.
+migration," not "this is Case B." It is stated here unconditionally because a
+fresh adoption has no always-loaded rules at all, and that is the run where a
+brand-new non-coder meets this for the first time. On a migration or top-up run
+the same guard is already loaded; the duplication is deliberate, since a guard
+that first has to work out which run it is on is worse than a guard stated twice.
 
 ## Step 0: Is a build running right now?
 
