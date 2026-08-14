@@ -10,6 +10,10 @@ Two sections. **Processed** — work discussed and agreed, ordered top-to-bottom
 
 ## Unprocessed
 
+#### Last session advises processing [editing-state-contract-status] next [forward-advisory]
+Its third question — whether a published field-level contract is standard practice or our own invention — turns on an external fact and needs a web search rather than a judgement. That answer may dissolve the other two questions entirely, so settling it first avoids designing a maintenance trigger for a document that should be deleted. The user raised all three and proposed the deletion; a live consumer was found, and her correction then established that a consumer does not save the file, because Understudy's Claude can read the hook that writes the markers and that source cannot drift.
+The nine rationale-cut captures filed the same session are cheap and self-contained, so they are good filler once this is settled — but several of them touch the same always-loaded file, so they want to be weighed together rather than one at a time.
+
 #### [user] Discord post: the planning session now offers you the work that is cheapest right now [discord-post-context-adjacency]
 Captured by you 2026-08-12; the angle is yours — the ladder and how it drastically improves the workflow.
 **It cannot be written until [ladder-rung-for-context-adjacent-items] has shipped.**
@@ -415,11 +419,6 @@ Captured by you (2026-08-13). Your words: you have no idea how the board works a
 **It reports one line even when quiet, and that is the point rather than a nicety.** Today's run came back clean, and nobody could have known that, because a clean board and an unrun board look identical from outside. A close that says "rule board: four signals, all quiet" turns silence into evidence. A close that says nothing recreates the exact condition that produced this capture.
 **Where a signal does fire, the existing behaviour stands unchanged** — it files a capture under the slug the board prints, and is satisfied while an open capture with that slug exists. Nothing here changes what firing means.
 **Files:** `plugin/throughliner/docs-b/done.md` and whichever close-family doc carries the hook-suite trigger, plus `CLAUDE.md` — the board's description there gains its trigger, which is the thing it has never had. Possibly a quiet-summary output mode in `resources/rule_signals.py` if the current output is too long for a one-line close report; check before adding one. Host-only — consumers never author method rules and have no board. Relates to [rule-gate-has-no-site-in-next] — the same siteless-mechanism failure, one layer down.
-
-#### Last session advises building [concision-build-removed-the-asks] first [forward-advisory]
-It is a live regression in shipped behaviour, reported again during the session that cleared it, so it outranks the ordinary queue. It now carries two independent causes — the output style's cadence rule and `plan.md`'s hand-over message — and fixing only one leaves the same symptom, so treat both as the item.
-It is host-side, so the asks do not come back until the plugin is reinstalled after the build, however clean the commit looks.
-Process [no-position-signal-in-a-processing-run] before or alongside it: both change the same hand-over message, and settling them separately means editing that text twice.
 
 #### There is no way to tell where you are in a long processing run [no-position-signal-in-a-processing-run]
 Captured 2026-08-14 at a /plan close, from the user losing her place live. Her words across three turns: "what is going on did we resolve the last item into work or not", "in the middle of what item? what item are we on? that's all I'm asking", and "then what was all that stuff you just did!".
