@@ -123,9 +123,8 @@ together.
 on its outcome** — a real dependency wins; end-preferred is the default only
 among items with no such constraint.
 
-**Claude reorders and narrates; it does not ask.** The user owns keep/delete and
-scope, not order. Order is low-stakes and reversible, so the narration is the
-catch-point where the user can redirect.
+Order here is low-stakes and reversible, so the narration is the catch-point
+where the user can redirect.
 
 **Use the mechanical mover — don't retype blocks.** Moving an item by hand means
 retyping its whole prose block verbatim, which on a long queue silently degrades
@@ -244,8 +243,7 @@ like a build. This is the close that records it and removes it from Processed, s
 a finished item doesn't strand in the queue and get re-presented by the next
 /next. It runs both as a close of its own and inside a planning close.
 
-**Identify completed items from what the session can already see — never by
-asking.** There is no completion ask anywhere in a `[user]` item's life.
+**Identify completed items from what the session can already see.**
 
 ```
 walked through to its end in THIS session   ->  completed. Close it here.
@@ -261,8 +259,7 @@ user. A failed check is reported as what was found, and the item stays in place.
 The gap this leaves is real and is meant to stay: an item the user completed on
 their own between sessions, with nothing observable to show for it, will sit in
 the queue until they mention it. **That is the fallback, not a hole to plug** —
-mentioning it is already a supported path, and a completion ask is exactly what
-this removed. Don't reintroduce one under any wording.
+mentioning it is already a supported path.
 
 ```
 1. take the completed item(s) from what the session can see  [SILENT]

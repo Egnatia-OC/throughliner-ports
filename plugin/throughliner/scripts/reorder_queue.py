@@ -244,6 +244,89 @@ def section_slugs(lines, section):
     return {s for s, _ in blocks if s}
 
 
+def crossing_note(before_order, before_anchor, after_order, after_anchor,
+                  named=None):
+    """Which items changed side of the readiness line, and what to say about it.
+
+    Returns (unnamed_crossers, note). The caller refuses on a non-empty
+    unnamed list and prints the note otherwise.
+
+    Two behaviours, and the line between them matters. An item the caller NAMED
+    crossing the line REPORTS and does not block: moving an item across the
+    line is a legitimate way to clear or shelve work, and refusing would force
+    a two-step dance for an ordinary operation. That reasoning is unchanged and
+    is why it is restated here.
+
+    What it never addressed is items the caller did NOT name crossing, as a
+    side effect of where the marker landed: a `--move-section ... --position
+    BOTTOM --marker-after` swept four held items into the cleared region and
+    reported only that the moved item was now cleared.
+
+    **The refusal is asymmetric, and the asymmetry is the whole of it.** Only
+    an unnamed crossing INTO the cleared region refuses. That is the direction
+    that causes harm: an unattended /next run may build anything above the
+    line, so widening it by accident hands unvetted work to a run with nobody
+    watching. An unnamed crossing OUT of the cleared region is reported and
+    allowed — it narrows what a run may build, the work stays in the queue, and
+    the next /plan sees it.
+
+    A symmetric refusal was written first and the mover's own suite refused it,
+    correctly: placing the marker after a newly-kept item necessarily shelves
+    whatever sat below it, and that is the commonest planning operation there
+    is. Blocking it would have made the sanctioned route refuse the ordinary
+    case, which is the cry-wolf shape this project keeps repealing.
+
+    Factored out of the within-section reorder path, which was the only path
+    that ever ran it — the crossing report was absent from --move-section,
+    where the largest crossings happen.
+    """
+    def _above(order, anchor):
+        if anchor == 'TOP':
+            return []
+        if anchor == 'BOTTOM':
+            return list(order)
+        if anchor not in order:
+            return []
+        return order[:order.index(anchor) + 1]
+
+    was = _above(before_order, before_anchor)
+    now = _above(after_order, after_anchor)
+    note = ", %d item%s above the line" % (len(now),
+                                           "" if len(now) == 1 else "s")
+    crossed = [s for s in after_order if (s in was) != (s in now)]
+    named = list(named or [])
+    # Only crossings INTO the cleared region are refusable — see the asymmetry
+    # above. `s in now` means it is now above the line.
+    unnamed = [s for s in crossed if s not in named and s in now]
+    for s in crossed:
+        direction = ("now CLEARED to run" if s in now
+                     else "now BELOW the line, no longer cleared")
+        # ASCII only: this goes to stderr, and a Windows console under a
+        # legacy code page mangles non-ASCII into replacement characters.
+        note += "\nreorder_queue: [%s] crossed the readiness line: %s" \
+                % (s, direction)
+    return unnamed, note
+
+
+def refuse_unnamed_crossings(unnamed, marker_pref):
+    """Refuse a write that would CLEAR items the caller never named.
+
+    Only the into-the-cleared-region direction reaches here; crossing_note()
+    filters the other way out.
+    """
+    if not unnamed:
+        return
+    die("this would CLEAR %d item%s you did not name: %s\n"
+        "  Placing the marker after '%s' puts %s above the readiness line, so "
+        "an unattended /next run could build %s.\n"
+        "  Nothing was written. Name --marker-after as the LAST item that "
+        "should stay cleared, rather than the item you just placed."
+        % (len(unnamed), "" if len(unnamed) == 1 else "s",
+           ", ".join("[%s]" % s for s in unnamed), marker_pref,
+           "it" if len(unnamed) == 1 else "them",
+           "it" if len(unnamed) == 1 else "them"))
+
+
 def write_verified(queue_path, new_lines, absent=(), present=()):
     """Write the queue, force it to disk, read it back, and confirm the write
     actually landed before reporting success.
@@ -481,6 +564,19 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
     # The moved item must never silently land above the target's readiness
     # marker: if it was inserted before the marker anchor resolves, the marker
     # keeps its anchor slug, which is unaffected by an insertion.
+    # The destination's crossings, computed before any write. This path never
+    # ran the crossing report at all, and it is the path where a whole held
+    # region can move at once: --marker-after resolves against the destination
+    # section, so placing it past held items sweeps every one of them into the
+    # cleared region. Only the moved slug is "named" here.
+    t_crossing_note = ""
+    if t_had:
+        t_unnamed, t_crossing_note = crossing_note(
+            [s for s, _ in t_blocks], t_marker_after if t_marker_after else 'TOP',
+            [s for s, _ in t_new], t_pref, named=[slug],
+        )
+        refuse_unnamed_crossings(t_unnamed, t_pref)
+
     f_out = assemble_section(f_pre, elements_with_marker(f_new, f_had, f_pref))
     t_out = assemble_section(t_pre, elements_with_marker(t_new, t_had, t_pref))
 
@@ -507,8 +603,9 @@ def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
     # A move is a delete plus an add, so it is verified on both sides.
     write_verified(queue_path, new_lines,
                    absent=[(slug, sec_from)], present=[(slug, sec_to)])
-    sys.stderr.write("reorder_queue: moved [%s] %s -> %s (%s)\n"
-                     % (slug, sec_from, sec_to, position or 'BOTTOM'))
+    sys.stderr.write("reorder_queue: moved [%s] %s -> %s (%s)%s\n"
+                     % (slug, sec_from, sec_to, position or 'BOTTOM',
+                        t_crossing_note))
 
     # Report which side of the readiness marker the item landed on. The marker
     # is a line, not an item, so "AFTER <the last cleared item>" is ambiguous:
@@ -753,6 +850,19 @@ def main():
         sys.stderr.write("reorder_queue: warning: section has no marker; "
                          "--marker-after ignored\n")
 
+    # Crossings are computed BEFORE the write, so an unnamed sweep refuses the
+    # whole call rather than being reported after the fact.
+    crossing_report = ""
+    if had_marker:
+        unnamed, crossing_report = crossing_note(
+            have, 'TOP' if marker_after is None else marker_after,
+            desired, pref,
+            # The full-slug-list form names every slug the caller passed, so
+            # nothing crosses unnamed there. --move names exactly one.
+            named=[move_slug] if move_slug is not None else desired,
+        )
+        refuse_unnamed_crossings(unnamed, pref)
+
     # Build the ordered element list and reassemble with canonical spacing —
     # shared with --move-section via the two helpers.
     out = assemble_section(
@@ -784,31 +894,7 @@ def main():
     # "marker placed" read as reassurance and said nothing: it appeared
     # identically whether the boundary held still or moved under an unrelated
     # request. What a reader needs is how much work now sits above the line.
-    note = ""
-    if had_marker:
-        def _above(order, anchor):
-            if anchor == 'TOP':
-                return []
-            if anchor == 'BOTTOM':
-                return list(order)
-            return order[:order.index(anchor) + 1]
-
-        was = _above(have, 'TOP' if marker_after is None else marker_after)
-        now = _above(desired, pref)
-        note = ", %d item%s above the line" % (len(now),
-                                               "" if len(now) == 1 else "s")
-        # Moving an item across the line is a legitimate way to clear or shelve
-        # work, so this reports rather than refuses — refusing would force a
-        # two-step dance for an ordinary operation. But it must be visible.
-        crossed = [s for s in desired
-                   if (s in was) != (s in now)]
-        for s in crossed:
-            direction = ("now CLEARED to run" if s in now
-                         else "now BELOW the line, no longer cleared")
-            # ASCII only: this goes to stderr, and a Windows console under a
-            # legacy code page mangles non-ASCII into replacement characters.
-            note += "\nreorder_queue: [%s] crossed the readiness line: %s" \
-                    % (s, direction)
+    note = crossing_report
 
     sys.stderr.write("reorder_queue: %s reordered (%d items)%s\n"
                      % (section, len(desired), note))

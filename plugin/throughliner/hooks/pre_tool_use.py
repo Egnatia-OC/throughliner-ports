@@ -107,7 +107,31 @@ SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
 # Invoking a SCRIPT FILE is unaffected — this check reads the command's text,
 # and `python scripts/reorder_queue.py QUEUE.md ...` contains no write call at
 # all. The mover stays the sanctioned route for awkward queue edits.
-PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-[0-9]")
+# `py -c` used to escape this entirely: the alternation read `\bpy\s+-[0-9]`,
+# which reaches `py -3.13` and nothing else. That is the worse half of the gap,
+# because this project's own scripting rules steer sessions towards `py` and
+# away from `python` — so the guard covered the invocation the rules discourage
+# and missed the one they require. Widened to `\bpy\s+-`, which reaches -c, -m
+# and the version flags alike.
+#
+# NOT widened to a bare `\bpy\b`, and the reason is a real false positive rather
+# than caution: a word boundary sits before the `py` in `file.py`, so the bare
+# form fires on any command merely naming a Python file — including invoking the
+# queue mover, the one scripted route this check exists to keep open. Requiring
+# a following flag costs nothing a real invocation has.
+PY_INVOCATION = re.compile(r"\bpython[0-9.]*\b|\bpy\s+-")
+
+# `sed -i` is the same fault in a different tool: an in-place rewrite of a
+# project file, through a script rather than the editing tools. It ran here
+# once, against QUEUE.md, and was harmless only because the scripts were empty.
+# CLAUDE.md's file-safety rules already name it; nothing enforced them.
+#
+# Same narrowness as the Python patterns: the flag must be present and the
+# target must be a literal path in the command text. GNU `sed -i` takes an
+# optional suffix attached to the flag (`-i.bak`); BSD takes it as a separate
+# argument (`-i ''`). Both forms are matched, and every remaining bare token
+# that is not an option or a quoted script is treated as a target.
+SED_INPLACE = re.compile(r"\bsed\b(?=[^;|&\n]*\s-i)")
 PY_OPEN_WRITE = re.compile(
     r"""\bopen\s*\(\s*(?P<q>['"])(?P<path>[^'"]+)(?P=q)\s*,\s*['"][waxr]*[wax]b?\+?['"]"""
 )
@@ -273,17 +297,43 @@ def _is_inside(filepath: str, cwd: str) -> bool:
     return norm == root or norm.startswith(root + os.sep)
 
 
+def _sed_inplace_targets(command: str) -> list:
+    """Literal file paths a `sed -i` segment names as its target.
+
+    Same narrowness as the Python patterns: the in-place flag must be present
+    and the target must be readable from the command's own text. A token is a
+    target when it is neither an option, nor a quoted argument (the script, or
+    BSD's separate backup suffix), nor an unquoted sed script.
+    """
+    targets = []
+    for segment in _split_segments(command):
+        if not SED_INPLACE.search(segment):
+            continue
+        for token in segment.split():
+            if token in ("sed",) or token.startswith("-"):
+                continue
+            if token[:1] in "'\"":
+                continue
+            # An unquoted sed script — s/a/b/, y/a/b/, 1,3d — is not a path.
+            if re.match(r"^[a-z]?[0-9,]*[a-z]?[/,;]", token):
+                continue
+            if "$" in token or "{" in token:
+                continue
+            targets.append(token)
+    return targets
+
+
 def structured_write_targets(command: str) -> list:
     """Literal file paths a structured shell write names as its target.
 
     Deliberately narrow. Returns paths only where the command is recognisably a
-    Python invocation AND the write call carries a literal quoted path. Anything
-    else returns nothing and the command passes — a form that does not parse
-    cleanly is never guessed at.
+    Python invocation carrying a literal quoted path in its write call, or a
+    `sed -i` naming a file. Anything else returns nothing and the command passes
+    — a form that does not parse cleanly is never guessed at.
     """
+    targets = _sed_inplace_targets(command)
     if not PY_INVOCATION.search(command):
-        return []
-    targets = []
+        return targets
     for pattern in (PY_OPEN_WRITE, PY_PATH_WRITE):
         for m in pattern.finditer(command):
             path = m.group("path").strip()

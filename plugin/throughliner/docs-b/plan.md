@@ -341,10 +341,15 @@ item says nothing at all.
 marker in the same call — never by hand:
 
 ```
-python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
+python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> Processed \
     --move <slug> AFTER <the last item that should stay cleared> \
-    --marker-after <slug>
+    --marker-after <the last item that should stay cleared>
 ```
+
+**The section name is required and goes before `--move`.** Without it the script
+exits with a usage message and writes nothing. **And `--marker-after` names the
+last item that should stay cleared — never the item just moved**, since the
+marker's correct position is defined by what should remain above it.
 
 Then drop the item's `Blocked by:` line and say in its prose what cleared it.
 (Skip-to-defer needs no command at all — it moves nothing.)
@@ -527,8 +532,8 @@ asks; it just stops pretending the ordering is undecided.
 ```
   "Nothing left distinguishes these by priority, so I'd take <named set>
    next — we've already got <what was opened> loaded this session, so
-   they're cheap from here. Otherwise I can work through in file order,
-   or we can stop and run /done."
+   they're cheap from here. Otherwise we can close the session and record
+   what happened, or I can work through in file order."
 
   user agrees          ->  process those, in the order given
   user declines        ->  file order, exactly as the rung says
@@ -847,7 +852,22 @@ python <plugin-root>/scripts/reorder_queue.py <QUEUE.md path> \
 `--marker-after` places the readiness marker in the same call, so keeping an
 item and clearing it is one command rather than two. The same script does the
 below-the-line lift (`--move` within Processed) and skip-to-defer
-(`--move <slug> BOTTOM`).
+(`--move <slug> BOTTOM`) — note that those two forms take the section name
+before `--move`, which `--move-section` does not.
+
+**`--position BOTTOM` with `--marker-after` sweeps the held region, whenever one
+exists.** `BOTTOM` means the bottom of the whole Processed section, which is
+*below* the held items — so the marker follows the item down there and every
+held item lands above it, cleared. It happened: four held posts became cleared
+silently, caught only afterwards by the queue lint. The hazard grows with the
+held region.
+
+```
+held region EMPTY      ->  --position BOTTOM --marker-after <slug> is safe
+held region NON-EMPTY  ->  place the item with BEFORE <first held item>, and
+                           name --marker-after <the last item that should stay
+                           cleared> — never the item just placed
+```
 
 **Before clearing, apply done-plan.md's hold-back-unverified-work rule.** Where
 this item's prose names a slug that LOG records as built but not yet verified,
@@ -993,8 +1013,9 @@ Unprocessed again.
 
 Skipping the last item leaves Unprocessed non-empty, which is fine. On the last
 item there's no next verbatim, so the message is just the off-ramps — worded
-**neutrally**, "anything else to capture or discuss, or run /done?", never as a
-lean toward closing. An empty Unprocessed is not a signal the session is over.
+**neutrally** — "we can close the session and record it, or is there anything
+else to capture or discuss?" — never as a lean toward closing, and never ending
+on the command itself. An empty Unprocessed is not a signal the session is over.
 
 **Recommend skip-to-defer when an item won't design out this session**
 [DISCUSS, PROMPT].
@@ -1052,7 +1073,10 @@ kept work in order; section headers intact.
 **Neutral end-of-queue gate** [PROMPT]. When the queue empties, do **not** presume
 the session is over and do not slide toward the close. An
 empty Unprocessed is a resting state, not a stop signal. Ask one neutral question
-— "anything else to capture or discuss, or shall we run /done?" — and wait. If the
+— "we can close the session and record it, or is there anything else to capture
+or discuss?" — and wait. The command is named in words and does not end the
+sentence: the app lifts a trailing slash command into the composer, so an ask
+ending on one is a keystroke from being answered by accident. If the
 user raises a further capture, file it and **return to this same neutral gate** —
 never re-lean to close after filing.
 

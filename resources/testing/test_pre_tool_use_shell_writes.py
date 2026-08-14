@@ -305,6 +305,47 @@ def main():
         "got: " + decision(d3, READ_ONLY),
     )
 
+    # 11. `py -c` was the invocation the guard missed, and the one this
+    #     project's own scripting rules require on this machine. It ran live
+    #     during a rezip, wrote plugin.json, and nothing fired.
+    PY_DASH_C = (
+        "py -c \"open('plugin/throughliner/.claude-plugin/plugin.json', 'w')"
+        ".write('{}')\""
+    )
+    check(
+        "py -c scripted write is denied",
+        decision(d3, PY_DASH_C) == "deny",
+        "got: " + decision(d3, PY_DASH_C),
+    )
+
+    # 12. `sed -i` is the same fault in another tool. This exact shape ran
+    #     against QUEUE.md and was harmless only because the scripts were empty.
+    SED_INPLACE_CMD = "sed -i '' -e '' QUEUE.md"
+    check(
+        "sed -i on a project file is denied",
+        decision(d3, SED_INPLACE_CMD) == "deny",
+        "got: " + decision(d3, SED_INPLACE_CMD),
+    )
+
+    # 13. The false positive the widened pattern must not create: invoking the
+    #     queue mover names a .py file and passes flags, and it is the
+    #     sanctioned route for awkward queue edits. A bare `\bpy\b` would have
+    #     fired on the `py` inside `reorder_queue.py`.
+    MOVER = "py plugin/throughliner/scripts/reorder_queue.py QUEUE.md --delete a-slug Processed"
+    check(
+        "queue mover invocation still passes",
+        decision(d3, MOVER) == "pass",
+        "got: " + decision(d3, MOVER),
+    )
+
+    # 14. A read-only sed carries no in-place flag and is not a write.
+    SED_READ = "sed -n '1,5p' QUEUE.md"
+    check(
+        "sed without -i still passes",
+        decision(d3, SED_READ) == "pass",
+        "got: " + decision(d3, SED_READ),
+    )
+
     print()
     if _failures:
         print("FAILURES: " + ", ".join(_failures))

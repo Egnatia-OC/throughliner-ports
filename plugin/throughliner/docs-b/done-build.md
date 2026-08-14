@@ -47,17 +47,8 @@ mismatch to Unprocessed per 1.2.
 ### 1.2 Route findings to Unprocessed  [PROMPT]
 
 Each finding is written to Unprocessed first, then reported — the whole set as
-one numbered report. A capture in a git-tracked QUEUE.md is recoverable without
-the user's help, so it is a write-first case; the user contests by number after
-the fact. This step does not wait on the user before writing.
-
-```
-the RECORD this step sweeps:
-    the build working file's notes
-    any captures already appended at the moment of noticing
-conversation memory  ->  a same-session BONUS pass, never a source this step
-                         depends on
-```
+one numbered report. What this step sweeps is done.md's **The record a routing
+step sweeps**.
 
 Append each finding to Unprocessed, placed per the Captures placement rule
 (narrate the placement). Append any fix a build check surfaced too.
@@ -113,10 +104,8 @@ queue text is *consumed* when it builds — /next removes it — so after the bu
 LOG entry is the only surviving record of what the work was for.
 
 **Each item's depth field says which form its entry takes — read it, don't judge
-it.** Every ticked item carries `Depth: short` or `Depth: full — <trigger>`,
-written at the tick (next.md's per-item completion step). Short names what
-changed and stops; full is what a contested-reasoning or weighed-alternative
-trigger buys. Never judge by run size — a twelve-item run can still contain the
+it.** The field is defined at its authoring site, next.md's per-item completion
+step. Never judge by run size — a twelve-item run can still contain the
 session's most contested decision.
 
 **A ticked item with no depth field is read as short**, and noted at the close as

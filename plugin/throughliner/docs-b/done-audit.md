@@ -27,21 +27,12 @@ delta — a finding is ticked when captured or dropped.
 ### 1.2 Route stragglers to Unprocessed  [PROMPT]
 
 Each straggler is written to Unprocessed first, then reported — the whole set as
-one numbered report. A capture in a git-tracked QUEUE.md is recoverable without
-the user's help, so it is a write-first case; the user contests by number after
-the fact. This step does not wait on the user before writing.
+one numbered report.
 
 The findings themselves were appended during the audit; this
 sweeps anything *else* flagged along the way — observations outside the audit's
-criteria, process issues.
-
-```
-the RECORD this step sweeps:
-    the build working file's notes
-    any captures already appended at the moment of noticing
-conversation memory  ->  a same-session BONUS pass, never a source this step
-                         depends on
-```
+criteria, process issues. What it sweeps is done.md's **The record a routing
+step sweeps**.
 
 Append each to Unprocessed, placed per the Captures placement rule (narrate the
 placement).

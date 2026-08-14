@@ -33,6 +33,11 @@ The work cycle. Every piece of work travels the same loop.
   1. /plan — think and organise. Processes a capture: kept into
      Processed, or deleted. Keeping settles how it runs — build,
      [audit], [user], [freeform] — and where it sits.
+     Processing a capture is also how HELD work is released: an
+     item below the readiness line is released by processing the
+     item that blocks it. Where nothing in the queue blocks it
+     yet, file the blocker as a capture first, then hold the item
+     against it.
   2. /next — build. Takes the top piece of ready work from above the
      readiness line and builds it, top-down, several back-to-back.
   3. /done — record what happened, and commit.
@@ -65,12 +70,18 @@ The work cycle. Every piece of work travels the same loop.
   - leading with the decision — the one thing the user must see or act on —
     with reasoning and alternatives offered on request, not front-loaded;
   - rendering the single user-facing ask in bold, phrased as a question, at
-    the end of the message;
+    the end of the message — naming any command it offers in words rather than
+    as a slash string, and never letting that command end the sentence, since
+    the app lifts a trailing slash command into the composer where one
+    keystroke sends it;
   - giving one item per message when the user's next action depends on the
     prior one, per `[SEQUENCE]` below — in every multi-part exchange, inside
     skills and out, with no exemption for items that seem short;
   - folding what several checks turn up into one narration, with anything the
-    user must act on leaving the bundle and going on its own.
+    user must act on leaving the bundle and going on its own;
+  - giving every explanation the user needs in order to act, in full sentences,
+    at whatever length that takes — what comes out is the padding around it:
+    meta-narration, a restatement of what was just shown, hedging.
 
   **The inversion governs sequencing, never approval-before-write.** Two
   separate axes: write-first answers *show-then-wait or write-then-report*, and
@@ -89,6 +100,13 @@ The work cycle. Every piece of work travels the same loop.
   NOT an inversion: [user] walk-through items     # driven live, always sequential
   ```
 
+- **Speak when something warrants it, and work quietly between.** Three occasions
+  warrant it: one sentence before the first tool call, saying what is about to
+  happen; a note mid-work on finding something important or changing direction;
+  and the finish, led by the outcome. Between those the work speaks for itself.
+  How often to speak is a separate question from how long any one message is, and
+  in a session full of tool calls it is the one that decides how much the user
+  reads.
 - **When capturing something mid-skill, close by who raised it.** User raised it →
   ask "anything else?" before resuming. Claude noticed it → confirm and resume,
   naming what you filed ("I noticed X, filed it, resuming"). Don't invite more on
@@ -429,6 +447,12 @@ A capture is unprocessed work: one work item appended to QUEUE.md's
 or task into the queue without stopping to work it. Write it, then report what was
 filed; include the reasoning, not just what was noticed.
 
+**A capture may be a single line whose only job is to release held work**, and
+its content may be no more than what must happen before that work can move. It
+is still real work and still passes the ordinary tests; what it does not have to
+be is substantial. So a session holding work back and finding nothing in the
+queue to name as its blocker writes one.
+
 **Line format** — this exact shape is what the hooks parse. Emitting a work
 item as a bold line or a plain bullet silently breaks the queue lint, the
 red-flag scan, and the section keying. The `#### ` heading is load-bearing, not
@@ -446,6 +470,13 @@ Blocked by: [slug]                             # only below the cleared-to-run
 
 **Write `Blocked by:` plain, not bolded.** The lint tolerates the emphasis, but
 the plain form is what this block shows.
+
+**Put a heading's distinguishing words first.** The queue is read in a Markdown
+viewer, navigated by an outline of headings, and the outline truncates each one
+mid-phrase — so the end of the line may never be seen, and a heading whose
+identifying half sits in a second clause says almost nothing where it is
+actually read. Word order, not length: a cap would be a limit with no
+derivation, which is banned above.
 
 The user-credit and the filing-time commit stamp are prose conventions written
 into the rationale, not fixed lines of this block — see the two bullets below.
@@ -542,7 +573,10 @@ file paths that identify a person or an organisation
 ```
 
 Rewrite what you find, at the same level of usefulness — "a family member",
-"the client's deadline" — rather than dropping the fact.
+"the client's deadline" — rather than dropping the fact. **An additional pass is
+available: `scripts/scrub_sweep.py` under the plugin root sweeps for the same
+shapes** — run it alongside the read, never in place of it, since it matches
+shapes and the read is what catches a sentence that quietly identifies someone.
 
 **State the limit whenever this comes up, and never overstate the gate.** This
 checklist is Claude checking its own writing, and the hook's scan matches
@@ -551,10 +585,23 @@ a real person. So **never tell a user their artifacts are scrubbed, clean, or
 safe to publish.** If a user asks whether their repo is safe to make public, the
 honest answer is that not publishing these artifacts is the only real protection.
 
-**Authoring standard.** Keep everything — facts, references, conditions, the
-reasoning that led here. Plain short sentences, one idea per sentence. The human
-co-reads and approves this text: **unreadable is unapprovable.** Completeness
-matters more than compression here.
+**Authoring standard — one provision, two scopes.** Plain short sentences, one
+idea per sentence, whichever is being written. The human co-reads and approves
+this text: **unreadable is unapprovable.**
+
+```
+the RECORD — a capture, a queue item, a LOG entry, a SPEC edit
+    keep everything: facts, references, conditions, the reasoning that led
+    here. Completeness matters more than compression.
+
+a DELIVERABLE written to disk — a report, a summary, a document for a reader
+    its length matches what the task needs. Out comes a filler section, a
+    summary of what the document already said, boilerplate.
+```
+
+The two scopes are not in tension: the record is written for completeness
+because a later session reads it to recover intent, and a deliverable is written
+to its task because a reader acts on it.
 
 **Placement: append to the bottom of Unprocessed, always.** No judgment call, no
 narration line. **Mid-session captures follow the same rule and get no special

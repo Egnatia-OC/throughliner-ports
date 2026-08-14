@@ -87,24 +87,24 @@ Check what the doc causes Claude to *say to the user* against the communication 
 
 **Read this before treating anything about this project's narration as evidence the method works.** Three layers assert the method's communication rules in every session here, and only one of them is the method. Where a rule is doubled, no session can tell which layer it followed — so a rule that is weak, badly worded, or missing from `skill-nonspecific-rules.md` still produces correct behaviour in this project, supplied by a layer consumers do not have. The defect then ships and this project never sees it.
 
-The three layers: **(G)** the user's global `~/.claude/CLAUDE.md`, loaded in every session on this machine and in every project; **(S)** the shipped output style `plugin/throughliner/output-styles/concise-throughliner.md`, applied automatically at system-prompt priority; **(M)** the method's own `plugin/throughliner/docs-b/skill-nonspecific-rules.md`. Only M ships as the method's steering; G is personal and reaches every project; S ships but sits above M in priority.
+**Two layers now, not three, and the change is recent.** A shipped output style — `plugin/throughliner/output-styles/concise-throughliner.md`, applied automatically at system-prompt priority — was the third until it was deleted on 2026-08-14 for asserting rules the other two already carried. Its three unique rules migrated into the method's own file. What remains: **(G)** the user's global `~/.claude/CLAUDE.md`, loaded in every session on this machine and in every project; **(M)** the method's own `plugin/throughliner/docs-b/skill-nonspecific-rules.md`. Only M ships as the method's steering; G is personal and reaches every project.
 
-| Rule | G | S | M |
-|---|---|---|---|
-| One item per message when the next action depends on the last | yes | yes | yes |
-| State the count upfront before a multi-part exchange | yes | yes | yes |
-| Never preview later items | yes | yes | yes |
-| Alternatives the user is choosing between are shown together | yes | yes | yes |
-| Lead with the decision; don't front-load reasoning | yes | yes | yes |
-| Skip recaps of what the user can already see | yes | yes | — |
-| The single user-facing ask goes in bold, as a question, at the end | yes | — | yes |
-| Offer a web search rather than guessing at an external fact | yes | — | yes |
-| Plain English for a non-coder; no unexplained jargon | yes | yes | yes |
-| Gate detail behind an explicit request | — | yes | — |
-| How often to speak while working (narration cadence) | — | yes | — |
-| A written file's length matches what the task needs | — | yes | — |
+| Rule | G | M |
+|---|---|---|
+| One item per message when the next action depends on the last | yes | yes |
+| State the count upfront before a multi-part exchange | yes | yes |
+| Never preview later items | yes | yes |
+| Alternatives the user is choosing between are shown together | yes | yes |
+| Lead with the decision; don't front-load reasoning | yes | yes |
+| Skip recaps of what the user can already see | yes | — |
+| The single user-facing ask goes in bold, as a question, at the end | yes | yes |
+| Offer a web search rather than guessing at an external fact | yes | yes |
+| Plain English for a non-coder; no unexplained jargon | yes | yes |
+| Gate detail behind an explicit request | — | yes |
+| How often to speak while working (narration cadence) | — | yes |
+| A written file's length matches what the task needs | — | yes |
 
-**How to read it.** Nine of the twelve are asserted by at least two layers, and five by all three — so this project's behaviour on those five is unattributable, and its good behaviour on them is not evidence about M. The three S-only rows are the opposite case and worth watching for the same reason in reverse: nothing in M carries them, so removing S would remove them entirely.
+**How to read it.** Eight of the twelve are asserted by both layers, so this project's behaviour on those eight is unattributable and its good behaviour on them is not evidence about M. The four single-layer rows are where this project's narration *does* test something: the three M-only rows are M working alone, and the one G-only row is carried by nothing the method ships. **The deletion of the style improved this table's diagnostic value** — three rules that were previously S-only and untested here are now M's, so they are exercised by the layer that actually ships.
 
 **What was rejected, and why it is not reopened.** Stripping the duplicated rules out of G was refused: those instructions serve the user across every other project, and removing them to improve one project's test fidelity trades real everyday benefit for a diagnostic. Testing the communication rules in a consumer project without the global overrides is the real answer and is separate work. Making the overlap visible — this table — costs nothing and loses nothing, which is why it is what was built.
 

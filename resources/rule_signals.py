@@ -109,15 +109,13 @@ for _stream in (sys.stderr, sys.stdout):
 #
 # resources/method-compliance-audit-checklist.md has always required the count
 # be reported split by audience. This is the tool finally doing it.
+# The shipped output style used to sit here too — applied automatically at
+# system-prompt priority, so always-loaded in the only sense this count cares
+# about. It was deleted on 2026-08-14 as triplication of rules the file above
+# already carries; its three unique rules migrated into that file, so the
+# corpus this list measures is unchanged in substance and smaller in text.
 SHIPPED_ALWAYS_LOADED = [
     "plugin/throughliner/docs-b/skill-nonspecific-rules.md",
-    # The output style is shipped and applied automatically whenever the plugin
-    # is enabled, at system-prompt priority — so it is always-loaded in the only
-    # sense this count cares about, and it carries behavioural rules. It sat
-    # outside this list until an underived limit reached it and no watcher said
-    # anything: the growth report did not count it and BORN's trigger did not
-    # cover it, so a commit changing only the style fired nothing at all.
-    "plugin/throughliner/output-styles/concise-throughliner.md",
 ]
 
 HOST_ALWAYS_LOADED = [
@@ -158,7 +156,6 @@ GROWTH_WINDOW = 30
 # this stage buildable at all.
 RULE_BEARING = [
     "plugin/throughliner/docs-b/",
-    "plugin/throughliner/output-styles/",
     "resources/self-authoring-rules.md",
     "resources/rule-maintenance.md",
     "CLAUDE.md",
@@ -387,7 +384,8 @@ def signal_audited(root, measured):
             "No automatic trigger: the ceiling this fired on is gone and no "
             "replacement threshold is defensible. The three-lens sweep in "
             "resources/method-compliance-audit-checklist.md is run by judgment "
-            "— MEASURED's direction of travel and MAINTAINED are the inputs."
+            "— the direction of travel in the rule-text count, and the "
+            "near-duplicate check, are the inputs."
         ),
     }
 
@@ -890,6 +888,39 @@ def board(root):
     ]
 
 
+# What each entry actually reads, in plain words. The internal stage names
+# (BORN, CONTRADICTED, MAINTAINED, REPEALED, MEASURED, AUDITED) stay as the
+# dict keys and inside the capture slugs, where they are stable identifiers —
+# but they never reach the output any more. They were invented here, they
+# reached the user's always-loaded CLAUDE.md without ever being explained, and
+# the user was never the intended audience of this output.
+CHECK_LABELS = {
+    "MEASURED": "How much rule text there is",
+    "AUDITED": "Whether a corpus sweep is due",
+    "BORN": "Rule-bearing commits carry a gate line",
+    "CONTRADICTED": "No commit says 'gate not needed' while rules grew",
+    "MAINTAINED": "No two rules say nearly the same thing",
+    "REPEALED": "No live rule names a retired mechanism",
+}
+
+# The framing this whole script had wrong until 2026-08-14. On 2026-08-13 it
+# ran clean while five real rule defects were found by conversation in the same
+# session — a bare number shipped into the output style, the turn-by-turn asks
+# removed from every session, the rule gate having no site in the build, this
+# board having no trigger, and a shipped component missing from the project
+# map. Not one of the four checks asks whether a rule is CORRECT, whether it
+# FIRES, or whether it improved anything: they ask whether a required line
+# exists, whether two artifacts contradict, whether two rules read alike, and
+# whether a rule names a retired word. So a clean run is evidence the paperwork
+# was completed, and reporting that as health is the over-claiming this
+# project's own standard forbids.
+CLEAN_RUN_NOTE = (
+    "What a clean result means: these four things were checked and nothing was "
+    "found.\nIt is not evidence the rules are correct, that they fire, or that "
+    "they made anything better —\nno check here asks any of those questions."
+)
+
+
 def main(argv):
     root = argv[1] if len(argv) > 1 else "."
     entries = board(root)
@@ -902,29 +933,34 @@ def main(argv):
     signals = [s for s in entries if s.get("kind") != "report"]
     firing = [s for s in signals if s["firing"]]
 
-    print(f"## Rule-lifecycle board — {len(firing)} of {len(signals)} signalling")
+    print(
+        f"## Rule-corpus checks — {len(firing)} of {len(signals)} found something"
+    )
     if reports:
         print()
-        print("### Reports — measurements with no threshold. These never fire.")
+        print("### Measurements — no threshold, so nothing here can be failed.")
         for s in reports:
-            print(f"- {s['stage']} {s['message']}")
+            print(f"- {CHECK_LABELS.get(s['stage'], s['stage'])}: {s['message']}")
     print()
-    print("### Signals — these fire, and a firing signal files a capture.")
+    print("### Checks — each can find something, and what it finds becomes work.")
     for s in signals:
-        mark = "FIRING" if s["firing"] else "ok"
-        print(f"- {s['stage']} [{mark}] {s['message']}")
+        mark = "FOUND SOMETHING" if s["firing"] else "nothing found"
+        label = CHECK_LABELS.get(s["stage"], s["stage"])
+        print(f"- {label} [{mark}] {s['message']}")
     if firing:
         print()
-        print("Each firing signal files one capture in Unprocessed, under the slug "
-              "shown below.")
-        print("A signal is already satisfied — file nothing — while ANY open work "
+        print("Each check that found something files one capture in Unprocessed, "
+              "under the slug shown below.")
+        print("A check is already satisfied — file nothing — while ANY open work "
               "item carries its slug,")
         print("in EITHER section: Unprocessed or Processed, captured or designed "
               "and cleared to run.")
-        print("Only deleting that item re-arms the signal. Nothing here scans the "
+        print("Only deleting that item re-arms the check. Nothing here scans the "
               "queue; you perform this check.")
         for s in firing:
             print(f"  [{s['slug']}]")
+    print()
+    print(CLEAN_RUN_NOTE)
     print()
     print(GROWTH_NOTE)
     return 0

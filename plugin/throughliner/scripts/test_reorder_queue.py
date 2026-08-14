@@ -253,6 +253,62 @@ def test_write_verified_refuses_a_write_that_did_not_land():
               "write_verified reported success for a slug still in the file")
 
 
+def test_move_section_refuses_an_unnamed_sweep():
+    """A marker relocation that would CLEAR held items the caller never named.
+
+    The recorded failure: `--position BOTTOM --marker-after <the moved slug>`
+    put the marker below four held items and swept every one of them into the
+    cleared region, reporting only that the moved item was now cleared. Here
+    gamma is held; placing beta at the bottom and anchoring the marker to it
+    would clear gamma too.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(FIXTURE)
+        before = open(path, "r", encoding="utf-8").read()
+
+        result = subprocess.run(
+            [sys.executable, SCRIPT, path,
+             "--move-section", "beta", "Unprocessed", "Processed",
+             "--position", "BOTTOM", "--marker-after", "beta"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        output = result.stdout + result.stderr
+
+        check("the sweep is refused", result.returncode != 0,
+              f"exit {result.returncode}: {output}")
+        check("the refusal names the swept item", "[gamma]" in output,
+              f"got: {output}")
+        check("nothing was written",
+              open(path, "r", encoding="utf-8").read() == before)
+
+
+def test_named_move_across_the_line_still_reports_and_succeeds():
+    """The behaviour the refusal must NOT take: a deliberate, named crossing.
+
+    Moving an item across the line is a legitimate way to clear or shelve work.
+    The original code reported rather than refused for exactly this case, and
+    that reasoning is unchanged — only unnamed crossings are new.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "QUEUE.md")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(FIXTURE)
+
+        result = subprocess.run(
+            [sys.executable, SCRIPT, path, "Processed",
+             "--move", "gamma", "AFTER", "alpha", "--marker-after", "gamma"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        output = result.stdout + result.stderr
+
+        check("the named move succeeds", result.returncode == 0,
+              f"exit {result.returncode}: {output}")
+        check("the crossing is reported",
+              "crossed the readiness line" in output, f"got: {output}")
+
+
 if __name__ == "__main__":
     print("test_reorder_queue")
     test_side_of_marker_report()
@@ -261,5 +317,7 @@ if __name__ == "__main__":
     test_move_section_marker_failure_writes_nothing()
     test_delete_reports_only_what_landed()
     test_write_verified_refuses_a_write_that_did_not_land()
+    test_move_section_refuses_an_unnamed_sweep()
+    test_named_move_across_the_line_still_reports_and_succeeds()
     print(f"\n{len(failures)} failure(s)" if failures else "\nall passed")
     sys.exit(1 if failures else 0)

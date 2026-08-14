@@ -277,6 +277,22 @@ working-tree edit with no separate commit. It rides into the next session's
 commit, exactly as the hash backfill does. The entry is the session's record, and
 a capture belongs to the session it came up in.
 
+## The record a routing step sweeps
+
+Both close sub-docs route leftovers to Unprocessed, and both sweep the same
+record. Defined once here; each points at it.
+
+```
+the RECORD a routing step sweeps:
+    the build working file's notes
+    any captures already appended at the moment of noticing
+conversation memory  ->  a same-session BONUS pass, never a source the step
+                         depends on
+```
+
+An audit run has a build working file like any other run — its findings are
+ticked there — so the first line applies to both closes unchanged.
+
 ## Checks the closing session couldn't run
 
 The deferred-tests section is retired — there is no separate test queue.
@@ -452,7 +468,14 @@ against the active build's file list. Any dirty path outside it is a user edit n
 build staged.
 
 ```
-RECOGNISE THE HASH-BACKFILL SIGNATURE FIRST — and skip the investigation:
+RECOGNISE THE INHERITED TAIL FIRST — and skip the investigation:
+    a dirty LOG entry from a PREVIOUS session carrying a marked tail section,
+    or a capture at the bottom of Unprocessed that no session here filed
+        -> the previous session's post-commit tail, which by design commits
+           nothing and rides into this commit
+        -> fold it in with at most a one-line note
+
+RECOGNISE THE HASH-BACKFILL SIGNATURE TOO — and skip the investigation:
     a dirty LOG/index.md or LOG/<slug>.md whose ONLY change is a placeholder
     hash becoming a real hash, in an entry heading or the start of an index line
         -> the session-start hook's automatic backfill, already announced in
@@ -636,12 +659,54 @@ key only on "Processed work exists", which cannot tell work /next can run from
 work that needs vetting first — so a close that had just emptied the cleared
 region still pointed at /next, straight into a stop.
 
+**A session makes exactly one commit, and the tail makes none.** That is the
+whole shape, and everything below follows from it. The close commits; work
+arriving afterwards is written to the working tree and left there, to be carried
+by the next close. No amendment commit, no delta commit, no second close.
+
+```
+the close                ->  ONE commit. Everything the session did.
+the post-commit tail     ->  writes files, commits NOTHING:
+                               a capture appended to QUEUE.md
+                               an append to this session's LOG entry
+                               a hash the session-start backfill filled in
+                             all of it rides into the NEXT close's commit
+```
+
+**Why the tail loses its commits rather than the tail losing its work.** Work
+genuinely does arrive after a commit — a question answered, a reply sent, an
+observation worth keeping — and recording it beats pretending the session ended.
+So the thing to remove is the commit per increment, not the increment. A close
+was producing two and three commits every time, and the user's word for it was
+*every time*: this is a recurring shape, not one untidy session.
+
+**The cost, stated rather than discovered: the tree is dirty between one close
+and the next, always.** That is accepted, and it is what makes the dirt
+*legible*. Uncommitted changes at a session's opening now mean one thing — the
+previous session's tail, plus the backfill — so a session recognises the
+signature instead of investigating it, exactly as it already does for the
+backfill alone. Dirt that is always the same shape can be read at a glance;
+dirt that is sometimes tail and sometimes an unexplained commit cannot.
+
+**What was rejected, and why it is not reopened.** Requiring the close to leave a
+clean tree cannot be done without either forbidding post-close work or committing
+each increment — the first loses the record, the second is the defect. A second
+lightweight close over the tail was weighed and lost for the same reason: it is
+another commit wearing a different name, and it needs the user to decide when the
+tail has ended, which nothing can tell them.
+
+**So the close's staging check keeps its teeth**, because the dirt it must catch
+is now sharply distinguishable: tail-shaped dirt is the previous session's LOG
+entry, a capture at the bottom of Unprocessed, or a backfilled hash. Anything
+else is a user edit and still gets the full treatment.
+
 **After the close, if further work changes a file, offer once to append it to
 this session's LOG entry** [BRIEF, PROMPT]. The entry is written and committed by
 now, so anything done afterwards — a fix, a question answered, a piece of work
-run on request — is invisible in the record unless the entry is amended and the
-amendment committed. The session has ended in the method's terms and not in the
-chat's.
+run on request — is invisible in the record unless the entry is amended. **The
+amendment is not committed; it waits for the next close** — that is what the one
+commit per session rule above means in practice at this exact moment, which is
+the moment it was most often broken.
 
 ```
 append, never rewrite   ->  a marked tail section on the existing entry, so it
@@ -696,19 +761,13 @@ every later edit and which stops the queue mover dead: it refuses on the whole
 file, so no move or deletion can run at all while the advisory is present.
 
 **The advisory is a transient orientation handoff, not work.** It is read at the
-next /plan's opening to orient where that session starts, and cleared at that
-session's /done close (done-plan.md). It never runs through keep/delete and never
-moves into Processed. It stays in QUEUE.md rather than getting a file of its own
+next /plan's opening to orient where that session starts, and cleared there, at
+that same read (plan.md). Nothing about clearing it is this close's job. It never
+runs through keep/delete and never moves into Processed. It stays in QUEUE.md rather than getting a file of its own
 because it is read at the top of Unprocessed anyway, and a separate document would
 be one more thing for the user to learn about for one transient line — what made it
 misread as unprocessed work was never its location but that nothing in it said what
 it was, which is why the heading text carries that now.
-
-```
-clear IF it actually oriented this session   # whether or not it was followed
-keep  IF it names a persist-condition that hasn't been met
-      # e.g. "persist until the cleared builds ship"
-```
 
 ```
 flavor deltas:

@@ -109,6 +109,25 @@ wording and approved it. Sending is outward-facing and both mailboxes may sit
 in repositories that get published, so draft, show, wait — the same guarantee
 the feedback reports keep.
 
+**Name the sending project twice: in the message's filename, and in its opening
+line.** The filename carries it as `<date>-from-<sending project>-<subject>.md`;
+the body opens by saying which project is writing.
+
+```
+INBOX/2026-08-14-from-hexboard-trailing-slash-command.md
+
+    # <subject>
+    From <sending project>, running Throughliner <version>.
+```
+
+Both, because they fail differently. The filename is readable without opening
+anything, which is what makes a mailbox triageable — and it is the half any
+move, archive or rename can drop. The body line survives every rename and is
+invisible until the message is opened. Written at the send, which is the only
+moment the sender is known for certain: a receiving-side check can see the field
+is missing and can never recover it. One message arrived without either, and
+identifying who sent it took five checks and a screenshot before it was settled.
+
 **Check the recipient's `INBOX/` exists before writing, and say plainly when one
 has to be created.** A project whose installed method predates INBOX scaffolding
 has nothing at its session start that surfaces waiting mail, so a message
