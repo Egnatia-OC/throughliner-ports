@@ -53,6 +53,11 @@ for _stream in (sys.stderr, sys.stdout):
 SLUG_RE = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]\s*$")
 ITEM_RE = re.compile(r"^####\s+\S")
 BLOCKED_RE = re.compile(r"^Blocked by:\s*\[([a-z0-9][a-z0-9-]*)\]", re.IGNORECASE)
+# `Not before: YYYY-MM-DD` — the second holding fact, and the only one that
+# resolves without anyone confirming it. Printed with whether the date has
+# passed, so the lift is a fact on the line rather than a date the reader has
+# to compare against today by hand.
+NOT_BEFORE_RE = re.compile(r"^Not before:\s*(\S+)\s*$", re.IGNORECASE)
 FLAG_RE = re.compile(r"^Red flag\s*·\s*State:\s*(\w+)", re.IGNORECASE)
 FLAVOR_RE = re.compile(r"^\[(audit|user|freeform)\]\s*", re.IGNORECASE)
 # "Runs alone" — the item is ready, but /next must not build it alongside other
@@ -134,7 +139,7 @@ def parse(path):
     above_marker = True
     current = None
 
-    for raw in lines:
+    for lineno, raw in enumerate(lines, start=1):
         stripped = raw.strip()
 
         if re.match(r"^##\s+Processed\b", stripped, re.IGNORECASE):
@@ -166,12 +171,15 @@ def parse(path):
                 "heading": heading,
                 "slug": slug,
                 "blocked_by": None,
+                "not_before": None,
                 "flag": None,
                 "runs_alone": False,
                 # Lowercased prose, for the placement-contradiction checks. Not
                 # printed — the digest stays one line per item.
                 "prose": [],
+                "prose_at": [],
                 "files_line": None,
+                "files_line_raw": None,
             }
             items.append(current)
             continue
@@ -180,6 +188,9 @@ def parse(path):
             blocked = BLOCKED_RE.match(stripped)
             if blocked:
                 current["blocked_by"] = blocked.group(1)
+            not_before = NOT_BEFORE_RE.match(stripped)
+            if not_before:
+                current["not_before"] = not_before.group(1).strip()
             flag = FLAG_RE.match(stripped)
             if flag:
                 current["flag"] = flag.group(1).lower()
@@ -188,8 +199,19 @@ def parse(path):
             files = FILES_LINE_RE.match(stripped)
             if files and current["files_line"] is None:
                 current["files_line"] = files.group(1).lower()
+                # The same text with its capitals intact, for printing. The
+                # matching copy above is lowercased so the phrase checks can
+                # compare case-insensitively, and the paths ride along with it
+                # — which is why the digest used to report `spec.md` and
+                # `claude.md` for files that are SPEC.md and CLAUDE.md.
+                current["files_line_raw"] = files.group(1)
             if stripped:
                 current["prose"].append(stripped.lower())
+                # Line number and original casing, so a flag can say WHERE it
+                # fired and quote what it matched. Locating one flagged phrase
+                # by hand cost three round-trips, and the first repair fixed
+                # the wrong occurrence because the item contained it twice.
+                current["prose_at"].append((lineno, stripped))
 
     return items
 
@@ -215,7 +237,7 @@ def _self_referential_phrase(item):
     genuinely is about this item. Built-into means folded-into, a different verb
     sense, so a following "into" suppresses the match.
     """
-    for line in item["prose"]:
+    for idx, line in enumerate(item["prose"]):
         for phrase in DO_NOT_BUILD_PHRASES:
             at = line.find(phrase)
             if at == -1:
@@ -229,7 +251,12 @@ def _self_referential_phrase(item):
             ]
             if others:
                 continue
-            return phrase
+            # Where it fired and what it matched, not just the phrase. An item
+            # can carry the same phrase twice, so the phrase alone sends a
+            # reader to the wrong occurrence — which happened.
+            lineno, raw = (item["prose_at"][idx] if idx < len(item["prose_at"])
+                           else (None, line))
+            return phrase, lineno, raw
     return None
 
 
@@ -294,8 +321,22 @@ def shipped_slugs(root):
     return found
 
 
-def first_seen(root, queue_path):
+def first_seen(root, queue_path, held_dates=None):
     """First date each slug's heading appears in QUEUE.md, as {slug: date}.
+
+    When `held_dates` is passed a dict, it is filled with {slug: date} for the
+    first date that slug's item was seen carrying a hold — a `Blocked by:` or
+    `Not before:` line — off the same pass. That date is what turns "four items
+    are held" into "held since the 14th", which is the difference between
+    background noise and something a reader acts on: a bare count was printed
+    at every session start while a chain sat stuck for a day and nobody noticed.
+
+    **Attribution is partial, and the caller states it rather than hiding it.**
+    With no diff context, a hold line can only be attributed to an item when the
+    two were added together — which is the ordinary case, since an item is
+    normally written already held. An item that was cleared and later held by a
+    line added on its own gets no date, and prints none. A missing date is
+    therefore "not known", never "not held".
 
     One git pass for the whole queue, not one per slug. The per-slug form
     (`git log -S"[slug]"`) costs about a tenth of a second each and this script
@@ -326,15 +367,28 @@ def first_seen(root, queue_path):
 
     dates = {}
     date = None
+    # The slug of the item whose heading was added in the run of added lines
+    # currently being read. Reset by anything that ends that run, so a hold
+    # line is only ever attributed to a heading added beside it.
+    pending_slug = None
     for line in proc.stdout.splitlines():
         if GIT_DATE_RE.match(line):
             date = line
+            pending_slug = None
             continue
-        if not line.startswith("+####"):
+        if not line.startswith("+"):
+            pending_slug = None
             continue
-        match = SLUG_RE.search(line.rstrip())
-        if match and date:
-            dates.setdefault(match.group(1), date)
+        if line.startswith("+####"):
+            match = SLUG_RE.search(line.rstrip())
+            pending_slug = match.group(1) if match else None
+            if match and date:
+                dates.setdefault(match.group(1), date)
+            continue
+        if held_dates is not None and pending_slug and date:
+            body = line[1:].strip()
+            if BLOCKED_RE.match(body) or NOT_BEFORE_RE.match(body):
+                held_dates.setdefault(pending_slug, date)
     return dates
 
 
@@ -357,20 +411,30 @@ def files_named(items):
     noise on a line-per-item digest. What earns its own block is the overlap:
     two items naming the same file are merge candidates, and merging them means
     one run touches that file once instead of twice.
+
+    **Grouped case-insensitively, printed as written.** Two items naming the
+    same file in different casing are still the same file and still merge
+    candidates, so the grouping key stays lowercased — but the path shown is the
+    one the item actually wrote, because a reader who copies `spec.md` or
+    `claude.md` off this block is copying a filename that does not exist.
     """
     by_path = {}
+    display = {}
     for item in items:
-        if not item["files_line"]:
+        raw_line = item["files_line_raw"] or item["files_line"]
+        if not raw_line:
             continue
         slug = item["slug"] or "NO-SLUG"
-        for path in FILES_PATH_RE.findall(item["files_line"]):
+        for path in FILES_PATH_RE.findall(raw_line):
             path = path.strip()
             if not PATH_SHAPE_RE.search(path):
                 continue
-            by_path.setdefault(path, [])
-            if slug not in by_path[path]:
-                by_path[path].append(slug)
-    return {p: s for p, s in sorted(by_path.items()) if len(s) > 1}
+            key = path.lower()
+            display.setdefault(key, path)
+            by_path.setdefault(key, [])
+            if slug not in by_path[key]:
+                by_path[key].append(slug)
+    return {display[k]: s for k, s in sorted(by_path.items()) if len(s) > 1}
 
 
 def contradictions(items, root=""):
@@ -393,18 +457,22 @@ def contradictions(items, root=""):
         if item["section"] == "Processed":
             hit = _self_referential_phrase(item)
             if hit:
+                phrase, lineno, raw = hit
+                where = f" (line {lineno})" if lineno else ""
                 found.append(
                     f"[{slug}] sits in Processed but its own text says "
-                    f'"{hit}"'
+                    f'"{phrase}"{where}: {raw}'
                 )
 
             files_line = item["files_line"]
             if files_line is not None:
                 for phrase in NO_FILES_PHRASES:
                     if phrase in files_line:
+                        shown = item["files_line_raw"] or files_line
                         found.append(
                             f"[{slug}] sits in Processed but its Files line "
-                            f'says "{phrase}" — nothing for a build to change'
+                            f'says "{phrase}" — nothing for a build to change: '
+                            f"{shown}"
                         )
                         break
 
@@ -451,6 +519,27 @@ def _blocker_loop(item, items):
     return False
 
 
+def not_before_state(raw):
+    """Whether a `Not before:` date has arrived, as a printable phrase.
+
+    Computed rather than left to the reader: a date is the one holding fact
+    that resolves itself, so the digest can say the item is ready without
+    anyone comparing it against today by hand. An unreadable date says so —
+    the queue lint reports it at the edit that wrote it, and a digest that
+    quietly ignored it would hold the item forever with nothing on the line.
+    """
+    import datetime
+
+    try:
+        when = datetime.date.fromisoformat(raw)
+    except ValueError:
+        return "NOT A DATE (YYYY-MM-DD expected)"
+    today = datetime.date.today()
+    if when <= today:
+        return "passed, ready to lift"
+    return f"{(when - today).days} day(s) away"
+
+
 def locate(slug, items):
     """Where a slug sits, for resolving a Blocked by: reference."""
     for item in items:
@@ -464,7 +553,8 @@ def locate(slug, items):
 def render(items, root="", queue_path="QUEUE.md"):
     out = []
     shipped = shipped_slugs(root)
-    ages = first_seen(root, queue_path)
+    held_dates = {}
+    ages = first_seen(root, queue_path, held_dates)
     for section in ("Processed", "Unprocessed"):
         in_section = [i for i in items if i["section"] == section]
         out.append(f"## {section} — {len(in_section)} item(s)")
@@ -482,6 +572,8 @@ def render(items, root="", queue_path="QUEUE.md"):
             line = f"- [{slug}] ({', '.join(bits)}) {item['heading']}"
             if item["blocked_by"]:
                 line += f"  | Blocked by: [{item['blocked_by']}] -> {locate(item['blocked_by'], items)}"
+            if item["not_before"]:
+                line += f"  | Not before: {item['not_before']} -> {not_before_state(item['not_before'])}"
             if item["flag"]:
                 line += f"  | Red flag: {item['flag']}"
             # Only citations that resolve to a shipped LOG entry are printed.
@@ -493,6 +585,12 @@ def render(items, root="", queue_path="QUEUE.md"):
                 line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in done)
             if item["slug"] and item["slug"] in ages:
                 line += f"  | First seen: {ages[item['slug']]}"
+            # Held-since prints only on a held item, and only where the date
+            # could be attributed. A count of held items reads as background;
+            # a date is what makes a stuck item visible as stuck.
+            if (section == "Processed" and not item["cleared"]
+                    and item["slug"] in held_dates):
+                line += f"  | Held since: {held_dates[item['slug']]}"
             out.append(line)
         out.append("")
 
@@ -506,6 +604,11 @@ def render(items, root="", queue_path="QUEUE.md"):
         )
     else:
         out.append("- none")
+    out.append(
+        "Placement flags match a fixed set of known phrases, so a clean result "
+        "means none of the phrases this check knows were found — not that no "
+        "contradiction exists. Partial coverage, not a clean bill."
+    )
     out.append(
         "Superseded-research flags cover only items that NAME the research file "
         "in their prose. An item scoped on a finding it never cites is not "

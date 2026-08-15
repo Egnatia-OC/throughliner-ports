@@ -680,6 +680,14 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     Keyed on the build working file being absent rather than on "a planning
     session", because absence is what the code can actually see — and that is also
     what makes the gate cover a freeform session, which has the same condition.
+
+    One session kind is excluded, and it is excluded by its own declaration
+    rather than by widening this list: /setup writes a marker into the session
+    scratchpad for the length of its run (see _setup_marker_present), and the
+    caller allows any write while that marker exists. /setup never creates a
+    build working file, so without the exclusion it is classified here and every
+    write its migration path makes — the version and format-epoch markers, the
+    managed CLAUDE.md block, .gitignore — is denied with no prompt.
     """
     if not _is_inside(filepath, cwd):
         return False
@@ -722,6 +730,49 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     if rel.startswith(os.path.normcase("FAQ") + "/"):
         return True
     return False
+
+
+SETUP_MARKER_NAME = ".throughliner-setup-active"
+
+
+def _setup_marker_present(session_id: str) -> bool:
+    """True while /setup has declared itself for THIS session.
+
+    /setup writes `.throughliner-setup-active` into its session scratchpad at
+    the start of a run and removes it at the end. A session carrying it is
+    neither a planning session nor a build, so the standing list does not apply
+    to it.
+
+    The scratchpad is the marker's home for two reasons. It is already writable
+    in every session type, so /setup can declare itself without being stopped by
+    the very lock this works around; and it clears itself, so a run that dies
+    mid-setup leaves nothing to clean up by hand.
+
+    Matched by path SHAPE under the system temp directory —
+    `<temp>/claude/<project-slug>/<session-id>/scratchpad/` — never a hardcoded
+    machine path, and scoped to this session's own id so one project's setup run
+    cannot unlock another session. Never raises: a scratchpad that cannot be
+    read reports no marker, which leaves the lock ON, the fail-safe direction.
+
+    Widening the standing list instead was weighed and refused: /setup's targets
+    are the files the lock most exists to protect, and listing them would open
+    them for every planning session in every consumer project to fix a condition
+    that is only true during setup.
+    """
+    try:
+        import glob
+        import tempfile
+
+        safe_id = safe_session_id(session_id)
+        if safe_id == "unknown":
+            return False
+        pattern = os.path.join(
+            tempfile.gettempdir(), "claude", "*", safe_id, "scratchpad",
+            SETUP_MARKER_NAME,
+        )
+        return bool(glob.glob(pattern))
+    except Exception:
+        return False
 
 
 def _fire_once(cwd: str, session_id: str, marker_name: str) -> bool:
@@ -1039,6 +1090,16 @@ def main() -> int:
             )
 
     else:
+        # /setup declares itself with a scratchpad marker, and a session
+        # carrying it is neither a planning session nor a build — so the
+        # standing list below does not apply. Checked ahead of the Rule 4
+        # branch: /setup's whole migration path (the version and format-epoch
+        # markers, the managed CLAUDE.md block, .gitignore, any missing
+        # scaffold file) sits outside the standing list and was denied with no
+        # prompt and no override.
+        if _setup_marker_present(data.get("session_id", "")):
+            return 0
+
         # Rule 4: no build working file, so this is a planning or freeform
         # session, and the scope-lock runs against the STANDING list instead of
         # a build's agreed one. Writes to that surface pass silently; everything

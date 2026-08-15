@@ -121,12 +121,12 @@ else:
 HOOK = os.path.join(HOOKS, "pre_tool_use.py")
 
 
-def _decide(cwd, path):
+def _decide(cwd, path, session_id="test-session"):
     payload = {
         "cwd": cwd,
         "tool_name": "Write",
         "tool_input": {"file_path": path, "content": "x"},
-        "session_id": "test-session",
+        "session_id": session_id,
     }
     proc = subprocess.run(
         [sys.executable, HOOK], input=json.dumps(payload),
@@ -167,6 +167,56 @@ for rel, expected, what in E2E:
     if got != expected:
         failures.append((rel, expected, got, what))
     print(f"[{status}] end-to-end {rel!r} -> {got} ({what})")
+
+# --- the /setup marker -------------------------------------------------------
+#
+# /setup never creates a build working file, so it was classified by the branch
+# above and every write its migration path makes was denied with no prompt —
+# the version and format-epoch markers, the managed CLAUDE.md block, .gitignore.
+# It now declares itself with `.throughliner-setup-active` in the session
+# scratchpad, and a session carrying that marker is exempt from the standing
+# list. These cases drive the hook for real, marker present and absent.
+
+_setup_session = "setup-marker-test-session"
+_scratch = os.path.join(
+    tempfile.gettempdir(), "claude", "plan-lock-test-project",
+    _setup_session, "scratchpad",
+)
+os.makedirs(_scratch, exist_ok=True)
+_marker = os.path.join(_scratch, pre_tool_use.SETUP_MARKER_NAME)
+
+SETUP_TARGET = os.path.join(_tmp, "CLAUDE.md")
+
+got = _decide(_tmp, SETUP_TARGET, _setup_session)
+if got != "deny":
+    failures.append(("CLAUDE.md", "deny", got, "denied before the marker exists"))
+print(f"[{'ok' if got == 'deny' else 'FAIL'}] setup marker absent -> {got} "
+      "(a normally-denied path is denied)")
+
+with open(_marker, "w", encoding="utf-8") as _f:
+    _f.write("")
+
+got = _decide(_tmp, SETUP_TARGET, _setup_session)
+if got != "pass":
+    failures.append(("CLAUDE.md", "pass", got, "allowed while the marker exists"))
+print(f"[{'ok' if got == 'pass' else 'FAIL'}] setup marker present -> {got} "
+      "(a normally-denied path passes)")
+
+# The marker is scoped to the session that wrote it: one project's setup run
+# must not unlock a planning session in another chat.
+got = _decide(_tmp, SETUP_TARGET, "some-other-session")
+if got != "deny":
+    failures.append(("CLAUDE.md", "deny", got, "another session is unaffected"))
+print(f"[{'ok' if got == 'deny' else 'FAIL'}] setup marker, other session -> {got} "
+      "(the exemption does not leak between sessions)")
+
+os.remove(_marker)
+
+got = _decide(_tmp, SETUP_TARGET, _setup_session)
+if got != "deny":
+    failures.append(("CLAUDE.md", "deny", got, "denied again once cleaned up"))
+print(f"[{'ok' if got == 'deny' else 'FAIL'}] setup marker cleaned up -> {got} "
+      "(the exemption ends with the run)")
 
 print()
 if failures:

@@ -263,6 +263,28 @@ def _check_readiness_marker(annotated, blocks, warnings):
 
 BLOCKED_BY_LINE = re.compile(r"^\*{0,2}Blocked by:?\*{0,2}\s*(.+)$", re.IGNORECASE)
 SLUG_REF = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]")
+# `Not before: YYYY-MM-DD` — the second thing that may hold an item below the
+# line. The date is captured loosely here and validated as a real calendar date
+# by _parse_not_before, so a malformed date is reported rather than accepted.
+NOT_BEFORE_LINE = re.compile(
+    r"^\*{0,2}Not before:?\*{0,2}\s*(.+?)\s*$", re.IGNORECASE
+)
+
+
+def _parse_not_before(raw):
+    """A `Not before:` value as a date, or None when it is not a real one.
+
+    Held-until-a-date is the one holding fact that resolves itself: no session
+    and no user has to confirm it, so the lint's whole job here is making sure
+    the date can actually be read. A value that is not a real `YYYY-MM-DD`
+    would sit unnoticed and hold the item forever.
+    """
+    import datetime
+
+    try:
+        return datetime.date.fromisoformat(raw.strip())
+    except ValueError:
+        return None
 
 
 def _check_blocked_by(annotated, blocks, warnings):
@@ -277,10 +299,19 @@ def _check_blocked_by(annotated, blocks, warnings):
     lift-condition; the moment it was split out as its own work item it became
     visible immediately.
 
-    So the rule is now exactly one thing: an item sits below the marker if and
-    only if a NAMED queue item blocks it. Anything waiting on the world gets
-    described as its own item in Unprocessed, where /plan will process it, and
-    the blocked item names that item as its blocker. This check is what makes
+    So the rule is now exactly two things, and both name the holding fact on the
+    item itself: an item sits below the marker if and only if a NAMED queue item
+    blocks it (`Blocked by: [slug]`) or a date it must not be built before has
+    not yet passed (`Not before: YYYY-MM-DD`). Anything else waiting on the world
+    gets described as its own item in Unprocessed, where /plan will process it,
+    and the blocked item names that item as its blocker.
+
+    A date earns its own field rather than a proxy item because it resolves
+    itself: every other blocker needs a human or a build to clear it, which is
+    why blockers are queue items, but a date is checkable by a script and costs
+    no attention at all. Expressing one as a capture someone has to confirm cost
+    a planning session per post and still failed — the item it was pacing simply
+    never went out. This check is what makes
     the rule real rather than a convention sessions drift from — the below-line
     population becomes derivable instead of remembered.
 
@@ -312,10 +343,27 @@ def _check_blocked_by(annotated, blocks, warnings):
             continue
         below = b["idx"] > marker_idx
         refs = []
+        dates = []
+        bad_dates = []
         for line in b["lines"][1:]:
             m = BLOCKED_BY_LINE.match(line)
             if m:
                 refs.extend(SLUG_REF.findall(m.group(1)))
+            d = NOT_BEFORE_LINE.match(line.strip())
+            if d:
+                parsed = _parse_not_before(d.group(1))
+                if parsed is None:
+                    bad_dates.append(d.group(1))
+                else:
+                    dates.append(parsed)
+
+        for raw in bad_dates:
+            warnings.append(
+                f"line {b['idx'] + 1}: {b['heading'][:60]!r} carries "
+                f"'Not before: {raw}', which is not a date in YYYY-MM-DD form. "
+                "A date nobody can read holds the item forever, because nothing "
+                "can ever tell that it has passed."
+            )
 
         if not below:
             if refs:
@@ -325,17 +373,30 @@ def _check_blocked_by(annotated, blocks, warnings):
                     "cleared work has nothing blocking it. Either move it below "
                     "the marker or drop the blocker."
                 )
+            if dates:
+                warnings.append(
+                    f"line {b['idx'] + 1}: {b['heading'][:60]!r} sits ABOVE the "
+                    "cleared-to-run marker but carries a 'Not before:' line — "
+                    "cleared work has nothing holding it. Either move it below "
+                    "the marker or drop the date."
+                )
+            continue
+
+        if not refs and not dates:
+            warnings.append(
+                f"line {b['idx'] + 1}: {b['heading'][:60]!r} sits below the "
+                "cleared-to-run marker with no 'Blocked by: [slug]' line and no "
+                "'Not before: YYYY-MM-DD' line. Below the line means held by a "
+                "named queue item or by a date, and nothing else — if nothing "
+                "holds it, move it above the marker; if it waits on something in "
+                "the world, file that as its own item in Unprocessed and name it "
+                "here."
+            )
             continue
 
         if not refs:
-            warnings.append(
-                f"line {b['idx'] + 1}: {b['heading'][:60]!r} sits below the "
-                "cleared-to-run marker with no 'Blocked by: [slug]' line. Below "
-                "the line means blocked by a named queue item and nothing else "
-                "— if nothing in the queue blocks it, move it above the marker; "
-                "if it waits on something in the world, file that as its own "
-                "item in Unprocessed and name it here."
-            )
+            # Held by a date alone, which is complete on its own: a date needs
+            # no blocker item, because it resolves without anyone confirming it.
             continue
 
         for slug in refs:
@@ -413,6 +474,57 @@ def _check_orphaned_prose(annotated, warnings):
             flagged_run = True
 
 
+# Phrases that assert the user wrote or reasoned something. The shipped
+# provenance rule already requires the user's own words as the source of a
+# credit; this is that bar made checkable — the item is asked to show them.
+CREDIT_PHRASES = (
+    "captured by you",
+    "in your own words",
+    "your own words",
+    "your words",
+    "her words",
+    "his words",
+    "their words",
+    "the user's own words",
+)
+# What counts as showing them: a quoted string of any of the three shapes this
+# corpus actually uses. Deliberately generous — the check exists to catch a
+# credit with NOTHING quoted anywhere in the item, not to police quote style.
+QUOTE_SHAPES = (
+    re.compile(r"[“”][^“”]{3,}[“”]"),
+    re.compile(r'"[^"]{3,}"'),
+    re.compile(r"^>\s+\S", re.MULTILINE),
+)
+
+
+def _check_credit_without_quote(blocks, warnings):
+    """Check 6: an item claiming the user's words shows some of them.
+
+    Advisory, like everything here. It cannot tell invented reasoning from real
+    reasoning and must never be described as if it could — what it does is
+    raise the cost of an unsupported credit from nothing to fabricating a
+    quotation, and make the omission visible to a reader. That is a real
+    difference and it is not verification.
+
+    Why it fires here rather than in a digest read hours later: the failure
+    happens at the moment of writing, so the report belongs at the write.
+    """
+    for b in blocks:
+        text = "\n".join(b["lines"])
+        low = text.lower()
+        claimed = next((p for p in CREDIT_PHRASES if p in low), None)
+        if not claimed:
+            continue
+        if any(shape.search(text) for shape in QUOTE_SHAPES):
+            continue
+        warnings.append(
+            f"line {b['idx'] + 1}: {b['heading'][:60]!r} says "
+            f'"{claimed}" but quotes nothing. A credit to the user rests on '
+            "words they actually said — quote them, or drop the credit and "
+            "leave the item unmarked, which reads as Claude's."
+        )
+
+
 def lint(content: str) -> list[str]:
     annotated = _annotate(content)
     blocks = _workline_blocks(annotated)
@@ -423,7 +535,61 @@ def lint(content: str) -> list[str]:
     _check_readiness_marker(annotated, blocks, warnings)
     _check_blocked_by(annotated, blocks, warnings)
     _check_orphaned_prose(annotated, warnings)
+    _check_credit_without_quote(blocks, warnings)
     return warnings
+
+
+def _item_word_counts(content: str) -> dict:
+    """{slug: word count} for every work item in a queue's text."""
+    counts = {}
+    for b in _workline_blocks(_annotate(content)):
+        m = SLUG_AT_END.search(b["heading"])
+        if m:
+            counts[m.group(1)] = len("\n".join(b["lines"]).split())
+    return counts
+
+
+def _growth_report(cwd: str, content: str) -> list[str]:
+    """Per-item word deltas since the last commit, as bare facts.
+
+    **No threshold, no verdict, and none may be added.** A threshold here would
+    be a bare number, and the research this rests on states explicitly that no
+    band may be read off this corpus, because this corpus is the bloated one.
+    The report makes growth visible and enforces nothing — the same register as
+    the readiness-line crossing report the queue mover prints.
+
+    The baseline is the queue as last committed, not as it stood before this
+    particular edit. A hook is given no before-image, and the alternative was a
+    cached copy on disk — a state file that must be maintained, where the first
+    session that forgets makes the output lie. Since a session's edits are
+    reported against the state its work started from, the committed version is
+    the honest baseline and needs nothing kept in step.
+
+    Never raises: no git, no repository, or no committed QUEUE.md returns
+    nothing at all.
+    """
+    try:
+        import subprocess
+
+        proc = subprocess.run(
+            ["git", "show", "HEAD:QUEUE.md"],
+            cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            encoding="utf-8", errors="replace", timeout=15,
+        )
+        if proc.returncode != 0 or not proc.stdout:
+            return []
+        before = _item_word_counts(proc.stdout)
+    except Exception:
+        return []
+
+    now = _item_word_counts(content)
+    lines = []
+    for slug, count in now.items():
+        was = before.get(slug)
+        if was is None or count == was:
+            continue
+        lines.append(f"[{slug}] {count - was:+d} words")
+    return lines
 
 
 # --- Secret-shape scan ---
@@ -549,6 +715,14 @@ def _lint_queue(queue_path: str) -> int:
             "and never flagged. Judge each one: fix what's genuinely wrong "
             "in a follow-up edit, leave what isn't.\n"
             + "\n".join(f"- {w}" for w in warnings)
+        )
+
+    growth = _growth_report(os.path.dirname(queue_path) or ".", content)
+    if growth:
+        sections.append(
+            "[Throughliner] Queue item word growth since the last commit, as "
+            "bare facts — no threshold, no judgment, and none is implied.\n"
+            + "\n".join(f"- {g}" for g in growth)
         )
 
     secrets = _scan_secrets(queue_path)

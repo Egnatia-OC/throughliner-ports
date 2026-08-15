@@ -419,3 +419,84 @@ The plugin used to be called Sovereign Implementer. The name changed because it 
 **Two things worth knowing.** The automatic follow-along needs Claude Code version 2.1.193 or newer — on an older version you'd see a "plugin not found" message, and the fix is to update Claude Code first. And if your Claude Code settings are managed by an administrator (a work laptop, for instance), those can't be rewritten automatically, so the notice keeps appearing until an admin updates them.
 
 **Inside your own project**, two small hidden marker files are renamed too — they record which version and which document format your project is on. If your project was set up before the rename, Claude will say your project is on an older format and point you at /setup, which renames them for you along with anything else that needs bringing up to date. Nothing you wrote is touched.
+
+## Claude calls some things "captures" and others "work items". What's the difference?
+
+Where they sit in your queue, and whether anyone has agreed to them yet.
+
+- A **capture** is anything written into the **Unprocessed** part of your queue. An idea, a problem spotted mid-build, something you said in passing. Anyone can file one at any time — that's the point of it. Nobody has decided it's worth doing.
+- A **work item** is an entry in the **Processed** part. It got there because a planning session weighed it with you, agreed it was worth doing, and worked out what building it would actually change.
+
+**Why the two words are kept apart.** Everything in your queue looks the same on the page — a heading, a short name in brackets, some reasoning underneath. Using one word for both makes an idea nobody has looked at read exactly like work you approved. That blur is how a half-thought-through capture can end up looking queued and ready.
+
+So: **captures become work items.** That transition is what a planning session is for, and it's the only line the queue really has.
+
+## What is a "return path" on a message from another project, and what if one hasn't got one?
+
+It's the sending project's own folder, written into the message — so whoever receives it can reply without you having to go and find where the sender lives.
+
+Messages between your projects carry two things identifying the sender: its **name**, in the filename and the opening line, and its **return path**, in the body. The name tells you who wrote. Only the path says where to write back, which is why both are there.
+
+**Mail without a return path may be undeliverable in the reply direction.** Older messages, sent before this existed, often name the project and nothing else — and a few name nobody at all. Claude can't go looking: it works only in the folder you opened it in, and never scans your machine for your other projects. So if a reply is owed to a message with no path, Claude will ask you for the folder, once, and remember it for next time.
+
+**Is the path safe to have in there?** It only ever goes into a mailbox folder that git has been told to ignore — and before writing anything, Claude checks the receiving project's ignore rules and refuses to send if that folder isn't covered. So the path stays on your machine and never reaches a published repository.
+
+## Claude mentioned word counts and a missing quote after editing my queue. Is something wrong?
+
+No. Those are notes, not errors — the queue check has always reported things it noticed without stopping anything, and these are two more.
+
+**"[some-item] +420 words"** is a bare fact: that item got longer since your last save. There's no threshold and no opinion attached, and there deliberately never will be — nobody can say what the right length for a piece of work is, so the note tells you what changed and leaves the judgement to you. Sometimes growth is exactly right, because a decision genuinely needed recording. Sometimes it's padding. You can tell; a number can't.
+
+**"says 'captured by you' but quotes nothing"** means an item claims the words or reasoning were yours without showing any of them. The rule behind it is that a credit to you should rest on something you actually said — not on Claude's summary of what you probably meant. The fix is either to quote you properly or to drop the credit, in which case the item reads as Claude's, which is the default.
+
+**What neither of these can do**, said plainly because it would be easy to assume otherwise: they cannot tell whether reasoning attributed to you is genuinely yours. The first makes growth visible. The second makes an unsupported credit visible. Both turn something silent into something you can point at, and neither is a guarantee.
+
+## What is /rescan, and when would I use it?
+
+It reads back over your conversation and writes down anything you decided or noticed but never actually put in the queue. Run it whenever you like.
+
+A lot gets said in a working conversation that never lands in a file — an idea in passing, a problem you spotted, a decision made out loud and moved on from. Until now the only thing catching those was the closing step, at the very end. `/rescan` is that same check, available whenever you want it.
+
+**It only looks back as far as the last time you ran it.** So running it three times in one conversation doesn't show you the same things three times — each run picks up from where the last one stopped. That's what makes it cheap enough to use mid-conversation.
+
+**It writes things down. It doesn't decide what happens to them.** Everything it finds goes into the unprocessed part of your queue, and a planning session decides what's worth keeping. It never builds anything — partly because that's `/next`'s job, and partly because it couldn't help if it tried: the plugin your conversation is running is a fixed copy, so a fix made now wouldn't reach you until the plugin is reinstalled anyway.
+
+**Why it exists as its own command.** Two reasons, both from real annoyance. Every check added to the closing step made the end of a conversation heavier and pulled the whole thing toward wrapping up. And an earlier version of this check that fired "at a natural pause" had no way to tell what a pause was — it ran three times in one conversation, unasked. Yours is the honest trigger: it runs when you say so.
+
+**The closing step still does it**, just shortened — it picks up whatever came after your last `/rescan`. Never run it and nothing changes for you.
+
+## The planning session told me some work is "being held". Do I need to do something?
+
+Usually not — but read the line, because sometimes the answer is yes, and that's exactly why it's now said out loud.
+
+Work sits in a held state when something has to happen before it can be built: another piece of work has to ship first, or a date has to arrive. Held work is still yours and still queued; it just isn't offered to a build run yet.
+
+**What changed.** Every planning session now names each held item, what it's waiting for, and how long it's been waiting. Before, you were told a number — "three items held" — which is true and tells you nothing you can act on. A number reads as normal. "Held since the 14th, waiting on you" doesn't.
+
+**Why it mattered enough to change.** Work sat held, correctly held, and its owner couldn't see it during ordinary use — she ran builds and closes and never sat through the part of a planning session where held work is examined. In one case a post she'd decided to make simply never went out, and nobody noticed for a day. In another project, someone asked why a feature "wasn't queued" when it was queued, fully designed, and held for a perfectly good reason.
+
+**So: read it, and act only if it names you.** If a held item is waiting on other work, it lifts itself when that work ships. If it's waiting on a date, it lifts itself when the date arrives. If it's waiting on **you**, that's the one worth stopping for.
+
+**One honest gap.** For older items, Claude can't always work out the date a hold started. When it can't, it says the item is held without claiming to know since when, rather than guessing.
+
+## A queue item says "Not before" and a date. What is that?
+
+It's work that is finished being planned and is waiting for a day to arrive — nothing more.
+
+Most work that sits below the "cleared to run" line is waiting on **other work**: something else in your queue has to happen first, and the item says which. A date is the other kind of wait. If you want a post to go out tomorrow rather than today, or a check to run a week after a change ships, the item carries a line reading `Not before:` and the date.
+
+**Nothing is asked of you, and nothing has to be remembered.** When the day arrives, the planning session sees it has arrived and offers the work. You don't confirm it, and Claude doesn't have to notice it — the date is read off the calendar automatically at the start of every session.
+
+**Why this is worth having.** Before, the only way to hold work until a date was to file a second, made-up piece of work saying "a day has passed" — which someone then had to sit through a planning session to answer. It cost a session to answer a question a calendar answers, and it failed anyway: the work being paced simply never came back up, and a post that was meant to go out a day later never went out at all.
+
+**If the date looks wrong**, say so and Claude will change it. It's an ordinary line in your queue, not a setting.
+
+## Can I plan and build in the same conversation?
+
+**Yes.** Planning, building and recording in one conversation is the normal shape of a session — it's the cycle the method describes: /plan to decide what to work on, /next to build it, /done to record and commit.
+
+If Claude has ever pushed back on that, it was reading a rule that has now been removed. The old wording said planning and building must not be "crossed" inside one session, which sounded like a ban on typing both commands in one conversation. It was never meant that way, and it contradicted the workflow's own description of a session.
+
+**What the real boundary is, and it hasn't changed.** Anyone — any session, any command — can *write something down* in your queue. Only a planning session *decides what happens to it*: whether it's kept, what shape the work takes, where it sits. So a build that spots something new writes it into your queue and carries on; it doesn't quietly promote it to agreed work. That's the line the method actually holds.
+
+**The one practical caution is about length, not permission.** Claude works better in shorter conversations, so a long session that has already planned and built a lot is a good moment to start fresh — a suggestion about how well the work will go, never a rule about what you're allowed to do.

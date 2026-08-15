@@ -51,17 +51,38 @@ mean the safety check yielding to the one command that changes the most files,
 which is that guard's whole purpose inverted.
 
 **A planning session is different — it is not refused.** There is no build file
-there and nothing is blocked; writes outside the usual few files simply ask
-first. What /setup owes that situation is a description rather than a refusal,
-because the failure to avoid is silence, not permission. Say what is about to
-happen and let the user choose:
+there, and /setup's own marker (Step 0.5 below) is what lets its writes through:
+without it, a session with no build file is read as planning, and every write
+outside that session's usual few files is refused outright — no prompt, no
+override. What /setup owes that situation is a description rather than a
+refusal, because the failure to avoid is silence, not permission. Say what is
+about to happen and let the user choose:
 
-> You've got a planning session going here. I can set up now — it'll ask before
-> touching anything outside your usual files. Worth knowing that the planning
-> work in this chat isn't saved yet; /done is what records it. Set up now, or
-> close first?
+> You've got a planning session going here. I can set up now — setting up
+> changes a few files outside the usual ones, which is fine and expected. Worth
+> knowing that the planning work in this chat isn't saved yet; /done is what
+> records it. Set up now, or close first?
 
 Then wait for their answer, and do what they say.
+
+## Step 0.5: Declare the run  [SILENT]
+
+Before writing anything, create an empty file named
+`.throughliner-setup-active` in this session's scratchpad directory. Delete it
+when the run ends — including on every path that ends early: the user declining
+above, a stop partway through, an error.
+
+It is what tells the safety check that this session is a setup run rather than a
+planning one. Without it, every write /setup makes outside QUEUE.md, SPEC.md,
+LOG/ and FAQ/ is refused: the version marker, the format-epoch marker, the
+`.gitignore` lines, the managed block in CLAUDE.md, and any scaffold file the
+run finds missing. Fresh adoption and the queue conversion still work, which is
+what made the failure invisible until a migration in an already-adopted project
+hit it.
+
+The scratchpad is used because it is writable in every session type — so the
+marker can always be created — and because it clears itself, so a run that dies
+partway leaves nothing to tidy up by hand.
 
 ## Step 1: Detect folder state
 
@@ -408,7 +429,7 @@ the core — the main thing it produces,  ->  How it works
     organises, or does
 principles or constraints               ->  Principles
     ("must work offline", "no accounts", "everything in plain text")
-the first thing to build today          ->  becomes the first work item
+the first thing to build today          ->  becomes the first capture
 anything else worth knowing
 ```
 
@@ -426,8 +447,8 @@ into an interrogation.** Tell the user plainly, early on, that they can end it a
 time by saying **"build from what we have"**, at which point you stop asking and
 write the docs from whatever's been gathered.
 
-**The first work item** — whichever answer names the first thing to build — creates
-**one rough work item** in Unprocessed: a `#### ` heading **in the user's words**,
+**The first capture** — whichever answer names the first thing to build — creates
+**one rough capture** in Unprocessed: a `#### ` heading **in the user's words**,
 with a kebab-case `[slug]` at the end and a "captured by you" note beneath.
 
 **Write the heading in the user's own words, and stop there.** Their words are
@@ -457,12 +478,14 @@ we have"), write the docs, then close in a sentence or two and **stop and wait**
 
 ```
 1.  fill SPEC.md from the interview answers
-2.  write ONE work item in Unprocessed from the first-thing-to-build answer
+2.  write ONE capture in Unprocessed from the first-thing-to-build answer
     # the user's words, a [slug] at its end, a "captured by you" note.
     # Not multiple scoped entries.
 3.  show the user what was created (file list + one line each)
-4.  recommend /done to record this setup and commit the new files
-5.  teach the working rhythm (below)
+4.  delete `.throughliner-setup-active` from the session scratchpad — the run
+    is over, so the declaration from Step 0.5 comes down with it
+5.  recommend /done to record this setup and commit the new files
+6.  teach the working rhythm (below)
 ```
 
 The file list shows what appeared in the folder; the session's single summary is

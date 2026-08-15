@@ -26,12 +26,13 @@ Non-coders who know what their project should do but need a framework to keep Cl
 
 ## What it does
 
-The plugin splits your project into a build queue and walks you through it. Four slash commands drive the workflow:
+The plugin splits your project into a build queue and walks you through it. Five slash commands drive the workflow:
 
 - `/setup` — interviews you about your project (adapting to your answers) and scaffolds everything
 - `/plan` — organise the queue, capture ideas, resolve design questions
 - `/next` — build the next piece of ready work, scope-locked so Claude stays focused; it can build several pieces of cleared work back-to-back without you confirming each one, and it works through everything you've marked ready rather than proposing to stop early
 - Work can be tagged so `/next` treats it differently: a **review pass** that reads and reports without editing, a **step for you** that Claude walks you through live rather than doing itself, or **hands-off** work that Claude must not run from the queue at all — for repairs to the plugin's own machinery, where using a broken mechanism to fix itself is the risk
+- `/rescan` — look back over the conversation for anything you decided or noticed but never wrote down, and file it in the queue. Run it whenever you like, as often as you like: it only looks back as far as the last time you ran it, so it never repeats itself. It files things; deciding what happens to them is still `/plan`'s job
 - `/done` — record what happened, commit. It tells you what's next and stops there, rather than inviting you straight into another build in the same conversation — a fresh one works better, and a message ending in a command is easy to send by accident. If you carry on working afterwards and something changes, it offers once to add that to the session's record
 - If you ask for something mid-build that isn't part of the current job, Claude writes it into your queue and says why rather than silently deferring it — and if you ask a second time, a small change gets done there and then
 

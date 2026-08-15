@@ -33,11 +33,12 @@ The work cycle. Every piece of work travels the same loop.
   1. /plan — think and organise. Processes a capture: kept into
      Processed, or deleted. Keeping settles how it runs — build,
      [audit], [user], [freeform] — and where it sits.
-     Processing a capture is also how HELD work is released: an
-     item below the readiness line is released by processing the
-     item that blocks it. Where nothing in the queue blocks it
-     yet, file the blocker as a capture first, then hold the item
-     against it.
+     Processing a capture is also how HELD work blocked by
+     another item is released: process the item that blocks it.
+     Where nothing in the queue blocks it yet, file the blocker
+     as a capture first, then hold the item against it. Work
+     held by a DATE releases itself — nothing is processed and
+     nobody confirms it.
   2. /next — build. Takes the top piece of ready work from above the
      readiness line and builds it, top-down, several back-to-back.
   3. /done — record what happened, and commit.
@@ -415,7 +416,7 @@ whole finding falls or only part of it:
 **Superseded by: <path or item>** — <what falls, and what still stands>
 ```
 
-The queue digest reads that line back: a work item whose prose names a
+The queue digest reads that line back: any queue entry whose prose names a
 superseded research file is flagged, so the correction reaches the decisions
 built on it. Citation otherwise runs one way — an item names the file, the file
 names nothing — so a superseded finding leaves every item scoped against it
@@ -442,8 +443,10 @@ triage above.
 
 ## Captures
 
-A capture is unprocessed work: one work item appended to QUEUE.md's
-**Unprocessed** section. Capturing is how any session puts a new idea, discovery
+A capture is one entry appended to QUEUE.md's **Unprocessed** section. It is
+not yet a work item: **"work item" names an entry in Processed only** — work
+becomes work when /plan has agreed it. Until then it is a capture, or an
+unprocessed entry. Capturing is how any session puts a new idea, discovery
 or task into the queue without stopping to work it. Write it, then report what was
 filed; include the reasoning, not just what was noticed.
 
@@ -465,8 +468,16 @@ Red flag · State: <cleared | uncleared>        # only if it carries one
 Runs alone                                     # only if the work moves paths
                                                # underneath a run in flight
 Blocked by: [slug]                             # only below the cleared-to-run
-                                               # line, where it is required
+                                               # line, where one of these two
+                                               # is required
+Not before: YYYY-MM-DD                         # a date the item must not be
+                                               # built before; it lifts itself
 ```
+
+**A date holds an item on its own, with no blocker item standing in for it.**
+Every other blocker needs a human or a build to resolve, which is why blockers
+are queue items — a date resolves itself and is read off the calendar by the
+hooks, so nobody confirms anything and no wake-up capture is filed.
 
 **Write `Blocked by:` plain, not bolded.** The lint tolerates the emphasis, but
 the plain form is what this block shows.
@@ -625,23 +636,30 @@ stale silently. Status is re-derived from LOG. A slug written into prose is also
 the only thing that makes a cross-reference exist at all, and it stays grep-able
 through any reorder.
 
-## Work-item states — the canonical four
+## Queue states — the canonical four
+
+The lifecycle of an entry in QUEUE.md, from capture to work. **It is a model of
+queue states, not of work-item states**, because the first of the four is not a
+work item at all: an entry becomes a work item when it reaches Processed.
 
 ```
-Unprocessed                    captured, not yet fully processed. Two kinds:
+Unprocessed                    a capture, not yet fully processed. Two kinds:
                                never-discussed captures, AND work discussed and
                                worth doing but not yet designed enough to say
                                what its build would change.
-Processed, above the line      kept and ready. /next picks work from here,
-                               except a `[freeform]` item, which it halts on.
-Processed, below the line      designed and buildable, blocked by a named
-                               queue item — and by nothing else.
+Processed, above the line      a work item, kept and ready. /next picks work
+                               from here, except a `[freeform]` item, which it
+                               halts on.
+Processed, below the line      a work item, designed and buildable, held by a
+                               named queue item or by a date — and by nothing
+                               else.
 Deleted                        judged not worth doing. Git history keeps it.
 
 discriminator: can you describe what gets built?
     no                        -> Unprocessed
-    yes, blocked by an item   -> Processed below the line, naming its blocker
-    yes, nothing blocks it    -> Processed above the line
+    yes, and something holds  -> Processed below the line, naming its blocker
+      it                         or its date
+    yes, nothing holds it     -> Processed above the line
 ```
 
 **An empty Processed section is normal** — the vetted work is done.
@@ -691,8 +709,9 @@ Screen every session for anything that could expose the user's data or their
 users' data, or amounts to a breach — a duty owed every session, and one that
 catches only what it spots, so it is never a guarantee that every risk present
 has been found. When one is found, state the risk in plain English, surface it
-immediately, and tag the work item carrying it with the `Red flag · State:` line
-shown in the Captures line format above.
+immediately, and tag the queue entry carrying it with the `Red flag · State:`
+line shown in the Captures line format above — usually a capture, since an
+uncleared flag lives in Unprocessed.
 
 **The flag rides the work** — the item is the work (what will be done about the
 risk); the marker tags it as carrying the concern. Not a dedicated section: a
@@ -853,7 +872,6 @@ CLAUDE.md vs memory =  "this project" vs "all projects"
   user frames something as a behaviour change ("make Claude always do X") that's
   really product truth ("the app does X"), name it as SPEC content and route it
   there.
-- **/plan is for planning, /next is for building. Don't cross them.**
 - **Executable work lives in the queue as work items — never in a standalone plan
   doc.** /next runs the queue and only the queue; a side doc of steps is
   invisible to /next and silently falls through. A task mixing Claude-work and
@@ -885,43 +903,28 @@ premise is broken       ->  halt and course-correct
   Don't hold it in conversation to deal with later; an unrouted discovery
   survives only in memory.
 
-  **User-only discoveries file as a `[user]` work item, not a plain capture.**
+  **User-only discoveries file as a `[user]` capture, tagged at filing rather
+  than left untagged.**
   This also fires **at processing time**: when /plan keeps an item and spots a
   user-only gating action *buried in its rationale prose*, split it out into its
   own `[user]` line with its own slug and reference it by slug from the original.
 - **Nothing unrouted survives a session.** File or drop before close.
 - **One build at a time.** Never start a second while this session's build
   working file exists.
-- **Parallel sessions are allowed** — a planning session in one chat and a build
-  in another. "One build at a time" forbids a second concurrent *build*;
-  "don't cross plan and next" forbids mixing modes *inside one session*. Don't
-  refuse a planning chat opened alongside an active build.
+- **One chat runs /plan and /next as many times as the work needs, one after
+  another.** A plan session and a next session are runs of a command inside a
+  chat, not the chat itself. Run whichever the user asks for, whatever ran
+  before it in the chat. The boundary that binds is filing vs processing,
+  stated in the rule above.
 
-  **Which precaution applies depends on the isolation model, and session_start
-  says which is in force** — it compares git's `--git-dir` against
-  `--git-common-dir`, which differ in a linked worktree and match in a main
-  checkout. Don't infer it from a missing directory and don't ask the user.
+  **/done closes the CHAT**, once, when the chat is finished — it records
+  everything the chat did, across every plan session and next session in it.
 
-```
-shared tree  ->  two appends to different parts of QUEUE.md don't collide, and
-                 the file-modified warning catches it if they do. Avoid two
-                 sessions writing QUEUE.md or committing at the same instant.
-worktree     ->  sessions cannot collide at all — but a capture filed in one
-                 never reaches the other, and the last branch to merge wins.
-                 Keep queue edits in one session until a merge lands.
-clone        ->  a cloud session, running on its own copy in a container. Fully
-                 isolated, and the isolation is stronger than a worktree's:
-                 work reaches the main machine ONLY as a pushed branch, so a
-                 capture filed here is invisible everywhere else until that
-                 branch merges. Never read this as a shared tree — no
-                 file-modified warning can cross the container boundary.
-```
-
-  **Under both models: don't interrupt a run to file a capture.** Same advice,
-  opposite reasons. On a shared tree no coordination is needed, and the one
-  moment worth avoiding is /next's close, which rewrites Processed and moves the
-  marker. Under isolation, pausing achieves nothing at all — the capture lands
-  in the other session's own copy and cannot reach the running build.
+  **Work on a project from one chat at a time.** Where a second chat is open on
+  the same project, say so and let the user close it or come back to it. Two
+  chats at once was supported for a period and never worked: a capture filed in
+  one is invisible to the other, and the two disagree about the queue from the
+  moment either writes to it.
 
   **What happens to an isolated session's work at close, which is the case that
   loses work.** The harness makes the worktree and its branch and **never merges

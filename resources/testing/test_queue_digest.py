@@ -311,6 +311,121 @@ def test_age_prints_in_this_repository():
     )
 
 
+def test_held_since_degrades_without_git():
+    """No repository, no date — and no error, exactly as first_seen degrades.
+
+    The attribution limit is pinned by the same case: `held_dates` is filled
+    from the same git pass, so where there is no pass there is nothing to fill
+    and the field simply does not print.
+    """
+    root = project(processed="#### An item [alpha]\nRationale.\n")
+    path = os.path.join(root, "QUEUE.md")
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    text = text.replace(
+        "## Unprocessed",
+        "#### A held item [gamma]\nRationale.\nBlocked by: [alpha]\n\n"
+        "## Unprocessed",
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    _, out = run(root)
+    check(
+        "held-since prints nothing outside a git repository, and no error",
+        "Held since" not in out and "error" not in out.lower(),
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_held_since_attributes_within_one_commit():
+    """A hold added beside its heading is attributed; one added alone is not.
+
+    This is the honest half of the field. `first_seen` walks the queue's patch
+    history with no context lines, so a hold line can be tied to an item only
+    when the two arrived together — the ordinary case, since an item is
+    normally written already held.
+    """
+    held = {}
+    dates = digest.first_seen(ROOT, os.path.join(ROOT, "QUEUE.md"), held)
+    if not dates:
+        print("  skip held-since (no git history for QUEUE.md here)")
+        return
+    check(
+        "every held-since date is an ISO day",
+        all(len(d) == 10 and d[4] == "-" for d in held.values()),
+        str(list(held.items())[:3]),
+    )
+    check(
+        "held-since never invents a date for an item first_seen doesn't know",
+        set(held) <= set(dates),
+        str(set(held) - set(dates)),
+    )
+
+
+def test_not_before_prints_with_its_state():
+    """The field, and the fact of whether the date has arrived.
+
+    Both directions in one case: a date far in the future counts down, a date
+    already past says so. This is a lookup against today's calendar, not an
+    interpretation of a dependency condition — nobody has to confirm that a day
+    has passed, which is the whole reason the field exists.
+    """
+    root = project(
+        processed=(
+            "#### An ordinary cleared item [alpha]\nRationale.\n"
+        ),
+    )
+    with open(os.path.join(root, "QUEUE.md"), "a", encoding="utf-8") as f:
+        pass
+    # Rewrite with two held items below the marker.
+    path = os.path.join(root, "QUEUE.md")
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    text = text.replace(
+        "## Unprocessed",
+        "#### Waits for a future day [future]\nRationale.\n"
+        "Not before: 2099-01-01\n\n"
+        "#### Waited for a day now past [past]\nRationale.\n"
+        "Not before: 2000-01-01\n\n## Unprocessed",
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    _, out = run(root)
+    check(
+        "a future date prints with how far away it is",
+        "Not before: 2099-01-01 -> " in out and "day(s) away" in out,
+        out,
+    )
+    check(
+        "a date that has arrived says so",
+        "Not before: 2000-01-01 -> passed, ready to lift" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_unreadable_not_before_says_so():
+    root = project(processed="#### An item [alpha]\nRationale.\n")
+    path = os.path.join(root, "QUEUE.md")
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    text = text.replace(
+        "## Unprocessed",
+        "#### Held on something unreadable [bad]\nRationale.\n"
+        "Not before: soon\n\n## Unprocessed",
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    _, out = run(root)
+    check(
+        "a date nobody can read is named rather than ignored",
+        "NOT A DATE" in out,
+        out,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
 if __name__ == "__main__":
     print("test_queue_digest.py")
     test_shipped_citation_prints()
@@ -327,6 +442,10 @@ if __name__ == "__main__":
     test_do_not_build_still_fires()
     test_no_git_degrades_quietly()
     test_age_prints_in_this_repository()
+    test_held_since_degrades_without_git()
+    test_held_since_attributes_within_one_commit()
+    test_not_before_prints_with_its_state()
+    test_unreadable_not_before_says_so()
     print()
     if _failures:
         print(f"{len(_failures)} failure(s): " + ", ".join(_failures))

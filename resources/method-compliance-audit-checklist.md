@@ -16,6 +16,28 @@ The obvious alternative, a sweep every N sessions, was rejected twice over: N wo
 
 Run all three lenses over each doc in scope. One read of the doc serves all three. Findings route to Captures for a later /plan to scope — an audit produces findings, not edits to the docs it reads.
 
+## State the axis before you start, and it is the parent axis
+
+**An audit compares a doc against its parent, never against its sibling.** Say which axis you are running on before the first read, and if it is not the parent axis, argue for the one you have chosen.
+
+```
+parent axis     done-build.md vs done.md; next-audit.md vs next.md; any
+   (right)      sub-doc vs skill-nonspecific-rules.md. Finds a child restating
+                what its parent already carries — genuine duplication, because
+                the child is loaded WITH the parent and the reader has both.
+
+sibling axis    done-build.md vs done-audit.md, next-build.md vs next-audit.md.
+   (wrong)      Finds WORDING similarity between docs that are parallel by
+                design, so near-identical phrasing is the expected state rather
+                than the defect.
+```
+
+**The worked instance, which is why this is not a stylistic preference.** An audit once reported `done-build.md` and `next.md` carrying the same rule in near-identical words. True as text, wrong as a finding: `next.md` guards *presenting* a run, `done-build.md` guards *writing a size cap into the note for the next session*, and no session reads both. Two holes, two plugs, one wording. The finding was refused at processing weeks later, with both docs untouched. On the parent axis it would never have been produced, since neither doc is the other's parent.
+
+## Every finding names where each site fires
+
+A finding gives the moment each site is read, not only the line it sits on. One sentence per site, and it is what catches a false duplication at the audit rather than weeks later at processing — two rules that read alike but fire at moments no single session reaches are not duplicates at all.
+
 ## The instruction count — run this first
 
 The gate's binding limit is a **count of instructions**, not a word count, so a sweep that doesn't produce a number can only produce opinions: "evict what fails admission" has no target and no stopping rule without one. Count before disposing of anything.
@@ -110,4 +132,4 @@ Check what the doc causes Claude to *say to the user* against the communication 
 
 ## Output
 
-Findings to Captures, one per drifted spot — name the doc, the step or rule, the lens, and what drifted. No edits to the audited docs; the fixes get scoped in a later /plan that processes the findings.
+Findings to Captures, one per drifted spot — name the doc, the step or rule, the lens, **the moment each site fires**, and what drifted. No edits to the audited docs; the fixes get scoped in a later /plan that processes the findings.

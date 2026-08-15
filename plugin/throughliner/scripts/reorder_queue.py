@@ -485,6 +485,39 @@ def delete_item(queue_path, slug, section):
             % (len(dependents), slug, ', '.join('[%s]' % d for d in dependents),
                slug))
 
+    # The wider case: any item whose PROSE names the deleted slug. A blocker is
+    # one kind of inbound reference and the rarer one; a citation in prose is
+    # the common one, and until this printed, those were found by grepping
+    # afterwards. One delete left five citing items, repaired across three
+    # passes, the first incomplete because the grep output was truncated.
+    #
+    # Reported, never repaired: rewriting another item's prose is an authoring
+    # decision, and a delete is already the user's call. Same register as the
+    # readiness-line crossing report — a mechanical consequence of a write,
+    # computed from data the script already has.
+    citing = []
+    seen_headings = set()
+    current = None
+    for line in new_lines:
+        if ITEM_RE.match(line):
+            current = heading_slug(line) or line.strip()
+            continue
+        if current is None or current in seen_headings:
+            continue
+        if re.match(r'^Blocked by:', line.strip(), re.I):
+            continue
+        if ('[%s]' % slug) in line:
+            seen_headings.add(current)
+            citing.append(current)
+    if citing:
+        sys.stderr.write(
+            "reorder_queue: NOTE — %d item(s) still cite [%s] in their prose: "
+            "%s. Those references now name work that is no longer in the "
+            "queue. Read each before assuming it needs an edit: a citation of "
+            "SHIPPED work is often correct as written, while a citation of "
+            "dropped work may leave the citing item's premise wrong.\n"
+            % (len(citing), slug, ', '.join('[%s]' % c for c in citing)))
+
 
 def move_section(queue_path, slug, sec_from, sec_to, position, anchor,
                  marker_pref=None):

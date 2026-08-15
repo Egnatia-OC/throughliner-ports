@@ -92,7 +92,7 @@ file content — as part of getting the item right.
 
 ```
 a check Claude CAN run   ->  just building
-a check needing the user ->  a [user] work item, which /plan would have set as
+a check needing the user ->  a [user] capture, which /plan would have kept as
                              its own item; /next walks the user through it
 a check Claude can run   ->  it stays OUTSTANDING in the run's working file.
   but a circumstance of      Retry it before the close; if the circumstance
@@ -250,7 +250,7 @@ physical-device behaviour, a subjective judgment you can't verify — and it isn
 already a `[user]` item:
 
 ```
-1. append it to Unprocessed as a [user] work item (what needs checking, and why)
+1. append it to Unprocessed as a [user] capture (what needs checking, and why)
    write it, then report in one line what was filed
 2. ask "anything else?" — repeat until no
 3. resume the build

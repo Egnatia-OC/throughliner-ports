@@ -298,13 +298,13 @@ ticked there — so the first line applies to both closes unchanged.
 The deferred-tests section is retired — there is no separate test queue.
 
 ```
-a verification only the user can run  ->  a [user] work item
+a verification only the user can run  ->  a [user] capture
 a check Claude can run                ->  just part of building
 ```
 
 So the only thing /done does with a check it couldn't run is the ordinary capture
 move: if the closing session discovers a needed verification that isn't already a
-`[user]` item, file it as a `[user]` work item appended to Unprocessed. Nothing
+`[user]` item, file it as a `[user]` capture appended to Unprocessed. Nothing
 tracks it in a dedicated section, and **no LOG-only prose stands in for the queue
 line** — an unrun check recorded only in a log entry never surfaces again.
 
@@ -344,7 +344,13 @@ two things:
 Commit core points here, so it runs at **every** /done close regardless of session
 type.
 
-Before committing, re-read this session's own discussion and surface candidate
+**Look back only as far as the last /rescan in this chat.** /rescan is the same
+step with its own trigger, and it can be run as often as the user likes; the
+close picks up whatever came after the last one. Invoke it shortly before
+closing and this costs a line. Never invoke it and the close does the full job —
+scanning the whole chat — which is what it has always done.
+
+Before committing, re-read that stretch of the chat and surface candidate
 captures — things the user thought out loud but never flagged.
 
 ```
@@ -396,13 +402,16 @@ proxy for compaction.
 One thing to state, not fix: a fresh-chat /done has none of the session's
 thinking in view, so there is nothing to re-scan.
 
-**This is the only wind-down re-scan in the method, and there is no second one
-to coordinate with.** /plan has none — a re-scan defined by the position "after
-every item is processed" never reaches that position in a session that processes
-in batches at the user's direction, so it attached itself to whatever felt like a
-pause and ran three times in one session, twice at a moment no document names.
-Each run is a stop-and-ask, so an invented cadence spends the user's turns on a
-beat they did not ask for and cannot predict. Do not reintroduce one.
+**The only other re-scan in the method is /rescan, and it is coordinated with by
+the look-back window above — nothing else.** /plan has none, and must not gain
+one: a re-scan defined by the position "after every item is processed" never
+reaches that position in a chat that processes in batches at the user's
+direction, so it attached itself to whatever felt like a pause and ran three
+times in one chat, twice at a moment no document names. Each run is a
+stop-and-ask, so an invented cadence spends the user's turns on a beat they did
+not ask for and cannot predict. That failure is precisely why /rescan is invoked
+by the user rather than fired by a position, and it is why no third one is
+added.
 
 > "Re-read our discussion — nothing came up that isn't already captured."
 
@@ -552,12 +561,16 @@ commit first (the safe, local action), THEN gate the outward push on consent:
 A sub-doc may override to fit its session shape — done-plan.md commits and doesn't
 offer push — but these commit-first mechanics stay canonical.
 
-**5. Pass the message shell-agnostically.** Write it to a file in the project root
-(e.g. `COMMIT_MSG.tmp`), commit with `git commit -F COMMIT_MSG.tmp`, then delete
-the file. One mechanism on every machine — it sidesteps inline-quoting fragility
-(embedded newlines vary by shell, and a PowerShell here-string needs its closing
-token at column 0). The file is writable here because the sub-doc deletes the build working file
-before Commit, or none ever existed, so the scope-lock isn't active on the root.
+**5. Pass the message shell-agnostically.** Write it to a file in the session
+scratchpad (e.g. `COMMIT_MSG.tmp` there), commit with
+`git commit -F <scratchpad>/COMMIT_MSG.tmp`, then delete the file. One mechanism
+on every machine — it sidesteps inline-quoting fragility (embedded newlines vary
+by shell, and a PowerShell here-string needs its closing token at column 0).
+
+The scratchpad is on the scope-lock's standing list, so the write passes in every
+session type — a build, a planning close, a freeform close — rather than
+depending on which kind the safety check reads the session as. It is also where
+a file the project never keeps belongs.
 
 **5a. A staging step that partly failed is a STOP, not something to commit
 around** [BRIEF, PROMPT]. Check that every path this close meant to stage is

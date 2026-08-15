@@ -110,7 +110,9 @@ repealed — do not reinstate:
 Do **not** reintroduce `Blocks:` / `Depends on:` headers. The one dependency
 field that exists is `Blocked by: [slug]`, written on the item that is held, and
 it is lint-checked precisely so it can't go stale the way those headers did.
-Everything else stays prose slug-references.
+Its sibling `Not before: YYYY-MM-DD` holds an item until a date rather than
+until another item, and is lint-checked the same way. Everything else stays
+prose slug-references.
 
 **Place `[user]` and `[audit]` lines end-preferred**, after
 contiguous blocks of build work. Both flavors force /next to stop for the user — a
@@ -194,21 +196,25 @@ was built, and whether it was verified, is read off its LOG entry — this rule 
 the `[user]`-placement rule below both depend on that answer, and a fresh short
 session has no memory to fall back on.
 
-**Name the blocker when placing any item below the marker.** One line in the
-item's block:
+**Name the holding fact when placing any item below the marker.** One line in
+the item's block, whichever holds it:
 
 ```
 Blocked by: [slug]
+Not before: YYYY-MM-DD
 ```
 
-The slug must resolve to a real work item in this queue — that is what the queue
-lint checks. Below the line means blocked by a named queue item and nothing else.
+A slug must resolve to a real work item in this queue, and a date must be a real
+`YYYY-MM-DD` — the queue lint checks both. Below the line means held by a named
+queue item or by a date, and nothing else.
 
 ```
-nothing in the queue blocks it   ->  it goes ABOVE the marker, not below
-it waits on something in the     ->  file that as its own item in Unprocessed
-    world (a restart, a reply,        first, then name it here. /plan will
-    a site going live)                process it like any other work.
+a date is what it waits for      ->  write the date. No blocker item: the date
+                                     resolves itself, so nobody confirms it
+nothing holds it                 ->  it goes ABOVE the marker, not below
+it waits on something else in    ->  file that as its own item in Unprocessed
+    the world (a restart, a          first, then name it here. /plan will
+    reply, a site going live)        process it like any other work.
 you can't yet say what it        ->  Unprocessed — it still needs thought
     would build
 ```

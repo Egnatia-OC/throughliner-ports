@@ -1,513 +1,10 @@
 # QUEUE
 
-Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds from above the `--- Cleared to run above this line ---` marker. **Unprocessed** — captured, not yet processed; the next /plan weighs each item. A work item is a `#### ` heading (its description) with a `[slug]` at the end of that line and its rationale beneath. A leading `[audit]` / `[user]` tag names how it's executed; no tag means a build. An item carrying a security or privacy risk gets a `Red flag · State: …` marker — the flag rides the work.
+Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds from above the `--- Cleared to run above this line ---` marker. **Unprocessed** — captured, not yet processed; the next /plan weighs each item. Every entry in either section is a `#### ` heading (its description) with a `[slug]` at the end of that line and its rationale beneath; an entry in Unprocessed is a **capture**, and it becomes a **work item** when /plan keeps it into Processed. A leading `[audit]` / `[user]` tag names how it's executed; no tag means a build. An item carrying a security or privacy risk gets a `Red flag · State: …` marker — the flag rides the work.
 
 **Authoring a rule for the method's own text? The rule gate is in `CLAUDE.md`, always loaded — run it before you write.**
 
 ## Processed
-
-#### The work cycle map and the don't-cross rule contradict each other, so running /next after /plan now draws a warning [cycle-map-contradicts-dont-cross]
-**Captured by you 2026-08-15, in your own words: this just happened in Understudy, and it used to work perfectly well before we added the build cycle map.** You brought a screenshot of a live Understudy session. Its user asked to go straight into /next and record the planning and the build with one /done; Claude opened with "one concern, then I'll do it if you still want it", argued the method separates the two deliberately, and offered a truncated run as a compromise.
-
-**Both texts are in `docs-b/skill-nonspecific-rules.md`, always loaded, read at every session start.**
-
-- The work cycle block lists /plan, /next and /done as steps 1, 2 and 3, then says *"4. Then the session ends and a fresh one starts. The loop's boundary is a new session with no memory of this one."* That places the boundary **after** /done, so one session holds all three.
-- The parallel-sessions rule says *"'don't cross plan and next' forbids mixing modes inside one session."* That forbids the arrangement the cycle map describes.
-
-**A session reading both is right to hedge**, which is why this reads as Claude being obstructive rather than Claude being wrong. The fix is to the corpus, not to the behaviour.
-
-**Timing checked rather than assumed.** The cycle map first appears at `5234ec8`, 2026-08-12. "Don't cross them" is older and survives the 2026-08-13 rename commit. So the user's account of what changed is supported by git.
-
-**The likely resolution, to test at processing rather than adopt here.** The corpus already states the correct rule separately and precisely: *"No planning work in any execution skill. The boundary is filing vs processing"* — filing is open to every session, processing is /plan's. That is about doing planning work **during** a build, not about which commands may be typed in one session. On that reading the "inside one session" gloss is a false session-level prohibition layered on top of a correct step-level one, and it is **evicted** rather than reworded — which would make this a subtraction from the always-loaded file rather than an addition to it.
-
-**The dependency check was run at processing 2026-08-15**, against the always-loaded file rather than from memory. Three statements are involved and only two need to change:
-
-- `**/plan is for planning, /next is for building. Don't cross them.**` — a bare prohibition with no stated content, and the corpus restates it correctly two bullets later.
-- `**Parallel sessions are allowed** — … "One build at a time" forbids a second concurrent *build*; "don't cross plan and next" forbids mixing modes *inside one session*.` — the gloss lives here.
-- `**No planning work in any execution skill.** The boundary is **filing vs processing**` — correct, precise, and untouched.
-
-**Settled: both the bare prohibition and the gloss are evicted, and the third statement carries the rule alone.** The bare prohibition says nothing the third does not say better, and the gloss adds a session-level ban that contradicts the cycle map and that nothing else needs. The parallel-sessions bullet keeps its actual subject — two sessions at once, one build at a time — and stops explaining a rule it does not own.
-
-**What gets built.** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` alone: delete the `Don't cross them` bullet, and rewrite the parallel-sessions bullet so it explains concurrency only. The work cycle block is **not** touched — it is the text that is correct, and this session's finding is that the other two disagree with it.
-
-**FAQ:** required. A user who has been told plan and next may not share a session will see that change, and it alters what they do — it makes a sequence available that they were previously warned off.
-
-Rule gate: run — admitted, and it is a **pure subtraction**: two always-loaded statements are removed and none is added, which is the eviction this corpus rarely gets. Failure evidence is one live consumer instance, brought by the user as a screenshot, plus a git check confirming the contradiction dates from `5234ec8` on 2026-08-12 rather than being long-standing. **Nothing is added, so nothing needs evicting to make room** — the usual accounting runs the other way here.
-
-#### The planning scope-lock blocks /setup, so a migration cannot finish in an already-adopted project [scope-lock-blocks-setup]
-Filed 2026-08-15 from INBOX mail sent by Understudy on 1.20.0-test8, opened mid-session at the user's request. **Verified here against `plugin/throughliner/hooks/pre_tool_use.py` rather than taken on report:** the gate keys on the build working file being absent, and its own docstring states that absence is what the code can see and what makes the gate cover freeform sessions too. /setup never creates a build working file, so it is classified as a planning session and denied.
-
-**What is denied.** Every write /setup's migration path makes: `.throughliner-version`, `.throughliner-format-epoch`, `.gitignore` lines, the `CLAUDE.md` plugin-managed block, retiring `REGISTRY.md`, and any scaffold file the run finds missing. QUEUE.md is on the standing list, which is why fresh adoption and the queue conversion still work — so the failure is invisible on the paths most likely to be tested.
-
-**A shipped doc now contradicts the hook.** `setup.md` Step 0 tells the user that in a planning session, writes outside the usual files "simply ask first". They do not ask; they are denied with no prompt and no override. A user following the doc is told setup can proceed when it cannot.
-
-**Its knock-on is already biting a real project.** Understudy's managed block still names the method Sovereign Implementer, describes /next as executing "the top batch", states SPEC.md is read-only during builds — which the current template reverses — carries no INBOX line, and describes a retired queue shape. Re-running /setup is the mechanism built to repair exactly that, and it is the mechanism that cannot run. Every session there opens by reading the wrong description of the method.
-
-**This project is in the same state**, per this session's own start: recorded version 1.12.0 against installed 1.20.0-test8, with /setup wanting a session of its own.
-
-**Regression, and recent.** The deny shipped this morning at `8e20122`. It replaced an ask, and under the ask this cost a prompt rather than a failure.
-
-**Settled at processing 2026-08-15 on the user's decision: /setup declares itself with a marker file in the scratchpad.** /setup writes the marker at its start and removes it at its end; `pre_tool_use` treats a session carrying it as neither a planning session nor a build, so the standing list does not apply. The scratchpad is chosen because it is already writable in every session type — so /setup can create the marker without being stopped by the very lock this works around — and because it clears itself, so a run that dies mid-setup leaves nothing to clean up by hand.
-
-**Why this shape rather than widening the list, weighed and recorded so it is not re-proposed.** The alternative was adding /setup's targets — `.throughliner-version`, `.throughliner-format-epoch`, `.gitignore`, `CLAUDE.md`, `REGISTRY.md` — to the standing list permanently. Smaller, and needs no new artifact. It loses because those are the files the lock most exists to protect, and it would open them for every planning session in every consumer project in order to fix a condition that arises only during setup. The marker keeps the exemption scoped to the moment it is true.
-
-**It reuses the existing mechanism rather than inventing a parallel one.** The hook already decides what a session may write by asking whether a file declaring the session's kind exists; this adds a second such file rather than a second kind of answer.
-
-**Files, and what changes inside each.**
-
-- `plugin/throughliner/hooks/pre_tool_use.py` — a scratchpad marker check ahead of the Rule 4 branch, returning allow when it is present; the `_is_plan_quiet_path` docstring gains a line saying setup is excluded and how, since that docstring currently states the keying covers every session with no build file.
-- `plugin/throughliner/skills/setup/` and `plugin/throughliner/docs-b/setup.md` — write the marker at the start of a run and remove it at the end, including on the paths that end early.
-- `plugin/throughliner/docs-b/setup.md` Step 0 — the wording telling the user that writes outside the usual files "simply ask first" is false and is corrected in the same build; it is what tells a user setup can proceed when it cannot.
-- The `pre_tool_use` suite under `resources/testing/` — cases for a marked session writing a normally-denied path, an unmarked one being denied, and the marker being cleaned up.
-
-**Ordering note rather than a blocker:** [next-presents-items-setup-will-overtake] proposes telling users setup is outstanding, which would send them into this denial while it stands. That item's prose already records the interaction; it needs no `Blocked by:` because it is a design question rather than a build waiting on this one.
-
-Rule gate: run — admitted as an amendment to the scope-lock's existing session classification, adding one recognised session kind to a mechanism that already recognises two. Failure evidence is one reported instance with a repro, verified here by reading the hook, in a consumer project where the stale managed block it would repair is being read by every session. **Nothing is evicted**; the docstring's overreaching sentence is corrected rather than removed, and Step 0's false sentence is replaced by a true one, so the net rule text barely moves.
-
-#### The close cannot write its own commit-message file, because deleting the build working file makes the session look like planning [scope-lock-blocks-commit-msg-file]
-Filed 2026-08-15 from INBOX mail sent by Understudy on 1.20.0-test8, opened mid-session at the user's request.
-
-**The inverted reasoning, quoted from the shipped doc.** `done.md`'s commit core says to write the message to a file in the project root and commit with `git commit -F`, and justifies it: *"The file is writable here because the sub-doc deletes the build working file before Commit, or none ever existed, so the scope-lock isn't active on the root."* That is backwards. Deleting the build working file is precisely what makes `pre_tool_use` classify the session as planning, which denies the project root. The doc names the deletion as what makes the write safe, when it is what makes it fail.
-
-**Repro, from the sender:** run /next so a build working file exists, then /done; `done-build.md` deletes the working file, the commit core runs, and the very next write is refused.
-
-**Their workaround is probably the fix.** They wrote the file to the session scratchpad, which the standing list permits, and `git commit -F` worked unchanged. It also keeps a transient file out of the project, which this project's own temp-file routing already prefers.
-
-**This session will hit it at its own close**, so it is not a report about somebody else's project.
-
-**Regression from `8e20122`, same build as [scope-lock-blocks-setup].** Both are the deny replacing the ask, and both are cases the build's file list never reached: the hook, the tests and the plan doc were all traced, and the two docs that write outside the standing list — `setup.md` and `done.md` — were not.
-
-**Settled at processing 2026-08-15: adopt the sender's workaround.** The commit message is written to the session scratchpad rather than the project root, and committed with `git commit -F` from there. The scratchpad is already on the scope-lock's standing list, so the write passes in every session type — a build, a planning close, a freeform close — rather than depending on which one the hook thinks it is looking at. It is also where this project's own temp-file routing already says a file the project never keeps belongs, so the fix moves the file to where the rules already put it rather than carving an exception for the root.
-
-**The false justification is deleted, not merely corrected.** The sentence claiming the file is writable *because* the build working file was deleted is exactly backwards and would mislead the next reader in the same direction; the replacement states plainly that the scratchpad is on the standing list and therefore always writable.
-
-**Files, and what changes inside.** `plugin/throughliner/docs-b/done.md` alone — verified by grep: it is the only doc under `docs-b/` naming `COMMIT_MSG` or `commit -F`, so the close's sub-docs inherit this without edits. The commit core's path changes to the scratchpad, and the justification paragraph is replaced.
-
-Rule gate: run — admitted as an amendment to the commit core's existing instruction, correcting a path and deleting a false reason. **A genuine eviction rather than an addition:** the wrong justification comes out and a shorter true one goes in. Failure evidence is one reported instance with a repro, confirmed by reading the hook, plus the certainty that this session's own close would hit it.
-
-#### Work held until a date names the date itself, instead of a capture someone has to confirm [not-before-date-field]
-**Captured by you 2026-08-15, in your own words: "we need to design a new blocker type that is 'is this date' because this isn't working."** Your requirement was one holding-fact per date per user item — a post that waits for tomorrow should say so on its own line rather than have a whole separate item filed to wake it. The field design below is Claude's recommendation of three options; you chose it.
-
-**What is broken, on the record rather than in the abstract.** `Blocked by: [slug]` is the only way an item can be held, and it always names a queue item. A date is not a queue item, so a date has to be expressed by proxy: a capture that a human confirms. The four Discord posts are held that way behind [announcement-cadence-clear-to-resume], which exists only to say "a day has passed." That costs a planning session per post to answer a question a calendar answers, and it has already failed — the chain has not moved since 2026-08-14, and the wake-up item came back to /plan the next session with nothing for the user to actually decide.
-
-**The design.** An item may name a date it must not be built before, written on its own line in the item's block alongside `Blocked by:`, the red-flag marker and `Runs alone`:
-
-```
-Not before: YYYY-MM-DD
-```
-
-The item sits below the cleared-to-run line as held work like any other. The below-the-line revisit that already runs at every /plan opening gains one more arm: where the date has passed, lift it. Nobody confirms anything, and the wake-up capture disappears for date cases.
-
-**Why a date earns a field when the standing answer is "don't invent queue machinery."** Every other blocker needs a human or a build to resolve, which is exactly why blockers are queue items. A date resolves itself and is checkable by a script, so the detection costs no attention at all — it arrives as fact from the hooks, the same argument session_start already records for computing the dependency graph. That is also why the rule text stays small: the mechanism carries the work, not Claude's memory.
-
-**Two things checked against the code rather than reasoned from the discussion, per the hook-format grep rule.** The queue lint in `post_tool_use.py` hard-rejects any below-line item without a `Blocked by: [slug]` line — verified at `_check_blocked_by` — so a date-held item is flagged today and the lint must learn the field or the shape cannot ship. And `FORMAT_EPOCH` does **not** bump: the field is optional and every existing project's files stay structurally valid, which is the epoch's whole test.
-
-**Files, and what changes inside each.** Traced by grepping `Blocked by:` across the repo, which is what the hook-enforced-format rule requires.
-
-- `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — add `Not before:` to the Captures line-format block; reword the work-cycle block's sentence saying held work is released by processing the item that blocks it, which becomes wrong on its own.
-- `plugin/throughliner/docs-b/plan.md` — the below-the-line revisit gains the date arm; the keep-step's below-line placement guidance gains the case where the holding fact is a date and no blocker item is written.
-- `plugin/throughliner/docs-b/done-plan.md` — check its two `Blocked by:` mentions in the reorder and hold-back rules and extend where they enumerate what holds an item.
-- `plugin/throughliner/hooks/post_tool_use.py` — `_check_blocked_by` accepts a below-line item held by `Not before:` alone, and validates the date is a real `YYYY-MM-DD`.
-- `plugin/throughliner/hooks/session_start.py` — the dependency facts count date-held items, and report how many have a date that has now passed.
-- `SPEC.md` — added at the /plan close 2026-08-15. Its "Lifting shelved work" section states that work sits below the readiness line **for exactly one reason: another named item in the queue blocks it**, and that a thing awaited outside the queue is filed as its own item rather than noted as a wait. A date field makes both sentences false. SPEC is accurate today and moves when the behaviour does.
-- `plugin/throughliner/scripts/queue_digest.py` — print the field on the item's line and whether the date has passed, alongside the existing resolved-blocker field.
-- `plugin/throughliner/scripts/reorder_queue.py` — check whether its three `Blocked by:` mentions need the field; the mover travels blocks byte-for-byte, so this may be nothing.
-- `plugin/throughliner/templates/faq-template.md` and `faq-index-template.md`, plus this project's `FAQ/faq.md` and `FAQ/index.md` — an entry: what a date-held item is, and that it lifts itself with nothing for the user to do.
-- Tests: `scripts/test_queue_digest.py`, `scripts/test_reorder_queue.py`, and the `post_tool_use` suite under `resources/testing/`.
-- `SPEC.md` — its one `Blocked by:` sentence describes how work is held; check whether it goes incomplete.
-
-**What happens to the existing chain when this ships, corrected 2026-08-15.** An earlier draft of this item said the three posts behind the head already block on each other and that the field replaces only the chain's starter. That is wrong, and the error is worth keeping visible: blocking on each other implements *order*, not *one a day*. Post 2 lifts the moment post 1 closes, in the same session, on the same day. So the chain has never implemented the user's stated rule at all — the only thing enforcing one-a-day was a human answering a question once. `Not before:` on each of the four posts is what actually implements it. The starter capture that used to hold the chain was deleted on 2026-08-15 once the head was lifted, so this build has only the four posts to fit with dates — there is no wake-up item left to remove.
-
-**FAQ:** required. It changes what appears in a user's own queue and introduces held work that clears with no action from them.
-
-Rule gate: run — admitted, as an amendment to the `Blocked by:` line-format block rather than a freestanding rule. It passes the subordination test: the block already holds parallel marker lines, this is a fourth, and it is not a complete sentence. The failure evidence was recorded as thin when this was written — one mechanism failing across two consecutive sessions. **It is no longer thin, and the strengthening came from the user within the same conversation.** Two independent failures are now on the record: the wake-up capture costing a planning session to answer a calendar question, and, worse, the held item never being presented by /next at all, so the post that pacing was meant to delay simply never happened. Her words: "it wasn't presented to me in next." A third followed on re-reading the chain — blocking each post on the previous one implements order and not one-a-day, so the rule she stated has never been mechanically in force. The one limit that stands: **nothing is evicted**: this is a net addition, offset only by the wake-up-capture pattern falling out of use for date cases and by two sentences being reworded because they go wrong. Do not read that as a balanced trade.
-
-#### A correctly held item is as invisible to the user as a wrongly held one [held-items-invisible-during-normal-use]
-Filed 2026-08-13 by Claude from the same Understudy correction, the part they say is not a rules problem at all.
-**What happened on their project.** Their user asked why a feature she had raised repeatedly "isn't queued". It was queued, fully designed, and held below the readiness line for a correct reason. She could not see it during ordinary use.
-**Why the correction sharpens this rather than dissolving it.** The cost was originally reported as collateral damage from a wrong placement, so fixing the placement looked like fixing the visibility. The placement turned out right, and the user still couldn't see her work. That makes the invisibility independent of whether any given hold is justified.
-**What is actually invisible.** /next presents the cleared region and builds from it; the held region is read at /plan's below-the-line revisit, which is deliberately silent while an item is still blocked. So a user who runs /next and /done and doesn't sit through a /plan revisit has no moment where held work is named, and the silence is by design.
-**A second instance, 2026-08-15, in this project rather than a consumer's.** Four Discord posts sat held below the line; the user's own post never went out and neither she nor Claude noticed for a day. Her words on why: "it wasn't presented to me in next." So the failure is not confined to a consumer misreading their queue — it cost the developer a post she had decided to make.
-
-**Settled at processing, 2026-08-15. Not /next, and not the re-scan skill.** The user's decision and her reason: nothing surfaced in /next is actionable there, so the line would be per-run noise on every run. The re-scan skill was weighed on her suggestion and rejected in discussion: that skill looks back over the *conversation* for things said and never written down, whereas held work is already written down and merely unshown — two unrelated jobs, and bundling them by the surface similarity of "things you might have missed" would miscategorise both.
-
-**What gets built: /plan's opening narration names each held item, what it waits on, and how long it has been held.** Not a count. This session is the evidence for that distinction — the opening did report four items held, because `session_start` computes the number at every session start, and it still read as normal. What it could not say is that the chain had been stuck since 2026-08-14 and that releasing it needed one word from the user. A bare count is background; "held since the 14th, waiting on you" is not.
-
-**Files, and what changes inside each.**
-
-- `plugin/throughliner/docs-b/plan.md` — Step 1's opening narration gains held work as a named element alongside the digest, the recent log lines, the mail and the placement flags; the below-the-line revisit keeps its deliberate silence for the lift question, and this is stated as separate from it so a later session does not read the two as contradicting.
-- `plugin/throughliner/scripts/queue_digest.py` — emit a held-since date per held item. Verified rather than assumed: `first_seen()` already walks QUEUE.md's entire patch history in a single `git log -p` pass to date each slug's heading, so the date a `Blocked by:` line first appeared for that slug comes off the same pass at no extra cost, and degrades to nothing outside a git repository exactly as `first_seen` already does.
-- `plugin/throughliner/scripts/test_queue_digest.py` — a case for the new field, including the no-git degradation.
-- FAQ entry: what it means when the planning session says work is being held, and that it needs nothing from the user unless it names them.
-
-Rule gate: run — admitted as an amendment to Step 1's existing enumeration of what the opening narration surfaces, adding one element to a list that already holds five. It is not a freestanding rule and costs no slot. Failure evidence is two independent instances in two different projects — Understudy's user asking why a queued feature "isn't queued", and this project losing a post for a day. Question four of the admission test is answered by the mechanism carrying the work: the count already exists in `session_start` and the per-item detail is computed by the digest, so the rule itself only has to say the line is spoken. **Nothing is evicted; this is a net addition of one narration element**, and it is not offset by anything.
-
-Relates to [no-field-for-ordering-preference] and [built-unverified-check-only-at-the-close].
-
-#### Move the wind-down re-scan out of the close into a skill of its own, scanning back only to the last re-scan point [rescan-as-its-own-skill]
-**Captured by you 2026-08-15 at the close, in your own words: you want the re-scan moved to a new skill, because every time more close-stuff goes back into /plan, Claude becomes even naggier about ending the session — and it already is. The re-scan should scan the session back to the last re-scan point only. Its purpose is to solve the tension in situations like this one, where the re-scan keeps turning up things that need building immediately, not another three sessions and two rezips away.** The analysis below is Claude's; the design is yours.
-
-**Two distinct problems, and only the first is about where the step lives.**
-
-```
-nagging      the re-scan is a stop-and-ask welded to the close, so every
-             addition to close machinery adds weight to the end of a session
-             and pulls the whole session toward ending. `done.md` already
-             records the sibling failure — a /plan-side re-scan defined by
-             position "after every item is processed" attached itself to
-             whatever felt like a pause and ran three times in one session.
-             That instance is the argument FOR this: the step needs its own
-             trigger, and the user's is the honest one — she invokes it.
-
-latency      a re-scan finding becomes a capture, waits for a /plan to
-             process it, then a /next to build it, then a rezip before it is
-             live. For a finding about the machinery being used RIGHT NOW,
-             that is the wrong lifecycle, and this session produced several.
-```
-
-**The incremental scope is what makes a standalone skill work at all.** Scanning back only to the last re-scan point means the step can run repeatedly in one session without re-surfacing what it already surfaced — which is what the close-welded version cannot do, since it assumes it runs once. It also makes the step cheap enough to invoke mid-session, which removes it from the close's weight.
-
-**The hard question this must answer, stated because it is where the design will fail if unexamined.** The latency complaint points at letting the re-scan's findings be *built* rather than only captured. That crosses the plan/next boundary the method holds firmly: filing is open to every session, routing and building are not. **Do not quietly resolve that by letting a new skill build things.** Either the skill files as today and the win is purely the trigger and the incremental scope, or the boundary is being deliberately amended and that needs its own argument. The user's complaint is real either way; the resolution is not obvious.
-
-**Settled 2026-08-15: the skill FILES, and never builds.** The user's answer, and her reason: "plan does not build" — the standing boundary already answers this and the item should not have posed it as open. Two supporting points came out of the exchange and are kept because they are the arguments a later session would otherwise re-derive. Building on the spot would not deliver what the latency complaint wants: the installed plugin is a frozen snapshot, so a fix made mid-session does not reach the session that made it until a rezip and restart. And a skill that could both route and build would let any session change the project without the user having agreed to the work. The latency complaint stays real and is about the capture-to-live path — the rezip step — not about where the re-scan lives.
-
-**What the last-re-scan point actually is, and it needs settling.** There is no marker in any file today. Candidates: a session-scoped value held in the conversation (simple, lost on compaction — and compaction is unobservable, which `done.md` already records); a line in the working tree (durable, but a new artifact and this project deletes those); or the previous re-scan's filed captures used as the boundary (no new state, but it cannot see a re-scan that surfaced nothing).
-
-**Settled 2026-08-15: no durable marker; the point is held in the session, with the filed captures as the fallback.** The skill remembers within the conversation where it last stopped. Where that is gone — a summarised conversation, which cannot be detected from inside — it falls back to reading the captures it filed earlier that day and using those as the boundary. The item's objection to that fallback, that a re-scan finding nothing leaves no boundary, is answered rather than accepted: a stretch that yielded nothing yields nothing again, so the cost is re-reading, not duplicate items. **The user's decision on the durable option, and her reason: no marker, context is massive so the loss is not a live concern.** Rejecting a new artifact also matches this project's record of deleting the state files it invents.
-
-**Settled 2026-08-15 on the user's decision: the close keeps a shrunken one.** Removing it entirely would cost a session that never invokes the new skill its whole safety net, and that net exists because things get thought out loud and never flagged — demonstrated the same day, when a held Discord post went unposted and unnoticed. What makes keeping it compatible with the original complaint is that the close now looks back only to wherever the skill last stopped: invoke the skill shortly before closing and the close's version finds nothing and costs a line, never invoke it and it does the full job it does today. The weight disappears exactly in the case the user was objecting to, and remains exactly where it is still needed.
-
-**Files, settled 2026-08-15.** A new skill folder under `plugin/throughliner/skills/`, holding the invocation stub; its procedure doc under `docs-b/`, carrying the three settlements above — files and never builds, remembers its stopping point in the session with the filed captures as fallback, no durable marker; `done.md`'s wind-down section, rewritten so the close's re-scan looks back only to wherever the skill last stopped and does the full job when the skill was never invoked; and `plugin/throughliner/.claude-plugin/plugin.json` to register the skill. Shipped, not host-only. **No `FORMAT_EPOCH` bump** — nothing here makes an existing project's own documents structurally wrong.
-
-**`SPEC.md` and `README.md` are in the build's file list, added at the /plan close 2026-08-15.** SPEC says "Four skills drive the workflow" and then describes each; a fifth skill makes that sentence wrong the moment it ships. README's "What it does" feature list rides the same trigger under the shipped README-sync rule, since a new skill is a user-facing feature. SPEC is accurate today, so it is not edited now — it moves when the behaviour does, which is what the spec-sync gate requires of a decision made before its build.
-
-**FAQ:** required, and it is the first new skill since the original four, so the entry introduces the command rather than merely describing a changed behaviour.
-
-Rule gate: run — admitted. It is genuinely new territory rather than a refinement with an unlooked-for parent: no existing rule governs a user-invoked review step, and the part that does have a parent — the close's wind-down — is being amended in the same build rather than left standing alongside it. **The eviction is real and is named: the close's full re-scan is replaced, not duplicated.** A session that invokes the skill pays a line at the close instead of the whole step; a session that never invokes it pays what it pays today. Failure evidence is two recorded instances, not one: the user's complaint that close machinery accumulating in the close pulls every session toward ending, and `done.md`'s own record of a positional re-scan defined as "after every item is processed" attaching itself to whatever felt like a pause and running three times in one session. That second instance is the argument for a skill with its own trigger rather than a step with a position.
-
-Relates to [subset-done-has-no-stated-shape], [post-close-tail-state] and [internal-checks-get-narrated].
-
-#### The queue mover cannot place a NEW item into Processed, so authoring one there is done by hand [mover-cannot-add-a-new-item]
-Filed 2026-08-15 by Claude at the close, from an error it made in this session and the queue lint caught.
-
-**What happened.** [plan-scope-lock-denies] was authored directly into Processed rather than captured into Unprocessed and moved. `reorder_queue.py` moves *existing* items, so there was no command for it; the item was hand-inserted before the first held item, which put it **below** the readiness marker. The advisory lint flagged it on the next edit and it was moved up with `--move` plus `--marker-after`.
-
-**Why this is worth a line rather than a shrug.** The lint caught it, so nothing was lost — but hand-placement into Processed is precisely the operation `plan.md` warns about for moves, where an exact-string edit "can corrupt an item with no error", and the hazard is the same. It is also not rare: /plan's work-it-now branch places a kept item straight into Processed, and a decision the user gives as an instruction rather than a capture arrives with no Unprocessed entry to move.
-
-**A second instance, 2026-08-15, in the /plan session that processed this.** [not-before-date-field] came out of conversation rather than from a capture, so again there was no Unprocessed entry to move and the item was hand-inserted into Processed. It landed correctly this time, but only because the file's structure was read first — which is the hazard, not the mitigation.
-
-**Settled at processing, 2026-08-15: the procedural answer, on the user's decision.** A new item is appended to the bottom of Unprocessed like any capture, then moved with `--move-section` exactly as a processed capture is. No code changes, no new mover mode, no new tests. The reasoning that decided it: the procedural route costs one extra command, while the code route buys that command back in exchange for a new way for the mover to fail — and the mover is what every queue operation depends on, so its failure surface is the last one worth enlarging to save a keystroke.
-
-**What gets built.** `plugin/throughliner/docs-b/plan.md` gains, at the keep-step where the mover is already described, a sentence saying that an item with no Unprocessed entry — the work-it-now branch, and a decision the user gives as an instruction rather than a capture — is appended to Unprocessed first and then moved, never hand-placed into Processed. The existing warning about exact-string edits corrupting an item is the parent this attaches to.
-
-Rule gate: run — admitted as an amendment to the keep-step's existing mover instruction, which already tells a session to move rather than hand-edit; this names the one case that instruction did not cover. Subordinate to it, no slot spent. Failure evidence is two instances in two consecutive sessions, one caught by the lint after landing wrong and one that landed right by luck. **Nothing is evicted** — one sentence is added. The alternative it replaces was never shipped, so its rejection evicts nothing either.
-
-**Files:** `plugin/throughliner/docs-b/plan.md` alone. Relates to [scripts-dont-report-consequences].
-
-#### Two shipped scripts stay silent about the consequences of what they just did, costing round-trips [scripts-dont-report-consequences]
-Filed 2026-08-15 by Claude, from a measured cost in the session that filed it: deleting one item and repairing what followed took about ten round-trips for three edits' worth of work. Both gaps are one-line additions to scripts that already ship.
-
-**`reorder_queue.py --delete` reports nothing about inbound references.** It removed [blocked-by-in-unprocessed-is-never-revisited] and said nothing about the five items whose prose cited that slug. They were found by grepping afterwards and repaired across three passes, the first incomplete because the grep output was truncated. A `5 items still cite this slug` line on the delete would have made it one informed pass. **The precedent is exact and days old** — the mover gained a readiness-line crossing report in the same week: the same shape, a mechanical consequence report attached to a write, computed from data the script already has.
-
-**`queue_digest.py` names the phrase that fired a contradiction but not where it is.** The report reads `its own text says "must not be built"` with no line number and no snippet. Three of the ten round-trips were spent locating it, and the first repair fixed the wrong occurrence — the item contained the phrase twice. Printing the line number and the matched sentence costs one field.
-
-**What this is NOT, checked against the record before filing.** It is **not** a second instance of the general scripts-directory clause refused at `b4de5bf`, whose LOG entry invites a second instance as the evidence it needs. That refusal was about Claude not *knowing* a shipped script exists. Here the scripts were known, read, and used correctly; they simply don't report what they did. Listing the scripts directory would have prevented none of it. **Do not cite this item as the evidence that reopens that refusal.**
-
-**Confirmed twice more on 2026-08-15, in the /plan session that processed this.** Two items were deleted — [prior-plan-scope-lock-not-located] and [announcement-cadence-clear-to-resume] — and `--delete` reported nothing about inbound references either time. Both left dangling citations: [prior-plan-scope-lock-found] still asserts in its own heading that the first "can be closed", and [not-before-date-field] still describes deleting the second. Those two references were repaired by hand in the same session. Four instances now, across three sessions.
-
-**Merged in on 2026-08-15, on the user's decision: [digest-lowercases-file-paths].** That item was a separate capture reporting that the digest's files-named block prints `spec.md` and `claude.md` where the files are `SPEC.md` and `CLAUDE.md`, because `queue_digest.py` lowercases each item's prose and `files_line` once at parse time so the placement-contradiction checks can match phrases case-insensitively — the paths ride along. Its recommended fix is to keep a second, un-lowercased copy of the `files_line` for rendering, leaving the matching path untouched; the alternative of case-folding at each comparison is cleaner but touches every phrase check for the same visible result. Merged because it is a third output fix to the same script, so one run opens `queue_digest.py` once instead of twice — the digest's own files-named block flagged the overlap.
-
-**Files:** `plugin/throughliner/scripts/reorder_queue.py` (an inbound-citation scan on the delete path, reported and never blocking — a delete is the user's decision) and `plugin/throughliner/scripts/queue_digest.py` (three changes: line number plus matched sentence on every contradiction, and an un-lowercased `files_line` kept for rendering), with cases in each script's suite. Host-only in effect, though both scripts ship.
-
-Rule gate: not needed — no rule is authored or amended. Three output fields are added to two scripts and no doc under `docs-b/` or `resources/` changes. Relates to [digest-flags-correct-hold-chains] and [digest-reports-computed-fields-not-summaries].
-
-#### The step that guarantees INBOX mail gets opened has nothing enforcing it, and it was skipped in the session that wrote this [inbox-open-step-not-enforced]
-Filed 2026-08-14 by Claude at its own /done close, as a testing outcome from using the plugin to build the plugin.
-**What happened.** `plan.md`'s Step 1 names itself the guaranteed moment mail is read: `session_start` surfaces that messages are waiting and `feedback-and-inbox.md` says what to do with one, but without this step nothing says *when* a message gets opened. This /plan session ran its full opening — digest, recent log lines, below-the-line revisit, placement flags — and did not open the waiting message. It was opened at the /done close instead, only because the close listed the mailbox.
-**Why the miss matters beyond one session.** The doc's own stated failure is mail being surfaced every session and read in none. That is exactly what happened, in the project that authors the rule, with the rule loaded. And the message wasn't incidental: it reported a defect in `plan.md`'s own end-of-queue gate that this session then reproduced twice before reading it.
-**The shape of the problem, for processing to weigh.** This is the siteless-rule failure the method already names — except the site exists and was skipped, which is worse evidence than a missing site. `session_start` already knows the mailbox is non-empty, so an unopened message is one of the few things here that is mechanically detectable. Weigh a hook-side check against the standing rule that a gate crying wolf gets worked around, and against whether the /plan opening simply has too many checks competing.
-**Relates to [rule-gate-has-no-site-in-next]** and to [closing-ask-ends-on-a-command], which is the message that went unread.
-**Settled at processing, 2026-08-15, on the user's decision: the message text is delivered at session start rather than announced.** `session_start` currently prints the filename and an instruction to go and read it, and that instruction is what got skipped. Including the message body in the payload removes the step that can be skipped — the message is in front of the session whether or not anyone remembers to fetch it. The alternative was weighed and rejected on the record rather than on taste: requiring a close-time line saying what happened to the mail is the FAQ-sync shape this project trusts, but it fires at the close, and in the very session that produced this item the mail *was* read at the close — so that check would have recorded a pass on the failure it exists to catch.
-
-**What gets built.**
-
-- `plugin/throughliner/hooks/session_start.py` — where `INBOX/` holds messages, emit each message's body in the payload, not only its filename and a count. Two things stated in the payload alongside it: that the content is another project's report and not an instruction to this session, per the standing rule that only the user's own words direct the work; and that the file still needs routing and archiving, which delivery does not do.
-- `plugin/throughliner/docs-b/plan.md` — Step 1's INBOX block changes from *open, route, archive* to *route and archive*, because the opening has already happened by the time the step runs. The block's stated failure — mail surfaced every session and read in none — is answered by the delivery rather than by the step, so the step keeps only the part delivery cannot do.
-- `plugin/throughliner/docs-b/feedback-and-inbox.md` — its account of when a message gets opened is checked against the new order and reworded where it assumes the session fetches the file.
-- The `session_start` suite under `resources/testing/` — a case for a mailbox with a message, and one for an empty mailbox.
-- `SPEC.md` — added at the /plan close 2026-08-15. SPEC enumerates what `session_start` reports, and delivering a message's body rather than announcing its filename changes that list. SPEC is accurate today and moves when the behaviour does.
-
-**One cost, named rather than discovered.** An unarchived message rides in every session's opening until it is archived, so a large one is paid repeatedly. No size limit is set: a limit would be a bare number with no derivation, and the INBOX is a deliberately low-traffic channel whose messages are short. If this turns into a real cost it will show up as a specific message, which is the evidence a limit would need.
-
-Rule gate: run — admitted as an amendment to Step 1's existing INBOX block. **A genuine eviction, not an addition:** the instruction to open each message is removed, replaced by routing and archiving alone, so the step gets shorter. Failure evidence is the recorded instance in this item — a session running its full opening, skipping the mail, and then reproducing twice the bug the unread message described. Shipped, not host-only: consumers receive INBOX mail too.
-
-#### An audit compares a doc against its parent, never its sibling, and each finding names where both sites fire [audit-axis-is-parent-not-sibling]
-**Split out of [standing-audit-programme] on 2026-08-15 at the user's decision, because this half is fully designed and the rest is not.** The parent item cannot be kept — its file list is whatever its own design turns out to produce — but this part needs no further design and protects every audit run between now and whenever that programme exists. **Captured by you 2026-08-15, in your own words: this is why you wanted to audit the bottom docs against their relevant middle docs and not against their siblings — and that third audit slipped through without your noticing and got done anyway.**
-
-**The axis.**
-
-```
-sibling axis    done-build.md vs done-audit.md, next-build.md vs
-   (wrong)      next-audit.md. Finds WORDING similarity between docs that
-                are parallel by design, so near-identical phrasing is the
-                expected state rather than the defect.
-
-parent axis     done-build.md vs done.md; next-audit.md vs next.md; any
-   (right)      sub-doc vs skill-nonspecific-rules.md. Finds a child
-                restating what its parent already carries — genuine
-                duplication, because the child is loaded WITH the parent
-                and the reader has both.
-```
-
-**The worked instance, and it is why the axis is not a stylistic preference.** [done-build-restates-no-subset-rule] — refused and deleted at processing 2026-08-15, both docs untouched — reported `done-build.md` and `next.md` carrying the same rule in near-identical words. True as text, wrong as a finding: `next.md` guards *presenting* a run, `done-build.md` guards *writing a size cap into the note for the next session*, and no session reads both. Two holes, two plugs, one wording. An audit on the parent axis would not have produced it, since neither doc is the other's parent.
-
-**What gets built.** `resources/method-compliance-audit-checklist.md` gains two requirements on top of the three lenses it already carries: an audit states the axis it compares along before it runs, and it is the parent axis unless it argues otherwise; and every finding names the moment each site fires, not only the line it sits on. The second is what would have caught the worked instance at the audit rather than weeks later at processing, and it costs one sentence per finding.
-
-**Host-only, and the boundary is deliberate.** This governs audits the method runs over its own procedure docs, where a parent/child loading relationship exists. A consumer auditing their own app has no such structure, so shipping it would put a rule in front of people it can never fire for.
-
-Rule gate: run — admitted as an amendment to the existing three-lens checklist rather than a freestanding rule; it adds two requirements to a document whose whole content is audit criteria. Failure evidence is one worked instance, [done-build-restates-no-subset-rule], plus the user's own account of a third audit running on the wrong axis without her noticing. **Nothing is evicted**; this is a net addition of two requirements to a host-only checklist. **Noted at the gate rather than assumed:** the mechanical trigger that fires the gate reads staged paths under `docs-b/`, `resources/self-authoring-rules.md`, `resources/rule-maintenance.md` and `CLAUDE.md` — it does not include this checklist, which holds rules. The gate was run here by judgment, not by the trigger. That gap is filed separately.
-
-**The parent item keeps the rest** — the standing set itself, the mechanical-check-retires-an-audit test, the strategy and its overreach. See [standing-audit-programme].
-
-#### The shipped provenance rule is not holding — rationale keeps growing with reasoning the user never gave, and every pass copies it forward [invented-rationale-compounds-past-the-shipped-rule]
-Captured by you 2026-08-10, filed mid-/next after `a556e5c`. Your words: Claude keeps inventing rationale the user didn't give or agree to, adding more and more.
-**The rule already shipped and is live.** [rationale-misattribution] built at `f9326dc`; its wording sits in `plugin/throughliner/docs-b/skill-nonspecific-rules.md` in two places (authored into `plugin-behaviour.md`, retired 2026-08-10 and split; reference corrected 2026-08-13) — the Captures provenance bullet (a `captured by you` credit requires the user's own words; mixed authorship names who did which part; the same bar binds reason-shaped sentences in the prose) and the Why-pipeline's rationale-provenance clause. Both were loaded in the installed host during the session that filed this. So this isn't a missing rule or one lost to the revert — it is a shipped, always-loaded, deliberately sharpened rule still not holding.
-**Why that is worse than the original finding, and why the obvious remedies are spent.** [rationale-misattribution] ruled out a hook on a stated argument: the lint sees only text, and nothing in a finished item distinguishes reasoning the session produced from reasoning the user gave. That left sharper wording, which is what shipped. Both candidate fixes have been tried. Whatever this needs is a third thing, and finding it is the work.
-**The new half you supplied: it compounds, with a measurable cost.** Rationale is re-authored forward at every stage — capture to processed item to LOG — and each pass adds. `/next`'s scope-lock then copies every run item's rationale verbatim into `_build.md`. In the run that filed this, about eight thousand tokens for fifteen items, all already read from QUEUE.md minutes earlier. So invented rationale is not only a misrepresenting record; it is a bill paid again on every run that touches those items, and it grows.
-**The live instance, in this session's own writing.** The capture filed minutes before this one opens "Captured by you" over a body that is mostly Claude's reasoning about where to search and what retrieval would settle. The credit line is accurate — the instruction was the user's — but the surrounding prose is the shape the rule was written to catch, written with the rule loaded.
-**Sharpened and deferred 2026-08-10; two halves split out and cleared.** The compounding cost became [build-file-rationale-pointer]. The evidence question became [rationale-growth-audit], which runs on git history rather than waiting for future sessions. What's left is the provenance failure itself, and it does not design out yet.
-**One candidate rejected at processing, so it is not re-proposed.** A cap — *a re-author pass may only carry forward and reword, never add* — was refused: processing legitimately does add reasoning, since a decision reached in the interview or an alternative rejected is exactly what the throughline preserves. That rule would fix the symptom by deleting the feature.
-**New evidence from the session that deferred this, pointing elsewhere.** Across nine items processed 2026-08-10, attribution held — user and Claude contributions named separately, defeated Claude proposals recorded as Claude's — and rationale volume grew anyway. So authorship and volume are separable failures, and the volume half may not be a provenance problem at all. [rationale-growth-audit] tests that.
-Relates to [rationale-misattribution] (the rule this reports failing), [log-entry-cost-at-run-scale] and [arbitrary-run-length-capping] (both about what a large run costs at close), and [communication-rules-untestable-here].
-
-**Design progress 2026-08-14, made while processing [provenance-restated-in-plan-and-done] alongside this.** This still doesn't design out, but one thing is settled. The corpus states this rule in three places: canonically in the always-loaded rules, in `plan.md`'s processing discipline, and inside `done.md`'s LOG entry template. Only the third sits at the moment the failure occurs, since re-authoring an item's rationale into an entry is where reasoning gets re-attributed. That copy is protected — the paired item cuts `plan.md`'s and leaves `done.md`'s alone.
-
-**What that rules out, which is the useful part.** "State the rule again, or state it harder" is no longer a candidate: the rule is already stated at the failure site and was broken there anyway, and the nine-item evidence shows attribution holding while volume grew. More text is not the missing ingredient. Whether the fix is a check on the written entry, a different authoring order, or something unseen is still open — which is why this skips again.
-**Measured 2026-08-10 by [rationale-growth-audit]; numbers at `resources/research/rationale-growth-measurement.md`.** They were five queue items until 2026-08-11, when they were consolidated into that file and deleted — none was work, so each would have failed the keep-check's second limb and halted a run. The two that bear hardest: growth happens almost entirely at capture→processed and barely afterwards, so **the compounding framing above is wrong as stated**; and the worst-growing item was later cut 56% by hand, evidence the growth is compressible rather than load-bearing. Read §5 with any figure taken from it — word counts cannot separate invented reasoning from decisions genuinely reached, which is the question this item asks.
-**A fourth instance of the pattern this item owns — a correctly-worded always-loaded rule failing to fire — carried across from [subagent-ask-rule-slipped] at /plan on 2026-08-13, when that item was deleted.** Mid-/plan on 2026-08-11, Claude spawned the `claude-code-guide` subagent without asking, at roughly 28,000 subagent tokens. The rule is always-loaded, unambiguous, and says to ask first and name the cost; Claude read it at session start and broke it hours later. That item listed it as the third instance alongside [write-first-report-without-write] and this one. Recorded here rather than kept because **its buildable half is closed**: the subagent cost ask-gate was confirmed alive by reading `hooks/hooks.json` (matcher `Task|Agent`) and `pre_tool_use.py` (`if tool_name in ("Task", "Agent")`), both naming current and legacy tool names, with a comment recording the earlier silent death when only `Task` matched. The gate returns `ask`, never `deny`. Enforcement is intact; only the prose-does-not-fire pattern survives.
-**Skipped at /plan on 2026-08-13, with a fifth thing now in play that this item predates.** A rule added 2026-08-13 tells Claude to match a written file's length to what the task needs, naming queue rationale and LOG entries explicitly. (Authored in the shipped output style; that file was deleted 2026-08-14 and the rule now lives in `docs-b/skill-nonspecific-rules.md`, as a second scope inside the Captures authoring standard.) That is a third remedy after the two recorded as spent, it aims at volume rather than provenance, and it has never been tested. So the next move is to observe whether volume falls now the rule exists — not to design a fourth mechanism on an untested third. Re-examine once a few sessions have written rationale under it.
-**One methodological lesson from that deletion, worth more than the instance.** The deleted item asserted that settling the gate question needed a user observation and would decompose into a `[user]` line. It did not: "did the gate fire?" is answered by reading what the gate matches on. That is the reframe the over-tag guard exists for — asking *what would answer this?* rather than *how do I observe it?*
-
-**The waiting condition was met on 2026-08-15, and the third remedy failed.** This item had skipped three times on one stated condition: observe whether volume falls now the length rule exists, and design no fourth mechanism on an untested third. That rule shipped 2026-08-13, and August was split at its ship date using `resources/measure_written_shape_length.py`'s own `queue_lengths()`. **Capture length rose rather than fell — median 321 to 396 words, mean 368 to 461, n=152 after.** Full numbers and caveats at `resources/research/written-shape-length-growth.md`. Three caveats are recorded there and none rescues the rule: a three-day window; the rule's home moving mid-window when the output style holding it was deleted on 2026-08-14; and word count being unable to separate invented rationale from reasoning genuinely reached. **So the condition is discharged, and what it discharges is the ban on designing a non-prose mechanism.** All three remedies to date were prose, and the last of them now has a measured non-result.
-
-**Settled at processing 2026-08-15 on the user's decision: build both checks below, in the queue lint.** The lint already fires after every QUEUE.md edit and reports without blocking, which is the right register — the failure happens at the moment of writing, so the report belongs there rather than in a digest read hours later. The two checks split this item's two halves, which the evidence has shown to be separable.
-
-- **Credit without a quote is flagged.** An item whose prose asserts user authorship — `captured by you`, `in your own words`, or a reason-shaped sentence claiming the user's reasoning — must contain an actual quoted string. Missing one, the lint says so. This is the shipped provenance rule's own bar made checkable rather than restated: the rule already requires the user's own words as the source of a credit, and this asks the item to show them.
-- **Word growth is reported per touched item.** After a QUEUE.md edit, print each edited item's word delta as a bare fact — `[slug] +420 words` — in the same register as the readiness-line crossing report `reorder_queue.py` already prints. No threshold, no verdict, and none may be added: a threshold here would be a bare number, and the research file it rests on states explicitly that no band may be read off this corpus because this corpus is the bloated one.
-
-**What neither check does, stated here so the build cannot claim otherwise.** Neither can identify invented reasoning. The first makes an unsupported credit visible and raises the cost of a false one from nothing to fabricating a quotation — a real difference, and not verification. The second makes growth visible and enforces nothing. Both convert something silent into something a reader can point at, which is the one mechanism in this project with a record of working; describing them as fixing misattribution would be the over-claiming this project's own standard forbids.
-
-**Files, and what changes inside each.**
-
-- `plugin/throughliner/hooks/post_tool_use.py` — two additions to the existing advisory checks: a credit-without-quote scan over each item's block, and a per-item word delta computed against the file's prior content on the same edit. Both report, neither blocks — a delete and a rewrite are the user's decisions.
-- The `post_tool_use` suite under `resources/testing/` — cases for a credited item with a quote, one without, and a growth report on an edited item.
-- FAQ entry: the lint now mentions word growth and missing quotes, and a consumer meeting either message needs to know it is a note rather than an error.
-
-Rule gate: run — admitted, and it authors **no rule at all**: two mechanical checks are added to a hook, and no always-loaded text grows. That is the point of the item, so a prose amendment here would contradict the finding that licensed it. Failure evidence is the longest chain in the queue — a shipped rule broken in the session that read it, attribution holding while volume grew across nine items, a fourth instance carried over from a deleted item, and now a measured non-result for the third remedy. **Nothing is evicted, and nothing needs to be:** the eviction question is about rule-text budget, and this adds none.
-
-#### A refused proposal leaves no artifact anyone can scan, so the gate's proudest output is its least visible [refusals-have-no-visible-record]
-**Captured by you 2026-08-15, in your own words: if the gate is causing failures of items to silently slip through then that is a big problem for me — you trusted that was built, and you don't want to have to read the whole log to see what was built and what wasn't.** The diagnosis and the proposed shape are Claude's.
-
-**What is not true, checked before filing, because the item must not rest on a premise the record contradicts.** Nothing slipped through silently in the prompting instance. `b4de5bf`'s LOG entry records that the general scripts-directory clause was tested against the gate, failed it, and that **the user chose the narrow fix after being shown the result** — the count of three of four skills, none in /setup, one pointable instance. The index line says the same. The refusal happened with her present, which is the entire reason `CLAUDE.md` sites the gate at /plan rather than at the build.
-
-**What IS true, and it is the real finding.** A refusal leaves no scannable artifact. A kept item sits in the queue where she sees it. A built item leaves a queue item vanishing and a LOG entry named after its slug. A **refused** proposal leaves one sentence inside one LOG entry and nothing anywhere else — no queue line, no index signal, no board entry. So "what did I ask for that did not get built?" is answerable only by reading every entry, the exact cost she objects to.
-
-**Why this is worse than a general visibility gap.** `CLAUDE.md`'s account of the gate rests on refusal being its distinctive power — a /plan-sited gate *can* refuse, which a build-sited or close-sited one cannot, "and that is the whole gain". The output the design is proudest of is the one output nothing surfaces. The same document already records the honest limit that nothing can tell an honest disposition from a dishonest one; this is a second limit beside it, and unlike that one it is fixable.
-
-**The fix is cheap because the record already exists in a fixed form.** Every refusal lands on a `Rule gate: run — …` line, and `resources/rule_signals.py` already parses those lines for two of its four firing checks. A refusals report — what was proposed, what refused it, which commit and session — is a grep over lines that already exist. **No new record-keeping is asked of any session**, which keeps this from being another close-time obligation.
-
-**To settle at processing.** Whether this is a fifth check in `rule_signals.py` or a plain report run on demand; whether it reads only refusals or every disposition; and whether the user wants it surfaced at a /plan opening or only when she asks. The last is genuinely hers — a standing report she didn't ask for is the noise this project keeps repealing.
-
-**One guard.** The report states what a disposition *says* it refused. It cannot say whether the refusal was correct, and it cannot see a proposal dropped in conversation before any disposition was written. Say both wherever it reports; partial coverage read as complete is the failure this project guards hardest against.
-
-**Settled at processing 2026-08-15. Three answers, and the third was corrected by the user mid-discussion.**
-
-**A mode behind its own flag, not a fifth check.** `rule_signals.py` deliberately keeps two classes apart — four checks that can find something, two that only measure — and its header counts only the four. A dispositions listing is neither: nothing is wrong when it prints. It reuses the existing `Rule gate:` parsing without joining the count.
-
-**It reads every disposition, not only refusals.** The user's stated question is what was asked for and not built, and refusals are half of that; the same parse yields the rest at the cost of one more column.
-
-**It is surfaced at /plan's opening, bounded to refusals recorded since the last /plan session — the user's own boundary, replacing two worse answers.** Claude first recommended on-demand only. **She refused it with the question that settles it: "how would I even know to demand it?"** — which is the siteless-check failure this project has recorded five times, walked into by the very recommendation. Claude's counter-proposal, a window of the five newest LOG index lines, was then tightened by her to *since the last plan session*, which is better because it tracks the moment she actually looks rather than an arbitrary count. The full history stays reachable through the flag.
-
-**Why a window rather than everything.** A report listing every refusal ever made grows without bound, and an ever-growing line is one a reader learns to skip. Windowed, it goes quiet by itself when nothing has been refused — the same shape as the held-work line settled earlier the same day.
-
-**Files, and what changes inside each.**
-
-- `resources/rule_signals.py` — a dispositions mode behind a flag, printing every `Rule gate:` line with its commit, its LOG entry and its outcome; and a windowed form taking "since the most recent planning LOG entry", which is derivable because planning entries are identifiable by name. Where no prior planning entry exists, print that the window could not be established and name the full-history flag rather than silently reporting nothing.
-- `CLAUDE.md` — the /plan-opening surfacing, as a host-only obligation beside the existing `rule_signals.py` description.
-
-**It must NOT go in `plan.md`, and this was nearly the build's mistake.** `plan.md` ships, `rule_signals.py` does not, and consumers never author method rules — so a step there would be a check that can never fire in any consumer project. Same reasoning that keeps the rule gate and the hook-suite step in this file.
-
-**The guard stays, and is stated wherever the report prints.** It reports what a disposition *claims*. It cannot say a refusal was correct, and it cannot see a proposal dropped in conversation before any disposition was written.
-
-Rule gate: run — admitted as an amendment to this file's existing account of `rule_signals.py`, which already enumerates the script's modes and insists the two classes stay countable; this adds a third class and says so. **Nothing is evicted:** one report mode and one opening element are added, and the always-loaded text grows by a short paragraph in a host-only file. Failure evidence is the user's own account, plus the structural point that `CLAUDE.md` rests the gate's whole value on its power to refuse while nothing surfaces a refusal.
-
-**Files:** `resources/rule_signals.py` and `CLAUDE.md`. Host-only. Relates to [scripts-dont-report-consequences], [rule-admission-has-no-independent-approver] and [build-wrote-its-own-gate-disposition].
-
-#### "Decide what happens to X" items never meet the two-limb keep check, because that check only fires on a promotion nobody attempts [decide-items-escape-the-keep-check]
-Filed 2026-08-14 from an INBOX message sent by another project running Throughliner (host 1.20.0-test6, build stamp dc86440b6b0c). Opened during a /next pre-flight, filed unprocessed, message archived.
-
-**What the reporting project found.** Three items in its queue were each phrased "decide what happens to X". None named a build; they are design questions in a work item's clothing. /plan's two-limb keep check would have rejected all three, and never ran on any of them, because it fires only when a session tries to move an item into Processed. Nobody tried. They sat in Unprocessed and each /plan that reached them added another finding.
-
-**The structural claim, the part worth weighing.** Skip-to-defer deliberately records nothing and moves nothing, so a skipped item returns unchanged next session. A "decide" item is exactly the shape that gets skipped, because there is no build to describe and the honest move is to skip. Every individual step is the procedure working correctly; the aggregate is an item that grows forever and never resolves. So the guard sits at the wrong end of the pipe — an undesigned item is tested only when someone tries to promote it.
-
-**The sender's framing of the cost, in their user's words as reported:** deciding is what a /plan session is for, so a parked decision is a decision nobody is making; and a "decide" item invites enrichment forever because no build would close it.
-
-**What they suggest, a datapoint rather than a design.** Some test at filing or presentation time rather than only at keep — a capture whose description opens "decide" or "work out" or "figure out" is a design question, and the answer is either to settle it in that session or to write down what it waits on. Explicitly not a new state and not a new tag; they note the method rejects those. Possibly one line in the present-and-interview step naming the shape and saying to settle rather than enrich it.
-
-**Their own caveat, kept.** One project, three items, all filed before 1.20.x. It may already be designed out, or be a local authoring habit rather than a method defect.
-
-**Both checks were run at processing, 2026-08-15, and both changed the design.**
-
-**This project has one instance, not three, and it is instructive rather than merely confirming.** A scan of Unprocessed headings for the shape returns [setup-repo-privacy-and-publishing]. It had been skipped and enriched twice, on 2026-08-14 and again earlier in this session, and its prose named its two open questions cleanly. When one of them was finally asked, the user answered it in a sentence. The naming worked; nobody had asked.
-
-**And the method instructs the enrichment.** `plan.md`'s skip-to-defer recommendation says in terms that the sharpen-first is part of the move — capture whatever design progress was made so the next /plan starts further along. So the growth the sender reports is procedure working, not procedure failing, which is why no individual step looks wrong.
-
-**Settled: the fix is not a filing-time test, and not a limit on enrichment.** Enrichment is not the defect — today's instance genuinely advanced, and its recorded progress is what made the decision cheap once it was finally put. The defect is enrichment **substituting** for a decision that was available for the asking.
-
-**What gets built.** `plan.md`'s skip-to-defer recommendation gains two clauses:
-
-- **An item skipped because it will not design out names what would settle it and who owns that** — a decision the user owns, a fact to be looked up, or a build that must ship first. Naming the blocker-in-kind is what turns an open item into an answerable one.
-- **Where the answer is a decision the user owns, the session asks before skipping.** /plan is the one moment they are present, and the cost of asking is a sentence. This is the load-bearing clause: the instance above waited a day for a ten-second answer that could have been had at the moment it was identified.
-
-**Why not the sender's filing-time test, recorded so it is not re-proposed.** They suggested flagging a capture whose description opens "decide" or "work out". It keys on wording rather than on the condition, so it misses a design question phrased as a statement and fires on work genuinely named that way — [setup-repo-privacy-and-publishing] opens "Setup should settle", which the test would catch by luck rather than by design. It also fires at filing, where nothing can be done about it, rather than at the skip, where the user is present. Their caveat that this may be a local authoring habit is kept and is part of why the lighter fix wins.
-
-**A reply to the sending project is owed** — their finding was right, their proposed mechanism was not adopted, and they should have both halves.
-
-**Files:** `plugin/throughliner/docs-b/plan.md`, the skip-to-defer recommendation, and `SPEC.md` — added at the /plan close 2026-08-15, because SPEC's processing-flow section describes what skipping does ("sets it aside for the rest of that session and does not move it in the file"), and this adds a required naming step and an ask before the skip. Shipped.
-
-Rule gate: run — admitted as an amendment to the existing skip-to-defer recommendation, which already tells a session what to write into a skipped item; this says what that writing must contain and when to ask instead. Subordinate to it, no freestanding slot. Failure evidence is three items in a consumer project plus one here whose cost is measurable — a day's wait for a one-sentence answer. **Nothing is evicted**; two clauses are added to a rule that already exists. Relates to [research-packaged-as-build-work] (the same check pushing work into the wrong shape from the other direction) and [no-position-signal-in-a-processing-run].
-
-#### Two replies are stuck because their senders can't be identified, and nothing gives an unattributed message a route [unattributed-mail-has-no-recovery-route]
-Filed 2026-08-15 by Claude at the close of the eighteen-item run, from two replies that could not be sent.
-
-**What happened.** Replies were drafted and approved in substance for two archived messages — the queue-lint scaffold report and the Hexboard trailing-slash-command report — and neither could be delivered. The lint report names no sending project at all. Hexboard's names itself but has no folder in the address book, and folders may only be recorded from what the user supplies, never found by scanning. Asked directly, the user said plainly that she does not know how to figure either out.
-
-**Why the fix already shipped does not reach this.** `[outbound-message-has-no-sender]` requires every outbound message to name its sender in the filename and body, which closes this for messages sent from now on. It does nothing for messages already in the archive, and nothing for a correspondent whose name is known while its path is not. Both halves are needed to route a reply: a name identifies who, the address book supplies where.
-
-**The cost is not hypothetical.** A reply that cannot be routed is a reply that doesn't get sent, and the reply is what makes the INBOX a channel rather than a suggestion box. Two projects reported real defects, both fixed in this run, and neither reporter will hear so. The drafts are preserved in this session's LOG entries for `[lint-flags-scaffold-preamble]` and `[message-ending-drives-the-suggestion-chip]`, so nothing is lost if a path turns up later.
-
-**A third instance arrived at processing, 2026-08-15.** The "decide what happens to X" report was processed in the same session, its finding accepted and its proposed mechanism rejected for stated reasons — and it names no sender either, only "a project running Throughliner 1.20.0-test6". So a reporter who was right will not hear that they were right, nor why their fix was not taken. Three stuck replies, not two.
-
-**Settled at processing 2026-08-15, in two halves, on the user's decisions.**
-
-**Forward: an outbound message carries a RETURN PATH, not only a sender name.** The sender always knows its own folder, so it writes that folder into the message. The recipient then needs no address book for that correspondent, nothing is looked up and nothing is scanned — and the path is user-supplied by construction, since the sending project is the user's own. This is an amendment to the shipped rule from [outbound-message-has-no-sender], which requires a name and stops there: a name identifies who, and only the path says where, so requiring one without the other closes half a channel.
-
-**Backward, for the three stuck replies: a `[user]` walkthrough built from what the user actually did.** She identified one sender by scrolling her Claude Code session list. That worked, and it was improvised rather than followed, so it becomes a written walkthrough she can repeat: open the session list, find the session around the message's date, read off the project folder, tell Claude the path. **Her decision, chosen over the alternative below.**
-
-**The alternative, weighed and refused, recorded so it is not re-proposed as obvious.** Claude Code keeps session transcripts under `.claude/projects/<project-slug>/`, and this project's `CLAUDE.md` already sanctions reading them for E2E work — so searching them for a message's own text would identify its sender mechanically. It was put to the user with its tension stated rather than adopted quietly: the method says operate on the folder the session opened in and never scan to find another project, and although reading the session log is not scanning sibling folders and the purpose is addressing rather than working, it does discover other projects, which is what the rule guards against. **She chose the walkthrough.** The refusal is about who does the discovering, not about whether the search would work.
-
-**Files, and what changes inside each.**
-
-- `plugin/throughliner/docs-b/feedback-and-inbox.md` — the outbound message format gains the return path beside the sender name, in both the filename convention's neighbouring body block and the drafting instructions.
-- A `[user]` line, split out per the decomposition rule, carrying the session-list walkthrough for the three stuck replies — filed as its own item with its own slug so the recovery is tracked rather than living in this item's prose.
-- FAQ entry: what a return path is for, and that mail without one may be undeliverable.
-
-Rule gate: run — admitted as an amendment to the shipped sender rule rather than a freestanding one; it extends an existing requirement from one field to two. Failure evidence is three undeliverable replies across two sessions, each to a project that reported a real defect. **Nothing is evicted**; one field is added to a message format.
-
-Relates to [outbound-message-has-no-sender] (the rule this amends) and [cross-project-work-completes-invisibly].
-
-#### The hook-payload "under half the cap" assertion is a bare number with no derivation [half-cap-assertion-has-no-derivation]
-Filed 2026-08-12 by Claude at /plan, relocated out of [session-start-payload-over-its-headroom] when that item was deleted as already fixed. The question is the deleted item's; the reading of the test file is Claude's.
-**Why the parent was deleted and this survived.** That item reported two failing assertions in `resources/testing/hook_schema_check.py`. Both were run at /plan on 2026-08-12 and both pass: the payload is back under the headroom line, and the project-state line leads the payload again, which `2f0dfdf` records fixing after a 2,289-character drift. So its build had nothing left to do. But it raised a third point the passing tests don't answer, and that point is this item.
-**What the test file actually says, read rather than assumed.**
-```
-HOOK_OUTPUT_CAP = 10_000        # sourced: hooks reference + two GitHub issues
-size < HOOK_OUTPUT_CAP // 2     # "keeps headroom" — no derivation given
-```
-The 10,000-character cap is properly grounded — the hooks reference, `anthropics/claude-code#44086` and `#70460`, noting that past the cap the harness saves the text to a file and injects a ~2KB preview plus a path, so the model never sees the remainder. **The half is grounded in nothing.** No comment, no measurement, no reference.
-**Why that matters here specifically.** A bare threshold with no derivation is what [derivation-required-for-limits] bans, and this project has deleted two for that reason: the rule-corpus ceiling in `rule_signals.py`, and the 150–200 instruction count in the self-authoring gate. A third inside a test suite is the same defect where nobody looks, and it has already fired once — the parent item existed because this assertion failed.
-**The separate 2KB figure is NOT in scope.** `check("SessionStart: project state within the first 2KB", 0 <= state <= 2048)` is a different number with a different job, and whether it has a derivation wasn't examined. Check it or leave it alone deliberately; don't assume it shares this one's fate.
-**The question was asked before concluding, at processing 2026-08-15, and the answer is that no derivation exists.** The assertion entered at `455082b` on 2026-08-04. A search of every LOG entry for headroom or half-the-cap reasoning returns two files: one a false match on the phrase "half the capture", and the other the 2026-08-12 session that filed this item. So the half was never derived, in the file or anywhere else — established by looking rather than by assuming, which is what the item asked for.
-
-**Settled at processing 2026-08-15 on the user's decision: keep the hard cap, replace the half with a size report that asserts nothing.** The suite prints the payload's actual size against the documented 10,000-character cap and leaves the reading to a human. That is what this project did when the rule-corpus ceiling was removed, and the item's own argument applies — a test suite is exactly where a threshold sits unexamined for months, so a number nobody has to defend beats a defensible-sounding invention.
-
-**Deriving one honestly was attempted and abandoned, recorded so it is not retried blind.** A justified early-warning threshold would need evidence of how the payload grows with project state — held items, waiting mail, worktrees, the INBOX bodies that [inbox-open-step-not-enforced] will add. That evidence does not exist, and manufacturing a figure without it is the bare-number failure with extra steps.
-
-**The 2KB figure IS in scope now, on the user's decision, and it is expected to survive.** `check("SessionStart: project state within the first 2KB", 0 <= state <= 2048)` looks grounded rather than guessed: the harness injects a roughly 2KB preview once the cap is exceeded, which is documented in the hooks reference and the two GitHub issues this file already cites. Confirm that is what the figure measures and write the derivation into the file beside it; if it turns out to be unmoored, it takes the same treatment as the half.
-
-**Files, and what changes inside.** `resources/testing/hook_schema_check.py` alone: the `size < HOOK_OUTPUT_CAP // 2` assertion becomes a printed size line, the hard 10,000 assertion stays with its existing sourcing comment, and the 2KB check gains a derivation comment or is replaced in kind.
-
-Rule gate: run — admitted as an application of [derivation-required-for-limits] rather than a new rule; nothing is authored, one undefended threshold is removed and one is documented. **A genuine eviction:** the corpus loses a bare number and gains no rule text. Failure evidence is this assertion having already failed once, which is why its parent item existed. Host-only. Relates to [derivation-required-for-limits], [index-cap-sample-was-three-entries], [board-reports-one-audience-not-two] and [gate-still-declares-the-old-ceiling].
-
-#### Replace the ladder's reasoning-heavy rungs with mechanical proxies — line count and file order [ladder-rungs-by-mechanical-proxy]
-**Captured by you 2026-08-15, in your own words: you were trying line count as a stand-in for "design completeness", because having Claude reason about what is fully designed could be wrong anyway and burns more usage. Also: over the last few plan sessions you have seen Claude really struggling to reason across the long QUEUE, so much so that you ran a tersification in a chat and replaced the QUEUE wholesale just to get a ten percent reduction — and it did help, but nothing has helped so much as going by line count. And: the decay rung also uses too much reasoning, and file order is its perfect stand-in.** The evidence check below is Claude's.
-
-**The proposal has two halves, and one of them rests on a stronger leg than you gave it.**
-
-**Line count as a proxy for design completeness is weakly supported, and today partly contradicted it.** Eight items were processed in line-count order this session. Of them five were kept, two could not be kept at all, and one was deleted — and the two that could not be kept were the longest and the fourth-longest, [standing-audit-programme] at 48 lines and [setup-repo-privacy-and-publishing] at 18. At the top of the distribution, length tracked *repeated enrichment without resolution* rather than design completeness. That is the shape [decide-items-escape-the-keep-check] describes, processed in this same session.
-
-**But the ordering worked anyway, for the reason you gave second, and that is the one to build on.** Long items are what make the queue expensive to reason across, and processing them first is what shortens it fastest — so line-count order is queue maintenance whose benefit does not depend on the proxy being accurate. Your own comparison is the evidence: a wholesale tersification bought about ten percent and helped less than ordering by length. Resting the rung on design completeness would make it falsifiable in a way it does not need to be; resting it on cost-of-reading makes it true by construction.
-
-**Decay to file order is a clean substitution and needs no such correction.** Unprocessed is appended to at the bottom and never reordered by hand, so file order is filing order and the top of the section is the oldest work. Age is what decay is actually about, so the proxy is not an approximation of the signal — it is the signal, read for free. The two rungs then collapse into one, which shortens the ladder rather than restating it.
-
-**The direction this points, worth naming because it may be the item's real content.** Every rung above already reads off something mechanical — the digest reports red flags, placement contradictions, incoming citations and shared files. With these two substitutions, no rung requires Claude to form a judgment before ordering, which matches this project's standing preference for a mechanical check over a prose rule.
-
-**Your constraint on the labels, kept.** The rung names carry what the ladder is *for* and must survive; what goes is the explanation stuffed beneath each one. The shape you named — a label, then the mechanical thing that stands in for it — is what the rewrite should look like.
-
-**Settled at processing 2026-08-15. The ladder goes from six rungs to three, and every one either reads a digest field or counts lines.**
-
-```
-1. an uncleared red flag in Unprocessed   a breach outranks a delay
-2. unblock-potential                      the item most others are waiting on
-3. longest first                          the long items make the queue
-                                          expensive to read
-```
-
-**Rung 3 is total, which is the structural point.** Longest-first never exhausts, so nothing can sit beneath it. That is what killed file order — **the user's own finding**, along with the observation that putting file order first would kill longest-first instead, and that longest-first is the more important of the two. The ladder is therefore really a default with two overrides: take the longest, unless something carries an unaddressed risk or is holding other work up. All three labels survive, which was her stated constraint.
-
-**Unblock-potential is kept deliberately, and the reason must survive any later compression pass. In her words: this is reasoning, but of a type Claude excels at — running a dependency graph.** That is the line between what stays and what was cut: following citations between items is mechanical in the way that matters, whereas judging whether two items feel related is not.
-
-**Three rungs were deleted, each for a stated reason.**
-
-- **"Unsticks a stalled cleared region"** — the digest already surfaces placement contradictions at Step 1, directly to the user. The rung was a second route to the same information, and the convoluted one: it ordered an *Unprocessed* item by its effect on a *Processed* one.
-- **"Cheap to settle"** — the user's judgment that it is cancelled out by recent work, confirmed by two findings. The files-named block is now a **merge** tool used at the keep step, which is how [digest-lowercases-file-paths] was folded into [scripts-dont-report-consequences] in this same session, so its ordering job was already redundant. And its stated criterion contradicted itself: `plan.md` calls it "checkable, not judged" while including *subject matter*, which cannot be checked without reading every item's prose and forming a judgment. Deleting beat repairing.
-- **"Decay", and then "file order"** — decay collapsed into file order because Unprocessed is only ever appended to, so file order is filing order and oldest is what decay was reaching for. File order then died as unreachable. **The consequence, named rather than left to be discovered: staleness is no longer an ordering concern at all.** It keeps a surfacing route — the digest flags an item whose premise cites work that has shipped, at the opening, where the user sees it — so the concern is not lost, only removed from ordering.
-
-**Two defects in the current text found by the user's questions while settling this, both to fix in the same build.** She asked twice whether a rung required reasoning across the queue; the first time the answer was no and the second time it was yes.
-
-- The digest's **placement-contradictions block states no caveat**. It matches a fixed set of known phrases, so a clean result means "none of the phrases it knows were found", not "no contradictions exist". The superseded-research flag already prints exactly such a caveat for the same reason; this block should too.
-- **Rung 5's criterion contradicted its own claim to be checkable**, as above. It leaves with the rung.
-
-**Files, and what changes inside each.**
-
-- `plugin/throughliner/docs-b/plan.md` — the fallback ladder in Step 2 is rewritten to the three rungs above; the rung-6 offer that fires on reaching file order goes with it, since file order no longer exists; the rung-change narration clause stays, as a rung can still change between picks.
-- `plugin/throughliner/scripts/queue_digest.py` — the placement-contradictions block gains its partial-coverage caveat, in the shape the superseded-research line already uses.
-
-**Check when building:** `plan.md`'s rungs 3 and 4 are described elsewhere as reading the same citations in opposite directions and not merging. With decay gone, that paragraph is about a rung that no longer exists and comes out too.
-
-Rule gate: run — admitted, and it is a **net subtraction**: three rungs and one offer are deleted, one caveat sentence is added to a script's output, and the ladder's prose shrinks by more than half. Failure evidence is the user's direct experience across several planning sessions — she reports Claude struggling to reason across a long queue, ran a tersification and replaced QUEUE wholesale for about ten percent, and found ordering by length helped more than that did.
-
-**Files:** `plugin/throughliner/docs-b/plan.md`, `plugin/throughliner/scripts/queue_digest.py`, and `SPEC.md` — added at the /plan close 2026-08-15, because SPEC's processing-flow section spells the ladder out rung by rung, naming decay and cheap-to-settle, both of which this deletes. Shipped. Relates to [decide-items-escape-the-keep-check] (why long items are long) and [no-position-signal-in-a-processing-run].
-
-#### "Work item" should mean an item in Processed only, and the shipped rules use it for Unprocessed items throughout [work-item-means-processed-only]
-**Captured by you 2026-08-15, in your own words: only items in Processed are called "work items"; until then they are casually known as "captures" or "unprocessed items". They're not work until they are queued as work.** Said after Claude called an Unprocessed capture a work item. The evidence below is Claude's.
-
-**This is a change to the shipped vocabulary, not a correction of drift — which matters because it sets the scope.** `docs-b/skill-nonspecific-rules.md` uses the term for Unprocessed items in at least four places, and Claude's usage came from there:
-
-- `A capture is unprocessed work: one work item appended to QUEUE.md's Unprocessed section` — the sentence defining a capture calls it both unprocessed *work* and a work *item*.
-- `User-only discoveries file as a [user] work item, not a plain capture` — sets the two terms against each other as kinds of Unprocessed item, rather than as before and after processing.
-- `Work-item states — the canonical four` lists Unprocessed first, so the whole state model treats an unprocessed capture as a work item in one of its states.
-- `A capture may be a single line whose only job is to release held work … It is still real work`.
-
-**Why the change is worth making anyway.** The distinction the user is drawing is the one the method's own boundary rests on: a capture is a thing anyone may file, and work is what /plan has agreed to. Using one word for both blurs the only transition the queue has, and it is the same blur that lets an undesigned capture read as though it were queued work — the failure [decide-items-escape-the-keep-check] describes.
-
-**Scope traced by grep at processing 2026-08-15, not written from the discussion: about 120 occurrences across 25 files.** They fall into two kinds, and the user's decision was to split them.
-
-**This item takes the definitional and user-facing half — roughly 30 sites.** These are where the term is *taught*, and what she and every consumer actually read.
-
-- `plugin/throughliner/docs-b/skill-nonspecific-rules.md` (7) — including the sentence defining a capture as "one work item appended to Unprocessed", and the `[user] work item, not a plain capture` line that sets the two terms against each other as kinds of Unprocessed item.
-- `SPEC.md` (6), `FAQ/faq.md`, `plugin/throughliner/templates/faq-template.md` (13), `faq-index-template.md`, `CLAUDE-TEMPLATE.md`, and QUEUE.md's own header.
-- The remaining `docs-b/` prose sites, judged per occurrence: reword to "capture" or "unprocessed item" where the sentence means any queue entry, leave where it means agreed work.
-
-**The canonical-states block needs the most care and is called out separately.** It is titled "Work-item states — the canonical four" and lists Unprocessed first. Under this rule it is not a model of work-item states at all — it is a model of queue states, or of a capture-to-work lifecycle. Renaming it changes what the block is *of*, so settle that before rewording its entries.
-
-**The code half is split out as [work-item-term-in-hook-and-script-code], on the user's decision.** Roughly 60 sites, mostly `post_tool_use.py` and `reorder_queue.py`, where the term names a `#### ` block the parser handles identically in both sections. Excluded here because it touches the internals of the files that lint and move the queue, for no user-visible gain. **The argument against the split is recorded rather than waved off:** leaving code calling an Unprocessed block a work item preserves exactly the double meaning this item exists to remove, in a place she does not read.
-
-**Check whether the user's own queue prose now disagrees with the rule.** Items written across this session use the loose sense freely, including several written after the correction was given but before it was applied. Fixing QUEUE.md's existing prose is **not** in scope — it is a record, and rewriting it would edit the history of how the term was used.
-
-Rule gate: run — admitted as a vocabulary change to existing text rather than a new rule; nothing is added to the corpus and several sentences get shorter. Failure evidence is one instance, the user correcting Claude in this session, which is thin on its own — it is admitted on the stronger ground that the shipped text contradicts itself in four places, calling a capture both a capture and a work item within one sentence. **Nothing is evicted, because nothing is added.**
-
-**Files:** as listed above. Shipped and user-facing.
 
 #### [user] Discord post: the planning session now offers you the work that is cheapest right now [discord-post-context-adjacency]
 Captured by you 2026-08-12; the angle is yours — the ladder and how much it improves the workflow.
@@ -553,29 +50,6 @@ Captured by you 2026-08-12; the angle is yours — the ladder and how much it im
 
 **Files:** none in this project — the artifacts are an article for the Throughliner site and a Discord post. Relates to [digest-reports-computed-fields-not-summaries] (shipped) and `resources/research/auto-memory-staleness.md` (verified and corrected).
 
-#### [user] Identify the senders of three stuck replies from your session list, so the drafts can be delivered [identify-stuck-reply-senders]
-Split out of [unattributed-mail-has-no-recovery-route] at processing 2026-08-15, per the rule that a Claude-prep-plus-user-action item decomposes rather than burying the user's part in prose. **The method is the user's own** — she identified one sender this way already; this writes it down so it is repeatable rather than improvised.
-
-**Why this is genuinely user work, and it passes the capability check.** The address book records only what the user supplies, and the method bars scanning for other projects. A transcript search was weighed at processing and refused by her — see the parent item — so identifying the sender is hers to do by construction, not for want of a tool.
-
-**The three messages, all in `INBOX/archive/`:**
-
-- `2026-08-14-queue-lint-flags-scaffold-preamble.md` — names no sending project.
-- `2026-08-14-hexboard-trailing-slash-command.md` — names Hexboard, but no folder is recorded for it.
-- `2026-08-14-decide-items-escape-the-keep-check.md` — names only "a project running Throughliner 1.20.0-test6".
-
-**Walkthrough.**
-
-1. Open your Claude Code session list.
-2. For each message, find the session running around the date in its filename — 2026-08-14 for all three.
-3. Read off that session's project folder.
-4. Tell Claude the folder path for each one you can identify.
-5. Claude delivers the preserved drafts to those folders' INBOXes, showing you each one before it sends, as every outbound message requires.
-
-**Where a sender cannot be identified, say so and the item still closes.** An undeliverable reply is an acceptable outcome; a forgotten one is not. The drafts stay on file in the LOG entries named in the parent item, so nothing is lost by stopping here.
-
-**Hexboard is the most likely to succeed**, since it names itself — only its path is missing. The other two need the date match to do the whole job.
-
 --- Cleared to run above this line ---
 
 #### [user] Discord post: Claude now knows how the work cycle actually fits together [discord-post-cycle-awareness]
@@ -617,6 +91,11 @@ Blocked by: [discord-post-session-start-strength]
 **Files:** none — the artifact is a Discord post. Relates to [self-authoring-rules].
 
 ## Unprocessed
+
+#### Last session advises processing setup-repo-privacy-and-publishing next [forward-advisory]
+It is one decision away from being keepable, and the decision is the user's rather than a design question: whether /setup surfaces the open-source-implies-open-logging idea at all, and if so as a neutral option rather than a recommendation. Its other open question was settled 2026-08-15 — the licence question moves onto the public-repo offer instead of joining /setup's interview — and the item's prose records that this is the only thing holding it in Unprocessed.
+
+Two conditions worth carrying rather than re-deriving. Its build edits `setup.md`, and so does [scope-lock-blocks-setup], which repairs /setup's ability to write anything at all in an already-adopted project — so the repair wants to land first, and both are cleared. And a /plan that opens before that repair ships should not send anyone to /setup, however far behind the project's version marker reads: /setup will be denied partway through and leave the migration half-done.
 
 #### Name the post-/done tail as an explicit state: route it cleanly and advise that scope-lock is off — without adding a re-/done prerequisite [post-close-tail-state]
 Captured by you — filed after `fa2f8e5`. Observed live 2026-08-01: after a /done committed (`ea272f6`), the session ran a long tail — six captures filed to QUEUE.md, all uncommitted — and the user briefly lost track of being post-close. The method neither names nor handles the post-close tail. (This capture is itself one.)
@@ -1170,4 +649,59 @@ Filed 2026-08-15 by Claude at the close's re-scan, from an instance it caused in
 **The distinction that matters, and it is what a fix has to get right.** A two-column block inside a procedure doc is read by Claude, in a wide view, and works. The same shape emitted *to the user* is read on whatever display they have. So the rule is about output, not about the docs — and a fix that reformatted the procedure docs would be solving the wrong half.
 
 **To settle at processing.** Whether this is a rule about chat output ("structured content shown to the user goes one item per line, never in aligned columns"), or whether it is already covered by the existing item and should be folded into it. Check that item's actual subject first — its title is about a prose rule's stated reason being false, which may be a different concern wearing the same word.
+
+#### "Session" is used for both a chat and a single run of /plan or /next, and the corpus never separates them [session-conflates-chat-and-run]
+**Captured by you 2026-08-15, in your own words: stop using the word "session" because it conflates a chat with a use of plan or next — only say "plan session" or "next session".** Said while correcting a rule this run had just written, which used "session" in both meanings inside four sentences.
+
+**Why it is not a wording preference.** The whole always-loaded corpus rests on the distinction: "one build at a time", "nothing unrouted survives a session", "design for fresh, short sessions", the working file that is "per session, not per project", and /done's own subject all mean one of the two things, and which one is left to the reader. A rule that reads correctly under one meaning can read as a prohibition under the other — which is exactly the failure [cycle-map-contradicts-dont-cross] was filed for, and fixing that item's two sentences did not touch the ambiguity underneath them.
+
+**The vocabulary the user gave:** a **chat** is the conversation; a **plan session** and a **next session** are runs of a command inside it. `session_id`, the working file name and the hooks' own use of the word are the machine's meaning and are a separate question — the same code/prose split [work-item-means-processed-only] made, and probably the same answer.
+
+**Scope is a grep, not a discussion** — the shipped docs under `docs-b/`, SPEC.md, the FAQ and its template, CLAUDE-TEMPLATE.md. Expect it to be large; the term is everywhere.
+
+#### /done records what was built or planned, not what happened in the chat [log-records-the-run-not-the-chat]
+**Captured by you 2026-08-15, in your own words: /done is not for wrapping up one next session or one plan session, it is for wrapping up ONE CHAT — that's why it is stupid that logs only record what was built or planned, and not everything that happened in the chat.**
+
+**Where the shape comes from.** The close routes by what it finds: a build working file sends it to the build close, its absence to the planning close, and each writes entries about the work items that ran. Anything the chat did outside those items — a correction the user gave, a decision reached in conversation, work done by hand between two runs — has no entry to belong to, so it survives only if someone thinks to write it somewhere.
+
+**This run is its own evidence.** The user's correction of the plan/next rule arrived between build items, changed the shipped text, and belongs to no work item in the run; without her raising it, the LOG entry would have described only the item as originally designed.
+
+**Relates to [session-conflates-chat-and-run]** and to **[rescan-as-its-own-skill]**, whose wind-down re-scan is the current partial answer — it looks back over the conversation for things said and never written down — and to `[freeform]`, which is the only shape today for a chat whose work is not queue items.
+
+#### session_start still coaches every chat on running two chats at once, after that permission was withdrawn [session-start-advises-parallel-chats]
+Filed 2026-08-15 by Claude, from a smoke-test run minutes after the permission was withdrawn.
+
+**What it prints, verbatim from the hook's own payload:** *"Isolation: this session shares one working tree with any other session open on this project. The parallel-sessions advice for this case: two appends to different parts of QUEUE.md don't collide…"* — advice for coordinating concurrent chats, addressed to a reader whose always-loaded rules now say a project is worked on from one chat at a time.
+
+**Why it is a real cost rather than a stale sentence.** It is in the payload of every chat, it names a rule that no longer exists, and it reads as permission — a chat told how to coordinate with another chat has been told it may have one. That is the same shape as [cycle-map-contradicts-dont-cross]: two always-loaded texts disagreeing, with the session left to pick.
+
+**What needs settling, and it is not just deletion.** The isolation *detection* has other consumers — the close's isolated-branch warning, which is about a worktree the harness made rather than about two chats the user opened — so the question is which parts of the payload survive the withdrawal and how the surviving ones are worded.
+
+**Files, to confirm at processing:** `plugin/throughliner/hooks/session_start.py`, and the `resources/testing/` suite that pins its payload.
+
+#### [audit] Audit every term in the corpus against what it actually means, the way "session" turned out to mean two things [terminology-corpus-audit]
+**Captured by you 2026-08-15, in your own words: we need to do a full corpus audit for these terms and ensure they are all corrected to exactly what they mean.** Said immediately after the "session" correction, as the general case of it.
+
+**Why an audit rather than a list of renames.** Two individual instances are already filed — [session-conflates-chat-and-run] and [work-item-means-processed-only] — and both were found the same way: the user heard Claude use a word, recognised it as wrong, and said so. That is the only detection this corpus has ever had for the class, so the terms nobody has happened to say out loud in front of her are undetected by construction. An audit is what finds those.
+
+**What the audit looks for**, generalised from the two known instances: a term used for two different things (a chat and a run of a command); a term used for a thing before and after a transition that the method's own boundary turns on (a capture and agreed work). Both shapes let a rule read correctly under one meaning and as a false prohibition under the other, which is how [cycle-map-contradicts-dont-cross] happened.
+
+**Terms worth starting from**, not an exhaustive list — the audit's job is to find the ones nobody has noticed: session, work item, build, run, batch, close, entry, item, capture, processed.
+
+**The axis is fixed by [audit-axis-is-parent-not-sibling]**, which is cleared to run: state the axis before starting, and name where each site fires.
+
+**Findings become captures, and the renames are separate build work.** An audit edits nothing, so this produces a list; whether the corpus-wide corrections then run as one build or several is a question for whoever processes the findings. Expect it to be large.
+
+#### A `[user]` walkthrough can be written with a step the user cannot perform, and nothing checks that [walkthrough-step-user-cannot-perform]
+Filed 2026-08-15 by Claude during a /next walk-through, from the item it stopped.
+
+**What happened.** A `[user]` item's walkthrough opened with "open your Claude Code session list". The run reached that step, gave it, and the user said she does not know how to find it. Every other check had passed: the item was correctly tagged `[user]`, the capability check confirmed Claude could not do the work, and the walkthrough named an observable result. Nobody had asked whether the person doing it knew how to do the first step.
+
+**What the existing checks do and do not cover.** `plan.md`'s keep-step confirms that a step *can produce the observation* the item names — that it yields the evidence — and /next's pre-hand-off runs the light capability check, which asks whether a tool could do the work instead. Neither asks whether the user can carry the step out. The two questions look adjacent and are not: a step can be perfectly capable of producing its evidence and still be unperformable by the person handed it.
+
+**Why it bites harder than an ordinary gap.** The walkthrough is authored at /plan, where the user is present and could be asked in a sentence — and it is *executed* in an unattended run, where the only thing that happens is the run stops. That is the same before/after asymmetry the rule gate is sited for.
+
+**Not a proposal to add a question to every `[user]` item.** Most walkthroughs are steps the user has done before or obviously can do, and asking each time is the over-asking this method keeps removing. What to settle: whether the trigger is a step naming a tool or a surface the user has not used before, whether it belongs at the keep-step or at the hand-off, and whether the honest answer is simply that a stopped walk-through is a cheap failure and no rule is needed.
+
+**The instance is not recoverable and does not need to be** — the item was deleted on the user's decision, and this capture is about walkthrough authoring, not about that item's subject.
 

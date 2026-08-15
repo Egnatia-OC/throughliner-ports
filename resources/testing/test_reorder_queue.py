@@ -403,6 +403,40 @@ def test_move_section_top_reports_above():
           "ABOVE the cleared-to-run marker" in err, err)
 
 
+def test_delete_reports_inbound_citations():
+    """A delete names the items whose prose still cites the deleted slug.
+
+    Until this printed, those were found by grepping afterwards — one delete
+    left five citing items, repaired across three passes, the first incomplete
+    because the grep output was truncated.
+    """
+    text = build_queue(
+        "#### The one being deleted [alpha]\nRationale.\n\n"
+        "#### A citing item [beta]\nThis builds on [alpha].\n\n"
+        + MARKER + "\n"
+    )
+    rc, err, _ = run(text, "--delete", "alpha", "Processed")
+    check("delete with citations: exits 0", rc == 0, err)
+    check("delete reports the citing item", "[beta]" in err and "cite" in err, err)
+    check(
+        "delete does not assert the citation is wrong",
+        "often correct as written" in err,
+        err,
+    )
+
+
+def test_delete_reports_nothing_when_uncited():
+    """The other half — a report that fires on every delete is one people skip."""
+    text = build_queue(
+        "#### The one being deleted [alpha]\nRationale.\n\n"
+        "#### An unrelated item [beta]\nNothing to do with it.\n\n"
+        + MARKER + "\n"
+    )
+    rc, err, _ = run(text, "--delete", "alpha", "Processed")
+    check("delete without citations: exits 0", rc == 0, err)
+    check("no citation note when nothing cites it", "cite" not in err, err)
+
+
 def main():
     print("reorder_queue.py regression tests")
     for fn in (
@@ -426,6 +460,8 @@ def main():
         test_delete_from_unprocessed,
         test_move_section_after_last_cleared_reports_below,
         test_move_section_top_reports_above,
+        test_delete_reports_inbound_citations,
+        test_delete_reports_nothing_when_uncited,
     ):
         print(fn.__name__)
         fn()

@@ -171,8 +171,22 @@ def test_session_start_payload_fits_under_the_cap():
     is exactly why nobody noticed: Claude read CLAUDE.md and the queue directly
     and reconstructed roughly what the hook would have said.
 
-    Asserted with real headroom rather than at the line: a payload creeping up
-    on the cap is already a bug waiting for one more state line.
+    The hard cap is asserted. The size is REPORTED beside it and asserts
+    nothing.
+
+    There used to be a second assertion, that the payload stayed under half the
+    cap. The 10,000 is sourced; the half was not — no comment, no measurement,
+    no reference anywhere in the file or in any LOG entry, which was established
+    by searching rather than assumed. A bare threshold with no derivation is
+    what this project's own rule bans, and two others have been deleted for it.
+    It had already failed once, which is the only reason anyone looked.
+
+    Deriving an honest early-warning threshold was attempted and abandoned:
+    it would need evidence of how the payload grows with project state — held
+    items, waiting mail, worktrees, delivered INBOX bodies — and that evidence
+    does not exist. Manufacturing a figure without it is the same failure with
+    extra steps. A number nobody has to defend beats a defensible-sounding
+    invention, so the size is printed and a human reads it.
     """
     rc, out, err = drive("session_start.py",
                          {"hook_event_name": "SessionStart", "cwd": ROOT,
@@ -184,8 +198,9 @@ def test_session_start_payload_fits_under_the_cap():
     size = len(ctx)
     check(f"SessionStart: payload within the {HOOK_OUTPUT_CAP}-char cap",
           size < HOOK_OUTPUT_CAP, f"{size} chars")
-    check("SessionStart: payload keeps headroom (under half the cap)",
-          size < HOOK_OUTPUT_CAP // 2, f"{size} chars")
+    pct = round(100 * size / HOOK_OUTPUT_CAP)
+    print(f"  size SessionStart payload: {size} of {HOOK_OUTPUT_CAP} chars "
+          f"({pct}%) — reported, not asserted")
 
 
 def test_session_start_points_at_the_rules_rather_than_pasting_them():
@@ -241,7 +256,15 @@ def test_session_start_state_lines_lead_the_payload():
         return
     ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
     state = ctx.find("[Throughliner] Project is set up.")
-    check("SessionStart: project state within the first 2KB",
+    # 2048 is derived, unlike the half-cap that was removed above: past the
+    # 10,000-char cap the harness replaces the payload with a preview of about
+    # 2KB plus a file path, so anything after the first 2KB is what a capped
+    # session would never see. The figure measures the preview, and its
+    # sourcing is the hooks reference plus anthropics/claude-code#44086 and
+    # #70460 — the same two issues cited for the cap itself. Checked rather
+    # than assumed to share the half's fate.
+    check("SessionStart: project state within the first 2KB (the size of the "
+          "preview a capped payload is replaced by)",
           0 <= state <= 2048, "state line at " + str(state))
     flags = ctx.find("UNCLEARED RED FLAG(S)")
     if flags != -1:
@@ -481,6 +504,59 @@ def test_post_tool_use_non_queue_edit_is_silent():
     check("PostToolUse (unrelated file): emits nothing", out.strip() == "", out[:300])
 
 
+def test_session_start_delivers_inbox_message_bodies():
+    """A waiting message arrives as text, not as a filename to go and fetch.
+
+    The instruction to open the file was a step, and a step can be skipped —
+    it was, in a session that then reproduced twice the bug the unread message
+    described. Both halves are pinned here: the body is present, and the
+    payload still says the message is data rather than an instruction.
+    """
+    d = tempfile.mkdtemp(prefix="hookcheck-inbox-")
+    with open(os.path.join(d, "SPEC.md"), "w", encoding="utf-8") as f:
+        f.write("# SPEC\n")
+    with open(os.path.join(d, "QUEUE.md"), "w", encoding="utf-8") as f:
+        f.write("# QUEUE\n\n## Processed\n\n## Unprocessed\n")
+    os.makedirs(os.path.join(d, "INBOX"))
+    body = "A distinctive sentence only this message carries."
+    with open(os.path.join(d, "INBOX", "2026-08-15-a-report.md"), "w",
+              encoding="utf-8") as f:
+        f.write("# A report\n\n" + body + "\n")
+    rc, out, err = drive("session_start.py",
+                         {"hook_event_name": "SessionStart", "cwd": d,
+                          "source": "startup"})
+    check("SessionStart (mail): exits 0", rc == 0, err[:500])
+    ctx = ""
+    if _is_json(out):
+        ctx = (json.loads(out).get("hookSpecificOutput") or {}).get(
+            "additionalContext", "")
+    check("SessionStart: the message body is delivered", body in ctx, ctx[:300])
+    check("SessionStart: the message is labelled as data, not instruction",
+          "not an instruction" in ctx, ctx[:300])
+    check("SessionStart: routing and archiving are still required",
+          "INBOX/archive/" in ctx, ctx[:300])
+
+
+def test_session_start_empty_mailbox_is_silent():
+    """The other half — a mailbox with nothing in it adds nothing."""
+    d = tempfile.mkdtemp(prefix="hookcheck-inbox-empty-")
+    with open(os.path.join(d, "SPEC.md"), "w", encoding="utf-8") as f:
+        f.write("# SPEC\n")
+    with open(os.path.join(d, "QUEUE.md"), "w", encoding="utf-8") as f:
+        f.write("# QUEUE\n\n## Processed\n\n## Unprocessed\n")
+    os.makedirs(os.path.join(d, "INBOX"))
+    rc, out, err = drive("session_start.py",
+                         {"hook_event_name": "SessionStart", "cwd": d,
+                          "source": "startup"})
+    check("SessionStart (empty mail): exits 0", rc == 0, err[:500])
+    ctx = ""
+    if _is_json(out):
+        ctx = (json.loads(out).get("hookSpecificOutput") or {}).get(
+            "additionalContext", "")
+    check("SessionStart: an empty mailbox says nothing",
+          "INBOX" not in ctx, ctx[:300])
+
+
 def main():
     print("hook schema-conformance check")
     print("(shape only — delivery is proved by the liveness step in CLAUDE.md)\n")
@@ -491,6 +567,8 @@ def main():
         test_session_start_payload_fits_under_the_cap,
         test_session_start_points_at_the_rules_rather_than_pasting_them,
         test_session_start_state_lines_lead_the_payload,
+        test_session_start_delivers_inbox_message_bodies,
+        test_session_start_empty_mailbox_is_silent,
         test_pre_tool_use_out_of_scope_denies,
         test_pre_tool_use_in_scope_is_silent,
         test_pre_tool_use_retired_terms_is_writable,

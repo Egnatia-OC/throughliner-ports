@@ -921,8 +921,102 @@ CLEAN_RUN_NOTE = (
 )
 
 
+PLANNING_ENTRY_RE = re.compile(r"-plan(-\d+)?\.md$", re.IGNORECASE)
+
+
+def dispositions(root, window=True):
+    """Every `Rule gate:` line on record, newest LOG entry first.
+
+    **A mode behind a flag, not a fifth check.** Nothing is wrong when this
+    prints, so it joins neither class the board counts — it reuses the same
+    `Rule gate:` parsing the checks already do, and stays out of the
+    denominator.
+
+    **It reads every disposition, not only refusals.** The question it answers
+    is "what did I ask for that did not get built", and refusals are half of
+    that; the same parse yields the rest for one more column.
+
+    Windowed to entries since the most recent planning LOG entry, because that
+    is the moment someone actually looks. `window=False` prints the whole
+    history. Where no planning entry exists, the window cannot be established —
+    the caller says so and names the flag, rather than silently printing
+    nothing, which would read as "no refusals".
+
+    **The guard, stated wherever this prints.** It reports what a disposition
+    *claims*. It cannot say whether a refusal was correct, and it cannot see a
+    proposal dropped in conversation before any disposition was written.
+    """
+    log_dir = os.path.join(root, "LOG")
+    if not os.path.isdir(log_dir):
+        return [], "no LOG/ directory"
+
+    names = sorted(n for n in os.listdir(log_dir) if n.endswith(".md")
+                   and n != "index.md")
+    boundary = None
+    for name in names:
+        if PLANNING_ENTRY_RE.search(name):
+            boundary = name
+    scope = names
+    note = None
+    if window:
+        if boundary is None:
+            note = ("no planning entry found, so the since-last-plan window "
+                    "could not be established — showing full history "
+                    "(--dispositions-all prints this deliberately)")
+        else:
+            scope = [n for n in names if n >= boundary]
+
+    found = []
+    for name in scope:
+        try:
+            with open(os.path.join(log_dir, name), "r", encoding="utf-8") as f:
+                text = f.read()
+        except OSError:
+            continue
+        heading = next((ln for ln in text.splitlines() if ln.strip()), "")
+        shas = re.findall(r"\b([0-9a-f]{7,40})\b", heading)
+        sha = shas[0][:7] if shas else "unrecorded"
+        for line in text.splitlines():
+            if DISPOSITION_RE.match(line):
+                outcome = ("not needed" if NOT_NEEDED_RE.match(line) else "run")
+                found.append({
+                    "entry": name, "sha": sha, "outcome": outcome,
+                    "text": line.strip(),
+                })
+    found.reverse()
+    return found, note
+
+
+DISPOSITION_GUARD = (
+    "This reports what each disposition SAYS. It cannot tell whether a refusal "
+    "was correct,\nand it cannot see a proposal dropped in conversation before "
+    "any disposition was written."
+)
+
+
+def print_dispositions(root, window=True):
+    found, note = dispositions(root, window)
+    scope = "since the last planning session" if window else "full history"
+    print(f"## Rule-gate dispositions — {len(found)} on record ({scope})")
+    if note:
+        print(f"\nNote: {note}")
+    print()
+    if not found:
+        print("- none recorded in this window.")
+    for d in found:
+        print(f"- {d['entry']} [{d['sha']}] — {d['outcome']}")
+        print(f"    {d['text']}")
+    print()
+    print(DISPOSITION_GUARD)
+    return 0
+
+
 def main(argv):
-    root = argv[1] if len(argv) > 1 else "."
+    args = [a for a in argv[1:] if not a.startswith("-")]
+    flags = {a for a in argv[1:] if a.startswith("-")}
+    root = args[0] if args else "."
+    if "--dispositions" in flags or "--dispositions-all" in flags:
+        return print_dispositions(root, window="--dispositions-all" not in flags)
     entries = board(root)
     # Reports are instruments; signals are alarms. Only signals can fire, so
     # only signals are counted — a denominator that included the reports
