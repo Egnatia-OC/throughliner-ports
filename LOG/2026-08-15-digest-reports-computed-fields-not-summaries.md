@@ -1,4 +1,4 @@
-# [HASH] — The queue digest gains three computed fields, and its first test suite
+# 8e20122 — The queue digest gains three computed fields, and its first test suite
 
 The digest printed enough for the droppable skim and the ordering, and not enough for the judgments a consolidation pass actually needs — so a pass that needed them read QUEUE.md whole, 175KB and roughly 56,000 tokens. Three fields close most of that gap without asking anyone to maintain anything, because all three are extraction from text already parsed.
 

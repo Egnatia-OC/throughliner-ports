@@ -1,4 +1,4 @@
-# [HASH] — migrate-checklist.md's show-first paragraph reclassified rather than cut or kept
+# 8e20122 — migrate-checklist.md's show-first paragraph reclassified rather than cut or kept
 
 The audit flagged about sixty words explaining why the migration shows before it writes, and called it the closest call in the set. Neither cutting nor keeping was right: the answer is the reclassify move CLAUDE.md already prescribes, which neither the audit nor the item had reached for.
 

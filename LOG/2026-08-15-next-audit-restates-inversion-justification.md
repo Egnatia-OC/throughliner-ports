@@ -1,4 +1,4 @@
-# [HASH] — Two sentences cut from next-audit.md, and the one kept on an asymmetric-cost argument
+# 8e20122 — Two sentences cut from next-audit.md, and the one kept on an asymmetric-cost argument
 
 `next-audit.md`'s present-findings step explained that presenting findings as one numbered set is the bulk-approval inversion, and why — the findings being a deterministic result set under criteria the user already approved. The always-loaded inversions block states exactly that and names an audit's findings as its own worked example, so the clause was a restatement and is gone.
 

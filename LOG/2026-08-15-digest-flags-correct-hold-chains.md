@@ -1,4 +1,4 @@
-# [HASH] — The digest's hold-chain flag replaced by a loop check, and a phrase that matched its own opposite
+# 8e20122 — The digest's hold-chain flag replaced by a loop check, and a phrase that matched its own opposite
 
 The digest reported three "placement contradictions" on every run, one per link of a deliberate pacing chain built on the user's own instruction. The decisive fact was found by reading the code rather than the item: `render()` already appends `Blocked by: [X] -> Processed/held` to every held item's line, so the chain was printed item by item one row above. Removing the flag deletes a duplicate, not a signal — which answers the only real argument for leaving it alone.
 

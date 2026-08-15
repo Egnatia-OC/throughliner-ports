@@ -1,4 +1,4 @@
-# [HASH] — Every written shape measured, and every one of them roughly doubled in August
+# 8e20122 — Every written shape measured, and every one of them roughly doubled in August
 
 The user's question was whether Claude is mirroring the length it sees rather than writing what the matter calls for. That is not observable to Claude from the inside and is entirely observable from outside, so this measured it rather than designing a fix for an unestablished cause.
 

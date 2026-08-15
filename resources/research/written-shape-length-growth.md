@@ -88,3 +88,21 @@ Longest index lines, with the entry each points at:
 - 2026-08-13: index line 194 words -> entry 1224 words (2026-08-13-rename-to-throughliner.md)
 - 2026-08-10: index line 190 words -> entry 1433 words (2026-08-10-plan-2.md)
 
+## Added 2026-08-15 — did the length rule change anything?
+
+**The question.** A rule telling Claude to match a written file's length to what the task needs, naming queue rationale and LOG entries explicitly, shipped on 2026-08-13. [invented-rationale-compounds-past-the-shipped-rule] had been skipped three times waiting for exactly this observation: whether volume falls now the rule exists, before any fourth mechanism is designed. The monthly buckets above cannot answer it, because the rule landed mid-month. August was therefore split at the ship date, using the same script's own `queue_lengths()`.
+
+**Capture length at first filing, split at the rule's ship date:**
+
+| window | n | median | mean | max |
+|---|---|---|---|---|
+| 2026-07 (pre-rule) | 187 | 176 | 265 | 7912 |
+| 2026-08-01 to 08-12 (pre-rule) | 515 | 321 | 368 | 1707 |
+| 2026-08-13 to 08-15 (post-rule) | 152 | 396 | 461 | 1901 |
+
+**The finding: volume did not fall. It rose — about 23% on the median and 25% on the mean.** On the available evidence the third remedy has not worked, and the direction is the opposite of the one it aimed at.
+
+**Three caveats, none of which rescues the rule.** The window is three days, though n=152 is not a small sample. The rule's home moved during that window — it shipped inside an output style that was deleted on 2026-08-14 and re-homed into the always-loaded rules — so part of the period ran it from a file that no longer exists; that is a reason the rule may have been weakly present, not a reason to read the numbers as a fall. And word count cannot distinguish invented rationale from reasoning genuinely reached, which is the caveat this file already carries and which still applies: these numbers answer the *volume* half of that item and say nothing about the *provenance* half.
+
+**What it licenses.** The item's own condition was that a fourth mechanism should not be designed on an untested third. The third is now tested. All three remedies to date have been prose — state the rule, sharpen the rule, add a length rule — and the corpus now has a measured non-result for the last of them alongside its earlier finding that attribution held while volume grew regardless. A fourth prose remedy is the one shape the evidence rules out.
+

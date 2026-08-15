@@ -3,11 +3,19 @@
 **Date:** 2026-06-09
 **Question:** Are the entries in `~/.claude/projects/.../memory/` injecting stale or wrong context into sessions in a way that's degrading planning quality?
 
+## Re-verified 2026-08-15 — one paragraph below has fallen
+
+Re-checked before drafting [competition-comparison-article], because the finding is two months old and the article makes claims about third parties. **The staleness finding itself stands unchanged.** Two things below are now wrong:
+
+**AutoDream is live, and the "we don't have it running" sentence is false.** It consolidates between sessions — merging new facts, deleting contradicted notes, converting relative dates to absolute ones, trimming the index — and it triggers automatically after roughly 24 hours plus at least five sessions of new activity. It was introduced in March 2026 and is on a gradual rollout, but **a manual `/dream` command is available to everyone**, so the consolidation is reachable regardless of rollout state. A cycle runs about 8–10 minutes. That means the manual-cleanup conclusion at the bottom of this file is no longer forced, and any comparison claiming automatic consolidation is something only competitors have is wrong.
+
+**"Obsidian memory systems" is a category, not a project, and must not be described as one thing.** There are many independent implementations — vault-as-memory guides, several separate open-source projects offering things like hybrid semantic search, self-rewriting notes and scheduled maintenance agents, and a Claude Code skill distributed through a marketplace. Obsidian's own official Agent Skills, released January 2026, teach Claude Code to handle wikilinks, frontmatter, Bases and JSON Canvas correctly. So a comparison must either name the specific project it is comparing against or describe the general vault-as-memory pattern and say that is what it is doing.
+
 ## Finding
 
 Yes, this is a recognised failure mode of Claude Code auto-memory as of 2026 — not a one-off. Auto-memory accumulates well but doesn't curate itself: snapshots of project state ("V47 promoted X," "ideas scoped to V51/V52") rot fast because the underlying state moves while the memory doesn't. Behavioural/preference memories don't have this problem and stay durable.
 
-Anthropic's own remedy is **AutoDream**, a background sub-agent that consolidates memory between sessions — replacing vague time refs with exact dates and resolving contradictions. We don't have it running, so cleanup is manual.
+Anthropic's own remedy is **AutoDream**, a background sub-agent that consolidates memory between sessions — replacing vague time refs with exact dates and resolving contradictions. ~~We don't have it running, so cleanup is manual.~~ **Corrected 2026-08-15 — see the re-verification above: it is live and `/dream` is available manually to everyone.**
 
 ## Pattern (what goes stale vs. what doesn't)
 
@@ -33,3 +41,16 @@ Going forward: avoid writing project-state snapshots into memory at all. The que
 - [Claude Code Memory System Explained — Milvus Blog](https://milvus.io/blog/claude-code-memory-memsearch.md)
 - [Persistent Memory Across Context Compactions — anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556)
 - [Claude Code AutoDream: Memory Consolidation for AI Agents](https://zenvanriel.com/ai-engineer-blog/claude-code-autodream-memory-consolidation-guide/)
+
+### Added at the 2026-08-15 re-verification
+
+- [Claude Code Auto Dream Explained: Memory Like REM Sleep](https://decodethefuture.org/en/claude-code-auto-dream-explained/)
+- [Auto Memory and Auto Dream: how Claude Code learns and consolidates its memory](https://antoniocortes.com/en/2026/03/30/auto-memory-and-auto-dream-how-claude-code-learns-and-consolidates-its-memory/)
+- [Claude Code Auto-Dream Explained: How AI Organizes Its Memory While You're Away](https://claudelab.net/en/articles/claude-code/claude-code-auto-dream-memory-consolidation-guide)
+- [Anthropic introduces dreaming for Claude agent memory consolidation](https://letsdatascience.com/news/anthropic-introduces-dreaming-for-claude-agent-memory-consol-32a279c9)
+- [obsidian-memory-for-ai](https://github.com/jrcruciani/obsidian-memory-for-ai)
+- [ai-memory-vault](https://github.com/jaredrhod/ai-memory-vault)
+- [obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain)
+- [obsidian-mind](https://github.com/breferrari/obsidian-mind)
+- [Obsidian Memory System — Claude Code skill listing](https://mcpmarket.com/tools/skills/obsidian-memory-system)
+- [Stop Calling It Memory: The Problem with Every "AI + Obsidian" Tutorial](https://limitededitionjonathan.substack.com/p/stop-calling-it-memory-the-problem)

@@ -1,4 +1,4 @@
-# [HASH] — The planning scope-lock now denies against a standing list, and the lookup it was ordered to do saved it from shipping a break
+# 8e20122 — The planning scope-lock now denies against a standing list, and the lookup it was ordered to do saved it from shipping a break
 
 The user decided this, in her own words: plan needs a scope lock, we had it before the reversion, she wants it back, full stop — and she said plainly that she is sick of re-arguing it, having done so for weeks. Her reason is the whole argument: just because Claude asks the user for an edit does not mean the user reads the request in full and understands what it means. An ask that gets waved through is not consent. The design below is Claude's; the decision is not.
 
