@@ -1,4 +1,4 @@
-# [HASH] — The rule-corpus checks get a close trigger, so their silence finally means something
+# b4de5bf — The rule-corpus checks get a close trigger, so their silence finally means something
 
 Captured by the user, whose words were that she has no idea how this works and is concerned it is not working, because she never hears about it.
 

@@ -1,4 +1,4 @@
-# [HASH] — A command offered inside an ask is named in words and never ends the sentence
+# b4de5bf — A command offered inside an ask is named in words and never ends the sentence
 
 The desktop app lifts a trailing slash command out of an assistant message and pre-fills the composer with it, so a message ending "…or shall we run /done?" leaves that command sitting in the input box as though the user had typed it, one keystroke from being sent. A user was already caught by exactly that.
 

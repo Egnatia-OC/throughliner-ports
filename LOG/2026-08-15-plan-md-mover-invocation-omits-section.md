@@ -1,4 +1,4 @@
-# [HASH] — Every documented queue-mover command checked, one syntax defect fixed and one silent hazard documented
+# b4de5bf — Every documented queue-mover command checked, one syntax defect fixed and one silent hazard documented
 
 `plan.md`'s below-the-line lift gave the invocation without the section name the script requires before `--move`. Run exactly as written it exits non-zero with a usage message and writes nothing.
 

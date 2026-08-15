@@ -1,4 +1,4 @@
-# [HASH] — The depth field's two downstream restatements evicted, leaving the definition at its authoring site
+# b4de5bf — The depth field's two downstream restatements evicted, leaving the definition at its authoring site
 
 The field was defined three times: in `next.md`'s per-item completion step, again in `next-build.md`, and again in `done-build.md`. All three said the same thing — two values, short is the default, written at the tick rather than loosely during the build.
 

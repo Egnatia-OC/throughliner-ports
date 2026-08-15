@@ -1,4 +1,4 @@
-# [HASH] — /setup's queue scaffold writes its section preambles as blockquotes, so the lint stops firing on them
+# b4de5bf — /setup's queue scaffold writes its section preambles as blockquotes, so the lint stops firing on them
 
 Reported by another project running this plugin: the queue structure lint fired two advisory flags on every PostToolUse invocation — every Bash call, every Edit — saying the prose under `## Processed` and under `## Unprocessed` belongs to no work item.
 

@@ -1,4 +1,4 @@
-# [HASH] — The scrub rule names scrub_sweep.py as an additional pass, and the general scripts clause is refused
+# b4de5bf — The scrub rule names scrub_sweep.py as an additional pass, and the general scripts clause is refused
 
 Captured by the user in her own words: maybe there should be a list of on-hand script tools available to Claude inside the always-loaded rules so Claude knows about them.
 

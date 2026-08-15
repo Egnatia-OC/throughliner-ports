@@ -1,4 +1,4 @@
-# [HASH] — The migration recipe now refreshes whenever the format epoch is bumped
+# b4de5bf — The migration recipe now refreshes whenever the format epoch is bumped
 
 The recipe for converting an old-format project to the current shape drifts as the format keeps changing, and a stale recipe is worse than none. It had no maintenance trigger at all.
 

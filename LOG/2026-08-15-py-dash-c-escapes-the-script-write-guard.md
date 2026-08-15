@@ -1,4 +1,4 @@
-# [HASH] — The script-write guard widened to reach `py -c` and `sed -i`, measured against the suite before keeping the pattern
+# b4de5bf — The script-write guard widened to reach `py -c` and `sed -i`, measured against the suite before keeping the pattern
 
 Two live escapes, both harmless by luck. A rezip bumped `plugin.json` with `py -c "... open(p,'w') ..."` and nothing fired. A `sed -i '' -e '' QUEUE.md` rewrote the queue in place and was harmless only because the empty scripts made no change.
 

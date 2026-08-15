@@ -1,4 +1,4 @@
-# [HASH] — Two restatements cut from done-plan.md, two kept on the placement-site test
+# b4de5bf — Two restatements cut from done-plan.md, two kept on the placement-site test
 
 Four separate findings were merged into one pass because they shared a file and, more importantly, a single judgment: does a local copy serve the moment of placement, or does it merely restate? Answering that four times separately would have meant reopening the same file four times and risking four inconsistent answers.
 

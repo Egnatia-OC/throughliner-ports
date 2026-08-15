@@ -1,4 +1,4 @@
-# [HASH] — The work-cycle block now says processing a capture is how held work gets released
+# b4de5bf — The work-cycle block now says processing a capture is how held work gets released
 
 The user has given this correction five to ten times in about a month, and her words at processing were the design: this is solvable by an addition to the build cycle description — Claude needs to know that in /plan, not only are captures processed, but items under the line get lifted, and the how is that we process the capture that blocks that item, thus unblocking it; and a capture does not have to hold the Magna Carta, it can literally be "process this to unblock X".
 

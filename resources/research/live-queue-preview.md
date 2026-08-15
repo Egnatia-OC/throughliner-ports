@@ -1,5 +1,7 @@
 # Live preview of QUEUE.md (and other project docs)
 
+**Superseded in part by Understudy** — the user reported on 2026-08-15 that Understudy now live-renders a file as it changes on disk. What falls is this file's *conclusion*: that no live preview is available and the want is unmet pending an Anthropic fix. What still stands is the finding itself — the desktop app's own Files panel does not auto-refresh, which is untouched by anything outside the app. **Do not cite this file as evidence that live rendering is unavailable.**
+
 Researched 2026-06-03. Context: Alex wants a live or near-live rendered preview of QUEUE.md while working in the Claude Code desktop app. The app's Files panel shows a preview when you click a file, but it does not auto-refresh — you have to click away and click back (or re-open the file) to see changes.
 
 ## Root cause: this is a known, unfixed limitation

@@ -1,4 +1,4 @@
-# [HASH] — done.md stops instructing the close to clear the forward advisory
+# b4de5bf — done.md stops instructing the close to clear the forward advisory
 
 `done.md` told a closing session that the advisory is "read at the next /plan's opening to orient where that session starts, and cleared at that session's /done close (done-plan.md)". The clear was moved to the read itself; grepping `done-plan.md` for "advisory" returns nothing at all. So a shipped doc named a step in another shipped doc that does not exist.
 

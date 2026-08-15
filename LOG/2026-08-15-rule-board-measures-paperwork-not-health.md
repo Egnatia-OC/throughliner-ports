@@ -1,4 +1,4 @@
-# [HASH] — The rule-corpus checks stop reporting a clean run as health, and lose their invented vocabulary
+# b4de5bf — The rule-corpus checks stop reporting a clean run as health, and lose their invented vocabulary
 
 Raised by the user, whose words were that these rules have had zero effect, and who asked of what relevance approval is when she has literally never been asked.
 

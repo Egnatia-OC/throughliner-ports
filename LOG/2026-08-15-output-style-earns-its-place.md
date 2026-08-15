@@ -1,4 +1,4 @@
-# [HASH] — The shipped output style deleted in full, three rules migrated into the always-loaded file
+# b4de5bf — The shipped output style deleted in full, three rules migrated into the always-loaded file
 
 This session ran across 2026-08-14 and 2026-08-15.
 

@@ -1,4 +1,4 @@
-# [HASH] — Outbound INBOX messages now name their sender, in the filename and in the body
+# b4de5bf — Outbound INBOX messages now name their sender, in the filename and in the body
 
 An arriving message named its host version and build stamp but not the project that sent it, and identifying the sender took five separate checks that still did not settle it. Version files record the version at the last /setup rather than the host actually running; the quoted preamble text is shipped scaffold and identical everywhere; one project was eliminated only because it happened to have no preambles at all; two projects then matched on every artifact readable from here. It was resolved by the user showing a screenshot of the sending session.
 

@@ -1,4 +1,4 @@
-# [HASH] — Work-item headings must put their distinguishing words first, because the outline truncates them
+# b4de5bf — Work-item headings must put their distinguishing words first, because the outline truncates them
 
 Captured by the user from a screenshot of her queue open in a Markdown reader with an outline sidebar, where every heading was cut mid-phrase. Her observation that she navigates by the section titles is what surfaced it; the slug plays no part in that navigation.
 

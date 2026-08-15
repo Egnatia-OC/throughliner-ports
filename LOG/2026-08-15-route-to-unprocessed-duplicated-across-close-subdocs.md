@@ -1,4 +1,4 @@
-# [HASH] — The close sub-docs' shared routing justification deleted, and their identical record block hoisted into done.md
+# b4de5bf — The close sub-docs' shared routing justification deleted, and their identical record block hoisted into done.md
 
 `done-build.md` and `done-audit.md` opened their route-to-Unprocessed steps with a word-for-word identical paragraph, and both carried a byte-identical fenced block naming the record the step sweeps. Duplication twice over: the two sub-docs restated each other, and the justification was separately canonical in the always-loaded write-first rule, which carries the recoverability test the copies asserted without stating.
 

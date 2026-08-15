@@ -1,4 +1,4 @@
-# [HASH] — A session makes exactly one commit, and the post-commit tail makes none
+# b4de5bf — A session makes exactly one commit, and the post-commit tail makes none
 
 Captured by the user in her own words: the close is getting very messy every time with many commits. Her word was *every time*, so this was never about one untidy session.
 

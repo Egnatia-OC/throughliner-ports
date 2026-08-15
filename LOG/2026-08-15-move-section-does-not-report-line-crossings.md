@@ -1,4 +1,4 @@
-# [HASH] — The mover reports line crossings on both paths, and refuses to clear items nobody named
+# b4de5bf — The mover reports line crossings on both paths, and refuses to clear items nobody named
 
 The crossing report existed only on the within-section reorder path. `--move-section`, which moves an item between sections and may carry `--marker-after`, never ran it — and that is the path where the largest crossings happen. Observed rather than reasoned: a `--move-section … --position BOTTOM --marker-after` swept four held items into the cleared region and reported only that the moved item was now cleared, while the corrective `--move` in the same session printed four crossing warnings. Same hazard, same script, opposite verbosity, and the silent path is the one where a whole held region can move at once.
 

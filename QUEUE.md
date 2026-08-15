@@ -6,6 +6,300 @@ Two sections. **Processed** — work discussed and agreed, ordered top-to-bottom
 
 ## Processed
 
+#### The queue digest should report computed fields, not summaries — three of them, none requiring judgment [digest-reports-computed-fields-not-summaries]
+Filed 2026-08-15 from a post-close discussion. **Mixed authorship: the user asked how the QUEUE structure could be improved, told Claude that an index had already been tried and failed, and independently spotted that these fields bear on the ladder. The diagnosis and the field list are Claude's.**
+
+**Why an index failed, which is the load-bearing part and is not recorded anywhere.** The user reports trying a QUEUE index like `LOG/index.md` and that Claude "immediately lost ability to reason across it". That is structural rather than an implementation fault. **LOG is read by point lookup** — you want the one entry that decided something, so an index is ideal: scan lines, open one file. **QUEUE is read for comparison** — does this duplicate that, does this unblock that, what order should they go in. That is relational reasoning across the whole set, and a per-item summary destroys precisely the material the relations are made of. Indexes support lookup, not comparison. **Do not re-propose a QUEUE index**; the reason it failed will not change.
+
+**What works instead is a projection, and one already exists.** `queue_digest.py` is a computed view regenerated from the source every time, which is why `plan.md` says it satisfies the page-the-whole-file rule *more strongly* than paging does — code cannot silently truncate, and a projection cannot drift the way a maintained index does. It simply does not carry enough yet.
+
+**The cost this addresses, measured this session.** A consolidation pass read QUEUE.md whole — 175KB, roughly 56,000 tokens — because the judgments it needed (is this a duplicate, is this premise stale) were not answerable from the digest. Most of that read would have been unnecessary.
+
+**Three fields, all mechanically extractable, no judgment in any of them.**
+
+```
+files named        group items by the file paths in their Files line
+                   # seven merges were done by hand this session; six were
+                   # items naming one file — four naming done-plan.md, two
+                   # naming pre_tool_use.py. This surfaces them for free.
+
+slugs cited,       extract every [slug] appearing in an item's prose and
+resolved           report whether that slug has a LOG entry
+against LOG        # a LOG entry means it shipped. Executes the always-loaded
+                   # sentence "Status is re-derived from LOG", which is
+                   # already the rule and which nothing currently performs.
+
+age                first-seen commit per item, as a column
+                   # a fact, not a threshold
+```
+
+**The six recorded instances behind the slug field, carried here 2026-08-15 when [blocked-by-in-unprocessed-is-never-revisited] was deleted into this item.** They are the evidence that this field is the whole fix rather than a convenience, and they are the reason it must read PROSE citations and not only `Blocked by:` lines.
+
+```
+2026-08-13, three at once   [discord-post-spec-inversion],
+                            [discord-post-context-adjacency] and
+                            [discord-post-cycle-awareness], each naming a
+                            blocker absent from the queue. All three had
+                            SHIPPED, two on 2026-08-12 with LOG entries
+                            named after their slugs. Ready for a day with
+                            nothing saying so; found only because the user
+                            asked why work goes unsurfaced.
+
+2026-08-15, two more        [migration-recipe-freshness], behind a checklist
+                            shipped 2026-08-01; [setup-repo-privacy-and-
+                            publishing], behind a scrub gate shipped
+                            2026-08-09. Found only because a session read
+                            the whole queue for an unrelated pass.
+```
+
+**The second pair is why the field reads prose, and it is the load-bearing detail.** Neither carried a `Blocked by:` line at all — their dependencies were written as ordinary prose ("gated on [migration-checklist] existing first"). A `Blocked by:`-scoped fix would have missed both. And prose is the **correct** place for these: the always-loaded rules retired prose lift-conditions but positively require citing other items by slug in prose, saying a slug in prose "is the only thing that makes a cross-reference exist at all". So the information was recorded exactly as the method prescribes and still reached nobody.
+
+**Why no rule ships alongside the report, settled when the deleted item was processed.** That item's remaining question was what should *happen* once the report exists — widen `plan.md`'s below-the-line revisit to both regions, surface it separately, or leave it as a digest line. The answer is none of them: the field feeds **rung 4 of the ladder**, decay, which runs at every /plan opening, and this item's own file list already carries the `plan.md` edit that makes rung 4 say it reads this field. Detection plus an existing consumer is the whole fix. The deleted item leaned this way itself — "the honest answer may be that the report is the whole fix."
+
+**The coverage gap this closes, stated so the fix is not over-read.** `plan.md`'s below-the-line revisit walks **Processed below the marker only**; nothing walks Unprocessed for the same question. The digest does resolve a `Blocked by:` reference and print `-> ABSENT`, but ABSENT reads identically for a blocker that shipped and one that never existed, and no step is told to act on it. An item sitting in Unprocessed behind a stale blocker is invisible to that revisit, invisible to /next, and its blocker is invisible to the throughput floor once it has shipped and left the queue.
+
+**The hard guard, and it is why this survives the prose-blocker repeal.** Each field reports a **fact**, never a **verdict**. "Cites [X]; [X] has a LOG entry" is a lookup. "Ready to lift" is an interpretation, and interpreting dependency conditions is exactly what was retired at `9022700` along with the four-way classifier built to do it. The user raised this objection herself; the answer is that extraction is not interpretation, and the build must keep it that way. **No field may become a threshold either** — "more than three citations" or "older than thirty days" would be the bare numbers the method bans.
+
+**The user's own observation, and it is stronger than she put it: this bears on the ladder, and three of its six rungs are currently judgment calls these fields would make computable.** Rung 3, unblock-potential — the stated default — asks which item's processing releases the most other work; with citations resolved both ways that is a count. Rung 4, decay, asks whether a premise is going stale; an item citing a slug that has shipped has a demonstrably stale premise. Rung 5, cheap-to-settle, currently reads off "what was actually opened this session", which is memory; the files-named field makes it mechanical. Rung 2 is already served by the existing placement-contradiction flags.
+
+**Weigh at processing whether rungs 3 and 4 stay distinct once both are computed** — an item whose cited work has shipped is both unblockable and stale-premised, which may be one rung seen from two sides.
+
+**A quiet gain worth stating.** `plan.md` records an honest limit on rung-change narration: Claude must compare the rung in force against the rung a pick came from, and a drifted session can answer wrongly. If the digest prints these fields, the rung becomes readable from output rather than recalled. That narrows the hole rather than closing it, and must not be described as closing it.
+
+**What this does NOT do.** It cannot make the final judgment — whether two items are genuinely the same finding still needs their prose. It narrows the candidate set from sixty items to a handful, after which prose is read per item at the moment of processing, which is what `plan.md` already prescribes.
+
+**Rejected, so they are not re-proposed:** a QUEUE index (above); splitting QUEUE across several files (same failure as the index — cross-item reasoning is the thing being served); and summarising items (that *is* the index).
+
+**Rungs 3 and 4 stay distinct — settled at processing 2026-08-15, answering the weigh-at-processing question above, which misread the direction.** Unblock-potential asks *who cites me* — the incoming arrow, a count of other items whose prose names this slug. Decay asks *has what I cite already shipped* — the outgoing arrow, this item's own citations resolved against LOG. Two different directions on the same citation graph, so one field feeds both rungs and neither rung absorbs the other. Do not merge them.
+
+**Output shape, settled at processing on the user's decision.** Three new fields across sixty-odd items could easily undo the token saving this item exists for, so each is rendered at the cheapest place that still serves its rung:
+
+```
+files named     a SEPARATE block after the contradictions, listing only files
+                named by TWO OR MORE items — the merge candidates. Not a
+                per-item field: on a line-per-item digest it would be noise,
+                and a file named by one item surfaces nothing.
+
+slugs cited     on the item's own line, printing ONLY citations that resolve
+                to a shipped LOG entry. The user's decision, asked and
+                answered directly. An unshipped citation is the normal state
+                and would print on nearly every line for nothing; a SHIPPED
+                one is the signal — it is the stale-premise tell rung 4 wants.
+
+age             a plain first-seen date on the item's line.
+```
+
+**Mechanism checked before the build was described, and two of the three fields need no new parsing.** `queue_digest.py` already captures each item's `files_line` and its full lowercased `prose`, so files-named and slugs-cited are extraction and rendering only.
+
+**Age is one git pass, not one per slug — measured, not estimated.** The obvious build is `git log -S"[slug]"` per item: 0.12s each, about 8 seconds across the current queue, on a script that re-runs several times in a session. One pass instead — `git log --reverse --format=%as -U0 -p -- QUEUE.md`, scanning added `#### ` heading lines and recording the first date each slug appears — returns every item's first-seen date in **1.7 seconds** on this repository's 561-commit history. Build that one. **It must degrade quietly**: this is a shipped script, so a consumer project may not be a git repository at all, or may have a QUEUE.md that was never committed. No date, no error, no noise.
+
+**"Has a LOG entry" needs no git either.** Entries are named `<date>-<slug>.md`, so the resolve is a filename match over `LOG/` read once, not a history scan.
+
+**The fact-not-verdict guard lands in the script's docstring, not in `plan.md`.** It is a constraint on whoever next edits the script, which is where the maintainer reads; putting it in `plan.md` would state it as a session rule, which it is not.
+
+**Rule gate: not needed — this authors no rule.** The commit touches `docs-b/plan.md`, so the trigger fires mechanically, but what lands there is a description of what the digest now prints. The ladder's six rungs are unchanged in wording and in force; what changes is that three of them become readable from output instead of recalled. The one rule-shaped sentence in this item — fields report facts, never verdicts, and no field becomes a threshold — is not admitted to the always-loaded corpus at all; it goes to the script docstring per the decision above.
+
+**Files:** `plugin/throughliner/scripts/queue_digest.py` (the three fields, the one-pass git helper, the LOG filename resolve, the grouped files block, and the fact-not-verdict docstring note); `plugin/throughliner/docs-b/plan.md` (the digest's described output at Step 1, and the ladder's rungs 3, 4 and 5 where they say what they read from); `SPEC.md` (the `/plan` bullet's account of what the digest reports); and a NEW `resources/testing/test_queue_digest.py` — checked at processing, the digest has no suite at all today, so the build writes one rather than extending one, covering each field and the no-git degrade. Relates to [superseded-flag-has-no-section-granularity] (the same one-way-citation problem). The six instances the slug field catches are carried in this item's own prose above, since [blocked-by-in-unprocessed-is-never-revisited] was deleted into it.
+
+#### The queue digest reports a deliberate terminating hold-chain as a placement contradiction [digest-flags-correct-hold-chains]
+Filed 2026-08-14 by Claude at the /done close, from the digest firing on a chain built the same session on the user's explicit instruction.
+
+**What happens.** Four `[user]` Discord-post items were chained deliberately — each blocked by the one before it, so they release one per day and never flood the server. The digest reports three "Placement contradictions", one per link, each saying the item "is blocked by [X], which is itself held — a hold chain, so neither moves until the chain's end does". The chain is correct, intended, and terminates at a wake-up item in Unprocessed.
+
+**Why it is worth a line rather than a shrug.** `plan.md`'s own text already draws the distinction the report does not: "One that terminates is slow; one that loops never resolves." A chain terminating in an Unprocessed item will resolve the moment that item is processed; a chain looping back on itself never will. The digest reports both identically, and under a heading that says *contradiction*.
+
+**The cost is the familiar one.** A flag that fires on correct work gets learned past, and then a genuine looping chain arrives looking exactly like the three that are always there. This project has now recorded that shape at the queue lint's scaffold preambles ([lint-flags-scaffold-preamble]) and in the standing rule that a check which over-claims makes the corpus look guarded when it is only partly guarded.
+
+**Candidate fixes, none chosen.** Resolve the chain to its end and report only where it fails to terminate, which is what `plan.md`'s own sentence implies and is computable from the data the digest already resolves. Or keep reporting it but under a heading that is not "contradiction" — a chain is a fact about the queue, not a fault. Or do nothing, which is a real candidate: three lines at the bottom of a digest is cheap, and the flag does surface something a reader may want to know.
+
+**Do not fix it by suppressing chains involving `[user]` items**, which is the tempting narrow patch — the pacing chain is not special, and a build chain would deserve the same treatment.
+
+**Chosen at processing 2026-08-15, on the user's decision: the first candidate, resolve-to-the-end — but as a cycle check, which is sharper than the candidate as written.**
+
+**The decisive fact, found by reading the code rather than the item: the chain is already printed, per item, on its own line.** `render()` appends `Blocked by: [X] -> Processed/held` to every held item's line, and `locate()` supplies the `Processed/held` half. That *is* the chain, item by item. The contradictions block then re-states the same relation under a heading reading *contradiction*. So removing the flag loses no information whatsoever — it deletes a duplicate, not a signal. This answers the third candidate's one real argument ("the flag does surface something a reader may want to know"): the reader is already told, one line higher.
+
+**What replaces it.** Follow each item's `Blocked by:` from item to item. Terminating at anything that is not itself held — Unprocessed, cleared, or absent — means the chain resolves when that end resolves, and nothing is reported. Revisiting a slug already seen on the walk means a loop, which never releases, and *that* is reported. Purely mechanical, no interpretation, so it holds the fact-not-verdict guard that [digest-reports-computed-fields-not-summaries] states.
+
+**The second candidate was refused, and the reason is worth keeping.** Rewording the heading keeps a line that fires on every run and says nothing the item's own line did not already say. Renaming a false flag does not make it fire less.
+
+**A second false-positive class, found live on 2026-08-15 in the session that processed this item, and it widens the fix.** Twice while writing another item, Claude produced sentences the do-not-build detector flagged. Both used the list's first phrase followed by the word *into*, saying that *other work* must not be folded into that item — the **opposite** of what the detector reads. The existing discriminator (a slug earlier on the line means the sentence is about a different item) cannot see this shape: there is no slug, and the sentence genuinely is about that item, just not about building it.
+
+**So the phrase list is the defect, not the discriminator.** The listed phrase matches as a substring of itself-plus-*into*, which is a different verb sense — built-into means folded-into. The narrow fix is to require the phrase to be terminal, or followed by some word other than that one: mechanical, no judgment, one regex. Check the other four entries in `DO_NOT_BUILD_PHRASES` for the same substring hazard while there.
+
+**A third instance the same session, and it is the one that settles the fix's shape.** This item — which describes the detector — fired the detector, because a paragraph explaining which phrases trigger a check has to quote those phrases. That is not an authoring slip better care avoids: **the detector cannot be documented in the queue without tripping itself**, and the same binds any future item proposing to change the list. The paragraphs above are now written around the literal string, which is a workaround and reads worse for it.
+
+**This is what carries the item past the one-instance bar and rules out the cheap alternative.** Three instances in one session, two of them from a session that had read the phrase list an hour earlier. So "ask authors to avoid the phrase" is refuted twice over: the author who knew the list still tripped it, and an item *about* the list cannot avoid it at all. The hold-chain class above fires on every run besides.
+
+**An absent blocker is deliberately left alone.** A chain ending in a slug that resolves to nothing is a wrong reference rather than a loop, and it already has two homes — `session_start` names held items whose blocker is in neither section, and `plan.md`'s below-the-line revisit treats it as a fault to fix that session. Adding a third report here would be the duplication this item exists to remove.
+
+**Rule gate: not needed — this authors no rule.** The commit touches `docs-b/plan.md`, firing the trigger mechanically, but what changes there is one row of a table describing what the digest reports. No rule is stated, amended or evicted.
+
+**Files:** `plugin/throughliner/scripts/queue_digest.py` (`contradictions()` — the hold-chain branch replaced by a chain-walk with a seen-set, reporting loops only); `plugin/throughliner/docs-b/plan.md` (Step 1's placement-contradiction table, whose hold-chain row becomes a loop row); `SPEC.md` (the `/plan` bullet lists "a chain of work each waiting on something itself waiting" among the reported contradictions — that sentence goes wrong under this change and is corrected in the same commit); and `resources/testing/test_queue_digest.py`, the suite [digest-reports-computed-fields-not-summaries] creates, which gains a terminating-chain case and a looping-chain case.
+
+**Placed directly after [digest-reports-computed-fields-not-summaries] in the cleared region** — same two shipped files plus SPEC, so one run touches each once, and that item's new test suite covers this one at no extra cost. Ordering judgment, not a dependency: neither item needs the other to build.
+
+#### Script the length measurement across captures, work items, LOG entries and index lines [log-entry-length-may-be-mirrored]
+**Captured by you 2026-08-15, in your own words: the log entries are the longest and heaviest item still, and — a random thought — is Claude looking at previous entries and mirroring the length? Because now that we have per-item logging there is no need for each entry to match the length of the per-session logs we used to have.** The supporting evidence is Claude's. Scope widened and the fix's shape settled in discussion the same day; the record of that is below the build.
+
+**WHAT GETS BUILT.** A measurement script under `resources/`, walking git history and reporting length against date for four written shapes, and one research file carrying its output. **The item ends at the research file. It writes no rule, no number, no `docs-b/` text.** The band is derived afterwards, at the /plan session that reads the finding, in conversation — that step needs no queue item of its own, and this item's scope stops short of it.
+
+```
+captures            first-filed length per item, against date
+work items          length in Processed, against date; and against
+                    the same item's length when first captured
+LOG entries         word count against date, split by flavor (plan vs
+                    build) and marked at the per-entry split
+LOG index lines     word count against date, against the length of the
+                    entry each one points at — the inflation path the
+                    user named: a longer index line implies a longer entry
+```
+
+Every output is a **fact against a date**. No threshold is invented anywhere in the script.
+
+**The distribution alone cannot give the band, and a build that reads it straight off will ship a bloated range.** The derivation method is measured *good* generations, not typical ones — and this corpus is the bloated one, which is the whole premise. So the script reports the distribution and stops; picking which specimens count as good is the user's and Claude's judgment together, and it is the one step here that is not mechanical. Say so rather than letting the numbers look self-generating.
+
+**The fix's shape, already settled, so the derivation session does not reopen it:** a two-tier **word** range per shape — a soft band plus a hard ceiling naming an *action* on breach — and **no specimen**. The unit question, the two-tier form, the derivation method and the case against a specimen are all in `resources/research/llm-length-instruction-following.md`. **Read that file rather than re-arguing any of it here**; what stays below is only what is specific to this project.
+
+**Why the action-on-breach is load-bearing, and this is the project-specific half.** The 20% index-line cap was repealed on 2026-08-12 for firing on correct work. A hard tier that *advises* — reconsider the shape, split the item — costs a moment's thought when it fires on something correct rather than blocking it. **A build that turns the ceiling into a refusal has reproduced the repealed cap.** The breach action is authored per shape and is not shared: "split into two items" means something for a work item and nothing for a LOG entry.
+
+**Why a number is admissible at all**, given this project bans bare ones: the ban is on *underived* numbers, and `CLAUDE.md` accepts a figure from research as a derivation. The measurement is that derivation. **The range is an output of this work, never an input to it.**
+
+**Two grounds for no specimen that are the user's and are project-specific**, beyond the research file's argument: a specimen is doc text in a corpus this project is fighting to shrink, and the rule gate already names worked examples as the growth engine; and a specimen dictates structure and appearance, when only length was being decided. **The live-LOG-as-specimen idea is withdrawn too** — it decays as the read window rolls forward, so it would need redoing.
+
+---
+
+**THE RECORD — why this item exists and what it had to argue past.**
+
+**The structural point is yours and it is the strongest part.** Before the per-entry split, one entry covered a whole session and legitimately carried a lot. After it, one entry covers one work item. The scope shrank; the entries did not.
+
+**A live instance from the session that captured this.** That session opened by reading the five most recent index lines, several of which run to a full paragraph each, and then wrote an index line running to a full paragraph. No length was chosen; the length in view was reproduced.
+
+**Evidence already in the corpus.** [close-cost-scales-with-run-size] measured a seventeen-item close at 7,650 words of entries, and recorded that **the seven entries marked `Depth: short` still ran 120–200 words each**. So the depth field exists, is required, is being written, and "short" is not producing short. That is a correct rule failing to fire rather than a missing rule — the same pattern as [invented-rationale-compounds-past-the-shipped-rule].
+
+**Why measure before designing.** Whether Claude is mirroring is not observable to Claude — the same class of blindness as compaction, where nothing announces itself from the inside. It is entirely observable from outside. Designing a fix for an unestablished cause is what this project's own derivation rule exists to prevent. **The precedent is exact** — `resources/research/rationale-growth-measurement.md` did this for queue rationale, and its output was a research file.
+
+**Three candidate fixes were weighed and two are dead.** Compressing the existing log to change what Claude sees rewrites the record to alter an inference. A worked specimen in `done-build.md` fell for the reasons above. A stated number was refused outright at capture and that refusal is **reversed** — see the admissibility paragraph in the build section.
+
+**New evidence, supplied by the user, and it is the second recorded instance.** The session that wrote the eighteen-item close ran `head -8 LOG/index.md` immediately before authoring its entries, and nothing else — **no prior entry was opened at any point.** The four index lines it read are each a dense paragraph; the second recites seven distinct findings. The lines it then wrote matched. Taken with the instance already recorded above, both known instances of mirroring are **index lines**, and in neither was an entry body in view.
+
+**So the mechanism, read off `done.md` rather than assumed: nothing reads previous entry bodies.** The close writes from the entry template and from the ticked item's own candidate line. `/plan`'s Step 1 reads the five most recent index *lines*, every session, and that is the only prior-log text any session is instructed to open. If entry bodies are inherited at all, they are inherited **through** the index line, because that is the only thing in view at the moment both are written — which makes the index line both the demonstrated cause and the cheapest lever, and means no work aimed at it is wasted.
+
+**The user's structural point, which is the widest part and the reason scope grew.** Every written shape has grown over time, captures included, and the reading fatigue is not confined to the log — it is in the queue, in conversation, and in the index. The rule corpus is the one place now coming under control, and it came under control **without** numbers. Everything else has had nothing holding it.
+
+**Prior decisions this must argue past, cited at processing rather than discovered at build time.** Two of the four shapes are already governed by recorded refusals, and neither may be quietly reversed:
+
+```
+LOG index lines   a 20% PROPORTIONAL cap sat at this exact site and was
+                  REPEALED 2026-08-12 after measurement showed it fired on
+                  short entries rather than on long lines. done.md says do not
+                  restore it or replace it with another figure, and the
+                  always-loaded Index-entries rule hardened that to "no length
+                  cap of any kind — not absolute, not proportional", on the
+                  ground that a check firing against correct work is learned
+                  past and then ignored everywhere.
+
+conversation      SPEC's Principles rule out a word-count cap in terms: the
+                  levers are sequencing and leading with the decision, "never
+                  a word-count cap". Anti-overwhelm, not terseness.
+```
+
+**What has changed since that repeal, which is why this is not re-litigation.** The repeal answered *"does a cap tell a good line from a bad one?"* — it does not, and that finding stands untouched. This item asks a different question: *"does anything stop drift?"* The repeal's implicit answer was that the content requirement bounds the line — it must carry enough to decide open-or-skip and no more. Two recorded instances now show that requirement not holding. A new fact, not a re-argued one. **A build that cannot show its derived range discriminating long lines from short ones has reproduced the repealed cap and must stop rather than ship it.**
+
+**The plan-versus-build distinction, the user's, and the cheapest part of this.** A planning entry records a whole session and its decisions; a build entry records one item. The scope differs by design and the lengths should differ with it — nothing currently says so anywhere, so both are written against the same undifferentiated expectation. Whatever this ships, it distinguishes the two.
+
+**The anti-mirroring rule, in the user's own positive wording: "write in the length the matter calls for, not mirroring the length in view."** Her first draft was a prohibition, which the wording rule bans, and she restated it herself. Run against admission it is an **amendment** to the existing authoring standard in `skill-nonspecific-rules.md` (the record-versus-deliverable split), not a freestanding rule, so it consumes no slot; it has two pointable instances; Claude demonstrably does not do it unprompted; it fires in every skill that writes any of the four shapes; and no hook can judge what the matter calls for.
+
+**The honest argument AGAINST that wording, which is why it is held rather than shipped now.** It is the same shape as the rules that have already failed here. `Depth: short` exists, is required, is written — and [close-cost-scales-with-run-size] measured seven entries marked short still running 120–200 words. The authoring standard exists and has not held. A third statement of "write what it needs" is the correct-rule-not-firing pattern this corpus has now named repeatedly. That is the strongest evidence for the user's instinct that **only a number holds**, and it is why the wording ships only if the measurement fails to yield a defensible range.
+
+**Rule gate: not needed for THIS item — it authors no rule.** The measurement touches no rule-bearing path: a script, a research file, and an index line. The rule wording it may later justify is a separate admission, run at the /plan session that reads the findings, and a build that finds itself about to ship rule text from this item halts and says so.
+
+**Files:** a measurement script under `resources/`, producing `resources/research/written-shape-length-growth.md` plus its `resources/research/index.md` line. Host-only. **No rule text, no `docs-b/` file and no number is written by this item** — it produces findings, and a later /plan decides what if anything they justify. Relates to [close-cost-scales-with-run-size], [rationale-growth-measurement]'s research file, [invented-rationale-compounds-past-the-shipped-rule] (the correct-rule-not-firing pattern), and [research-packaged-as-build-work] (which argues research like this belongs in a planning session rather than a build item — unresolved, and this item is an instance of it).
+
+#### next-audit.md restates the bulk-approval inversion's justification [next-audit-restates-inversion-justification]
+Filed 2026-08-14 from the `[redundancy-audit-did-not-cover-subdocs]` audit, finding 3. Rides this session's commit.
+**What was found.** `next-audit.md:66–69` explains that presenting findings as one numbered set is the bulk-approval inversion of one-at-a-time, and why: the findings are a deterministic result set produced by criteria the user already approved. The always-loaded inversions block states exactly that, and names an audit's findings as its worked example.
+**What is site-specific.** The mechanics — state the count upfront, list each with number, observation, file:line and why it matters, ask for whole-set approval or contested numbers — plus the observation that this keeps the always-show rule intact, since the user reads every finding's wording before any of it is filed. Those stay; the argument for why it is an inversion is what duplicates.
+**Weigh at processing whether the contested-findings step below it is a second instance**, since the canonical block already says contested items then go one at a time.
+
+**Settled at processing 2026-08-15, after reading both sites rather than the audit's summary of them.**
+
+**The cut is two sentences, not the paragraph.** In `next-audit.md`'s present-findings step, the clause naming this as the bulk-approval inversion and explaining that it applies because the findings are a deterministic result set under criteria the user already approved — that is the always-loaded inversions block restated, and that block names an audit's findings as its own worked example. Delete it.
+
+**The paragraph's last sentence stays:** that this keeps the always-show rule fully intact, since the user reads every finding's exact wording before any of it is filed. It reconciles two rules against each other, which the parent block does not do, so it is not a restatement of anything.
+
+**The open question is answered NO: the contested-findings step is not a second instance.** The parent does carry the principle — contested items then go one at a time — but that step's body is mechanics the parent is silent on: the reword-or-drop routing, and waiting for each call before presenting the next. Its heading is a step label rather than a restated rule, and cutting it would leave those mechanics with no home.
+
+**The judgment call on the surviving sentence, recorded because it was close and because the same question recurs.** `CLAUDE.md`'s bar is that an explanatory sentence earns its place only where there is a recorded instance of the rule being misapplied without it. There is no such instance here — nobody has yet read bulk approval as breaching show-first. By the letter it should go. **It is kept anyway on an asymmetric-cost argument, which the user endorsed after being shown both readings:** wrong to keep costs fifteen words; wrong to cut risks a later session "correcting" the audit step into approving findings one at a time, which would undo the inversion entirely. **This reasoning is not a general licence** — it applies where the misreading would *reverse* the rule, not merely obscure it.
+
+**This finding is on the parent axis and that is why it survived where its sibling did not.** `next-audit.md` against `skill-nonspecific-rules.md` is a child against the doc loaded alongside it. Compare with [done-build-restates-no-subset-rule], refused and deleted the same day for being a sibling-axis finding — see [standing-audit-programme], which now carries both as its worked examples.
+
+**Rule gate: not needed — this evicts rationale and authors nothing.** The commit touches `docs-b/`, so the trigger fires mechanically, but the operative instruction (present findings as one numbered set, state the count, list each, ask for whole-set approval or contested numbers) is untouched. Removing rationale from an operative site is compliance with the existing rationale-lives-outside-the-rule rule, not a new one.
+
+**FOLD RECORD — and this one is the weaker of the two, which is why recording it matters more.** The surviving sentence (that bulk approval keeps the always-show rule intact) was admitted on **no recorded misapplication at all** — only on the asymmetric-cost argument above. It is therefore the first candidate to cut if this ever needs revisiting. **Re-test it whenever the present-findings step or the always-loaded inversions block is next edited**, and cut it the moment the inversions block says anything itself about findings being read before they are filed. Recorded per [folded-reasons-are-a-one-way-ratchet].
+
+**Files:** `plugin/throughliner/docs-b/next-audit.md` — two sentences deleted from the present-findings step, everything else in that file unchanged. No other doc is touched, and no test suite covers prose.
+
+#### migrate-checklist.md's show-first explanation, about 60 words — the closest call in the set [cut-rationale-migrate-checklist]
+Audit finding 8. "Why this shows before it writes, when nearly everything else writes first" (around line 16). It fails the test cleanly — the instruction to draft the conversion and get approval before writing stands complete without it.
+**Why it is flagged as contestable rather than filed as an ordinary cut.** Its working function is to stop a later session reading this as an exception to write-first and "correcting" it; the paragraph says in terms that this is the general test applied, not an exception to it. That is a real risk, and the doc is fetched rather than always-loaded, so the saving is small. A keep here would be defensible.
+**Settled at processing 2026-08-15: neither cut nor keep, but RECLASSIFY — fold the reason into the operative sentence and delete the block. That is `CLAUDE.md`'s own prescribed move for this exact case, and neither the audit nor this item had reached for it.**
+
+**The strict bar is met here, where the sibling finding met only a judgment call.** `CLAUDE.md` admits an explanatory sentence only where there is a recorded instance of the rule being misapplied without it. There is one, in the rule's own text: SPEC records that this rule's wording "used to ask whether a revert would undo it, which quietly assumed a safety net that a freshly adopted project may not have." The misapplication has already happened.
+
+**But the same passage says what follows from admitting it, and it is not "keep the paragraph".** Once admitted, the reason is written *into the operative sentence, so it cannot be removed without leaving the rule incomplete*. Left standing as a separate why-paragraph it remains what it is today — rationale beside a rule, which every future rationale pass will correctly flag again, exactly as this one did.
+
+**The build.** Replace the opening instruction's tail so the reason rides the rule:
+
+```
+getting the user's approval before writing, because a project being
+migrated may have been adopted moments ago and may not be a committed
+git repo — so there may be nothing to recover.
+```
+
+Then delete the whole "Why this shows before it writes" paragraph.
+
+**What it buys and what it costs, both weighed.** About sixty words become about twenty-five, and the reason can no longer be stripped by a later pass, because removing it would leave a rule with a dangling "because". Lost is the sentence stating that this is the general write-first test applied rather than an exception to it — judged self-evident once the rule carries its own reason, since nobody reaches to "correct" a rule that explains itself. The user was shown that cost and accepted it.
+
+**Rule gate: not needed — this reclassifies existing text and authors nothing.** The commit touches `docs-b/`, firing the trigger mechanically. No rule is admitted, evicted or amended in substance: the same instruction governs the same case, with its already-admitted reason moved from beside the sentence into it.
+
+**FOLD RECORD — what admitted this reason, written here because nothing else records it.** The folded clause is *"because a project being migrated may have been adopted moments ago and may not be a committed git repo — so there may be nothing to recover."* It was admitted on a recorded misapplication: SPEC states that this rule's wording once asked whether a revert would undo the change, "which quietly assumed a safety net that a freshly adopted project may not have." **Re-test this fold whenever the surrounding instruction is next edited:** if the write-first rule's recoverability test is ever reworded so that a freshly adopted project is covered explicitly, this clause has lost its justification and may be cut. Recorded per [folded-reasons-are-a-one-way-ratchet], which established that a fold made under the reclassify rule is unremovable by construction and therefore needs its admission recorded somewhere a later pass can reach.
+
+**Files:** `plugin/throughliner/docs-b/migrate-checklist.md` — the opening instruction extended, one paragraph deleted, nothing else in the file touched. Source: the audit run under [rationale-written-into-shipped-docs]. Relates to [next-audit-restates-inversion-justification] (the same close call, settled the other way because its bar was met only on asymmetric cost) and [standing-audit-programme].
+
+#### Make the planning scope-lock deny rather than ask, against the standing list [plan-scope-lock-denies]
+**Decided by you 2026-08-15, in your own words: plan needs scope lock — we had it before the reversion, you want it back, full stop. And your reason: just because Claude asks the user for an edit does not mean the user reads the request in full and understands what it means.** You also said plainly that you are sick of re-arguing this, having done so for weeks. The design below is Claude's; the decision is not open.
+
+**What is there now.** `pre_tool_use.py`'s `_is_plan_quiet_path` gives a session with no build working file an **ask** on any write outside a quiet list, never a denial. Its comment instructs future sessions not to "improve" this into a denial. That instruction is what this item reverses.
+
+**The justification in that comment is also wrong, and it is corrected in the same edit.** It reads *"Here there is no agreed list"* — false. A build has a list agreed for that specific piece of work; a planning session has a **standing** list, the same few docs every time. The comment reasons from no-list-at-all, and the second half of its argument — that a legitimate write is authorised in one word — is exactly what your reason refutes: an ask that gets waved through is not consent.
+
+**The design: lock against the STANDING list and deny. Nothing needs restoring.** A build's lock reads its file list from the working file; the planning working file `_plan-<id>.md` was deleted from the method at `47966bb` on 2026-08-14 on your own decision, and this must not quietly bring it back. It does not have to: a planning session's list is fixed, so the lock has a list without any per-session file.
+
+```
+writable in a planning session (deny everything else):
+    QUEUE.md · SPEC.md · LOG/
+    resources/research/     # research is resolvable in-session by plan.md's
+                            # own ground rules, and the always-loaded rules
+                            # REQUIRE a finding to be filed as part of using
+                            # it — a lock without this breaks a shipped duty,
+                            # and did so live in this session
+    the session scratchpad · the memory directory
+```
+
+**`resources/research/` is the catch that a naive build would miss.** This session filed `llm-length-instruction-following.md` and its index line mid-/plan, which is not optional — the rule is that a finding is filed as part of using it. Deny that path and the first /plan needing research is stuck.
+
+**Everything else becomes queued work, which is what `plan.md` already says.** Its ground rules open with *"never build — work that changes anything outside the quiet list is queued, not done here."* So this hook change ships **no new rule**; it makes an existing one mechanical. That is also the honest answer to where a `CLAUDE.md` or `docs-b/` edit goes in a planning session: it becomes a build item, which is already what happens in practice.
+
+**Rule gate: run — no rule admitted; an existing rule gains mechanical enforcement.** The gate's fourth admission question asks whether a hook could do the job instead, and `CLAUDE.md` says to escalate where the failure's cost justifies the standing friction. The user has judged that it does, over a period she describes as weeks. One false justification is evicted in the same move (the no-agreed-list clause above). No text is added to the always-loaded corpus.
+
+**What the friction will be, stated rather than discovered.** A denial in a planning session cannot be waved through, so a genuinely needed write outside the list stops the session and becomes a queue item — a round trip where today there is a sentence. That is the cost being accepted, not an unforeseen consequence, and it is the point: the stop is what makes the write visible.
+
+**Files:** `plugin/throughliner/hooks/pre_tool_use.py` (`_is_plan_quiet_path` becomes a deny-list gate, its comment rewritten, `resources/research/` and the memory directory added to the writable set); `plugin/throughliner/docs-b/plan.md` (the containment paragraph, which currently says nothing mechanically contains a planning session — that stops being true); `SPEC.md` (the `pre_tool_use` bullet, which describes the scope-lock's reach); and `resources/testing/test_plan_quiet_list.py`, which exists and pins the current ask behaviour, so it changes with the hook. Shipped, not host-only — consumers run planning sessions too.
+
+**Resolve [prior-plan-scope-lock-not-located] before building this — an ordering preference, deliberately NOT a `Blocked by:` line.** The user said she had a planning scope-lock before the reversion and it was never located this session, so this design was authored fresh and may be re-deriving something worse. The lookup is two git commands. It is carried as a sentence rather than as the field because `Blocked by:` sends an item below the readiness line and out of what the user sees during an ordinary run — which the always-loaded rule records as having cost a consumer project two designed items and its user's confidence a feature was queued at all. She has waited weeks for this item; shelving it out of sight to express a minutes-long lookup would be exactly that failure.
+
+**And an FAQ entry ships with this batch** — `plugin/throughliner/templates/faq-template.md` plus its `faq-index-template.md` index line. The trigger is met at its strongest: a consumer's planning session that today gets a question they can answer in one word will instead **stop**, and the write becomes queued work. That is a changed step, a changed moment where they must decide, and a new thing appearing in their queue — three of the four things the trigger names. The entry answers the question a non-coder will actually have: *why won't Claude just edit that file for me any more, and what do I do instead?* Check this project's own `FAQ/` too, noting [own-faq-diverged-from-shipped-template] — the two have drifted and the authoring rule points at only one of them.
+
 --- Cleared to run above this line ---
 
 #### [user] Discord post: the planning session now offers you the work that is cheapest right now [discord-post-context-adjacency]
@@ -14,7 +308,7 @@ Captured by you 2026-08-12; the angle is yours — the ladder and how it drastic
 **What the post has to convey, and the difficulty is making it vivid.** When nothing is left to prioritise by, /plan now says so and offers the items closest to what the session has already read, rather than working blindly down the file. The value is concrete: in the session that produced this, one item needed SPEC.md read in full — 6,159 words — which the session had already loaded, so the measurement that made the item decidable cost nothing. A later session pays that read again to reach the same point.
 **A judgment for you at drafting time.** The before-picture is a real failure — a session grinding through items in file order while cheap adjacent work sat unnoticed, and you asking for it by hand across several sessions. Whether that goes in a public post is your call; it is what makes the improvement legible.
 **Walkthrough.** 1. The feature ships. 2. Claude drafts inside 2,000 characters. 3. You read it and say what to change. 4. You post it. 5. You confirm, and this line closes.
-**Unblocked 2026-08-13.** [ladder-rung-for-context-adjacent-items] shipped, and has since been refined once — the offer now leads with a recommendation rather than a flat menu (`LOG/2026-08-12-context-adjacency-offer-is-a-flat-menu.md`, `e5d169b`). Draft against the refined behaviour, not the original. Sat blocked unnoticed; see [blocked-by-in-unprocessed-is-never-revisited].
+**Unblocked 2026-08-13.** [ladder-rung-for-context-adjacent-items] shipped, and has since been refined once — the offer now leads with a recommendation rather than a flat menu (`LOG/2026-08-12-context-adjacency-offer-is-a-flat-menu.md`, `e5d169b`). Draft against the refined behaviour, not the original. Sat blocked unnoticed; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries], which absorbed the item that recorded this.
 
 **Paced 2026-08-14 on the user's decision: head of a one-post-per-day chain.** Her reason, in her own words: she wants to post one a day and does not want to drown out the server with too many announcements at once. Nothing about this post is unready — the pacing is the only thing holding it, and she had already posted on the day this was placed.
 Blocked by: [announcement-cadence-clear-to-resume]
@@ -26,7 +320,7 @@ Captured by you 2026-08-12; the angle is yours — awareness of the build cycle,
 **The design point worth including.** A flat list of stages would not have prevented either failure, because both were about a loop *closing*. What shipped names the return edges explicitly.
 **Same judgment as the sibling post:** the before-picture is Claude getting it wrong, and whether that appears publicly is yours to decide.
 **Walkthrough.** 1. The feature ships. 2. Claude drafts inside 2,000 characters. 3. You read it and say what to change. 4. You post it. 5. You confirm, and this line closes.
-**Unblocked 2026-08-13.** [cycle-summary-at-every-skill-opening] shipped — its LOG entry is `LOG/2026-08-12-cycle-summary-at-every-skill-opening.md`. Ordinary ready work. Sat blocked unnoticed; see [blocked-by-in-unprocessed-is-never-revisited].
+**Unblocked 2026-08-13.** [cycle-summary-at-every-skill-opening] shipped — its LOG entry is `LOG/2026-08-12-cycle-summary-at-every-skill-opening.md`. Ordinary ready work. Sat blocked unnoticed; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries], which absorbed the item that recorded this.
 
 **Paced 2026-08-14 on the user's decision: second in a one-post-per-day chain.** Her reason, in her own words: she wants to post one a day and does not want to drown out the server with too many announcements at once. Nothing about this post is unready — the pacing is the only thing holding it. It lifts when [discord-post-context-adjacency] has been posted and closed.
 Blocked by: [discord-post-context-adjacency]
@@ -38,7 +332,7 @@ Captured by you 2026-08-11. The observation is yours, in your own words: before,
 **The post's content, to draft when it ships.** The shaky-first-few-items problem and what causes it; what the orientation read changes; and the honest scope — it does not carry all necessary context, it sets upcoming work against past work. The cost bound is worth including too, since it is why the feature waited: five index lines is an unbounded read until index lines are capped, which is what [index-line-length-proportional-cap] fixes.
 **Constraints:** 2000 characters, the Discord limit. Not posted until *everything* the post describes has shipped — the standing rule recorded in `CLAUDE.md`, adopted 2026-08-11.
 **Walkthrough.** 1. The feature ships. 2. Claude drafts the post inside the character limit. 3. You read it and say what to change. 4. You post it — Claude has no route to Discord. 5. You confirm, and the line is closed.
-**Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — its LOG entry is `LOG/2026-08-12-plan-reads-recent-log-index.md`, and /plan's read-state step now opens by reading the five newest index lines. Ordinary ready work. This was the fourth item found sitting behind a shipped blocker; see [blocked-by-in-unprocessed-is-never-revisited].
+**Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — its LOG entry is `LOG/2026-08-12-plan-reads-recent-log-index.md`, and /plan's read-state step now opens by reading the five newest index lines. Ordinary ready work. This was the fourth item found sitting behind a shipped blocker; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
 
 **Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her reason, in her own words: she wants to post one a day and does not want to drown out the server with too many announcements at once. Nothing about this post is unready — the pacing is the only thing holding it. It lifts when [discord-post-cycle-awareness] has been posted and closed.
 Blocked by: [discord-post-cycle-awareness]
@@ -59,10 +353,10 @@ Blocked by: [discord-post-session-start-strength]
 
 ## Unprocessed
 
-#### Last session advises processing announcement-cadence-clear-to-resume next [forward-advisory]
-It is the wake-up item for the four held Discord posts, and processing it is what releases the chain's head so a post can go out. The chain cannot move at all while it sits unprocessed — every one of the four names the one before it, and the head names this.
+#### Last session advises processing prior-plan-scope-lock-not-located next [forward-advisory]
+The user asked for this one specifically, at the close of 2026-08-15: she wants it done in the next session. It is a two-command lookup, not a build — follow `pre_tool_use.py` across the Throughliner rename with `git log --follow`, and search the reverted span named in `LOG/2026-08-10-queue-machinery-repair-freeform.md`.
 
-The condition it waits on is that a day has passed since the last Throughliner announcement. One had gone out on the day this was filed, which is the only reason the chain was held rather than started.
+**Resolve it before [plan-scope-lock-denies] is built.** That item was designed fresh against a standing list, and its own capture records the risk: if an earlier planning scope-lock existed, it may already answer questions the new design has not met — how a legitimate out-of-list write is authorised, and what happens in a `[freeform]` session, which has the same no-working-file condition. A /next run reaching the scope-lock item before this lookup has happened would build the unchecked design.
 
 #### Design a /plan→/next ordering handoff: carry the order's rationale forward so /next explains (not infers) it, with a predictable, not-over-narrated shape and optional user reorder-input before the run [next-start-order-handoff]
 Captured by you — filed after `bebffe7`.
@@ -214,19 +508,12 @@ Filed 2026-08-13 by Claude from a live instance in this /plan session, caught by
 **Why that particular substitution is worse than a neutral miss.** The end-of-queue gate is carefully worded not to lean toward closing *given an empty queue*. Applied to a full one it stops being neutral: it silently reclassifies 35 unprocessed items as nothing left to do. The same failure the checkpoint recital was stripped back for — an offer naming closing, at the end of a piece of finished work, reading as an announcement that closing is what happens next.
 **To settle at processing:** whether the fix is a stated shape for subset-exhausted (return to the ladder and present the next item, continuing as the default), or whether the end-of-queue gate should test that the queue is actually empty before it may be used. Relates to [close-invites-same-session-next] and [plan-gates-say-close-out-for-a-retired-phase] — three records of a close being offered where continuing was the better default.
 
-#### A `Blocked by:` line in Unprocessed is read by nothing, so an item can stay blocked long after its blocker shipped [blocked-by-in-unprocessed-is-never-revisited]
-Captured by you (2026-08-13), from your standing instruction that nothing may be held without something existing to surface it again. The three live instances below are the evidence.
-**What was found.** Three `[user]` Discord-post items in Unprocessed — [discord-post-spec-inversion], [discord-post-context-adjacency] and [discord-post-cycle-awareness] — each carried a `Blocked by:` naming a slug absent from the queue. All three blockers were checked against LOG and **all three had shipped**, two of them on 2026-08-12 with LOG entries named after their slugs. The posts had been ready for a day with nothing saying so, and they were found only because you asked why work goes unsurfaced.
-**The mechanism, which is a coverage gap rather than a bug.** `plan.md`'s below-the-line revisit is the thing that asks "has this blocker shipped?" and it walks **Processed below the marker only**. Nothing walks Unprocessed for the same field. The queue digest does resolve the reference and prints `-> ABSENT`, but ABSENT reads identically for a blocker that shipped and one that never existed, and no step is told to act on it.
-**Why this is worse than the region it does cover.** An item held below the line in Processed is at least designed, cleared-adjacent and looked at by a step that exists. An item sitting in Unprocessed behind a stale blocker is invisible to that step, invisible to /next, and its blocker is invisible to the throughput floor once it has shipped and left the queue. Nothing anywhere is looking.
-**To settle at processing:** whether the revisit simply widens to both regions, or whether `Blocked by:` should be barred from Unprocessed altogether — an Unprocessed item is by definition not yet designed, so the field may be claiming a precision it cannot have. Either way the digest already resolves the reference, so the check is cheap. Relates to [runs-alone-at-the-end-can-be-starved] (found in the same exchange) and [held-items-invisible-during-normal-use].
-
 #### A `Runs alone` item placed last can be overtaken indefinitely and never reached [runs-alone-at-the-end-can-be-starved]
 Filed 2026-08-13 by Claude, from your question about why the rename had not happened. Filed after the last committed close, so it belongs to no committed session record.
 **The live instance.** [rename-to-throughliner] is cleared to run and has been for some time. It is not held, not blocked, and nothing is wrong with its placement — it carries `Runs alone` and sits last, which is exactly what `plan.md` prescribes for unrelated work so a run clears the buildable items before stopping. You had assumed it was stuck below the line; it never was.
 **Why correct placement produces starvation anyway.** A run reaches a last-placed item only after everything ahead of it is built. Every planning session adds newly cleared work *ahead* of it, because that is where kept items land. So the queue position that guarantees a clean run also guarantees the item recedes each time the queue is worked. This session alone placed three items ahead of it.
 **What makes it invisible.** Nothing reports how long an item has been cleared, and nothing may — a bare age threshold is the kind of invented number this project bans. The item is not flagged by the digest, not held by any rule, and reads as perfectly healthy at every inspection. It surfaced only because you asked after it by name.
-**To settle at processing, and the obvious answers are both weak.** Placing `Runs alone` work first inverts the problem — it stops every run at the top. Reporting cleared-age needs a threshold nobody can defend. Worth weighing whether the honest fix is narrative rather than mechanical: /plan naming, when it places work into an already-cleared region, that it has just placed something ahead of a `Runs alone` item. Relates to [blocked-by-in-unprocessed-is-never-revisited] and [held-items-invisible-during-normal-use].
+**To settle at processing, and the obvious answers are both weak.** Placing `Runs alone` work first inverts the problem — it stops every run at the top. Reporting cleared-age needs a threshold nobody can defend. Worth weighing whether the honest fix is narrative rather than mechanical: /plan naming, when it places work into an already-cleared region, that it has just placed something ahead of a `Runs alone` item. Relates to [digest-reports-computed-fields-not-summaries] (which absorbed the stale-blocker item this used to cite) and [held-items-invisible-during-normal-use].
 
 #### The project's two Claude Code config files point at a folder layout that has not existed for months [claude-config-points-at-dead-layout]
 Filed 2026-08-13 by Claude during the identity-rename build. Filed after the last committed close, so it belongs to no committed session record.
@@ -299,11 +586,6 @@ Filed 2026-08-14 by Claude while processing [self-hosting-auto-detection], from 
 **The FAQ-sync close gate does not catch it.** That gate requires a disposition line in the LOG saying the FAQ was updated or why it was not needed. A session that updates the template satisfies it honestly and leaves this project's own FAQ untouched.
 **What to weigh at processing.** Whether the two should be one file with the shipped copy generated from it, whether the authoring rule should name both, or whether this project's FAQ should simply be replaced by the template on a re-copy — the method already has a re-copy discipline for method-shipped boilerplate. Also worth reading the 47-line difference before deciding: some of it may be consumer-only material that should never be here.
 **Files (rough):** `CLAUDE.md` (the FAQ-entry rule), `FAQ/faq.md`, `FAQ/index.md`, possibly `templates/faq-template.md`. Host-only. Relates to [migrate-recipe-freshness] and to the FAQ-sync gate.
-
-#### migrate-checklist.md's show-first explanation, about 60 words — the closest call in the set [cut-rationale-migrate-checklist]
-Audit finding 8. "Why this shows before it writes, when nearly everything else writes first" (around line 16). It fails the test cleanly — the instruction to draft the conversion and get approval before writing stands complete without it.
-**Why it is flagged as contestable rather than filed as an ordinary cut.** Its working function is to stop a later session reading this as an exception to write-first and "correcting" it; the paragraph says in terms that this is the general test applied, not an exception to it. That is a real risk, and the doc is fetched rather than always-loaded, so the saving is small. A keep here would be defensible.
-**Files:** `plugin/throughliner/docs-b/migrate-checklist.md`. Source: the audit run under [rationale-written-into-shipped-docs].
 
 #### [audit] A second rationale pass over the shipped docs, for the shapes the first pass could not see [rationale-audit-second-pass]
 Captured by you 2026-08-14, in your own words: make a capture describing an audit that might pick up some more. Filed after the last committed close, so it belongs to no committed session record.
@@ -415,17 +697,6 @@ Filed 2026-08-14 by Claude at its own /done close, from destroying two committed
 **One observation recorded without a claim attached.** The Write tool is documented to refuse an overwrite of an existing file that has not been read in the session, and it did not refuse here. Whether that contract works differently than described, or the file counted as read for some reason, is unknown and was not investigated — do not build on this sentence without checking it.
 **Files (rough):** `plugin/throughliner/docs-b/done.md` (the LOG entry files section, and possibly the commit core's staging check). Shipped — consumers write LOG entries the same way.
 
-#### next-audit.md restates the bulk-approval inversion's justification [next-audit-restates-inversion-justification]
-Filed 2026-08-14 from the `[redundancy-audit-did-not-cover-subdocs]` audit, finding 3. Rides this session's commit.
-**What was found.** `next-audit.md:66–69` explains that presenting findings as one numbered set is the bulk-approval inversion of one-at-a-time, and why: the findings are a deterministic result set produced by criteria the user already approved. The always-loaded inversions block states exactly that, and names an audit's findings as its worked example.
-**What is site-specific.** The mechanics — state the count upfront, list each with number, observation, file:line and why it matters, ask for whole-set approval or contested numbers — plus the observation that this keeps the always-show rule intact, since the user reads every finding's wording before any of it is filed. Those stay; the argument for why it is an inversion is what duplicates.
-**Weigh at processing whether the contested-findings step below it is a second instance**, since the canonical block already says contested items then go one at a time.
-
-#### done-build.md restates next.md's no-subset rule in full [done-build-restates-no-subset-rule]
-Filed 2026-08-14 from the `[redundancy-audit-did-not-cover-subdocs]` audit, finding 4. Rides this session's commit.
-**What was found.** `done-build.md:153–158` and `next.md`'s present-the-run step carry the same instruction, the same reason (the cleared-to-run line is the run bound, the user sets it at /plan, and Claude has no gauge of context filling at all) and the same exception (a behaviour-based no-progress stop, never a number).
-**The complication that makes this a judgment rather than a straight cut.** The two fire at genuinely different moments — `next.md` forbids proposing a subset at a run's start, `done-build.md` forbids writing one into the forward advisory at a close. A session at one moment does not read the other doc. So this may be the promote-to-always-loaded shape rather than the delete-one shape, and the two candidates should be weighed against each other rather than assuming a cut.
-
 #### A reversibility claim settled at processing was never checked against the world, and the build hit the exception [processing-asserts-reversibility-without-checking]
 Filed 2026-08-14 by Claude at its own /done close, as a testing outcome from using the plugin to build the plugin. Host-only in its example, general in its shape.
 **What happened.** [delete-codex-port-from-history] was settled at processing with a careful, well-reasoned paragraph choosing the cheap operation over a history rewrite, and it recorded that the cheap one "is also the reversible one" because dropped commits stay recoverable from the reflog until garbage collection. That is true of commits. The worktree being deleted held 722 lines of uncommitted work across 24 files plus two untracked files, none of which is a commit and none of which the reflog holds. The build halted, surfaced it, and the user chose to discard the work after being told plainly it could not be recovered.
@@ -499,6 +770,25 @@ Captured by you — raised mid-/done, filed after `9cd1e51`. Throughliner conten
 
 **Two of the five finish conditions are already mechanically checkable** by `resources/rule_signals.py` as it stands — no live rule naming a retired term, and no near-duplicate rule pairs. That is this item's own design test paying off before the design starts: the standing set inherits two conditions it never has to audit by hand, and should look for more of the same before proposing any audit that a script could do instead.
 
+**The comparison AXIS is part of each audit's design, and getting it wrong produces findings that look real and are not. Captured by you 2026-08-15, in your own words: this is why you wanted to audit the bottom docs against their relevant middle docs and not against their siblings — and that third audit slipped through without your noticing and got done anyway.** The demonstration arrived the same day, from that audit's own leftovers.
+
+```
+sibling axis    done-build.md vs done-audit.md, next-build.md vs
+   (wrong)      next-audit.md. Finds WORDING similarity between docs that
+                are parallel by design, so near-identical phrasing is the
+                expected state rather than the defect.
+
+parent axis     done-build.md vs done.md; next-audit.md vs next.md; any
+   (right)      sub-doc vs skill-nonspecific-rules.md. Finds a child
+                restating what its parent already carries — which is
+                genuine duplication, because the child is loaded WITH the
+                parent and the reader has both.
+```
+
+**The worked instance, and it is why the axis is not a stylistic preference.** [done-build-restates-no-subset-rule] — refused and deleted at processing on 2026-08-15, both docs left untouched — reported `done-build.md` and `next.md` carrying the same rule in near-identical words. True as text and wrong as a finding: `next.md` guards *presenting* a run, `done-build.md` guards *writing a size cap into the note for the next session*, and no session reads both. Two holes, two plugs, one wording. The finding was filed because the audit compared texts rather than the moments they fire at. **An audit run on the parent axis would not have produced it**, since neither doc is the other's parent.
+
+**So each standing audit declares what it compares against, and a finding names the firing moment of each site, not only the line.** That is the mechanical part; it costs the auditor one sentence per finding and it is what would have caught this one at the audit rather than at processing, weeks later.
+
 **Files (rough):** not yet derivable — the output is a designed programme, and its file list depends on which checks turn out to be mechanical. Likely `resources/method-compliance-audit-checklist.md` (which already holds the criteria for the periodic three-lens sweep and is the obvious home), `resources/rule_signals.py`, and `CLAUDE.md` for whatever trigger the set gets. Host-only — consumers do not maintain the method's rules. Relates to [law-prose-restyle], which is the last piece of cleanup this set follows.
 
 #### [user] Confirm a day has passed since the last Throughliner announcement, so the post chain can resume [announcement-cadence-clear-to-resume]
@@ -524,21 +814,6 @@ Filed 2026-08-14 as the wake-up item for the held Discord post chain. **The user
 **The signature to search for, which makes this scopeable rather than a whole re-read.** Two or more rules governing the same subject, stated at the same level, with no declared relationship between them. Length is the known instance — there are at least three separate statements about how long something should be, in one always-loaded file, and they do not reference each other. Other candidate subjects: what gets written where, when to ask versus proceed, what counts as evidence.
 
 **Weigh at processing whether this is its own pass or a lens added to [law-prose-restyle]**, since that pass is already reading every rule and restructuring is closer to its work than to the rationale audit's. Folding it in is the cheaper answer and may be the right one; filing it separately is what stops it being forgotten either way. Belongs in the cleanup inventory's group B either way.
-
-#### The queue digest reports a deliberate terminating hold-chain as a placement contradiction [digest-flags-correct-hold-chains]
-Filed 2026-08-14 by Claude at the /done close, from the digest firing on a chain built the same session on the user's explicit instruction.
-
-**What happens.** Four `[user]` Discord-post items were chained deliberately — each blocked by the one before it, so they release one per day and never flood the server. The digest reports three "Placement contradictions", one per link, each saying the item "is blocked by [X], which is itself held — a hold chain, so neither moves until the chain's end does". The chain is correct, intended, and terminates at a wake-up item in Unprocessed.
-
-**Why it is worth a line rather than a shrug.** `plan.md`'s own text already draws the distinction the report does not: "One that terminates is slow; one that loops never resolves." A chain terminating in an Unprocessed item will resolve the moment that item is processed; a chain looping back on itself never will. The digest reports both identically, and under a heading that says *contradiction*.
-
-**The cost is the familiar one.** A flag that fires on correct work gets learned past, and then a genuine looping chain arrives looking exactly like the three that are always there. This project has now recorded that shape at the queue lint's scaffold preambles ([lint-flags-scaffold-preamble]) and in the standing rule that a check which over-claims makes the corpus look guarded when it is only partly guarded.
-
-**Candidate fixes, none chosen.** Resolve the chain to its end and report only where it fails to terminate, which is what `plan.md`'s own sentence implies and is computable from the data the digest already resolves. Or keep reporting it but under a heading that is not "contradiction" — a chain is a fact about the queue, not a fault. Or do nothing, which is a real candidate: three lines at the bottom of a digest is cheap, and the flag does surface something a reader may want to know.
-
-**Do not fix it by suppressing chains involving `[user]` items**, which is the tempting narrow patch — the pacing chain is not special, and a build chain would deserve the same treatment.
-
-**Files (rough):** `plugin/throughliner/scripts/queue_digest.py`, and `plan.md` if the heading's wording changes. Shipped.
 
 #### Routine internal checks get narrated, and having just read about the hazard is what triggers it [internal-checks-get-narrated]
 **Captured by you 2026-08-14 at the /done close, in your own words: "I don't think these require narration."** You quoted two lines back: an announcement that a filename-collision check was about to run, and a report that it had passed and why. The diagnosis below is Claude's.
@@ -633,4 +908,105 @@ Filed 2026-08-15 by Claude at the close of the eighteen-item run, from two repli
 **The cost is not hypothetical.** A reply that cannot be routed is a reply that does not get sent, and the reply is what makes the INBOX a channel rather than a suggestion box. Two projects reported real defects, both were fixed in this run, and neither reporter will hear so. The drafts are preserved in this session's LOG entries for `[lint-flags-scaffold-preamble]` and `[message-ending-drives-the-suggestion-chip]`, so nothing is lost if a path turns up later.
 
 **What a keep would decide, with the obvious answer probably wrong.** The tempting fix is to let Claude search sibling folders for a matching project, and the method forbids exactly that — operate on the folder the session opened in, never scan for others, and the address book records only what the user supplies. So the question is what a *non-scanning* recovery looks like: whether the user can be given a reliable way to identify a sender themselves (she found one by scrolling her session list, which worked but is not a procedure), or whether unattributable mail is simply accepted as undeliverable and the drafts left on file. Relates to [outbound-message-has-no-sender] (the forward fix) and [cross-project-work-completes-invisibly].
+
+#### Write the article comparing Throughliner to memory-system approaches, finishing with what shipped [competition-comparison-article]
+**Captured by you 2026-08-15**, from a discussion prompted by Discord talk about "Obsidian memory systems" and "dreaming". **Your framing and your decision: the analysis reads as an article starter for the Throughliner site, and rather than sending it now it should be captured and finished with our shipped solutions, with the announcement doubling as a Discord post.**
+
+**This is your own shipped-only rule applied correctly, and you reached it independently.** `CLAUDE.md` says a post announces only what has shipped and that where a post describes work designed but not built, it waits for the build and is filed as a queue item naming what it waits on. That is exactly this.
+
+**What it waits on: [digest-reports-computed-fields-not-summaries].** The article's honest weak points — that curation is manual here, that a 56,000-token queue read was needed — are answered by that item and by nothing else currently queued. Naming it as the blocker rather than a vague "the digest work" matters, because a reference to something not yet filed is the failure this session hit twice.
+
+**The substance, drafted in discussion and to be rewritten rather than pasted.** *Where Throughliner is stronger:* typed documents with defined roles versus an undifferentiated note graph, so product truth, pending work and history each have a home; memory coupled to execution, since /next builds from the queue rather than merely reading it; the throughline carrying *why* rather than only what; deletion as a user-approved fate decision rather than an automatic prune; and everything as plain markdown in git, reversible and auditable. *Where it is weaker:* curation is manual, which is dreaming's entire job — sixty unprocessed items with duplicates accumulated over weeks, seven merges done by hand, and six items found sitting behind blockers that had already shipped; scale, where graph retrieval never needs to read everything; and one-way links, where backlinks are derived for free.
+
+**The verification step runs BEFORE drafting, not after, and it is not optional.** `resources/research/auto-memory-staleness.md` is dated 2026-06-09 and names AutoDream as Anthropic's own consolidation sub-agent — that is two months old, and what the Discord means by "Obsidian memory systems" may be a specific community project rather than the general vault-as-memory pattern. **Publishing a wrong description of someone else's system under the user's name is worse than publishing nothing**, and unlike everything else this project writes, it is a claim about a third party. Search first, update the research file, then draft.
+
+**Two artifacts, not one text, settled at capture.** The article is the full piece and may be long, may discuss competitors, and may say where Throughliner is weaker. The Discord post is capped at 2,000 characters, takes the shipped fix as its subject with the comparison only as framing, and points at the article. Making one text serve both would either saddle the announcement with a comparison it does not need or truncate the article into a changelog.
+
+**The Discord post is this item's final step rather than a separate item — the user's decision.** So the order is: verify, draft the article, ship the digest work, finish the article with what actually shipped, then write the post. **Nothing is published without the user seeing the exact text and giving an explicit yes**, and Claude has no route to Discord or to the site — the user posts both.
+
+**One thing to resolve at drafting.** The site is another project, so the article is drafted here and delivered rather than written into that repository directly. Whether that delivery is an INBOX message or the user carrying it across is a question for the moment it is ready.
+
+**Files:** none in this project — the artifacts are an article for the Throughliner site and a Discord post. Relates to [digest-reports-computed-fields-not-summaries] (what it waits on) and `resources/research/auto-memory-staleness.md` (the finding to verify and update).
+Blocked by: [digest-reports-computed-fields-not-summaries]
+
+#### Two shipped scripts stay silent about the consequences of what they just did, costing round-trips [scripts-dont-report-consequences]
+Filed 2026-08-15 by Claude, from a measured cost in the session that filed it: deleting one item and repairing what followed took about ten round-trips for three edits' worth of work. Both gaps are one-line additions to scripts that already ship.
+
+**`reorder_queue.py --delete` reports nothing about inbound references.** It removed [blocked-by-in-unprocessed-is-never-revisited] and said nothing about the five items whose prose cited that slug. They were found by grepping afterwards and repaired across three passes, the first incomplete because the grep output was truncated. A `5 items still cite this slug` line on the delete would have made it one informed pass. **The precedent is exact and days old** — the mover gained a readiness-line crossing report in the same week, which is the same shape: a mechanical consequence report attached to a write, computed from data the script already has.
+
+**`queue_digest.py` names the phrase that fired a contradiction but not where it is.** The report reads `its own text says "must not be built"` with no line number and no snippet. Three of the ten round-trips were spent locating it, and the first repair fixed the wrong occurrence — the item contained the phrase twice. Printing the line number and the matched sentence costs one field.
+
+**What this is NOT, checked against the record before filing.** It is **not** a second instance of the general scripts-directory clause refused at `b4de5bf`, whose LOG entry invites a second instance as the evidence it needs. That refusal was about Claude not *knowing* a shipped script exists. Here the scripts were known, read, and used correctly; they simply do not report what they did. Listing the scripts directory would have prevented none of it. **Do not cite this item as the evidence that reopens that refusal.**
+
+**Files:** `plugin/throughliner/scripts/reorder_queue.py` (an inbound-citation scan on the delete path, reported and never blocking — a delete is the user's decision) and `plugin/throughliner/scripts/queue_digest.py` (line number plus matched sentence on every contradiction), with cases in each script's suite. Host-only in effect, though both scripts ship. Relates to [digest-flags-correct-hold-chains] (which fixes what the contradiction report *says*, where this fixes where it points) and [digest-reports-computed-fields-not-summaries].
+
+#### A refused proposal leaves no artifact anyone can scan, so the gate's proudest output is its least visible [refusals-have-no-visible-record]
+**Captured by you 2026-08-15, in your own words: if the gate is causing failures of items to silently slip through then that is a big problem for me — you trusted that was built, and you don't want to have to read the whole log to see what was built and what wasn't.** The diagnosis and the proposed shape are Claude's.
+
+**What is not true, checked before filing, because the item must not rest on a premise the record contradicts.** Nothing slipped through silently in the instance that prompted this. `b4de5bf`'s LOG entry records that the general scripts-directory clause was tested against the gate, failed it, and that **the user chose the narrow fix after being shown the result** — the count of three of four skills, none in /setup, one pointable instance. The index line says the same. The refusal happened with her present, which is the entire reason `CLAUDE.md` sites the gate at /plan rather than at the build.
+
+**What IS true, and it is the real finding.** A refusal leaves no scannable artifact. A kept item sits in the queue where she sees it. A built item leaves a queue item vanishing and a LOG entry named after its slug. A **refused** proposal leaves one sentence inside one LOG entry and nothing anywhere else — no queue line, no index signal, no board entry. So "what did I ask for that did not get built?" is answerable only by reading every entry, which is the exact cost she is objecting to.
+
+**Why this is worse than a general visibility gap.** `CLAUDE.md`'s account of the gate rests on refusal being its distinctive power — a /plan-sited gate *can* refuse, which a build-sited or close-sited one cannot, "and that is the whole gain". The output the design is proudest of is the one output nothing surfaces. The same document already records the honest limit that nothing can tell an honest disposition from a dishonest one; this is a second limit sitting beside it, and unlike that one it is fixable.
+
+**The fix is cheap because the record already exists in a fixed form.** Every refusal lands on a `Rule gate: run — …` line, and `resources/rule_signals.py` already parses those lines for two of its four firing checks. A refusals report — what was proposed, what refused it, which commit and session — is a grep over lines that already exist. **No new record-keeping is asked of any session**, which is what keeps this from being another close-time obligation.
+
+**To settle at processing.** Whether this is a fifth check in `rule_signals.py` or a plain report run on demand; whether it reads only refusals or every disposition; and whether the user wants it surfaced at a /plan opening or only when she asks. The last is genuinely hers — a standing report she did not ask for is the noise this project keeps repealing.
+
+**One guard.** The report states what a disposition *says* it refused. It cannot say whether the refusal was correct, and it cannot see a proposal that was dropped in conversation before any disposition was written. Say both wherever it reports; partial coverage read as complete is the failure this project guards hardest against.
+
+**Files (to settle):** `resources/rule_signals.py`, and `CLAUDE.md` only if the report gains a standing trigger. Host-only — consumers never author method rules. Relates to [scripts-dont-report-consequences] (same family: the information exists and nothing surfaces it), [rule-admission-has-no-independent-approver] and [build-wrote-its-own-gate-disposition].
+
+#### The pre-reversion planning scope-lock was never found, so its replacement was authored fresh [prior-plan-scope-lock-not-located]
+Filed 2026-08-15 by Claude at the close, from a claim that could not be checked in the time available. **The user's words when ordering the restoration: "we had it before the reversion."** She is describing something that existed; nothing in this session confirmed what it was.
+
+**What was searched and what it returned.** `git log -S"_is_plan_quiet_path"` on `pre_tool_use.py` reaches only `989c38b` (2026-08-13), which is the Throughliner rename moving the whole package — so the function's history before the rename sits under the old path and was not followed. `LOG/index.md` was grepped for planning scope-lock references and returned the planning working file's deletion at `47966bb`, the session-scoping of working files at `7c9922a`, and the Codex port's `_plan.md` lane deadlock — none of which is a planning scope-lock in canon.
+
+**Why it matters rather than being tidy-up.** [plan-scope-lock-denies] was designed fresh, locking against a standing list. If a previous implementation existed it may have solved problems this design has not met yet — how a legitimate out-of-list write is authorised, what happens to a `[freeform]` session which has the same no-working-file condition, whether the deny list was per-session or standing. **Building the new design without checking is a real risk of re-deriving something worse.**
+
+**What would settle it cheaply:** follow `pre_tool_use.py` across the rename with `git log --follow`, and search the reverted span named in `LOG/2026-08-10-queue-machinery-repair-freeform.md`, which records retrieving one other fix "from the reverted span rather than re-derived" — so that span is a known home for lost work and has been mined before.
+
+**Files:** none — this is a lookup whose output either amends [plan-scope-lock-denies] or confirms it. Host-only.
+
+#### The queue mover cannot place a NEW item into Processed, so authoring one there is done by hand [mover-cannot-add-a-new-item]
+Filed 2026-08-15 by Claude at the close, from an error it made in this session and the queue lint caught.
+
+**What happened.** [plan-scope-lock-denies] was authored directly into Processed rather than captured into Unprocessed and moved. `reorder_queue.py` moves *existing* items between and within sections, so there was no command for it; the item was hand-inserted before the first held item, which put it **below** the readiness marker. The advisory lint flagged it on the next edit and it was moved up with `--move` plus `--marker-after`.
+
+**Why this is worth a line rather than a shrug.** The lint caught it, so nothing was lost — but hand-placement into Processed is precisely the operation `plan.md` warns about for moves, where an exact-string edit "can corrupt an item with no error", and the hazard is the same. It is also not rare: /plan's work-it-now branch places a kept item straight into Processed, and a decision the user gives as an instruction rather than as a capture arrives with no Unprocessed entry to move.
+
+**To settle at processing:** whether the mover gains an add-at-position mode reading the item's text from a file, or whether the procedure should instead say to append to Unprocessed and move — which needs no code and costs one extra command. The second is probably right and should be weighed first.
+
+**Files (to settle):** `plugin/throughliner/scripts/reorder_queue.py` and its suite, or `plugin/throughliner/docs-b/plan.md` alone if the procedural answer wins. Relates to [scripts-dont-report-consequences].
+
+#### Move the wind-down re-scan out of the close into a skill of its own, scanning back only to the last re-scan point [rescan-as-its-own-skill]
+**Captured by you 2026-08-15 at the close, in your own words: you want the re-scan moved to a new skill, because every time more close-stuff goes back into /plan, Claude becomes even naggier about ending the session — and it already is. The re-scan should scan the session back to the last re-scan point only. Its purpose is to solve the tension in situations like this one, where the re-scan keeps turning up things that need building immediately, not another three sessions and two rezips away.** The analysis below is Claude's; the design is yours.
+
+**Two distinct problems, and only the first is about where the step lives.**
+
+```
+nagging      the re-scan is a stop-and-ask welded to the close, so every
+             addition to close machinery adds weight to the end of a session
+             and pulls the whole session toward ending. `done.md` already
+             records the sibling failure — a /plan-side re-scan defined by
+             position "after every item is processed" attached itself to
+             whatever felt like a pause and ran three times in one session.
+             That instance is the argument FOR this: the step needs its own
+             trigger, and the user's is the honest one — she invokes it.
+
+latency      a re-scan finding becomes a capture, waits for a /plan to
+             process it, then a /next to build it, then a rezip before it is
+             live. For a finding about the machinery being used RIGHT NOW,
+             that is the wrong lifecycle, and this session produced several.
+```
+
+**The incremental scope is the part that makes a standalone skill work at all.** Scanning back only to the last re-scan point means the step can run repeatedly in one session without re-surfacing what it already surfaced — which is precisely what the close-welded version cannot do, since it assumes it runs once. It also makes the step cheap enough to invoke mid-session, which is what removes it from the close's weight.
+
+**The hard question this must answer, stated because it is where the design will fail if unexamined.** The latency complaint points at letting the re-scan's findings be *built* rather than only captured. That crosses the plan/next boundary the method holds firmly: filing is open to every session, routing and building are not. **Do not quietly resolve that by letting a new skill build things.** Either the skill files as today and the win is purely the trigger and the incremental scope, or the boundary is being deliberately amended and that needs its own argument. The user's complaint is real either way; the resolution is not obvious.
+
+**What the last-re-scan point actually is, and it needs settling.** There is no marker in any file today. Candidates: a session-scoped value held in the conversation (simple, lost on compaction — and compaction is unobservable, which `done.md` already records); a line in the working tree (durable, but a new artifact and this project deletes those); or the previous re-scan's filed captures used as the boundary (no new state, but it cannot see a re-scan that surfaced nothing).
+
+**Whether the close keeps one at all** is the other open question. Removing it entirely means a session that never invokes the new skill loses the safety net that exists because things get thought out loud and never flagged.
+
+**Files (to settle):** a new skill folder under `plugin/throughliner/skills/`, its procedure doc under `docs-b/`, `done.md`'s wind-down section, and `plugin/throughliner/.claude-plugin/plugin.json`. Shipped, not host-only. Relates to [subset-done-has-no-stated-shape], [post-close-tail-state] and [internal-checks-get-narrated] — all about the close's weight and the session's ending.
 
