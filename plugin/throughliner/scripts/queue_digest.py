@@ -17,6 +17,14 @@ cannot be silently truncated, so the guarantee is stronger than paging gives.
 The field list is fixed by what queue-wide reasoning actually consumes; a step
 needing an item's prose reads that item's prose at the moment it presents it.
 
+Every field here reports a FACT, never a VERDICT. "Cites [X]; [X] has a LOG
+entry" is a lookup anyone can check; "ready to lift" is an interpretation, and
+interpreting dependency conditions was retired from this method along with the
+classifier built to do it. No field may become a threshold either — "more than
+three citations", "older than thirty days" — because a number with no
+derivation behind it is exactly what this project bans. Whoever edits this
+script next inherits that constraint.
+
 Usage:
     python queue_digest.py <QUEUE.md path>
 
@@ -25,6 +33,7 @@ Exit codes: 0 on success, 1 on a usage or read error.
 
 import os
 import re
+import subprocess
 import sys
 
 # Force UTF-8 on the console output, once, before anything is printed. The
@@ -88,6 +97,31 @@ FILES_LINE_RE = re.compile(r"^\**Files\b[^:]*:\**\s*(.*)$", re.IGNORECASE)
 RESEARCH_CITE_RE = re.compile(r"resources/research/([a-z0-9][a-z0-9._-]*\.md)")
 SUPERSEDED_RE = re.compile(r"^\**Superseded by:?\**\s*(.+)$",
                            re.IGNORECASE | re.MULTILINE)
+
+# Any [slug] appearing in an item's prose. The always-loaded rules require a
+# cross-reference to be written as a slug in prose — they say a slug in prose is
+# the only thing that makes a cross-reference exist at all — so prose is where
+# the dependency information actually lives, and reading only `Blocked by:`
+# lines would miss most of it.
+SLUG_CITE_RE = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]")
+# A path inside a Files line. Files lines write paths in backticks, mixed with
+# prose describing what changes in each, so the backticks are what separates a
+# path from the sentence around it.
+FILES_PATH_RE = re.compile(r"`([^`]+)`")
+# What counts as a path inside those backticks. Files lines also backtick
+# skill names (`/plan`) and field names, so a bare "contains a slash" test
+# collects those too; a real path ends in a file extension or a folder slash.
+PATH_SHAPE_RE = re.compile(r"(\.(md|py|json|js|txt|ya?ml|toml)|/)$", re.IGNORECASE)
+# The flavor tags are written in the same square brackets as a slug, so prose
+# saying an item is `[freeform]` would otherwise read as a citation of a slug
+# by that name — and this project has a LOG entry that would resolve it.
+FLAVOR_TAGS = frozenset({"audit", "user", "freeform"})
+# A LOG entry filename: <date>-<slug>.md. A slug having an entry means it
+# shipped, which is the whole resolve — no history scan needed.
+LOG_ENTRY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}-([a-z0-9][a-z0-9-]*)\.md$")
+# A bare date on its own line in the git log pass below: the commit's date,
+# emitted by --format=%as ahead of that commit's patch.
+GIT_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def parse(path):
@@ -173,11 +207,20 @@ def _self_referential_phrase(item):
     on the same line means the sentence is about that other item. A slug after
     the phrase is a cross-reference hanging off a statement about this item, so
     it does not suppress.
+
+    A second discriminator covers a different failure — the phrase matching as a
+    substring of itself plus the next word. "Must not be built into this item"
+    says other work stays out, which is the OPPOSITE of what this check reads,
+    and the slug discriminator cannot see it: there is no slug, and the sentence
+    genuinely is about this item. Built-into means folded-into, a different verb
+    sense, so a following "into" suppresses the match.
     """
     for line in item["prose"]:
         for phrase in DO_NOT_BUILD_PHRASES:
             at = line.find(phrase)
             if at == -1:
+                continue
+            if line[at + len(phrase):].lstrip().startswith("into"):
                 continue
             before = line[:at]
             others = [
@@ -229,6 +272,107 @@ def _superseded_research(item, root):
     return hits
 
 
+def shipped_slugs(root):
+    """Slugs that have a LOG entry, i.e. slugs whose work shipped.
+
+    Entries are named `<date>-<slug>.md`, so this is one directory listing
+    rather than a history scan. Degrades to an empty set where there is no
+    LOG/ folder at all.
+    """
+    if not root:
+        return set()
+    found = set()
+    for folder in (os.path.join(root, "LOG"),):
+        try:
+            names = os.listdir(folder)
+        except OSError:
+            continue
+        for name in names:
+            match = LOG_ENTRY_RE.match(name)
+            if match:
+                found.add(match.group(1))
+    return found
+
+
+def first_seen(root, queue_path):
+    """First date each slug's heading appears in QUEUE.md, as {slug: date}.
+
+    One git pass for the whole queue, not one per slug. The per-slug form
+    (`git log -S"[slug]"`) costs about a tenth of a second each and this script
+    re-runs several times a session; walking the queue's own patch history once
+    returns every item's date together.
+
+    Degrades quietly and completely: a project may not be a git repository, may
+    have no git on PATH, or may have a QUEUE.md that was never committed. Any of
+    those returns {} — no date on any line, no error, no noise.
+    """
+    if not root:
+        return {}
+    try:
+        proc = subprocess.run(
+            ["git", "log", "--reverse", "--format=%as", "-U0", "-p", "--",
+             os.path.basename(queue_path)],
+            cwd=root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if proc.returncode != 0 or not proc.stdout:
+        return {}
+
+    dates = {}
+    date = None
+    for line in proc.stdout.splitlines():
+        if GIT_DATE_RE.match(line):
+            date = line
+            continue
+        if not line.startswith("+####"):
+            continue
+        match = SLUG_RE.search(line.rstrip())
+        if match and date:
+            dates.setdefault(match.group(1), date)
+    return dates
+
+
+def citations(item):
+    """Slugs this item's prose names, excluding its own. Order preserved."""
+    seen, out = set(), []
+    for line in item["prose"]:
+        for slug in SLUG_CITE_RE.findall(line):
+            if slug == item["slug"] or slug in seen or slug in FLAVOR_TAGS:
+                continue
+            seen.add(slug)
+            out.append(slug)
+    return out
+
+
+def files_named(items):
+    """{path: [slugs]} for every path named by TWO OR MORE items.
+
+    A file named by one item surfaces nothing, and a per-item field would be
+    noise on a line-per-item digest. What earns its own block is the overlap:
+    two items naming the same file are merge candidates, and merging them means
+    one run touches that file once instead of twice.
+    """
+    by_path = {}
+    for item in items:
+        if not item["files_line"]:
+            continue
+        slug = item["slug"] or "NO-SLUG"
+        for path in FILES_PATH_RE.findall(item["files_line"]):
+            path = path.strip()
+            if not PATH_SHAPE_RE.search(path):
+                continue
+            by_path.setdefault(path, [])
+            if slug not in by_path[path]:
+                by_path[path].append(slug)
+    return {p: s for p, s in sorted(by_path.items()) if len(s) > 1}
+
+
 def contradictions(items, root=""):
     """Items whose placement contradicts their own text. Flags, never decides.
 
@@ -264,14 +408,47 @@ def contradictions(items, root=""):
                         )
                         break
 
-        blocker = item["blocked_by"]
-        if blocker and locate(blocker, items) == "Processed/held":
+        if _blocker_loop(item, items):
             found.append(
-                f"[{slug}] is blocked by [{blocker}], which is itself held — "
-                "a hold chain, so neither moves until the chain's end does"
+                f"[{slug}] sits in a loop of blockers that comes back to "
+                "itself — nothing in the loop can ever be released"
             )
 
     return found
+
+
+def _blocker_loop(item, items):
+    """True where following this item's blockers revisits a slug already seen.
+
+    A chain of held items is NOT reported. Every held item's own digest line
+    already prints `Blocked by: [X] -> Processed/held`, so the chain is on the
+    page item by item; restating it under a heading reading *contradiction*
+    duplicated a line the reader had one row above, and fired on correct work —
+    a deliberate pacing chain, built on the user's instruction, produced three of
+    these on every run. A flag that fires on correct work gets learned past, and
+    then a real one arrives looking exactly like the three that are always there.
+
+    What survives is the distinction plan.md already draws: a chain that
+    terminates is slow, a chain that loops never resolves. Terminating anywhere
+    — Unprocessed, cleared, or a blocker that resolves to nothing — means the
+    chain releases when that end does, and nothing is reported. Revisiting a slug
+    means it never releases. Purely mechanical; no interpretation.
+
+    An absent blocker is deliberately left alone here: a chain ending in a slug
+    that resolves to nothing is a wrong reference rather than a loop, and it
+    already has two homes — session_start names held items whose blocker is in
+    neither section, and plan.md's below-the-line revisit treats it as a fault to
+    fix that session.
+    """
+    by_slug = {i["slug"]: i for i in items if i["slug"]}
+    seen = set()
+    current = item
+    while current is not None and current["blocked_by"]:
+        if current["slug"] in seen:
+            return True
+        seen.add(current["slug"])
+        current = by_slug.get(current["blocked_by"])
+    return False
 
 
 def locate(slug, items):
@@ -284,8 +461,10 @@ def locate(slug, items):
     return "ABSENT"
 
 
-def render(items, root=""):
+def render(items, root="", queue_path="QUEUE.md"):
     out = []
+    shipped = shipped_slugs(root)
+    ages = first_seen(root, queue_path)
     for section in ("Processed", "Unprocessed"):
         in_section = [i for i in items if i["section"] == section]
         out.append(f"## {section} — {len(in_section)} item(s)")
@@ -305,6 +484,15 @@ def render(items, root=""):
                 line += f"  | Blocked by: [{item['blocked_by']}] -> {locate(item['blocked_by'], items)}"
             if item["flag"]:
                 line += f"  | Red flag: {item['flag']}"
+            # Only citations that resolve to a shipped LOG entry are printed.
+            # An unshipped citation is the normal state and would print on
+            # nearly every line for nothing; a shipped one is the signal — the
+            # item's premise names work that is already done.
+            done = [s for s in citations(item) if s in shipped]
+            if done:
+                line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in done)
+            if item["slug"] and item["slug"] in ages:
+                line += f"  | First seen: {ages[item['slug']]}"
             out.append(line)
         out.append("")
 
@@ -324,6 +512,15 @@ def render(items, root=""):
         "reached by this check — read it as partial coverage, not a clean bill."
     )
     out.append("")
+
+    shared = files_named(items)
+    out.append(f"## Files named by two or more items — {len(shared)}")
+    if shared:
+        for path, slugs in shared.items():
+            out.append(f"- {path}: " + ", ".join(f"[{s}]" for s in slugs))
+    else:
+        out.append("- none")
+    out.append("")
     return "\n".join(out)
 
 
@@ -339,7 +536,7 @@ def main(argv):
     # The project root is the queue file's own folder, so the research files an
     # item cites can be opened without asking for a second argument.
     root = os.path.dirname(os.path.abspath(argv[1]))
-    print(render(items, root))
+    print(render(items, root, argv[1]))
     return 0
 
 

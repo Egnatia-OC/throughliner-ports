@@ -63,10 +63,8 @@ One message, all findings. State the count upfront, then list each: number,
 observation, file:line, why it matters. Ask the user to approve the whole set or
 list the numbers they don't accept as-is. Then wait.
 
-This is the **bulk-approval inversion** of one-at-a-time, and it applies because
-the findings are a deterministic result set produced by criteria the user already
-approved when they queued the audit. It keeps the always-show rule fully intact —
-the user reads every finding's exact wording before any of it is filed.
+This keeps the always-show rule fully intact — the user reads every finding's
+exact wording before any of it is filed.
 
 ## Handle contested findings one at a time  [SEQUENCE, PROMPT]
 

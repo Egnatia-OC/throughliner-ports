@@ -9,6 +9,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [What happens to a check that can't be done yet?](faq.md#what-happens-to-a-check-that-cant-be-done-yet)
 - [I closed the app in the middle of a build. What happens when I reopen it?](faq.md#i-closed-the-app-in-the-middle-of-a-build-what-happens-when-i-reopen-it)
 - [Is it safe to clear the conversation or start a new session between steps?](faq.md#is-it-safe-to-clear-the-conversation-or-start-a-new-session-between-steps)
+- [In a planning session Claude wouldn't edit a file and put it in the queue instead. Why?](faq.md#in-a-planning-session-claude-wouldnt-edit-a-file-and-put-it-in-the-queue-instead-why)
 - [Can I edit SPEC.md while doing a build?](faq.md#can-i-edit-specmd-while-doing-a-build)
 - [I just had an idea for a feature. How do I record it?](faq.md#i-just-had-an-idea-for-a-feature-how-do-i-record-it-without-losing-my-train-of-thought)
 - [The queue is empty. Does that mean the project is done?](faq.md#the-queue-is-empty-does-that-mean-the-project-is-done)

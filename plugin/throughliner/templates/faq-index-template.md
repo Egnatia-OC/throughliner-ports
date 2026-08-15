@@ -44,6 +44,7 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [A session stopped and said my project's files are on an "older format". What is that, and is my work at risk?](faq.md#a-session-stopped-and-said-my-projects-files-are-on-an-older-format-what-is-that-and-is-my-work-at-risk)
 - [A session opened by saying my project was missing something — what happened?](faq.md#a-session-opened-by-saying-my-project-was-missing-something--what-happened)
 - [What happens if Claude needs to touch something outside the current work item?](faq.md#what-happens-if-claude-needs-to-touch-something-outside-the-current-work-item)
+- [In a planning session Claude wouldn't edit a file and put it in the queue instead. Why?](faq.md#in-a-planning-session-claude-wouldnt-edit-a-file-and-put-it-in-the-queue-instead-why)
 - [Will Claude use my phone or another device to test my app?](faq.md#will-claude-use-my-phone-or-another-device-to-test-my-app)
 - [What's a "red flag," and what do cleared and uncleared mean?](faq.md#whats-a-red-flag-and-what-do-cleared-and-uncleared-mean)
 - [What happens to a red flag when the work carrying it is built?](faq.md#what-happens-to-a-red-flag-when-the-work-carrying-it-is-built)

@@ -11,14 +11,8 @@ note: >
 
 No new skill and no hook change: this is a guided manual pass, working item by
 item, drafting the converted queue and **getting the user's approval before
-writing.**
-
-**Why this shows before it writes, when nearly everything else writes first.**
-The general rule is write-then-report, and its test is whether the previous
-version is recoverable without the user's help. A wholesale conversion of the
-user's own queue can fail that test: a project being migrated may have been
-adopted moments ago and may not be a committed git repo, so there may be
-nothing to recover. This is the general test applied, not an exception to it.
+writing, because a project being migrated may have been adopted moments ago and
+may not be a committed git repo — so there may be nothing to recover.**
 
 **When this applies.** A project's `QUEUE.md` format is the one project doc that
 reliably falls behind as the method evolves. LOG is already per-entry + index,

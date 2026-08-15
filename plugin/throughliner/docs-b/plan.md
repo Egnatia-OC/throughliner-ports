@@ -25,11 +25,14 @@ gets built first — through discussion, not silently.
 - **Write to QUEUE.md first, then report what landed.** The full rule, including
   the one test that decides which moments still show first, is in
   skill-nonspecific-rules.md's approval-time outputs.
-- **Nothing mechanically contains a planning session, so the containment is a
-  prompt.** There is no build working file here and so no engaged scope-lock; what
-  a session gets instead is an ask before any write outside the quiet list —
-  QUEUE.md, SPEC.md, `LOG/`, and the session's own planning notes. It doesn't stop
-  you doing something urgent, it stops you doing it unremarked.
+- **A planning session is scope-locked to a standing list, and a write outside it
+  is denied.** Writable: QUEUE.md, SPEC.md, `LOG/`, `FAQ/`,
+  `resources/research/`, the scratchpad and the memory directory. Everything
+  else is work — including a template, whose edit reaches every future
+  consumer — and work is
+  queued rather than done here, which is what this doc's opening already
+  requires. When the lock refuses a write, say in plain words what you were
+  about to change and file it as a work item.
 - **A recommendation is not a decision.** Whether an item is kept or deleted is
   still the user's call, and a written line is not an agreed one — the user can
   reject what was written, and it is reverted.
@@ -163,9 +166,27 @@ python <plugin-root>/scripts/queue_digest.py <QUEUE.md path>
 ```
 
 It prints one line per work item — section, side of the readiness marker, flavor,
-heading, slug, any `Blocked by:` with the blocker's resolved location, and any
-red-flag state. That is everything this step's queue-wide reasoning consumes; the
-rationale prose it omits is read per item, at the moment Step 2 presents that item.
+heading, slug, any `Blocked by:` with the blocker's resolved location, any
+red-flag state, any slug the item's prose cites that already has a LOG entry, and
+the date the item first appeared in the queue. It then prints two blocks: the
+placement contradictions, and every file named by two or more items. That is
+everything this step's queue-wide reasoning consumes; the rationale prose it
+omits is read per item, at the moment Step 2 presents that item.
+
+**A cited slug that has a LOG entry means that work shipped**, which is the
+always-loaded instruction "status is re-derived from LOG" performed rather than
+merely stated. An item whose prose leans on work already done has a premise worth
+re-reading, and that is what rung 4 of the ladder below reads. Only shipped
+citations print: an unshipped one is the ordinary state and would appear on
+nearly every line for nothing.
+
+**The files-named block lists merge candidates**, not a per-item field — two
+items naming the same file can often be settled together, and one run then
+touches that file once instead of twice.
+
+**Each of these reports a fact, never a verdict.** "Cites [X]; [X] has a LOG
+entry" is a lookup; "ready to lift" would be an interpretation, and the digest
+does not make one. Read them as inputs to your own judgment.
 
 This is the code-generated digest the page-to-the-end rule prefers, so it
 satisfies that rule rather than dodging it. If the digest fails to run, fall back
@@ -384,9 +405,14 @@ item in Processed whose own text says     ->  surface it. It is cleared to run
 item in Processed whose Files line names  ->  surface it. The keep-check's
   nothing, or names its own design's          buildability limb, failing after
   output                                      the fact
-a hold chain — blocked by an item that    ->  surface it. Neither moves until
-  is itself held                              the chain's end does
+a loop of blockers that comes back to     ->  surface it. Nothing in the loop
+  itself                                      can ever be released
 ```
+
+**A chain that terminates is not reported, and that is not an omission.** Every
+held item's own digest line already names its blocker and where that blocker
+sits, so the chain is on the page item by item; a chain ending anywhere outside
+the held region releases when that end does. Only a loop never resolves.
 
 **Flag, don't decide.** Moving an item out of Processed is a fate decision and
 stays the user's, so these are surfaced for them and nothing else. That is the
@@ -509,16 +535,28 @@ unblocks anything else, don't fall through to file order silently. Work down:
    cleared region                         contradiction in Processed, the item
                                           whose processing settles it goes first
 3. unblock-potential                      the stated default; what nearly every
-                                          session actually uses
+                                          session actually uses. Read it off the
+                                          digest: how many OTHER items cite this
+                                          item's slug — the incoming arrow
 4. decay                                  a premise going stale, or evidence that
-                                          only holds while the observation is fresh
+                                          only holds while the observation is
+                                          fresh. Read it off the digest's
+                                          "cites shipped" field — the outgoing
+                                          arrow: work this item's premise names
+                                          is already done
 5. cheap to settle                        decidable in one exchange; clears volume
-                                          so the queue stops reading as heavy
+                                          so the queue stops reading as heavy. The
+                                          files-named block is the mechanical half
+                                          — items sharing a file settle together
 6. file order                             position in the section
 ```
 
 The ladder is never presented as a choice — it's surfaced only through the one-line
 floor narration, which names whichever rung the order actually came from.
+
+**Rungs 3 and 4 read the same citations in opposite directions and do not merge.**
+Unblock-potential asks who cites me; decay asks whether what I cite has already
+shipped. One field feeds both, and neither absorbs the other.
 
 **Reaching rung 6 triggers one offer** [PROMPT]. The ladder itself is unchanged —
 file order stays the bottom rung and is what runs if the offer is declined.

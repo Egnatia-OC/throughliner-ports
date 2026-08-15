@@ -643,19 +643,39 @@ def write_editing_marker(cwd: str, session_id: str, filepath: str, active: bool)
 
 
 def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
-    """True for the files a session with no build working file writes by design.
+    """True for the files a session with no build working file may write.
 
-    The quiet list is the planning session's own working surface: QUEUE.md,
-    SPEC.md and LOG/. Writing to these is what a planning session IS, so asking
-    about them would be pure noise on every write. Everything else gets an ask —
-    never a denial.
+    This is the planning session's STANDING list — QUEUE.md, SPEC.md, LOG/ and
+    FAQ/, plus the memory directory, `resources/research/`, the scratchpad and
+    any INBOX (checked by their own helpers at the call site). Everything else
+    is DENIED.
 
-    Ask-never-deny is load-bearing and must not be "improved" into a denial. In a
-    build there is a file list agreed in advance, so a surprise write means drift
-    and denying is right. Here there is no agreed list, the user is present, and a
-    legitimate write is authorised in one word. The gate's job is visibility, not
-    containment: it doesn't stop you doing something urgent, it stops you doing it
-    unremarked.
+    This used to ask rather than deny, and the comment here instructed future
+    sessions not to "improve" the ask into a denial. Both are reversed on the
+    user's decision, after she re-argued the point over a period of weeks. Her
+    reason: an ask that gets waved through is not consent — just because Claude
+    asks for an edit does not mean the user reads the request in full and
+    understands what it means.
+
+    The old justification was also wrong on its own terms, and is evicted with
+    it. It read "here there is no agreed list", which is false: a build has a
+    list agreed for one specific piece of work, and a planning session has a
+    standing list — the same few paths every time. Nothing needs restoring for
+    this to work, and in particular the `_plan-<id>.md` working file deleted from
+    the method on 2026-08-14 must not come back: a fixed list needs no per-session
+    file to hold it.
+
+    `resources/research/` is on the list because it must be. plan.md's own ground
+    rules resolve research in-session, and the always-loaded rules REQUIRE a
+    finding to be filed as part of using it — so denying that path would break a
+    shipped duty rather than merely inconvenience a session.
+
+    What a denial costs, stated rather than discovered: a genuinely needed write
+    outside the list now stops the session and becomes a queue item, where before
+    it was one sentence. That is the point. plan.md already says a planning
+    session never builds — that work outside its surface is queued, not done here
+    — so this adds no rule; it makes an existing one mechanical, and the stop is
+    what makes the write visible.
 
     Keyed on the build working file being absent rather than on "a planning
     session", because absence is what the code can actually see — and that is also
@@ -688,6 +708,18 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     if re.match(r"^_build-[a-z0-9._-]+\.md$", rel):
         return True
     if rel.startswith(os.path.normcase("LOG") + "/"):
+        return True
+    # FAQ/ is on the list for the same reason resources/research/ is: the close
+    # REQUIRES an FAQ disposition, so denying the path would break a mandated
+    # step rather than merely inconvenience a session. Recovered from the
+    # pre-reversion version of this gate, which carried it and said so; the
+    # 2026-08-15 design was authored without it and would have shipped the break.
+    #
+    # templates/ is deliberately NOT here, and that asymmetry is a decision.
+    # Editing a template changes what every future consumer receives, which is
+    # exactly the class of change this gate exists to stop happening in a
+    # planning session.
+    if rel.startswith(os.path.normcase("FAQ") + "/"):
         return True
     return False
 
@@ -1007,10 +1039,11 @@ def main() -> int:
             )
 
     else:
-        # Rule 4: no build working file, so no scope-lock is engaged. This is a
-        # planning or freeform session. Writes to its own working surface pass
-        # silently; anything else ASKS — never denies. See _is_plan_quiet_path
-        # for why the ask must not become a denial.
+        # Rule 4: no build working file, so this is a planning or freeform
+        # session, and the scope-lock runs against the STANDING list instead of
+        # a build's agreed one. Writes to that surface pass silently; everything
+        # else is denied. See _is_plan_quiet_path for why this denies rather
+        # than asks.
         if not (
             _is_plan_quiet_path(filepath, cwd)
             or _is_memory_dir(filepath)
@@ -1018,13 +1051,17 @@ def main() -> int:
             or _is_scratchpad_dir(filepath, cwd)
             or _is_inbox_dir(filepath)
         ):
-            return _ask(
-                "[Throughliner] This session has no build running, so "
-                "nothing is limiting which files get changed — and this write is "
-                "outside the files a planning session normally touches "
-                f"(QUEUE.md, SPEC.md, LOG/).\n\nAbout to edit: {filepath}\n\n"
-                "This isn't a refusal and there's nothing wrong with saying yes. "
-                "Go ahead?"
+            return _deny(
+                "[Throughliner] BLOCKED: planning sessions can only change a "
+                "fixed set of files, and this isn't one of them.\n\n"
+                f"About to edit: {filepath}\n\n"
+                "A planning session may write QUEUE.md, SPEC.md, anything in "
+                "LOG/, research notes and its own scratch files. Everything "
+                "else is work, and work gets queued and built rather than done "
+                "here.\n\n"
+                "Add this to the queue as a piece of work instead, and tell the "
+                "user in plain words what you were about to change and why it "
+                "is now an item rather than an edit."
             )
 
     return 0

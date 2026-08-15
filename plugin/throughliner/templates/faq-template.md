@@ -229,6 +229,18 @@ The plugin keeps improving after your project is set up, so a project can end up
 
 Claude stops and asks. It stays within the work item's scope. If something else needs changing: "I need to edit [file] because [reason]. Add to scope?"
 
+## In a planning session Claude wouldn't edit a file and put it in the queue instead. Why?
+
+Because a planning session is for deciding what to do, and changing a file is doing it. Claude is only allowed to write a small fixed set of files while planning: your queue, your SPEC, your session records, any research notes, and its own scratch files. Anything else is refused outright, and the change becomes a piece of work in your queue.
+
+**This used to be a question and now it's a refusal, which is the whole change.** Claude used to ask — "I'd like to edit this file, go ahead?" — and you'd say yes, and the edit happened. The problem with that is quiet: an approval request you skim and wave through isn't really consent, and after a few of them nobody is reading the question at all. A refusal can't be skimmed.
+
+**What it costs you.** A change that genuinely does need making right now takes longer: instead of one word, it becomes an item in your queue, and it gets built in a build session. That's a real cost and it's the intended one — the stop is what makes the change visible to you as a decision rather than passing by as a detail.
+
+**What to do when it happens.** Claude will tell you in plain words what it was about to change and why. If it's something you want, it goes into the queue and a build session does it — usually the very next one. If it's urgent, say so: you can close the planning session and start a build.
+
+**Nothing is lost.** The refusal never discards work. The change is written down as an item with the reasoning attached, exactly like anything else you decide during planning.
+
 ## Will Claude use my phone or another device to test my app?
 
 Only if you say yes. Some checks need a real device or emulator — installing the app on a phone, tapping through a screen. Before Claude connects to or tests on any device attached to your computer, it asks your permission first and waits for your answer. It won't reach into your hardware silently. And if no device is connected, Claude asks whether one is available rather than guessing — so a check that needs a device doesn't quietly get skipped or run behind your back.
