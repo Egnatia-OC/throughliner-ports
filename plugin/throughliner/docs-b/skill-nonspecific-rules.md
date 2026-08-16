@@ -153,11 +153,18 @@ floor:     the show-first cases above stay show-first regardless. The switch
   **Being driven remotely is not a separate trigger.** It is a case where the
   user asks. No detection is built to reach an outcome that asking reaches.
 
-  **The report after the write is one line** naming what landed and where. It is
-  never a re-paste of the text just written — the one exception is the
-  inline-text offer below, which the user switches on and which covers this
-  report by name. It must be specific enough to object to without opening the
-  file. Say the user can reject it and it's reverted.
+  **The report after the write is one line** naming what landed and where, and
+  pointing the user at the artifact to read. It is never a re-paste of the text
+  just written — the one exception is the inline-text offer below, which the user
+  switches on and which covers this report by name. **Name the artifact
+  specifically enough that the user knows which one to open**, and say they can
+  reject what is in it and have it reverted.
+
+  **The report is a pointer to the record, never a substitute for reading it.**
+  This method's control model is that the user reads and approves the record; a
+  report written to be sufficient on its own is a workaround for that not
+  happening, and it makes the workaround the design. What keeps the reading
+  affordable is the artifact's own word band, not a longer report.
 - **When text IS shown — the show-first cases above — the View-in-doc rendering
   section below says how.** End the message with an explicit ask naming the
   decision needed.
@@ -501,18 +508,44 @@ into the rationale, not fixed lines of this block — see the two bullets below.
   Claude's — never write an AI-authorship label. A convention, not a lint-checked
   field.
 
-  **A `captured by you` credit requires the user's own words as its source.**
-  Not their approval, not their agreement, not "they'd have said this" — words
-  they actually said. Approving a proposal Claude reasoned out is agreement, and
-  agreement is not authorship. When in doubt, leave it unmarked.
+  **Two different claims travel under provenance, and only one is about
+  wording:**
+
+```
+an ORIGIN claim   "captured by you", "you raised this", "on your
+                  instruction"
+                  -> says where the item came from. Write it wherever
+                     the user raised the thing, and state it in your own
+                     paraphrase. No quotation is required or expected.
+
+a QUOTE claim     "your words", "in her own words", quotation marks
+                  -> says how something was phrased. Write it only over
+                     text the user actually said, reproduced verbatim.
+```
+
+  **Write an origin claim wherever the user raised the item, whether or not
+  their wording survives.** Everything in these documents is written and
+  recorded by Claude, so requiring a quote for an origin claim would move every
+  un-transcribed idea of theirs into Claude's column — and the cheapest way to
+  satisfy such a rule is to ask the user to prove their own work is theirs.
+
+  **Reserve a quote claim for verbatim text.** Rendering someone's point in
+  Claude's own third-person words and framing it as theirs is the failure this
+  half exists to stop, and it is not fixed by quotation marks around a
+  paraphrase.
+
+  **Approval is not authorship, for either claim.** Agreeing to a proposal
+  Claude reasoned out makes the reasoning Claude's. When in doubt about origin,
+  leave the item unmarked, which reads as Claude's.
 
   **Mixed authorship is written as mixed**, naming who did which part. The
   shape: *"Bundling by hand was rejected on Claude's recommendation and the
   user's agreement."* — not one party assigned the whole.
 
-  **The same bar binds reason-shaped sentences inside the prose** — "their
-  reason", "the user's call", "on their instruction". Don't write one unless the
-  user gave that reason.
+  **The same split binds reason-shaped sentences inside the prose** — "their
+  reason", "the user's call", "on their instruction" are origin claims about a
+  reason, so write one where the user gave that reason and quote it only where
+  you are reproducing how they put it.
 - The **filing-time commit stamp** exists because a capture filed after a
   session's /done close belongs to no committed session record. Plain prose, not
   a parsed field.
@@ -622,17 +655,35 @@ this text: **unreadable is unapprovable.**
 
 ```
 the RECORD — a capture, a queue item, a LOG entry, a SPEC edit
-    keep everything: facts, references, conditions, the reasoning that led
-    here. Completeness matters more than compression.
+    keep the facts, references, conditions and reasoning that led here, and
+    write them within the shape's word band below.
 
 a DELIVERABLE written to disk — a report, a summary, a document for a reader
     its length matches what the task needs. Out comes a filler section, a
     summary of what the document already said, boilerplate.
 ```
 
-The two scopes are not in tension: the record is written for completeness
-because a later session reads it to recover intent, and a deliverable is written
-to its task because a reader acts on it.
+**Each written shape has a word band and a ceiling, and a breach names an action
+rather than blocking the write.** Words, not characters. Each band's top is this
+project's July median for that shape, its floor half of that, its ceiling one and
+a half times it.
+
+```
+shape         band       ceiling   on breach
+capture        90-177      265     file the reasoning as research, cite it
+work item     115-229      345     split into two items
+build entry   115-229      345     split per item built
+plan entry    160-323      485     split per decision
+index line     20-40        60     the line is restating its entry
+```
+
+**A shape under its floor is read for what the record is missing, and lengthened
+only where reasoning is genuinely absent.** A record too thin to rebuild intent
+from fails as surely as one too long to get through, and the floor is what keeps
+the ceiling from being read as a target.
+
+**Run `resources/measure_written_shape_length.py . --bands` to report the whole
+project against these figures.**
 
 **Placement: append to the bottom of Unprocessed, always.** No judgment call, no
 narration line. **Mid-session captures follow the same rule and get no special

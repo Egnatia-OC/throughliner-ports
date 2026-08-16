@@ -19,15 +19,21 @@ two-section work-item model:
      one of cleared / uncleared. A red flag is an ordinary work
      line carrying this one extra marker; the state must be valid.
 
-Provenance is NOT linted. The old model required every work item to
-carry a "captured by you" / "by Claude" label; that requirement is
-gone. The convention is now asymmetric and default-AI: an unmarked item
-is assumed to come from the AI, and an explicit "captured by you" credit
-is written only when the user personally raised, pushed through, or
-wrote the item. No AI-authorship label is ever written. Because a
-user-credit is optional and an AI label is absent by design, there is
-nothing to enforce — so the lint neither requires a label nor forbids
-one (a leftover "by Claude" on an old item is harmless).
+Provenance labels are NOT linted. The old model required every work item
+to carry a "captured by you" / "by Claude" label; that requirement is
+gone. The convention is asymmetric and default-AI: an unmarked item is
+assumed to come from the AI, and an explicit "captured by you" credit is
+written only when the user personally raised, pushed through, or wrote
+the item. No AI-authorship label is ever written. Because a user-credit
+is optional and an AI label is absent by design, there is nothing to
+enforce — so the lint neither requires a label nor forbids one (a
+leftover "by Claude" on an old item is harmless).
+
+  4. What IS checked is narrower: a claim about the user's WORDING
+     ("your words", "in her own words") that shows no quoted text. An
+     ORIGIN claim ("captured by you") is never checked, because it says
+     where the item came from rather than how it was phrased, and a
+     paraphrase is the normal way to state that.
 
 Deny-list by design: only known violations are flagged; unknown or
 novel structure passes in silence, so the format can evolve (new
@@ -479,16 +485,27 @@ def _check_orphaned_prose(annotated, warnings):
             flagged_run = True
 
 
-# Phrases that assert the user wrote or reasoned something. The shipped
-# provenance rule already requires the user's own words as the source of a
-# credit; this is that bar made checkable — the item is asked to show them.
-CREDIT_PHRASES = (
-    "captured by you",
-    "in your own words",
+# Two different claims, and only one of them is about wording.
+#
+# An ORIGIN claim — "captured by you", "you raised this" — says where something
+# came from. A paraphrase is the normal way to state it, so requiring a quote
+# applies a wording test to a claim that was never about wording, and the
+# cheapest way to satisfy it is to ask the user to prove her own work is hers.
+# Origin claims are therefore not checked at all.
+#
+# A QUOTE claim — "your words", quotation marks — is about wording, and shows
+# the words or it is unsupported. That is the bar this check makes visible.
+# Each pronoun needs both forms: "her words" does not match "her own words",
+# which is the phrasing this corpus actually reaches for most often, so the
+# check silently passed every one of them until a test exercised it.
+QUOTE_CLAIM_PHRASES = (
     "your own words",
     "your words",
+    "her own words",
     "her words",
+    "his own words",
     "his words",
+    "their own words",
     "their words",
     "the user's own words",
 )
@@ -502,8 +519,8 @@ QUOTE_SHAPES = (
 )
 
 
-def _check_credit_without_quote(blocks, warnings):
-    """Check 6: an item claiming the user's words shows some of them.
+def _check_quote_claim_without_quote(blocks, warnings):
+    """Check 6: an item claiming the user's WORDS shows some of them.
 
     Advisory, like everything here. It cannot tell invented reasoning from real
     reasoning and must never be described as if it could — what it does is
@@ -517,16 +534,17 @@ def _check_credit_without_quote(blocks, warnings):
     for b in blocks:
         text = "\n".join(b["lines"])
         low = text.lower()
-        claimed = next((p for p in CREDIT_PHRASES if p in low), None)
+        claimed = next((p for p in QUOTE_CLAIM_PHRASES if p in low), None)
         if not claimed:
             continue
         if any(shape.search(text) for shape in QUOTE_SHAPES):
             continue
         warnings.append(
             f"line {b['idx'] + 1}: {b['heading'][:60]!r} says "
-            f'"{claimed}" but quotes nothing. A credit to the user rests on '
-            "words they actually said — quote them, or drop the credit and "
-            "leave the item unmarked, which reads as Claude's."
+            f'"{claimed}" but quotes nothing. That phrase claims the user\'s '
+            "wording, so it needs the words themselves — quote them, or say "
+            "where the item came from instead (\"captured by you\"), which "
+            "claims origin and needs no quote."
         )
 
 
@@ -540,7 +558,7 @@ def lint(content: str) -> list[str]:
     _check_readiness_marker(annotated, blocks, warnings)
     _check_blocked_by(annotated, blocks, warnings)
     _check_orphaned_prose(annotated, warnings)
-    _check_credit_without_quote(blocks, warnings)
+    _check_quote_claim_without_quote(blocks, warnings)
     return warnings
 
 
@@ -552,6 +570,62 @@ def _item_word_counts(content: str) -> dict:
         if m:
             counts[m.group(1)] = len("\n".join(b["lines"]).split())
     return counts
+
+
+def _head_queue(cwd: str) -> str:
+    """QUEUE.md as last committed, or "" when there is no answer.
+
+    git is the state. A cached copy on disk would be a state file that must be
+    maintained, and the first session that forgets makes the output lie — the
+    same ground on which one was refused for the growth report.
+
+    Never raises: no git, no repository, or no committed QUEUE.md returns "".
+    """
+    try:
+        import subprocess
+
+        proc = subprocess.run(
+            ["git", "show", "HEAD:QUEUE.md"],
+            cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            encoding="utf-8", errors="replace", timeout=15,
+        )
+        if proc.returncode != 0 or not proc.stdout:
+            return ""
+        return proc.stdout
+    except Exception:
+        return ""
+
+
+# A warning's line number moves whenever anything above it is edited, but its
+# body names the item, so the body is what identifies the same finding across
+# two versions of the file.
+_WARN_PREFIX_RE = re.compile(r"^line \d+: ")
+
+
+def _warning_body(warning: str) -> str:
+    return _WARN_PREFIX_RE.sub("", warning)
+
+
+def _split_warnings(warnings: list, head_content: str):
+    """(new, pre_existing) — findings this working tree introduced, and the rest.
+
+    Pre-existing flags were shown in full on every fire, so five standing flags
+    in a long queue were re-reported after every edit and every shell command.
+    Identical advisory output repeated is what gets skimmed past, and being
+    skimmed past is what makes a genuine new flag invisible. Reporting against
+    HEAD gives the new finding — the work just done — the full message, and
+    collapses everything else to a count.
+    """
+    if not head_content:
+        return list(warnings), []
+    try:
+        known = {_warning_body(w) for w in lint(head_content)}
+    except Exception:
+        return list(warnings), []
+    new, old = [], []
+    for w in warnings:
+        (old if _warning_body(w) in known else new).append(w)
+    return new, old
 
 
 def _growth_report(cwd: str, content: str) -> list[str]:
@@ -698,12 +772,21 @@ def _emit(message: str) -> int:
     return 0
 
 
-def _lint_queue(queue_path: str) -> int:
+def _lint_queue(queue_path: str, with_growth: bool = True) -> int:
     """Lint QUEUE.md at `queue_path` and emit any warnings as advisory context.
 
     Shared by both entry paths — an edit that landed on QUEUE.md, and any shell
     command in an adopted project. A missing or unreadable file is silently
     fine: this hook is advisory and never fails a tool call.
+
+    `with_growth` is False for the shell path, where the tool input does not say
+    which file was written, so a run of unrelated commands would otherwise
+    re-emit an identical growth report after each one. The residual is stated
+    rather than solved: a shell command CAN reach the queue through a script,
+    and that write now gets no growth report. Closing it needs remembered state
+    between fires, which is refused here on the project's own ground — a state
+    file must be maintained, and the first session that forgets makes the output
+    lie. The lint itself still runs on the shell path, so corruption is caught.
     """
     try:
         with open(queue_path, "r", encoding="utf-8") as f:
@@ -711,24 +794,40 @@ def _lint_queue(queue_path: str) -> int:
     except (OSError, UnicodeDecodeError):
         return 0
 
+    cwd = os.path.dirname(queue_path) or "."
+    head_content = _head_queue(cwd)
+
     sections = []
     warnings = lint(content)
-    if warnings:
+    new, pre_existing = _split_warnings(warnings, head_content)
+    if new:
+        body = "\n".join(f"- {w}" for w in new)
+        if pre_existing:
+            body += (
+                f"\n\n{len(pre_existing)} further flag(s) were already present "
+                "in the last commit and are not repeated here."
+            )
         sections.append(
             "[Throughliner] QUEUE.md structure lint (advisory). "
             "These flag known violations only — novel structure is allowed "
             "and never flagged. Judge each one: fix what's genuinely wrong "
-            "in a follow-up edit, leave what isn't.\n"
-            + "\n".join(f"- {w}" for w in warnings)
+            "in a follow-up edit, leave what isn't.\n" + body
+        )
+    elif pre_existing:
+        sections.append(
+            f"[Throughliner] QUEUE.md structure lint (advisory): "
+            f"{len(pre_existing)} flag(s), all of them already present in the "
+            "last commit and none introduced by this change."
         )
 
-    growth = _growth_report(os.path.dirname(queue_path) or ".", content)
-    if growth:
-        sections.append(
-            "[Throughliner] Queue item word growth since the last commit, as "
-            "bare facts — no threshold, no judgment, and none is implied.\n"
-            + "\n".join(f"- {g}" for g in growth)
-        )
+    if with_growth:
+        growth = _growth_report(cwd, content)
+        if growth:
+            sections.append(
+                "[Throughliner] Queue item word growth since the last commit, "
+                "as bare facts — no threshold, no judgment, and none is "
+                "implied.\n" + "\n".join(f"- {g}" for g in growth)
+            )
 
     secrets = _scan_secrets(queue_path)
     if secrets:
@@ -793,7 +892,7 @@ def main() -> int:
     if tool_name in ("Bash", "PowerShell"):
         if not is_adopted:
             return 0
-        return _lint_queue(os.path.join(cwd, "QUEUE.md"))
+        return _lint_queue(os.path.join(cwd, "QUEUE.md"), with_growth=False)
 
     filepath = tool_input.get("file_path", "")
     if not filepath:

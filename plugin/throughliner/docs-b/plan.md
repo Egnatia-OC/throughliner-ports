@@ -556,6 +556,12 @@ Scrub before writing). Keeping an item is where a capture's rough wording become
 the version that ships into a committed doc, so it is the last cheap moment to
 rewrite a real name or a case detail out of it.
 
+**Read the same text against the work item's word band** (skill-nonspecific-rules.md,
+Authoring standard). A draft over the ceiling is split into two items; a draft
+over the band is tightened before it is written. Advisory — it names an action
+and never blocks the keep. It rides the scrub's read rather than adding a pass of
+its own, because both look at the same draft at the same moment.
+
 **Process order.** Unprocessed top to bottom, then items raised in this session's
 own discussion. State the count upfront, counting both together ("5 items.
 First: …"). Position in the file *is* the order — an item placed next to its
@@ -790,6 +796,36 @@ that noticed a symptom, which is right, so the checking belongs at the reading
 end. This adds no separate step: you cannot honestly state what changes inside a
 file whose behaviour you have not looked at.
 
+**Two questions are settled before the build is described, and each is answered
+in the item's prose:**
+
+- **what is already on the shelf** — check `resources/research/index.md` for an
+  entry covering this item's subject, and where the reasoning draws on a
+  finding, cite the file rather than restating it;
+- **what level the fix belongs at** — where the item fixes an instance of
+  something more general, name whether the fix belongs at that instance, in a
+  rule, or in a hook, and where a lower level is chosen over a higher one, say
+  why.
+
+The index is one line per finding, so the look is nearly free, and it is the
+look that makes the citation possible — a session designing from what it
+believes it already knows never goes to the shelf. A restatement reads as
+complete, so a later session takes the item's account for the finding and can
+propose exactly what the research already refused.
+
+The level question has no detector and cannot have one, since whether an item
+fixes an instance of a general problem is a judgment. Asking it here is what
+makes the choice deliberate rather than whatever the author reached for first,
+which is the instance. The answer then shows up in the Files line, which already
+names a doc for a rule and a hook file for a hook — what was missing was the
+question, not a field.
+
+**Nothing detects an uncited dependency, and this must not be described as
+closing that.** The queue digest prints each item's `Cites research:` line, which
+reports what an item names; an item that restates a finding in its own words
+prints nothing. What this makes possible is a visible citation and a named fault
+for restating one.
+
 **When one item is mixed — half fully specified, half not designable yet —
 surface it as a choice about DESIGNING, never about filing.** Ask *"shall we
 design the remainder now, or split it off?"* Do not ask "shall I split this item
@@ -822,6 +858,17 @@ the run halts to ask.
 Part of keeping is settling who does it and how: Claude-work by default or
 `[user]`; and for Claude-work, its flavor. Claude places the item in Processed by
 relationship judgment and reports where it went.
+
+**Where an item's build produces a tool that measures or reports, file the
+`[audit]` that runs it in the same planning session, placed immediately after
+it.** The tool is the build; reading its output is the audit. Ordering works by
+placement and needs no `Blocked by:` line, because a dev tool run directly is
+live the moment it is written — one run can build the tool and then use it.
+
+A measuring build that ships alone completes, leaves nothing outstanding in the
+queue and gets a session record, while the step that reads its output was never
+written down. Nothing detects the absence of a step that never existed, so the
+filing is what has to be required.
 
 Stop and wait. The user decides.
 

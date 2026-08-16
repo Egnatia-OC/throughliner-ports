@@ -383,7 +383,7 @@ Two things still get shown to you *before* they happen, because a revert can't f
 - **Commit messages.** A commit is harder to unwind than a file edit, and the message never becomes part of a file, so there's nothing to read back and nothing to revert.
 - **Anything that leaves your machine** — a report sent to the method's author, or a message written into another one of your projects. Once it's delivered, undoing your copy doesn't recall theirs.
 
-The honest trade: under the old flow, text you hadn't agreed to never reached disk at all. Now it briefly does. That's cheap and recoverable — but it does mean the one line reporting what landed is worth actually reading, because the risk isn't you saying no, it's you not noticing. Claude keeps that line specific enough to object to without opening the file.
+The honest trade: under the old flow, text you hadn't agreed to never reached disk at all. Now it briefly does. That's cheap and recoverable — but it does mean the risk isn't you saying no, it's you not noticing. So the one line reporting what landed names the document precisely enough that you know which one to open, and it points you there rather than standing in for it. Reading the record is how you stay in control of the project; the line is a pointer to it, not a replacement for it.
 
 Why it changed: pasting every draft into the chat and then writing it wrote everything twice, which burns through a session's budget fast, and you ended up reading the same text in two places. This way you read it once, where it lives.
 
@@ -779,3 +779,32 @@ Three things about the offer:
 - **It's an offer.** Say no and nothing happens.
 
 Before this, the only thing that closed the gap was you remembering to ask.
+
+## Claude queued an audit right after a piece of work. Why two items instead of one?
+
+Because building a tool and reading what it says are two different jobs, and the second one used to get forgotten.
+
+When a piece of work produces something that **measures or reports** — a script that counts things, a check that lists problems — the tool being finished is not the same as anyone having looked at its output. So Claude now files the reading as its own item, placed straight after the building one.
+
+It has happened twice here that a measuring tool was built, the work was recorded as finished, the queue showed nothing outstanding — and nobody read the output for days. Nothing catches that, because there is no missing step to notice: the reading was never written down as a step in the first place.
+
+**What this means for you:**
+
+- **They run in the same session.** The second item needs nothing waiting — the tool works the moment it is written, so one run can build it and then use it.
+- **They stay next to each other.** The close normally shuffles audits toward the end of the ready work, and it now makes an exception for this pair so they don't get separated.
+- **The second one edits nothing.** It reads the output and files what it finds as new items for you to sort at your next planning session.
+
+## Claude used to repeat the same queue warnings after every single action. What changed?
+
+It now only tells you in full about problems **your current work introduced**, and mentions the rest as a count.
+
+The queue check looks at your QUEUE.md and flags anything shaped wrongly. It used to re-list every flag it found, every time it ran — so a few long-standing ones would be repeated after every edit and every command, unchanged, sometimes dozens of times in a session.
+
+That is worse than noise. Warnings that appear constantly get skipped past, and the one time a genuinely new problem appears, it is buried in the same wall of text as the ones you have already read and decided to leave.
+
+So the check now compares against your last commit. Anything new gets the full explanation. Anything already there before you started gets one line: how many, and that none of them came from this change.
+
+**Two other things worth knowing:**
+
+- **Nothing is hidden.** A long-standing flag is still counted, and still appears in full the moment its item is edited.
+- **The word-count report is quieter too.** It now appears only after something actually writes to your queue, rather than after any command at all.

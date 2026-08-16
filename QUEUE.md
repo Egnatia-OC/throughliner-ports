@@ -6,164 +6,6 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
-#### Ship word bands for every written shape, derived from July's medians [written-shape-word-bands]
-**Captured by you 2026-08-16, in your own words:** *"it is the reason I can't show the tool to anyone because it is impossible to use because of all the reading. I operate this whole project by inferring what all the work items and captures say from what you say in the chat, because otherwise i would go crazy from reading."* Top of the queue on your instruction. Kept deliberately short.
-
-**The evidence, measured this session.** One item's entry `2026-08-14-retiring-a-step-leaves-its-artifacts.md` runs 1,434 words — longer than three of the four legacy release logs, which each covered a whole release (`log-v1.7.0.md` 1,007, `log-v1.5.3.md` 941). One session entry hit 3,658. One index line hit 218 words, for a line whose only job is to let a reader skip the entry.
-
-**The derivation, which removes the blocker this has been stuck on.** The objection was that a band cannot be read off a bloated corpus. July can: it is measured, from this project's own record, before the August doubling. Medians — captures **177**, build entries **229**, plan entries **323**, index lines **40**. August: 336, 478, 898, 76.
-
-**Form, settled by `resources/research/llm-length-instruction-following.md`** — cited rather than restated, because restating it is what let this item mislead a session once already. Words, not characters. A soft band plus a hard ceiling. A named action on breach, advisory rather than blocking, authored per shape — which is what answers the repealed 20% index-line cap.
-
-**No specimens.** The same research records that a specimen is doc text in an always-loaded corpus and that this project's rule gate names worked examples as the growth engine. The user's decision, and it removes a `[user]` gate that would have parked this again.
-
-**Proposed figures — band floor at half July's median, band top at July's median, ceiling at 1.5×.** Every number a proportion of a measured figure, which the derivation rule admits; the three multipliers are the one judgment, adjustable without redoing the derivation.
-
-```
-capture       90–177   ceiling 265   on breach: file the reasoning as research, cite it
-work item    115–229   ceiling 345   on breach: split into two items
-build entry  115–229   ceiling 345   on breach: split per item built
-plan entry   160–323   ceiling 485   on breach: split per decision
-index line    20–40    ceiling  60   on breach: the line is restating its entry
-```
-
-**Files:** `resources/measure_written_shape_length.py` — a mode reporting each shape against its band. `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the bands and breach actions on the record-authoring standard. `plugin/throughliner/docs-b/plan.md` and `done.md` — the breach check at the moments text is written. `SPEC.md` — the bands as product truth.
-
-Rule gate: run — admitted as figures on the existing record-authoring standard, which already governs how a record is written; no freestanding rule. **The eviction is the completeness-over-compression clause**, which currently authorises unbounded growth and is replaced by the bands. Failure evidence is measured, above, plus one instance this session of a long item substituting for the research it never cited.
-
-#### Research on file is neither looked for before designing nor cited by the item resting on it [research-cited-not-restated]
-Filed 2026-08-16 by Claude, from a failure in the planning session that filed it. Processed immediately on the user's decision.
-
-**What happened.** [length-work-measures-but-does-not-constrain] — deleted the same session as superseded by [written-shape-word-bands], so it is findable in git history rather than in the queue — restated the findings of `resources/research/llm-length-instruction-following.md` in its own words and never named the file. A session read the item, believed it had the picture, and proposed a design the research had already refused — a prose remedy, where the research records that a prose remedy shipped on 2026-08-13 and measurably failed. The user caught it, in her words: *"we did so much research and work on this and you're just throwing it out."*
-
-**Two halves, and only one is buildable.** Coverage: the digest's superseded-research flag reaches only items that NAME the file, so an item resting on uncited research is invisible to the one check built for it. Substitution: restating research inside an item is what produces the uncited dependency, and a restatement reads as complete, so nobody goes upstream.
-
-**No detector for the first half, refused rather than unbuilt.** Knowing an item rests on research it never names requires inferring the dependency. A check listing research files no item cites would fire on nearly every file and be learned past — the cry-wolf shape repealed twice here.
-
-**The reading half, folded in 2026-08-16 from [research-index-trigger-misses-design] when that capture was deleted into this one.** You cannot cite what you never looked for, so the citing rule above needs the look to happen. The always-loaded rule fires *"before offering a search"* — which never engages when a session is designing from what it believes it already knows, and that is how this session went wrong twice without ever offering one.
-
-**The keep-step already has the site, pointed the wrong way.** It says to ask what would answer an item's open questions, and every example it gives is an outside-the-machine fact — a current version, whether a feature exists, what a tool does. Research already filed is not outside; it is on the shelf. So the step ran and pointed away from where the answer was.
-
-**Files:** `plugin/throughliner/scripts/queue_digest.py` — print each item's `resources/research/` citations on its digest line, as `Cites shipped:` already appears; `RESEARCH_CITE_RE` exists and is currently used only for the superseded flag. `plugin/throughliner/docs-b/plan.md` — one subordinate clause at the keep-step covering both halves: check `resources/research/index.md` for an entry covering the item's subject before describing its build, and where the reasoning draws on a finding, cite the file rather than restating it.
-
-**One clause, not two, and the count matters here.** Five separate clauses were proposed for this one step in a single planning session; [fix-level-has-no-site] records the accumulation and tells a build to check whether they collapse. This item folding two into one is that check applied rather than deferred.
-
-**The limit, and it goes in the shipped text rather than only here:** nothing detects an uncited dependency. This makes a citation visible and a restatement a named fault. Do not describe it as closing the hole.
-
-Rule gate: run — admitted as a subordinate clause on `plan.md`'s existing keep-step, which already governs what a kept item must state; no freestanding rule and no always-loaded slot spent. Nothing evicted. One alternative refused: an orphaned-research check, on the cry-wolf ground. Failure evidence is one recorded instance, in the session that filed it, with the user's correction as the trigger.
-
-#### Add the judge-a-design-by-likelihood rule to CLAUDE.md [design-judged-by-likelihood-not-guarantee]
-Filed 2026-08-16, its text approved by the user in the planning session that wrote it, then blocked by the planning scope-lock — CLAUDE.md is not on the standing writable list. An instance of [scope-lock-denies-claude-md]; the rule's content is settled, only the write is deferred.
-
-**The rule, as approved:** judge a design by whether it makes the intended outcome more likely, not by whether it guarantees it. A missing guarantee is an objection only where the design depends on that guarantee to work at all. It fires at /plan's keep-step, when weighing whether work is worth doing.
-
-**The carve-out ships with it, because without it the rule strips the honest limits.** Statements like "this scan matches credential shapes only" or "this flag reaches only items that name the file" describe what a mechanism covers once built, and exist so the tool never over-claims. The test: is the caveat arguing against doing something, or describing what the thing does? The first is the failure; the second is required.
-
-**Failure evidence is one instance, and no more is claimed.** In the session that filed this, a planning turn offered "shortening the artifacts may not by itself restore the reading" as a reason to hold work apart, when the work made reading affordable and never depended on it happening. The user's words settling it: *"any caveats like that can't 100% control how it works or else what would we be left with?"* A corpus-wide audit for the same pattern was proposed, searched for, and **withdrawn** — the instances checked turned out to be refusals on cry-wolf or unapproved-send grounds, which are different and still-valid arguments.
-
-**Files:** `CLAUDE.md` — one bullet in Working conventions, immediately above the rule gate, carrying the rule, the carve-out and the single recorded instance.
-
-Rule gate: run — admitted as a freestanding decision rule, which is the costly shape, taken deliberately because no existing rule governs how a design is weighed at the keep-step; the rule gate next to it governs admitting *rules*, not work. Nothing evicted. Failure evidence is the single instance above, and the fact that it is single is stated in the rule's own text so a later reader cannot mistake it for a measured pattern.
-
-#### SPEC's control model is not the one the project actually runs on [spec-control-model-not-what-happens]
-**Captured by you 2026-08-16, in your own words:** *"I operate this whole project by inferring what all the work items and captures say from what you say in the chat, because otherwise i would go crazy from reading."*
-
-**Reframed at processing, 2026-08-16, after the first reading was refused by the user.** The first version proposed correcting SPEC to describe what currently happens. That is backwards: SPEC states the design being built toward, and rewriting it to match a degraded present would delete the goal while calling it a correction. Her position, which settles it — reading and approving the record *"has been what I've been shooting for the whole time"*; the original blocker was that no good reading surface existed, and what changed is that verbosity now costs too much time.
-
-**So the defect is in the always-loaded rules, not in SPEC.** The write-first rule says the one-line report after a write must be *"specific enough to object to without opening the file."* That clause designs around the artifact not being read, in the same corpus where SPEC makes reading the control. SPEC holds the goal; the rule holds the workaround.
-
-**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the report clause reworded so the report points at an artifact the user is expected to open, rather than standing in for it. The report stays short; what changes is that it stops being written as a substitute. Reaches the same file as [law-prose-restyle] and [written-shape-word-bands], so it is a merge candidate with both rather than a third separate pass.
-
-#### A build that produces a measuring or reporting tool files the audit that runs it [tool-build-implies-an-audit]
-**Filed 2026-08-16 on the user's diagnosis, in her words:** *"if this is a novel failure of the method to describe an audit type that requires a tool first then we need to describe it in the method. making the tool is build work. the tool can immediately be used in the same session to run the audit. so it's a build work item and an audit work item."*
-
-**The gap is a missing rule, not a missing mechanism.** Ordering a dependent audit after its tool already works by placement, and `Blocked by:` exists for the cases that need it. What is missing is anything saying the audit must be filed at all — so a measuring build completes, the queue shows nothing outstanding, the log records a shipped item, and the step that reads the output was never written down. Nothing detects the absence of a step that never existed.
-
-**Two recorded instances, not one.** `measure_written_shape_length.py` shipped 2026-08-15 and was read by nobody until a user question three days later. And `resources/rule_signals.py` ran for its entire life with nothing invoking it, recorded in `CLAUDE.md` as exactly that.
-
-**The close's reorder would break the pairing, and this is the ripple that has to ship with it.** `done-plan.md`'s close moves `[audit]` and `[user]` lines to the end of the cleared region, so a tool-paired audit gets separated from the tool it runs — and the close happens after /next, so the separation arrives in time to break the next run rather than this one. The pairing therefore needs stating as an exception at the reorder step, not only at the keep-step. Found by tracing this item's own placement, which is the ripple the hook-enforced-format rule exists to catch.
-
-**Files:** `plugin/throughliner/docs-b/plan.md` — a clause at the keep-step: where an item's build produces a tool that measures or reports, the audit that runs it is filed in the same planning session, placed after it. `plugin/throughliner/docs-b/done-plan.md` — the end-preferred reorder excepts an audit that names a tool item it follows, so the close leaves the pair adjacent.
-
-Rule gate: run — admitted as a clause on `plan.md`'s existing keep-step, which already settles an item's flavor and placement; no freestanding rule and no always-loaded slot spent. Nothing evicted. Shipped rather than host-only: a consumer can build a reporting tool and hit the same gap. Failure evidence is the two instances above.
-
-#### The length measurement excludes the legacy logs, so it cannot make the comparison that proves the growth [measurement-excludes-legacy-logs]
-**The tool cannot see the era before the bloat.** `measure_written_shape_length.py` reads per-entry LOG files only, and its own note says the earlier record "lives in the legacy combined log and is not measured here" — which reads as *cannot be*. It parses fine: every legacy file carries `## <hash> — <title>` headings, one per entry, checked this session.
-
-**So the baseline exists and is not being shown.** Legacy entries run roughly 250–460 words each; August is 478 median for builds and 898 for planning, with singles at 1,434 and 3,658. Without the earlier era in the table, the growth is reported only within the bloated period, which is why its scale was invisible to anyone reading the output.
-
-**Settled at processing: legacy entries are measured as one undifferentiated group**, with no plan/build split. Flavor was not recorded then, and inferring it from title wording would be guesswork printed as measurement.
-
-**Kept on the user's purpose after Claude recommended dropping it.** That recommendation judged the item against deriving the bands, which July already settles. Her purpose is different and was not weighed: *"I just want to make sure that the legacy work is measured properly to show the growth."*
-
-**Files:** `resources/measure_written_shape_length.py` — parse `LOG/log.md` and `LOG/log-v*.md` by heading, measure each entry, report as a pre-split group; rewrite the coverage-limit note, which currently states a false limitation. Run by [run-the-written-shape-measurement], which follows it.
-
-#### [audit] Run the written-shape measurement and route what it finds [run-the-written-shape-measurement]
-Filed 2026-08-16. The reading half of work whose building half shipped on 2026-08-15 and was then never read.
-
-**What it does.** Run `py resources/measure_written_shape_length.py .`, read the tables, and file what they show as captures — shapes outside their band under [written-shape-word-bands], the pre-split baseline against the current era, and any shape moving in the wrong direction. Edits nothing, per the audit flavor.
-
-**Follows [measurement-excludes-legacy-logs] and takes no `Blocked by:` line.** The script is a dev resource run directly, not part of the installed plugin, so its change is live the moment it is written — the same run can build the tool and then use it. Placement carries the order; a holding field would push this below the readiness line and stop it running at all.
-
-**Why it exists as its own item.** A tool with nobody appointed to read it reported that every written shape had doubled, and nothing happened for three days. The output is even addressed to a reader — "no threshold is stated here and none may be read off the middle of these distributions" — who was never appointed.
-
-Rule gate: not needed — an audit authors nothing and amends nothing.
-
-#### Provenance applies a wording test to an origin claim, so Claude asks the user to prove her work is hers [provenance-splits-origin-from-quote]
-Filed 2026-08-16. Supersedes [unquoted-user-credits], which proposed fixing the instances and had the rule backwards.
-
-**Two different claims are collapsed into one.** An **origin** claim — "you raised this", "captured by you" — says where something came from and has nothing to do with wording; a paraphrase is the normal way to state it. A **quote** claim — "your words", quotation marks — is about wording and requires verbatim text. The shipped rule says a `captured by you` credit "requires the user's own words as its source," applying a wording test to an origin claim.
-
-**That is why Claude ends up demanding proof.** The rule makes wording the evidence for something that was never a claim about wording, so the cheapest available move is to ask the user to substantiate it. Reported by her from a live instance in another project the same day. **Her position, which settles the split:** *"nothing is 'the user's words' unless it's a direct quote. neither is work only the user's if it isn't exactly in their words. but everything is written and recorded by Claude."*
-
-**The lint has it backwards in both directions.** It flags an origin claim for lacking a quote — five items, all legitimate, and a planning session came one turn from deleting those credits on its instruction. It passes a quote frame over a paraphrase: *"Your words: before, it felt shaky for the first few items…"* is Claude's third-person rendering under a claim to be hers, and it is clean by the check.
-
-**What must not change: default-AI.** Unmarked reads as Claude's, and that is the half the mechanism was built for — stopping Claude claiming everything is the user's. Abolishing provenance was floated and refused for that reason; it returns to a state she has already rejected as confusing.
-
-**Trace the ripple by grep before building** — the credit phrasings are a hook-enforced format, so the file list is read off the corpus rather than written from this discussion.
-
-**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the provenance rule split into the two claims, with the wording test bound to the quote claim alone. `plugin/throughliner/hooks/post_tool_use.py` — flag a quote frame containing no quoted text; stop flagging an origin claim for lacking one. `QUEUE.md` — the paraphrase-under-quote-frame items corrected; the five currently flagged left alone.
-
-**Fourth item now landing in `skill-nonspecific-rules.md`**, alongside [law-prose-restyle], [written-shape-word-bands] and [spec-control-model-not-what-happens] — a merge candidate with all three rather than a separate pass.
-
-Rule gate: run — admitted as an amendment to the existing provenance rule, which already distinguishes credit from agreement and provides for mixed authorship; no freestanding rule and no slot spent. **The eviction is the wording test as applied to origin claims**, repealed outright. One proposal refused on the user's objection: a stricter form requiring verbatim for every credit, which would have transferred every un-transcribed idea of hers into Claude's column. Failure evidence is two instances — the five mislabelled items here, and a live report from another project the same day.
-
-#### The advisory hooks repeat unchanged output on every tool call [advisory-hooks-repeat-unchanged]
-The queue lint and the word-growth report fired on every PowerShell command and every edit in the filing session — around twenty times, identical content each time, including after commands that changed nothing. Repeated identical advisory output is what gets skimmed past, which is the failure this project has repealed measures for twice, and here it is generated by the reporting rather than by any rule.
-
-**The two need different fixes, and reading the hook settles both.**
-
-**The lint re-reports the whole file every time.** Five flags in this queue are pre-existing and were shown at every single fire. Fix: report against `HEAD`. A flag on a line that differs from `HEAD` gets its full message — that is work just done, and it is what the advisory is for. Everything else collapses to one line giving the count. The hook already runs `git show HEAD:QUEUE.md` for its growth report, so this needs no new machinery and **no state file** — git is the state, which is what keeps it honest.
-
-**The growth report is already `HEAD`-relative and its numbers are correct.** Its noise is firing on tool calls that changed nothing. Fix: emit only where the triggering tool wrote to QUEUE.md, which is knowable from the tool input for an edit or a write.
-
-**The residual, stated rather than solved.** A shell command can reach the queue through a script, which is why the hook runs after shell commands at all, and there the target is not knowable from the input — so a run of unrelated shell commands can still re-emit. Closing that needs remembered state between fires, and a state file is refused here on the project's own recorded ground: it must be maintained, and the first session that forgets makes the output lie.
-
-**Merge candidate with [provenance-splits-origin-from-quote]**, which changes the credit check in this same file. Two items editing one hook should be one pass.
-
-**The build runs the suites under `resources/testing/` before committing**, per the standing hook-touching close rule.
-
-**Files:** `plugin/throughliner/hooks/post_tool_use.py` — lint output made `HEAD`-relative with a count line for pre-existing flags; growth report emitted only on a write that targeted QUEUE.md.
-
-Rule gate: not needed — no rule authored or amended, and a hook file sits outside the gate's stated trigger, which names `docs-b/`, `CLAUDE.md` and the two self-authoring resources. Recording that here because the same shape is already captured as [gate-trigger-misses-the-audit-checklist]: a file that carries enforced behaviour, outside the set that summons a gate.
-
-#### Nothing asks whether a fix belongs at the instance, in a rule, or in a hook [fix-level-has-no-site]
-**Filed 2026-08-16 on the user's observation, in her words:** *"you keep applying things only to work rather than considering if rules need to be written about them."*
-
-**The gate fires at the wrong end.** `CLAUDE.md`'s rule gate runs "before adding any rule to the method's own text" — so it only engages once someone has already decided a rule is the answer. Its fourth admission question is exactly the right one, *could a hook do it instead*, and it can never be reached from the other direction: looking at a broken instance and choosing how to fix it. So the default is whatever the item's author reached for first, which is the instance.
-
-**Two instances in the session that filed this, both caught by the user rather than by any check.** The provenance defect was diagnosed correctly and then proposed as a text cleanup, leaving the lint that certifies the bad shape untouched. The measurement defect was proposed as a replacement item until she supplied the rule — build the tool, then audit with it — which became [tool-build-implies-an-audit].
-
-**Not a hook.** Whether an item is fixing an instance of a general problem is a judgment, not a pattern, so no check can detect it.
-
-**Files:** `plugin/throughliner/docs-b/plan.md` — a clause at the keep-step: where an item fixes an instance of something, name whether the fix belongs at the instance, in a rule, or in a hook, and where a lower level is chosen over a higher one, say why in the item's prose. The answer then shows up in the Files line, which already names a doc for a rule and a hook file for a hook — what is missing is the question, not a field.
-
-**Shipped rather than host-only.** A consumer processing an item hits the same choice between fixing one occurrence and writing a rule into their own `CLAUDE.md`.
-
-**One thing a build must weigh, and it is the strongest argument against this item.** Four items cleared in this same session add a clause to `plan.md`'s keep-step — [files-line-names-excluded-files], [research-cited-not-restated], [tool-build-implies-an-audit] and this one. That is the accumulation the rule gate exists to control, arriving at one step, in one session, with nothing counting it. A build should check whether these four collapse into fewer clauses before writing all four.
-
-Rule gate: run — admitted as a clause on `plan.md`'s existing keep-step. Nothing evicted, and the accumulation above is recorded rather than resolved, because merging four clauses is a build-time judgment over their final wording. Failure evidence is the two instances above, both from the filing session, both surfaced by the user.
-
 #### Rename `docs-b/` to `docs/`, overturning the refusal recorded the day before [rename-docs-b-folder]
 Filed 2026-08-16 by Claude, on the user's decision, after she challenged the refusal during the planning session that had just cited it.
 
@@ -326,17 +168,17 @@ Relates to [next-presents-items-setup-will-overtake], which covers a run being p
 #### [user] Discord post: Claude now knows how the work cycle actually fits together [discord-post-cycle-awareness]
 Captured by you 2026-08-12; the angle is yours — awareness of the build cycle.
 **Cannot be written until [cycle-summary-at-every-skill-opening] has shipped.**
-**The honest before-picture, also the strongest material.** Every piece was documented — what an audit does, what a capture is, what /plan may process, what /next may build — and nothing stated the loop. Claude assembled it wrong twice in consecutive sessions, both times confidently, reasoning that a planning session between an audit's findings and their build meant the findings couldn't reach the build. That is the cycle working. Your words the second time: this is the second planning session in a row where you've had to explain it.
+**The honest before-picture, also the strongest material.** Every piece was documented — what an audit does, what a capture is, what /plan may process, what /next may build — and nothing stated the loop. Claude assembled it wrong twice in consecutive sessions, both times confidently, reasoning that a planning session between an audit's findings and their build meant the findings couldn't reach the build. That is the cycle working. Your objection the second time, rendered in Claude's words rather than quoted: this is the second planning session in a row where you've had to explain it.
 **The design point worth including.** A flat list of stages would not have prevented either failure, because both were about a loop *closing*. What shipped names the return edges explicitly.
 **Same judgment as the sibling post:** the before-picture is Claude getting it wrong; publishing that is yours to decide.
 **Walkthrough.** 1. Feature ships. 2. Claude drafts inside 2,000 characters. 3. You say what to change. 4. You post. 5. You confirm, and this line closes.
 **Unblocked 2026-08-13.** [cycle-summary-at-every-skill-opening] shipped — `LOG/2026-08-12-cycle-summary-at-every-skill-opening.md`. Ordinary ready work. Sat blocked unnoticed; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
 
-**Paced 2026-08-14 on the user's decision: second in a one-post-per-day chain.** Her words: one a day, don't drown out the server. Pacing alone holds it. It lifts when [discord-post-context-adjacency] is posted and closed.
+**Paced 2026-08-14 on the user's decision: second in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Pacing alone holds it. It lifts when [discord-post-context-adjacency] is posted and closed.
 Blocked by: [discord-post-context-adjacency]
 
 #### [user] Discord post: how much stronger a session is from its start once /plan opens by reading recent LOG index lines [discord-post-session-start-strength]
-Captured by you 2026-08-11. Your words: before, it felt shaky for the first few items; starting with log-awareness plus some maybe-relevant context massively boosts the start of sessions. The angle is yours; the correction below is Claude's.
+Captured by you 2026-08-11. Your point, rendered in Claude's words rather than quoted: before, it felt shaky for the first few items; starting with log-awareness plus some maybe-relevant context massively boosts the start of sessions. The angle is yours; the correction below is Claude's.
 **It cannot be written yet, which is why this is a queue item rather than a draft.** You asked believing the feature was live. It wasn't: `plan.md`'s Step 1 reads QUEUE.md and SPEC.md only, and its three `LOG/index.md` mentions are targeted lookups — has this been decided — not an orientation read. The feature is [plan-reads-recent-log-index], held below the line behind [index-line-length-proportional-cap].
 **Your experience was real; the mechanism you credited was wrong.** What steadied that session was the below-line revisit reading LOG to check two blockers, plus the previous session's forward advisory naming where to start. Both live; neither is the five-recent-lines read. Worth carrying into the post — "the thing that helped wasn't the thing I thought" is the better story.
 **The post's content, to draft when it ships.** The shaky-first-items problem and its cause; what the orientation read changes; and the honest scope — it doesn't carry all necessary context, it sets upcoming work against past work. Include the cost bound, since it's why the feature waited: five index lines is an unbounded read until index lines are capped, which [index-line-length-proportional-cap] fixes.
@@ -344,7 +186,7 @@ Captured by you 2026-08-11. Your words: before, it felt shaky for the first few 
 **Walkthrough.** 1. Feature ships. 2. Claude drafts inside the limit. 3. You say what to change. 4. You post — Claude has no route to Discord. 5. You confirm, and the line closes.
 **Unblocked 2026-08-13.** [plan-reads-recent-log-index] shipped — `LOG/2026-08-12-plan-reads-recent-log-index.md`; /plan's read-state step now opens with the five newest index lines. Ordinary ready work. Fourth item found sitting behind a shipped blocker; the fix is the slug-resolution field in [digest-reports-computed-fields-not-summaries].
 
-**Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her words: one a day, don't drown out the server. Pacing alone holds it. It lifts when [discord-post-cycle-awareness] is posted and closed.
+**Paced 2026-08-14 on the user's decision: third in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Pacing alone holds it. It lifts when [discord-post-cycle-awareness] is posted and closed.
 Blocked by: [discord-post-cycle-awareness]
 
 #### [user] Correct and post the announcement about rationale moving out of operative rules — the draft tells readers the why lives in session logs they can't reach [announcement-rationale-split-correction]
@@ -356,12 +198,17 @@ Captured by you 2026-08-09 — split out of [rationale-relocation-invisible-to-c
 3. The user posts it.
 4. The user confirms; it's recorded and the line removed.
 Rough draft, to sharpen at step 1 — the announcement's other content wasn't reviewed, so check the whole thing, not only the false sentence. Also decide at step 1 whether it's still worth announcing, given the week that has passed.
-**Paced 2026-08-14 on the user's decision: last in a one-post-per-day chain.** Her words: one a day, don't drown out the server. Last because it corrects an already-posted announcement rather than being news, so it yields to the three new posts. It lifts when [discord-post-session-start-strength] is posted and closed.
+**Paced 2026-08-14 on the user's decision: last in a one-post-per-day chain.** Her reason, rendered in Claude's words rather than quoted: one a day, don't drown out the server. Last because it corrects an already-posted announcement rather than being news, so it yields to the three new posts. It lifts when [discord-post-session-start-strength] is posted and closed.
 Blocked by: [discord-post-session-start-strength]
 
 **Files:** none — the artifact is a Discord post. Relates to [self-authoring-rules].
 
 ## Unprocessed
+
+#### Last session advises consolidating the cleared region before any build [forward-advisory]
+Several cleared items edit the same few files: `skill-nonspecific-rules.md` is named by the restyle, the word bands, the write-first clause and the provenance split; `post_tool_use.py` by the provenance split and the advisory-hook item; and `plan.md`'s keep-step gains a clause from several items at once. Built as filed, each pass rewrites text a previous pass just rewrote, and each can undo the other's wording — the argument that made the restyle wait for the rationale audit, now applying to the items that came after it.
+
+The consolidation is a planning move, not a build one, and it is the same operation that opened this session for [law-prose-restyle]. It was recommended at the close and not taken up, so it is advice rather than a decision.
 
 #### Add a lightweight post-close "done delta" — commit everything since the last /done without a full-session rescan [done-delta-close]
 Captured by you — filed after `fa2f8e5`. /done is expensive: the full close re-scans the whole session's discussion, runs the spec-sync gate, reorder, marker positioning, advisory management, LOG authoring, staleness sweep. When a /done already committed this session and the tail only filed a few captures, most steps no-op but Claude still pays the reading cost to *reach* each no-op. (Seen live 2026-08-01: a second /done banked six post-close captures; nearly every step was a silent no-op and the full path was still walked.)
@@ -383,7 +230,7 @@ Captured by you (2026-08-01) while reviewing your Claude Code feature request an
 External dependency: anthropics/claude-code#77134.
 
 #### Routing communication feedback to memory masks the method defect that produced it — the memory-boundaries rule needs the exception [memory-masks-method-defects]
-Captured by you — raised 2026-08-09 at a /done close, filed after `115f851`. Your words: if Claude's replies are affected by memory, then the method can't truly be tested.
+Captured by you — raised 2026-08-09 at a /done close, filed after `115f851`. Your point, rendered in Claude's words rather than quoted: if Claude's replies are affected by memory, then the method can't truly be tested.
 **The conflict the shipped rule does not see.** plugin-behaviour.md's memory-boundaries rule lists what memory is free for: user preferences, working style, **communication feedback**, cross-project facts. Separately, this project's CLAUDE.md states that all use of the plugin to develop the plugin is testing it, and that any moment session memory covers for something the docs should carry is a mandatory capture. Nobody applied that second rule to *persistent* memory, and the two disagree: saving communication feedback to memory is permitted, and doing it here contaminates the only test the method gets.
 **Why it is sharper than a self-hosting quirk.** Communication feedback is very often *evidence about the method's own narration rules*. This session demonstrates it: the user twice said there was too much text — evidence that the /plan checkpoint is too long, filed as [done-invoked-when-user-meant-continue]. Had that also gone to memory, Claude would simply have behaved better, the queue item would have stopped mattering, and the defect would have survived in the shipped docs. Memory would quietly buy a fix for one user while every consumer kept the bug.
 **So the routing test is not "is this a preference?" but "is this evidence about the method?"** A preference no method rule governs — a name, a timezone, a tool the user likes — stays memory's. Feedback that a *method-produced behaviour* was wrong is a testing outcome and belongs in the queue, whether or not it also reads as a preference. The overlap is the problem: it is genuinely both, and the current rule names only the branch that silences it.
@@ -411,7 +258,7 @@ Filed 2026-08-10 during a /next walk-through, at your instruction. Mixed authors
 Relates to [inbox-delivery-unconfirmed], [inbox-mail-has-no-place-in-the-ladder] and [report-url-404] (the instance).
 
 #### An "unattended" /next run is not unattended: it stops for [user] items and never closes itself [unattended-run-is-not-unattended]
-Captured by you 2026-08-11 in the post-close tail. Your words: an unattended run is not actually unattended — it stops for user items and doesn't automatically run /done on itself; we can design that, but it needs consideration of where user items land.
+Captured by you 2026-08-11 in the post-close tail. Your point, rendered in Claude's words rather than quoted: an unattended run is not actually unattended — it stops for user items and doesn't automatically run /done on itself; we can design that, but it needs consideration of where user items land.
 **The claim as it stands.** `SPEC.md` calls multi-item /next "unattended in practice — the autonomous build mode the Principles name", and the Principles say execution sessions trend toward pure execution, "stopping only for what genuinely needs the user". In practice a run stops at least three ways: a `[user]` item is walked through live one step at a time; a `[freeform]` item halts it outright; and at the end it simply stops, because **/done is a command the user runs**. So a run left alone finishes its builds and sits there uncommitted until someone returns.
 **Why this is worth more than a wording fix.** The word shapes real decisions. `[user]` and `[audit]` lines are placed end-preferred *because* a stop inside a contiguous build run interrupts an otherwise unattended sequence — that rule only makes sense if the run is meant to be left alone. The readiness line was made the run's sole bound on the same reasoning. If "unattended" is aspirational, several settled decisions rest on an overstatement.
 **What a design has to settle, and your condition is the hard part.** Where `[user]` items land. End-preferred placement batches them at the end of the cleared region, the right instinct but only a tie-adjustment — a genuine dependency still puts a `[user]` item mid-run. Options: whether a truly unattended run must exclude `[user]` items entirely and leave them to a separate walk-through session; whether the readiness line grows a second meaning (build up to here unattended, then stop for the human); or whether the honest answer is to stop calling it unattended and describe it as a run that clears vetted work and pauses where a person is genuinely needed.
@@ -449,7 +296,7 @@ Filed 2026-08-13 by Claude during the identity-rename build. Filed after the las
 **Files (rough):** `.claude/launch.json`, `.claude/settings.local.json`. Host-only — a consumer's `.claude/` is their own.
 
 #### A one-line reply cannot be told apart from a suggestion chip, so every user-credit resting on one is unverifiable [chip-replies-are-indistinguishable-from-user-authorship]
-Captured by you (2026-08-13), in your words: those are ALL chip answers, i don't write like that. The metadata check and containment test are Claude's.
+Captured by you (2026-08-13). Your objection, rendered in Claude's words rather than quoted: those are ALL chip answers, i don't write like that. The metadata check and containment test are Claude's.
 **What was being checked.** You asked where `Runs alone` came from, saying you didn't remember okaying it. The item that introduced it recorded two user-credits: that you directed settling it before the next run, and that the marker was "the route, chosen by the user". Claude read the raw transcript, judged the first accurate and the second wrong, and said so confidently. You then said all those replies were chips.
 **The metadata settles it, against the record rather than for it.** Every user message in `.claude/projects/<slug>/*.jsonl` carries `origin: {kind: "human"}` and `promptSource: "sdk"`. Messages you plainly typed — including ones carrying your own typos — are byte-for-byte indistinguishable from one-line affirmatives. The transcript records who **sent** a message, never who **composed** it. So the primary evidence this project relies on for provenance cannot answer the provenance question.
 **The loop, which makes this structural rather than a discipline failure.** Claude proposes a design; the harness renders Claude's proposal as a suggestion chip; the user clicks it to move on; Claude records "chosen by the user, in their own words". Claude's recommendation is laundered into the user's authorship, and the artifact is indistinguishable from a real user decision — to a later session, to an audit, and to the session that wrote it. It was believed and asserted twice in the exchange that discovered it.
@@ -486,7 +333,7 @@ Filed 2026-08-13 by Claude, measured live in its own post-close tail. Filed afte
 #### There is no way to tell where you are in a long processing run [no-position-signal-in-a-processing-run]
 Captured 2026-08-14 at a /plan close, from the user losing her place live. Her words across three turns: "what is going on did we resolve the last item into work or not", "in the middle of what item? what item are we on? that's all I'm asking", and "then what was all that stuff you just did!".
 **What happened.** Ten items in one session. Each produced several turns of discussion, and several produced side-work — a reply drafted and delivered, a capture filed mid-item, a rule gate opened, references repaired after a delete. From outside, side-work is indistinguishable from work on the item, so a single-word instruction like "delete" was followed by four further exchanges and the user could no longer tell whether the item was resolved, what item was current, or whether anything was open.
-**A running count is NOT the fix, and this capture's first draft had it backwards.** It claimed the count was stated once at the start and never again, and offered a running position line. The user corrected both at the close, in her own words: the count was in fact being stated at random points through the run for no apparent reason, it has since gone, and it is better gone. Claude had been emitting unprompted tallies — "that's five items processed and two skipped" — at moments no procedure asks for, noise dressed as orientation. Recorded rather than quietly amended, because a running counter is the intuitive fix and would otherwise be re-proposed by the next session to read this.
+**A running count is NOT the fix, and this capture's first draft had it backwards.** It claimed the count was stated once at the start and never again, and offered a running position line. The user corrected both at the close; her correction, rendered in Claude's words rather than quoted: the count was in fact being stated at random points through the run for no apparent reason, it has since gone, and it is better gone. Claude had been emitting unprompted tallies — "that's five items processed and two skipped" — at moments no procedure asks for, noise dressed as orientation. Recorded rather than quietly amended, because a running counter is the intuitive fix and would otherwise be re-proposed by the next session to read this.
 **What is actually missing is narrower.** Not how many items, but whether the item in hand is finished and whether what Claude is now doing still belongs to it. All three of her questions were that question, never a request for a total.
 **What to weigh at processing.** Whether side-work should be announced as side-work when it starts, so a stretch of tool calls after a one-word instruction reads as "still finishing the delete". Whether a plain "that item is closed" line at the moment an item ends would do it. Neither should reintroduce a tally. Relates to [concision-build-removed-the-asks], [subset-done-has-no-stated-shape] and [claude-md-vocabulary-is-unexplained] — all four are the user unable to read her own position from what the session says.
 
@@ -502,7 +349,7 @@ Captured by you 2026-08-14, mid-/next, from your proposal to delete the file. Fi
 **But a live consumer does NOT put a delete off the table, which is your correction and it defeats this capture's first version.** Claude wrote that it did; you pointed out that what Understudy has is *code* that reads the markers, and that Understudy's Claude can read the hook that writes them. That is the stronger source in every respect: `pre_tool_use.py`'s marker-writing function **is** the format, so it cannot drift, while the document can and has nothing checking it — question 2 below. The document would only be load-bearing if Understudy couldn't reach this repository, and it can: sibling folders on the same machine, and the v2 change in fact travelled by INBOX message rather than by anyone reading the contract. So a delete is live, and question 3 is now most of the answer.
 Your other point stands untouched: users will not read it, and it is not written for them.
 **Question 1 — does the dependency get to be visible from both ends?** Today the citation runs one way: this project publishes a contract and doesn't know who consumes it, and Understudy's code names the format without anything on this side recording that it does. Same one-way-citation shape the superseded-research rule was built for, one project apart. A pointer from Understudy's side, or a note here naming the consumer, would make a v3 change reach the code that depends on it. Weigh against the standing rule that this project doesn't scan other projects — any pointer is something a person writes, never something a session goes looking for. **This question survives a delete and may be the only part that does:** knowing who reads the markers matters whether the format is documented in prose or read out of the hook, and it's the one thing neither the code nor the document records.
-**Question 2 — when does it get maintained, or is it quietly decaying?** Your question, in your words. There is no trigger of any kind: not in the rule gate's path list, not in the board's growth report, not in the FAQ-sync trigger, and no close reads it. The hooks could drift from the published format and nothing would say so — the exact shape of the output-style failure built earlier in this run, where an always-loaded layer sat outside every watcher and an underived number reached it in silence. Note a conformance check here is mechanically possible in a way most of this method's checks are not: the fields the hook writes are literal strings, so a test could assert the marker matches the document.
+**Question 2 — when does it get maintained, or is it quietly decaying?** Your question, put here in Claude's phrasing. There is no trigger of any kind: not in the rule gate's path list, not in the board's growth report, not in the FAQ-sync trigger, and no close reads it. The hooks could drift from the published format and nothing would say so — the exact shape of the output-style failure built earlier in this run, where an always-loaded layer sat outside every watcher and an underived number reached it in silence. Note a conformance check here is mechanically possible in a way most of this method's checks are not: the fields the hook writes are literal strings, so a test could assert the marker matches the document.
 **Question 3 — is a published interface contract standard practice, or our own invention? This is now the load-bearing question.** Yours, and with the consumer objection defeated it carries most of the decision. If it is standard practice, defended by sources, it stays and gains a trigger. If it is our invention, it duplicates what is already in the repository in executable form — the hook code *is* the format, Claude can read it, and it cannot drift the way prose can — and this project has spent this session removing second copies. Your words for why the code is the better source: it is probably way more accurate too. **This turns on an external fact, so it needs a web search rather than a judgement here** — whether published field-level contracts for local file-based signals are a recognised practice, and what maintains them where they are.
 **Files:** unknown until question 3 is settled — possibly `EDITING-STATE-CONTRACT.md` (deleted, or gaining a maintenance trigger), `CLAUDE.md` and `resources/rule_signals.py` (if it gains one), `resources/testing/` (if a conformance test is the answer). Host-only in every branch. Relates to [rule-lifecycle-board-has-no-trigger] and to the superseded-research one-way-citation problem.
 
@@ -516,7 +363,7 @@ Filed 2026-08-14 by Claude while running a rezip, from the rule misfiring on tha
 **Files (rough):** `resources/release-ritual.md`, the rezip's step 1. Host-only. Relates to the push's version-reset clause in `CLAUDE.md`, the other half of the disagreement.
 
 #### The slug in a work item's heading appeared with nothing ever explaining it [slug-never-explained-to-the-user]
-Captured by you 2026-08-14, in your own words: you have never actually known what the bracketed part of the title is for — it just randomly emerged one day and you didn't have time to deal with it.
+Captured by you 2026-08-14. Your point, rendered in Claude's words rather than quoted: you have never actually known what the bracketed part of the title is for — it just randomly emerged one day and you didn't have time to deal with it.
 **The gap.** The slug is load-bearing structure: it is what `Blocked by:` resolves against, what the queue lint checks, what a LOG entry names to say which item it built, and what Claude uses to refer to an item exactly in chat. None of that is stated anywhere the user reads. It appeared in their own documents and they worked around it for weeks.
 **Why this is not solved by the slug being harmless to ignore.** It is harmless to ignore only once you know you may. Until then it is unexplained structure in a document the user is asked to read and approve, and the method's own standard is that unreadable is unapprovable.
 **The likely shape, to settle at processing.** Either the queue file's header sentence gains a clause saying what the bracketed name is for and that the user never has to write one, or it becomes an FAQ entry, or both. The queue header is read by anyone who opens the file, which the FAQ is not — so the header is the stronger site and the FAQ the fuller answer. Depends on [faq-entry-criteria] if the FAQ route is taken.
@@ -584,7 +431,7 @@ Mixed authorship: the failure was Claude's, and you reported it in your own word
 **The cost was one extra turn**, which is cheap. The reason to file it anyway is that a consumer meeting the same halt has strictly less context than you do, and no way to ask a question that gets a second attempt from someone who knows the material.
 
 #### Design the standing audit set that maintains the rule corpus once the cleanup is finished [standing-audit-programme]
-**Captured by you 2026-08-14, in your own words: design the routine audits that you will run in the future and maintain the full corpus once we're done.** The reasoning below came out of that discussion — your strategy is yours, the argument about what it can and cannot retire is Claude's, and you asked for it to be captured.
+**Captured by you 2026-08-14. Your instruction, rendered in Claude's words rather than quoted: design the routine audits that you will run in the future and maintain the full corpus once we're done.** The reasoning below came out of that discussion — your strategy is yours, the argument about what it can and cannot retire is Claude's, and you asked for it to be captured.
 
 **Your strategy, recorded first because the design serves it.** Dedupe and de-contradict the corpus first, cutting the word count and therefore how much there is to process; then design the audits and edits that put the final finish on the method rules, converting them into the law-prose style; then, once the always-loaded self-authoring rules are doing their job, stop needing to run these audits at all.
 
@@ -967,4 +814,128 @@ Relates to [competition-comparison-article], where it was decided.
 **To settle at processing.** Whether the close gains a mail step — it is the one skill that always runs, which is the argument that put the wind-down re-scan there. Whether archiving should follow triage automatically, since a triaged message has no reason to stay in the mailbox. And whether the size problem should be solved at all once triage is reliable, or whether [inbox-size-contradicts-the-payload-cap] simply stops being reachable.
 
 **Ordering, carried in prose rather than as a field because this sits in Unprocessed where no holding field exists.** The user's instruction at the close was that the cap item wait on the next planning session rather than being fixed piecemeal — settle this first, then decide whether the cap needs touching at all. Relates to [inbox-size-contradicts-the-payload-cap] and to [inbox-delivery-unconfirmed].
+
+#### No test asserts that an origin claim goes unflagged, which is the whole of the provenance split [origin-claim-has-no-test]
+Filed 2026-08-16 by the build of [provenance-splits-origin-from-quote], as adjacent work rather than part of it.
+
+**What the suite covers and what it misses.** `resources/testing/test_queue_lint_flags.py` has four cases on the credit check, and all four survived the split untouched because each happens to use a quote-claim phrase alongside its `Captured by you`. So the suite still passes and still asserts only the half that did not change.
+
+**The half that did change has no case at all:** a bare `Captured by you` with nothing quoted must now produce no warning. That is the entire point of the split — it is what stops Claude asking the user to prove her own work is hers — and a later session could restore the old phrase list with every test still green.
+
+**Files:** `resources/testing/test_queue_lint_flags.py` — one case asserting a bare origin claim is not flagged, and one asserting a quote claim still is.
+
+#### The word bands fire on the median artifact in four shapes out of five [bands-fire-on-the-median-artifact]
+Filed 2026-08-16 by the audit that first ran the measurement, in the same session that shipped the bands.
+
+**Measured medians against their ceilings:** captures 329 against 265, work items 412 against 345, build entries 400 against 345, index lines 62 against 60. Only plan entries sit under, at 408 against 485.
+
+So the breach action does not fire on an outlier — it fires on the typical case, and will keep firing on nearly every write for as long as the corpus takes to come down. That is the cry-wolf shape this project has repealed measures for twice, arriving this time from the figures rather than from the wording.
+
+**What needs settling is the transition, not the bands.** The figures are derived from July and the derivation stands. What has no stated position is what a session does when the advisory fires constantly: whether the breach action is worth running every time, whether a session says so once per run rather than per write, or whether the gap is simply the expected cost of a corpus that has to shrink. Relates to [written-shape-word-bands], shipped 2026-08-16.
+
+#### An index line's length is a toll paid on every retrieve, not a page a reader skims [index-line-length-is-a-toll-on-every-retrieve]
+Filed 2026-08-16 by the audit that first ran the measurement. **The reframing is the user's, in her own words:** *"the reader is Claude though for index. not a human. the human accesses log mostly by asking Claude to read it. so it's not like a table of contents in a book."* The measurement and the figures are Claude's; the first draft argued from human scannability and was wrong about who reads it.
+
+**Measured:** 306 of 594 index lines are over ceiling, median 62 against a 20–40 band. At the current median the index runs about 37,000 words; at the band top it would run about 24,000.
+
+The index is read in full, by Claude, to decide which single entry to open — so its total length is a fixed cost on every lookup rather than something a reader skips past. The extreme case shows what the breach buys: a 337-word line pointing at a 1,710-word entry, where reading the line costs a fifth of simply opening the entry it exists to save you from opening.
+
+`skill-nonspecific-rules.md` already states that the index is Claude-facing and that terseness for human scannability is not the criterion. What it does not state is this cost model, which is the argument the band actually rests on.
+
+#### The plan-entry breach action says split per decision without saying where a split lands [plan-entry-split-action-underspecified]
+Filed 2026-08-16 by the audit that first ran the measurement.
+
+**Planning entries are the fastest-growing shape measured:** July median 323 to August 901, a 2.8-fold rise, with a maximum of 3,658 words. Build entries rose 2.1-fold over the same span and captures 1.9-fold.
+
+**The shipped breach action for a plan entry is "split per decision", and a build entry's is "split per item built".** The build case is well defined — an item is a named unit with its own slug and its own index line. A planning session's decisions reference each other, have no slugs of their own, and no rule says what the resulting files are named, how they cross-reference, or which one the index line points at.
+
+So the shape under the most pressure has the least defined remedy. Relates to [written-shape-word-bands].
+
+#### A work item accretes past its band between capture and build, and no band reaches that [work-items-accrete-past-their-band]
+Filed 2026-08-16 by the audit that first ran the measurement.
+
+**Measured:** items first filed in August grew a median of 145 words between capture and Processed, with a maximum of 4,425. July's median growth was zero, so the accretion is recent.
+
+**The bands govern the moment text is written.** An item can pass its band at capture, be enriched at five successive planning sessions, and reach the build at three times its ceiling without any single write ever breaching anything. Every author was in band; the artifact is not.
+
+The keep-step's band read partly covers this, since re-processing rewrites the item — but only where a session rewrites the whole block rather than appending a paragraph to it, and appending is the common move. What has no stated position is whether a band applies to the item as it stands or only to the text being added. Relates to [written-shape-word-bands].
+
+#### The pre-split log baseline corroborates the bands, and the earlier estimate of it was wrong [pre-split-baseline-corroborates-the-bands]
+Filed 2026-08-16 by the audit that first ran the measurement. **A pass rather than work** — recorded because a finding is a finding, and because the corrected figure changes how the growth is described.
+
+**Measured across 157 entries in the combined logs:** median 183, mean 197, maximum 656. That sits comfortably inside the 115–229 build-entry band, so the band describes a length this project has already sustained rather than an aspiration.
+
+**[measurement-excludes-legacy-logs] estimated the same entries at "roughly 250–460 words each" and was wrong on the low side.** Against a true median of 183, August's build median of 485 is a 2.7-fold rise rather than the roughly 1.5-fold that estimate implied. Anything quoting the old figure — including a Discord post drawing on it — needs the measured one.
+
+#### The vocabulary rule bans a term it should sometimes teach once [vocabulary-rule-has-no-teaching-branch]
+**Captured by you 2026-08-16, in your own words:** *"I think that a little bit of learning is ok. we need to design jargon sensitively around this which is tricky.. but arguably NO jargon at all is even trickier (and possibly impossible)."*
+
+**What the shipped rule says.** `skill-nonspecific-rules.md`'s vocabulary test asks whether a term names something in this user's world that you could show them. Yes means say it and show the thing the first time. No means don't say it — translate or omit. There is no third answer.
+
+**The gap your position names.** A term can name nothing in your world and still be worth one teaching moment, because the alternative is a longer sentence every time it comes up, forever. Zero jargon may not be reachable at all.
+
+**The instance that raised it.** Claude used "crying wolf" and "synthetic test" unexplained, then treated both as violations. One is an ordinary English idiom and the other a craft term; the rule's own examples are procedure vocabulary — `[SILENT]`, "Step 2.4", doc filenames — so the rule was probably never aimed at either, and applying it there is what makes it look unworkable.
+
+**The second half, added 2026-08-16 after the same conversation continued. Your position, in your own words:** *"I don't know that we need to be prescriptive to Claude how it explains things, demanding it show first. Claude is perfectly capable of explaining things responsively."*
+
+**So the same paragraph over-prescribes twice.** The first half bans a term outright where it should sometimes be taught once; the second half dictates the *form* the teaching takes — "Show it, don't define it" — rather than leaving Claude to answer the question it was actually asked.
+
+**The evidence behind the show-first form is one instance, and the user says it is misread.** The rule's own text claims something was explained repeatedly to a user who still did not have it, until somebody opened a file and pointed. **Her account of that same moment, 2026-08-16, in her own words:** *"no that just happened to be when I relented."*
+
+**So the sole justification is a coincidence recorded as a cause.** What the rule reads as "pointing is what made it land" was the user giving up on the argument at that point. Claude wrote the rule from its own reading of a moment it could not see inside, and the reading has stood as evidence ever since. [law-prose-restyle] has already settled that this sentence is cut as rationale, so it was about to leave the corpus without ever being checked against the person it describes.
+
+**One thing to weigh at processing, without inventing a pattern from a single case.** A rule whose evidence is "and then it worked" rests on Claude's reading of whether it worked. This is one such misreading, found only because the user was present when it was quoted back. Whether that is worth looking for elsewhere is a judgment for a planning session; it is recorded here rather than filed as its own item, because one instance is not a pattern and this project bans speculative work.
+
+**A live counter-instance, from the exchange that raised this.** Asked what a hook had to do with tracing a change, Claude opened `post_tool_use.py`, showed the line holding two literal words, and explained from it — because that was the clearest answer available, not because a rule required it. Responsive explaining reached the show-first outcome on its own.
+
+**What needs settling.** Which terms earn a teaching moment; whether the ban narrows to procedure vocabulary rather than all unfamiliar words; and whether the form of explanation stays prescribed at all, or reduces to naming what good explanation achieves and leaving the method to the moment. Relates to [halt-narration-used-unexplained-jargon], which is the same failure observed once before and recurred today.
+
+#### An ideation loop: Claude offers to capture and holds the write until the user says they are done [ideation-loop-holds-the-write]
+**Captured by you 2026-08-16, in your own words:** *"maybe we need an ideation loop in skill nonspecific behaviours. one where Claude offers write to capture and doesn't until user is done and says yes. might save tokens and also make captures shorter as they'll be less cumulative and meandering?"*
+
+**Measured in the conversation that raised it.** Six writes across one continuous design discussion — three on [vocabulary-rule-has-no-teaching-branch], three on [teaching-method-looked-up-on-demand] — each a full re-authoring of text that was not finished. A capture written repeatedly reads like several conversations stacked on each other, because it is.
+
+**The lengths, measured the same day by `resources/measure_written_shape_length.py --bands`:** the two written across three turns came to 634 and 586 words; this one, held and written once, came to 354. Band top is 177 and the ceiling 265.
+
+**Read that as direction, not proof, and the caveats belong in the item.** One held instance is one data point. It still breaches the ceiling by a third, so writing once is not sufficient on its own. And the two long items absorbed genuinely more content across those turns, so part of their length is substance rather than repetition. The stronger evidence is adjacent: the five captures filed the same day by [run-the-written-shape-measurement], each written in a single pass on comparable subjects, landed three inside the band and two just over, at 185 and 211. Nothing here isolates the loop from everything else that changed that day.
+
+**The gap is narrow and the write-first rule is not wrong.** Its test — is the previous version recoverable without the user? — holds. What it assumes silently is that the text is *finished*. Mid-ideation it is not, so it fires at every turn of a design that has not settled. This targets that assumption without touching the rule's logic.
+
+**The objection, and your answer to it.** Holding means a chat ending unexpectedly loses the design, against the standing rule that nothing unrouted survives a chat. **Your answer, in your own words:** *"if it's missed and rescan isn't run, the done rescan will catch it at least."* The close's wind-down re-scan runs at every close and /rescan runs on demand, so a held design is no more exposed than anything else in the chat.
+
+**The open question you named, left open:** *"minor additional wording on rescan and done rescan might be needed to ensure they pick up that failure type.. or maybe not, maybe it's fine."* The argument that it is needed: both re-scans are written to catch things thought out loud and never flagged — an oversight — and a deliberately held design is not an oversight, so a scan could skip it precisely because the holding was correct. The argument that it is not: their existing wording says *decided, noticed or asked for and never written into a file*, and a held design is all three.
+
+**Placement.** `skill-nonspecific-rules.md` on the merits, since ideation happens in all four skills, which is that file's stated admission test.
+
+#### Look up how to teach a concept at the moment it fails, rather than fixing a teaching form in advance [teaching-method-looked-up-on-demand]
+**Captured by you 2026-08-16, in your own words:** *"maybe once something has been explained twice, Claude can reach to the internet for better examples the third time? or look first for 'what is the best way to teach x' then choose the best or second best according to its ability (its ability to display text)"*
+
+**Your reason for rejecting the obvious alternative, also your words:** researching best learning approaches up front *"doesn't make sense because we don't know what concept Claude will be explaining to people."* Generic pedagogy filed once is too abstract to reach any particular concept; a lookup at the moment of need is aimed at the concept that actually failed.
+
+**It replaces a prescription with an escalation.** [vocabulary-rule-has-no-teaching-branch] records that the shipped rule dictates one form of explanation on evidence the user says was misread. This proposes nothing fixed: explain normally, and only where that fails, go and find out how this specific thing is taught.
+
+**The medium constraint is load-bearing rather than a caveat, and it has two arms — your words:** *"Best available to me in this channel"* OR *"best I can refer them to"*, the second being *"the shortest video demonstrating a part of whole concept related to explaining the thing."* So the option set is what Claude can perform in text, plus what Claude can point at. Most teaching advice assumes a whiteboard, a physical object, or a room, and neither arm can reach those.
+
+**Shortest is the right criterion for the referral arm, because it is checkable.** Duration is a fact; "best" would be Claude judging content it has not consumed.
+
+**The vouching risk was raised and you resolved it, which is why the referral arm survives.** The objection: Claude can find a video and cannot watch it, so recommending one vouches for something unconsumed — the same shape as the shipped rule that a command is verified before it is handed over to be pasted, since a non-coder cannot tell a bad resource from a good one and the failure arrives in their hands. **Your answer, in your own words:** *"it can check the full cc if we specify YouTube... let's say video or articles or any audio whose transcript is available."*
+
+**So the criterion is readable text, not medium.** Anything whose content Claude can read before pointing at it qualifies — captions, an article, a transcript — and Claude reads it rather than vouching blind. **And your second point narrows the search usefully:** an explainer for one *part* of a concept is easier to match than one for the whole, so a narrow ask has more good answers.
+
+**One residual, recorded rather than argued.** A transcript is not the demonstration. Where the value is visual — someone pointing at a screen — the transcript reads "and then you click here", and auto-generated captions can be poor. Claude can confirm a source is on-topic; it cannot confirm the presentation works.
+
+**The weak point, which needs settling before this can be built.** "Explained twice" requires Claude to notice its own explanation did not land, and this project has found repeatedly that noticing-based triggers do not fire — a session satisfied with its answer notices nothing. The observable version is the user asking about the same thing again, which is a fact rather than a self-assessment.
+
+**Also to settle:** whether this amends the existing research-and-evidence rule, whose *what would answer this?* trigger already covers reaching outward but is aimed at external facts rather than at how to explain something.
+
+#### Repealing a shipped clause has no ripple-trace rule, so an unattended run stops to ask [repeal-has-no-ripple-trace]
+Filed 2026-08-16 by Claude, from a failure observed twice in one run rather than reasoned about.
+
+**What happened.** [spec-control-model-not-what-happens] repealed one sentence from the always-loaded rules and its Files line named that one file, stating in its own prose that "the defect is in the always-loaded rules, not in SPEC." The repealed clause was in fact restated verbatim in three more live places — `SPEC.md`, the shipped FAQ template, and the FAQ copy. The run therefore stopped twice to grow scope, in a run whose whole premise is that it does not stop.
+
+**The rule that should have caught it does not reach this.** `CLAUDE.md` requires a ripple traced by grep when a work item changes a **format or enum the hooks enforce**. A repealed sentence is neither. Yet the trace needed is identical and just as mechanical: grep the clause's distinctive words across the repository before writing the Files line.
+
+**Not a judgment call, which is what makes it fixable.** Where an item says a sentence is repealed, the sentence is a literal string. Nobody has to weigh anything — the item either grepped for it or it did not.
+
+**What to settle:** whether this widens the existing ripple-trace rule to cover any item that repeals or rewords shipped text, or whether it becomes a limb of the keep-step's two-limb check, which is where the Files line is written. Relates to [fix-level-has-no-site], shipped this session, which asks the same question about levels.
 

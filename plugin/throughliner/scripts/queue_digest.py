@@ -274,6 +274,25 @@ def _self_referential_phrase(item):
     return None
 
 
+def research_cited(item):
+    """Research filenames this item names in its prose, in order, deduplicated.
+
+    Same coverage limit as the superseded check below: it reaches an item that
+    NAMES a research file. An item that restates a finding in its own words
+    cites nothing and is invisible here, which is the failure this printing
+    exists to make visible rather than to detect.
+    """
+    out, seen = [], set()
+    for line in item["prose"]:
+        for name in RESEARCH_CITE_RE.findall(line):
+            # index.md is the shelf, not a finding. An item naming it has said
+            # where to look, not what it rests on.
+            if name != "index.md" and name not in seen:
+                seen.add(name)
+                out.append(name)
+    return out
+
+
 def _superseded_research(item, root):
     """Research files this item cites that carry a `Superseded by:` line.
 
@@ -632,6 +651,15 @@ def render(items, root="", queue_path="QUEUE.md"):
             done = [s for s in citations(item) if s in shipped]
             if done:
                 line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in done)
+            # Research files the item names. Printed for every citation, not
+            # only superseded ones: the superseded flag tells a session that a
+            # finding it already knows about has moved, while this tells the
+            # session which findings the item rests on at all. An item that
+            # restates a finding without naming it prints nothing here, and
+            # nothing detects that — see the coverage limit in the footer.
+            researched = research_cited(item)
+            if researched:
+                line += "  | Cites research: " + ", ".join(researched)
             # Line count, and whether it sits at or above the section median.
             # Both rungs of the ladder that read this now read a computed field
             # instead of anyone subtracting numbers by hand.
@@ -669,6 +697,12 @@ def render(items, root="", queue_path="QUEUE.md"):
         "Superseded-research flags cover only items that NAME the research file "
         "in their prose. An item scoped on a finding it never cites is not "
         "reached by this check — read it as partial coverage, not a clean bill."
+    )
+    out.append(
+        "The same limit binds `Cites research:`. It reports what an item names; "
+        "an item that restates a finding in its own words prints nothing, and "
+        "nothing detects that. A blank there means no citation was written, "
+        "never that the item rests on no research."
     )
     out.append("")
 

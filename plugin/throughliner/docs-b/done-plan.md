@@ -125,6 +125,13 @@ together.
 on its outcome** — a real dependency wins; end-preferred is the default only
 among items with no such constraint.
 
+**Leave an `[audit]` that reads a tool item's output sitting immediately after
+that item.** The dependency runs the other way from the case above — the audit
+depends on the build — and it carries no `Blocked by:` line, because placement is
+what orders the pair. Moving the audit to the end separates it from the tool it
+runs, and the close happens after /next, so the separation arrives in time to
+break the *next* run rather than this one.
+
 Order here is low-stakes and reversible, so the narration is the catch-point
 where the user can redirect.
 

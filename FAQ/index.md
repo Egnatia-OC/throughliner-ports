@@ -96,3 +96,5 @@ Quick answers about how this project's workflow works. Each question links to a 
 - [I sent a message to another one of my projects. How do I know it arrived?](faq.md#i-sent-a-message-to-another-one-of-my-projects-how-do-i-know-it-arrived)
 - [I asked for something during a build and Claude wrote it down instead of doing it. Can I insist?](faq.md#i-asked-for-something-during-a-build-and-claude-wrote-it-down-instead-of-doing-it-can-i-insist)
 - [We kept working after the session was "closed", and Claude offered to add it to the record. Why?](faq.md#we-kept-working-after-the-session-was-closed-and-claude-offered-to-add-it-to-the-record-why)
+- [Claude queued an audit right after a piece of work. Why two items instead of one?](faq.md#claude-queued-an-audit-right-after-a-piece-of-work-why-two-items-instead-of-one)
+- [Claude used to repeat the same queue warnings after every single action. What changed?](faq.md#claude-used-to-repeat-the-same-queue-warnings-after-every-single-action-what-changed)

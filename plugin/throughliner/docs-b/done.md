@@ -150,6 +150,13 @@ situation is where a name or a case detail arrives without anyone noticing. Fix
 what you find at the same level of usefulness rather than dropping the fact — and
 don't tell the user the entry is clean afterwards, because you can't know that.
 
+**Read the entry and its index line against their word bands too**
+(skill-nonspecific-rules.md, Authoring standard). A build entry over its ceiling
+splits per item built, a planning entry splits per decision, and an index line
+over its ceiling is restating the entry it points at. Advisory — it names an
+action and never blocks the write. It rides the scrub's read, since both look at
+the same text at the same moment.
+
 **One text, several positions.** The session authors **two** texts, not four:
 
 ```
@@ -265,9 +272,12 @@ Prepend to `LOG/index.md` after the header, ending with the entry's filename:
 ```
 
 **The 20% proportional cap that used to sit here was repealed on 2026-08-12**,
-after measurement showed it fired on short entries rather than on long lines; do
-not restore it or replace it with another figure. What the line must carry is in
-the behaviour rules' Index entries section.
+after measurement showed it fired on short entries rather than on long lines. Do
+not restore it: a figure proportional to the entry's length is what made it fire
+on the wrong lines. What the line must carry is in the behaviour rules' Index
+entries section, and what length it is written to is the index-line band in the
+same file — an absolute word figure derived from July's median, with an advisory
+action on breach rather than a block.
 
 **Each entry is its own file under `LOG/`, date-prefixed** so the folder sorts
 newest-first on a name sort — never appended to a shared log file:

@@ -4,6 +4,7 @@
 Host-only dev artifact — not shipped in the plugin package.
 
 Run:  py resources/measure_written_shape_length.py .
+      py resources/measure_written_shape_length.py . --bands
 
 Four shapes, each reported as a LENGTH AGAINST A DATE and nothing more:
 
@@ -15,19 +16,27 @@ Four shapes, each reported as a LENGTH AGAINST A DATE and nothing more:
                       being built
     LOG entries       word count per entry file, against the date in its name,
                       split by flavor (a planning session's entry versus a
-                      build's)
+                      build's) — preceded by the PRE-SPLIT BASELINE, every entry
+                      in the combined `log.md` / `log-v*.md` files measured as
+                      one undifferentiated group, since flavor was not recorded
+                      in that era. That baseline is the era before the growth,
+                      so without it the growth is only ever reported from
+                      inside the period it happened in.
     LOG index lines   word count per index line, against date, beside the word
                       count of the entry that line points at — the inflation
                       path the user named: a longer index line implies a longer
                       entry
 
-WHAT THIS SCRIPT DOES NOT DO, deliberately. It invents no threshold, states no
-band, and passes no judgment on any figure. It prints a distribution. The band
-this measurement exists to inform is derived afterwards, in conversation, from
-specimens a human and Claude pick out as GOOD — not from the typical, because
-this corpus is the bloated one and reading a range straight off its middle would
-enshrine the bloat as the target. A future edit that adds a "too long" column has
-broken that, and the finding it feeds becomes worthless.
+The default report invents no threshold and passes no judgment on any figure. It
+prints a distribution, and no band may be read off the middle of it: this corpus
+is the bloated one, so its typical length is not a target.
+
+`--bands` is the separate mode, added once the bands existed. It reports the
+project's current written shapes against the bands shipped in
+`skill-nonspecific-rules.md`, which were derived from JULY's medians — the
+measured record before the August doubling — and not from this corpus's middle.
+The two modes must stay separate: a band printed inside the distribution report
+would be a threshold read off the thing being questioned.
 
 Method: the queue's own patch history is replayed from git, one blob per commit
 that touched QUEUE.md, through a single `git cat-file --batch` rather than a
@@ -188,6 +197,46 @@ def log_entries(root):
     return out
 
 
+# An entry heading in a pre-split combined log: `## <hash> — <title>`.
+LEGACY_FILE_RE = re.compile(r"^log(-v[0-9][0-9a-z.]*)?\.md$")
+LEGACY_HEADING_RE = re.compile(r"^##\s+\S")
+
+
+def legacy_entries(root):
+    """[(filename, title, word_count)] for every entry in the combined logs.
+
+    Measured as ONE undifferentiated group, with no plan/build split. Flavor was
+    not recorded in that era, and inferring it from a title's wording would be
+    guesswork printed as measurement.
+    """
+    folder = os.path.join(root, "LOG")
+    out = []
+    try:
+        names = sorted(os.listdir(folder))
+    except OSError:
+        return out
+    for name in names:
+        if not LEGACY_FILE_RE.match(name):
+            continue
+        try:
+            with open(os.path.join(folder, name), "r", encoding="utf-8") as f:
+                body = f.read()
+        except OSError:
+            continue
+        title, block = None, []
+        for raw in body.splitlines():
+            if LEGACY_HEADING_RE.match(raw):
+                if title is not None:
+                    out.append((name, title, words("\n".join(block))))
+                title, block = raw.lstrip("# ").strip(), []
+                continue
+            if title is not None:
+                block.append(raw)
+        if title is not None:
+            out.append((name, title, words("\n".join(block))))
+    return out
+
+
 def index_lines(root, entries):
     """[(date, line_words, entry_words, filename)] for LOG/index.md."""
     path = os.path.join(root, "LOG", "index.md")
@@ -280,10 +329,35 @@ def report(root):
     else:
         rows = list(entries.values())
         split = min(r[0] for r in rows)
-        lines += ["## LOG entries — by flavor", "",
-                  f"{len(rows)} entries. Earliest per-entry file: {split} — "
-                  "everything before that date lives in the legacy combined log "
-                  "and is not measured here.", ""]
+        legacy = legacy_entries(root)
+        lines += ["## LOG entries — the pre-split baseline", ""]
+        if not legacy:
+            lines += ["No combined log files found under LOG/.", ""]
+        else:
+            counts = sorted(w for _f, _t, w in legacy)
+            n = len(counts)
+            median = (counts[n // 2] if n % 2
+                      else (counts[n // 2 - 1] + counts[n // 2]) // 2)
+            lines += [
+                f"{n} entries in `LOG/log.md` and `LOG/log-v*.md`, the era before "
+                f"entries became one file each (per-entry files start {split}). "
+                "Measured as ONE group: flavor was not recorded then, and "
+                "inferring it from a title would be guesswork printed as "
+                "measurement. This is the baseline the later tables are read "
+                "against.", "",
+                "| group | n | min | median | mean | max |",
+                "|---|---|---|---|---|---|",
+                f"| pre-split | {n} | {counts[0]} | {median} | "
+                f"{sum(counts) // n} | {counts[-1]} |", "",
+                "Longest pre-split entries:", ""]
+            for name, title, count in sorted(legacy, key=lambda r: -r[2])[:10]:
+                head = title if len(title) <= 80 else title[:80].rstrip() + "…"
+                lines.append(f"- {count} words ({name}): {head}")
+            lines.append("")
+
+        lines += ["## LOG entries — by flavor, per-entry era", "",
+                  f"{len(rows)} entries, each its own file, from {split} onward.",
+                  ""]
         for flavor in ("plan", "build"):
             subset = [r for r in rows if r[1] == flavor]
             if not subset:
@@ -303,12 +377,98 @@ def report(root):
     return "\n".join(lines)
 
 
+# --- bands --------------------------------------------------------------------
+
+# Floor at half July's median, band top at July's median, ceiling at 1.5x.
+# July is the measured record before the August doubling; the three multipliers
+# are the one judgment. Canonical statement: docs-b/skill-nonspecific-rules.md.
+BANDS = {
+    "capture":     (90, 177, 265, "file the reasoning as research, cite it"),
+    "work item":   (115, 229, 345, "split into two items"),
+    "build entry": (115, 229, 345, "split per item built"),
+    "plan entry":  (160, 323, 485, "split per decision"),
+    "index line":  (20, 40, 60, "the line is restating its entry"),
+}
+
+
+def band_status(count, shape):
+    floor, top, ceiling, _action = BANDS[shape]
+    if count > ceiling:
+        return "OVER CEILING"
+    if count > top:
+        return "over band"
+    if count < floor:
+        return "under band"
+    return "in band"
+
+
+def current_shapes(root):
+    """{shape: [(name, word_count)]} for the project as it stands today."""
+    out = {shape: [] for shape in BANDS}
+
+    try:
+        with open(os.path.join(root, "QUEUE.md"), "r", encoding="utf-8") as f:
+            queue = f.read()
+    except OSError:
+        queue = ""
+    for slug, (section, _cleared, count) in items_in(queue).items():
+        if section == "Unprocessed":
+            out["capture"].append((slug, count))
+        elif section == "Processed":
+            out["work item"].append((slug, count))
+
+    entries = log_entries(root)
+    for name, (_date, flavor, count) in entries.items():
+        out["plan entry" if flavor == "plan" else "build entry"].append((name, count))
+
+    for _date, line_w, _entry_w, name in index_lines(root, entries):
+        out["index line"].append((name, line_w))
+
+    return out
+
+
+def bands_report(root):
+    lines = ["# Written shapes against their bands", "",
+             "**Bands are the ones shipped in `docs-b/skill-nonspecific-rules.md`**, "
+             "derived from July's medians. This reports the project as it stands "
+             "today. Advisory: a breach names an action, it blocks nothing.", ""]
+
+    shapes = current_shapes(root)
+    for shape in ("capture", "work item", "build entry", "plan entry", "index line"):
+        floor, top, ceiling, action = BANDS[shape]
+        rows = sorted(shapes[shape], key=lambda r: -r[1])
+        lines += [f"## {shape} — band {floor}-{top}, ceiling {ceiling}", "",
+                  f"On breach: {action}.", ""]
+        if not rows:
+            lines += ["Nothing found.", ""]
+            continue
+        counts = [c for _n, c in rows]
+        counts_sorted = sorted(counts)
+        n = len(counts_sorted)
+        median = (counts_sorted[n // 2] if n % 2
+                  else (counts_sorted[n // 2 - 1] + counts_sorted[n // 2]) // 2)
+        over = [r for r in rows if r[1] > ceiling]
+        above = [r for r in rows if top < r[1] <= ceiling]
+        lines += [f"{n} measured, median {median}. "
+                  f"{len(over)} over ceiling, {len(above)} over band.", ""]
+        for name, count in rows:
+            status = band_status(count, shape)
+            if status in ("in band", "under band"):
+                continue
+            lines.append(f"- {status}: {count} words — {name}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 def main(argv):
-    root = os.path.abspath(argv[1] if len(argv) > 1 else ".")
+    args = [a for a in argv[1:] if not a.startswith("--")]
+    flags = {a for a in argv[1:] if a.startswith("--")}
+    root = os.path.abspath(args[0] if args else ".")
     if not os.path.isfile(os.path.join(root, "QUEUE.md")):
         print(f"measure_written_shape_length: no QUEUE.md under {root}", file=sys.stderr)
         return 1
-    print(report(root))
+    print(bands_report(root) if "--bands" in flags else report(root))
     return 0
 
 
