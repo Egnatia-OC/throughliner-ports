@@ -1,4 +1,4 @@
-# [HASH] — The readiness marker is matched as a whole line in all four readers, so prose quoting it can no longer move it
+# d82f538 — The readiness marker is matched as a whole line in all four readers, so prose quoting it can no longer move it
 
 Three readers matched the readiness marker text as a **substring** and took the first hit inside Processed as the line. Any prose containing that string therefore became the readiness line for everything below it. This was not hypothetical: a planning session wrote a sentence into an item's own rationale describing what the marker does, and the digest immediately reported two items cleared and five held where the mover correctly reported four cleared — inventing held-since dates for two genuinely cleared items along the way.
 

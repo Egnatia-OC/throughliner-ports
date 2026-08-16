@@ -79,6 +79,13 @@ refused here; approximate compliance on short text is available for free.**
 
 ## How the two fit together, so a later session does not read them as opposed
 
+> **This section's conclusion is CORRECTED further down — see "Where this leaves
+> specimen-versus-number, corrected".** It reads "specimen first; a range is a
+> backstop", and that was drawn too strongly. The corrected reading is that a
+> two-tier word range is defensible as the primary lever for length. Marked here
+> on 2026-08-16, after a planning session read this section, stopped, and
+> proposed a design the correction below rules out.
+
 Anthropic's Opus 5 guidance says a **positive exemplar** is one of the most
 reliable ways to steer output shape, and that the 4.8-era "quantified targets
 beat adjectives" advice no longer governs. The general literature says a

@@ -20,6 +20,10 @@ A Claude Code plugin for non-coders. It gives users a structured workflow for bu
 
 Non-coders who know what their app should do but need a framework to keep Claude aligned.
 
+**It is built for someone willing to read and approve the record.** Someone who won't read is considered but is not the target, and the design is never lowered to them — a workflow built around its own expected non-compliance has nothing left in it. So the reading is assumed, and **length is the thing that has to be earned**: an artifact that outruns what a person will get through is the tool's failure, not the reader's.
+
+**Every written artifact is therefore sized to be read.** Enough is written that the work can be done and the reasoning survives; short enough that reading it is worth a person's time. Both halves bind. An artifact too thin to rebuild intent from has failed, and so has one too long to get through — and the second failure is the one this method has actually produced, at scale, while the first was the only one it was watching for.
+
 ## How it works
 
 Splits changes into a build queue that helps the user harness Claude's skills in dependency management, not just coding. The secondary core functionality is basic context window management.

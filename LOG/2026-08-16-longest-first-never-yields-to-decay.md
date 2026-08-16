@@ -1,4 +1,4 @@
-# [HASH] — The longest-first rung is partitioned at the median so it terminates, and decay by date filed sits beneath it
+# d82f538 — The longest-first rung is partitioned at the median so it terminates, and decay by date filed sits beneath it
 
 Raised by the user and processed in the same conversation, in her words: losing decay control by proxy of file order was wrong; line count size is so important, but line count will run interminably whereas blockingness doesn't, it runs out.
 

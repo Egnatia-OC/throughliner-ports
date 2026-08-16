@@ -1,4 +1,4 @@
-# [HASH] — The rule gate is narrated where it fires, so a decision is visible while it can still be objected to
+# d82f538 — The rule gate is narrated where it fires, so a decision is visible while it can still be objected to
 
 Claude proposes the rule, Claude runs the gate, Claude writes the disposition recording that it was admitted. `CLAUDE.md` already conceded that neither board check reading those lines can tell an honest disposition from a dishonest one. What this adds is that the one party with an independent view had never seen a gate decision at the moment it was made.
 

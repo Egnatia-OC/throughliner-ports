@@ -1,4 +1,4 @@
-# [HASH] — /setup's migration reads a project's own CLAUDE.md for retired vocabulary and reports what it finds
+# d82f538 — /setup's migration reads a project's own CLAUDE.md for retired vocabulary and reports what it finds
 
 A consumer project reported that its `CLAUDE.md` described the queue as holding batches with Build/Test/Audit subheadings, a Deferred tests section, and items carrying `Parked:` headers. All four are retired. That file was written at setup and is read at the start of every session since, and nothing compares it against the current structure — so one of their sessions went looking for a section that no longer exists and had to establish from the shipped docs that it was gone.
 

@@ -1,4 +1,4 @@
-# [HASH] — The shipped FAQ template is canonical and this project's FAQ is a copy of it, with the authoring rule keeping them in step
+# d82f538 — The shipped FAQ template is canonical and this project's FAQ is a copy of it, with the authoring rule keeping them in step
 
 `CLAUDE.md`'s FAQ-entry rule told a batch to carry an entry into `templates/faq-template.md` plus its index line, and named nothing else. This project also has its own `FAQ/`, which `session_start` points every session at. So every entry authored under that rule landed in the shipped template and not in the FAQ this project actually reads. **The divergence was produced by the rule, every time it fired**, rather than left behind by an event — which is why it widened between two consecutive days of measurement.
 

@@ -1,4 +1,4 @@
-# [HASH] — A session record gains a section for what the chat did outside its work items
+# d82f538 — A session record gains a section for what the chat did outside its work items
 
 The user's words: */done is not for wrapping up one next session or one plan session, it is for wrapping up ONE CHAT — that's why it is stupid that logs only record what was built or planned, and not everything that happened in the chat.*
 

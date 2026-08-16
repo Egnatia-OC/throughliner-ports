@@ -1,4 +1,4 @@
-# [HASH] — The rezip's version bump gets one permitted path on the planning standing list
+# d82f538 — The rezip's version bump gets one permitted path on the planning standing list
 
 The rezip's first step is bumping the `-testN` suffix in the plugin's version manifest, and that write was denied outright. The close deletes the build working file, `pre_tool_use` classifies any chat without one as planning, and the manifest is not on the planning standing list. Since the rezip is *defined* to run after a close, **there was no chat shape in which its own first step was permitted** — the `-testN` history proves it used to work, which means earlier rezips happened while a build working file still existed.
 

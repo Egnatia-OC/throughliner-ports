@@ -1,4 +1,4 @@
-# [HASH] — /next's halt condition gains the second limb it already claimed to have
+# d82f538 — /next's halt condition gains the second limb it already claimed to have
 
 Captured by the user as a testing observation about a run in another chat, in her words: stopping build to ask questions about how things should be — maybe it should be okay inside the scope? but wasn't it always "defer item back to top of queue for processing" or something?
 

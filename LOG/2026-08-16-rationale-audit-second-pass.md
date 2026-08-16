@@ -1,4 +1,4 @@
-# [HASH] — Second rationale pass over the always-loaded rules: eleven findings, filed as nine captures
+# d82f538 — Second rationale pass over the always-loaded rules: eleven findings, filed as nine captures
 
 The first rationale pass applied one mechanical criterion across all thirteen shipped docs — bolded why-paragraphs and defeated-alternative phrases — and found about 1,050 words. That is the shape the defect takes most often, and the audit said at the time it was not the only shape. This pass read `skill-nonspecific-rules.md` **per paragraph** against the delete-and-reread test, looking for the shapes a signature criterion structurally cannot see.
 

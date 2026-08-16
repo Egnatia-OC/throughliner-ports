@@ -1,4 +1,4 @@
-# [HASH] — The urge to drive verification informally is routed into a skill, stated where the post-close tail is defined
+# d82f538 — The urge to drive verification informally is routed into a skill, stated where the post-close tail is defined
 
 This item was filed on 2026-08-01 with three parts. **Two of them had closed by the time it was processed, and the item shrank to its third.**
 

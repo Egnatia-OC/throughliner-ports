@@ -1,4 +1,4 @@
-# [HASH] — The process-now offer recommends its first route instead of presenting a flat menu
+# d82f538 — The process-now offer recommends its first route instead of presenting a flat menu
 
 The user's words, said immediately after choosing process-now on a capture she had just raised: *Claude should always recommend processing it now — it's just good context use.*
 

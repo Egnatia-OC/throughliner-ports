@@ -1,4 +1,4 @@
-# [HASH] — The build tick takes two forms, so "written" and "ran" stop being the same mark
+# d82f538 — The build tick takes two forms, so "written" and "ran" stop being the same mark
 
 A consumer project reported closing a case where seven items had their code written and about to be committed, with confirmations outstanding. Neither of /done's two paths fitted: a partial close leaves those items in Processed, so the next run would present them as unbuilt and rebuild over existing code. They ticked and removed the seven — the building genuinely happened — and filed the outstanding confirmations as new items. Their general point, in their words: a build that ships code it never ran is not rare enough to leave to judgement, and the tick is the only signal, so it has to mean both.
 

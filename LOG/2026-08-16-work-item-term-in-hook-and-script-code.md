@@ -1,4 +1,4 @@
-# [HASH] — Three user-facing warnings stop calling an Unprocessed block a "work item"
+# d82f538 — Three user-facing warnings stop calling an Unprocessed block a "work item"
 
 Only items in Processed are work items; before that they are captures or unprocessed entries. That definition shipped with the parent item. This is the half that was split out so the definition could ship without touching hook internals.
 

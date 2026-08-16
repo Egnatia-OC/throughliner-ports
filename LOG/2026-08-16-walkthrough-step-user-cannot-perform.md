@@ -1,4 +1,4 @@
-# [HASH] — A `[user]` walkthrough step names what to click and what to look for, not just where to go
+# d82f538 — A `[user]` walkthrough step names what to click and what to look for, not just where to go
 
 A `[user]` item's walkthrough opened with "open your Claude Code session list". The run reached that step, gave it, and the user said she does not know how to find it. **Every other check had passed:** the item was correctly tagged, the capability check confirmed Claude could not do the work, and the walkthrough named an observable result. Nobody had asked whether the person doing it knew how to do the first step.
 

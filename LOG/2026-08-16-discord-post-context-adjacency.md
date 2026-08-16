@@ -1,4 +1,4 @@
-# [HASH] — Ladder post checked before drafting and held: host is stale and the subject moved again
+# d82f538 — Ladder post checked before drafting and held: host is stale and the subject moved again
 
 Walk-through reached during the twenty-one-item run of 2026-08-16. **Nothing was drafted and nothing was posted.** The item's own pre-drafting check failed, twice over, and the item stays in Processed unchanged.
 

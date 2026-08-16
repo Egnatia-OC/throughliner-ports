@@ -1,4 +1,4 @@
-# [HASH] — Comparison article: the framing settled in the user's own words, drafting not yet started
+# d82f538 — Comparison article: the framing settled in the user's own words, drafting not yet started
 
 Walk-through opened during the twenty-one-item run of 2026-08-16. The article is not drafted; what this entry records is the framing decision taken at the start of the walk-through, which changes the piece's spine from what the queue item described.
 

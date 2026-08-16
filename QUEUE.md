@@ -6,6 +6,259 @@ Two sections. **Processed** — agreed work, ordered top-to-bottom; /next builds
 
 ## Processed
 
+#### Ship word bands for every written shape, derived from July's medians [written-shape-word-bands]
+**Captured by you 2026-08-16, in your own words:** *"it is the reason I can't show the tool to anyone because it is impossible to use because of all the reading. I operate this whole project by inferring what all the work items and captures say from what you say in the chat, because otherwise i would go crazy from reading."* Top of the queue on your instruction. Kept deliberately short.
+
+**The evidence, measured this session.** One item's entry `2026-08-14-retiring-a-step-leaves-its-artifacts.md` runs 1,434 words — longer than three of the four legacy release logs, which each covered a whole release (`log-v1.7.0.md` 1,007, `log-v1.5.3.md` 941). One session entry hit 3,658. One index line hit 218 words, for a line whose only job is to let a reader skip the entry.
+
+**The derivation, which removes the blocker this has been stuck on.** The objection was that a band cannot be read off a bloated corpus. July can: it is measured, from this project's own record, before the August doubling. Medians — captures **177**, build entries **229**, plan entries **323**, index lines **40**. August: 336, 478, 898, 76.
+
+**Form, settled by `resources/research/llm-length-instruction-following.md`** — cited rather than restated, because restating it is what let this item mislead a session once already. Words, not characters. A soft band plus a hard ceiling. A named action on breach, advisory rather than blocking, authored per shape — which is what answers the repealed 20% index-line cap.
+
+**No specimens.** The same research records that a specimen is doc text in an always-loaded corpus and that this project's rule gate names worked examples as the growth engine. The user's decision, and it removes a `[user]` gate that would have parked this again.
+
+**Proposed figures — band floor at half July's median, band top at July's median, ceiling at 1.5×.** Every number a proportion of a measured figure, which the derivation rule admits; the three multipliers are the one judgment, adjustable without redoing the derivation.
+
+```
+capture       90–177   ceiling 265   on breach: file the reasoning as research, cite it
+work item    115–229   ceiling 345   on breach: split into two items
+build entry  115–229   ceiling 345   on breach: split per item built
+plan entry   160–323   ceiling 485   on breach: split per decision
+index line    20–40    ceiling  60   on breach: the line is restating its entry
+```
+
+**Files:** `resources/measure_written_shape_length.py` — a mode reporting each shape against its band. `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the bands and breach actions on the record-authoring standard. `plugin/throughliner/docs-b/plan.md` and `done.md` — the breach check at the moments text is written. `SPEC.md` — the bands as product truth.
+
+Rule gate: run — admitted as figures on the existing record-authoring standard, which already governs how a record is written; no freestanding rule. **The eviction is the completeness-over-compression clause**, which currently authorises unbounded growth and is replaced by the bands. Failure evidence is measured, above, plus one instance this session of a long item substituting for the research it never cited.
+
+#### Research on file is neither looked for before designing nor cited by the item resting on it [research-cited-not-restated]
+Filed 2026-08-16 by Claude, from a failure in the planning session that filed it. Processed immediately on the user's decision.
+
+**What happened.** [length-work-measures-but-does-not-constrain] — deleted the same session as superseded by [written-shape-word-bands], so it is findable in git history rather than in the queue — restated the findings of `resources/research/llm-length-instruction-following.md` in its own words and never named the file. A session read the item, believed it had the picture, and proposed a design the research had already refused — a prose remedy, where the research records that a prose remedy shipped on 2026-08-13 and measurably failed. The user caught it, in her words: *"we did so much research and work on this and you're just throwing it out."*
+
+**Two halves, and only one is buildable.** Coverage: the digest's superseded-research flag reaches only items that NAME the file, so an item resting on uncited research is invisible to the one check built for it. Substitution: restating research inside an item is what produces the uncited dependency, and a restatement reads as complete, so nobody goes upstream.
+
+**No detector for the first half, refused rather than unbuilt.** Knowing an item rests on research it never names requires inferring the dependency. A check listing research files no item cites would fire on nearly every file and be learned past — the cry-wolf shape repealed twice here.
+
+**The reading half, folded in 2026-08-16 from [research-index-trigger-misses-design] when that capture was deleted into this one.** You cannot cite what you never looked for, so the citing rule above needs the look to happen. The always-loaded rule fires *"before offering a search"* — which never engages when a session is designing from what it believes it already knows, and that is how this session went wrong twice without ever offering one.
+
+**The keep-step already has the site, pointed the wrong way.** It says to ask what would answer an item's open questions, and every example it gives is an outside-the-machine fact — a current version, whether a feature exists, what a tool does. Research already filed is not outside; it is on the shelf. So the step ran and pointed away from where the answer was.
+
+**Files:** `plugin/throughliner/scripts/queue_digest.py` — print each item's `resources/research/` citations on its digest line, as `Cites shipped:` already appears; `RESEARCH_CITE_RE` exists and is currently used only for the superseded flag. `plugin/throughliner/docs-b/plan.md` — one subordinate clause at the keep-step covering both halves: check `resources/research/index.md` for an entry covering the item's subject before describing its build, and where the reasoning draws on a finding, cite the file rather than restating it.
+
+**One clause, not two, and the count matters here.** Five separate clauses were proposed for this one step in a single planning session; [fix-level-has-no-site] records the accumulation and tells a build to check whether they collapse. This item folding two into one is that check applied rather than deferred.
+
+**The limit, and it goes in the shipped text rather than only here:** nothing detects an uncited dependency. This makes a citation visible and a restatement a named fault. Do not describe it as closing the hole.
+
+Rule gate: run — admitted as a subordinate clause on `plan.md`'s existing keep-step, which already governs what a kept item must state; no freestanding rule and no always-loaded slot spent. Nothing evicted. One alternative refused: an orphaned-research check, on the cry-wolf ground. Failure evidence is one recorded instance, in the session that filed it, with the user's correction as the trigger.
+
+#### Add the judge-a-design-by-likelihood rule to CLAUDE.md [design-judged-by-likelihood-not-guarantee]
+Filed 2026-08-16, its text approved by the user in the planning session that wrote it, then blocked by the planning scope-lock — CLAUDE.md is not on the standing writable list. An instance of [scope-lock-denies-claude-md]; the rule's content is settled, only the write is deferred.
+
+**The rule, as approved:** judge a design by whether it makes the intended outcome more likely, not by whether it guarantees it. A missing guarantee is an objection only where the design depends on that guarantee to work at all. It fires at /plan's keep-step, when weighing whether work is worth doing.
+
+**The carve-out ships with it, because without it the rule strips the honest limits.** Statements like "this scan matches credential shapes only" or "this flag reaches only items that name the file" describe what a mechanism covers once built, and exist so the tool never over-claims. The test: is the caveat arguing against doing something, or describing what the thing does? The first is the failure; the second is required.
+
+**Failure evidence is one instance, and no more is claimed.** In the session that filed this, a planning turn offered "shortening the artifacts may not by itself restore the reading" as a reason to hold work apart, when the work made reading affordable and never depended on it happening. The user's words settling it: *"any caveats like that can't 100% control how it works or else what would we be left with?"* A corpus-wide audit for the same pattern was proposed, searched for, and **withdrawn** — the instances checked turned out to be refusals on cry-wolf or unapproved-send grounds, which are different and still-valid arguments.
+
+**Files:** `CLAUDE.md` — one bullet in Working conventions, immediately above the rule gate, carrying the rule, the carve-out and the single recorded instance.
+
+Rule gate: run — admitted as a freestanding decision rule, which is the costly shape, taken deliberately because no existing rule governs how a design is weighed at the keep-step; the rule gate next to it governs admitting *rules*, not work. Nothing evicted. Failure evidence is the single instance above, and the fact that it is single is stated in the rule's own text so a later reader cannot mistake it for a measured pattern.
+
+#### SPEC's control model is not the one the project actually runs on [spec-control-model-not-what-happens]
+**Captured by you 2026-08-16, in your own words:** *"I operate this whole project by inferring what all the work items and captures say from what you say in the chat, because otherwise i would go crazy from reading."*
+
+**Reframed at processing, 2026-08-16, after the first reading was refused by the user.** The first version proposed correcting SPEC to describe what currently happens. That is backwards: SPEC states the design being built toward, and rewriting it to match a degraded present would delete the goal while calling it a correction. Her position, which settles it — reading and approving the record *"has been what I've been shooting for the whole time"*; the original blocker was that no good reading surface existed, and what changed is that verbosity now costs too much time.
+
+**So the defect is in the always-loaded rules, not in SPEC.** The write-first rule says the one-line report after a write must be *"specific enough to object to without opening the file."* That clause designs around the artifact not being read, in the same corpus where SPEC makes reading the control. SPEC holds the goal; the rule holds the workaround.
+
+**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the report clause reworded so the report points at an artifact the user is expected to open, rather than standing in for it. The report stays short; what changes is that it stops being written as a substitute. Reaches the same file as [law-prose-restyle] and [written-shape-word-bands], so it is a merge candidate with both rather than a third separate pass.
+
+#### A build that produces a measuring or reporting tool files the audit that runs it [tool-build-implies-an-audit]
+**Filed 2026-08-16 on the user's diagnosis, in her words:** *"if this is a novel failure of the method to describe an audit type that requires a tool first then we need to describe it in the method. making the tool is build work. the tool can immediately be used in the same session to run the audit. so it's a build work item and an audit work item."*
+
+**The gap is a missing rule, not a missing mechanism.** Ordering a dependent audit after its tool already works by placement, and `Blocked by:` exists for the cases that need it. What is missing is anything saying the audit must be filed at all — so a measuring build completes, the queue shows nothing outstanding, the log records a shipped item, and the step that reads the output was never written down. Nothing detects the absence of a step that never existed.
+
+**Two recorded instances, not one.** `measure_written_shape_length.py` shipped 2026-08-15 and was read by nobody until a user question three days later. And `resources/rule_signals.py` ran for its entire life with nothing invoking it, recorded in `CLAUDE.md` as exactly that.
+
+**The close's reorder would break the pairing, and this is the ripple that has to ship with it.** `done-plan.md`'s close moves `[audit]` and `[user]` lines to the end of the cleared region, so a tool-paired audit gets separated from the tool it runs — and the close happens after /next, so the separation arrives in time to break the next run rather than this one. The pairing therefore needs stating as an exception at the reorder step, not only at the keep-step. Found by tracing this item's own placement, which is the ripple the hook-enforced-format rule exists to catch.
+
+**Files:** `plugin/throughliner/docs-b/plan.md` — a clause at the keep-step: where an item's build produces a tool that measures or reports, the audit that runs it is filed in the same planning session, placed after it. `plugin/throughliner/docs-b/done-plan.md` — the end-preferred reorder excepts an audit that names a tool item it follows, so the close leaves the pair adjacent.
+
+Rule gate: run — admitted as a clause on `plan.md`'s existing keep-step, which already settles an item's flavor and placement; no freestanding rule and no always-loaded slot spent. Nothing evicted. Shipped rather than host-only: a consumer can build a reporting tool and hit the same gap. Failure evidence is the two instances above.
+
+#### The length measurement excludes the legacy logs, so it cannot make the comparison that proves the growth [measurement-excludes-legacy-logs]
+**The tool cannot see the era before the bloat.** `measure_written_shape_length.py` reads per-entry LOG files only, and its own note says the earlier record "lives in the legacy combined log and is not measured here" — which reads as *cannot be*. It parses fine: every legacy file carries `## <hash> — <title>` headings, one per entry, checked this session.
+
+**So the baseline exists and is not being shown.** Legacy entries run roughly 250–460 words each; August is 478 median for builds and 898 for planning, with singles at 1,434 and 3,658. Without the earlier era in the table, the growth is reported only within the bloated period, which is why its scale was invisible to anyone reading the output.
+
+**Settled at processing: legacy entries are measured as one undifferentiated group**, with no plan/build split. Flavor was not recorded then, and inferring it from title wording would be guesswork printed as measurement.
+
+**Kept on the user's purpose after Claude recommended dropping it.** That recommendation judged the item against deriving the bands, which July already settles. Her purpose is different and was not weighed: *"I just want to make sure that the legacy work is measured properly to show the growth."*
+
+**Files:** `resources/measure_written_shape_length.py` — parse `LOG/log.md` and `LOG/log-v*.md` by heading, measure each entry, report as a pre-split group; rewrite the coverage-limit note, which currently states a false limitation. Run by [run-the-written-shape-measurement], which follows it.
+
+#### [audit] Run the written-shape measurement and route what it finds [run-the-written-shape-measurement]
+Filed 2026-08-16. The reading half of work whose building half shipped on 2026-08-15 and was then never read.
+
+**What it does.** Run `py resources/measure_written_shape_length.py .`, read the tables, and file what they show as captures — shapes outside their band under [written-shape-word-bands], the pre-split baseline against the current era, and any shape moving in the wrong direction. Edits nothing, per the audit flavor.
+
+**Follows [measurement-excludes-legacy-logs] and takes no `Blocked by:` line.** The script is a dev resource run directly, not part of the installed plugin, so its change is live the moment it is written — the same run can build the tool and then use it. Placement carries the order; a holding field would push this below the readiness line and stop it running at all.
+
+**Why it exists as its own item.** A tool with nobody appointed to read it reported that every written shape had doubled, and nothing happened for three days. The output is even addressed to a reader — "no threshold is stated here and none may be read off the middle of these distributions" — who was never appointed.
+
+Rule gate: not needed — an audit authors nothing and amends nothing.
+
+#### Provenance applies a wording test to an origin claim, so Claude asks the user to prove her work is hers [provenance-splits-origin-from-quote]
+Filed 2026-08-16. Supersedes [unquoted-user-credits], which proposed fixing the instances and had the rule backwards.
+
+**Two different claims are collapsed into one.** An **origin** claim — "you raised this", "captured by you" — says where something came from and has nothing to do with wording; a paraphrase is the normal way to state it. A **quote** claim — "your words", quotation marks — is about wording and requires verbatim text. The shipped rule says a `captured by you` credit "requires the user's own words as its source," applying a wording test to an origin claim.
+
+**That is why Claude ends up demanding proof.** The rule makes wording the evidence for something that was never a claim about wording, so the cheapest available move is to ask the user to substantiate it. Reported by her from a live instance in another project the same day. **Her position, which settles the split:** *"nothing is 'the user's words' unless it's a direct quote. neither is work only the user's if it isn't exactly in their words. but everything is written and recorded by Claude."*
+
+**The lint has it backwards in both directions.** It flags an origin claim for lacking a quote — five items, all legitimate, and a planning session came one turn from deleting those credits on its instruction. It passes a quote frame over a paraphrase: *"Your words: before, it felt shaky for the first few items…"* is Claude's third-person rendering under a claim to be hers, and it is clean by the check.
+
+**What must not change: default-AI.** Unmarked reads as Claude's, and that is the half the mechanism was built for — stopping Claude claiming everything is the user's. Abolishing provenance was floated and refused for that reason; it returns to a state she has already rejected as confusing.
+
+**Trace the ripple by grep before building** — the credit phrasings are a hook-enforced format, so the file list is read off the corpus rather than written from this discussion.
+
+**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — the provenance rule split into the two claims, with the wording test bound to the quote claim alone. `plugin/throughliner/hooks/post_tool_use.py` — flag a quote frame containing no quoted text; stop flagging an origin claim for lacking one. `QUEUE.md` — the paraphrase-under-quote-frame items corrected; the five currently flagged left alone.
+
+**Fourth item now landing in `skill-nonspecific-rules.md`**, alongside [law-prose-restyle], [written-shape-word-bands] and [spec-control-model-not-what-happens] — a merge candidate with all three rather than a separate pass.
+
+Rule gate: run — admitted as an amendment to the existing provenance rule, which already distinguishes credit from agreement and provides for mixed authorship; no freestanding rule and no slot spent. **The eviction is the wording test as applied to origin claims**, repealed outright. One proposal refused on the user's objection: a stricter form requiring verbatim for every credit, which would have transferred every un-transcribed idea of hers into Claude's column. Failure evidence is two instances — the five mislabelled items here, and a live report from another project the same day.
+
+#### The advisory hooks repeat unchanged output on every tool call [advisory-hooks-repeat-unchanged]
+The queue lint and the word-growth report fired on every PowerShell command and every edit in the filing session — around twenty times, identical content each time, including after commands that changed nothing. Repeated identical advisory output is what gets skimmed past, which is the failure this project has repealed measures for twice, and here it is generated by the reporting rather than by any rule.
+
+**The two need different fixes, and reading the hook settles both.**
+
+**The lint re-reports the whole file every time.** Five flags in this queue are pre-existing and were shown at every single fire. Fix: report against `HEAD`. A flag on a line that differs from `HEAD` gets its full message — that is work just done, and it is what the advisory is for. Everything else collapses to one line giving the count. The hook already runs `git show HEAD:QUEUE.md` for its growth report, so this needs no new machinery and **no state file** — git is the state, which is what keeps it honest.
+
+**The growth report is already `HEAD`-relative and its numbers are correct.** Its noise is firing on tool calls that changed nothing. Fix: emit only where the triggering tool wrote to QUEUE.md, which is knowable from the tool input for an edit or a write.
+
+**The residual, stated rather than solved.** A shell command can reach the queue through a script, which is why the hook runs after shell commands at all, and there the target is not knowable from the input — so a run of unrelated shell commands can still re-emit. Closing that needs remembered state between fires, and a state file is refused here on the project's own recorded ground: it must be maintained, and the first session that forgets makes the output lie.
+
+**Merge candidate with [provenance-splits-origin-from-quote]**, which changes the credit check in this same file. Two items editing one hook should be one pass.
+
+**The build runs the suites under `resources/testing/` before committing**, per the standing hook-touching close rule.
+
+**Files:** `plugin/throughliner/hooks/post_tool_use.py` — lint output made `HEAD`-relative with a count line for pre-existing flags; growth report emitted only on a write that targeted QUEUE.md.
+
+Rule gate: not needed — no rule authored or amended, and a hook file sits outside the gate's stated trigger, which names `docs-b/`, `CLAUDE.md` and the two self-authoring resources. Recording that here because the same shape is already captured as [gate-trigger-misses-the-audit-checklist]: a file that carries enforced behaviour, outside the set that summons a gate.
+
+#### Nothing asks whether a fix belongs at the instance, in a rule, or in a hook [fix-level-has-no-site]
+**Filed 2026-08-16 on the user's observation, in her words:** *"you keep applying things only to work rather than considering if rules need to be written about them."*
+
+**The gate fires at the wrong end.** `CLAUDE.md`'s rule gate runs "before adding any rule to the method's own text" — so it only engages once someone has already decided a rule is the answer. Its fourth admission question is exactly the right one, *could a hook do it instead*, and it can never be reached from the other direction: looking at a broken instance and choosing how to fix it. So the default is whatever the item's author reached for first, which is the instance.
+
+**Two instances in the session that filed this, both caught by the user rather than by any check.** The provenance defect was diagnosed correctly and then proposed as a text cleanup, leaving the lint that certifies the bad shape untouched. The measurement defect was proposed as a replacement item until she supplied the rule — build the tool, then audit with it — which became [tool-build-implies-an-audit].
+
+**Not a hook.** Whether an item is fixing an instance of a general problem is a judgment, not a pattern, so no check can detect it.
+
+**Files:** `plugin/throughliner/docs-b/plan.md` — a clause at the keep-step: where an item fixes an instance of something, name whether the fix belongs at the instance, in a rule, or in a hook, and where a lower level is chosen over a higher one, say why in the item's prose. The answer then shows up in the Files line, which already names a doc for a rule and a hook file for a hook — what is missing is the question, not a field.
+
+**Shipped rather than host-only.** A consumer processing an item hits the same choice between fixing one occurrence and writing a rule into their own `CLAUDE.md`.
+
+**One thing a build must weigh, and it is the strongest argument against this item.** Four items cleared in this same session add a clause to `plan.md`'s keep-step — [files-line-names-excluded-files], [research-cited-not-restated], [tool-build-implies-an-audit] and this one. That is the accumulation the rule gate exists to control, arriving at one step, in one session, with nothing counting it. A build should check whether these four collapse into fewer clauses before writing all four.
+
+Rule gate: run — admitted as a clause on `plan.md`'s existing keep-step. Nothing evicted, and the accumulation above is recorded rather than resolved, because merging four clauses is a build-time judgment over their final wording. Failure evidence is the two instances above, both from the filing session, both surfaced by the user.
+
+#### Rename `docs-b/` to `docs/`, overturning the refusal recorded the day before [rename-docs-b-folder]
+Filed 2026-08-16 by Claude, on the user's decision, after she challenged the refusal during the planning session that had just cited it.
+
+**Her words, which are the reason this exists:** *"i don't know why it's still called docs b even though i have been asking for that to be changed for weeks. there is no docs a anymore so why would it be called docs b."* She is right on the model — docset A was retired on 2026-08-09, nothing picks between docsets, and the letter names a sibling that does not exist.
+
+**The refusal being overturned, and why it does not hold.** [docs-b-name-outlives-the-two-docset-model] shipped on 2026-08-16 and refused the folder rename outright, on a grep: 639 occurrences, 215 live, **424 in `LOG/` and one archived message.** The argument was that renaming moves the "B" out of a live path `CLAUDE.md` can explain and into 424 historical references pointing at a folder that no longer exists — "drift by fixing drift."
+
+**That argument treats a session record as though it were supposed to describe the present.** It is not. A LOG entry written in August naming `docs-b/` is an accurate record of what the folder was called in August, which is what a record is for. Nobody proposed rewriting those 424, so the choice was never between renaming and falsifying the record. The Codex-port precedent the refusal cited says the same thing back: that decision was about **not rewriting** history, which is an argument for leaving `LOG/` alone, not against renaming a live folder going forward.
+
+**So the real cost is the 215 live references**, across 22 files: all five skill entry points, `session_start.py`, four of the docs themselves, four test suites, `CLAUDE.md`, `SPEC.md` and the migration recipe. This project has already carried out a larger rename in a single build — "Sovereign Implementer" to "Throughliner" moved the plugin slug, the package folder, both project marker files and the positioning together.
+
+**Who decided what, recorded because the first decision's authorship is the point.** The rename was refused by Claude, at a close, with the user's question as the trigger and no moment where the choice was put to her — the same shape as [rule-admission-has-no-independent-approver], one layer out. This reversal is her decision; the reasoning against the old argument is Claude's, given at her challenge.
+
+**`Runs alone`, and this is the marker's textbook case.** The work moves file paths underneath anything in flight, so a run holding paths in its working file and its scope-lock list would find them stale mid-build.
+
+**Trace the ripple by grep before building, per the hook-enforced-format rule** — `docs-b` as a literal across the repository, not a file list written from this item. The counts above are from 2026-08-16 and will have moved.
+
+**Leave `LOG/` and `INBOX/archive/` untouched.** They are the record. `resources/plugin-behaviour-retired.md` is a retired archive and is also left alone.
+
+**`QUEUE.md` IS a live reference and must be updated, which the first pass of this item missed.** Open work items carry the old path in their own Files lines — [law-prose-restyle] and [files-line-names-excluded-files] both do at the time of filing — and a queue item is an instruction to a future build, not a record of the past. Left alone they would send a run at a folder that no longer exists. The `LOG/`-is-a-record argument above does not extend to the queue: the queue describes what is still to be done.
+
+**Files:** `plugin/throughliner/docs-b/` renamed to `plugin/throughliner/docs/`, with every live reference updated — the five skill entry points, `plugin/throughliner/hooks/session_start.py`, the docs that cross-reference each other, the four suites under `resources/testing/`, `CLAUDE.md`, `SPEC.md` and `plugin/throughliner/docs/migrate-checklist.md`. `CLAUDE.md`'s refusal paragraph is deleted and replaced with a dated line recording the rename and noting that earlier session records name the old path. `QUEUE.md` — every open item's Files line carrying the old path, rewritten to the new one. Exclusions and untouched paths are named in the paragraphs above rather than on this line.
+
+Runs alone
+
+Rule gate: run — no rule authored and none amended. **The disposition is an eviction:** `CLAUDE.md`'s paragraph refusing the rename is deleted outright, along with the reasoning that supported it, and replaced by a dated statement of fact. Failure evidence is the refusal itself failing on its first contact with the user it was written for — she read the explanation and rejected it the next day.
+
+#### A Files line naming an excluded file makes it a false merge candidate in the digest [files-line-names-excluded-files]
+Filed 2026-08-16 by Claude, from the digest run that verified [law-prose-restyle]'s placement in this same planning session. Processed immediately on the user's decision to work it rather than file it.
+
+**What happened.** [law-prose-restyle]'s Files line ends "`CLAUDE.md` and `SPEC.md` are both out of scope under the decisions above." The digest then listed that item under both files in its "files named by two or more items" block — the block whose whole purpose is surfacing work that could be settled together. Two false merge candidates, generated by a sentence saying the opposite.
+
+**The mechanism, read rather than assumed.** `FILES_PATH_RE` in `queue_digest.py` extracts every backticked string from the Files line and keeps whatever ends in a file extension or a slash. It has no notion of scope, so an excluded path is indistinguishable from an included one. The digest is not guessing wrongly; it is being told wrongly.
+
+**The fix is at the authoring end, not in the detector.** Teaching the script to recognise exclusion phrases would be brittle in exactly the way [disposition-detector-is-format-brittle] records. Same shape as [rule-counter-blind-to-bold-prose-rules], settled the day before: an authoring constraint replaced a counting change there, for the same reason — a pattern cannot tell an excluded path from an included one any more than it can tell prose from a rule.
+
+**So the Files line names only files that change.** An exclusion is a different statement and goes in its own sentence outside the line. Its parent is the two-limb keep check in `plan.md`, which already governs what a Files line must state, so this ships as a subordinate clause on that rule rather than as a freestanding one.
+
+**Files:** `plugin/throughliner/docs-b/plan.md` — the two-limb keep check gains the clause above. `QUEUE.md` — [law-prose-restyle]'s Files line reworded so its exclusion sentence sits outside the line. No change to `queue_digest.py`.
+
+Rule gate: run — admitted as a subordinate clause on `plan.md`'s existing two-limb keep check, which already defines what a Files line must state; no freestanding rule and no always-loaded slot spent. Nothing evicted. One alternative refused: phrase-detection inside the digest, on the brittleness ground recorded at [disposition-detector-is-format-brittle]. Failure evidence is one recorded instance, produced in this session by the item being processed at the time.
+
+#### Restyle `skill-nonspecific-rules.md` into the law-prose wording standard, with a rule count taken either side [law-prose-restyle]
+**Filed 2026-08-14 while assembling the remaining-cleanup inventory (recorded in that session's LOG entry), from finding it absent.** The restyle is the final step of your stated strategy — dedupe, then "put the final finish on all the method rules, putting them all into the new law-prose style format" — and it existed only in conversation. Grepping `QUEUE.md`, `SPEC.md`, `CLAUDE.md` and `resources/` returned nothing but the sentence recording that strategy, written an hour earlier. **The largest single piece of the plan had no queue item**, precisely the failure the method's own rule names: executable work lives in the queue as work items, and anything held only in conversation is invisible to /next and vanishes when the session ends.
+
+**What it is.** A pass over the method's rule text converting it to the wording style the rule gate already specifies — state the action the rule requires rather than the prohibition; express a qualification as structure rather than explanation; main clause first, conditions after; one idea per provision; every exception at the same level as the rule it qualifies. The gate states that standard for rules being *authored*; nothing has applied it to the rules already shipped.
+
+**Why it runs last, a hard ordering rather than a preference.** A restyle over a corpus still holding duplicates restyles each copy separately and gives every copy its own chance to diverge — so it must follow the deduplication work (inventory group A) and the drift work (group C). Those groups are enumerated in that session's LOG entry; the sequencing argument is in [standing-audit-programme].
+
+**The risk it carries, which shapes how it must be run.** A large authoring pass over the whole corpus, where every rewrite is an opportunity to reintroduce what the earlier passes cut — rationale creeping back into operative sentences being likeliest. It must be audited *after* rather than trusted to verify itself, because the party restyling is the party that would certify it: see [rule-admission-has-no-independent-approver].
+
+**Scope settled at processing, 2026-08-15: `skill-nonspecific-rules.md` alone, and the other twelve files are deliberately excluded.** The user's decision, taken between three shapes offered — this one file, file by file across the corpus, or whole-corpus in one pass. It is the only file loaded in every session, so it carries the most value per paragraph rewritten, and one file is small enough that the after-the-fact audit this item demands is actually affordable. Whether the remaining files follow is a decision to take after this pass shows what one file costs; it is not filed as work now, because a speculative item for twelve untouched files would be exactly the undesigned shape this item was just rescued from.
+
+**Narrowing the scope does not dissolve the ordering, which is why this stays held.** The original argument was that a restyle over a corpus still holding duplicates restyles each copy separately and lets the copies diverge. That survives the narrowing: a rule stated both here and in a skill doc still has two copies, and rewriting one of them is what starts the drift. So the pass still runs after the deduplication and drift work.
+
+**Returned to Unprocessed 2026-08-15, and the reason is the blocker rather than the design.** The scope decision above stands and so does the acceptance test below; what could not be written is a `Blocked by:` value that is true. The item was briefly held against [standing-audit-programme] on the reasoning that the audit set sequences the cleanup groups. That is backwards, and the record says so: the inventory in `LOG/2026-08-14-plan-4.md` files this restyle as group F, "runs last, audited afterwards", and one of the five stated finish conditions is that the restyle has run and been audited by a pass that did not write it. The audit set follows this item; it does not gate it.
+
+**The true gate is a condition over a group, and the queue has no field for one.** This runs after groups A, B and C are clear — group B being [rationale-audit-second-pass], scoped to the same single file in the same planning session and kept ahead of this deliberately, so its findings can still change the rewrite rather than arriving after it. Around seven items are still open, among them [own-faq-diverged-from-shipped-template], [freeform-documented-as-the-wrong-thing], [docs-b-name-outlives-the-two-docset-model] and [adopted-claude-md-describes-retired-structure] — several of them kept and cleared on 2026-08-15, so the group is shrinking rather than static. A fifth, [spec-names-a-count-the-style-dropped], left the group by deletion the same day: its SPEC target had already been rewritten, so it was a finding rather than work. `Blocked by:` takes exactly one slug, so any single value would report this liftable the moment that one item shipped, with the rest outstanding. Holding it on a proxy was weighed and refused for that reason: a field that resolves early is worse than no field, because the revisit trusts it. The gap itself is captured separately as [blocked-by-cannot-express-a-group-condition].
+
+**Re-kept and cleared 2026-08-16: groups A and C are done, and the group condition that could not be written no longer needs to be.** The gate was checked against the record rather than against this item's own count, which was a day stale. Group A — five duplicate-rule items — is four shipped and one, [done-build-restates-no-subset-rule], refused outright and deleted on 2026-08-15. Group C — eight stale-description items — is six shipped, one deleted as a finding ([spec-names-a-count-the-style-dropped]), and one folded into the output-style removal. So the condition over a group expired by being satisfied, not by gaining a field; [blocked-by-cannot-express-a-group-condition] stays filed on its own merits, because the next item to need a group condition will still have nowhere to write one.
+
+**Group B did not clear the same way, and folding it in is what resolved it.** [rationale-audit-second-pass] shipped on 2026-08-16, but an audit edits nothing — it filed nine findings, eight of them against this same file. Building those eight separately and then restyling would be two per-paragraph passes over the same sentences, each able to undo the other's wording: the exact cost this item already refused when it absorbed the "session" terminology fix. **So the eight are deleted into this item and their findings carried below.** The ninth, [rationale-audit-fetched-docs-gap], stays in Unprocessed — it is about the twelve files this pass does not touch.
+
+**The acceptance test is mechanical, and it is the answer to this item's own stated risk.** The danger named here is that every rewrite is a chance to reintroduce what earlier passes cut, with rationale creeping back into operative sentences the likeliest form. A restyle authors no new rule and evicts none — it restates existing rules in the wording standard the gate already specifies — so the count of always-loaded rule statements must not rise across the pass. `resources/rule_signals.py` already computes that count for its CONTRADICTED check. Take it before, take it after: a rise means the pass smuggled something in, and that addition is justified at the gate or reverted. This does not detect a rewrite that changes a rule's meaning while keeping the count flat, and must not be described as if it did.
+
+**The caveat that closes the hole in that test, written on 2026-08-16 when [rule-counter-blind-to-bold-prose-rules] built.** The count reaches three shapes only — a bullet, a paragraph whose bold leads the line, and a line inside a typed block — so a rule rewritten into plain prose, or with its bold moved off the start of the line, disappears from the count. This pass is a rewriting pass over the counted file, so it could walk through that hole unnoticed: the count would fall or hold flat while nothing was actually removed. Those three shapes are now the stated authoring constraint in `CLAUDE.md`'s rule gate and in the file's own opening, so the restyle must keep every rule inside them, and the acceptance test means what it says only on that condition.
+
+**The test has a hole this pass could walk through, found 2026-08-16 and stated here rather than left to be discovered.** The counter sees a rule only where it is a bullet, a line whose bold leads it, or a line inside a typed block. **A rule rewritten into plain prose becomes invisible and the count FALLS** — which this test reads as success. A restyle is a rewriting pass over exactly those sentences, so this is the likeliest way for the check to be passed while the corpus is damaged, not a theoretical edge. **So a fall in the count is not a pass either: any fall this pass produces must be accounted for rule by rule, against the eviction it claims.** The authoring constraint settled on [rule-counter-blind-to-bold-prose-rules] — an always-loaded rule takes one of those three shapes — is what keeps the count honest through this pass, and that item should ship first for that reason.
+
+**The "session" terminology fix is folded into this pass, absorbed from [session-conflates-chat-and-run] on 2026-08-15 when that item was deleted into this one and [terminology-corpus-audit].** The user's words, which are the decision: *stop using the word "session" because it conflates a chat with a use of plan or next — only say "plan session" or "next session".* Said while correcting a rule that used both meanings inside four sentences. The vocabulary itself is already shipped in this same file — one chat runs /plan and /next as often as needed, and a plan session and a next session are runs of a command inside it — so nothing needs defining; this applies it.
+
+**Why it folds in here rather than running as its own pass.** This file has 61 occurrences of the word, and each needs a judgment about which meaning rather than a substitution. Resolving them is a wording decision, and this pass is already rewriting every rule statement in the file. Run separately it would be the third per-paragraph pass over the same sentences in one plan — after the rationale audit and this restyle — with each able to undo the previous one's wording. The remaining 646 occurrences across SPEC, both FAQs, `done.md`, `plan.md` and the rest are out of this pass's scope and belong to [terminology-corpus-audit], where "session" is already the first term listed.
+
+**The eight rationale findings absorbed on 2026-08-16, each with the site it names and the disposition settled at this keep-step.** These were filed by [rationale-audit-second-pass] and approved as that audit's numbered set; they are the specific work this pass carries beyond the wording standard.
+
+1. **The work-cycle fenced block, from [cycle-block-carries-rationale-in-a-fence].** Two sentences inside the fence at the top of the file: step 5's "A planning session between a finding and its build is the cycle working, not an obstacle to it", and step 4's "The loop's boundary is a new session with no memory of this one, which is why every return edge below routes through a FILE and never through what someone remembers." Both fail the delete-and-reread test — the steps still say what to do without them. The build weighs one thing before cutting: the fence is orientation whose whole job is conveying a shape, so check whether either sentence is doing operative work there rather than assuming the test settles it. This shape was invisible to the first audit pass, which matched prose and never looked inside a fence.
+2. **The cadence rule, from [cadence-rule-rationale-and-numeral].** Cut the trailing "How often to speak is a separate question from how long any one message is, and in a session full of tool calls it is the one that decides how much the user reads" — an argument for the rule's importance, not part of applying it. **And drop the "Three occasions warrant it" numeral, settled here as recommended.** It does not breach the derivation rule, being descriptive of the list that follows rather than a declared limit; it is dropped on maintenance grounds — a session admitting a fourth occasion has to notice a numeral three lines above the list, and a numeral that silently disagrees with its list is worse than none. Reword to name the three without counting them.
+3. **Two unmarked opening rationale paragraphs, from [unmarked-rationale-paragraphs-open-two-rules].** The scrub-before-writing section opens "QUEUE.md, SPEC.md and LOG entries get committed, and a commit keeps the text even after it's deleted. Many users' repos are public" — both deletable, the instruction beneath stands. Research-and-evidence-filing opens "Offering a web search is a capable move, not an admission of ignorance. The bar is low — offering is cheap because the user can decline." **Apply the test to that second sentence on its own rather than cutting the paragraph as a block**: "the bar is low" is arguably an instruction about how readily to offer. This is the commonest shape the first pass could not see, having no bold lead-in and no defeated-alternative phrase to match on.
+4. **The captures-placement explanation, from [captures-placement-rationale].** "Placement: append to the bottom of Unprocessed, always" is the whole operative statement; the seventy-word "Two reasons, the second being the real one…" paragraph beneath it goes to the LOG entry that settled the placement rule. It fails the test cleanly — the rule names one position and admits no judgment, which is what makes it cheap to follow.
+5. **The throughline's "what it buys" paragraph, from [throughline-rationale-duplicated-in-spec].** Stated twice in two always-read documents: once here, once at greater length in SPEC's opening as product truth. **Cut the always-loaded copy and leave SPEC's, settled here.** SPEC is where the product's reason for existing belongs and it has a floor a rule list does not — a true sentence about a live feature can never be removed to save room. **No SPEC edit follows from this**, so the single-file scope holds.
+6. **Two of three evidence clauses, from [evidence-clauses-attached-to-three-rules].** Cut the vocabulary rule's "this was explained repeatedly to a user who still did not have it, because nobody had opened a file and pointed", and the inversion rule's "Reading 'deliver together' as 'show for approval first' is what once put the close's capture re-scan in conflict with the write-first rule that governs above it." Both are recorded instances that belong in the LOG entry admitting the rule.
+7. **The third evidence clause is KEPT and reclassified as operative — the user's decision, 2026-08-16, asked at this keep-step because the item required it.** The sentence is the one-chat-at-a-time rule's "Two chats at once was supported for a period and never worked: a capture filed in one is invisible to the other, and the two disagree about the queue from the moment either writes to it." The test reads it as rationale. It is kept anyway on the user's own recorded behaviour as evidence: meeting a stale FAQ entry describing two-chat coordination as supported, she rejected it in her own words — *"has NEVER successfully happened and EVERY time we have tried to ship that behaviour, it has fallen over"* — and she recognised it as wrong **because she knew the history**. A bare prohibition with the history stripped reads as arbitrary, and arbitrary rules are the ones that get argued with; see [plan-does-not-build-keeps-being-relitigated] for what happens when a boundary's reasoning is unavailable to its reader. Written into the operative sentence per the gate's reclassification route, so it cannot be removed later without leaving the rule incomplete.
+8. **The inline-switch paragraph, from [inline-switch-paragraph-is-justification].** Only its last sentence — "Default off means today's behaviour" — is operative. The two before it argue for a decision already taken and restate a mechanism the typed block directly above already carries, which makes this the eviction rule's own case: a clearer restatement leaving the original standing has doubled the text rather than merged it. Keep the operative sentence, cut the rest.
+9. **The truncated-read sentence is REWRITTEN, not cut, from [truncated-read-sentence-reclassify].** Under "Reading a whole file before reasoning over it": "The failure is silent by construction: a truncated read looks like a complete one to whatever reasons over it, so nothing downstream can detect it — which is why the check belongs at the read, not later." Delete the whole sentence and *where the check belongs* goes with it; delete only the first two clauses and the instruction survives. Lead with the operative half — the check runs at the read — and let the reason follow inside that same sentence. **This is the one finding in the set that keeps text, and it is the failure mode of the technique itself**: an auditor applying the test mechanically would cut this and silently move a check to nowhere.
+
+**Why nine numbered findings and eight absorbed items:** [evidence-clauses-attached-to-three-rules] splits into entries 6 and 7 because its three sites now have two different dispositions.
+
+**One thing the fold must not silently swallow:** the machine's use of the word — `session_id`, the working file's name, the hooks' own messages — is a separate question with probably the same answer as [work-item-means-processed-only] gave for code. This pass touches prose only, and where a rule statement names the machine's term it stays as it is.
+
+**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — every rule statement in it reworded to the standard: prohibitions restated as the action required, qualifications carried by structure rather than explanation, main clause first with conditions after, one idea per provision, exceptions at the same level as the rule they qualify, and every use of "session" resolved to chat, plan session or next session. Plus the nine numbered rationale findings above, each at the site it names: two sentences cut from the work-cycle fence, the cadence rule's trailing argument and its "Three occasions" numeral, two unmarked opening paragraphs, the captures-placement explanation, the throughline's "what it buys" paragraph, two of three evidence clauses, the inline-switch paragraph down to its last sentence, the one-chat-at-a-time clause rewritten as operative text, and the truncated-read sentence led by its operative half. No other file changes; `CLAUDE.md` and `SPEC.md` are both out of scope under the decisions above.
+
+**Run the count before and after in the same session, and record both numbers in the LOG entry** — `py resources/rule_signals.py .` supplies it. A rise means something was smuggled in; a fall must be accounted for rule by rule against the evictions claimed above, since a rule rewritten out of the three counted shapes disappears silently.
+
+Rule gate: run — no rule authored, none evicted, and no rule moves between always-loaded and fetched. The pass restates shipped rules in the wording standard the gate's fourth part already specifies, which is why it needs no admission argument of its own: the standard was admitted when the gate was. The count check above is the evidence that this stayed true, not a claim that it did. **The fold of the nine rationale findings adds no rule and evicts none beyond what those findings already carried; the one addition it makes is a reclassification — entry 7 moves a sentence from rationale into operative text, on the user's decision, which is the gate's own stated route rather than a new rule.**
+
 #### [user] Discord post: the ordering ladder cut from six rungs to three, and every rung now costs no judgment [discord-post-context-adjacency]
 Captured by you 2026-08-12; the angle is yours — the ladder and how much it improves the workflow. **Subject replaced 2026-08-15 — see the correction below. The slug is unchanged because slugs are immutable.**
 
@@ -56,6 +309,17 @@ Captured by you 2026-08-12; the angle is yours — the ladder and how much it im
 **Only the final step yields to the one-a-day chain.** Three posts are already queued ahead of it, and the user's pacing rule applies to the post rather than to the writing — so the item is cleared and the article can be drafted whenever. This is carried as a prose sentence today because there is no way to write a date; once [not-before-date-field] ships, this becomes a `Not before:` line instead.
 
 **Files:** none in this project — the artifacts are an article for the Throughliner site and a Discord post. Relates to [digest-reports-computed-fields-not-summaries] (shipped) and `resources/research/auto-memory-staleness.md` (verified and corrected).
+
+#### [freeform] Run /setup on this project, outstanding since 1.12.0 [setup-outstanding-here]
+`session_start` reports the plugin moved 1.12.0 → 1.20.0-test10 since this project was last set up, and says /setup wants a session of its own. A standing condition surfaced at every session opening and acted on by nobody, including the eight-version gap itself going unremarked.
+
+**`[freeform]` settled at processing, and it is the tag's own definition rather than a judgment call.** /setup refuses outright while a build is in progress, and a /next run is a build in progress — so this cannot execute inside a run, which is what `[freeform]` names. Not `[user]`: the test is whether Claude can do it at all, and Claude can. The constraint is the session, not the capability.
+
+**Placed last in the cleared region, below the two `[user]` posts.** /next halts on a `[freeform]` item, so anything beneath it is never reached in that invocation — which makes the bottom the only position that lets the run clear everything else first. The `[user]` items are walked during a run and must therefore sit above it.
+
+**Not a prerequisite for the cleared work.** No format halt has fired, so this is the version top-up rather than a format migration, and the top-up is add-only — it never rewrites what the user has written. So the doc edits queued ahead of it are not at risk from running it afterwards.
+
+Relates to [next-presents-items-setup-will-overtake], which covers a run being presented while this is outstanding rather than the running of it.
 
 --- Cleared to run above this line ---
 
@@ -460,41 +724,6 @@ Filed 2026-08-15 by Claude at the close's re-scan, from an instance it caused in
 
 **To settle at processing.** Whether this is a rule about chat output ("structured content shown to the user goes one item per line, never in aligned columns"), or whether it is already covered by the existing item and should be folded into it. Check that item's actual subject first — its title is about a prose rule's stated reason being false, which may be a different concern wearing the same word.
 
-#### Restyle `skill-nonspecific-rules.md` into the law-prose wording standard, with a rule count taken either side [law-prose-restyle]
-**Filed 2026-08-14 while assembling the remaining-cleanup inventory (recorded in that session's LOG entry), from finding it absent.** The restyle is the final step of your stated strategy — dedupe, then "put the final finish on all the method rules, putting them all into the new law-prose style format" — and it existed only in conversation. Grepping `QUEUE.md`, `SPEC.md`, `CLAUDE.md` and `resources/` returned nothing but the sentence recording that strategy, written an hour earlier. **The largest single piece of the plan had no queue item**, precisely the failure the method's own rule names: executable work lives in the queue as work items, and anything held only in conversation is invisible to /next and vanishes when the session ends.
-
-**What it is.** A pass over the method's rule text converting it to the wording style the rule gate already specifies — state the action the rule requires rather than the prohibition; express a qualification as structure rather than explanation; main clause first, conditions after; one idea per provision; every exception at the same level as the rule it qualifies. The gate states that standard for rules being *authored*; nothing has applied it to the rules already shipped.
-
-**Why it runs last, a hard ordering rather than a preference.** A restyle over a corpus still holding duplicates restyles each copy separately and gives every copy its own chance to diverge — so it must follow the deduplication work (inventory group A) and the drift work (group C). Those groups are enumerated in that session's LOG entry; the sequencing argument is in [standing-audit-programme].
-
-**The risk it carries, which shapes how it must be run.** A large authoring pass over the whole corpus, where every rewrite is an opportunity to reintroduce what the earlier passes cut — rationale creeping back into operative sentences being likeliest. It must be audited *after* rather than trusted to verify itself, because the party restyling is the party that would certify it: see [rule-admission-has-no-independent-approver].
-
-**Scope settled at processing, 2026-08-15: `skill-nonspecific-rules.md` alone, and the other twelve files are deliberately excluded.** The user's decision, taken between three shapes offered — this one file, file by file across the corpus, or whole-corpus in one pass. It is the only file loaded in every session, so it carries the most value per paragraph rewritten, and one file is small enough that the after-the-fact audit this item demands is actually affordable. Whether the remaining files follow is a decision to take after this pass shows what one file costs; it is not filed as work now, because a speculative item for twelve untouched files would be exactly the undesigned shape this item was just rescued from.
-
-**Narrowing the scope does not dissolve the ordering, which is why this stays held.** The original argument was that a restyle over a corpus still holding duplicates restyles each copy separately and lets the copies diverge. That survives the narrowing: a rule stated both here and in a skill doc still has two copies, and rewriting one of them is what starts the drift. So the pass still runs after the deduplication and drift work.
-
-**Returned to Unprocessed 2026-08-15, and the reason is the blocker rather than the design.** The scope decision above stands and so does the acceptance test below; what could not be written is a `Blocked by:` value that is true. The item was briefly held against [standing-audit-programme] on the reasoning that the audit set sequences the cleanup groups. That is backwards, and the record says so: the inventory in `LOG/2026-08-14-plan-4.md` files this restyle as group F, "runs last, audited afterwards", and one of the five stated finish conditions is that the restyle has run and been audited by a pass that did not write it. The audit set follows this item; it does not gate it.
-
-**The true gate is a condition over a group, and the queue has no field for one.** This runs after groups A, B and C are clear — group B being [rationale-audit-second-pass], scoped to the same single file in the same planning session and kept ahead of this deliberately, so its findings can still change the rewrite rather than arriving after it. Around seven items are still open, among them [own-faq-diverged-from-shipped-template], [freeform-documented-as-the-wrong-thing], [docs-b-name-outlives-the-two-docset-model] and [adopted-claude-md-describes-retired-structure] — several of them kept and cleared on 2026-08-15, so the group is shrinking rather than static. A fifth, [spec-names-a-count-the-style-dropped], left the group by deletion the same day: its SPEC target had already been rewritten, so it was a finding rather than work. `Blocked by:` takes exactly one slug, so any single value would report this liftable the moment that one item shipped, with the rest outstanding. Holding it on a proxy was weighed and refused for that reason: a field that resolves early is worse than no field, because the revisit trusts it. The gap itself is captured separately as [blocked-by-cannot-express-a-group-condition].
-
-**So it waits in Unprocessed and is re-kept when the groups clear** — at which point the last outstanding group A/C item is a true single blocker and this becomes an ordinary held item, or the groups are simply done and it clears straight away.
-
-**The acceptance test is mechanical, and it is the answer to this item's own stated risk.** The danger named here is that every rewrite is a chance to reintroduce what earlier passes cut, with rationale creeping back into operative sentences the likeliest form. A restyle authors no new rule and evicts none — it restates existing rules in the wording standard the gate already specifies — so the count of always-loaded rule statements must not rise across the pass. `resources/rule_signals.py` already computes that count for its CONTRADICTED check. Take it before, take it after: a rise means the pass smuggled something in, and that addition is justified at the gate or reverted. This does not detect a rewrite that changes a rule's meaning while keeping the count flat, and must not be described as if it did.
-
-**The caveat that closes the hole in that test, written on 2026-08-16 when [rule-counter-blind-to-bold-prose-rules] built.** The count reaches three shapes only — a bullet, a paragraph whose bold leads the line, and a line inside a typed block — so a rule rewritten into plain prose, or with its bold moved off the start of the line, disappears from the count. This pass is a rewriting pass over the counted file, so it could walk through that hole unnoticed: the count would fall or hold flat while nothing was actually removed. Those three shapes are now the stated authoring constraint in `CLAUDE.md`'s rule gate and in the file's own opening, so the restyle must keep every rule inside them, and the acceptance test means what it says only on that condition.
-
-**The test has a hole this pass could walk through, found 2026-08-16 and stated here rather than left to be discovered.** The counter sees a rule only where it is a bullet, a line whose bold leads it, or a line inside a typed block. **A rule rewritten into plain prose becomes invisible and the count FALLS** — which this test reads as success. A restyle is a rewriting pass over exactly those sentences, so this is the likeliest way for the check to be passed while the corpus is damaged, not a theoretical edge. **So a fall in the count is not a pass either: any fall this pass produces must be accounted for rule by rule, against the eviction it claims.** The authoring constraint settled on [rule-counter-blind-to-bold-prose-rules] — an always-loaded rule takes one of those three shapes — is what keeps the count honest through this pass, and that item should ship first for that reason.
-
-**The "session" terminology fix is folded into this pass, absorbed from [session-conflates-chat-and-run] on 2026-08-15 when that item was deleted into this one and [terminology-corpus-audit].** The user's words, which are the decision: *stop using the word "session" because it conflates a chat with a use of plan or next — only say "plan session" or "next session".* Said while correcting a rule that used both meanings inside four sentences. The vocabulary itself is already shipped in this same file — one chat runs /plan and /next as often as needed, and a plan session and a next session are runs of a command inside it — so nothing needs defining; this applies it.
-
-**Why it folds in here rather than running as its own pass.** This file has 61 occurrences of the word, and each needs a judgment about which meaning rather than a substitution. Resolving them is a wording decision, and this pass is already rewriting every rule statement in the file. Run separately it would be the third per-paragraph pass over the same sentences in one plan — after the rationale audit and this restyle — with each able to undo the previous one's wording. The remaining 646 occurrences across SPEC, both FAQs, `done.md`, `plan.md` and the rest are out of this pass's scope and belong to [terminology-corpus-audit], where "session" is already the first term listed.
-
-**One thing the fold must not silently swallow:** the machine's use of the word — `session_id`, the working file's name, the hooks' own messages — is a separate question with probably the same answer as [work-item-means-processed-only] gave for code. This pass touches prose only, and where a rule statement names the machine's term it stays as it is.
-
-**Files:** `plugin/throughliner/docs-b/skill-nonspecific-rules.md` — every rule statement in it reworded to the standard: prohibitions restated as the action required, qualifications carried by structure rather than explanation, main clause first with conditions after, one idea per provision, exceptions at the same level as the rule they qualify, and every use of "session" resolved to chat, plan session or next session. No other file changes; `CLAUDE.md` is out of scope under the decision above.
-
-Rule gate: run — no rule authored, none evicted, and no rule moves between always-loaded and fetched. The pass restates shipped rules in the wording standard the gate's fourth part already specifies, which is why it needs no admission argument of its own: the standard was admitted when the gate was. The count check above is the evidence that this stayed true, not a claim that it did.
-
 #### Work that waits on a GROUP of items has no way to say so, so it cannot be held at all [blocked-by-cannot-express-a-group-condition]
 Filed 2026-08-15 by Claude, from the item it stopped in the same planning session.
 
@@ -525,25 +754,6 @@ Filed 2026-08-15 by Claude while processing [post-close-tail-state], from the ad
 
 Relates to [post-close-tail-state], which hit this and worked around it, and to [freestanding-rules-that-should-be-subordinate], which is the same gate examined from a different side.
 
-#### The length work shipped as measurement only, so nothing constrains how long anything gets [length-work-measures-but-does-not-constrain]
-**Captured by you 2026-08-16, in your own words: when our research on word count limits for items of varying type gets built in, hopefully there will be less space for that type of distribution.** Said while weighing whether long items should be ordered first. Filed after checking what actually shipped, because the answer is not what the hope assumed.
-
-**What shipped, and it is already done rather than pending.** [log-entry-length-may-be-mirrored] built at `8e20122` — `resources/measure_written_shape_length.py` plus `research/written-shape-length-growth.md`. It measured every written shape across git history and found each roughly doubled during August 2026: planning entries 323→895 median, build entries 229→478, index lines 40→76, captures 176→336 at first filing, with a further 141 words gained between capture and Processed.
-
-**It states no band, deliberately, and that is the whole gap.** Its own record says so: the corpus it measured is the bloated one, so deriving a limit from it would encode the bloat — a flaw caught before it shipped rather than an oversight. No word range appears in any shipped doc; checked at filing. So the mechanism measures and reports, and nothing anywhere acts on what it reports.
-
-**The evidence that this is a live cost, not a theoretical one.** In the planning session that filed this, items ran between 268 and 1,160 words each against a measured filing median of 336. The growth report named every one of them as it happened, and nothing changed, because nothing was built to change. A report with no consequence is the shape this project has repealed measures for twice.
-
-**Why it is genuinely hard rather than merely undone.** The derivation rule bans a bare number, and the obvious source for a derived one — this corpus — is exactly what cannot be used. So "add a band" is not an available answer, and any item proposing one has to say where the figure comes from first.
-
-**One route is now proved rather than hypothesised, and it came from the same conversation.** [longest-first-never-yields-to-decay] settles the ordering ladder's termination on the **median of the section, computed per pass** — a proportion, which the derivation rule expressly admits, and which cannot encode a bloated absolute because it moves with whatever the corpus actually is. The same shape may be available here: a relative measure against the current distribution rather than a fixed word count.
-
-**Two other routes worth weighing before anything is built, neither designed.** A band derived from **good exemplars** rather than from the corpus — which is what the measurement could not do, since it had no known-good set. Or **accept measurement-only and say so in the docs**, so the gap is visible rather than assumed closed; that costs nothing and is honest, and it is a real candidate rather than a fallback.
-
-**What must not happen** is a figure chosen because it feels right. That is the bare-number failure this project bans, and the reason the measurement shipped without one.
-
-Relates to [written-deliverable-length-unaddressed], to [close-cost-scales-with-run-size] which measures the same growth from the close's side, and to [longest-first-never-yields-to-decay] for the proportion-not-absolute route.
-
 #### Filing a capture has no mechanical route, so it is hand-anchored to a neighbouring item and can land in the wrong section [no-mechanical-route-for-filing-a-capture]
 Filed 2026-08-16 by Claude at the close, from an error it made in this planning session and did not catch itself.
 
@@ -560,90 +770,6 @@ Filed 2026-08-16 by Claude at the close, from an error it made in this planning 
 **To settle at processing:** whether `reorder_queue.py` gains an append that takes a heading and a body and puts it at the bottom of a named section; whether the write-guard's script-write ban needs an exemption for it, as it has for the mover; and whether the always-loaded filing rule should name the tool the way the keep-step names the mover.
 
 Relates to [mover-cannot-add-a-new-item], which shipped the *move* half of this gap, and to [move-section-does-not-report-line-crossings].
-
-#### Rationale sits inside the work-cycle fenced block, where the first audit pass could not read it [cycle-block-carries-rationale-in-a-fence]
-Filed 2026-08-16 by [rationale-audit-second-pass], the second rationale audit over `skill-nonspecific-rules.md`. Approved as part of that audit's numbered set.
-
-**Two sentences, both inside the fence.** Step 5 carries "A planning session between a finding and its build is the cycle working, not an obstacle to it." Step 4 carries "The loop's boundary is a new session with no memory of this one, which is why every return edge below routes through a FILE and never through what someone remembers."
-
-**Both fail the delete-and-reread test.** Delete either and the step it sits in still says what to do: step 5 still routes an audit's findings to captures, and the return edges below still route through files whether or not the reason is stated. The first is reassurance about a design; the second explains a property the steps already have.
-
-**This is the shape the first pass was structurally unable to see**, and it is why the second pass was scoped. Pass 1 matched bolded why-paragraphs and defeated-alternative phrases in prose; a fenced block is not prose to that criterion, so nothing inside one was ever examined. The block is at the very top of the always-loaded file, read by every session.
-
-**What a build has to weigh, and it is not obvious.** The fence is orientation read once at the top of every session, and its lines are short. Cutting two sentences saves little and may cost the reader the sense of why the loop is shaped as it is. The gate's answer is that rationale goes to the LOG entry that decided it — but a build should check whether these two are doing operative work in a block whose whole job is to convey a shape.
-
-#### The cadence rule carries its rationale in the second half of its own sentence, and a bare numeral that will go wrong [cadence-rule-rationale-and-numeral]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set. **This item carries a decision the audit was explicitly asked to take.**
-
-**The rationale half.** The rule reads "Speak when something warrants it, and work quietly between", lists three occasions, and then adds: "How often to speak is a separate question from how long any one message is, and in a session full of tool calls it is the one that decides how much the user reads." Delete that and the rule is complete — it is an argument for the rule's importance, not part of applying it.
-
-**The numeral, which the audit was told to settle either way.** The rule opens "Three occasions warrant it" and then lists three. That numeral migrated out of the deleted output style and out of a SPEC sentence since rewritten. **It does not breach the derivation rule**: it is descriptive of a list that follows, not a declared limit, so nothing here says a count was invented as a threshold.
-
-**The recommendation is to drop it anyway, on maintenance rather than on derivation.** A session admitting a fourth occasion later has to notice a numeral three lines above the list and change it too, and a numeral that silently disagrees with the list beneath it is worse than no numeral. Rewording to name the three occasions without counting them — "Speak before the first tool call, on finding something important or changing direction, and at the finish" — costs nothing and removes the trap. Recorded as a recommendation rather than a decision because it is a wording change to a shipped always-loaded rule and belongs at a keep-step.
-
-#### Two always-loaded rules open with an unmarked rationale paragraph carrying no signature phrase [unmarked-rationale-paragraphs-open-two-rules]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set.
-
-**The commonest of the shapes invisible to the first pass**, and the reason it is invisible: there is no bold lead-in and no defeated-alternative phrase to match on, so a criterion built from signature phrases passes straight over it.
-
-**Site 1 — the scrub-before-writing section.** It opens "QUEUE.md, SPEC.md and LOG entries get committed, and a commit keeps the text even after it's deleted. Many users' repos are public." Delete both sentences and the instruction beneath — read what you are about to write against this list — is complete and correctly applicable.
-
-**Site 2 — research and evidence filing.** It opens "Offering a web search is a capable move, not an admission of ignorance. The bar is low — offering is cheap because the user can decline." Delete it and the trigger rule beneath is unaffected.
-
-**One caution for whoever builds this.** Site 2's second sentence is close to operative: "the bar is low" is arguably an instruction about how readily to offer, rather than a reason. Apply the delete-and-reread test to that sentence on its own rather than cutting the paragraph as a block.
-
-#### The captures-placement rule carries seventy words explaining why appending beats judgment placement [captures-placement-rationale]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set.
-
-**The rule is one sentence and the explanation is a paragraph.** "Placement: append to the bottom of Unprocessed, always" is the whole operative statement. Beneath it sits "Two reasons, the second being the real one…", running through the cost of judgment placement and ending "chronological is the better read, because file order records when things landed."
-
-**It fails the test cleanly.** Nothing in applying the rule requires knowing why appending was chosen — the rule names one position and admits no judgment, which is precisely what makes it cheap to follow.
-
-**Why it survived pass 1.** It has no bold lead-in and none of the defeated-alternative phrases, so the signature criterion never reached it, despite being one of the longer stretches of pure rationale in the file.
-
-**Where it goes.** The LOG entry that settled the placement rule, per the gate's rationale-lives-outside-the-operative-rule split. Git history holds the current text either way.
-
-#### The throughline's "what it buys" paragraph is stated twice, in two always-read documents [throughline-rationale-duplicated-in-spec]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set.
-
-**The duplication is the finding, not the rationale on its own.** `skill-nonspecific-rules.md` ends its throughline section with "What it buys: Claude's memory resets each session, and the throughline is why a fresh, short session still builds the project the way the user meant instead of re-deriving intent from the code and guessing wrong." `SPEC.md`'s opening makes the same argument at greater length, as product truth.
-
-**Both are read, and neither is applied.** The always-loaded copy is paid by every session; the SPEC copy is read during planning and building. Two statements of one argument in two documents is the near-duplicate shape the rule board's own check exists to find, arrived at here by reading rather than by pattern.
-
-**The likely resolution, for a keep-step to settle.** SPEC is where the product's reason for existing belongs and it has a floor a rule list does not — a true sentence about a live feature can never be removed to save room. So the always-loaded copy is the one to cut. That is a recommendation, not a decision.
-
-#### Three always-loaded rules carry an evidence sentence as a subordinate clause [evidence-clauses-attached-to-three-rules]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set. **One of the three is contested by the user's own recorded behaviour and must not be cut without deciding that first.**
-
-**Site 1 — the vocabulary rule.** "Show it, don't define it" is followed by "this was explained repeatedly to a user who still did not have it, because nobody had opened a file and pointed." That is the recorded instance that admitted the rule, and the gate says such an instance belongs in the LOG entry admitting it, not in the operative text.
-
-**Site 2 — the inversion rule.** "Reading 'deliver together' as 'show for approval first' is what once put the close's capture re-scan in conflict with the write-first rule that governs above it." Same shape: a past failure named inside a live rule.
-
-**Site 3 — one chat at a time, and this is the contested one.** "Two chats at once was supported for a period and never worked: a capture filed in one is invisible to the other, and the two disagree about the queue from the moment either writes to it." By the test this is rationale — the prohibition stands without it.
-
-**The argument for keeping site 3, from an event on the day this was filed.** The user met a stale FAQ entry describing two-chat coordination as supported and reacted immediately, in her own words, that it "has NEVER successfully happened and EVERY time we have tried to ship that behaviour, it has fallen over." She recognised the entry as wrong *because she knew the history*. A bare prohibition with the history stripped out reads as arbitrary, and arbitrary rules are the ones that get argued with. **Do not cut site 3 without putting that to her.**
-
-Relates to [plan-does-not-build-keeps-being-relitigated], which records what happens when a boundary's reasoning is not available to the reader.
-
-#### The inline-switch paragraph is design justification with one operative sentence buried in it [inline-switch-paragraph-is-justification]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set.
-
-**What is there.** "The inline switch covers /next's edit display too, rather than asking twice. Line references are already the default everywhere, so a separate run-start question would add an ask to reach an outcome this offer already covers — the over-asking the method keeps removing. Default off means today's behaviour."
-
-**Only the last sentence is operative.** "Default off means today's behaviour" tells a session what to do when nobody has said anything. Everything before it argues for a decision already taken, and the mechanism it describes — that the offer covers /next's edit display — is already stated in the typed block directly above, which is where a session actually reads it.
-
-**So this is a restatement plus its justification**, which makes it the eviction rule's own case: a clearer restatement that leaves the original standing has doubled the text rather than merged it.
-
-#### A truncated-read sentence needs reclassifying as operative rather than cutting [truncated-read-sentence-reclassify]
-Filed 2026-08-16 by [rationale-audit-second-pass]. Approved as part of that audit's numbered set. **This is the one finding in the set that recommends keeping text rather than removing it, which is why it is filed separately.**
-
-**The sentence.** Under "Reading a whole file before reasoning over it": "The failure is silent by construction: a truncated read looks like a complete one to whatever reasons over it, so nothing downstream can detect it — which is why the check belongs at the read, not later."
-
-**It fails the delete-and-reread test in one direction and passes in the other.** Delete the whole sentence and something operative goes with it: *where the check belongs*. Delete only the first two clauses and the instruction survives. So the sentence is mixed — rationale and rule sharing one sentence, which is the second of the shapes this pass was scoped to find.
-
-**The gate's answer is reclassification, not exemption.** Where a reason is genuinely needed to apply a rule, it is written into the operative sentence so it cannot be removed without leaving the rule incomplete. Here the fix is to lead with the operative half — the check runs at the read — and let the reason follow as part of that sentence rather than as a preamble to it.
-
-**Recording it matters more than the words.** An auditor applying the test mechanically would cut this and silently move a check to nowhere, which is the failure mode of the technique itself. Relates to [law-prose-restyle], which will rewrite this sentence anyway.
 
 #### The rationale audit has covered one file per paragraph and twelve by signature phrase only [rationale-audit-fetched-docs-gap]
 Filed 2026-08-16 by [rationale-audit-second-pass], recording its own scope so the gap is visible rather than assumed closed.

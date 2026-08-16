@@ -1,4 +1,4 @@
-# [HASH] — `[freeform]` reconciled to mean work done by hand, and the freeform close it named now exists
+# d82f538 — `[freeform]` reconciled to mean work done by hand, and the freeform close it named now exists
 
 The user's account, in her words: freeform is not for running things alone, it is for big sessions or things that characteristically can't run within /next; the vast majority of freeform sessions are run by her ad hoc and never planned, and the tag exists so /done knows what it is looking at.
 

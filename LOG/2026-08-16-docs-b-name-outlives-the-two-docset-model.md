@@ -1,4 +1,4 @@
-# [HASH] — The docset stamp reads `current`, and the folder keeps its name for a reason now written down
+# d82f538 — The docset stamp reads `current`, and the folder keeps its name for a reason now written down
 
 The user asked at a close why `docs-b/` was still there when docset B had been absorbed as the main method. She was right about the model — there is one docset, A was retired, nothing picks between them — and the naming is the residue.
 

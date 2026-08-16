@@ -1,4 +1,4 @@
-# [HASH] — /setup gains a keep-everything-private option and a public-repository offer that carries the licence question
+# d82f538 — /setup gains a keep-everything-private option and a public-repository offer that carries the licence question
 
 Throughliner's documents hold a project's plans, reasoning and history, and a user's repository may be public. /setup previously left that posture implicit. It now settles it, in two additions and **no sixth interview question**.
 

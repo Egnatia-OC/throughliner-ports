@@ -1,4 +1,4 @@
-# [HASH] — The isolation messages stop coaching on running two chats at once
+# d82f538 — The isolation messages stop coaching on running two chats at once
 
 The session-start hook printed, into the payload of every chat: *"The parallel-sessions advice for this case: two appends to different parts of QUEUE.md don't collide and the file-modified warning catches it if they do — but avoid two sessions writing QUEUE.md or committing at the same instant."* Advice for coordinating concurrent chats, addressed to a reader whose always-loaded rules now say a project is worked on from one chat at a time.
 

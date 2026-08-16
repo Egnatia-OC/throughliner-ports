@@ -1,4 +1,4 @@
-# [HASH] — "Session" surveyed across the corpus: the settled vocabulary has three slots and the corpus needs at least six
+# d82f538 — "Session" surveyed across the corpus: the settled vocabulary has three slots and the corpus needs at least six
 
 **The axis was stated before the survey began**, as the audit-axis rule requires: what does each occurrence *refer to* at the site where it fires. Not what it should say. The target vocabulary was already settled by the user — a plan session, a next session, the chat — and she corrected an earlier draft of the item that read as though the answer were known, because an audit starting from "the bare word must go" degenerates into a find-and-replace, which this explicitly is not.
 

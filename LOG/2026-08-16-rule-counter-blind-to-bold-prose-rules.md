@@ -1,4 +1,4 @@
-# [HASH] — Three permitted shapes for an always-loaded rule statement, as an authoring constraint rather than a counting change
+# d82f538 — Three permitted shapes for an always-loaded rule statement, as an authoring constraint rather than a counting change
 
 The item arrived claiming the rule counter scores bold-prose rules as zero. **That diagnosis was corrected at processing by reading the pattern instead of the account of it:** the counter matches a bold lead-in at the start of a stripped line, so it does reach bold prose, and `CLAUDE.md` — written almost entirely that way — scores 147.
 

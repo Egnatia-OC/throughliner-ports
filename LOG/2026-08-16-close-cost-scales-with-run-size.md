@@ -1,4 +1,4 @@
-# [HASH] — A subtraction pass over `done.md`, and an honest measurement that it grew anyway
+# d82f538 — A subtraction pass over `done.md`, and an honest measurement that it grew anyway
 
 The headline finding this item was filed with — that a close's cost scales linearly with run size and cannot be reduced by anything the run does — was **accepted and closed at processing rather than built**. The close writes one entry per item because a built item's queue text is consumed when it builds, so the entry becomes the only surviving record. Every route to reducing that cost trades away part of the record. Recording that the linear cost is the price of the record is the honest outcome, and it is written down so a later session does not reopen it expecting a fix to exist.
 
