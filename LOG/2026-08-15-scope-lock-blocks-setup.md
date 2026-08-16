@@ -1,4 +1,4 @@
-# [HASH] — /setup declares itself with a scratchpad marker, so the scope-lock stops denying every write a migration makes
+# 0e62afe — /setup declares itself with a scratchpad marker, so the scope-lock stops denying every write a migration makes
 
 A consumer project reported that /setup could not finish a migration, and reading `pre_tool_use.py` here confirmed it: the planning gate keys on the *absence* of a build working file, and /setup never creates one, so a setup run is classified as planning and every write outside the standing list is denied — no prompt, no override. That covers the version marker, the format-epoch marker, the `.gitignore` lines, the managed CLAUDE.md block and any scaffold file the run finds missing. QUEUE.md is on the standing list, which is why fresh adoption still worked and the failure stayed invisible on the paths most likely to be tested. It was a same-day regression from `8e20122`, where the deny replaced an ask.
 

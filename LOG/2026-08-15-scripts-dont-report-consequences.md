@@ -1,4 +1,4 @@
-# [HASH] — Two shipped scripts now report what their writes did, saving the round-trips spent rediscovering it
+# 0e62afe — Two shipped scripts now report what their writes did, saving the round-trips spent rediscovering it
 
 Both gaps were measured rather than supposed. Deleting one item and repairing what followed took about ten round-trips for three edits' worth of work.
 

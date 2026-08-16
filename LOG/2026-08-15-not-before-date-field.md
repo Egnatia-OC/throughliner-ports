@@ -1,4 +1,4 @@
-# [HASH] — Work can be held until a date it names itself, across the queue's whole surface
+# 0e62afe — Work can be held until a date it names itself, across the queue's whole surface
 
 `Blocked by: [slug]` was the only way to hold work, and it always names a queue item. A date is not a queue item, so a date had to be expressed by proxy: a capture that a human confirms. Four Discord posts were held that way behind an item whose entire content was "a day has passed" — costing a planning session per post to answer a question a calendar answers, and failing anyway. The user's words on the failure: "it wasn't presented to me in next." Holding the item below the readiness line made it invisible during ordinary use, so the pacing did not slow the post down, it stopped it happening.
 

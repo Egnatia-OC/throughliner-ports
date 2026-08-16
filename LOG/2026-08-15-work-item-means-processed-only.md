@@ -1,4 +1,4 @@
-# [HASH] — "Work item" now means an entry in Processed only, and a capture is what it was before that
+# 0e62afe — "Work item" now means an entry in Processed only, and a capture is what it was before that
 
 The user's correction, after Claude called an Unprocessed capture a work item: only items in Processed are work items; until then they are captures or unprocessed items. They're not work until they are queued as work.
 

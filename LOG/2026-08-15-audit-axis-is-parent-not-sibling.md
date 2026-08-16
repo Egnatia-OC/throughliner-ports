@@ -1,4 +1,4 @@
-# [HASH] — An audit states its axis before it runs, and it is the parent axis unless it argues otherwise
+# 0e62afe — An audit states its axis before it runs, and it is the parent axis unless it argues otherwise
 
 The compliance checklist carried three lenses and said nothing about what a doc is compared *against*. Comparing siblings — `done-build.md` against `done-audit.md`, `next-build.md` against `next-audit.md` — finds wording similarity between docs that are parallel by design, where near-identical phrasing is the expected state rather than the defect. Comparing a doc against its parent finds a child restating what its parent already carries, which is genuine duplication because the child is loaded *with* the parent and the reader has both.
 

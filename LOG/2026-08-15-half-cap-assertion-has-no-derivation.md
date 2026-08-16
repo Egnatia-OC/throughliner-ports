@@ -1,4 +1,4 @@
-# [HASH] — An undefended threshold in the hook suite becomes a printed size, and a defended one gains its derivation
+# 0e62afe — An undefended threshold in the hook suite becomes a printed size, and a defended one gains its derivation
 
 `hook_schema_check.py` asserted the session-start payload stayed under half the 10,000-character hook output cap. The cap is properly grounded — the hooks reference plus `anthropics/claude-code#44086` and `#70460`, which document that past it the harness saves the text to a file and injects a preview plus a path. The half was grounded in nothing: no comment, no measurement, no reference. That was established by looking rather than assumed — the assertion entered at `455082b`, and a search of every LOG entry for headroom reasoning returns two files, one a false match on "half the capture" and the other the session that filed this item.
 

@@ -1,4 +1,4 @@
-# [HASH] — Two mechanical checks in the queue lint, after three prose remedies failed
+# 0e62afe — Two mechanical checks in the queue lint, after three prose remedies failed
 
 This item carried the longest chain in the queue: a shipped, always-loaded provenance rule broken in the very session that read it; a hook ruled out early because a lint sees only text and nothing in a finished item distinguishes reasoning Claude produced from reasoning the user gave; sharper wording tried and spent; attribution holding across nine items while volume grew anyway, which showed the two halves are separable; and a fourth instance carried over from a deleted item.
 

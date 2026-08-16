@@ -1,4 +1,4 @@
-# [HASH] — The planning opening names each held item, what it waits on, and how long it has been held
+# 0e62afe — The planning opening names each held item, what it waits on, and how long it has been held
 
 A correctly held item is as invisible as a wrongly held one. /next presents the cleared region and builds from it; the held region is read at /plan's below-the-line revisit, which is deliberately silent while an item is still blocked. So a user who runs /next and /done, and doesn't sit through a revisit, has no moment where held work is named. In a consumer project that meant someone asking why a feature "isn't queued" when it was queued, fully designed, and held for a good reason. Here it meant four Discord posts sitting held while the user's own post never went out, unnoticed for a day.
 

@@ -1,4 +1,4 @@
-# [HASH] — The close writes its commit message to the scratchpad, and the doc's backwards reason for the old path is deleted
+# 0e62afe — The close writes its commit message to the scratchpad, and the doc's backwards reason for the old path is deleted
 
 `done.md`'s commit core told the close to write its message to a file in the project root and justified it: the file is writable *because* the sub-doc deletes the build working file before committing. That is exactly backwards. Deleting the working file is precisely what makes `pre_tool_use` classify the session as planning, which denies the project root — so the doc named the deletion as what makes the write safe when it is what makes it fail. The reporting project's repro was simple: run /next so a working file exists, then /done; the sub-doc deletes it, the commit core runs, and the very next write is refused.
 

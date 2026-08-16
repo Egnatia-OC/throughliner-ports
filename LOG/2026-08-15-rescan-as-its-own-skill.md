@@ -1,4 +1,4 @@
-# [HASH] — /rescan ships as the method's fifth skill, and the close's wind-down shrinks to pick up where it stopped
+# 0e62afe — /rescan ships as the method's fifth skill, and the close's wind-down shrinks to pick up where it stopped
 
 The wind-down re-scan was welded to the close, and every addition to close machinery added weight to the end of a chat and pulled the whole chat toward ending. The user's complaint was that it was already naggy and getting worse. A second problem rode with it: a re-scan finding becomes a capture, waits for a /plan, then a /next, then a reinstall — the wrong lifecycle for a finding about the machinery being used right now.
 

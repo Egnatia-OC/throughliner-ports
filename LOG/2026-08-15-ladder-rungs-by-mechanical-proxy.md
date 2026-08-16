@@ -1,4 +1,4 @@
-# [HASH] — The ordering ladder cut from six rungs to three, every one mechanical
+# 0e62afe — The ordering ladder cut from six rungs to three, every one mechanical
 
 The user's own experience is the evidence: across several planning sessions she watched Claude struggle to reason across a long queue, ran a tersification in a separate chat and replaced QUEUE.md wholesale to buy about ten percent — and reported that nothing helped as much as ordering by line count. Her proposal was line count as a stand-in for design completeness, and file order as a stand-in for decay.
 

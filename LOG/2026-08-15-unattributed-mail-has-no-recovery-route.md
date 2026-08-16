@@ -1,4 +1,4 @@
-# [HASH] — An outbound message carries a return path, and the doc's own refusal of that is superseded
+# 0e62afe — An outbound message carries a return path, and the doc's own refusal of that is superseded
 
 A name says who wrote; only a path says where to write back. The shipped rule required the sender's name in the filename and the opening line and stopped there, so a recipient with the name and no path could not reply until the user looked the folder up by hand. Three replies stalled exactly there — two projects that reported real defects, and a third that reported one and had its proposed mechanism rejected for stated reasons, none of whom will hear so.
 

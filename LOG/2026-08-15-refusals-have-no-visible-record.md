@@ -1,4 +1,4 @@
-# [HASH] — Refusals get a scannable record, surfaced where the user actually looks
+# 0e62afe — Refusals get a scannable record, surfaced where the user actually looks
 
 The finding is structural rather than an incident. A kept item sits in the queue where the user sees it. A built item leaves a vanished queue entry and a LOG entry named after its slug. A **refused** proposal leaves one sentence inside one LOG entry and nothing anywhere else — no queue line, no index signal, no board entry. So "what did I ask for that did not get built?" was answerable only by reading every entry, which is exactly the cost the user objected to. And `CLAUDE.md` rests the gate's entire value on its power to refuse: a /plan-sited gate can refuse, which a build-sited or close-sited one cannot, "and that is the whole gain". The output the design is proudest of was the one output nothing surfaced.
 

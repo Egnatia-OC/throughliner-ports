@@ -1,4 +1,4 @@
-# [HASH] — Waiting mail is delivered in full at session start, removing the step that could be skipped
+# 0e62afe — Waiting mail is delivered in full at session start, removing the step that could be skipped
 
 `plan.md`'s Step 1 named itself the guaranteed moment mail gets read: `session_start` surfaced that messages were waiting and `feedback-and-inbox.md` said what to do with one, but the step was what said *when* a message gets opened. It was skipped. A /plan session ran its full opening — digest, recent log lines, below-the-line revisit, placement flags — and did not open the waiting message, which was then opened at the close only because the close listed the mailbox. The message reported a defect in `plan.md`'s own end-of-queue gate, which that session reproduced twice before reading it.
 

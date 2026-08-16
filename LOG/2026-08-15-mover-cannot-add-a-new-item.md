@@ -1,4 +1,4 @@
-# [HASH] — A new item goes to Unprocessed first and is moved, never hand-placed into Processed
+# 0e62afe — A new item goes to Unprocessed first and is moved, never hand-placed into Processed
 
 `reorder_queue.py` moves existing items, so authoring a new one directly into Processed has no command and gets done by hand — which is the operation `plan.md` already warns about, where an exact-string edit can corrupt an item with no error. It is not rare: /plan's work-it-now branch places a kept item straight into Processed, and a decision the user gives as an instruction arrives with no Unprocessed entry to move.
 

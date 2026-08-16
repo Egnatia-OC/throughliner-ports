@@ -1,4 +1,4 @@
-# [HASH] — A skipped item names what would settle it, and where that is the user's decision, /plan asks before skipping
+# 0e62afe — A skipped item names what would settle it, and where that is the user's decision, /plan asks before skipping
 
 Reported by another project running Throughliner: three items in its queue each phrased "decide what happens to X", none naming a build. The two-limb keep check would have rejected all three and never ran on any, because it fires only when a session tries to move an item into Processed, and nobody tried. Skip-to-defer records nothing and moves nothing, so each returned unchanged next session and each /plan added another finding. Every individual step is the procedure working; the aggregate is an item that grows forever and never resolves.
 

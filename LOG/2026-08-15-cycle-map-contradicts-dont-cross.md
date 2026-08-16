@@ -1,4 +1,4 @@
-# [HASH] — Two always-loaded statements evicted so the rules stop contradicting the work cycle they describe
+# 0e62afe — Two always-loaded statements evicted so the rules stop contradicting the work cycle they describe
 
 A consumer project's user asked to plan and build in one chat and record both with one close. Claude opened with a concern, argued the method separates the two deliberately, and offered a truncated run as a compromise. It was reading the corpus correctly: the work cycle block lists /plan, /next and /done as steps and puts the loop's boundary after /done, while the parallel-sessions bullet glossed "don't cross plan and next" as forbidding mixed modes inside one session. Two always-loaded texts, read at every session start, disagreeing.
 
