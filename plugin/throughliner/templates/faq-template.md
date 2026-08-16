@@ -589,3 +589,193 @@ If Claude has ever pushed back on that, it was reading a rule that has now been 
 **What the real boundary is, and it hasn't changed.** Anyone — any session, any command — can *write something down* in your queue. Only a planning session *decides what happens to it*: whether it's kept, what shape the work takes, where it sits. So a build that spots something new writes it into your queue and carries on; it doesn't quietly promote it to agreed work. That's the line the method actually holds.
 
 **The one practical caution is about length, not permission.** Claude works better in shorter conversations, so a long session that has already planned and built a lot is a good moment to start fresh — a suggestion about how well the work will go, never a rule about what you're allowed to do.
+
+## What is "freeform" work, and when would I use it?
+
+**Freeform work is work you and Claude do by hand, in a session of its own, instead of building it from the queue.** Something too big to break into queue items, or something that by its nature can't run inside a build run.
+
+**You don't have to set it up.** The common case never touches the queue at all: you open a session, you and Claude work on something directly, and when you're done you run /done. It reads the edits as your expected work — not as a broken project — records what happened, and commits. That's a freeform close, and it's what the word names.
+
+**Occasionally one is filed as a piece of work.** Then it carries a `[freeform]` tag, sits with your ready work, and a build run **stops** when it reaches it rather than building it — saying plainly that this one needs a session of its own. Claude places it at one end of your ready work so a run either stops immediately or gets everything else finished first.
+
+**One case where it genuinely matters.** If the thing being repaired is part of the machinery a build run itself uses — the tool that moves items around your queue, the safety check on which files can be edited — then using that machinery to fix itself is the risk. That's an example of freeform work, not the definition of it.
+
+**If you're unsure which you've got**, just work on it and run /done. That's the freeform path, and it needs no decision from you in advance.
+
+## An update told me my CLAUDE.md describes things that no longer exist. What do I do?
+
+**Nothing, unless you want to.** It's a heads-up, not a problem with your project, and nothing is broken.
+
+**Where it comes from.** Your `CLAUDE.md` was written when the project was first set up, and Claude reads it at the start of every session. The method itself keeps changing — pieces get replaced by better ones — so a file written a while ago can end up describing parts that were retired since. The words are still sitting there being read as though they were current.
+
+**What Claude checks, and only during an update.** When a newer version of the plugin brings your project up to date, it reads your `CLAUDE.md` for names of things the method no longer has, and tells you each one alongside what took its place. Common ones: a queue made of "batches" with Build/Test/Audit sub-headings, a "Deferred tests" section, and items carrying a `Parked:` line. Each is now something simpler — a single work item with a tag saying how it runs, a step written as work for you to do, and work held below the "cleared to run" line.
+
+**It reads and never rewrites.** Claude will not edit that file for you here, deliberately. It's your file, you may have written a good deal of it yourself, and replacing your paragraph with the current wording would throw away what you wrote to fix something cosmetic. So you get told what's out of date, and the change is yours to make or ignore.
+
+**Why it's worth telling you at all.** A session that reads a description of something retired goes looking for it. That happened on a real project: a session hunted for a section that had been removed months earlier, then had to work out from scratch that it was gone. Ten seconds of your attention now saves that.
+
+## A build run stopped and said a job doesn't say enough to build. What does it want from me?
+
+**It wants the missing decision, and there are two kinds it can be missing.**
+
+A build run works through jobs you already agreed, without checking back. It stops for one reason: the job doesn't contain enough to build from, and going ahead would mean inventing something you never agreed to.
+
+Two things can be missing:
+
+- **Which files it changes.** The job describes an outcome but nothing that says where the change goes.
+- **What changes inside them.** The job names the files perfectly clearly and still doesn't say what the new behaviour should *be* — "improve how this works" names a place, not a change.
+
+**The second one is new, and it used to come out differently.** A run meeting that kind of gap had no defined route, so it improvised: it stopped mid-build and started a design conversation. That's the wrong shape — design happens when you're planning, with time to think, not halfway through a run you weren't watching.
+
+**What to do.** Say what the job should actually do, and Claude carries on — or say you'd rather work it out properly, and it goes back for planning. Either answer is fine; the stop exists so the choice is yours rather than Claude's.
+
+**It isn't a failure.** Nothing is broken and nothing is lost. A job that reaches a run under-specified got through a check earlier on, and the stop is the backstop working.
+
+## Setup offered to keep my planning documents out of the repository. What does that cover, and can I change my mind?
+
+**It covers three things: `SPEC.md`, `QUEUE.md`, and the whole `LOG/` folder.** Those are your plans, your reasoning and your session history — the most personal material the method produces. Saying yes adds them to `.gitignore`, so they stay on your computer and never enter the repository.
+
+**What you give up.** They stop being version-controlled. That means an unwanted change can't be undone by going back to a previous version, and they don't come with the project if you clone it somewhere else. Everything else about how they work is unchanged — Claude still reads and writes them exactly as before.
+
+**Yes, you can change your mind, in either direction.** It's a few lines in a file called `.gitignore` at the top of your project. Ask Claude to add them or remove them and it will. Nothing about the decision is locked in.
+
+**One thing that isn't reversible.** If those documents were already committed before you changed your mind, adding them to `.gitignore` stops *future* changes being recorded — it doesn't remove what's already in the repository's history. If that matters to you, say so and Claude will tell you plainly what's already in there.
+
+**Why you're asked at all.** If your repository is ever made public, these documents go public with it, and they're the ones most likely to contain something you didn't mean to publish. Claude checks its own writing and scans for things shaped like passwords, but no check can tell whether a sentence quietly identifies a real person. Not publishing them is the only complete protection — which is what this option is.
+
+## My session record has an "Also in this chat" section. What goes in there?
+
+**Everything real that happened in the conversation but wasn't one of the jobs.**
+
+Your session records are organised around work: one record per piece of work that got built or planned. That's most of what happens, but not all of it. You correct Claude about something and the correction changes how the tool behaves. A decision gets reached in conversation. Something goes wrong and gets fixed. You edit a file by hand between two runs.
+
+None of that belongs to any job on your list — so before this existed, it went into the record only if someone happened to think of it, and usually vanished when the conversation ended.
+
+**What it looks like.** A short section at the end of the record, listing those things plainly. If nothing like that happened, the section isn't there at all.
+
+**Why it matters more than it sounds.** /done closes a **conversation**, not a single command. A correction you gave that changed how something works is often the most valuable thing in the whole session — and it was the one thing with nowhere to live.
+
+**It's separate from the "work came after the close" section.** That one covers things done *after* the record was written and committed. This one covers things that happened during the conversation and simply weren't jobs.
+
+## At the end of a build Claude told me some work was "unconfirmed". What should I do?
+
+**It means the code was written but nothing has run it yet, and Claude is telling you rather than letting you assume otherwise.**
+
+When a build finishes a piece of work, it marks it one of two ways: **built and confirmed** — something actually ran and passed, a test, a command, a check of the output — or **built but unconfirmed**, along with what still needs running. At the close, anything in the second group gets named out loud.
+
+**Why this is worth a moment of your attention.** "It's written" and "it works" are different claims, and they used to look identical in the record. A build could finish, everything could look complete, and nobody would know that a piece of it had never been executed. Worse, other work in your queue waits on things being *verified*, not merely built — so a missing distinction quietly weakened a safety check somewhere else.
+
+**What to do about it.** Usually nothing immediately. It's a note of what's outstanding, and the check gets run when it can be. If it's something only you can do — looking at a screen, trying it on a device — Claude will have put that in your queue as a step for you.
+
+**What it isn't.** It isn't a failure, and it isn't a warning that something is broken. Unconfirmed means unknown, not wrong.
+
+## Claude sometimes stops and corrects itself about something it said it filed. What's happening?
+
+A check is catching a report that doesn't match your queue.
+
+Here's the background. Claude writes to your queue **first** and tells you **after** — that way, if you don't like what it wrote, it's already there to look at and can be undone. The trade-off is that the telling is now a separate act from the writing. A reply can say "filed as [something]" when the write never actually ran, and from where you're sitting that reads exactly like a real one. This happened, and it happened repeatedly: the report was acted on before the work existed.
+
+So when a reply says a named piece of work was filed, a check looks in your queue for it. If it's genuinely there, nothing happens and you see nothing. If it isn't, Claude is handed that fact and has to sort it out — make the write, or tell you plainly that it didn't land — before you go and rely on it.
+
+**What you'll see** is Claude carrying on for a moment and correcting the record. It isn't an error and nothing is lost.
+
+**What it doesn't catch:** a report that stays vague. "I've written that up" names nothing, so there's nothing to look for. That gap is deliberate rather than hidden — Claude is required to name what it filed, so the check enforces that rule and no more.
+
+It also gives up after one go on the same claim, so a genuine disagreement can never trap the conversation in a loop.
+
+## What is the "queue dependency facts" line at the start of a session?
+
+Three numbers, worked out by reading your queue before Claude says anything: **how many items are ready to build, how many are held back waiting on other work, and how many of the things they're waiting on haven't been sorted out yet.**
+
+It's there for one reason. Some of your work is stuck behind other work, and the useful question at the start of a planning session is *what should I sort out to get the most unstuck?* Claude used to work that out by reading the whole queue and counting by hand, which is slow and occasionally wrong. Now the numbers are counted before the session starts and simply handed over.
+
+In a planning session you'll see them turn into a recommendation — something like "three items are holding other work up, so I'd suggest getting through at least those three." That number is derived from the count rather than picked, and Claude will tell you where it came from.
+
+**You'll see the line even when all three numbers are zero**, which is deliberate. "Nothing is waiting on anything" is genuinely useful to know, and staying silent would be ambiguous — you couldn't tell the difference between nothing to report and a check that didn't run.
+
+You don't need to do anything with it. It's information, not a request.
+
+## Why does a planning session open knowing what happened last time?
+
+Because it reads the last few one-line session summaries before saying anything.
+
+Sessions don't remember each other. That used to show most at the very start of a planning session: Claude would be working from your queue alone, with no sense of what had just been done, and you'd often end up asking it to go and look. Now it reads the top lines of your session index as part of getting its bearings, and folds anything relevant into what it says to you at the opening.
+
+**It's orientation, not a report.** You won't get a summary of your recent history for its own sake — only the parts that bear on what you're about to work on. And it's a few short lines, not a few full session records, so it costs very little.
+
+## My app asked whether to keep or remove this session's copy of the project. Which do I pick?
+
+**If the session did any work, do not pick remove until it's been merged.**
+
+Some setups give each conversation its own private copy of your project, so two conversations can't tread on each other. The catch is what happens at the end: **that copy is never merged back on its own.** When you close it, the app asks whether to keep it or remove it — and *remove deletes the copy, the branch, and every commit on it.* It reads like tidying up. It isn't.
+
+So the workflow does two things about it:
+
+- **At the close of an isolated conversation**, Claude tells you which branch your work is on, that it hasn't been merged, and that "remove" would delete it. It can't do the merge itself from there — git won't let a copy update the main line while the main line is open elsewhere.
+- **At the start of a conversation in your main copy**, Claude points out any copies holding commits the main one doesn't have, and offers to merge them. It offers; it never merges on its own. If the merge can't be done cleanly, it leaves the branch exactly where it is and tells you the work is safe there — you'll never be shown a tangle of conflict markers to sort out.
+
+One honest limit: what Claude can see is *a copy holding commits yours doesn't*. It can't tell that apart from a deliberate long-lived copy — an archived version of the project, say — so it will describe what it found and judge before offering, rather than assuming everything it sees is stranded work.
+
+## Claude flagged some queue items as contradicting themselves. What does that mean?
+
+When you run /plan, Claude checks your queue for work whose *position* disagrees with what the work itself says. It reports what it finds and stops there — it never moves anything.
+
+Three things get flagged:
+
+- **Work marked ready that says it isn't.** An item sitting above the "cleared to run" line whose own notes say it must not be built as written, or that a previous build session handed it back untouched. Left alone, the next build run would build exactly the thing the item warns against.
+- **Work with nothing to change.** An item marked ready whose list of files to edit is empty, or says the list will come out of designing it. That means it's still a design question, not a build.
+- **A chain of waiting.** Work waiting on something that is itself waiting on something else. Neither moves until the far end of the chain does, which is easy to miss when you only look at one item at a time.
+
+**Why this check exists.** Work gets examined carefully when it's *put* into the ready pile, and then never looked at again. But things change around it afterwards — a decision gets reversed, a build session hands something back, the thing it was waiting for turns out to be waiting too. A gate on the door isn't the same as looking around the room.
+
+**Nothing happens automatically.** Whether a flagged item gets moved, rewritten or left exactly where it is, is your call — that's a decision about what the work *is*, and those are always yours. Claude tells you and waits.
+
+## My session records used to be long. Why are some of them short now?
+
+Because short is now the normal one, and long is the exception it's meant to be.
+
+Every piece of work gets a record written into your `LOG/` folder when you run /done. Those records used to run long by default — several hundred words each, walking through the reasoning, the options considered and why one won. That's genuinely valuable for a decision you might revisit or disagree with later. It's wasted on a change that's fully explained by saying what changed.
+
+The problem was that writing less *felt* like leaving something out, so nearly everything got the long treatment. On a session that finished a dozen pieces of work, writing the records cost more than doing several of the jobs did.
+
+**What changed.** As Claude builds each piece of work, it decides on the spot whether that one deserves the long version — while the reasoning is fresh, not hours later at the end. Two things earn it: the reasoning was genuinely contested, or a real alternative was weighed and rejected. Everything else gets a short record naming what changed.
+
+**Nothing is capped, and nothing is lost.** There's no word limit — a hard decision still gets as much room as it needs. The only change is which way the default points. And the reasoning behind your *work* isn't affected at all: that lives on the queue items themselves and travels with them, which is separate from how the finished record is written up.
+
+## I sent a message to another one of my projects. How do I know it arrived?
+
+**You know it was delivered. You don't know it was read, and nothing here will tell you.**
+
+Sending writes a file into the other project's mailbox. That's the whole mechanism — there's no receipt, no read confirmation, and no notification back to you. The other project sees it the next time you open a session there, and only then.
+
+**Two things happen to make that less fragile.** Before writing, Claude checks the other project actually has a mailbox, and says so plainly if it has to create one — because a project set up before mailboxes existed has nothing that tells you mail is waiting, so a message can sit there forever with neither side knowing. And the first time you give Claude the folder path for a project, it's saved, so continuing a conversation doesn't mean digging out the path again every time.
+
+**That saved list lives inside the `INBOX/` folder, which git ignores** — so the folder paths on your computer are never committed and never end up in a published repository. If you ever move that file somewhere else, you lose that protection without any warning.
+
+**Why there's no read receipt.** It would mean one project automatically writing into another, and nothing here sends anything without you seeing the exact wording first. A receipt you have to approve for a message you didn't write is worse than no receipt at all.
+
+## I asked for something during a build and Claude wrote it down instead of doing it. Can I insist?
+
+**Yes — ask again and a small change gets done.**
+
+When you raise something mid-build that isn't part of what's being built, Claude writes it into your queue and carries on, and tells you in one line *why*: the run stays on the work you agreed, and the new thing gets weighed properly against everything else still to come rather than being decided on the spot. It also gets a proper check and a file list before anything is written, which is what stops a half-thought-through change landing in the middle of a build.
+
+**If you ask a second time, Claude takes that as your decision and does it** — as long as it's small, meaning it touches a file or two. That's not a special rule for builds; it's the same principle everywhere here, that if Claude raises a concern and you repeat yourself, the call is yours.
+
+**Big changes still get pushed back.** If what you're asking for touches a lot of files, or isn't fully worked out yet, Claude will suggest finishing the current run and picking it up properly afterwards. Asking twice doesn't make a large change small, and that's exactly the kind of change that goes wrong when it's squeezed into a run already underway.
+
+## We kept working after the session was "closed", and Claude offered to add it to the record. Why?
+
+**Because the record was already written and committed, so that work wasn't in it.**
+
+Closing a session writes up what happened and commits it. That's the end of the session as far as the workflow is concerned — but conversations don't stop that neatly. You ask one more thing, something gets fixed, a small job gets run. All of it is real work, and none of it appears anywhere, because the write-up was finished before it happened.
+
+So when something after the close actually changes a file, Claude offers once to **add a short section to the end of that session's record**, marked as work that came afterwards. It's added rather than blended in, so you can still see what was true at the close and what came later.
+
+Three things about the offer:
+
+- **It comes once**, not after every message.
+- **It only comes if a file changed.** Talking something through afterwards has nothing to record.
+- **It's an offer.** Say no and nothing happens.
+
+Before this, the only thing that closed the gap was you remembering to ask.

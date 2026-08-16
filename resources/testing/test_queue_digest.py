@@ -74,6 +74,83 @@ def run(root):
     return items, digest.render(items, root, os.path.join(root, "QUEUE.md"))
 
 
+# --- the readiness marker is a line, never a substring ------------------------
+
+def test_marker_text_in_prose_does_not_move_the_line():
+    """An item may describe how the queue works, quoting the marker text.
+
+    The digest once matched that text as a substring and took the first hit
+    inside Processed as the readiness line — so a sentence in an item's own
+    rationale silently moved the line, hiding cleared work from the run and
+    reporting invented held-since dates. The counts must not move.
+    """
+    quoting = (
+        "#### An item that describes the queue [talker]\n"
+        "This explains that /next builds from above the\n"
+        "--- Cleared to run above this line --- marker, which is what bounds a run.\n"
+    )
+    plain = "#### An ordinary second item [quiet]\nRationale.\n"
+
+    baseline = project(processed="#### First [one]\nRationale.\n" + plain)
+    _, out_baseline = run(baseline)
+    shutil.rmtree(baseline, ignore_errors=True)
+
+    root = project(processed=quoting + plain)
+    _, out = run(root)
+    check(
+        "prose quoting the marker leaves both items cleared",
+        "2 cleared to run, 0 held below the line" in out,
+        out,
+    )
+    check(
+        "the quoting item is not reported as held",
+        "(held," not in out,
+        out,
+    )
+    check(
+        "the count matches a queue whose prose says nothing",
+        "2 cleared to run, 0 held below the line" in out_baseline,
+        out_baseline,
+    )
+    shutil.rmtree(root, ignore_errors=True)
+
+
+# --- fields: line count and section median -----------------------------------
+
+def test_line_count_and_median_print():
+    """Both fields the ladder's rungs 3 and 4 read must be computed, not judged.
+
+    Rung 3 orders only entries at or above the section median, which is what
+    makes it terminate; rung 4 sits beneath it. Neither can read a field the
+    digest does not print.
+    """
+    root = project(
+        processed=(
+            "#### Short one [short]\nOne line.\n"
+            "\n"
+            "#### Long one [long]\nLine.\nLine.\nLine.\nLine.\nLine.\nLine.\n"
+        ),
+    )
+    _, out = run(root)
+    check("the section median prints once",
+          "median entry length:" in out, out)
+    check("every entry line carries its own line count",
+          out.count("| Lines: ") >= 2, out)
+    check("the longer entry is marked at/above median",
+          "[long]" in out and "(at/above median)" in out, out)
+    shutil.rmtree(root, ignore_errors=True)
+
+
+def test_median_absent_on_an_empty_section():
+    """An empty section has no median, and must not print a made-up one."""
+    root = project(processed="", unprocessed="#### Only capture [c]\nProse.\n")
+    _, out = run(root)
+    processed_block = out.split("## Unprocessed")[0]
+    check("no median line on an empty Processed section",
+          "median entry length:" not in processed_block, processed_block)
+    shutil.rmtree(root, ignore_errors=True)
+
+
 # --- field: slugs cited, resolved against LOG --------------------------------
 
 def test_shipped_citation_prints():
@@ -428,6 +505,9 @@ def test_unreadable_not_before_says_so():
 
 if __name__ == "__main__":
     print("test_queue_digest.py")
+    test_marker_text_in_prose_does_not_move_the_line()
+    test_line_count_and_median_print()
+    test_median_absent_on_an_empty_section()
     test_shipped_citation_prints()
     test_unshipped_citation_stays_quiet()
     test_flavor_tag_is_not_a_citation()

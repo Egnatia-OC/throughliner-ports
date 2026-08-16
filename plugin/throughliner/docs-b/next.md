@@ -1,6 +1,6 @@
 ---
 name: next
-docset: B
+docset: current
 note: >
   /next procedure. This is the method's one docset — light, for the 5-series,
   originally authored by subtraction from the now-retired heavy docset.
@@ -272,9 +272,9 @@ Two situations must not be conflated:
 
 ```
 you CAN'T tell which files THIS item's       ->  underspecification
-    described work would change                  SURFACE IT. The only case
-                                                 that halts — building it means
-                                                 inventing scope the user never
+    described work would change,                 SURFACE IT. The only case
+  OR you can name the files but the item        that halts — building it means
+    doesn't say WHAT CHANGES INSIDE THEM         inventing scope the user never
                                                  agreed to.
 
 you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
@@ -287,6 +287,25 @@ you CAN scope it, but notice OTHER work      ->  adjacent-work discovery
 names.** The same two-limb test runs at /plan's keep-step, which carries the full
 argument and is where an item like this should be stopped; meeting one here means
 it got through.
+
+**Both limbs halt, and the second one is why.** A design question about the item
+in hand — "how should this behave?" — is not a question about which files change
+and is not other work, so under a one-limb test it fell through both routes with
+no defined path, and a run meeting one improvised: it stopped and asked. **That
+question IS underspecification** — the item did not say how — arriving late
+because limb two was never tested here. It routes through the mechanism that
+already exists rather than through a design-question branch, which would
+legitimise stopping an unattended run to ask how things should be.
+
+This matters most where it is least visible. A halt on "which files" is a clean
+stop with a clear question; a halt on "how should this work" is a design
+conversation started by the runner, in a session whose whole premise is that
+design already happened.
+
+*Worked example, second limb.* An item names `plan.md` and says its ordering rule
+should be "improved" without saying what the new rule is. The files are perfectly
+clear and the item is still unbuildable — halt as underspecified rather than
+choosing a rule the user never agreed.
 
 A blocking ask on adjacent work both defeats the unattended run and reopens a
 scope decision reserved for /plan. The extra look self-scoping gives is preserved

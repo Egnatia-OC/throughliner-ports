@@ -74,6 +74,19 @@ CASES = [
     (os.path.join("FAQ", "index.md"), True, "the FAQ index"),
     (os.path.join("plugin", "throughliner", "templates", "faq-template.md"), False,
      "a template is denied — it changes what every consumer receives"),
+    # The plugin's version manifest, added 2026-08-16 ([scope-lock-blocks-the-rezip]).
+    # The rezip runs after a close, which has deleted the build working file, so
+    # every chat it can run in is classified as planning — and its first step is
+    # bumping the `-testN` suffix in this file. Without the permission there was
+    # no chat shape in which the rezip could run at all.
+    #
+    # The sibling case below is the guard that matters: the permission is ONE
+    # path, not the folder, so it cannot be read as opening plugin/throughliner/
+    # to planning chats.
+    (os.path.join("plugin", "throughliner", ".claude-plugin", "plugin.json"), True,
+     "the version manifest the rezip must bump"),
+    (os.path.join("plugin", "throughliner", ".claude-plugin", "marketplace.json"), False,
+     "a sibling in the same folder is still denied"),
     ("README.md", False, "an ordinary project file is denied"),
     (os.path.join("plugin", "throughliner", "docs-b", "plan.md"), False,
      "a shipped doc is denied"),

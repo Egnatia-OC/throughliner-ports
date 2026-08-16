@@ -616,6 +616,12 @@ def _queue_dependency_facts(queue_path):
     # resolves itself, so counting it here is the whole mechanism — nobody has
     # to confirm that a day has passed.
     not_before_re = re.compile(r"^Not before:\s*(\S+)\s*$", re.IGNORECASE)
+    # The readiness marker, matched as a whole line and never as a substring: an
+    # item's own prose may quote the marker text while describing how the queue
+    # works, and a substring test would take that sentence as the readiness line,
+    # silently moving it and reporting wrong cleared/held counts to every session.
+    # Same anchored predicate reorder_queue.py uses.
+    CLEARED_MARKER_RE = re.compile(r"^---\s*Cleared to run above this line\s*---\s*$")
 
     for raw in lines:
         stripped = raw.strip()
@@ -627,7 +633,7 @@ def _queue_dependency_facts(queue_path):
             section = "unprocessed"
             in_held_item = False
             continue
-        if "Cleared to run above this line" in stripped:
+        if CLEARED_MARKER_RE.match(stripped):
             above_marker = False
             in_held_item = False
             continue
@@ -856,7 +862,7 @@ def _behaviour_rules_directive(plugin_root):
 
     The trade is honest: the new failure mode is a skimmed redirect, which is
     quieter than the old one. That is why the self-check ships with it rather
-    than after it. The self-check reads the `docset: B` frontmatter stamp the
+    than after it. The self-check reads the `docset: current` frontmatter stamp the
     docs already carry, so it costs nothing and converts a silent
     wrong-file-opened failure into a loud one.
     """
@@ -872,7 +878,7 @@ def _behaviour_rules_directive(plugin_root):
         "skill. This is not optional and it is not conditional — there is no "
         "trigger that would later remind you to fetch them, so a session that "
         "skips this runs ungoverned for its whole life.\n"
-        "SELF-CHECK: the file you open carries `docset: B` in its frontmatter. If "
+        "SELF-CHECK: the file you open carries `docset: current` in its frontmatter. If "
         "it isn't there or doesn't match, tell the user plainly that the rules "
         "could not be loaded and name what you found instead — do "
         "not carry on as though they had been.\n"
@@ -1210,39 +1216,48 @@ def main() -> int:
         context_parts.append(facts)
 
     # Which isolation model is actually in force, measured rather than assumed.
-    # One fact, so the parallel-sessions advice can state the case that applies
-    # instead of hedging across both.
+    #
+    # Each message says what this session's isolation means for ITS OWN WORK
+    # REACHING THE USER'S MACHINE, and says nothing about coordinating with
+    # another session. The parallel-sessions framing these carried until
+    # 2026-08-16 was coaching for a permission that has been withdrawn: the
+    # always-loaded rules now say a project is worked on from one chat at a
+    # time, and a chat told how to coordinate with another chat has been told it
+    # may have one. Deletion was the wrong instinct — two of the three arms
+    # carry real information with no other home, which is why only the framing
+    # and the coaching clauses came out.
     isolation = _isolation_model(cwd)
     if isolation == "clone":
+        # A cloud session is not a second chat running alongside another; it is
+        # the only chat, running somewhere else. Almost all of this survives.
         context_parts.append(
             "[Throughliner] Isolation: this session runs on a CLONE of the "
             "repository inside a cloud container, not on the user's machine. "
-            "The parallel-sessions advice for this case: nothing written here "
-            "is visible to any other session, and work reaches the main "
-            "machine only as a pushed branch — so a capture filed here is "
-            "invisible everywhere else until that branch merges. Do not read "
-            "this as a shared tree: no file-modified warning can fire across "
-            "the container boundary."
+            "Work reaches the main machine only as a pushed branch — so a "
+            "capture filed here is invisible everywhere else until that branch "
+            "merges. Do not read this as a shared tree: no file-modified "
+            "warning can fire across the container boundary."
         )
     elif isolation == "worktree":
+        # Mixed, and the split is the finding. The strand-prevention warning is
+        # about a worktree THE HARNESS created, where nobody opened a second
+        # chat, so it survives; the keep-queue-edits-in-one-session clause was
+        # parallel-chat coaching and is gone.
         context_parts.append(
             "[Throughliner] Isolation: this session is in its own git "
-            "worktree, so edits here cannot touch another session's files. The "
-            "parallel-sessions advice for this case: a capture filed in another "
-            "session never reaches this one, and the last branch to merge wins, "
-            "so keep queue edits in one session until a merge lands. This "
+            "worktree, so its edits live on a branch of their own. This "
             "session's work is NOT merged back automatically — the close says "
             "which branch it is on and warns that choosing \"remove\" at exit "
             "would delete it."
         )
     elif isolation == "shared":
+        # Wholly stale. Every part of it coached on coordinating two chats, and
+        # the closing instruction told a session how to run the thing the rules
+        # forbid. A shared tree with one chat needs no advice, so nothing
+        # replaces it beyond naming the isolation.
         context_parts.append(
             "[Throughliner] Isolation: this session shares one working "
-            "tree with any other session open on this project. The "
-            "parallel-sessions advice for this case: two appends to different "
-            "parts of QUEUE.md don't collide and the file-modified warning "
-            "catches it if they do — but avoid two sessions writing QUEUE.md or "
-            "committing at the same instant."
+            "tree with any other session open on this project."
         )
 
         # Only a main-checkout session can merge a session branch back: git

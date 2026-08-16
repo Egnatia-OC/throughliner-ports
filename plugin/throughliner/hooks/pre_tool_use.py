@@ -729,6 +729,29 @@ def _is_plan_quiet_path(filepath: str, cwd: str) -> bool:
     # planning session.
     if rel.startswith(os.path.normcase("FAQ") + "/"):
         return True
+    # The plugin's own version manifest. HOST-ONLY BY RESIDENCE: this path exists
+    # only in the repository that develops the method, so in a consumer project
+    # the permission is a no-op — there is nothing at that path to write.
+    #
+    # It is here because the rezip has no other route. A rezip bumps the `-testN`
+    # suffix in this one file, and it runs after a close, which has already
+    # deleted the build working file — so under the standing list every chat the
+    # rezip can run in is classified as planning and its first step is denied.
+    # There was no permitted chat shape at all.
+    #
+    # ONE PATH, not the folder: a sibling under plugin/throughliner/ is still
+    # denied, so this cannot be read as opening the package to planning chats.
+    # A self-declared marker like /setup's was refused for the same reason —
+    # that is a full bypass, and this write is one field in one file.
+    #
+    # The `.replace` is load-bearing: on Windows `os.path.normcase` turns `/`
+    # into `\`, so a multi-component literal must be put back into the same
+    # forward-slash form `rel` carries or it can never match. The single-component
+    # literals above escape this because they contain no separator.
+    if rel == os.path.normcase(
+        "plugin/throughliner/.claude-plugin/plugin.json"
+    ).replace("\\", "/"):
+        return True
     return False
 
 

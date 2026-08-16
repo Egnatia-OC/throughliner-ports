@@ -1,6 +1,6 @@
 ---
 name: done
-docset: B
+docset: current
 note: >
   /done procedure. Routes to a per-flavor close-out and states the
   shared close core once; the sub-docs carry the flavor-specific steps.
@@ -44,10 +44,20 @@ NO build working file          ->  done-plan.md, which carries all three
     a planning session
         (queue managed, captures processed, readiness line moved)
     a completed [user] item
-    standalone handmade work
+    standalone handmade work — a FREEFORM close
         (no planning either, and the tree holds uncommitted edits the
          session didn't make)
 ```
+
+**The freeform close is this third shape, and naming it is the whole of what the
+`[freeform]` tag buys.** A freeform session is work done by hand rather than by
+/next, because it is large or because it characteristically cannot run inside a
+run — and most of them never pass through /plan at all, so there is no queue item
+and no build working file. The route already existed and worked; it simply had no
+name, so the tag's stated job of telling the close what it is looking at was
+asserted and implemented nowhere. Read the edits as the user's expected work,
+never as a broken repository, and split them across separate log entries by
+judgment where they cover several distinct changes.
 
 A no-build close touches QUEUE.md, SPEC.md and LOG/ and nothing else, whichever
 of the three it is — which is why one sub-doc carries all three and a build close
@@ -108,9 +118,7 @@ red-flag lifecycle, the wind-down re-scan. Combine what they turn up into one
 user must act on.
 
 **Run the scrub checklist before writing a LOG entry** (skill-nonspecific-rules.md,
-Scrub before writing). A LOG entry is committed text that quotes the session's own
-discussion back, so it is the moment a real name or a case detail reaches a
-permanent record.
+Scrub before writing).
 
 ## Staleness sweep  [SILENT] when clean; [BRIEF] when flagging
 
@@ -193,6 +201,38 @@ plan/setup  **Queue changes:**       work processed, reordered, or modified
 The audit's Approval-outcomes line means a decision made at audit time doesn't
 vanish — without it, the only trace of a dropped or reworded finding is its
 absence.
+
+**One more section, on every flavor: what the chat did outside its work items.**
+
+```
+**Also in this chat:**   corrections the user gave, decisions reached in
+                         conversation, errors made and fixed, work done by hand
+                         between runs — anything real that belongs to no work
+                         item. Omit the section when there is nothing.
+```
+
+**The gap it closes.** /done closes a **chat**, not one run of a command — but
+every entry field above is organised around the work items that ran, so anything
+the chat did outside them has no entry to belong to and survives only if someone
+thinks to write it somewhere. The user's words: */done is not for wrapping up one
+next session or one plan session, it is for wrapping up ONE CHAT — that's why it
+is stupid that logs only record what was built or planned, and not everything that
+happened in the chat.*
+
+**Why this is not covered by /rescan.** That converts chat into **work** — things
+decided, noticed or asked for become captures. Nothing converts chat into
+**record.** A correction the user gives that changes shipped text is not future
+work; it is already done, and it was never a queue item, so it lands nowhere. That
+is precisely the class a capture cannot catch.
+
+**The post-commit tail is the precedent and the proof of shape** — a marked
+section in the entry that is not about any work item, already defined and already
+working. This is the same move applied one step earlier.
+
+**Written on the entry, not in a separate document**, and this section is added in
+one place because the entry format is shared: adding it to `done-build.md` and
+`done-plan.md` separately would put the same rule in two files that already point
+here.
 
 **The frame, identical for every flavor.** Write the entry, then report in one
 line what landed and where. A revert undoes a LOG entry, so it doesn't wait on
@@ -368,12 +408,6 @@ or reworked one at a time.
 
 Add them to this session's LOG entry's "Routed to Captures:" line as a
 working-tree edit riding this commit.
-
-**Why the set still arrives together.** Delivering all of them at once is the
-bulk-approval inversion, which governs SEQUENCING — one item per message, or
-all together — and never approval-before-write. Reading it as "show for
-approval first" is what put this step in conflict with the write-first rule
-that governs above it.
 
 **State this sentence, as written, when the step runs:**
 
@@ -686,13 +720,6 @@ the post-commit tail     ->  writes files, commits NOTHING:
                              all of it rides into the NEXT close's commit
 ```
 
-**Why the tail loses its commits rather than the tail losing its work.** Work
-genuinely does arrive after a commit — a question answered, a reply sent, an
-observation worth keeping — and recording it beats pretending the session ended.
-So the thing to remove is the commit per increment, not the increment. A close
-was producing two and three commits every time, and the user's word for it was
-*every time*: this is a recurring shape, not one untidy session.
-
 **The cost, stated rather than discovered: the tree is dirty between one close
 and the next, always.** That is accepted, and it is what makes the dirt
 *legible*. Uncommitted changes at a session's opening now mean one thing — the
@@ -712,6 +739,24 @@ tail has ended, which nothing can tell them.
 is now sharply distinguishable: tail-shaped dirt is the previous session's LOG
 entry, a capture at the bottom of Unprocessed, or a backfilled hash. Anything
 else is a user edit and still gets the full treatment.
+
+**In a tail, an urge to run or drive testing or verification is the signal to
+route it into a skill rather than doing it here** — a quick /plan to structure the
+lines, or /next to hand over a `[user]` line that already exists. This fires
+hardest where the verification is *already* a `[user]` item, because then the work
+has a home and the tail is bypassing it.
+
+The recorded instance: a close committed, and the session then initiated a render
+verification informally in conversation — having the user run testing that was
+already sitting as a `[user]` line in Processed. Its findings came back as loose
+captures, and the whole long tail followed from that one move. Same failure family
+as under-filing a `[user]` line, and it blurs the plan/execute boundary from the
+far side: executing structured work with no skill around it.
+
+**The limit, stated rather than found later:** the urge is not confined to a tail.
+It happened in one, and nothing says it only happens there. Siting the clause here
+covers the recorded instance and not the general case; a second instance occurring
+outside a tail is what would reopen this.
 
 **After the close, if further work changes a file, offer once to append it to
 this session's LOG entry** [BRIEF, PROMPT]. The entry is written and committed by

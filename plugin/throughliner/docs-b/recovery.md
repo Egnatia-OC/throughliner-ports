@@ -1,6 +1,6 @@
 ---
 name: recovery
-docset: B
+docset: current
 note: >
   Reference for recovering a project after a large rollback. Consulted on
   demand — not a sequence to run. Loaded when the user asks to undo a lot of

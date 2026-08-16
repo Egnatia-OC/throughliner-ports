@@ -1,6 +1,6 @@
 ---
 name: next-audit
-docset: B
+docset: current
 note: Execution procedure for `[audit]`-flavor work items. Reached from next.md.
 ---
 

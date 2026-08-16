@@ -30,6 +30,27 @@ list of outputs whose producer no longer exists — so a stale artifact can sit 
 to a live one presenting itself as current. The parser reads only the term list, so
 the artifact section is for a session to read rather than for the board to scan.
 
+**The old queue's section names are deliberately NOT on this list, and the
+attempt is recorded so it is not remade.** `Deferred tests`, `Parked` and the
+`Build/Test/Audit` sub-headings are genuinely retired, and
+[adopted-claude-md-describes-retired-structure] scoped them here on 2026-08-16.
+Adding them was tried and reverted the same hour: the REPEALED signal scans the
+whole repository and every hit was correct writing — `migrate-checklist.md` and
+`resources/queue-two-section-migration-recipe.md` name the old sections because
+their entire job is converting away from them, `setup.md` names them to
+recognise the old shape, and `session_start.py`'s epoch history names them to
+record what epoch 1 was. No string separates a stale use from a migration doc
+quoting the same heading, so the term cannot be made to fire only on the
+mistake. Same cry-wolf failure the `ceiling of 200` entry below records, and the
+same resolution: **listing them would fire against correct work, which is worse
+than not listing them at all.**
+
+Detection for these three lives in `docs-b/setup.md`'s migration instead, which
+carries its own small table and reads **one file** — the project's own
+CLAUDE.md, where none of the migration prose above exists. A narrower scanner
+over a narrower scope is what makes the check possible; a repo-wide term list is
+what made it impossible.
+
 **A term is removed from this list only when no live reference remains** and
 the retirement is old enough that nobody will reintroduce it. Removing it
 early turns the signal off while the problem stands.

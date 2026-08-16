@@ -1,6 +1,6 @@
 ---
 name: migrate-checklist
-docset: B
+docset: current
 note: >
   Loaded on demand when a project's QUEUE.md is in an old format and needs
   converting to the two-section model. A guided manual pass in an ordinary

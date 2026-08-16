@@ -65,7 +65,11 @@ FLAVOR_RE = re.compile(r"^\[(audit|user|freeform)\]\s*", re.IGNORECASE)
 # of the ready region a single run can actually clear, which is exactly what a
 # planning session is deciding when it reads the digest.
 RUNS_ALONE_RE = re.compile(r"^\**Runs alone\**\s*$", re.IGNORECASE)
-MARKER = "Cleared to run above this line"
+# The readiness marker. Matched as a whole line, never as a substring: an item's
+# own prose may legitimately quote the marker text while describing how the queue
+# works, and a substring test would take that sentence as the readiness line and
+# silently move it. Same anchored predicate reorder_queue.py uses.
+MARKER_RE = re.compile(r"^---\s*Cleared to run above this line\s*---\s*$")
 
 # Placement-contradiction signals. Each is a contradiction the queue's own text
 # already contains, so the check reports something rather than nothing — which
@@ -148,7 +152,7 @@ def parse(path):
         if re.match(r"^##\s+Unprocessed\b", stripped, re.IGNORECASE):
             section, current = "Unprocessed", None
             continue
-        if MARKER in stripped:
+        if MARKER_RE.match(stripped):
             above_marker, current = False, None
             continue
 
@@ -180,9 +184,19 @@ def parse(path):
                 "prose_at": [],
                 "files_line": None,
                 "files_line_raw": None,
+                # Line span, for the ladder's above-median longest-first rung.
+                # The arithmetic is the point: last line minus first, with
+                # nothing counting words and nothing reading the entry to place
+                # it. `last_line` is advanced by every line that belongs to this
+                # entry, so the span is closed by whatever ends the entry.
+                "first_line": lineno,
+                "last_line": lineno,
             }
             items.append(current)
             continue
+
+        if current is not None and stripped:
+            current["last_line"] = lineno
 
         if current is not None:
             blocked = BLOCKED_RE.match(stripped)
@@ -540,6 +554,33 @@ def not_before_state(raw):
     return f"{(when - today).days} day(s) away"
 
 
+def entry_lines(item):
+    """One entry's length, as last line minus first, inclusive.
+
+    The arithmetic and nothing else — no word counting, no reading the entry to
+    judge how substantial it looks. Computed here so the ladder's rung reads a
+    field rather than anyone subtracting two numbers by hand and getting a
+    different answer each time.
+    """
+    return item["last_line"] - item["first_line"] + 1
+
+
+def median_lines(items):
+    """The median entry length of one section, or None when it is empty.
+
+    A proportion of the thing it governs, which is what the derivation rule
+    admits; a bare figure like "twelve lines and over" is what it bans. The
+    ladder partitions its longest-first rung here so that the rung terminates.
+    """
+    spans = sorted(entry_lines(i) for i in items)
+    if not spans:
+        return None
+    mid = len(spans) // 2
+    if len(spans) % 2:
+        return spans[mid]
+    return (spans[mid - 1] + spans[mid]) // 2
+
+
 def locate(slug, items):
     """Where a slug sits, for resolving a Blocked by: reference."""
     for item in items:
@@ -561,6 +602,14 @@ def render(items, root="", queue_path="QUEUE.md"):
         if section == "Processed":
             cleared = sum(1 for i in in_section if i["cleared"])
             out.append(f"   {cleared} cleared to run, {len(in_section) - cleared} held below the line")
+        # The section's median line count, printed once. The ladder's rung 3
+        # orders only the entries at or above it, which is what makes that rung
+        # terminate instead of ranking the whole section forever. A proportion
+        # of the section it governs, never a bare figure — printed here so the
+        # rung reads a computed field rather than anyone deciding a threshold.
+        med = median_lines(in_section)
+        if med is not None:
+            out.append(f"   median entry length: {med} lines")
         for item in in_section:
             bits = []
             if section == "Processed":
@@ -583,6 +632,13 @@ def render(items, root="", queue_path="QUEUE.md"):
             done = [s for s in citations(item) if s in shipped]
             if done:
                 line += "  | Cites shipped: " + ", ".join(f"[{s}]" for s in done)
+            # Line count, and whether it sits at or above the section median.
+            # Both rungs of the ladder that read this now read a computed field
+            # instead of anyone subtracting numbers by hand.
+            span = entry_lines(item)
+            line += f"  | Lines: {span}"
+            if med is not None and span >= med:
+                line += " (at/above median)"
             if item["slug"] and item["slug"] in ages:
                 line += f"  | First seen: {ages[item['slug']]}"
             # Held-since prints only on a held item, and only where the date

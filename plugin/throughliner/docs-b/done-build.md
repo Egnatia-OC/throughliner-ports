@@ -1,6 +1,6 @@
 ---
 name: done-build
-docset: B
+docset: current
 note: >
   Close-out for build-flavor work items. Reached from done.md's router for the
   run's build items (work items carrying no flavor tag).
@@ -112,6 +112,20 @@ session's most contested decision.
 a discipline slip rather than passing silently: the field is required, so a
 missing one means the build skipped a step, and saying so is what keeps it from
 decaying back into an optional line.
+
+**Transcribe each item's tick form into its LOG entry, and announce every
+unconfirmed item at the close** [BRIEF]. The tick reads either `done, confirmed`
+or `done, UNCONFIRMED: <what still needs running>` (next-build.md). Carry
+whichever it says into the entry verbatim — never compose one — and where any item
+is unconfirmed, say so plainly in the close's narration, naming the item and what
+has not been run.
+
+**The announcement is required rather than left to judgment**, because that is the
+whole gap this closes: an obligation discharged by remembering to mention
+something is indistinguishable from one skipped, and a build that ships code
+nothing ever ran is not rare. `done-plan.md`'s hold-back rule reads this field to
+decide whether dependent work may clear, so an entry that omits it silently
+weakens a safety rule one document away.
 
 **If a `[user]` item's entry was already started**, the walk-through opened it live
 and appended as it went (next.md). Continue that file rather than writing a fresh

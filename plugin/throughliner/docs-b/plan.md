@@ -1,6 +1,6 @@
 ---
 name: plan
-docset: B
+docset: current
 note: >
   /plan procedure. The method's one docset, originally authored by subtraction
   from the now-retired heavy docset.
@@ -114,9 +114,18 @@ capture instead ONLY when /plan genuinely can't resolve it this session:
   in skill-nonspecific-rules.md for what earns one.
 - **Who does the work, and how.** Work is Claude's to build by default, and the
   flavor tags are in skill-nonspecific-rules.md. A `[user]` line must carry a
-  DESCRIBED walkthrough, settled here at the keep-step.
+  DESCRIBED walkthrough, settled here at the keep-step — including that each step
+  names the thing to click or type and the thing to look for, not just where to
+  go. The requirement is stated in full in skill-nonspecific-rules.md; this is the
+  moment it is applied, because the walkthrough is authored here, with the user in
+  the room, and executed in an unattended run where the only thing that happens is
+  the run stops.
 
-- **`[freeform]` placement.** Either the user or Claude may designate it,
+- **`[freeform]` placement, for the uncommon case where one reaches the queue at
+  all.** Most freeform work is done by hand in a session of its own and never
+  passes through /plan — the tag's main job is telling the close what kind of
+  session it is looking at. What follows governs a freeform item that *is* filed.
+  Either the user or Claude may designate it,
   typically as a stopgap or as the nuclear option for something too big to fix
   stepwise. **Place it at one end of the cleared
   region, never interleaved with Claude-work:** first when it is a prerequisite or
@@ -177,8 +186,9 @@ omits is read per item, at the moment Step 2 presents that item.
 always-loaded instruction "status is re-derived from LOG" performed rather than
 merely stated. An item whose prose leans on work already done has a premise worth
 re-reading — surfaced here, at the opening, where the user sees it. It orders
-nothing: staleness left the ladder when the decay rung was deleted, so this is a
-flag to read rather than a reason to take an item first. Only shipped
+nothing: rung 4 orders by the date an entry was FILED, which is a different fact
+from whether its premise has been overtaken, so this stays a flag to read rather
+than a reason to take an item first. Only shipped
 citations print: an unshipped one is the ordinary state and would appear on
 nearly every line for nothing.
 
@@ -566,25 +576,52 @@ unblocks anything else, don't fall through to file order silently. Work down:
 1. an uncleared red flag in Unprocessed   a breach outranks a delay
 2. unblock-potential                      order by how many other items cite
                                           this one's slug, most-cited first
-3. longest first by LINE COUNT            order by last line minus first line,
-                                          descending — the long ones make the
-                                          queue expensive to read
+3. ABOVE-MEDIAN longest first             among entries at or above the
+     by LINE COUNT                        section's median line count, order
+                                          by line count descending
+4. oldest first by DATE FILED             order by the digest's First seen
+                                          date, oldest first — the decay rung
 ```
 
 Every rung either reads a digest field or subtracts two line numbers. Rung 1 is
 the red-flag state. Rung 2 is the incoming arrow — the count of other entries
 citing this one's slug — so it ranks the whole section, not one item. Rung 3 is
-each entry's line count.
+each entry's line count, against the median the digest prints. Rung 4 is the
+digest's First seen date.
 
 **Line count means the arithmetic, and that is the whole reason it is here.** An
 entry's last line number minus its first: one subtraction, off numbers already
 in front of you. Nothing counts words, nothing weighs how finished an item looks,
 and nothing has to be read to produce the order.
 
-**Rung 3 is total, which is the structural point.** Longest-first never
-exhausts, so nothing can sit beneath it and no bottom-rung offer is reachable.
-The ladder is really a default with two overrides: take the longest, unless
-something carries an unaddressed risk or is holding other work up.
+**Rung 3 is partitioned at the median so that it terminates.** It orders only the
+entries at or above the section's median line count — a finite group that shrinks
+as it is worked — so the rung genuinely yields and what sits beneath it is
+reachable. The median is computed at the opening and fixed for that pass; the
+digest prints it. **No figure is ever written into this text:** a bare number like
+"twelve lines and over" is a limit with no derivation, which the method bans,
+while a proportion of the thing it governs is expressly admissible.
+
+**Why the partition was needed at all, recorded because the fault was invisible.**
+Rungs 1 and 2 are *selectors* — each picks a subset and runs out. Rung 3 was a
+*total order*: it ranked every entry, so it never yielded, and any rung placed
+beneath it could never fire. This document used to present that as a feature,
+saying nothing could sit beneath it. That sentence is what hid the fault, and it
+is deleted rather than reworded.
+
+**Rung 4 is decay, and it reads the date filed rather than file order.** A user
+can ask for the queue to be reordered however they like, which would silently
+render a file-order decay rung useless — it would still run, ranking by something
+the user had just overwritten. The date an entry first appeared cannot be
+overwritten by a reorder, and the digest already computes it. The case it serves,
+in the user's words: someone with a very long queue who does not get through the
+full set for many sessions. For that person entries genuinely rot, and nothing in
+the three-rung ladder ever reached them.
+
+**Decay's earlier deletion was a forced choice, not a finding against it.** The
+record framed it as a decision that staleness stops being an ordering concern.
+That was not the reason: no way to terminate the line-count rung was available at
+the time, and that rung was judged more important. The constraint is now removed.
 
 **Longest-first rests on cost-of-reading, not on design completeness.** Long
 entries are what make the queue expensive to reason across, and processing them
@@ -651,8 +688,9 @@ changed.** The opening names the rung the order came from; nothing used to cover
 a change once processing was under way. A session once opened on one rung,
 exhausted the work that rung selected about ten items later, moved to another
 with no narration at all, and the user had to ask outright what order was in
-force. A rung can still change mid-session — a red flag arrives, or the item
-holding everything up gets processed — even though the bottom rung no longer
+force. A rung can still change mid-session — a red flag arrives, the item holding
+everything up gets processed, or the above-median group empties into rung 4 —
+even though the bottom rung no longer
 runs out.
 
 Hanging this on the pick — a step that always runs — is what makes it fire; a
@@ -1113,17 +1151,33 @@ else?" — that can read as parking their idea. File it first, then offer the
 branch:
 
 ```
-process it now   ->  loops straight into the present-and-interview loop
+process it now   ->  RECOMMEND THIS. Loops straight into the present-and-
+                     interview loop.
 carry on         ->  leaves it in Unprocessed for its turn
 (either way: anything else to add first?)
 ```
+
+**Lead with the recommendation rather than a flat menu.** The user's words:
+*Claude should always recommend processing it now — it's just good context use.*
+The capture exists because this session's context produced it, so processing it is
+cheapest right now, and ordering is Claude's to own and narrate rather than hand
+back as a neutral choice. The process-now offer is one of the last flat menus
+left.
+
+**What stays the user's:** whether to process it at all, and whether there is
+appetite to carry on. The recommendation names the route; the answer is theirs.
 
 **The "anything else to add first?" clause is not optional**, and it belongs to
 this branch only. It was dropped once, and it is the clause that stops a user's
 idea being closed off before they have finished the thought.
 
 **When *Claude* raises something mid-/plan that may be work, ask once, at the
-moment it is raised, before any write: file it for later, or work it now?**
+moment it is raised, before any write: file it for later, or work it now — and
+recommend working it now.** The reason is identical on both branches: the capture
+exists because this session's context produced it. **Recommend the route and
+nothing else** — no clause inviting anything further, since this branch is barred
+from soliciting further captures and a recommendation is the easiest place for
+that bar to leak.
 Work-it-now runs the ordinary present-and-interview loop and, if kept, places the
 item straight into Processed — a route that already exists and needs nothing
 built. What was missing is the choice, so the answer stopped defaulting to

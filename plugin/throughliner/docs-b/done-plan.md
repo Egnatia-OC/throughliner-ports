@@ -1,6 +1,6 @@
 ---
 name: done-plan
-docset: B
+docset: current
 note: >
   Close-out for every no-build session. Reached from done.md's router when no
   build working file exists — /plan sessions, /setup sessions, method-doc-only
@@ -191,10 +191,20 @@ loop, so clearing one that rests on built-but-unverified work would let the run
 stack committed work on a foundation that might later fail its check. Narrate it
 when it holds an item back — one line naming which item waits on which.
 
-**Re-derive prerequisite state from LOG, not from memory.** Whether a dependency
-was built, and whether it was verified, is read off its LOG entry — this rule and
-the `[user]`-placement rule below both depend on that answer, and a fresh short
-session has no memory to fall back on.
+**Re-derive prerequisite state from LOG, not from memory, by reading the
+dependency entry's transcribed tick.** Every built item's entry carries either
+`done, confirmed` or `done, UNCONFIRMED: <what still needs running>`, written into
+the build working file at the moment the work happened and copied into the entry
+at the close (next-build.md, done-build.md). Read that field. This rule and the
+`[user]`-placement rule below both depend on the answer, and a fresh short session
+has no memory to fall back on.
+
+**Read the field, don't infer the answer from the entry's prose.** The field
+replaced exactly that: this rule used to depend on whatever a previous session
+happened to write in sentences, so a rule that must know whether something was
+verified was reading a distinction nothing guaranteed. An entry with no such field
+predates the mechanism — treat it as unconfirmed and say so, rather than reading
+its prose for a claim it may never make.
 
 **Name the holding fact when placing any item below the marker.** One line in
 the item's block, whichever holds it:

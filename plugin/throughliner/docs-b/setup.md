@@ -1,6 +1,6 @@
 ---
 name: setup
-docset: B
+docset: current
 note: >
   /setup procedure. It runs on two kinds of session: a fresh adoption, where the
   always-loaded behaviour rules are absent, and a migration or top-up inside an
@@ -235,6 +235,39 @@ actually landed. It is what clears the session-start halt that sent the user
 here, so writing it early would silence the warning while the project was still
 on the old shape — and nothing else would ever raise it again.
 
+**3b. Read the project's own CLAUDE.md for retired terms, and report what you
+find**  [SILENT] when clean; [BRIEF] when reporting.
+
+A project's CLAUDE.md was written when it was set up and is read at the start of
+every session since. Where it describes a piece of the method that has since been
+retired, every session reads that description as current — one went looking for a
+section that no longer exists and had to establish from the shipped docs that it
+was gone.
+
+Search the file for each retired term the method carries, and for each hit say
+plainly what the term was and what replaced it.
+
+```
+retired terms to search for, with their replacements:
+    "batch", "Build/Test/Audit"  ->  a work item is a single `#### ` heading
+                                     with a flavor tag; there are no batches
+                                     and no sub-headings inside one
+    "Deferred tests"             ->  deferred verification is a `[user]` work
+                                     line, revisited each planning session
+    "Parked:"                    ->  work is held below the cleared-to-run line
+                                     by `Blocked by:` or `Not before:`
+```
+
+**Report only — edit nothing.** The file is the user's, and reconciling its
+wording against the current template would clobber whatever they wrote into it.
+Tell them what is stale, what it means now, and leave the change to them.
+
+```
+no hits    ->  say nothing; carry on
+one hit    ->  name the term, what it was, what replaced it
+several    ->  one message listing all of them, then carry on
+```
+
 **4. Skip the interview** — the project is already described in SPEC.md.
 
 **5. Close state-aware.**
@@ -387,6 +420,60 @@ never be committed.
 **Git repository** — if the folder isn't already one, run `git init`, silently and
 mechanically like the rest of the scaffold. Without a repository there is nothing
 for the close-out to commit to.
+
+**Keep-everything-private option**  [BRIEF, PROMPT]. Offer once, as part of
+scaffolding, to add the project's Throughliner documents — `SPEC.md`, `QUEUE.md`
+and `LOG/` — to `.gitignore` so they never enter the repository at all.
+
+Say what it costs and what it buys, in one short exchange: these documents hold
+the project's plans, its reasoning and its session history, which is the most
+personal material the method produces; keeping them out of the repository is the
+only complete protection if it is ever published. The cost is that they are not
+version-controlled, so an unwanted change cannot be undone by reverting, and they
+do not travel with a clone.
+
+```
+user says yes  ->  add the three paths to `.gitignore`, say so in one line
+user says no   ->  say nothing further. Not asked again at any later setup run.
+```
+
+**This adds no sixth interview question.** It is part of scaffolding, where the
+files are being created, and it is answerable without knowing anything about the
+project.
+
+**Public-repository offer, and it carries the licence question with it**
+[DISCUSS, PROMPT]. Made **only** where the user asks for a public repository —
+never volunteered. When they do:
+
+```
+1. ask what licence the project should carry, and why it is being asked NOW:
+   a licence is what says who may use the code and on what terms, and it only
+   becomes a real question once the code is going somewhere public
+2. set up the repository
+```
+
+**Never represent the contents as screened.** The method scans for things shaped
+like credentials and reads its own writing against a checklist, and neither can
+tell whether a sentence quietly identifies a real person. So this offer may set up
+the repository and may **not** say the documents have been checked, are clean, or
+are safe to publish. Say plainly instead: the only complete protection is not
+publishing these documents, which is what the keep-everything-private option
+above does. Any wording implying they have been checked contradicts a shipped
+rule, and it is the sentence most likely to slip in here.
+
+**Declining is a plain answer, not a refusal.** "Not now" ends it; the offer is
+not repeated and nothing is set aside for later.
+
+**Two things are deliberately NOT asked, recorded so they are not re-proposed.**
+A standalone licence question in the interview — moved onto this offer, because
+most non-coders cannot answer it while still describing what their app is, which
+turns a question into a small failure with "I don't know" as the honest reply. And
+the idea that open source implies open logging — dropped entirely, because raising
+it at all nudges a user toward publishing their planning documents, which is the
+exact direction the scrub gate's stated limit exists to avoid nudging. Both costs
+were named and accepted: a user who never asks for a public repository never
+considers licensing, and a user who publishes may never think about whether their
+logs belong in it.
 
 ## Step 3: Interview (adaptive discovery + two settings)
 

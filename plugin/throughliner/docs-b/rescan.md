@@ -1,6 +1,6 @@
 ---
 name: rescan
-docset: B
+docset: current
 note: >
   /rescan procedure. Split out of done.md's wind-down re-scan on 2026-08-15 so
   the step has its own trigger and can run repeatedly in one chat.

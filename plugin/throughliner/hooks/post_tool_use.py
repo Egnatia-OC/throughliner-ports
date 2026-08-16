@@ -181,8 +181,12 @@ def _check_slugs(blocks, warnings):
     for b in blocks:
         if not SLUG_AT_END.search(b["heading"]):
             warnings.append(
-                f"line {b['idx'] + 1}: work item {b['heading'][:60]!r} has no "
-                "[slug] at the end of its description line — every work item "
+                # "entry", not "work item": this fires on Unprocessed blocks too,
+                # and only Processed holds work items. Neutral vocabulary that is
+                # true in both sections, rather than the user's, which draws a
+                # distinction the parser does not.
+                f"line {b['idx'] + 1}: entry {b['heading'][:60]!r} has no "
+                "[slug] at the end of its description line — every entry "
                 "needs one so a later LOG entry can name it."
             )
 
@@ -465,7 +469,8 @@ def _check_orphaned_prose(annotated, warnings):
             continue
         if not in_block and not flagged_run:
             warnings.append(
-                f"line {i + 1}: prose belongs to no work item — the text "
+                # "entry" for the same reason as the slug warning above.
+                f"line {i + 1}: prose belongs to no entry — the text "
                 f"starting {line[:50]!r} has no #### heading above it in this "
                 "section. A destroyed or missing heading leaves an item's "
                 "rationale orphaned like this; check whether an item's "

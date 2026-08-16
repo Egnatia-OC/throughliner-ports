@@ -356,7 +356,14 @@ def signal_measured(root):
         "kind": "report",
         "value": shipped + host,
         "slug": "rule-corpus-over-ceiling",
-        "message": "Growth report (no ceiling, no verdict). " + " | ".join(lines),
+        "message": (
+            "Growth report (no ceiling, no verdict). " + " | ".join(lines)
+            + " | Counts three shapes only: a bullet, a paragraph whose bold "
+            "leads the line, and a line inside a typed block. A rule stated in "
+            "plain prose, or with its bold anywhere but the start of the line, "
+            "is invisible here — which is why those three are the authoring "
+            "constraint rather than something to widen the pattern for."
+        ),
     }
 
 

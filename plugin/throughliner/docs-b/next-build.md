@@ -1,6 +1,6 @@
 ---
 name: next-build
-docset: B
+docset: current
 note: Execution procedure for build-flavor work items. Reached from next.md.
 ---
 
@@ -67,8 +67,39 @@ worked — routes out via Scope management below.
 3. if readable content -> reveal the new text (informational, no ask)
    if code             -> stay silent
 4. check what was built against SPEC       # SILENT unless it contradicts
-5. tick it: - [x] item description — done
+5. tick it, in whichever of the two forms is true (see below)
 ```
+
+**The tick takes two forms, and choosing between them is not optional.**
+
+```
+built AND confirmed      ->  - [x] item description — done, confirmed
+                             # something ran and passed: a suite, a command, a
+                             # read-back, an inspection of the output
+
+built, NOT confirmed     ->  - [x] item description — done, UNCONFIRMED:
+                                   <what still needs running>
+                             # name the check, the command, or the observation
+                             # nobody has made yet
+```
+
+**A build that ships code nothing ever ran is not rare enough to leave to
+judgement.** The tick used to mean one thing — the writing finished — and carried
+no claim that anything ran, while a shipped safety rule in `done-plan.md` already
+depends on the built-versus-confirmed distinction: an item whose prose names a
+slug that LOG records as built but not yet verified is held below the readiness
+line. Its input was whatever prose a previous session happened to write. One rule
+wrote the distinction by choice; another read it as though it were guaranteed.
+
+**Written here rather than required of the LOG entry, and that is the whole
+point.** An obligation discharged by remembering to write a sentence at the close
+is indistinguishable from one skipped. The mark is written at the moment the
+knowledge exists — the build has just run or just not run the thing — rather than
+at the close, where it has to be reconstructed. Same reasoning that moved the rule
+gate's disposition onto the queue item.
+
+The tick lives in the build working file, not in QUEUE.md, so no hook parses it
+and the queue lint needs no change — verified rather than assumed.
 
 **Step 4 checks the work against SPEC; it never edits SPEC to fit the work.** SPEC
 was read once at run start (next.md's pre-flight), so this costs almost nothing,

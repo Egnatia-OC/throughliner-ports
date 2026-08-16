@@ -1,6 +1,6 @@
 ---
 name: skill-nonspecific-rules
-docset: B
+docset: current
 note: >
   The rules that fire whatever is running. Extracted from the retired
   plugin-behaviour.md on 2026-08-10; skill-specific rules went down into the
@@ -15,6 +15,10 @@ note: >
 doc, where it is paid only when that skill runs. This test is what the filename
 states, and it is the admission control: check a candidate rule against the four
 before writing it here.
+
+**A rule in this file is written as a bullet, as a paragraph whose bold leads the
+line, or as a line inside a typed block** — the three shapes this file already
+uses throughout. Anything else is a defect at authoring time.
 
 Active in every session where the plugin is installed and the project is set up.
 /setup is the one skill that also runs *before* that point — adopting a fresh
@@ -554,17 +558,33 @@ real and equally bad; neither warning may be louder than the other. (How a
   the world for it: a file present or absent, a branch gone, a URL responding.
   Where it names none, the item stays in place until the user mentions it.
 - **A `[user]` line carries a walkthrough** — which steps, in what order, what to
-  check. "Can't fully script it yet" is **not** a reason to withhold the line:
+  check. **Each step names the thing to click or type and the thing to look for,
+  never only the place to arrive at.** "Open your session list" is a destination;
+  a step says what to click to get there and what tells you it worked. Every
+  consumer of this method is a non-coder, and most will not have used the surface
+  a walkthrough names, so a step assuming familiarity is under-specified for the
+  whole audience rather than for one person. This fires at authoring time, where
+  the cost is wording — it does **not** become a per-item question about whether
+  the user can perform a step, at the keep-step or the hand-off. "Can't fully script it yet" is **not** a reason to withhold the line:
   file it with a rough walkthrough flagged for refinement at the keep-step. The
   only thing that keeps work out of a `[user]` line is genuine uncertainty that
   it's user-work at all — and that routes to Unprocessed as an ordinary capture,
   still tracked.
 
-The `[freeform]` tag marks work that must **not** be built by /next — typically a
-repair to the machinery /next itself uses (the queue mover, the scope-lock, the
-lint), where running the broken mechanism to build past it is the failure. It is
-ready work with nothing blocking it, so it sits **above** the cleared-to-run line;
-the tag carries the exception rather than a third region of the queue.
+The `[freeform]` tag names **work done by hand rather than by /next** — because it
+is large, or because it characteristically cannot run inside a run. Its main job
+is telling the close what kind of session it is looking at.
+
+**Most freeform work never passes through /plan at all.** The user and Claude do
+it by hand in a session of its own, and /done reads the resulting edits as their
+expected work. Where one *is* filed as a queue item, it is ready work with nothing
+blocking it, so it sits **above** the cleared-to-run line and /next halts on it;
+the tag carries that exception rather than a third region of the queue.
+
+A repair to the machinery /next itself uses — the queue mover, the scope-lock, the
+lint — is **one example** of work that cannot run inside a run, since running the
+broken mechanism to build past it is the failure. It is an example and not the
+definition.
 
 ### Scrub before writing — and never claim more than that
 

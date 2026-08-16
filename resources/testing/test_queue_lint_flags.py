@@ -116,7 +116,7 @@ def test_orphaned_prose_is_flagged():
     bad = CLEAN.replace("## Processed\n",
                         "## Processed\n\nProse belonging to no work item.\n")
     warnings = lint(bad)
-    hit = any("no #### heading" in w or "belongs to no work item" in w
+    hit = any("no #### heading" in w or "belongs to no entry" in w
               for w in warnings)
     check("prose under no work item is flagged", hit, f"got: {warnings}")
 

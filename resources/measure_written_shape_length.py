@@ -49,7 +49,10 @@ for _stream in (sys.stderr, sys.stdout):
 
 SLUG_RE = re.compile(r"\[([a-z0-9][a-z0-9-]*)\]\s*$")
 ITEM_RE = re.compile(r"^####\s+\S")
-MARKER = "Cleared to run above this line"
+# Matched as a whole line, never as a substring — an item's prose may quote the
+# marker text, and a substring test would read that sentence as the readiness
+# line. Same anchored predicate reorder_queue.py uses.
+MARKER_RE = re.compile(r"^---\s*Cleared to run above this line\s*---\s*$")
 LOG_ENTRY_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-([a-z0-9][a-z0-9-]*)\.md$")
 INDEX_LINE_RE = re.compile(r"^-\s+(.*?)\s*(?:→|->)\s*([0-9a-z._-]+\.md)\s*$")
 
@@ -127,7 +130,7 @@ def items_in(text):
             flush()
             section, slug, block = "Unprocessed", None, []
             continue
-        if MARKER in line:
+        if MARKER_RE.match(line.strip()):
             cleared = False
             continue
         if ITEM_RE.match(line):

@@ -1,6 +1,6 @@
 ---
 name: feedback-and-inbox
-docset: B
+docset: current
 note: >
   Fetched on demand from skill-nonspecific-rules.md's pointers. Full procedures for
   the consumer feedback channel and the cross-project INBOX. The always-loaded

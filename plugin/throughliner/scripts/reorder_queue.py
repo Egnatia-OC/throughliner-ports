@@ -191,7 +191,9 @@ def split_blocks(body):
             flush()
             cur_slug = heading_slug(line)
             if cur_slug is None:
-                die("work item heading has no [slug]: " + line.strip())
+                # "entry" rather than "work item": this reads both sections, and
+                # only Processed holds work items.
+                die("entry heading has no [slug]: " + line.strip())
             cur = [line]
         else:
             cur.append(line)
@@ -361,13 +363,13 @@ def write_verified(queue_path, new_lines, absent=(), present=()):
 
     for slug, section in absent:
         if slug in section_slugs(after, section):
-            die("write did NOT land: [%s] is still a work item in %s after the "
+            die("write did NOT land: [%s] is still an entry in %s after the "
                 "file was written and read back. Nothing downstream should "
                 "treat this as done — re-run the command and check the file."
                 % (slug, section))
     for slug, section in present:
         if slug not in section_slugs(after, section):
-            die("write did NOT land: [%s] is not a work item in %s after the "
+            die("write did NOT land: [%s] is not an entry in %s after the "
                 "file was written and read back. Nothing downstream should "
                 "treat this as done — re-run the command and check the file."
                 % (slug, section))
@@ -408,11 +410,11 @@ def delete_item(queue_path, slug, section):
 
     matches = [s for s, _ in blocks if s == slug]
     if not matches:
-        die("--delete slug '%s' is not a work item in section %s. Check the "
+        die("--delete slug '%s' is not an entry in section %s. Check the "
             "spelling, and check the other section — the script refuses rather "
             "than guessing." % (slug, section))
     if len(matches) > 1:
-        die("--delete slug '%s' matches %d work items in section %s. Refusing: "
+        die("--delete slug '%s' matches %d entries in section %s. Refusing: "
             "two items sharing a slug is itself a fault, and deleting the wrong "
             "one is unrecoverable from here. Fix the duplicate first."
             % (slug, len(matches), section))

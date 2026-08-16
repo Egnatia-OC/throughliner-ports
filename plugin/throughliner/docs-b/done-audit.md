@@ -1,6 +1,6 @@
 ---
 name: done-audit
-docset: B
+docset: current
 note: >
   Close-out for audit-flavor work items. Reached from done.md's router for the
   run's [audit] items.
