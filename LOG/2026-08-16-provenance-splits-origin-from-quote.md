@@ -1,4 +1,4 @@
-# [HASH] — Provenance splits into an origin claim and a quote claim, and the wording test binds only to the second
+# de2f5fc — Provenance splits into an origin claim and a quote claim, and the wording test binds only to the second
 
 Two different claims were collapsed into one. An **origin** claim — "captured by you", "you raised this" — says where something came from and has nothing to do with wording; a paraphrase is the normal way to state it. A **quote** claim — "your words", quotation marks — is about wording and needs verbatim text. The shipped rule said a `captured by you` credit "requires the user's own words as its source", applying a wording test to an origin claim.
 

@@ -1,4 +1,4 @@
-# [HASH] — The after-a-write report stops being written as a substitute for reading the record
+# de2f5fc — The after-a-write report stops being written as a substitute for reading the record
 
 SPEC makes reading and approving the record the control model — the user keeps Claude aligned by reading what it does. The write-first rule contradicted that in one clause: the one-line report after a write had to be *"specific enough to object to without opening the file."* That designs around the artifact not being read, in the same corpus where reading is the control.
 

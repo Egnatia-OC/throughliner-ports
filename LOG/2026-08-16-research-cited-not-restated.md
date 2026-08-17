@@ -1,4 +1,4 @@
-# [HASH] — The keep-step now checks the research shelf and cites rather than restates, and the digest prints each item's citations
+# de2f5fc — The keep-step now checks the research shelf and cites rather than restates, and the digest prints each item's citations
 
 An item restated the findings of `resources/research/llm-length-instruction-following.md` in its own words and never named the file. A later session read the item, believed it had the picture, and proposed a design the research had already refused. Restating research inside an item is what produces an uncited dependency, and a restatement reads as complete, so nobody goes upstream.
 

@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md gains the judge-a-design-by-likelihood rule, with its carve-out protecting honest coverage limits
+# de2f5fc — CLAUDE.md gains the judge-a-design-by-likelihood rule, with its carve-out protecting honest coverage limits
 
 A design is judged by whether it makes the intended outcome more likely, not by whether it guarantees it. A missing guarantee is an objection only where the design depends on that guarantee to work at all. It fires at `/plan`'s keep-step, when weighing whether work is worth doing.
 

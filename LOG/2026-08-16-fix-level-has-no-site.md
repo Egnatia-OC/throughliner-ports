@@ -1,4 +1,4 @@
-# [HASH] — The keep-step now asks what level a fix belongs at, merged with the research clause into one rule
+# de2f5fc — The keep-step now asks what level a fix belongs at, merged with the research clause into one rule
 
 The rule gate fires at the wrong end. It runs "before adding any rule to the method's own text", so it only engages once someone has already decided a rule is the answer. Its fourth admission question is exactly the right one — could a hook do it instead — and it can never be reached from the other direction: looking at a broken instance and choosing how to fix it. So the default was whatever the item's author reached for first, which is the instance.
 

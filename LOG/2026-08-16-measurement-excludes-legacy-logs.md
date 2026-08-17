@@ -1,4 +1,4 @@
-# [HASH] — The length measurement now reads the pre-split logs, and the baseline is shorter than anyone estimated
+# de2f5fc — The length measurement now reads the pre-split logs, and the baseline is shorter than anyone estimated
 
 The tool could not see the era before the growth. It read per-entry LOG files only, and its own note said the earlier record "lives in the legacy combined log and is not measured here" — which reads as *cannot be*. It parses fine: every legacy file carries `## <hash> — <title>` headings, one per entry. So the growth was being reported only from inside the period during which it happened, which is why its scale was invisible to anyone reading the output.
 

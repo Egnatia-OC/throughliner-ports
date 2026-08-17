@@ -1,4 +1,4 @@
-# [HASH] — The written-shape measurement was read at last, and five findings routed
+# de2f5fc — The written-shape measurement was read at last, and five findings routed
 
 The reading half of work whose building half shipped on 2026-08-15 and was then never read. It exists as its own item because a tool with nobody appointed to read it reported that every written shape had doubled, and nothing happened for three days — the output is even addressed to a reader who was never appointed.
 

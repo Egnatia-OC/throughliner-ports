@@ -1,4 +1,4 @@
-# [HASH] — Word bands and ceilings for five written shapes, derived from July's medians
+# de2f5fc — Word bands and ceilings for five written shapes, derived from July's medians
 
 The artifacts had outgrown what anyone will read, and the user's stated reason for it mattering is that she operates the project by inferring what items say from chat rather than reading them. A prose instruction to be concise shipped on 2026-08-13 and measurably failed, which is why this ships figures instead.
 

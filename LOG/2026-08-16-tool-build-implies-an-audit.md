@@ -1,4 +1,4 @@
-# [HASH] — A build producing a measuring or reporting tool now files the audit that runs it
+# de2f5fc — A build producing a measuring or reporting tool now files the audit that runs it
 
 The gap was a missing rule, not a missing mechanism. Ordering a dependent audit after its tool already works by placement, and `Blocked by:` exists for the cases that need it. What was missing was anything saying the audit must be filed at all — so a measuring build completes, the queue shows nothing outstanding, a session record says the item shipped, and the step that reads the output was never written down. Nothing detects the absence of a step that never existed.
 
